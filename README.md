@@ -7,7 +7,7 @@ References
 -----------
 
 ### Books
-* [Game Engine Architecture](https://www.gameenginebook.com/)
+* [Game Engine Architecture (Second Edition)](https://www.gameenginebook.com/)
 
 ### Youtube Channels
 * [The Cherno](https://www.youtube.com/user/TheChernoProject)
