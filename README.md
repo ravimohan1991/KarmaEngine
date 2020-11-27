@@ -3,6 +3,11 @@ KarmaEngine
 
 A game engine for learning and research purposes.
 
+Clone
+------
+This repository contains submodules, therefore use ``` git clone --recurse-submodules -j8  https://github.com/ravimohan1991/KarmaEngine.git``` to recursively download the submodules.
+
+
 References
 -----------
 
