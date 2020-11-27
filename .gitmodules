@@ -1,0 +1,3 @@
+[submodule "Karma/vendor/spdlog"]
+	path = Karma/vendor/spdlog
+	url = https://github.com/gabime/spdlog
