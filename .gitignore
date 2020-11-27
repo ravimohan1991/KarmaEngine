@@ -2,3 +2,8 @@
 .vs/
 build/
 obj/
+
+# Visual Studio files
+*.user
+*.vcxproj
+*.vcxproj.filters
