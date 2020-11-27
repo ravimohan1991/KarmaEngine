@@ -1,5 +1,4 @@
 # Directories
-.vs/
 build/
 obj/
 
@@ -8,3 +7,14 @@ obj/
 *.vcxproj
 *.vcxproj.filters
 *.sln
+
+# Visual Studio directories
+.vs/
+
+# Codelite files
+*.mk
+*.project
+*.workspace
+
+# Codelite directories
+.codelite/
