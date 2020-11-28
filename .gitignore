@@ -18,3 +18,11 @@ obj/
 
 # Codelite directories
 .codelite/
+
+# Linux specific files
+Makefile
+Application.txt
+Karma.txt
+
+# Linux specific directories
+.build-debug/
