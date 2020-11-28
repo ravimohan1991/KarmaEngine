@@ -10,10 +10,10 @@ This repository contains submodules, therefore use ``` git clone --recurse-submo
 Building and Developing
 -----------------------
 ### Windows ###
-On Windows use Visual Studio 2017 or higher. Click on ``` GenerateProjects.bat ``` and that will prepare VS solution in the root directory.
+On Windows use Visual Studio 2017 or higher. Double click on ``` GenerateProjects.bat ``` and that will prepare VS solution in the root directory.
 
 ### Linux ###
-Karma has be developed and tested on Ubuntu 16.04 but should work on any linux platform. To build the binaries go to the repository directory and type
+Karma has been developed and tested on Ubuntu 16.04 but should work on any linux platform. To build the binaries go to the repository directory and type
 ```
 vendor/bin/Premake/Linux/premake5 gmake
 make
