@@ -47,6 +47,16 @@ project "Application"
 			"KR_WINDOWS_PLATFORM"
 		}
 
+	filter "system:linux"
+		buildoptions "-std=c++11"
+		linkoptions { '-Wl,-rpath=\\$$ORIGIN' }
+
+		defines
+		{
+			"KR_LINUX_PLATFORM"		
+		}	
+	
+
 	filter "configurations:Debug"
 		defines "KR_DEBUG"
 		symbols "On"
@@ -92,6 +102,20 @@ project "Karma"
 		postbuildcommands
 		{
 			("{COPY} %{cfg.buildtarget.relpath} ../build/" .. outputdir .. "/Application")
+		}
+	
+	filter "system:linux"
+		buildoptions "-std=c++11"
+
+		defines
+		{
+			"KR_LINUX_PLATFORM",
+			"KR_BUILD_SO"		
+		}
+
+		postbuildcommands
+		{
+		--	("{COPY} %{cfg.buildtarget.relpath} ../build/" .. outputdir .. "/Application")
 		}
 
 	filter "configurations:Debug"

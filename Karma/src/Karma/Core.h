@@ -6,6 +6,12 @@
 	#else
 		#define KARMA_API __declspec(dllimport)
 	#endif
+#elif defined KR_LINUX_PLATFORM
+    #ifdef KR_BUILD_SO
+        #define KARMA_API __attribute__((visibility("default")))
+    #else
+        #define KARMA_API
+    #endif
 #else
-	#error Supports Windows only!
+#error Unsupported Platform detected!
 #endif
