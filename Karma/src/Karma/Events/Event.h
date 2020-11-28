@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Core.h"
+#include "Karma/Core.h"
 
 #include <string>
 #include <functional>
