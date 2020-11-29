@@ -11,6 +11,10 @@ workspace "KarmaEngine"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Include directories relative to root folder
+IncludeDir = {}
+IncludeDir["GLFW"] = "Karma/vendor/GLFW/include"
+
 project "Application"
 	location "Application"
 	kind "ConsoleApp"
@@ -69,6 +73,8 @@ project "Application"
 		defines "KR_DIST"
 		optimize "On"
 
+include "Karma/vendor/GLFW"
+
 project "Karma"
 	location "Karma"
 	kind "SharedLib"
@@ -86,7 +92,13 @@ project "Karma"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include"
+		"%{prj.name}/vendor/spdlog/include",
+		"%{IncludeDir.GLFW}"
+	}
+
+	links
+	{
+		"GLFW"
 	}
 
 	filter "system:windows"
