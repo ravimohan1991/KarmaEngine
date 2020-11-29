@@ -4,3 +4,4 @@
 [submodule "Karma/vendor/GLFW"]
 	path = Karma/vendor/GLFW
 	url = https://github.com/ravimohan1991/glfw
+	ignore = dirty
