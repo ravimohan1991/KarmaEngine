@@ -53,13 +53,18 @@ project "Application"
 
 	filter "system:linux"
 		buildoptions "-std=c++11"
-		linkoptions { '-Wl,-rpath=\\$$ORIGIN' }
+		linkoptions { '-Wl,-rpath=\\$$ORIGIN',  "-pthread"}
 
 		defines
 		{
 			"KR_LINUX_PLATFORM"		
 		}	
 	
+		links
+		{
+			"dl"		
+		}
+
 
 	filter "configurations:Debug"
 		defines "KR_DEBUG"
