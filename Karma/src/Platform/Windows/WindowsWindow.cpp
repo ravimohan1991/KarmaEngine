@@ -1,9 +1,16 @@
 #include "WindowsWindow.h"
 #include "Karma/Log.h"
+#include "Karma/Events/ApplicationEvent.h"
+#include "Karma/Events/KeyEvent.h"
+#include "Karma/Events/MouseEvent.h"
 
 namespace Karma
 {
 	static bool s_GLFWInitialized = false;
+	static void GLFWErrorCallback(int error, const char* message)
+	{
+		KR_CORE_ERROR("GLFW error ({0}) : {1}", error, message);
+	}
 
 	Window* Window::Create(const WindowProps& props)
 	{
@@ -33,6 +40,7 @@ namespace Karma
 			int success = glfwInit();
 			//KR_CORE_ASSERT()
 
+			glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 		}
 
@@ -42,6 +50,102 @@ namespace Karma
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
+
+		// Set glfw callbacks
+		SetGLFWCallbacks(m_Window);
+	}
+
+	void WindowsWindow::SetGLFWCallbacks(GLFWwindow* glfwWindow)
+	{
+		/*
+		*	@param GLFWwindow the window whose sizecallback is desired
+		*	@param GLFWwindowsizefun the function pointer that gets called whenever
+		*			window size changes. The Cherno uses something what is
+		*			known as lambda. I don't quite understand the relation
+		*			between function pointer and lambda.
+		*/
+		glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			data.Width = width;
+			data.Height = height;
+
+			WindowResizeEvent event(width, height);
+			data.EventCallback(event);
+		});
+
+		glfwSetWindowCloseCallback(glfwWindow, [](GLFWwindow* window)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowCloseEvent event;
+
+			data.EventCallback(event);
+		});
+
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			switch (action)
+			{
+				case GLFW_PRESS:
+				{
+					KeyPressedEvent event(key, 0);
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					KeyReleasedEvent event(key);
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_REPEAT:
+				{
+					KeyPressedEvent event(key, 1);
+					data.EventCallback(event);
+					break;
+				}
+			}
+
+		});
+
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			switch (action)
+			{
+				case GLFW_PRESS:
+				{
+					MouseButtonPressedEvent event(button);
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					MouseButtonReleasedEvent event(button);
+					data.EventCallback(event);
+					break;
+				}
+			}
+		});
+
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			MouseScrolledEvent event((float)xOffset, (float)yOffset);
+			data.EventCallback(event);
+		});
+
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			MouseMovedEvent event((float) xPos, (float) yPos);
+			data.EventCallback(event);
+		});
 	}
 
 	void WindowsWindow::ShutDown()

@@ -25,6 +25,8 @@ namespace Karma
 
 	private:
 		virtual void Init(const WindowProps& props);
+		
+		void SetGLFWCallbacks(GLFWwindow* glfwWindow);
 		virtual void ShutDown();
 
 		GLFWwindow* m_Window;

@@ -31,6 +31,7 @@ namespace Karma
 
 	class KARMA_API WindowCloseEvent : public Event
 	{
+	public:
 		WindowCloseEvent()
 		{
 		}
