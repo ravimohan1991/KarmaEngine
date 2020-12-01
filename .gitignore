@@ -26,3 +26,7 @@ Karma.txt
 
 # Linux specific directories
 .build-debug/
+
+# Xcode files
+*.xcodeproj
+*.xcworkspace
