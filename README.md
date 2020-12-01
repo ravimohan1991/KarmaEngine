@@ -1,7 +1,8 @@
 KarmaEngine
 ===========
+![Alt Text](/repositoryfiles/Karma.png)
 
-A game engine for learning and research purposes.
+A cross-platform game engine for learning and research purposes.
 
 Clone
 ------
