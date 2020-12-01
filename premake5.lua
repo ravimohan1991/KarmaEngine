@@ -62,10 +62,18 @@ project "Application"
 	
 		links
 		{
-			"dl"		
+			"dl"	
 		}
 
+	filter "system:macosx"
+		buildoptions "-std=c++11"
+		linkoptions { '-Wl,-install_name', '-Wl,@loader_path/%{cfg.linktarget.name}' }
 
+		defines
+		{
+			"KR_MAC_PLATFORM"		
+		}	
+		
 	filter "configurations:Debug"
 		defines "KR_DEBUG"
 		symbols "On"
@@ -135,6 +143,20 @@ project "Karma"
 		{
 		--	("{COPY} %{cfg.buildtarget.relpath} ../build/" .. outputdir .. "/Application")
 		}
+
+		filter "system:macosx"
+		buildoptions "-std=c++11"
+
+		defines
+		{
+			"KR_MAC_PLATFORM",
+			"KR_BUILD_SO"		
+		}
+
+		postbuildcommands
+		{
+		--	("{COPY} %{cfg.buildtarget.relpath} ../build/" .. outputdir .. "/Application")
+		}	
 
 	filter "configurations:Debug"
 		defines "KR_DEBUG"

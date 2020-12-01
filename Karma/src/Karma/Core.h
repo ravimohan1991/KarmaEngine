@@ -12,6 +12,12 @@
     #else
         #define KARMA_API
     #endif
+#elif defined KR_MAC_PLATFORM
+    #ifdef KR_BUILD_SO
+        #define KARMA_API __attribute__((visibility("default")))
+    #else
+        #define KARMA_API
+    #endif
 #else
 #error Unsupported Platform detected!
 #endif
