@@ -28,7 +28,7 @@ This will create binaries in ``` build/Debug-linux-x86-64/Karma(or Application)`
 ```
 cp build/Debug-linux-x86_64/Karma/libKarma.so build/Debug-linux-x86_64/Application/
 ```
-Note: I am trying to add postbuildcommand in premake for Linux but I have not succeded yet. If you know how to do that, you are welcom to submit pull requests! You may want to look [here](https://github.com/ravimohan1991/KarmaEngine/commit/cfadad34b94c4c6154fee51ff16f514d3c2b511e#diff-305eff9084f83e9096ab2d18b9815c7b52c4d3603363d3d6a27e1c85f466ec45) (line 118).
+Note: I am trying to add postbuildcommand in premake for Linux but I have not succeded yet. If you know how to do that, you are welcome to submit pull requests! You may want to look [here](https://github.com/ravimohan1991/KarmaEngine/commit/cfadad34b94c4c6154fee51ff16f514d3c2b511e#diff-305eff9084f83e9096ab2d18b9815c7b52c4d3603363d3d6a27e1c85f466ec45) (line 118).
 
 Now you are ready to run Karma
 ```
