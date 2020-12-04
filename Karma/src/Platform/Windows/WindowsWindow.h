@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Karma/Window.h"
-#include "GLFW/glfw3.h"
+
+struct GLFWwindow;
 
 namespace Karma
 {
