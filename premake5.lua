@@ -14,6 +14,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder
 IncludeDir = {}
 IncludeDir["GLFW"] = "Karma/vendor/GLFW/include"
+IncludeDir["Glad"] = "Karma/vendor/Glad/include"
 
 project "Application"
 	location "Application"
@@ -87,6 +88,7 @@ project "Application"
 		optimize "On"
 
 include "Karma/vendor/GLFW"
+include "Karma/vendor/Glad"
 
 project "Karma"
 	location "Karma"
@@ -106,12 +108,14 @@ project "Karma"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links
 	{
-		"GLFW"
+		"GLFW",
+		"Glad"
 	}
 
 	filter "system:windows"
