@@ -11,6 +11,8 @@
 
 #include "LayerStack.h"
 
+#include <algorithm>
+
 namespace Karma
 {
 	LayerStack::LayerStack()
