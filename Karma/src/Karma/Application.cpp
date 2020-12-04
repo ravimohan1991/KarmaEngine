@@ -18,6 +18,13 @@ namespace Karma
 	{
 		while (m_Running)
 		{
+			// The range based for loop valid because we have implemented begin()
+			// and end() in LayerStack.h
+			for (auto layer : m_LayerStack)
+			{
+				layer->OnUpdate();
+			}
+			
 			m_Window->OnUpdate();
 		}
 	}
@@ -29,11 +36,30 @@ namespace Karma
 		return true;
 	}
 
+	void Application::PushLayer(Layer* layer)
+	{
+		m_LayerStack.PushLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer* layer)
+	{
+		m_LayerStack.PushOverlay(layer);
+	}
+	
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
 
 		KR_CORE_TRACE("{0}", e);
+
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
+		{
+			(*--it)->OnEvent(e);
+			if (e.IsHandled())
+			{
+				break;
+			}
+		}
 	}
 }

@@ -46,6 +46,11 @@ namespace Karma
 			return GetCategoryFlags() & category;
 		}
 
+		inline bool IsHandled() const
+		{
+			return m_Handled;
+		}
+
 	protected:
 		// If an event has been handled or not. To implement blocking
 		bool m_Handled = false;
