@@ -30,7 +30,8 @@
 		#include <intrin.h>
 		#define debugBreak() __debugbreak()
 	#else
-		#define debugBreak() __asm { int 3 }
+		#include <signal.h>
+		#define debugBreak() raise(SIGTRAP)
 	#endif
 
 	#define KR_ASSERT(expr, ...) \
