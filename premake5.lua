@@ -163,11 +163,19 @@ project "Karma"
 		}	
 
 	filter "configurations:Debug"
-		defines "KR_DEBUG"
+		defines
+		{
+			"KR_DEBUG",
+			"KR_ENABLE_ASSERTS"
+		}
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "KR_RELEASE"
+		defines 
+		{
+			"KR_RELEASE",
+			"KR_ENABLE_ASSERTS"
+		}
 		optimize "On"
 
 	filter "configurations:Dist"

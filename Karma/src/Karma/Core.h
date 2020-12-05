@@ -23,3 +23,31 @@
 #endif
 
 #define BIT(x) (1 << x)
+
+// Assertions
+#ifdef KR_ENABLE_ASSERTS
+	#if _MSC_VER
+		#include <intrin.h>
+		#define debugBreak() __debugbreak()
+	#else
+		#define debugBreak() __asm { int 3 }
+	#endif
+
+	#define KR_ASSERT(expr, ...) \
+			if(expr){} \
+			else \
+			{\
+				KR_ERROR("Assertion Failed: {0}. Refer file: {1}, line: {2}", __VA_ARGS__, __FILE__, __LINE__); \
+				debugBreak(); \
+			}
+	#define KR_CORE_ASSERT(expr, ...) \
+			if(expr){} \
+			else \
+			{\
+				KR_CORE_ERROR("Assertion Failed: {0}. Refer file: {1}, line: {2}", __VA_ARGS__, __FILE__, __LINE__); \
+				debugBreak(); \
+			}
+#else
+	#define KR_ASSERT(expr, ...)
+	#define KR_CORE_ASSERT(expr, ...)
+#endif
