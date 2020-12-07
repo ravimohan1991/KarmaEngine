@@ -5,3 +5,7 @@
 	path = Karma/vendor/GLFW
 	url = https://github.com/ravimohan1991/glfw
 	ignore = dirty
+[submodule "Karma/vendor/ImGui"]
+	path = Karma/vendor/ImGui
+	url = https://github.com/ravimohan1991/imgui
+	ignore = dirty

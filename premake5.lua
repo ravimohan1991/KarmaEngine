@@ -15,6 +15,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "Karma/vendor/GLFW/include"
 IncludeDir["Glad"] = "Karma/vendor/Glad/include"
+IncludeDir["ImGui"] = "Karma/vendor/ImGui"
 
 project "Application"
 	location "Application"
@@ -89,6 +90,7 @@ project "Application"
 
 include "Karma/vendor/GLFW"
 include "Karma/vendor/Glad"
+include "Karma/vendor/ImGui"
 
 project "Karma"
 	location "Karma"
@@ -109,13 +111,15 @@ project "Karma"
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.ImGui}"
 	}
 
 	links
 	{
 		"GLFW",
-		"Glad"
+		"Glad",
+		"ImGui"
 	}
 
 	filter "system:windows"
