@@ -35,7 +35,9 @@ project "Application"
 	includedirs
 	{
 		"Karma/vendor/spdlog/include",
-		"Karma/src"
+		"Karma/src",
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.ImGui}"
 	}
 
 	links
@@ -120,6 +122,7 @@ project "Karma"
 		"GLFW",
 		"Glad",
 		"ImGui"
+		--"opengl32.lib"
 	}
 
 	filter "system:windows"
