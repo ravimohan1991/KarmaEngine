@@ -17,7 +17,7 @@ namespace Karma
 #ifdef KR_MAC_PLATFORM
 	Window* Window::Create(const WindowProps& props)
 	{
-		return new WindowsWindow(props);
+		return new MacWindow(props);
 	}
 #endif   
 
