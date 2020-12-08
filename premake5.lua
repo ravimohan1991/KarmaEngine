@@ -155,7 +155,7 @@ project "Karma"
 		--	("{COPY} %{cfg.buildtarget.relpath} ../build/" .. outputdir .. "/Application")
 		}
 
-		filter "system:macosx"
+	filter "system:macosx"
 		buildoptions "-std=c++11"
 
 		defines
