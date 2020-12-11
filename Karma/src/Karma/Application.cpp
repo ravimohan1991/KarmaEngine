@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Karma/Log.h"
+#include "GLFW/glfw3.h"
 
 namespace Karma
 {
@@ -10,7 +11,7 @@ namespace Karma
 		KR_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 		m_Window = std::unique_ptr<Window>(Window::Create());
-		m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
+		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent));
 	}
 
 	Application::~Application()
@@ -22,6 +23,9 @@ namespace Karma
 	{
 		while (m_Running)
 		{
+			glClearColor(0, 0, 0, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
+			
 			// The range based for loop valid because we have implemented begin()
 			// and end() in LayerStack.h
 			for (auto layer : m_LayerStack)
@@ -55,7 +59,7 @@ namespace Karma
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(std::bind(&Application::OnWindowClose, this, std::placeholders::_1));
+		dispatcher.Dispatch<WindowCloseEvent>(KR_BIND_EVENT_FN(Application::OnWindowClose));
 
 		KR_CORE_TRACE("{0}", e);
 

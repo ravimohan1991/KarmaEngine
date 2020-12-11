@@ -52,3 +52,5 @@
 	#define KR_ASSERT(expr, ...)
 	#define KR_CORE_ASSERT(expr, ...)
 #endif
+
+#define KR_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)

@@ -31,3 +31,6 @@ Karma.txt
 # Xcode files
 *.xcodeproj
 *.xcworkspace
+
+# ImGui files
+imgui.ini

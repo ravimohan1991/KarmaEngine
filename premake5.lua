@@ -121,8 +121,8 @@ project "Karma"
 	{
 		"GLFW",
 		"Glad",
-		"ImGui"
-		--"opengl32.lib"
+		"ImGui",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
