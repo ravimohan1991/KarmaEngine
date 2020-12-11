@@ -121,8 +121,7 @@ project "Karma"
 	{
 		"GLFW",
 		"Glad",
-		"ImGui",
-		"opengl32.lib"
+		"ImGui"
 	}
 
 	filter "system:windows"
@@ -136,6 +135,11 @@ project "Karma"
 			"KR_BUILD_DLL"
 		}
 
+		links
+		{
+			"opengl32.lib"	
+		}		
+
 		postbuildcommands
 		{
 			("{COPY} %{cfg.buildtarget.relpath} ../build/" .. outputdir .. "/Application")
@@ -148,6 +152,11 @@ project "Karma"
 		{
 			"KR_LINUX_PLATFORM",
 			"KR_BUILD_SO"		
+		}
+
+		links
+		{
+			"GL"	
 		}
 
 		postbuildcommands
