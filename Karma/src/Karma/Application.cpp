@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Karma/Log.h"
 #include "GLFW/glfw3.h"
+#include "Karma/Input.h"
 
 namespace Karma
 {
@@ -16,7 +17,8 @@ namespace Karma
 
 	Application::~Application()
 	{
-	
+		Input::DeleteInstance();
+		s_Instance = nullptr;
 	}
 	
 	void Application::Run()
