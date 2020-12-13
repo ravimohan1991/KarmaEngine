@@ -1,14 +1,14 @@
-#include "WindowsInput.h"
+#include "LinuxInput.h"
 #include "GLFW/glfw3.h"
 #include "Karma/Application.h"
 
 namespace Karma
 {
-#ifdef KR_WINDOWS_PLATFORM
-	Input* Input::s_Instance = new WindowsInput();
+#ifdef KR_LINUX_PLATFORM
+	Input* Input::s_Instance = new LinuxInput();
 #endif
-
-    bool WindowsInput::IsKeyPressedImpl(int keycode)
+    
+    bool LinuxInput::IsKeyPressedImpl(int keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetKey(window, keycode);
@@ -16,7 +16,7 @@ namespace Karma
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool WindowsInput::IsMouseButtonPressedImpl(int button)
+	bool LinuxInput::IsMouseButtonPressedImpl(int button)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetMouseButton(window, button);
@@ -24,7 +24,7 @@ namespace Karma
 		return state == GLFW_PRESS;
 	}
 
-	std::pair<float, float> WindowsInput::GetMousePositionImpl()
+	std::pair<float, float> LinuxInput::GetMousePositionImpl()
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
@@ -33,7 +33,7 @@ namespace Karma
 		return { (float)xpos, (float)ypos };
 	}
 
-	float WindowsInput::GetMouseXImpl()
+	float LinuxInput::GetMouseXImpl()
 	{
 		/*
 		* for c++14 and below (I am supporting c++11 in linux
@@ -49,7 +49,7 @@ namespace Karma
 		return (float)xpos;
 	}
 
-	float WindowsInput::GetMouseYImpl()
+	float LinuxInput::GetMouseYImpl()
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
