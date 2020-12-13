@@ -16,6 +16,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Karma/vendor/GLFW/include"
 IncludeDir["Glad"] = "Karma/vendor/Glad/include"
 IncludeDir["ImGui"] = "Karma/vendor/ImGui"
+IncludeDir["GLM"] = "Karma/vendor/GLM"
 
 project "Application"
 	location "Application"
@@ -37,7 +38,8 @@ project "Application"
 		"Karma/vendor/spdlog/include",
 		"Karma/src",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.GLM}"				
 	}
 
 	links
@@ -105,7 +107,9 @@ project "Karma"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/GLM/glm/**.hpp",
+		"%{prj.name}/vendor/GLM/glm/**.inl"
 	}
 
 	includedirs
@@ -114,7 +118,8 @@ project "Karma"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.GLM}"
 	}
 
 	links
