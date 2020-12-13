@@ -142,7 +142,7 @@ project "Karma"
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../build/" .. outputdir .. "/Application")
+			("{COPY} %{cfg.buildtarget.relpath} \"../build/" .. outputdir .. "/Application/\"")
 		}
 	
 	filter "system:linux"
@@ -161,7 +161,7 @@ project "Karma"
 
 		postbuildcommands
 		{
-		--	("{COPY} %{cfg.buildtarget.relpath} ../build/" .. outputdir .. "/Application")
+		--	("{COPY} %{cfg.buildtarget.relpath} \" ../build/" .. outputdir .. "/Application\"")
 		}
 
 	filter "system:macosx"
