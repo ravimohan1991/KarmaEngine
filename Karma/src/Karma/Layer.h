@@ -14,7 +14,7 @@ namespace Karma
 		virtual void OnAttach()
 		{
 		}
-		virtual void OnDetach()// Caution: it is not being used!
+		virtual void OnDetach()
 		{
 		}
 		virtual void OnUpdate()
