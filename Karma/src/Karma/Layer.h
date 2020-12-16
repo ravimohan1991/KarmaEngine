@@ -14,10 +14,13 @@ namespace Karma
 		virtual void OnAttach()
 		{
 		}
-		virtual void OnDetach()
+		virtual void OnDetach()// Caution: it is not being used!
 		{
 		}
 		virtual void OnUpdate()
+		{
+		}
+		virtual void OnImGuiRender()
 		{
 		}
 		virtual void OnEvent(Event& event)

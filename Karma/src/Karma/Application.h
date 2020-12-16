@@ -4,6 +4,7 @@
 #include "Karma/Window.h"
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/LayerStack.h"
+#include "Karma/ImGui/ImGuiLayer.h"
 
 #include <memory>
 
@@ -29,6 +30,7 @@ namespace Karma
 		bool OnWindowClose(WindowCloseEvent& event);
 
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;// Created on stack. For entire lifetime of the program (singleton?)
 

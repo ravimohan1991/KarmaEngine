@@ -5,7 +5,6 @@ class KarmaApp : public Karma::Application
 public:
 	KarmaApp()
 	{
-		PushOverlay(new Karma::ImGuiLayer());
 	}
 
 };
