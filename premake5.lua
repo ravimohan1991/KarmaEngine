@@ -33,7 +33,6 @@ project "Application"
 		"%{prj.name}/src/**.cpp"
 	}
 
-	-- find macros corresponding to Karma project instead of hardcoding
 	includedirs
 	{
 		"Karma/vendor/spdlog/include",
@@ -60,16 +59,22 @@ project "Application"
 
 	filter "system:linux"
 		buildoptions "-std=c++11"
-		linkoptions { '-Wl,-rpath=\\$$ORIGIN',  "-pthread"}
+		linkoptions {"-pthread"}
 
 		defines
 		{
 			"KR_LINUX_PLATFORM"		
 		}	
 	
+
+		-- Karma application likning to Karma still wants these linking. In windows it works without these linkings.
+		-- The issue began when we started compiling Karma as static library.	
 		links
 		{
-			"dl"	
+			"dl",
+			"GLFW",
+			"Glad",
+			"ImGui"	
 		}
 
 	filter "system:macosx"

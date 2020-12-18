@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Karma/Log.h"
+#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Karma/Input.h"
 
