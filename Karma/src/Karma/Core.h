@@ -30,6 +30,7 @@
 
 // Assertions
 #ifdef KR_ENABLE_ASSERTS
+#include "Karma/Log.h"
 	#if _MSC_VER
 		#include <intrin.h>
 		#define debugBreak() __debugbreak()
