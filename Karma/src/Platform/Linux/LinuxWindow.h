@@ -6,6 +6,8 @@ struct GLFWwindow;
 
 namespace Karma
 {
+	class GraphicsContext;
+
 	class LinuxWindow : public Window
 	{
 	public:
@@ -33,6 +35,7 @@ namespace Karma
 		virtual void ShutDown();
 
 		GLFWwindow* m_Window;
+		GraphicsContext* m_Context;
 		
 		struct WindowData
 		{
