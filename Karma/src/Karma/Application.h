@@ -34,6 +34,8 @@ namespace Karma
 		bool m_Running = true;
 		LayerStack m_LayerStack;// Created on stack. For entire lifetime of the program (singleton?)
 
+		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+
 		static Application* s_Instance;
 	};
 
