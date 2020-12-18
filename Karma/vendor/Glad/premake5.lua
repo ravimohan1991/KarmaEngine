@@ -2,6 +2,7 @@
 project "Glad"
 	kind "StaticLib"
 	language "C"
+	staticruntime "on"
 
 	targetdir ("build/" .. outputdir .. "/%{prj.name}")
 	objdir ("obj/" .. outputdir .. "/%{prj.name}")
@@ -20,14 +21,12 @@ project "Glad"
 
 	filter "system:windows"
 		systemversion "latest"
-		staticruntime "off"
 
 	filter "system:linux"
 		-- https://github.com/premake/premake-core/wiki/pic
 		pic "On"
 
 		systemversion "latest"
-		staticruntime "off"
 
 	filter "configurations:Debug"
 		runtime "Debug"
