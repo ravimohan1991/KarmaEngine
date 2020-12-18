@@ -22,6 +22,7 @@ project "Application"
 	location "Application"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "on"
 
 	targetdir ("build/" .. outputdir .. "/%{prj.name}")
 	objdir ("obj/" .. outputdir .. "/%{prj.name}")
@@ -39,7 +40,8 @@ project "Application"
 		"Karma/src",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.GLM}"				
+		"%{IncludeDir.GLM}",
+		"%{IncludeDir.GLFW}"				
 	}
 
 	links
@@ -49,7 +51,6 @@ project "Application"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "off"
 		systemversion "latest"
 
 		defines
@@ -98,8 +99,9 @@ include "Karma/vendor/ImGui"
 
 project "Karma"
 	location "Karma"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
+	staticruntime "on"
 
 	targetdir ("build/" .. outputdir .. "/%{prj.name}")
 	objdir ("obj/" .. outputdir .. "/%{prj.name}")
@@ -131,7 +133,6 @@ project "Karma"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "off"
 		systemversion "latest"
 
 		defines
@@ -144,11 +145,6 @@ project "Karma"
 		{
 			"opengl32.lib"	
 		}		
-
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} \"../build/" .. outputdir .. "/Application/\"")
-		}
 	
 	filter "system:linux"
 		buildoptions "-std=c++11"
@@ -162,11 +158,6 @@ project "Karma"
 		links
 		{
 			"GL"	
-		}
-
-		postbuildcommands
-		{
-		--	("{COPY} %{cfg.buildtarget.relpath} \" ../build/" .. outputdir .. "/Application\"")
 		}
 
 	filter "system:macosx"

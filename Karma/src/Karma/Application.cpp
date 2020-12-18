@@ -73,8 +73,6 @@ namespace Karma
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(KR_BIND_EVENT_FN(Application::OnWindowClose));
 
-		KR_CORE_TRACE("{0}", e);
-
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
 			(*--it)->OnEvent(e);

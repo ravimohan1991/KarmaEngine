@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef KR_DYNAMIC_LINK
 #ifdef KR_WINDOWS_PLATFORM
 	#ifdef KR_BUILD_DLL
 		#define KARMA_API __declspec(dllexport)
@@ -20,6 +21,9 @@
     #endif
 #else
 #error Unsupported Platform detected!
+#endif
+#else
+#define KARMA_API
 #endif
 
 #define BIT(x) (1 << x)
