@@ -22,8 +22,8 @@ namespace Karma
 		glBindVertexArray(m_VertexArray);
 
 		// Vertex buffer
-		glGenBuffers(1, &m_VertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+		/*glGenBuffers(1, &m_VertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);*/
 
 		// Clip space coordinates
 		float vertices[3 * 3] = {
@@ -32,20 +32,24 @@ namespace Karma
 			 0.0f, 0.5f, 0.0f
 		};
 
+		m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		
 		// Upload to GPU
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
 		// Index buffer
-		glGenBuffers(1, &m_IndexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+		/*glGenBuffers(1, &m_IndexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);*/
 
-		unsigned int indices[3] = { 0, 1, 2 };
+		uint32_t indices[3] = { 0, 1, 2 };
 
+		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		
 		// Upload to GPU
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 		std::string vertexSrc = R"(
 			#version 330 core
@@ -87,7 +91,7 @@ namespace Karma
 			
 			m_Shader->Bind();
 			glBindVertexArray(m_VertexArray);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, m_IndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			// The range based for loop valid because we have implemented begin()
 			// and end() in LayerStack.h
