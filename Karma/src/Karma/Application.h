@@ -5,6 +5,7 @@
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/LayerStack.h"
 #include "Karma/ImGui/ImGuiLayer.h"
+#include "Karma/Renderer/Shader.h"
 
 #include <memory>
 
@@ -35,6 +36,7 @@ namespace Karma
 		LayerStack m_LayerStack;// Created on stack. For entire lifetime of the program (singleton?)
 
 		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		std::unique_ptr<Shader> m_Shader;
 
 		static Application* s_Instance;
 	};
