@@ -63,7 +63,7 @@ namespace Karma
 		vertexBuffer->Bind();
 
 		uint32_t index = 0;
-		auto layout = vertexBuffer->GetLayout();
+		const auto& layout = vertexBuffer->GetLayout();
 		for (const auto& element : layout)
 		{
 			glEnableVertexAttribArray(index);
@@ -75,7 +75,6 @@ namespace Karma
 				(const void*)element.Offset);
 			index++;
 		}
-		int a = 10;
 		m_VertexBuffers.push_back(vertexBuffer);
 	}
 
