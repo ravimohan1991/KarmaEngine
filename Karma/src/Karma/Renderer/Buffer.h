@@ -56,7 +56,7 @@ namespace Karma
 	struct BufferElement
 	{
 		std::string Name;
-		uint32_t Offset;
+		uint64_t Offset;
 		uint32_t Size;
 		ShaderDataType Type;
 		bool Normalized;
