@@ -1,8 +1,8 @@
 #include "Application.h"
 #include "Karma/Log.h"
-#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Karma/Input.h"
+#include "Karma/Renderer/Renderer.h"
 
 namespace Karma
 {
@@ -20,14 +20,6 @@ namespace Karma
 
 		m_VertexArray.reset(VertexArray::Create());
 		
-		/*glGenVertexArrays(1, &m_VertexArray);
-		glBindVertexArray(m_VertexArray);*/
-
-		// Vertex buffer
-		/*glGenBuffers(1, &m_VertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);*/
-
-		// Clip space coordinates
 		float vertices[3 * 7] = {
 			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 			 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
@@ -47,34 +39,12 @@ namespace Karma
 		}
 		
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-		
-		/*uint32_t index = 0;
-		auto layout = m_VertexBuffer->GetLayout();
-		for (const auto& element : layout)
-		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, element.GetComponentCount(), 
-				ShaderDataTypeToOpenGLBaseType(element.Type), 
-				element.Normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), 
-				(const void*)element.Offset);
-			index++;
-		}*/
-
-		// Upload to GPU
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		// Index buffer
-		/*glGenBuffers(1, &m_IndexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);*/
 
 		uint32_t indices[3] = { 0, 1, 2 };
 
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-
-		// Upload to GPU
-		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 		std::string vertexSrc = R"(
 			#version 330 core
@@ -116,7 +86,7 @@ namespace Karma
 			 -0.25f, 0.25f, 0.0f
 		};
 
-		std::shared_ptr<VertexBuffer> squareVB;// = std::make_shared<VertexBuffer>();
+		std::shared_ptr<VertexBuffer> squareVB;
 		squareVB.reset(VertexBuffer::Create(verticesBSQ, sizeof(verticesBSQ)));
 
 		{
@@ -130,7 +100,7 @@ namespace Karma
 		m_SquareVA->AddVertexBuffer(squareVB);
 
 		uint32_t indicesBSQ[6] = { 0, 1, 2, 2, 3, 0 };
-		std::shared_ptr<IndexBuffer> squareIB;// = std::make_shared<IndexBuffer>();
+		std::shared_ptr<IndexBuffer> squareIB;
 		squareIB.reset(IndexBuffer::Create(indicesBSQ, sizeof(indicesBSQ) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
@@ -170,18 +140,18 @@ namespace Karma
 	{
 		while (m_Running)
 		{
-			glClearColor(0, 0, 0, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+			RenderCommand::Clear();
 			
+			Renderer::BeginScene();
+
 			m_Shader->Bind();
-			m_VertexArray->Bind();
-			//glBindVertexArray(m_VertexArray);
-			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
+			Renderer::Submit(m_VertexArray);
+			
 			m_BlueSQShader->Bind();
-			m_SquareVA->Bind();
-			glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
+			Renderer::Submit(m_SquareVA);
+			
+			Renderer::EndScene();
 
 			// The range based for loop valid because we have implemented begin()
 			// and end() in LayerStack.h
