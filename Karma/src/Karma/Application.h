@@ -8,6 +8,7 @@
 #include "Karma/Renderer/Shader.h"
 #include "Karma/Renderer/Buffer.h"
 #include "Karma/Renderer/VertexArray.h"
+#include "Karma/Renderer/OrthographicCamera.h"
 
 #include <memory>
 
@@ -42,6 +43,8 @@ namespace Karma
 	
 		std::shared_ptr<VertexArray> m_VertexArray;
 		std::shared_ptr<VertexArray> m_SquareVA;
+
+		OrthographicCamera m_Camera;
 
 		static Application* s_Instance;
 	};

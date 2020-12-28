@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Karma/Core.h"
+#include "glm/glm.hpp"
 #include <string>
 
 namespace Karma
@@ -13,6 +14,8 @@ namespace Karma
 
 		void Bind() const;
 		void UnBind() const;
+
+		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 
 	private:
 		// OpenGL's identification scheme
