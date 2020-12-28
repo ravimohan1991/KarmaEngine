@@ -45,6 +45,13 @@ namespace Karma
 		std::shared_ptr<VertexArray> m_SquareVA;
 
 		OrthographicCamera m_Camera;
+		struct CameraData
+		{
+			float x_Pos = 0.0f;
+			float y_Pos = 0.0f;
+			float angle = 0.0f;
+		};
+		CameraData camData;
 
 		static Application* s_Instance;
 	};

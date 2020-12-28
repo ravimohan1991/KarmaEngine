@@ -148,8 +148,8 @@ namespace Karma
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 			RenderCommand::Clear();
 			
-			//m_Camera.SetPosition({0.5f, 0.5f, 0.0f});
-			//m_Camera.SetRotation(45.0f);
+			m_Camera.SetPosition({camData.x_Pos, camData.y_Pos, 0.0f});
+			m_Camera.SetRotation(camData.angle);
 			Renderer::BeginScene(m_Camera);
 
 			Renderer::Submit(m_VertexArray, m_Shader);
@@ -205,6 +205,33 @@ namespace Karma
 			if (e.IsHandled())
 			{
 				break;
+			}
+		}
+
+		if (e.GetEventType() == EventType::KeyPressed)
+		{
+			KeyPressedEvent* kPressedEvent = static_cast<KeyPressedEvent*>(e.GetObjPointer());
+			int keycode = kPressedEvent->GetKeyCode();
+			switch (keycode)
+			{
+				case GLFW_KEY_A:
+					camData.x_Pos -= 0.1f;
+					break;
+				case GLFW_KEY_D: 
+					camData.x_Pos += 0.1f;
+					break;
+				case GLFW_KEY_W:
+					camData.y_Pos += 0.1f;
+					break;
+				case GLFW_KEY_S:
+					camData.y_Pos -= 0.1f;
+					break;
+				case GLFW_KEY_R:
+					camData.angle += 3.0f;
+					break;
+				case GLFW_KEY_T:
+					camData.angle -= 3.0f;
+					break;
 			}
 		}
 	}

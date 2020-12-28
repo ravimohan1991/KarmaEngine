@@ -51,6 +51,8 @@ namespace Karma
 			return m_Handled;
 		}
 
+		inline Event* GetObjPointer() { return this; }
+
 	protected:
 		// If an event has been handled or not. To implement blocking
 		bool m_Handled = false;
