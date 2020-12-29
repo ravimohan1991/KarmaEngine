@@ -5,10 +5,6 @@
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/LayerStack.h"
 #include "Karma/ImGui/ImGuiLayer.h"
-#include "Karma/Renderer/Shader.h"
-#include "Karma/Renderer/Buffer.h"
-#include "Karma/Renderer/VertexArray.h"
-#include "Karma/Renderer/OrthographicCamera.h"
 
 #include <memory>
 
@@ -37,21 +33,6 @@ namespace Karma
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;// Created on stack. For entire lifetime of the program (singleton?)
-
-		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<Shader> m_BlueSQShader;
-	
-		std::shared_ptr<VertexArray> m_VertexArray;
-		std::shared_ptr<VertexArray> m_SquareVA;
-
-		OrthographicCamera m_Camera;
-		struct CameraData
-		{
-			float x_Pos = 0.0f;
-			float y_Pos = 0.0f;
-			float angle = 0.0f;
-		};
-		CameraData camData;
 
 		static Application* s_Instance;
 	};
