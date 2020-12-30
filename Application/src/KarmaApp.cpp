@@ -122,9 +122,9 @@ public:
 		m_BlueSQShader.reset(new Karma::Shader(vertexSrcBSQ, fragmentSrcBSQ));
 	}
 
-	virtual void OnUpdate() override
+	virtual void OnUpdate(float deltaTime) override
 	{
-		KarmaAppInputPolling();
+		KarmaAppInputPolling(deltaTime);
 
 		Karma::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Karma::RenderCommand::Clear();
@@ -147,36 +147,36 @@ public:
 	{
 	}
 
-	void KarmaAppInputPolling()
+	void KarmaAppInputPolling(float deltaTime)
 	{
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_A))
 		{
-			camData.x_Pos -= 0.1f;
+			camData.x_Pos -= cameraTranslationSpeed * deltaTime;
 		}
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_D))
 		{
-			camData.x_Pos += 0.1f;
+			camData.x_Pos += cameraTranslationSpeed * deltaTime;
 		}
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_W))
 		{
-			camData.y_Pos += 0.1f;
+			camData.y_Pos += cameraTranslationSpeed * deltaTime;
 		}
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_S))
 		{
-			camData.y_Pos -= 0.1f;
+			camData.y_Pos -= cameraTranslationSpeed * deltaTime;
 		}
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_R))
 		{
-			camData.angle += 3.0f;
+			camData.angle += cameraRotationSpeed * deltaTime;
 		}
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_T))
 		{
-			camData.angle -= 3.0f;
+			camData.angle -= cameraRotationSpeed * deltaTime;
 		}
 	}
 
@@ -195,6 +195,8 @@ private:
 		float angle = 0.0f;
 	};
 	CameraData camData;
+	float cameraTranslationSpeed = 1.0f;
+	float cameraRotationSpeed = 180.0f;
 };
 
 class KarmaApp : public Karma::Application

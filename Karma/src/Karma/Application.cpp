@@ -3,6 +3,7 @@
 #include "GLFW/glfw3.h"
 #include "Karma/Input.h"
 #include "Karma/Renderer/Renderer.h"
+#include "chrono"
 
 namespace Karma
 {
@@ -27,13 +28,25 @@ namespace Karma
 	
 	void Application::Run()
 	{
+		std::chrono::high_resolution_clock::time_point begin, end;
+
+		begin = std::chrono::high_resolution_clock::now();
+
 		while (m_Running)
 		{
+			end = std::chrono::high_resolution_clock::now();
+
+			float deltaTime = (float) std::chrono::duration_cast<std::chrono::microseconds>
+				(end - begin).count();
+			begin = end;
+			
+			deltaTime /= 1000000.0f;
+
 			// The range based for loop valid because we have implemented begin()
 			// and end() in LayerStack.h
 			for (auto layer : m_LayerStack)
 			{
-				layer->OnUpdate();
+				layer->OnUpdate(deltaTime);
 			}
 			
 			m_ImGuiLayer->Begin();
