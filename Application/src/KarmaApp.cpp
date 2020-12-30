@@ -1,5 +1,6 @@
 #include "Karma.h"
 #include "glfw/glfw3.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 class ExampleLayer : public Karma::Layer
 {
@@ -41,12 +42,13 @@ public:
 			layout(location = 1) in vec4 a_Color;
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec4 v_Color;
 			
 			void main()
 			{
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0f);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
 				v_Color = a_Color;
 			}
 		)";
@@ -101,10 +103,11 @@ public:
 			layout(location = 0) in vec3 a_Position;
 			
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			void main()
 			{
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0f);
+				gl_Position = u_ViewProjection * u_Transform* vec4(a_Position, 1.0f);
 			}
 		)";
 
@@ -131,10 +134,21 @@ public:
 
 		m_Camera.SetPosition({ camData.x_Pos, camData.y_Pos, 0.0f });
 		m_Camera.SetRotation(camData.angle);
+		
 		Karma::Renderer::BeginScene(m_Camera);
 
+		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
+
+		for (int h = 0; h < 20; h++)
+		{
+			for (int i = 0; i < 20; i++)
+			{
+				glm::vec3 pos(i * 0.11f, h * 0.11f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader, transform);
+			}
+		}
 		Karma::Renderer::Submit(m_VertexArray, m_Shader);
-		Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader);
 
 		Karma::Renderer::EndScene();
 	}
@@ -149,6 +163,7 @@ public:
 
 	void KarmaAppInputPolling(float deltaTime)
 	{
+		// Camera controls
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_A))
 		{
 			camData.x_Pos -= cameraTranslationSpeed * deltaTime;
