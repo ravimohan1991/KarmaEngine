@@ -168,6 +168,11 @@ namespace Karma
 	{
 		glfwDestroyWindow(m_Window);
 		glfwTerminate();
+		if (m_Context)
+		{
+			delete m_Context;
+			m_Context = 0;
+		}
 	}
 
 	void WindowsWindow::OnUpdate()
