@@ -17,6 +17,7 @@ IncludeDir["GLFW"] = "Karma/vendor/GLFW/include"
 IncludeDir["Glad"] = "Karma/vendor/Glad/include"
 IncludeDir["ImGui"] = "Karma/vendor/ImGui"
 IncludeDir["GLM"] = "Karma/vendor/GLM"
+IncludeDir["Vulkan"] = "C:/VulkanSDK/1.2.162.0/Include"
 
 project "Application"
 	location "Application"
@@ -126,7 +127,8 @@ project "Karma"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.GLM}"
+		"%{IncludeDir.GLM}",
+		"%{IncludeDir.Vulkan}"
 	}
 
 	links
@@ -140,6 +142,11 @@ project "Karma"
 		cppdialect "C++17"
 		systemversion "latest"
 
+		libdirs
+		{
+			"C:/VulkanSDK/1.2.162.0/Lib"
+		}
+
 		defines
 		{
 			"KR_WINDOWS_PLATFORM",
@@ -148,7 +155,8 @@ project "Karma"
 
 		links
 		{
-			"opengl32.lib"	
+			--"opengl32.lib"
+			"vulkan-1.lib"
 		}		
 	
 	filter "system:linux"

@@ -1,5 +1,5 @@
 #include "Karma.h"
-#include "glfw/glfw3.h"
+#include "GLFW/glfw3.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 class ExampleLayer : public Karma::Layer

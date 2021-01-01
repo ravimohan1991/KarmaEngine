@@ -1,3 +1,4 @@
+#define GLFW_INCLUDE_VULKAN
 #include "Application.h"
 #include "Karma/Log.h"
 #include "GLFW/glfw3.h"
@@ -13,8 +14,13 @@ namespace Karma
 	{
 		KR_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
+		
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent));
+		uint32_t extensionCount = 0;
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		KR_CORE_INFO("{0} Vulkan extensions supported", extensionCount);
 
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
