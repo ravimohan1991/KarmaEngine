@@ -219,7 +219,7 @@ class KarmaApp : public Karma::Application
 public:
 	KarmaApp()
 	{
-		PushLayer(new ExampleLayer());
+		//PushLayer(new ExampleLayer());
 	}
 
 };

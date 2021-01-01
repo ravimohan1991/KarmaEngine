@@ -22,8 +22,8 @@ namespace Karma
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 		KR_CORE_INFO("{0} Vulkan extensions supported", extensionCount);
 
-		m_ImGuiLayer = new ImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
+		//m_ImGuiLayer = new ImGuiLayer();
+		//PushOverlay(m_ImGuiLayer);
 	}
 
 	Application::~Application()
@@ -55,12 +55,12 @@ namespace Karma
 				layer->OnUpdate(deltaTime);
 			}
 			
-			m_ImGuiLayer->Begin();
+			/*m_ImGuiLayer->Begin();
 			for (auto layer : m_LayerStack)
 			{
 				layer->OnImGuiRender();
 			}
-			m_ImGuiLayer->End();
+			m_ImGuiLayer->End();*/
 
 			m_Window->OnUpdate();
 		}
