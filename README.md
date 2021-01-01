@@ -1,4 +1,4 @@
-KarmaEngine
+KarmaEngine (Vulkan)
 ===========
 ![Alt Text](/repositoryfiles/Karma.png)
 
@@ -11,7 +11,19 @@ This repository contains submodules, therefore use ``` git clone --recurse-submo
 Building and Developing
 -----------------------
 ### Windows ###
-On Windows use Visual Studio 2017 or higher. Double click on ``` GenerateProjects.bat ``` and that will prepare VS solution in the root directory.
+On Windows use Visual Studio 2017 or higher. Next install download the Vulkan SDK from [here](https://vulkan.lunarg.com/) (latest version is recommended) and install it in the default directory ```C:\VulkanSDK\<VersionNumber>```. Make note of the ```<VersionNumber>```. Next open the ```premake5.lua``` located in the root directory and edit the following lines as per the ```<VersionNumber>```
+```
+...
+IncludeDir["Vulkan"] = "C:/VulkanSDK/<VersionNumber>/Include"
+...
+libdirs
+		{
+			"C:/VulkanSDK/<VersionNumber>/Lib"
+		}
+```
+and save it. In future I will try to automate this (if it is even possible).
+
+Finally double click on ``` GenerateProjects.bat ``` and that will prepare VS solution in the root directory. Refer to [this](https://vulkan-tutorial.com/en/Development_environment) for troubleshooting Vulkan setup.
 
 ### Linux ###
 Karma has been developed and tested on Ubuntu 16.04 but should work on any Linux platform. To build the binaries go to the repository directory 
