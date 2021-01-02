@@ -23,7 +23,7 @@ namespace Karma
 
 		inline static API GetAPI() { return s_API; }
 
-	public:
+	private:
 		static API s_API;
 	};
 }
