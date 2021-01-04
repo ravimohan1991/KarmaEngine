@@ -12,10 +12,11 @@ namespace Karma
 	struct QueueFamilyIndices
 	{
 		std::optional<uint32_t> graphicsFamily;
+		std::optional<uint32_t> presentFamily;
 
 		bool IsComplete()
 		{
-			return graphicsFamily.has_value();
+			return graphicsFamily.has_value() && presentFamily.has_value();
 		}
 	};
 
@@ -48,6 +49,9 @@ namespace Karma
 
 		void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 
+		// Surface
+		void CreateSurface();
+
 		// Physical device
 		void PickPhysicalDevice();
 		bool IsDeviceSuitable(VkPhysicalDevice device);
@@ -66,5 +70,8 @@ namespace Karma
 		VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
 		VkDevice m_device;
 		VkQueue m_graphicsQueue;
+
+		VkSurfaceKHR m_surface;
+		VkQueue m_presentQueue;
 	};
 }

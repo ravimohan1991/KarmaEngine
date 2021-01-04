@@ -1,5 +1,6 @@
 #include "VulkanContext.h"
 #include "GLFW/glfw3.h"
+#include <set>
 
 namespace Karma
 {
@@ -24,6 +25,7 @@ namespace Karma
 		{
 			DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 		}
+		vkDestroySurfaceKHR(instance, m_surface, nullptr);
 		vkDestroyInstance(instance, nullptr);
 	}
 
@@ -31,6 +33,7 @@ namespace Karma
 	{
 		CreateInstance();
 		SetupDebugMessenger();
+		CreateSurface();
 		PickPhysicalDevice();
 		CreateLogicalDevice();
 	}
@@ -39,11 +42,35 @@ namespace Karma
 	{
 	}
 
+	void VulkanContext::CreateSurface()
+	{
+		VkResult result = glfwCreateWindowSurface(instance, m_windowHandle, nullptr, &m_surface);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create window surface");
+	}
+
 	void VulkanContext::CreateLogicalDevice()
 	{
 		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
 
-		VkDeviceQueueCreateInfo queueCreateInfo{};
+		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), 
+		indices.presentFamily.value()};
+
+		float queuePriority = 1.0f;
+		for (uint32_t queueFamily : uniqueQueueFamilies)
+		{
+			VkDeviceQueueCreateInfo queueCreateInfo{};
+			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			queueCreateInfo.queueFamilyIndex = queueFamily;
+			queueCreateInfo.queueCount = 1;
+			queueCreateInfo.pQueuePriorities = &queuePriority;
+			queueCreateInfos.push_back(queueCreateInfo);
+		}
+
+		VkPhysicalDeviceFeatures deviceFeatures{};
+
+		/*VkDeviceQueueCreateInfo queueCreateInfo{};
 		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
 		queueCreateInfo.queueCount = 1;
@@ -51,12 +78,12 @@ namespace Karma
 		float queuePriority = 1.0f;
 		queueCreateInfo.pQueuePriorities = &queuePriority;
 
-		VkPhysicalDeviceFeatures deviceFeatures{};
+		VkPhysicalDeviceFeatures deviceFeatures{};*/
 
 		VkDeviceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		createInfo.pQueueCreateInfos = &queueCreateInfo;
-		createInfo.queueCreateInfoCount = 1;
+		createInfo.pQueueCreateInfos = queueCreateInfos.data();
+		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 		createInfo.pEnabledFeatures = &deviceFeatures;
 		createInfo.enabledExtensionCount = 0;
 
@@ -75,6 +102,7 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create logical device!");
 
 		vkGetDeviceQueue(m_device, indices.graphicsFamily.value(), 0, &m_graphicsQueue);
+		vkGetDeviceQueue(m_device, indices.presentFamily.value(), 0, &m_presentQueue);
 	}
 
 	void VulkanContext::PickPhysicalDevice()
@@ -136,6 +164,14 @@ namespace Karma
 			if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			{
 				indices.graphicsFamily = i;
+			}
+
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface, &presentSupport);
+
+			if (presentSupport)
+			{
+				indices.presentFamily = i;
 			}
 
 			if (indices.IsComplete())
