@@ -5,9 +5,20 @@
 #include "Karma/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
+#include <optional>
 
 namespace Karma
 {
+	struct QueueFamilyIndices
+	{
+		std::optional<uint32_t> graphicsFamily;
+
+		bool IsComplete()
+		{
+			return graphicsFamily.has_value();
+		}
+	};
+
 	class KARMA_API VulkanContext : public GraphicsContext
 	{
 	public:
@@ -37,11 +48,23 @@ namespace Karma
 
 		void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 
+		// Physical device
+		void PickPhysicalDevice();
+		bool IsDeviceSuitable(VkPhysicalDevice device);
+		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+
+		// Logical device
+		void CreateLogicalDevice();
+
 	private:
 		GLFWwindow* m_windowHandle;
 		VkInstance instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
 
 		static bool bEnableValidationLayers;
+
+		VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+		VkDevice m_device;
+		VkQueue m_graphicsQueue;
 	};
 }
