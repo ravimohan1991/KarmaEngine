@@ -20,6 +20,13 @@ namespace Karma
 		}
 	};
 
+	struct SwapChainSupportDetails
+	{
+		VkSurfaceCapabilitiesKHR capabilities;
+		std::vector<VkSurfaceFormatKHR> formats;
+		std::vector<VkPresentModeKHR> presentModes;
+	};
+
 	class KARMA_API VulkanContext : public GraphicsContext
 	{
 	public:
@@ -60,6 +67,14 @@ namespace Karma
 		// Logical device
 		void CreateLogicalDevice();
 
+		// Swapchain
+		void CreateSwapChain();
+		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
 	private:
 		GLFWwindow* m_windowHandle;
 		VkInstance instance;
@@ -73,5 +88,10 @@ namespace Karma
 
 		VkSurfaceKHR m_surface;
 		VkQueue m_presentQueue;
+
+		VkSwapchainKHR m_swapChain;
+		std::vector<VkImage> swapChainImages;
+		VkFormat swapChainImageFormat;
+		VkExtent2D swapChainExtent;
 	};
 }
