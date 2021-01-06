@@ -75,6 +75,9 @@ namespace Karma
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
+		// Image views
+		void CreateImageViews();
+
 	private:
 		GLFWwindow* m_windowHandle;
 		VkInstance instance;
@@ -93,5 +96,7 @@ namespace Karma
 		std::vector<VkImage> swapChainImages;
 		VkFormat swapChainImageFormat;
 		VkExtent2D swapChainExtent;
+
+		std::vector<VkImageView> swapChainImageViews;
 	};
 }
