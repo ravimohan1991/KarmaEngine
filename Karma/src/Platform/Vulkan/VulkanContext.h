@@ -78,6 +78,13 @@ namespace Karma
 		// Image views
 		void CreateImageViews();
 
+		// Graphics pipeline
+		void CreateGraphicsPipeline();
+
+		// Helper functions
+		static std::vector<char> ReadFile(const std::string& filename);
+		VkShaderModule CreateShaderModule(const std::vector<char>& code);
+
 	private:
 		GLFWwindow* m_windowHandle;
 		VkInstance instance;
