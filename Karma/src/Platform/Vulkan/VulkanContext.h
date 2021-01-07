@@ -81,6 +81,9 @@ namespace Karma
 		// Graphics pipeline
 		void CreateGraphicsPipeline();
 
+		//  Renderer pass
+		void CreateRenderPass();
+
 		// Helper functions
 		static std::vector<char> ReadFile(const std::string& filename);
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
@@ -100,10 +103,13 @@ namespace Karma
 		VkQueue m_presentQueue;
 
 		VkSwapchainKHR m_swapChain;
-		std::vector<VkImage> swapChainImages;
-		VkFormat swapChainImageFormat;
-		VkExtent2D swapChainExtent;
+		std::vector<VkImage> m_swapChainImages;
+		VkFormat m_swapChainImageFormat;
+		VkExtent2D m_swapChainExtent;
 
-		std::vector<VkImageView> swapChainImageViews;
+		std::vector<VkImageView> m_swapChainImageViews;
+
+		VkRenderPass m_renderPass;
+		VkPipelineLayout m_pipelineLayout;
 	};
 }
