@@ -91,6 +91,8 @@ namespace Karma
 		void CreateCommandPool();
 		void CreateCommandBuffers();
 
+		void CreateSemaphores();
+
 		// Helper functions
 		static std::vector<char> ReadFile(const std::string& filename);
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
@@ -124,5 +126,8 @@ namespace Karma
 
 		VkCommandPool m_commandPool;
 		std::vector<VkCommandBuffer> m_commandBuffers;
+
+		VkSemaphore m_imageAvailableSemaphore;
+		VkSemaphore m_renderFinishedSemaphore;
 	};
 }
