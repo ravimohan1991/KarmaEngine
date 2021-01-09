@@ -23,6 +23,7 @@ namespace Karma
 
 	VulkanContext::~VulkanContext()
 	{
+		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
 			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
@@ -56,10 +57,76 @@ namespace Karma
 		CreateRenderPass();
 		CreateGraphicsPipeline();
 		CreateFrameBuffers();
+		CreateCommandPool();
+		CreateCommandBuffers();
 	}
 
 	void VulkanContext::SwapBuffers()
 	{
+	}
+
+	void VulkanContext::CreateCommandBuffers()
+	{
+		m_commandBuffers.resize(m_swapChainFrameBuffers.size());
+
+		VkCommandBufferAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.commandPool = m_commandPool;
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandBufferCount = (uint32_t)m_commandBuffers.size();
+
+		VkResult result = vkAllocateCommandBuffers(m_device, &allocInfo, m_commandBuffers.data());
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffers!");
+
+		for (size_t i = 0; i < m_commandBuffers.size(); i++)
+		{
+			VkCommandBufferBeginInfo beginInfo{};
+			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			beginInfo.flags = 0;
+			beginInfo.pInheritanceInfo = nullptr;
+
+			VkResult result = vkBeginCommandBuffer(m_commandBuffers[i], &beginInfo);
+
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin recording command buffer");
+
+			VkRenderPassBeginInfo renderPassInfo{};
+			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			renderPassInfo.renderPass = m_renderPass;
+			renderPassInfo.framebuffer = m_swapChainFrameBuffers[i];
+			renderPassInfo.renderArea.offset = { 0, 0 };
+			renderPassInfo.renderArea.extent = m_swapChainExtent;
+
+			VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
+			renderPassInfo.clearValueCount = 1;
+			renderPassInfo.pClearValues = &clearColor;
+
+			vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+				vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
+				vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);
+
+			vkCmdEndRenderPass(m_commandBuffers[i]);
+
+			VkResult resultCB = vkEndCommandBuffer(m_commandBuffers[i]);
+
+			KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
+		}
+
+	}
+
+	void VulkanContext::CreateCommandPool()
+	{
+		QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(m_physicalDevice);
+
+		VkCommandPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+		poolInfo.flags = 0;
+
+		VkResult result = vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command pool!");
 	}
 
 	void VulkanContext::CreateFrameBuffers()

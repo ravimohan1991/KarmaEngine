@@ -87,6 +87,10 @@ namespace Karma
 		// Framebuffers
 		void CreateFrameBuffers();
 
+		// Commandpool
+		void CreateCommandPool();
+		void CreateCommandBuffers();
+
 		// Helper functions
 		static std::vector<char> ReadFile(const std::string& filename);
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
@@ -117,5 +121,8 @@ namespace Karma
 		VkPipeline m_graphicsPipeline;
 
 		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
+
+		VkCommandPool m_commandPool;
+		std::vector<VkCommandBuffer> m_commandBuffers;
 	};
 }
