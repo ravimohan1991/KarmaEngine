@@ -23,6 +23,10 @@ namespace Karma
 
 	VulkanContext::~VulkanContext()
 	{
+		for (auto framebuffer : m_swapChainFrameBuffers)
+		{
+			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+		}
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 		vkDestroyRenderPass(m_device, m_renderPass, nullptr);
@@ -51,10 +55,35 @@ namespace Karma
 		CreateImageViews();
 		CreateRenderPass();
 		CreateGraphicsPipeline();
+		CreateFrameBuffers();
 	}
 
 	void VulkanContext::SwapBuffers()
 	{
+	}
+
+	void VulkanContext::CreateFrameBuffers()
+	{
+		m_swapChainFrameBuffers.resize(m_swapChainImages.size());
+
+		for (size_t i = 0; i < m_swapChainImages.size(); i++)
+		{
+			VkImageView attachments[] = { m_swapChainImageViews[i] };
+
+
+			VkFramebufferCreateInfo framebufferInfo{};
+			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			framebufferInfo.renderPass = m_renderPass;
+			framebufferInfo.attachmentCount = 1;
+			framebufferInfo.pAttachments = attachments;
+			framebufferInfo.width = m_swapChainExtent.width;
+			framebufferInfo.height = m_swapChainExtent.height;
+			framebufferInfo.layers = 1;
+
+			VkResult result = vkCreateFramebuffer(m_device, &framebufferInfo, nullptr, &m_swapChainFrameBuffers[i]);
+
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create frame buffer");
+		}
 	}
 
 	void VulkanContext::CreateGraphicsPipeline()
@@ -567,7 +596,21 @@ namespace Karma
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData)
 	{
-		KR_CORE_ERROR("Validation Layer: {0}", pCallbackData->pMessage);
+		switch (messageSeverity)
+		{
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+			KR_CORE_INFO("Validation Layer: {0}", pCallbackData->pMessage);
+			break;
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+			KR_CORE_WARN("Validation Layer: {0}", pCallbackData->pMessage);
+			break;
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+			KR_CORE_ERROR("Validation Layer: {0}", pCallbackData->pMessage);
+			break;
+		default:
+			KR_CORE_TRACE("Validation Layer: {0}", pCallbackData->pMessage);
+			break;
+		}
 
 		return VK_FALSE;
 	}

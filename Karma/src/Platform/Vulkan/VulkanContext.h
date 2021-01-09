@@ -84,6 +84,9 @@ namespace Karma
 		//  Renderer pass
 		void CreateRenderPass();
 
+		// Framebuffers
+		void CreateFrameBuffers();
+
 		// Helper functions
 		static std::vector<char> ReadFile(const std::string& filename);
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
@@ -112,5 +115,7 @@ namespace Karma
 		VkRenderPass m_renderPass;
 		VkPipelineLayout m_pipelineLayout;
 		VkPipeline m_graphicsPipeline;
+
+		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 	};
 }
