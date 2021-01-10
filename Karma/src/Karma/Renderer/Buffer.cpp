@@ -2,6 +2,7 @@
 #include "Karma/Core.h"
 #include "Renderer.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
+#include "Platform/Vulkan/VulkanBuffer.h"
 
 namespace Karma
 {
@@ -9,11 +10,13 @@ namespace Karma
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::API::None:
+			case RendererAPI::API::None:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 				return nullptr;
-		case RendererAPI::API::OpenGL:
+			case RendererAPI::API::OpenGL:
 				return new OpenGLVertexBuffer(vertices, size);
+			case RendererAPI::API::Vulkan:
+				return new VulkanVertexBuffer(vertices, size);
 		}
 
 		KR_CORE_ASSERT(false, "Unknown RendererAPI specified");
@@ -24,11 +27,13 @@ namespace Karma
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::API::None:
+			case RendererAPI::API::None:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 				return nullptr;
-		case RendererAPI::API::OpenGL:
+			case RendererAPI::API::OpenGL:
 				return new OpenGLIndexBuffer(indices, size);
+			case RendererAPI::API::Vulkan:
+				return new VulkanIndexBuffer(indices, size);
 		}
 
 		KR_CORE_ASSERT(false, "Unknown RendererAPI specified");
