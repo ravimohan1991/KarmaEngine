@@ -214,12 +214,29 @@ private:
 	float cameraRotationSpeed = 180.0f;
 };
 
+class VulkanLayer : public Karma::Layer
+{
+public:
+	VulkanLayer()
+	{
+		float vertices[3 * 7] = {
+			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+		};
+		
+		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
+		m_VertexBuffer.reset(Karma::VertexBuffer::Create(vertices, sizeof(vertices)));
+
+	}
+};
+
 class KarmaApp : public Karma::Application
 {
 public:
 	KarmaApp()
 	{
-		//PushLayer(new ExampleLayer());
+		PushLayer(new VulkanLayer());
 	}
 
 };

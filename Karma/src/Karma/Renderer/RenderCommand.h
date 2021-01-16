@@ -8,6 +8,9 @@ namespace Karma
 	class KARMA_API RenderCommand
 	{
 	public:
+		static void Init();
+		static void DeInit();
+		
 		inline static void SetClearColor(const glm::vec4& color)
 		{
 			s_RendererAPI->SetClearColor(color);

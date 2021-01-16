@@ -1,9 +1,36 @@
 #pragma once
 
 #include "Karma/Renderer/Buffer.h"
+#include "vulkan/vulkan_core.h"
 
 namespace Karma
 {
+	struct Vertex
+	{
+		float* v_Vertices;
+
+		Vertex(float* vertices)
+		{
+			v_Vertices = vertices;
+		}
+		
+		static VkVertexInputBindingDescription GetBindingDescription()
+		{
+			VkVertexInputBindingDescription bindingDescription{};
+			bindingDescription.binding = 0;
+			bindingDescription.stride = sizeof(Vertex);
+			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+			return bindingDescription;
+		}
+
+		static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions()
+		{
+			std::array<VkVertexInputAttributeDescription, 2> attribureDescriptions{};
+
+			return attribureDescriptions;
+		}
+	};
+	
 	class KARMA_API VulkanVertexBuffer : public VertexBuffer
 	{
 	public:
@@ -22,9 +49,17 @@ namespace Karma
 			m_Layout = layout;
 		}
 
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlagBits properties);
+
 	private:
 		uint32_t m_renderedID;// Probably not useful
 		BufferLayout m_Layout;
+		
+		VkDevice* m_Device;
+		VkPhysicalDevice* m_PhysicalDevice;
+
+		VkBuffer m_VertexBuffer;
+		VkDeviceMemory m_VertexBufferMemory;
 	};
 
 	class KARMA_API VulkanIndexBuffer : public IndexBuffer

@@ -93,6 +93,9 @@ namespace Karma
 
 		void CreateSemaphores();
 
+		// Getters
+		VkDevice* GetLogicalDevice() const { &m_device; }
+
 		// Helper functions
 		static std::vector<char> ReadFile(const std::string& filename);
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);

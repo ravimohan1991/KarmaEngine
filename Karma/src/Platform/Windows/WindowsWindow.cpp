@@ -6,6 +6,7 @@
 #include "GLFW/glfw3.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Platform/Vulkan/VulkanContext.h"
+#include "Karma/Renderer/Renderer.h"
 
 namespace Karma
 {
@@ -52,7 +53,19 @@ namespace Karma
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		
-		m_Context = new VulkanContext(m_Window);
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::None:
+			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			break;
+		case RendererAPI::API::OpenGL:
+			m_Context = new OpenGLContext(m_Window);
+			break;
+		case RendererAPI::API::Vulkan:
+			m_Context = new VulkanContext(m_Window);
+			break;
+		}
+		
 		m_Context->Init();
 		
 		// Used for event callbacks

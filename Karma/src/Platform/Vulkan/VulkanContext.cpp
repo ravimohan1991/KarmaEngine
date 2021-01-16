@@ -1,5 +1,6 @@
 #include "VulkanContext.h"
 #include "GLFW/glfw3.h"
+#include "Platform/Vulkan/VulkanHolder.h"
 #include <set>
 #include <cstdint>
 #include <fstream>
@@ -466,6 +467,7 @@ namespace Karma
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create logical device!");
 
+		VulkanHolder::SetVulkanDevice(&m_device);
 		vkGetDeviceQueue(m_device, indices.graphicsFamily.value(), 0, &m_graphicsQueue);
 		vkGetDeviceQueue(m_device, indices.presentFamily.value(), 0, &m_presentQueue);
 	}
@@ -496,6 +498,8 @@ namespace Karma
 		{
 			KR_CORE_ASSERT(false, "Failed to find a suitable GPU!");
 		}
+
+		VulkanHolder::SetVulkanPhysicalDevice(&m_physicalDevice);
 	}
 
 	bool VulkanContext::IsDeviceSuitable(VkPhysicalDevice device)
@@ -726,7 +730,7 @@ namespace Karma
 			KR_CORE_ERROR("Validation Layer: {0}", pCallbackData->pMessage);
 			break;
 		default:
-			KR_CORE_TRACE("Validation Layer: {0}", pCallbackData->pMessage);
+			//KR_CORE_TRACE("Validation Layer: {0}", pCallbackData->pMessage);
 			break;
 		}
 
@@ -743,7 +747,9 @@ namespace Karma
 		VkDebugUtilsMessengerCreateInfoEXT createInfo;
 		PopulateDebugMessengerCreateInfo(createInfo);
 
-		KR_CORE_ASSERT(CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) == VK_SUCCESS, "Failed to set up debug messenger!");
+		VkResult result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger);
+		
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to set up debug messenger!");
 	}
 
 	void VulkanContext::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
