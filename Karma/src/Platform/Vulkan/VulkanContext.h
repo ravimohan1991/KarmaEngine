@@ -79,7 +79,7 @@ namespace Karma
 		void CreateImageViews();
 
 		// Graphics pipeline
-		void CreateGraphicsPipeline();
+		//void CreateGraphicsPipeline();
 
 		//  Renderer pass
 		void CreateRenderPass();
@@ -97,8 +97,8 @@ namespace Karma
 		VkDevice* GetLogicalDevice() const { &m_device; }
 
 		// Helper functions
-		static std::vector<char> ReadFile(const std::string& filename);
-		VkShaderModule CreateShaderModule(const std::vector<char>& code);
+		//static std::vector<char> ReadFile(const std::string& filename);
+		//VkShaderModule CreateShaderModule(const std::vector<char>& code);
 
 	private:
 		GLFWwindow* m_windowHandle;
@@ -122,8 +122,8 @@ namespace Karma
 		std::vector<VkImageView> m_swapChainImageViews;
 
 		VkRenderPass m_renderPass;
-		VkPipelineLayout m_pipelineLayout;
-		VkPipeline m_graphicsPipeline;
+		//VkPipelineLayout m_pipelineLayout;
+		//VkPipeline m_graphicsPipeline;
 
 		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 

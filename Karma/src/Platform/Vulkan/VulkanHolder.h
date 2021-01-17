@@ -28,8 +28,43 @@ namespace Karma
 			return m_VulkanPhysicalDevice;
 		}
 
+		static void SetVulkanSwapChainExtent(VkExtent2D* swapChainExtent)
+		{
+			m_swapChainExtent = swapChainExtent;
+		}
+
+		static VkExtent2D* GetVulkanSwapChainExtent()
+		{
+			return m_swapChainExtent;
+		}
+
+		static void SetVulkanRenderPass(VkRenderPass* renderPass)
+		{
+			m_renderPass = renderPass;
+		}
+
+		static VkRenderPass* GetVulkanRenderPass()
+		{
+			return m_renderPass;
+		}
+
+		static void SetVulkanPipeline(VkPipeline* pipeline)
+		{
+			m_graphicsPipeline = pipeline;
+		}
+
+		static VkPipeline* GetVulkanPipeline()
+		{
+			return m_graphicsPipeline;
+		}
+
 	private:
 		static VkDevice* m_VulkanDevice;
 		static VkPhysicalDevice* m_VulkanPhysicalDevice;
+
+		static VkExtent2D* m_swapChainExtent;
+		static VkRenderPass* m_renderPass;
+
+		static VkPipeline* m_graphicsPipeline;
 	};
 }
