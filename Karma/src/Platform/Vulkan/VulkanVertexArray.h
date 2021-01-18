@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Karma/Renderer/VertexArray.h"
-#include "Vulkan/vulkan.h"
+#include "vulkan/vulkan.h"
 
 namespace Karma
 {

@@ -6,9 +6,9 @@ namespace Karma
 {
 	VulkanVertexArray::VulkanVertexArray()
 	{
-		m_device = *VulkanHolder::GetVulkanDevice();
-		m_swapChainExtent = *VulkanHolder::GetVulkanSwapChainExtent();
-		m_renderPass = *VulkanHolder::GetVulkanRenderPass();
+		m_device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+		m_swapChainExtent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
+		m_renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
@@ -128,6 +128,8 @@ namespace Karma
 			1, &pipelineInfo, nullptr, &m_graphicsPipeline);
 
 		KR_CORE_ASSERT(resultGP == VK_SUCCESS, "Failed to create graphics pipeline!");
+
+		VulkanHolder::SetVulkanPipeline(m_graphicsPipeline);
 
 		vkDestroyShaderModule(m_device, fragShaderModule, nullptr);
 		vkDestroyShaderModule(m_device, vertShaderModule, nullptr);

@@ -35,7 +35,7 @@ namespace Karma
 		}
 		//vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		//vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-		//vkDestroyRenderPass(m_device, m_renderPass, nullptr);
+		vkDestroyRenderPass(m_device, m_renderPass, nullptr);
 		for (auto imageView : m_swapChainImageViews)
 		{
 			vkDestroyImageView(m_device, imageView, nullptr);
@@ -66,6 +66,8 @@ namespace Karma
 		CreateCommandPool();
 		CreateCommandBuffers();
 		CreateSemaphores();*/
+
+		VulkanHolder::SetVulkanContext(this);
 	}
 
 	void VulkanContext::SwapBuffers()
@@ -156,7 +158,7 @@ namespace Karma
 
 			vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-				vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, *VulkanHolder::GetVulkanPipeline());// <---- be careful here with pipeline handle
+				vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanPipeline());// <---- be careful here with pipeline handle
 				vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);
 
 			vkCmdEndRenderPass(m_commandBuffers[i]);
@@ -379,8 +381,6 @@ namespace Karma
 
 		m_swapChainImageFormat = surfaceFormat.format;
 		m_swapChainExtent = extent;
-
-		VulkanHolder::SetVulkanSwapChainExtent(&m_swapChainExtent);
 	}
 
 	void VulkanContext::CreateImageViews()
@@ -470,7 +470,6 @@ namespace Karma
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create logical device!");
 
-		VulkanHolder::SetVulkanDevice(&m_device);
 		vkGetDeviceQueue(m_device, indices.graphicsFamily.value(), 0, &m_graphicsQueue);
 		vkGetDeviceQueue(m_device, indices.presentFamily.value(), 0, &m_presentQueue);
 	}
@@ -501,8 +500,6 @@ namespace Karma
 		{
 			KR_CORE_ASSERT(false, "Failed to find a suitable GPU!");
 		}
-
-		VulkanHolder::SetVulkanPhysicalDevice(&m_physicalDevice);
 	}
 
 	bool VulkanContext::IsDeviceSuitable(VkPhysicalDevice device)
@@ -912,7 +909,5 @@ namespace Karma
 		VkResult result = vkCreateRenderPass(m_device, &renderPassInfo, nullptr, &m_renderPass);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create render pass!");
-
-		VulkanHolder::SetVulkanRenderPass(&m_renderPass);
 	}
 }

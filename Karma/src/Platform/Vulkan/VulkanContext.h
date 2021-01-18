@@ -94,7 +94,10 @@ namespace Karma
 		void CreateSemaphores();
 
 		// Getters
-		VkDevice* GetLogicalDevice() const { &m_device; }
+		VkDevice GetLogicalDevice() const { return m_device; }
+		VkPhysicalDevice GetPhysicalDevice() const { return m_physicalDevice; }
+		VkExtent2D GetSwapChainExtent() const { return m_swapChainExtent; }
+		VkRenderPass GetRenderPass() const { return m_renderPass; }
 
 		// Helper functions
 		//static std::vector<char> ReadFile(const std::string& filename);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Karma/Renderer/Buffer.h"
-#include "vulkan/vulkan_core.h"
+#include "vulkan/vulkan.h"
 
 namespace Karma
 {
@@ -55,8 +55,8 @@ namespace Karma
 		uint32_t m_renderedID;// Probably not useful
 		BufferLayout m_Layout;
 		
-		VkDevice* m_Device;
-		VkPhysicalDevice* m_PhysicalDevice;
+		VkDevice m_Device;
+		VkPhysicalDevice m_PhysicalDevice;
 
 		VkBuffer m_VertexBuffer;
 		VkDeviceMemory m_VertexBufferMemory;

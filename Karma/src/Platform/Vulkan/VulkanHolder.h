@@ -1,70 +1,35 @@
 #pragma once
 
 #include "Karma/Core.h"
-#include "Vulkan/vulkan_core.h"
+#include "Platform/Vulkan/VulkanContext.h"
 
 namespace Karma
 {
 	class KARMA_API VulkanHolder
 	{
 	public:
-		static void SetVulkanDevice(VkDevice* device)
+		static void SetVulkanContext(VulkanContext* vulkanContext)
 		{
-			m_VulkanDevice = device;
+			m_VulkanContext = vulkanContext;
 		}
 
-		static VkDevice* GetVulkanDevice()
+		static VulkanContext* GetVulkanContext()
 		{
-			return m_VulkanDevice;
+			return m_VulkanContext;
 		}
 
-		static void SetVulkanPhysicalDevice(VkPhysicalDevice* physicalDevice)
+		static void SetVulkanPipeline(VkPipeline pipeline)
 		{
-			m_VulkanPhysicalDevice = physicalDevice;
+			m_Pipeline = pipeline;
 		}
 
-		static VkPhysicalDevice* GetVulkanPhysicalDevice()
+		static VkPipeline GetVulkanPipeline()
 		{
-			return m_VulkanPhysicalDevice;
-		}
-
-		static void SetVulkanSwapChainExtent(VkExtent2D* swapChainExtent)
-		{
-			m_swapChainExtent = swapChainExtent;
-		}
-
-		static VkExtent2D* GetVulkanSwapChainExtent()
-		{
-			return m_swapChainExtent;
-		}
-
-		static void SetVulkanRenderPass(VkRenderPass* renderPass)
-		{
-			m_renderPass = renderPass;
-		}
-
-		static VkRenderPass* GetVulkanRenderPass()
-		{
-			return m_renderPass;
-		}
-
-		static void SetVulkanPipeline(VkPipeline* pipeline)
-		{
-			m_graphicsPipeline = pipeline;
-		}
-
-		static VkPipeline* GetVulkanPipeline()
-		{
-			return m_graphicsPipeline;
+			return m_Pipeline;
 		}
 
 	private:
-		static VkDevice* m_VulkanDevice;
-		static VkPhysicalDevice* m_VulkanPhysicalDevice;
-
-		static VkExtent2D* m_swapChainExtent;
-		static VkRenderPass* m_renderPass;
-
-		static VkPipeline* m_graphicsPipeline;
+		static VulkanContext* m_VulkanContext;
+		static VkPipeline m_Pipeline;
 	};
 }
