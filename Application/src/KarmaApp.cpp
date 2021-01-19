@@ -217,8 +217,9 @@ private:
 class VulkanLayer : public Karma::Layer
 {
 public:
-	VulkanLayer()
+	VulkanLayer() : m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
+		m_VertexArray.reset(Karma::VertexArray::Create());
 		float vertices[3 * 7] = {
 			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 			 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
@@ -227,8 +228,22 @@ public:
 		
 		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
 		m_VertexBuffer.reset(Karma::VertexBuffer::Create(vertices, sizeof(vertices)));
-
 	}
+
+	virtual void OnUpdate(float deltaTime) override
+	{
+
+		Karma::Renderer::BeginScene(m_Camera);
+
+		Karma::Renderer::Submit(m_VertexArray, m_Shader);
+
+		Karma::Renderer::EndScene();
+	}
+
+private:
+	std::shared_ptr<Karma::VertexArray> m_VertexArray;
+	Karma::OrthographicCamera m_Camera;
+	std::shared_ptr<Karma::Shader> m_Shader;
 };
 
 class KarmaApp : public Karma::Application

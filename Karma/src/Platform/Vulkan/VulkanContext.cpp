@@ -26,13 +26,13 @@ namespace Karma
 	{
 		vkDeviceWaitIdle(m_device);
 
-		vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
-		vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
-		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
-		for (auto framebuffer : m_swapChainFrameBuffers)
+		//vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
+		//vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
+		//vkDestroyCommandPool(m_device, m_commandPool, nullptr);
+		/*for (auto framebuffer : m_swapChainFrameBuffers)
 		{
 			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
-		}
+		}*/
 		//vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		//vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 		vkDestroyRenderPass(m_device, m_renderPass, nullptr);
@@ -59,9 +59,9 @@ namespace Karma
 		CreateLogicalDevice();
 		CreateSwapChain();
 		CreateImageViews();
+		CreateRenderPass();
 		
-		/*CreateRenderPass();
-		CreateGraphicsPipeline();
+		/*CreateGraphicsPipeline();
 		CreateFrameBuffers();
 		CreateCommandPool();
 		CreateCommandBuffers();
@@ -73,7 +73,7 @@ namespace Karma
 	void VulkanContext::SwapBuffers()
 	{
 		// Hacky way to draw. Will change in future
-		uint32_t imageIndex;
+		/*uint32_t imageIndex;
 		vkAcquireNextImageKHR(m_device, m_swapChain, UINT64_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 		VkSubmitInfo submitInfo{};
@@ -104,10 +104,10 @@ namespace Karma
 		presentInfo.pSwapchains = swapChains;
 		presentInfo.pImageIndices = &imageIndex;
 
-		vkQueuePresentKHR(m_presentQueue, &presentInfo);
+		vkQueuePresentKHR(m_presentQueue, &presentInfo);*/
 	}
 
-	void VulkanContext::CreateSemaphores()
+	/*void VulkanContext::CreateSemaphores()
 	{
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -118,9 +118,9 @@ namespace Karma
 		VkResult resultr = vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_renderFinishedSemaphore);
 		KR_CORE_ASSERT(resultr == VK_SUCCESS, "Failed to create renderFinishedSemaphore");
 
-	}
+	}*/
 
-	void VulkanContext::CreateCommandBuffers()
+	/*void VulkanContext::CreateCommandBuffers()
 	{
 		m_commandBuffers.resize(m_swapChainFrameBuffers.size());
 
@@ -168,9 +168,9 @@ namespace Karma
 			KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
 		}
 
-	}
+	}*/
 
-	void VulkanContext::CreateCommandPool()
+	/*void VulkanContext::CreateCommandPool()
 	{
 		QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(m_physicalDevice);
 
@@ -182,9 +182,9 @@ namespace Karma
 		VkResult result = vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command pool!");
-	}
+	}*/
 
-	void VulkanContext::CreateFrameBuffers()
+	/*void VulkanContext::CreateFrameBuffers()
 	{
 		m_swapChainFrameBuffers.resize(m_swapChainImages.size());
 
@@ -206,7 +206,7 @@ namespace Karma
 
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create frame buffer");
 		}
-	}
+	}*/
 
 	/*void VulkanContext::CreateGraphicsPipeline()
 	{

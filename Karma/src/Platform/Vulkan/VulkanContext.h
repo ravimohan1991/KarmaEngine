@@ -85,19 +85,24 @@ namespace Karma
 		void CreateRenderPass();
 
 		// Framebuffers
-		void CreateFrameBuffers();
+		//void CreateFrameBuffers();
 
 		// Commandpool
-		void CreateCommandPool();
-		void CreateCommandBuffers();
+		//void CreateCommandPool();
+		//void CreateCommandBuffers();
 
-		void CreateSemaphores();
+		//void CreateSemaphores();
 
 		// Getters
 		VkDevice GetLogicalDevice() const { return m_device; }
 		VkPhysicalDevice GetPhysicalDevice() const { return m_physicalDevice; }
 		VkExtent2D GetSwapChainExtent() const { return m_swapChainExtent; }
 		VkRenderPass GetRenderPass() const { return m_renderPass; }
+		const std::vector<VkImage>& GetSwapChainImages() const { return m_swapChainImages; }
+		const std::vector<VkImageView>& GetSwapChainImageViews() const { return m_swapChainImageViews; }
+		VkSwapchainKHR GetSwapChain() const { return m_swapChain; }
+		VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
+		VkQueue GetPresentQueue() const { return m_presentQueue; }
 
 		// Helper functions
 		//static std::vector<char> ReadFile(const std::string& filename);
@@ -128,12 +133,12 @@ namespace Karma
 		//VkPipelineLayout m_pipelineLayout;
 		//VkPipeline m_graphicsPipeline;
 
-		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
+		//std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 
-		VkCommandPool m_commandPool;
-		std::vector<VkCommandBuffer> m_commandBuffers;
+		//VkCommandPool m_commandPool;
+		//std::vector<VkCommandBuffer> m_commandBuffers;
 
-		VkSemaphore m_imageAvailableSemaphore;
-		VkSemaphore m_renderFinishedSemaphore;
+		//VkSemaphore m_imageAvailableSemaphore;
+		//VkSemaphore m_renderFinishedSemaphore;
 	};
 }
