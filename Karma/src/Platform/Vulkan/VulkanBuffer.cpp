@@ -4,9 +4,9 @@
 namespace Karma
 {
 	// Vertex Buffer
-	VulkanVertexBuffer::VulkanVertexBuffer(float* vertices, uint32_t size)
+	VulkanVertexBuffer::VulkanVertexBuffer(float* vertices, uint32_t size) : m_Vertices(vertices)
 	{	
-		VkBufferCreateInfo bufferInfo{};
+		/*VkBufferCreateInfo bufferInfo{};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = size;
 		bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
@@ -37,13 +37,13 @@ namespace Karma
 		void* data;
 		vkMapMemory(m_Device, m_VertexBufferMemory, 0, bufferInfo.size, 0, &data);
 			memcpy(data, vertices, (size_t) bufferInfo.size);// This needs attention
-		vkUnmapMemory(m_Device, m_VertexBufferMemory);
+		vkUnmapMemory(m_Device, m_VertexBufferMemory);*/
 	}
 
 	VulkanVertexBuffer::~VulkanVertexBuffer()
 	{
-		vkDestroyBuffer(m_Device, m_VertexBuffer, nullptr);
-		vkFreeMemory(m_Device, m_VertexBufferMemory, nullptr);
+		//vkDestroyBuffer(m_Device, m_VertexBuffer, nullptr);
+		//vkFreeMemory(m_Device, m_VertexBufferMemory, nullptr);
 	}
 
 	uint32_t VulkanVertexBuffer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlagBits properties)

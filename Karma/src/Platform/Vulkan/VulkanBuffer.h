@@ -4,33 +4,7 @@
 #include "vulkan/vulkan.h"
 
 namespace Karma
-{
-	struct Vertex
-	{
-		float* v_Vertices;
-
-		Vertex(float* vertices)
-		{
-			v_Vertices = vertices;
-		}
-		
-		static VkVertexInputBindingDescription GetBindingDescription()
-		{
-			VkVertexInputBindingDescription bindingDescription{};
-			bindingDescription.binding = 0;
-			bindingDescription.stride = sizeof(Vertex);
-			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-			return bindingDescription;
-		}
-
-		static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions()
-		{
-			std::array<VkVertexInputAttributeDescription, 2> attribureDescriptions{};
-
-			return attribureDescriptions;
-		}
-	};
-	
+{	
 	class KARMA_API VulkanVertexBuffer : public VertexBuffer
 	{
 	public:
@@ -51,8 +25,10 @@ namespace Karma
 
 		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlagBits properties);
 
+		inline float* GetData() const { return m_Vertices; }
+
 	private:
-		uint32_t m_renderedID;// Probably not useful
+		float* m_Vertices;
 		BufferLayout m_Layout;
 		
 		VkDevice m_Device;

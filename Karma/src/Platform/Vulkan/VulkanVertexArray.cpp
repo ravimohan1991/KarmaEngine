@@ -9,27 +9,73 @@ namespace Karma
 		m_device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
 		m_swapChainExtent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
 		m_renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
-
-		CreateGraphicsPipeline();
-		CreateFrameBuffers();
-		CreateCommandPools();
-		CreateCommandBuffers();
-		CreateSemaphores();
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
 	{
-		vkDeviceWaitIdle(m_device);
-
-		vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
-		vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
-		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
 			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
 		}
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+		vkDestroyBuffer(m_device, m_vertexBuffer, nullptr);
+		vkFreeMemory(m_device, m_vertexBufferMemory, nullptr);
+
+		vkDeviceWaitIdle(m_device);
+
+		vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
+		vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
+		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
+	}
+
+	void VulkanVertexArray::CreateVertexBuffer()
+	{
+		VkBufferCreateInfo bufferInfo{};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = m_bindingDescription.stride;// Is this correct?
+		bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		
+		VkResult result = vkCreateBuffer(m_device, &bufferInfo, nullptr, &m_vertexBuffer);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create vertex buffer");
+
+		VkMemoryRequirements memRequirements;
+		vkGetBufferMemoryRequirements(m_device, m_vertexBuffer, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, (VkMemoryPropertyFlagBits) (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+
+		VkResult resultm = vkAllocateMemory(m_device, &allocInfo, nullptr, &m_vertexBufferMemory);
+
+		KR_CORE_ASSERT(resultm == VK_SUCCESS, "Failed to allocate vertexbuffer memory");
+		vkBindBufferMemory(m_device, m_vertexBuffer, m_vertexBufferMemory, 0);
+
+		void* data;
+		vkMapMemory(m_device, m_vertexBufferMemory, 0, bufferInfo.size, 0, &data);
+		
+		memcpy(data, m_VertexBuffer->GetData(), (size_t) bufferInfo.size);
+		vkUnmapMemory(m_device, m_vertexBufferMemory);
+	}
+
+	uint32_t VulkanVertexArray::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlagBits properties)
+	{
+		VkPhysicalDeviceMemoryProperties memProperties;
+		vkGetPhysicalDeviceMemoryProperties(VulkanHolder::GetVulkanContext()->GetPhysicalDevice(), &memProperties);
+
+		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+		{
+			if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+			{
+				return i;
+			}
+		}
+
+		KR_CORE_ASSERT(false, "Failed to find suitable memory type");
+		return 0;
 	}
 
 	void VulkanVertexArray::Bind() const
@@ -120,6 +166,11 @@ namespace Karma
 			vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
+
+			VkBuffer vertexBuffers[] = {m_vertexBuffer};
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
+
 			vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);
 
 			vkCmdEndRenderPass(m_commandBuffers[i]);
@@ -193,10 +244,10 @@ namespace Karma
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr;
-		vertexInputInfo.vertexAttributeDescriptionCount = 0;
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_attributeDescriptions.size());
+		vertexInputInfo.pVertexBindingDescriptions = &m_bindingDescription;
+		vertexInputInfo.pVertexAttributeDescriptions = m_attributeDescriptions.data();
 
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -317,5 +368,63 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create shader module!");
 
 		return shaderModule;
+	}
+
+	static VkFormat ShaderDataTypeToVulkanType(ShaderDataType type)
+	{
+		switch (type)
+		{
+		case ShaderDataType::Float:
+			return VK_FORMAT_R32_SFLOAT;
+		case ShaderDataType::Float2:
+			return VK_FORMAT_R32G32_SFLOAT;
+		case ShaderDataType::Float3:
+			return VK_FORMAT_R32G32B32_SFLOAT;
+		case ShaderDataType::Float4:
+			return VK_FORMAT_R32G32B32A32_SFLOAT;
+		}
+
+		KR_CORE_ASSERT(false, "Vulkan doesn't support this ShaderDatatype");
+		return VK_FORMAT_UNDEFINED;
+	}
+
+	void VulkanVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+	{
+		KR_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "VertexBufferLayout empty.");
+
+		vertexBuffer->Bind();// What to do here?
+
+		uint32_t index = 0;
+		const auto& layout = vertexBuffer->GetLayout();
+
+		m_bindingDescription.binding = 0;
+		m_bindingDescription.stride = layout.GetStride();
+		m_bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		for (const auto& element : layout)
+		{
+			VkVertexInputAttributeDescription elementAttributeDescription{};
+			elementAttributeDescription.binding = 0;
+			elementAttributeDescription.location = index;
+			elementAttributeDescription.format = ShaderDataTypeToVulkanType(element.Type);
+			elementAttributeDescription.offset = static_cast<uint32_t>(element.Offset);
+
+			m_attributeDescriptions.push_back(elementAttributeDescription);
+			index++;
+		}
+
+		m_VertexBuffer = std::static_pointer_cast<VulkanVertexBuffer>(vertexBuffer);
+
+		GenerateVulkanVA();
+	}
+
+	void VulkanVertexArray::GenerateVulkanVA()
+	{
+		CreateGraphicsPipeline();
+		CreateFrameBuffers();
+		CreateCommandPools();
+		CreateVertexBuffer();
+		CreateCommandBuffers();
+		CreateSemaphores();
 	}
 }

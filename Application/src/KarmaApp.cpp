@@ -221,13 +221,22 @@ public:
 	{
 		m_VertexArray.reset(Karma::VertexArray::Create());
 		float vertices[3 * 7] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 		};
 		
 		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
 		m_VertexBuffer.reset(Karma::VertexBuffer::Create(vertices, sizeof(vertices)));
+
+		{
+			Karma::BufferLayout layout = {
+				{Karma::ShaderDataType::Float3, "a_Positon"},
+				{Karma::ShaderDataType::Float4, "a_Color"} };
+		
+			m_VertexBuffer->SetLayout(layout);
+		}
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 	}
 
 	virtual void OnUpdate(float deltaTime) override
