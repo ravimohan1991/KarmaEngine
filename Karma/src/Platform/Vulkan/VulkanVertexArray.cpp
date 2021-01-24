@@ -13,27 +13,27 @@ namespace Karma
 
 	VulkanVertexArray::~VulkanVertexArray()
 	{
+		vkDeviceWaitIdle(m_device);
+
+		vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
+		vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
+		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
+		vkDestroyBuffer(m_device, m_vertexBuffer, nullptr);
+		vkFreeMemory(m_device, m_vertexBufferMemory, nullptr);
+
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
 			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
 		}
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-		vkDestroyBuffer(m_device, m_vertexBuffer, nullptr);
-		vkFreeMemory(m_device, m_vertexBufferMemory, nullptr);
-
-		vkDeviceWaitIdle(m_device);
-
-		vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
-		vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
-		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 	}
 
 	void VulkanVertexArray::CreateVertexBuffer()
 	{
 		VkBufferCreateInfo bufferInfo{};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = m_bindingDescription.stride;// Is this correct?
+		bufferInfo.size = m_VertexBuffer->GetSize();
 		bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		
