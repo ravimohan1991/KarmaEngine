@@ -18,8 +18,6 @@ namespace Karma
 		vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
 		vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
 		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
-		vkDestroyBuffer(m_device, m_vertexBuffer, nullptr);
-		vkFreeMemory(m_device, m_vertexBufferMemory, nullptr);
 
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
@@ -27,55 +25,6 @@ namespace Karma
 		}
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-	}
-
-	void VulkanVertexArray::CreateVertexBuffer()
-	{
-		VkBufferCreateInfo bufferInfo{};
-		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = m_VertexBuffer->GetSize();
-		bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		
-		VkResult result = vkCreateBuffer(m_device, &bufferInfo, nullptr, &m_vertexBuffer);
-
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create vertex buffer");
-
-		VkMemoryRequirements memRequirements;
-		vkGetBufferMemoryRequirements(m_device, m_vertexBuffer, &memRequirements);
-
-		VkMemoryAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, (VkMemoryPropertyFlagBits) (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
-
-		VkResult resultm = vkAllocateMemory(m_device, &allocInfo, nullptr, &m_vertexBufferMemory);
-
-		KR_CORE_ASSERT(resultm == VK_SUCCESS, "Failed to allocate vertexbuffer memory");
-		vkBindBufferMemory(m_device, m_vertexBuffer, m_vertexBufferMemory, 0);
-
-		void* data;
-		vkMapMemory(m_device, m_vertexBufferMemory, 0, bufferInfo.size, 0, &data);
-		
-		memcpy(data, m_VertexBuffer->GetData(), (size_t) bufferInfo.size);
-		vkUnmapMemory(m_device, m_vertexBufferMemory);
-	}
-
-	uint32_t VulkanVertexArray::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlagBits properties)
-	{
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanHolder::GetVulkanContext()->GetPhysicalDevice(), &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-		{
-			if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-			{
-				return i;
-			}
-		}
-
-		KR_CORE_ASSERT(false, "Failed to find suitable memory type");
-		return 0;
 	}
 
 	void VulkanVertexArray::Bind() const
@@ -167,11 +116,11 @@ namespace Karma
 
 			vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
 
-			VkBuffer vertexBuffers[] = {m_vertexBuffer};
+			VkBuffer vertexBuffers[] = {m_VertexBuffer->GetVertexBuffer()};
 			VkDeviceSize offsets[] = { 0 };
 			vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-			vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);
+			vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);// <----- replace 3 with IndexBuffer count points
 
 			vkCmdEndRenderPass(m_commandBuffers[i]);
 
@@ -423,7 +372,6 @@ namespace Karma
 		CreateGraphicsPipeline();
 		CreateFrameBuffers();
 		CreateCommandPools();
-		CreateVertexBuffer();
 		CreateCommandBuffers();
 		CreateSemaphores();
 	}

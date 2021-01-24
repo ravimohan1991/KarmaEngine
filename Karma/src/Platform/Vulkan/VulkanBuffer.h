@@ -23,13 +23,18 @@ namespace Karma
 			m_Layout = layout;
 		}
 
-		inline float* GetData() const { return m_Vertices; }
-		inline uint32_t GetSize() const { return m_Size; }
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlagBits properties);
+
+		inline VkBuffer GetVertexBuffer() const { return m_VertexBuffer; }
+		inline VkDeviceMemory GetVertexBufferMemory() const { return m_VertexBufferMemory; }
 
 	private:
-		float* m_Vertices;
-		uint32_t m_Size;
 		BufferLayout m_Layout;
+
+		VkBuffer m_VertexBuffer;
+		VkDeviceMemory m_VertexBufferMemory;
+
+		VkDevice m_Device;
 	};
 
 	class KARMA_API VulkanIndexBuffer : public IndexBuffer

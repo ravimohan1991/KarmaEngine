@@ -24,14 +24,11 @@ namespace Karma
 		void CreateGraphicsPipeline();
 		void CreateFrameBuffers();
 		void CreateCommandPools();
-		void CreateVertexBuffer();
 		void CreateCommandBuffers();
 
 		void GenerateVulkanVA();
 
 		void CreateSemaphores();
-
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlagBits properties);
 
 		// Helper functions
 		static std::vector<char> ReadFile(const std::string& filename);
@@ -62,8 +59,8 @@ namespace Karma
 		VkVertexInputBindingDescription m_bindingDescription{};
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
 
-		VkBuffer m_vertexBuffer;
-		VkDeviceMemory m_vertexBufferMemory;
+		//VkBuffer m_vertexBuffer;
+		//VkDeviceMemory m_vertexBufferMemory;
 	};
 
 }
