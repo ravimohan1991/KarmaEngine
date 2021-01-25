@@ -50,10 +50,16 @@ namespace Karma
 			s_GLFWInitialized = true;
 		}
 
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		RendererAPI::API currentAPI = RendererAPI::GetAPI();
+		
+		if (currentAPI == RendererAPI::API::Vulkan)
+		{
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		}
+		
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		
-		switch (Renderer::GetAPI())
+		switch (currentAPI)
 		{
 		case RendererAPI::API::None:
 			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
@@ -67,10 +73,13 @@ namespace Karma
 		}
 		
 		m_Context->Init();
+		if (currentAPI == RendererAPI::API::OpenGL)
+		{
+			SetVSync(true);
+		}
 		
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		SetVSync(true);
 
 		// Set glfw callbacks
 		SetGLFWCallbacks(m_Window);

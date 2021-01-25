@@ -244,7 +244,7 @@ public:
 
 		Karma::Renderer::BeginScene(m_Camera);
 
-		Karma::Renderer::Submit(m_VertexArray, m_Shader);
+		Karma::Renderer::Submit(m_VertexArray, nullptr);
 
 		Karma::Renderer::EndScene();
 	}
@@ -252,7 +252,6 @@ public:
 private:
 	std::shared_ptr<Karma::VertexArray> m_VertexArray;
 	Karma::OrthographicCamera m_Camera;
-	std::shared_ptr<Karma::Shader> m_Shader;
 };
 
 class KarmaApp : public Karma::Application
@@ -260,6 +259,7 @@ class KarmaApp : public Karma::Application
 public:
 	KarmaApp()
 	{
+		//PushLayer(new ExampleLayer());
 		PushLayer(new VulkanLayer());
 	}
 
