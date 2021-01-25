@@ -87,6 +87,8 @@ namespace Karma
 		void RecreateSwapChain();
 		void CleanupSwapChain();
 
+		void SetVSync(bool bEnable);
+
 		// Getters
 		VkDevice GetLogicalDevice() const { return m_device; }
 		VkPhysicalDevice GetPhysicalDevice() const { return m_physicalDevice; }
@@ -121,5 +123,7 @@ namespace Karma
 		VkRenderPass m_renderPass;
 		
 		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
+
+		bool bVSync = false;
 	};
 }

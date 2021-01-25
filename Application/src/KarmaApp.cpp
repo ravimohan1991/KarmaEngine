@@ -241,7 +241,8 @@ public:
 
 	virtual void OnUpdate(float deltaTime) override
 	{
-
+		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
+		
 		Karma::Renderer::BeginScene(m_Camera);
 
 		Karma::Renderer::Submit(m_VertexArray, nullptr);

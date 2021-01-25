@@ -569,11 +569,14 @@ namespace Karma
 
 	VkPresentModeKHR VulkanContext::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 	{
-		for (const auto& availablePresentMode : availablePresentModes)
+		if (!bVSync)
 		{
-			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+			for (const auto& availablePresentMode : availablePresentModes)
 			{
-				return availablePresentMode;
+				if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+				{
+					return availablePresentMode;
+				}
 			}
 		}
 
@@ -645,5 +648,13 @@ namespace Karma
 		VkResult result = vkCreateRenderPass(m_device, &renderPassInfo, nullptr, &m_renderPass);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create render pass!");
+	}
+
+	void VulkanContext::SetVSync(bool bEnable)
+	{
+		bVSync = bEnable;
+
+		vkDeviceWaitIdle(m_device);
+		RecreateSwapChain();
 	}
 }

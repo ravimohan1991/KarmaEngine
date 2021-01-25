@@ -73,10 +73,7 @@ namespace Karma
 		}
 		
 		m_Context->Init();
-		if (currentAPI == RendererAPI::API::OpenGL)
-		{
-			SetVSync(true);
-		}
+		SetVSync(true);
 		
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -205,13 +202,23 @@ namespace Karma
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
-		if (enabled)
+		RendererAPI::API currentAPI = RendererAPI::GetAPI();
+		
+		switch (currentAPI)
 		{
-			glfwSwapInterval(1);
-		}
-		else
-		{ 
-			glfwSwapInterval(0);
+		case RendererAPI::API::OpenGL:
+			if (enabled)
+			{
+				glfwSwapInterval(1);
+			}
+			else
+			{
+				glfwSwapInterval(0);
+			}
+			break;
+		case RendererAPI::API::Vulkan:
+			VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
+			vContext->SetVSync(enabled);
 		}
 	}
 
