@@ -22,7 +22,7 @@ namespace Karma
 		virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
 
 		void CreateGraphicsPipeline();
-		void CreateFrameBuffers();
+
 		void CreateCommandPools();
 		void CreateCommandBuffers();
 
@@ -30,9 +30,17 @@ namespace Karma
 
 		void CreateSemaphores();
 
+		void RecreateSwapChainAndPipeline();
+		void CleanupPipelineandCommandBuffers();
+
 		// Helper functions
 		static std::vector<char> ReadFile(const std::string& filename);
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
+
+		// Getters
+		inline VkSemaphore GetImageAvailableSemaphore() const { return m_imageAvailableSemaphore; }
+		inline VkSemaphore GetRenderFinishedSemaphore() const { return m_renderFinishedSemaphore; }
+		const std::vector<VkCommandBuffer>& GetCommandBuffers() const { return m_commandBuffers; }
 
 	private:
 		uint32_t m_RendererID;
@@ -42,13 +50,9 @@ namespace Karma
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 
 		VkDevice m_device;
-		VkExtent2D m_swapChainExtent;
-		VkRenderPass m_renderPass;
 
 		VkPipelineLayout m_pipelineLayout;
 		VkPipeline m_graphicsPipeline;
-
-		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 
 		VkCommandPool m_commandPool;
 		std::vector<VkCommandBuffer> m_commandBuffers;
@@ -58,9 +62,6 @@ namespace Karma
 
 		VkVertexInputBindingDescription m_bindingDescription{};
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
-
-		//VkBuffer m_vertexBuffer;
-		//VkDeviceMemory m_vertexBufferMemory;
 	};
 
 }

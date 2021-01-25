@@ -78,35 +78,24 @@ namespace Karma
 		// Image views
 		void CreateImageViews();
 
-		// Graphics pipeline
-		//void CreateGraphicsPipeline();
-
 		//  Renderer pass
 		void CreateRenderPass();
 
 		// Framebuffers
-		//void CreateFrameBuffers();
+		void CreateFrameBuffers();
 
-		// Commandpool
-		//void CreateCommandPool();
-		//void CreateCommandBuffers();
-
-		//void CreateSemaphores();
+		void RecreateSwapChain();
+		void CleanupSwapChain();
 
 		// Getters
 		VkDevice GetLogicalDevice() const { return m_device; }
 		VkPhysicalDevice GetPhysicalDevice() const { return m_physicalDevice; }
 		VkExtent2D GetSwapChainExtent() const { return m_swapChainExtent; }
 		VkRenderPass GetRenderPass() const { return m_renderPass; }
-		const std::vector<VkImage>& GetSwapChainImages() const { return m_swapChainImages; }
-		const std::vector<VkImageView>& GetSwapChainImageViews() const { return m_swapChainImageViews; }
+		const std::vector<VkFramebuffer>& GetSwapChainFrameBuffer() const { return m_swapChainFrameBuffers; }
 		VkSwapchainKHR GetSwapChain() const { return m_swapChain; }
 		VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
 		VkQueue GetPresentQueue() const { return m_presentQueue; }
-
-		// Helper functions
-		//static std::vector<char> ReadFile(const std::string& filename);
-		//VkShaderModule CreateShaderModule(const std::vector<char>& code);
 
 	private:
 		GLFWwindow* m_windowHandle;
@@ -130,15 +119,7 @@ namespace Karma
 		std::vector<VkImageView> m_swapChainImageViews;
 
 		VkRenderPass m_renderPass;
-		//VkPipelineLayout m_pipelineLayout;
-		//VkPipeline m_graphicsPipeline;
-
-		//std::vector<VkFramebuffer> m_swapChainFrameBuffers;
-
-		//VkCommandPool m_commandPool;
-		//std::vector<VkCommandBuffer> m_commandBuffers;
-
-		//VkSemaphore m_imageAvailableSemaphore;
-		//VkSemaphore m_renderFinishedSemaphore;
+		
+		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 	};
 }

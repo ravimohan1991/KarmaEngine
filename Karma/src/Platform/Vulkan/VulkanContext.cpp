@@ -25,6 +25,11 @@ namespace Karma
 	VulkanContext::~VulkanContext()
 	{
 		vkDeviceWaitIdle(m_device);
+		
+		for (auto framebuffer : m_swapChainFrameBuffers)
+		{
+			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+		}
 		vkDestroyRenderPass(m_device, m_renderPass, nullptr);
 		for (auto imageView : m_swapChainImageViews)
 		{
@@ -50,6 +55,7 @@ namespace Karma
 		CreateSwapChain();
 		CreateImageViews();
 		CreateRenderPass();
+		CreateFrameBuffers();
 
 		VulkanHolder::SetVulkanContext(this);
 	}
@@ -58,12 +64,60 @@ namespace Karma
 	{
 	}
 
+	void VulkanContext::RecreateSwapChain()
+	{
+		CleanupSwapChain();
+
+		CreateSwapChain();
+		CreateImageViews();
+		CreateRenderPass();
+		CreateFrameBuffers();
+	}
+
+	void VulkanContext::CleanupSwapChain()
+	{
+		for (auto framebuffer : m_swapChainFrameBuffers)
+		{
+			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+		}
+		vkDestroyRenderPass(m_device, m_renderPass, nullptr);
+		for (auto imageView : m_swapChainImageViews)
+		{
+			vkDestroyImageView(m_device, imageView, nullptr);
+		}
+		vkDestroySwapchainKHR(m_device, m_swapChain, nullptr);
+	}
+
+	void VulkanContext::CreateFrameBuffers()
+	{
+		m_swapChainFrameBuffers.resize(m_swapChainImages.size());
+
+		for (size_t i = 0; i < m_swapChainImages.size(); i++)
+		{
+			VkImageView attachments[] = { m_swapChainImageViews[i] };
+
+
+			VkFramebufferCreateInfo framebufferInfo{};
+			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			framebufferInfo.renderPass = m_renderPass;
+			framebufferInfo.attachmentCount = 1;
+			framebufferInfo.pAttachments = attachments;
+			framebufferInfo.width = m_swapChainExtent.width;
+			framebufferInfo.height = m_swapChainExtent.height;
+			framebufferInfo.layers = 1;
+
+			VkResult result = vkCreateFramebuffer(m_device, &framebufferInfo, nullptr, &m_swapChainFrameBuffers[i]);
+
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create frame buffer");
+		}
+	}
+
 	void VulkanContext::CreateSwapChain()
 	{
 		SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(m_physicalDevice);
 
 		VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
-		VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
+		VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);// Analogous to v-sync
 		VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
 
 		uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;

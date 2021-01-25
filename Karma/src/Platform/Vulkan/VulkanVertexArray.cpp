@@ -7,8 +7,6 @@ namespace Karma
 	VulkanVertexArray::VulkanVertexArray()
 	{
 		m_device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
-		m_swapChainExtent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
-		m_renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
@@ -19,49 +17,30 @@ namespace Karma
 		vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
 		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 
-		for (auto framebuffer : m_swapChainFrameBuffers)
-		{
-			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
-		}
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 	}
 
 	void VulkanVertexArray::Bind() const
 	{
-		// Hacky way to draw. Will change in future
-		uint32_t imageIndex;
-		vkAcquireNextImageKHR(m_device, VulkanHolder::GetVulkanContext()->GetSwapChain(), UINT64_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+	}
 
-		VkSubmitInfo submitInfo{};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	void VulkanVertexArray::RecreateSwapChainAndPipeline()
+	{
+		vkDeviceWaitIdle(m_device);
 
-		VkSemaphore waitSemaphores[] = { m_imageAvailableSemaphore };
-		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-		submitInfo.waitSemaphoreCount = 1;
-		submitInfo.pWaitSemaphores = waitSemaphores;
-		submitInfo.pWaitDstStageMask = waitStages;
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &m_commandBuffers[imageIndex];
+		CleanupPipelineandCommandBuffers();
 
-		VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphore };
-		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = signalSemaphores;
+		VulkanHolder::GetVulkanContext()->RecreateSwapChain();
+		CreateGraphicsPipeline();
+		CreateCommandBuffers();
+	}
 
-		VkResult result = vkQueueSubmit(VulkanHolder::GetVulkanContext()->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit draw command buffer");
-
-		VkPresentInfoKHR presentInfo{};
-		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = signalSemaphores;
-
-		VkSwapchainKHR swapChains[] = { VulkanHolder::GetVulkanContext()->GetSwapChain() };
-		presentInfo.swapchainCount = 1;
-		presentInfo.pSwapchains = swapChains;
-		presentInfo.pImageIndices = &imageIndex;
-
-		vkQueuePresentKHR(VulkanHolder::GetVulkanContext()->GetPresentQueue(), &presentInfo);
+	void VulkanVertexArray::CleanupPipelineandCommandBuffers()
+	{
+		vkFreeCommandBuffers(m_device, m_commandPool, static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
+		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 	}
 
 	void VulkanVertexArray::CreateSemaphores()
@@ -78,7 +57,7 @@ namespace Karma
 
 	void VulkanVertexArray::CreateCommandBuffers()
 	{
-		m_commandBuffers.resize(m_swapChainFrameBuffers.size());
+		m_commandBuffers.resize(VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer().size());
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -103,10 +82,10 @@ namespace Karma
 
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = m_renderPass;
-			renderPassInfo.framebuffer = m_swapChainFrameBuffers[i];
+			renderPassInfo.renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
+			renderPassInfo.framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[i];
 			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent = m_swapChainExtent;
+			renderPassInfo.renderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
 
 			VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 			renderPassInfo.clearValueCount = 1;
@@ -143,30 +122,6 @@ namespace Karma
 		VkResult result = vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command pool!");
-	}
-
-	void VulkanVertexArray::CreateFrameBuffers()
-	{
-		m_swapChainFrameBuffers.resize(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size());
-
-		for (size_t i = 0; i < VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(); i++)
-		{
-			VkImageView attachments[] = { VulkanHolder::GetVulkanContext()->GetSwapChainImageViews()[i] };
-
-
-			VkFramebufferCreateInfo framebufferInfo{};
-			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			framebufferInfo.renderPass = m_renderPass;
-			framebufferInfo.attachmentCount = 1;
-			framebufferInfo.pAttachments = attachments;
-			framebufferInfo.width = m_swapChainExtent.width;
-			framebufferInfo.height = m_swapChainExtent.height;
-			framebufferInfo.layers = 1;
-
-			VkResult result = vkCreateFramebuffer(m_device, &framebufferInfo, nullptr, &m_swapChainFrameBuffers[i]);
-
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create frame buffer");
-		}
 	}
 
 	void VulkanVertexArray::CreateGraphicsPipeline()
@@ -206,14 +161,14 @@ namespace Karma
 		VkViewport viewport{};
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
-		viewport.width = (float)m_swapChainExtent.width;
-		viewport.height = (float)m_swapChainExtent.height;
+		viewport.width = (float)VulkanHolder::GetVulkanContext()->GetSwapChainExtent().width;
+		viewport.height = (float)VulkanHolder::GetVulkanContext()->GetSwapChainExtent().height;
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 
 		VkRect2D scissor{};
 		scissor.offset = { 0, 0 };
-		scissor.extent = m_swapChainExtent;
+		scissor.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
 
 		VkPipelineViewportStateCreateInfo viewportState{};
 		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -272,7 +227,7 @@ namespace Karma
 		pipelineInfo.pMultisampleState = &multisampling;
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.layout = m_pipelineLayout;
-		pipelineInfo.renderPass = m_renderPass;
+		pipelineInfo.renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -370,7 +325,6 @@ namespace Karma
 	void VulkanVertexArray::GenerateVulkanVA()
 	{
 		CreateGraphicsPipeline();
-		CreateFrameBuffers();
 		CreateCommandPools();
 		CreateCommandBuffers();
 		CreateSemaphores();
