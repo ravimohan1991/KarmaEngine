@@ -15,7 +15,6 @@ namespace Karma
 
 		vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
 		vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
-		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
@@ -38,7 +37,7 @@ namespace Karma
 
 	void VulkanVertexArray::CleanupPipelineandCommandBuffers()
 	{
-		vkFreeCommandBuffers(m_device, m_commandPool, static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		vkFreeCommandBuffers(m_device, VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 	}
@@ -61,7 +60,7 @@ namespace Karma
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.commandPool = m_commandPool;
+		allocInfo.commandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		allocInfo.commandBufferCount = (uint32_t)m_commandBuffers.size();
 
@@ -108,20 +107,6 @@ namespace Karma
 			KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
 		}
 
-	}
-
-	void VulkanVertexArray::CreateCommandPools()
-	{
-		QueueFamilyIndices queueFamilyIndices = VulkanHolder::GetVulkanContext()->FindQueueFamilies(VulkanHolder::GetVulkanContext()->GetPhysicalDevice());
-
-		VkCommandPoolCreateInfo poolInfo{};
-		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
-		poolInfo.flags = 0;
-
-		VkResult result = vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool);
-
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command pool!");
 	}
 
 	void VulkanVertexArray::CreateGraphicsPipeline()
@@ -325,7 +310,6 @@ namespace Karma
 	void VulkanVertexArray::GenerateVulkanVA()
 	{
 		CreateGraphicsPipeline();
-		CreateCommandPools();
 		CreateCommandBuffers();
 		CreateSemaphores();
 	}

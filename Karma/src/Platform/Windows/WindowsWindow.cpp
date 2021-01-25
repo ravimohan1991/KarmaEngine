@@ -61,15 +61,15 @@ namespace Karma
 		
 		switch (currentAPI)
 		{
-		case RendererAPI::API::None:
-			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
-			break;
-		case RendererAPI::API::OpenGL:
-			m_Context = new OpenGLContext(m_Window);
-			break;
-		case RendererAPI::API::Vulkan:
-			m_Context = new VulkanContext(m_Window);
-			break;
+			case RendererAPI::API::None:
+				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				break;
+			case RendererAPI::API::OpenGL:
+				m_Context = new OpenGLContext(m_Window);
+				break;
+			case RendererAPI::API::Vulkan:
+				m_Context = new VulkanContext(m_Window);
+				break;
 		}
 		
 		m_Context->Init();
@@ -206,19 +206,19 @@ namespace Karma
 		
 		switch (currentAPI)
 		{
-		case RendererAPI::API::OpenGL:
-			if (enabled)
-			{
-				glfwSwapInterval(1);
-			}
-			else
-			{
-				glfwSwapInterval(0);
-			}
-			break;
-		case RendererAPI::API::Vulkan:
-			VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
-			vContext->SetVSync(enabled);
+			case RendererAPI::API::OpenGL:
+				if (enabled)
+				{
+					glfwSwapInterval(1);
+				}
+				else
+				{
+					glfwSwapInterval(0);
+				}
+				break;
+			case RendererAPI::API::Vulkan:
+				VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
+				vContext->SetVSync(enabled);
 		}
 	}
 

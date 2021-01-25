@@ -23,7 +23,6 @@ namespace Karma
 
 		void CreateGraphicsPipeline();
 
-		void CreateCommandPools();
 		void CreateCommandBuffers();
 
 		void GenerateVulkanVA();
@@ -54,7 +53,6 @@ namespace Karma
 		VkPipelineLayout m_pipelineLayout;
 		VkPipeline m_graphicsPipeline;
 
-		VkCommandPool m_commandPool;
 		std::vector<VkCommandBuffer> m_commandBuffers;
 
 		VkSemaphore m_imageAvailableSemaphore;

@@ -84,6 +84,9 @@ namespace Karma
 		// Framebuffers
 		void CreateFrameBuffers();
 
+		// CommandPool
+		void CreateCommandPool();
+
 		void RecreateSwapChain();
 		void CleanupSwapChain();
 
@@ -98,6 +101,7 @@ namespace Karma
 		VkSwapchainKHR GetSwapChain() const { return m_swapChain; }
 		VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
 		VkQueue GetPresentQueue() const { return m_presentQueue; }
+		VkCommandPool GetCommandPool() const { return m_commandPool; }
 
 	private:
 		GLFWwindow* m_windowHandle;
@@ -123,6 +127,7 @@ namespace Karma
 		VkRenderPass m_renderPass;
 		
 		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
+		VkCommandPool m_commandPool;
 
 		bool bVSync = false;
 	};

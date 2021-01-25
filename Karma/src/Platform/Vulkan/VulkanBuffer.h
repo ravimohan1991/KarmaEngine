@@ -23,7 +23,12 @@ namespace Karma
 			m_Layout = layout;
 		}
 
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlagBits properties);
+		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
+		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 		inline VkBuffer GetVertexBuffer() const { return m_VertexBuffer; }
 		inline VkDeviceMemory GetVertexBufferMemory() const { return m_VertexBufferMemory; }

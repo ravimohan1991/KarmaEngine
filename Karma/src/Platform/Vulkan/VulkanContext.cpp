@@ -26,6 +26,7 @@ namespace Karma
 	{
 		vkDeviceWaitIdle(m_device);
 		
+		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
 			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
@@ -56,6 +57,7 @@ namespace Karma
 		CreateImageViews();
 		CreateRenderPass();
 		CreateFrameBuffers();
+		CreateCommandPool();
 
 		VulkanHolder::SetVulkanContext(this);
 	}
@@ -72,6 +74,20 @@ namespace Karma
 		CreateImageViews();
 		CreateRenderPass();
 		CreateFrameBuffers();
+	}
+
+	void VulkanContext::CreateCommandPool()
+	{
+		QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(m_physicalDevice);
+
+		VkCommandPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+		poolInfo.flags = 0;
+
+		VkResult result = vkCreateCommandPool(m_device, &poolInfo, nullptr, &m_commandPool);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command pool!");
 	}
 
 	void VulkanContext::CleanupSwapChain()
