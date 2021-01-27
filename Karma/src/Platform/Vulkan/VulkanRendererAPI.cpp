@@ -65,7 +65,7 @@ namespace Karma
 		}
 		else if (resultQP != VK_SUCCESS)
 		{
-			KR_CORE_ASSERT(false, "Failed ot present swapchain image");
+			KR_CORE_ASSERT(false, "Failed to present swapchain image");
 		}
 
 	}

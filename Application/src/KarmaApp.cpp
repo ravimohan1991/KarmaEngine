@@ -220,10 +220,17 @@ public:
 	VulkanLayer() : m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		m_VertexArray.reset(Karma::VertexArray::Create());
-		float vertices[3 * 7] = {
+		/*float vertices[3 * 7] = {
 			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
 			 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+		};*/
+
+		float vertices[7 * 4] = {
+			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			 -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
 		};
 		
 		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
@@ -237,6 +244,12 @@ public:
 			m_VertexBuffer->SetLayout(layout);
 		}
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+
+		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
+
+		std::shared_ptr<Karma::IndexBuffer> m_IndexBuffer;
+		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 	}
 
 	virtual void OnUpdate(float deltaTime) override

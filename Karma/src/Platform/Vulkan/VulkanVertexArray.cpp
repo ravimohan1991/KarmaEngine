@@ -94,11 +94,15 @@ namespace Karma
 
 			vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
 
+			// Bind vertex/index buffers
 			VkBuffer vertexBuffers[] = {m_VertexBuffer->GetVertexBuffer()};
 			VkDeviceSize offsets[] = { 0 };
+			
 			vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
+			vkCmdBindIndexBuffer(m_commandBuffers[i], m_IndexBuffer->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
-			vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);// <----- replace 3 with IndexBuffer count points
+
+			vkCmdDrawIndexed(m_commandBuffers[i], m_IndexBuffer->GetCount(), 1, 0, 0, 0);// <----- replace 3 with IndexBuffer count points
 
 			vkCmdEndRenderPass(m_commandBuffers[i]);
 
@@ -303,6 +307,13 @@ namespace Karma
 		}
 
 		m_VertexBuffer = std::static_pointer_cast<VulkanVertexBuffer>(vertexBuffer);
+	}
+
+	void VulkanVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+	{
+		indexBuffer->Bind();// What to do here?
+
+		m_IndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(indexBuffer);
 
 		GenerateVulkanVA();
 	}

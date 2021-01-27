@@ -25,7 +25,6 @@ namespace Karma
 
 		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
 			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-
 		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
@@ -34,12 +33,11 @@ namespace Karma
 		inline VkDeviceMemory GetVertexBufferMemory() const { return m_VertexBufferMemory; }
 
 	private:
+		VkDevice m_Device;
 		BufferLayout m_Layout;
 
 		VkBuffer m_VertexBuffer;
 		VkDeviceMemory m_VertexBufferMemory;
-
-		VkDevice m_Device;
 	};
 
 	class KARMA_API VulkanIndexBuffer : public IndexBuffer
@@ -51,10 +49,21 @@ namespace Karma
 		virtual void Bind() const override;
 		virtual void UnBind() const override;
 
+		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
 		virtual uint32_t GetCount() const override { return m_Count; }
+		inline VkBuffer GetIndexBuffer() const { return m_IndexBuffer; }
+		inline VkDeviceMemory GetIndexBufferMemory() const { return m_IndexBufferMemory; }
 
 	private:
-		uint32_t m_RendererID;
+		VkDevice m_Device;
 		uint32_t m_Count;
+
+		VkBuffer m_IndexBuffer;
+		VkDeviceMemory m_IndexBufferMemory;
 	};
 }
