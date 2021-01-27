@@ -226,11 +226,12 @@ public:
 			 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 		};*/
 
-		float vertices[7 * 4] = {
+		float vertices[7 * 5] = {
 			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
 			 -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f
 		};
 		
 		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
@@ -245,7 +246,7 @@ public:
 		}
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 
-		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
+		uint32_t indices[9] = { 0, 1, 2, 2, 3, 0, 2, 4, 3 };
 
 		std::shared_ptr<Karma::IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
