@@ -229,6 +229,18 @@ namespace Karma
 		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), 
 		indices.presentFamily.value()};
 
+		if (bEnableValidationLayers)
+		{
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("| Available Unique Queue Family Indices (Graphics Card):");
+			uint32_t index = 1;
+			for (uint32_t queueFamily : uniqueQueueFamilies)
+			{
+				KR_CORE_INFO("| {0}. {1}", index++, queueFamily);
+			}
+			KR_CORE_INFO("+-------------------------------------------------");
+		}
+
 		float queuePriority = 1.0f;
 		for (uint32_t queueFamily : uniqueQueueFamilies)
 		{
@@ -281,6 +293,11 @@ namespace Karma
 		std::vector<VkPhysicalDevice> devices(deviceCount);
 		vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
+		if (bEnableValidationLayers)
+		{
+			PrintAvailablePhysicalDevices(devices);
+		}
+
 		for (const auto & device : devices)
 		{
 			if (IsDeviceSuitable(device))
@@ -294,6 +311,20 @@ namespace Karma
 		{
 			KR_CORE_ASSERT(false, "Failed to find a suitable GPU!");
 		}
+	}
+
+	void VulkanContext::PrintAvailablePhysicalDevices(const std::vector<VkPhysicalDevice>& physicalDevices)
+	{
+		uint32_t index = 1;
+		KR_CORE_INFO("+-------------------------------------------------");
+		KR_CORE_INFO("| Available Graphics cards:");
+		for (auto physicalDevice : physicalDevices)
+		{
+			VkPhysicalDeviceProperties deviceProperties;
+			vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
+			KR_CORE_INFO("| {0}. Device Name: {1}", index++, deviceProperties.deviceName);
+		}
+		KR_CORE_INFO("+-------------------------------------------------");
 	}
 
 	bool VulkanContext::IsDeviceSuitable(VkPhysicalDevice device)
@@ -322,6 +353,18 @@ namespace Karma
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
 		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+		if (bEnableValidationLayers)
+		{
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("| Swapchain Extensions:");
+			uint32_t index = 1;
+			for (auto swapchainExtension : requiredExtensions)
+			{
+				KR_CORE_INFO("| {0}. {1}", index++, swapchainExtension);
+			}
+			KR_CORE_INFO("+-------------------------------------------------");
+		}
 
 		for (const auto& extension : availableExtensions)
 		{
@@ -397,6 +440,11 @@ namespace Karma
 
 	void VulkanContext::CreateInstance()
 	{
+		if (bEnableValidationLayers)
+		{
+			PrintAvailableExtensions();
+		}
+
 		if (bEnableValidationLayers && !CheckValidationLayerSupport())
 		{
 			KR_CORE_WARN("Validation layers requested, but not available");
@@ -410,21 +458,11 @@ namespace Karma
 		appInfo.pEngineName = "No Engine";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.apiVersion = VK_API_VERSION_1_2;
-
+		
 		// Tell Vulkan which global extensions and validation layers we want to use
 		VkInstanceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
-
-			// Use GLFW extensions		
-		uint32_t glfwExtensionCount = 0;
-		const char** glfwExtensions;
-
-		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-		createInfo.enabledExtensionCount = glfwExtensionCount;
-		createInfo.ppEnabledExtensionNames = glfwExtensions;
-		createInfo.enabledLayerCount = 0;
 
 			// Validation layers
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
@@ -449,6 +487,24 @@ namespace Karma
 		VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create Vulkan instance.");
+	}
+
+	void VulkanContext::PrintAvailableExtensions()
+	{
+		uint32_t extensionCount = 0;
+
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		std::vector<VkExtensionProperties> vulkanExtensions(extensionCount);
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, vulkanExtensions.data());
+
+		uint32_t index = 1;
+		KR_CORE_INFO("+-------------------------------------------------");
+		KR_CORE_INFO("| Available Vulkan instance extensions:");
+		for (auto extension : vulkanExtensions)
+		{
+			KR_CORE_INFO("| {0}. {1}", index++, extension.extensionName);
+		}
+		KR_CORE_INFO("+-------------------------------------------------");
 	}
 
 	bool VulkanContext::CheckValidationLayerSupport()
@@ -494,6 +550,15 @@ namespace Karma
 		if (bEnableValidationLayers)
 		{
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+			int32_t index = 1;
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("| GLFW required extensions:");
+			for (auto extension : extensions)
+			{
+				KR_CORE_INFO("| {0}. {1}", index++, extension);
+			}
+			KR_CORE_INFO("+-------------------------------------------------");
 		}
 
 		return extensions;

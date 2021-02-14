@@ -38,6 +38,9 @@ namespace Karma
 
 		void CreateInstance();
 
+		void PrintAvailableExtensions();
+		void PrintAvailablePhysicalDevices(const std::vector<VkPhysicalDevice>& physicalDevices);
+
 		// Validation layers
 		bool CheckValidationLayerSupport();
 		std::vector<const char*> GetRequiredExtensions();

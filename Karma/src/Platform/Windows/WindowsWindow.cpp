@@ -55,6 +55,9 @@ namespace Karma
 		if (currentAPI == RendererAPI::API::Vulkan)
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			uint32_t extensionCount = 0;
+			vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+			KR_CORE_INFO("{0} Vulkan extensions supported", extensionCount);
 		}
 		
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
