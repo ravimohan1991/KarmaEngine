@@ -3,7 +3,7 @@
 #include <fstream>
 
 namespace Karma
-{
+{	
 	VulkanVertexArray::VulkanVertexArray()
 	{
 		m_device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
@@ -13,8 +13,12 @@ namespace Karma
 	{
 		vkDeviceWaitIdle(m_device);
 
-		vkDestroySemaphore(m_device, m_renderFinishedSemaphore, nullptr);
-		vkDestroySemaphore(m_device, m_imageAvailableSemaphore, nullptr);
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			vkDestroySemaphore(m_device, m_renderFinishedSemaphores[i], nullptr);
+			vkDestroySemaphore(m_device, m_imageAvailableSemaphores[i], nullptr);
+			vkDestroyFence(m_device, m_inFlightFences[i], nullptr);
+		}
 
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
@@ -44,14 +48,29 @@ namespace Karma
 
 	void VulkanVertexArray::CreateSemaphores()
 	{
+		m_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+		m_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+		m_inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+		m_imagesInFlight.resize(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(), VK_NULL_HANDLE);
+		
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-		VkResult resulti = vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_imageAvailableSemaphore);
-		KR_CORE_ASSERT(resulti == VK_SUCCESS, "Failed to create imageAvailableSemaphore");
+		VkFenceCreateInfo fenceInfo{};
+		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-		VkResult resultr = vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_renderFinishedSemaphore);
-		KR_CORE_ASSERT(resultr == VK_SUCCESS, "Failed to create renderFinishedSemaphore");
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			VkResult resulti = vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_imageAvailableSemaphores[i]);
+			KR_CORE_ASSERT(resulti == VK_SUCCESS, "Failed to create imageAvailableSemaphore");
+
+			VkResult resultr = vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_renderFinishedSemaphores[i]);
+			KR_CORE_ASSERT(resultr == VK_SUCCESS, "Failed to create renderFinishedSemaphore");
+
+			VkResult resultf = vkCreateFence(m_device, &fenceInfo, nullptr, &m_inFlightFences[i]);
+			KR_CORE_ASSERT(resultf == VK_SUCCESS, "Failed to create inFlightFence");
+		}
 	}
 
 	void VulkanVertexArray::CreateCommandBuffers()
@@ -86,7 +105,7 @@ namespace Karma
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
 
-			VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+			VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
 			renderPassInfo.clearValueCount = 1;
 			renderPassInfo.pClearValues = &clearColor;
 

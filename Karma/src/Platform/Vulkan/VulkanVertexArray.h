@@ -37,9 +37,12 @@ namespace Karma
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
 
 		// Getters
-		inline VkSemaphore GetImageAvailableSemaphore() const { return m_imageAvailableSemaphore; }
-		inline VkSemaphore GetRenderFinishedSemaphore() const { return m_renderFinishedSemaphore; }
+		inline const std::vector<VkSemaphore>& GetImageAvailableSemaphore() const { return m_imageAvailableSemaphores; }
+		inline const std::vector<VkSemaphore>& GetRenderFinishedSemaphore() const { return m_renderFinishedSemaphores; }
+		inline std::vector<VkFence>& GetInFlightFence() { return m_inFlightFences; };
+		inline std::vector<VkFence>& GetImagesInFlight() { return m_imagesInFlight; }
 		const std::vector<VkCommandBuffer>& GetCommandBuffers() const { return m_commandBuffers; }
+		const int GetMaxFramesInFlight() const { return MAX_FRAMES_IN_FLIGHT; }
 
 	private:
 		uint32_t m_RendererID;
@@ -55,11 +58,15 @@ namespace Karma
 
 		std::vector<VkCommandBuffer> m_commandBuffers;
 
-		VkSemaphore m_imageAvailableSemaphore;
-		VkSemaphore m_renderFinishedSemaphore;
+		std::vector<VkSemaphore> m_imageAvailableSemaphores;
+		std::vector<VkSemaphore> m_renderFinishedSemaphores;
+		std::vector<VkFence> m_inFlightFences;
+		std::vector<VkFence> m_imagesInFlight;
 
 		VkVertexInputBindingDescription m_bindingDescription{};
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
+
+		const int MAX_FRAMES_IN_FLIGHT = 2;
 	};
 
 }

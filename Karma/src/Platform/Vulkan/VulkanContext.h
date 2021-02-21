@@ -102,6 +102,7 @@ namespace Karma
 		VkRenderPass GetRenderPass() const { return m_renderPass; }
 		const std::vector<VkFramebuffer>& GetSwapChainFrameBuffer() const { return m_swapChainFrameBuffers; }
 		VkSwapchainKHR GetSwapChain() const { return m_swapChain; }
+		inline const std::vector<VkImage>& GetSwapChainImages() const { return m_swapChainImages; }
 		VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
 		VkQueue GetPresentQueue() const { return m_presentQueue; }
 		VkCommandPool GetCommandPool() const { return m_commandPool; }

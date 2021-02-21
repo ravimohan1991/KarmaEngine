@@ -12,5 +12,8 @@ namespace Karma
 		virtual void Clear() override;
 
 		virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) override;
+
+	private:
+		size_t m_CurrentFrame = 0;
 	};
 }
