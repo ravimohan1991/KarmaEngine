@@ -1,24 +1,21 @@
 #pragma once
 
 #include "Karma/Core.h"
-#include "glm/glm.hpp"
 #include <string>
+#include "glm/glm.hpp"
 
 namespace Karma
 {
 	class KARMA_API Shader
 	{
 	public:
-		Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
-		~Shader();
+		virtual ~Shader() = default;
 
-		void Bind() const;
-		void UnBind() const;
+		virtual void Bind() const {}
+		virtual void UnBind() const {}
 
-		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {}
 
-	private:
-		// OpenGL's identification scheme
-		uint32_t m_RendererID;
+		static Shader* Create(const std::string& vertexSrc, const std::string& fragmentSrc);
 	};
 }

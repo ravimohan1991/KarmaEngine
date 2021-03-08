@@ -66,7 +66,7 @@ public:
 				color = v_Color;
 			}
 		)";
-		m_Shader.reset(new Karma::Shader(vertexSrc, fragmentSrc));
+		m_Shader.reset(Karma::Shader::Create(vertexSrc, fragmentSrc));
 
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
@@ -122,7 +122,7 @@ public:
 			}
 		)";
 
-		m_BlueSQShader.reset(new Karma::Shader(vertexSrcBSQ, fragmentSrcBSQ));
+		m_BlueSQShader.reset(Karma::Shader::Create(vertexSrcBSQ, fragmentSrcBSQ));
 	}
 
 	virtual void OnUpdate(float deltaTime) override
@@ -274,8 +274,8 @@ class KarmaApp : public Karma::Application
 public:
 	KarmaApp()
 	{
-		//PushLayer(new ExampleLayer());
-		PushLayer(new VulkanLayer());
+		PushLayer(new ExampleLayer());
+		//PushLayer(new VulkanLayer());
 	}
 
 };
