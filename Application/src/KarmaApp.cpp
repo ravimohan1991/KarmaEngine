@@ -35,7 +35,7 @@ public:
 		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		std::string vertexSrc = R"(
+		/*std::string vertexSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) in vec3 a_Position;
@@ -65,8 +65,8 @@ public:
 				color = vec4(0.8, 0.2, 0.3, 1.0);
 				color = v_Color;
 			}
-		)";
-		m_Shader.reset(Karma::Shader::Create(vertexSrc, fragmentSrc));
+		)";*/
+		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", true));
 
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
