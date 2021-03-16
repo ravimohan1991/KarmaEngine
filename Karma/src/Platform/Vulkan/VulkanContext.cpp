@@ -1,6 +1,7 @@
 #include "VulkanContext.h"
 #include "GLFW/glfw3.h"
 #include "Platform/Vulkan/VulkanHolder.h"
+#include "glslang/Public/ShaderLang.h"
 #include <set>
 #include <cstdint>
 #include <fstream>
@@ -59,7 +60,16 @@ namespace Karma
 		CreateFrameBuffers();
 		CreateCommandPool();
 
+		// For glslang
+		Initializeglslang();
+
 		VulkanHolder::SetVulkanContext(this);
+	}
+
+	void VulkanContext::Initializeglslang()
+	{
+		bool result = glslang::InitializeProcess();
+		KR_CORE_INFO("glslang status = {0}", result ? "true" : "false");
 	}
 
 	void VulkanContext::SwapBuffers()

@@ -95,6 +95,8 @@ namespace Karma
 
 		void SetVSync(bool bEnable);
 
+		void Initializeglslang();
+
 		// Getters
 		VkDevice GetLogicalDevice() const { return m_device; }
 		VkPhysicalDevice GetPhysicalDevice() const { return m_physicalDevice; }

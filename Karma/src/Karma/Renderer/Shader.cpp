@@ -32,8 +32,8 @@ namespace Karma
 			return nullptr;
 		case RendererAPI::API::OpenGL:
 			return new OpenGLShader(vertexSrcFile, fragmentSrcFile, bIsFile);
-			/*case RendererAPI::API::Vulkan:
-				return new VulkanShader();*/
+			case RendererAPI::API::Vulkan:
+				return new VulkanShader(vertexSrcFile, fragmentSrcFile);
 		}
 
 		KR_CORE_ASSERT(false, "Unknown RendererAPI");

@@ -1,10 +1,13 @@
 #include "VulkanShader.h"
+#include "glslang/Public/ShaderLang.h"
+#include "SPIRV/GlslangToSpv.h"
+#include "StandAlone/DirStackFileIncluder.h"
 
 namespace Karma
 {
 	VulkanShader::VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
-	
+		
 	}
 
 	VulkanShader::~VulkanShader()

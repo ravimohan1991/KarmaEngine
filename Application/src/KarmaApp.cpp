@@ -122,7 +122,7 @@ public:
 			}
 		)";
 
-		m_BlueSQShader.reset(Karma::Shader::Create(vertexSrcBSQ, fragmentSrcBSQ));
+		m_BlueSQShader.reset(Karma::Shader::Create(vertexSrcBSQ, fragmentSrcBSQ, true));
 	}
 
 	virtual void OnUpdate(float deltaTime) override

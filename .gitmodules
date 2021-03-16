@@ -12,3 +12,7 @@
 [submodule "Karma/vendor/GLM"]
 	path = Karma/vendor/GLM
 	url = https://github.com/ravimohan1991/glm
+[submodule "Karma/vendor/glslang"]
+	path = Karma/vendor/glslang
+	url = https://github.com/ravimohan1991/glslang
+	ignore = dirty

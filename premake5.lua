@@ -18,6 +18,7 @@ IncludeDir["Glad"] = "Karma/vendor/Glad/include"
 IncludeDir["ImGui"] = "Karma/vendor/ImGui"
 IncludeDir["GLM"] = "Karma/vendor/GLM"
 IncludeDir["Vulkan"] = "C:/VulkanSDK/1.2.162.0/Include"
+IncludeDir["glslang"] = "Karma/vendor/glslang"
 
 project "Application"
 	location "Application"
@@ -41,7 +42,8 @@ project "Application"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.GLM}",
-		"%{IncludeDir.GLFW}"				
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.glslang}"				
 	}
 
 	links
@@ -102,6 +104,7 @@ project "Application"
 include "Karma/vendor/GLFW"
 include "Karma/vendor/Glad"
 include "Karma/vendor/ImGui"
+include "Karma/vendor/glslang"
 
 project "Karma"
 	location "Karma"
@@ -128,14 +131,16 @@ project "Karma"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.GLM}",
-		"%{IncludeDir.Vulkan}"
+		"%{IncludeDir.Vulkan}",
+		"%{IncludeDir.glslang}"
 	}
 
 	links
 	{
 		"GLFW",
 		"Glad",
-		"ImGui"
+		"ImGui",
+		"glslang"
 	}
 
 	filter "system:windows"
