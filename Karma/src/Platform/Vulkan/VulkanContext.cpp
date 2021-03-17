@@ -45,6 +45,8 @@ namespace Karma
 		}
 		vkDestroySurfaceKHR(instance, m_surface, nullptr);
 		vkDestroyInstance(instance, nullptr);
+
+		glslang::FinalizeProcess();
 	}
 
 	void VulkanContext::Init()

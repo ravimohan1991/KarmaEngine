@@ -2,6 +2,7 @@
 
 #include "Karma/Renderer/Shader.h"
 #include "glad/glad.h"
+#include <string>
 #include <map>
 
 namespace Karma

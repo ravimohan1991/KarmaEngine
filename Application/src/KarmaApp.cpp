@@ -35,41 +35,10 @@ public:
 		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		/*std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec4 v_Color;
-			
-			void main()
-			{
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
-				v_Color = a_Color;
-			}
-		)";
-
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec4 v_Color;
-
-			void main()
-			{
-				color = vec4(0.8, 0.2, 0.3, 1.0);
-				color = v_Color;
-			}
-		)";*/
 		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", true));
 
 		// Drawing square
-		m_SquareVA.reset(Karma::VertexArray::Create());
+		/*m_SquareVA.reset(Karma::VertexArray::Create());
 
 		float verticesBSQ[3 * 4] = {
 			-0.25f, -0.25f, 0.0f,
@@ -96,33 +65,7 @@ public:
 		squareIB.reset(Karma::IndexBuffer::Create(indicesBSQ, sizeof(indicesBSQ) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
-
-		std::string vertexSrcBSQ = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			void main()
-			{
-				gl_Position = u_ViewProjection * u_Transform* vec4(a_Position, 1.0f);
-			}
-		)";
-
-		std::string fragmentSrcBSQ = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			void main()
-			{
-				color = vec4(0.2, 0.3, 0.8, 1.0);
-			}
-		)";
-
-		m_BlueSQShader.reset(Karma::Shader::Create(vertexSrcBSQ, fragmentSrcBSQ, true));
+		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", true));*/
 	}
 
 	virtual void OnUpdate(float deltaTime) override
@@ -137,7 +80,7 @@ public:
 		
 		Karma::Renderer::BeginScene(m_Camera);
 
-		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
+		/*static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
 
 		for (int h = 0; h < 20; h++)
 		{
@@ -147,7 +90,7 @@ public:
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
 				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader, transform);
 			}
-		}
+		}*/
 		Karma::Renderer::Submit(m_VertexArray, m_Shader);
 
 		Karma::Renderer::EndScene();
