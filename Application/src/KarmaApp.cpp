@@ -36,6 +36,7 @@ public:
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
 		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", true));
+		m_VertexArray->SetShader(m_Shader);
 
 		// Drawing square
 		/*m_SquareVA.reset(Karma::VertexArray::Create());
@@ -194,6 +195,9 @@ public:
 		std::shared_ptr<Karma::IndexBuffer> m_IndexBuffer;
 		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
+		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", true));
+		m_VertexArray->SetShader(m_Shader);
 	}
 
 	virtual void OnUpdate(float deltaTime) override
@@ -210,6 +214,7 @@ public:
 private:
 	std::shared_ptr<Karma::VertexArray> m_VertexArray;
 	Karma::OrthographicCamera m_Camera;
+	std::shared_ptr<Karma::Shader> m_Shader;
 };
 
 class KarmaApp : public Karma::Application
@@ -217,8 +222,8 @@ class KarmaApp : public Karma::Application
 public:
 	KarmaApp()
 	{
-		PushLayer(new ExampleLayer());
-		//PushLayer(new VulkanLayer());
+		//PushLayer(new ExampleLayer());
+		PushLayer(new VulkanLayer());
 	}
 
 };

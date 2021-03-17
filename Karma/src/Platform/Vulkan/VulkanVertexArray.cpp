@@ -131,13 +131,19 @@ namespace Karma
 
 	}
 
+	void VulkanVertexArray::SetShader(std::shared_ptr<Shader> shader)
+	{
+		m_Shader = std::static_pointer_cast<VulkanShader>(shader);
+		GenerateVulkanVA();
+	}
+
 	void VulkanVertexArray::CreateGraphicsPipeline()
 	{
-		auto vertShaderCode = ReadFile("../Resources/Shaders/vert.spv");
-		auto fragShaderCode = ReadFile("../Resources/Shaders/frag.spv");
+		//auto vertShaderCode = ReadFile("../Resources/Shaders/vert.spv");
+		//auto fragShaderCode = ReadFile("../Resources/Shaders/frag.spv");
 
-		VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
-		VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
+		VkShaderModule vertShaderModule = CreateShaderModule(m_Shader->GetVertSpirV());
+		VkShaderModule fragShaderModule = CreateShaderModule(m_Shader->GetFragSpirV());
 
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -266,12 +272,12 @@ namespace Karma
 		return buffer;
 	}
 
-	VkShaderModule VulkanVertexArray::CreateShaderModule(const std::vector<char>& code)
+	VkShaderModule VulkanVertexArray::CreateShaderModule(const std::vector<uint32_t>& code)
 	{
 		VkShaderModuleCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		createInfo.codeSize = code.size();
-		createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+		createInfo.codeSize = code.size() * sizeof(uint32_t);
+		createInfo.pCode = code.data();
 
 		VkShaderModule shaderModule;
 		VkResult result = vkCreateShaderModule(m_device, &createInfo, nullptr, &shaderModule);
@@ -333,7 +339,7 @@ namespace Karma
 
 		m_IndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(indexBuffer);
 
-		GenerateVulkanVA();
+		//GenerateVulkanVA();
 	}
 
 	void VulkanVertexArray::GenerateVulkanVA()

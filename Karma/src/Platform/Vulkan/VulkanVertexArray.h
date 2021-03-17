@@ -3,6 +3,8 @@
 #include "Karma/Renderer/VertexArray.h"
 #include "vulkan/vulkan.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
+#include "Karma/Renderer/Shader.h"
+#include "Platform/Vulkan/VulkanShader.h"
 
 namespace Karma
 {
@@ -17,6 +19,8 @@ namespace Karma
 
 		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
 		virtual void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
+
+		virtual void SetShader(std::shared_ptr<Shader> shader) override;
 
 		virtual const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
 		virtual const std::shared_ptr<IndexBuffer> GetIndexBuffer() const override { return m_IndexBuffer; }
@@ -34,7 +38,7 @@ namespace Karma
 
 		// Helper functions
 		static std::vector<char> ReadFile(const std::string& filename);
-		VkShaderModule CreateShaderModule(const std::vector<char>& code);
+		VkShaderModule CreateShaderModule(const std::vector<uint32_t>& code);
 
 		// Getters
 		inline const std::vector<VkSemaphore>& GetImageAvailableSemaphore() const { return m_imageAvailableSemaphores; }
@@ -45,7 +49,7 @@ namespace Karma
 		const int GetMaxFramesInFlight() const { return MAX_FRAMES_IN_FLIGHT; }
 
 	private:
-		uint32_t m_RendererID;
+		std::shared_ptr<VulkanShader> m_Shader;
 
 		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffers;
 		std::shared_ptr<VulkanVertexBuffer> m_VertexBuffer;
