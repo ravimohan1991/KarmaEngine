@@ -11,13 +11,16 @@ namespace Karma
 	{
 	public:
 		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
-		OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, bool bIsFile);
+		OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile);
 		virtual ~OpenGLShader() override;
 
 		virtual void Bind() const override;
 		virtual void UnBind() const override;
 
+		virtual void GenerateUniformBufferObject() override;
+		virtual void BindUniformBufferObject() override;
 		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) override;
+		virtual void UploadUniformBuffer() override;
 
 	private:
 		std::string ReadFile(const std::string& file);
@@ -26,5 +29,6 @@ namespace Karma
 	private:
 		// OpenGL's identification scheme
 		uint32_t m_RendererID;
+		uint32_t m_UniformsID;
 	};
 }

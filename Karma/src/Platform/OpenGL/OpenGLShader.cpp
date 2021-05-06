@@ -5,7 +5,7 @@
 
 namespace Karma
 {
-	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
+	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc) : Shader(nullptr)
 	{
 		// Create an empty vertex shader handle
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -109,14 +109,46 @@ namespace Karma
 		glDetachShader(program, fragmentShader);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, bool bIsFile)
-	{
+	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile) : Shader(ubo)
+	{	
 		std::unordered_map<GLenum, std::string> shaderSources;
 
 		shaderSources[GL_VERTEX_SHADER] = ReadFile(vertexSrcFile);
 		shaderSources[GL_FRAGMENT_SHADER] = ReadFile(fragmentSrcFile);
 
 		Compile(shaderSources);
+		GenerateUniformBufferObject();
+		BindUniformBufferObject();
+	}
+
+	void OpenGLShader::GenerateUniformBufferObject()
+	{
+		glCreateBuffers(1, &m_UniformsID);
+	}
+
+	void OpenGLShader::BindUniformBufferObject()
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, m_UniformsID);
+		glBufferData(GL_UNIFORM_BUFFER, GetUniformBuffer()->GetBufferSize(), NULL, GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		glBindBufferRange(GL_UNIFORM_BUFFER, 0, m_UniformsID, 0, GetUniformBuffer()->GetBufferSize());
+	}
+
+	void OpenGLShader::UploadUniformBuffer()
+	{
+		uint32_t index = 0;
+		for (auto it : GetUniformBuffer()->GetUniformList())
+		{
+			uint32_t uniformSize = GetUniformBuffer()->GetUniformSize()[index];
+			uint32_t offset = GetUniformBuffer()->GetAlignedOffsets()[index++];
+				
+			std::shared_ptr<UniformBufferObject> lol = GetUniformBuffer();
+
+			glBindBuffer(GL_UNIFORM_BUFFER, m_UniformsID);
+			glBufferSubData(GL_UNIFORM_BUFFER, offset, uniformSize, it.GetDataPointer());
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		}
 	}
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
@@ -230,4 +262,6 @@ namespace Karma
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
+
+	//template void OpenGLShader::UploadUniform<glm::vec1>(glm::vec1&, uint32_t);
 }

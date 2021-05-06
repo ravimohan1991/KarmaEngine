@@ -39,4 +39,73 @@ namespace Karma
 		KR_CORE_ASSERT(false, "Unknown RendererAPI specified");
 		return nullptr;
 	}
+
+	void UniformBufferObject::CalculateOffsetsAndBufferSize()
+	{
+		uint32_t uPreviousAlignedOffset = 0;
+		uint32_t uPreviousSize = 0;
+		uint32_t index = 0;
+
+		for (auto& uniformDataType : m_UniformDataType)
+		{
+			uint32_t uniformBaseAlignment = ComputeBaseAlignment(uniformDataType);
+			uint32_t uniformAlignedOffset = 0;
+			uint32_t uniformSize = ShaderDataTypeSize(uniformDataType);
+
+			if (index == 0)
+			{
+				uniformAlignedOffset = uPreviousAlignedOffset;
+			}
+			else
+			{
+				uniformAlignedOffset = uPreviousAlignedOffset + uPreviousSize;
+				while (uniformAlignedOffset % uniformBaseAlignment != 0)
+				{
+					uniformAlignedOffset++;
+				}
+			}
+			m_UniformAlignedOffsets.push_back(uniformAlignedOffset);
+			m_UniformSizes.push_back(uniformSize);
+
+			uPreviousAlignedOffset = uniformAlignedOffset;
+			uPreviousSize = uniformSize;
+			index++;
+		}
+
+		m_BufferSize = uPreviousAlignedOffset + uPreviousSize;
+	}
+
+	uint32_t UniformBufferObject::ComputeBaseAlignment(ShaderDataType dataType)
+	{
+		switch (dataType)
+		{
+			case Karma::ShaderDataType::None:
+				KR_CORE_ASSERT(false, "None ShaderDataType not supported yet!");
+				return 0;
+			case Karma::ShaderDataType::Float:
+				return sizeof(float);
+			case Karma::ShaderDataType::Float2:
+				return sizeof(glm::vec2);
+			case Karma::ShaderDataType::Float3:
+				return sizeof(glm::vec4);
+			case Karma::ShaderDataType::Float4:
+				return sizeof(glm::vec4);
+			case Karma::ShaderDataType::Mat3:
+				return sizeof(glm::vec4);
+			case Karma::ShaderDataType::Mat4:
+				return sizeof(glm::vec4);
+			case Karma::ShaderDataType::Int:
+				return sizeof(int);
+			case Karma::ShaderDataType::Int2:
+				return sizeof(glm::ivec2);
+			case Karma::ShaderDataType::Int3:
+				return sizeof(glm::ivec4);
+			case Karma::ShaderDataType::Int4:
+				return sizeof(glm::ivec4);
+			case Karma::ShaderDataType::Bool:
+				return sizeof(bool);
+		}
+		KR_CORE_ASSERT(false, "Unknown ShaderDataType");
+		return 0;
+	}
 }

@@ -2,6 +2,21 @@
 #include "GLFW/glfw3.h"
 #include "glm/gtc/matrix_transform.hpp"
 
+struct UboExample : public Karma::UniformBufferObject
+{
+	UboExample()
+	{
+		SetUniformDataType();
+		CalculateOffsetsAndBufferSize();
+	}
+
+protected:
+	virtual void SetUniformDataType() override
+	{
+		m_UniformDataType = { Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 };
+	}
+};
+
 class ExampleLayer : public Karma::Layer
 {
 public:
@@ -35,7 +50,8 @@ public:
 		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", true));
+		std::shared_ptr<Karma::UniformBufferObject> shaderUniform(new UboExample());
+		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
 		m_VertexArray->SetShader(m_Shader);
 
 		// Drawing square
@@ -196,7 +212,8 @@ public:
 		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", true));
+		std::shared_ptr<Karma::UniformBufferObject> shaderUniform(new UboExample());
+		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
 		m_VertexArray->SetShader(m_Shader);
 	}
 
@@ -206,7 +223,7 @@ public:
 		
 		Karma::Renderer::BeginScene(m_Camera);
 
-		Karma::Renderer::Submit(m_VertexArray, nullptr);
+		Karma::Renderer::Submit(m_VertexArray, m_Shader);
 
 		Karma::Renderer::EndScene();
 	}
@@ -222,8 +239,8 @@ class KarmaApp : public Karma::Application
 public:
 	KarmaApp()
 	{
-		//PushLayer(new ExampleLayer());
-		PushLayer(new VulkanLayer());
+		PushLayer(new ExampleLayer());
+		//PushLayer(new VulkanLayer());
 	}
 
 };

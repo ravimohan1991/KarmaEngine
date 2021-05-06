@@ -16,7 +16,7 @@ namespace Karma
 		};
 
 	public:
-		VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc);
+		VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc, std::shared_ptr<UniformBufferObject> ubo);
 		virtual ~VulkanShader() override;
 
 		virtual void Bind() const override;
@@ -26,6 +26,9 @@ namespace Karma
 
 		std::string ReadFile(const std::string& file);
 		std::string GetFilePath(const std::string& str);
+		
+		virtual void GenerateUniformBufferObject() override {}
+		virtual void BindUniformBufferObject() override {}
 		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) override;
 
 		//Getters

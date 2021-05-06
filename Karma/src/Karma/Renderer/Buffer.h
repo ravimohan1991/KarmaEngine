@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Karma/Core.h"
+#include "glm/gtc/type_ptr.hpp"
 #include <stdint.h>
 
 namespace Karma
@@ -180,5 +181,68 @@ namespace Karma
 		virtual uint32_t GetCount() const = 0;
 
 		static IndexBuffer* Create(uint32_t* vertices, uint32_t size);
+	};
+
+	class KARMA_API UBODataPointer
+	{
+	public:
+		UBODataPointer(void* data) : m_DataPointer(data)
+		{}
+
+		void* GetDataPointer() const
+		{
+			return m_DataPointer;
+		}
+	private:
+		void* m_DataPointer;
+	};
+
+	struct KARMA_API UniformBufferObject
+	{
+		template<typename... T>
+		void UpdateUniforms(T&&... uniforms)
+		{
+			m_UniformList = { uniforms... };
+		}
+
+		uint32_t GetBufferSize()
+		{
+			return m_BufferSize;
+		}
+
+		const std::vector<UBODataPointer>& GetUniformList() const
+		{
+			return m_UniformList;
+		}
+
+		const std::vector<ShaderDataType>& GetUniformDataType() const
+		{
+			return m_UniformDataType;
+		}
+
+		const std::vector<uint32_t>& GetAlignedOffsets() const
+		{
+			return m_UniformAlignedOffsets;
+		}
+
+		const std::vector<uint32_t>& GetUniformSize() const
+		{
+			return m_UniformSizes;
+		}
+
+	protected:
+		virtual void SetUniformDataType() = 0;
+
+		void CalculateOffsetsAndBufferSize();
+
+	protected:
+		uint32_t m_BufferSize;
+		std::vector<UBODataPointer> m_UniformList;
+		std::vector<ShaderDataType> m_UniformDataType;
+		std::vector<uint32_t> m_UniformAlignedOffsets;
+		std::vector<uint32_t> m_UniformSizes;
+
+	private:
+		uint32_t ComputeBaseAlignment(ShaderDataType dataType);
 	};
 }

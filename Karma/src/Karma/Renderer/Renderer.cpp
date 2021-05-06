@@ -13,13 +13,15 @@ namespace Karma
 	{
 	}
 
-	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform)
+	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, glm::mat4& transform)
 	{
 		if (shader)
 		{
 			shader->Bind();
-			shader->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-			shader->UploadUniformMat4("u_Transform", transform);
+			UBODataPointer viewProjection(&m_SceneData->ViewProjectionMatrix);
+			UBODataPointer trans(&transform);
+			shader->GetUniformBuffer()->UpdateUniforms(viewProjection, trans);
+			shader->UploadUniformBuffer();
 		}
 		
 		vertexArray->Bind();

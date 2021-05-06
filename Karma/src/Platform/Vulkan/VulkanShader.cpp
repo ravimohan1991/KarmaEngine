@@ -4,7 +4,7 @@
 
 namespace Karma
 {
-	VulkanShader::VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc)
+	VulkanShader::VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc, std::shared_ptr<UniformBufferObject> ubo) : Shader(ubo)
 	{
 		std::string vString = ReadFile(vertexSrc);
 		vertSpirV = Compile(vertexSrc, vString, EShLangVertex);// vertex shader
