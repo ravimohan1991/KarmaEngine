@@ -18,10 +18,14 @@ namespace Karma
 		if (shader)
 		{
 			shader->Bind();
-			UBODataPointer viewProjection(&m_SceneData->ViewProjectionMatrix);
-			UBODataPointer trans(&transform);
-			shader->GetUniformBuffer()->UpdateUniforms(viewProjection, trans);
-			shader->UploadUniformBuffer();
+			
+			if (shader->GetUniformBuffer() != nullptr)
+			{
+				UBODataPointer viewProjection(&m_SceneData->ViewProjectionMatrix);
+				UBODataPointer trans(&transform);
+				shader->GetUniformBuffer()->UpdateUniforms(viewProjection, trans);
+				shader->UploadUniformBuffer();
+			}
 		}
 		
 		vertexArray->Bind();

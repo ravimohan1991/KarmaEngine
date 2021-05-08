@@ -205,7 +205,7 @@ namespace Karma
 			m_UniformList = { uniforms... };
 		}
 
-		uint32_t GetBufferSize()
+		uint32_t GetBufferSize() const
 		{
 			return m_BufferSize;
 		}
@@ -230,6 +230,11 @@ namespace Karma
 			return m_UniformSizes;
 		}
 
+		uint32_t GetBindingPointIndex() const
+		{
+			return m_BindingPoint;
+		}
+
 	protected:
 		virtual void SetUniformDataType() = 0;
 
@@ -237,6 +242,7 @@ namespace Karma
 
 	protected:
 		uint32_t m_BufferSize;
+		uint32_t m_BindingPoint;
 		std::vector<UBODataPointer> m_UniformList;
 		std::vector<ShaderDataType> m_UniformDataType;
 		std::vector<uint32_t> m_UniformAlignedOffsets;

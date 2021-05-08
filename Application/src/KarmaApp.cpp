@@ -8,6 +8,7 @@ struct UboExample : public Karma::UniformBufferObject
 	{
 		SetUniformDataType();
 		CalculateOffsetsAndBufferSize();
+		m_BindingPoint = 0;
 	}
 
 protected:
@@ -55,13 +56,13 @@ public:
 		m_VertexArray->SetShader(m_Shader);
 
 		// Drawing square
-		/*m_SquareVA.reset(Karma::VertexArray::Create());
+		m_SquareVA.reset(Karma::VertexArray::Create());
 
-		float verticesBSQ[3 * 4] = {
-			-0.25f, -0.25f, 0.0f,
-			 0.25f, -0.25f, 0.0f,
-			 0.25f, 0.25f, 0.0f,
-			 -0.25f, 0.25f, 0.0f
+		float verticesBSQ[7 * 4] = {
+			-0.25f, -0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+			 0.25f, -0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+			 0.25f, 0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+			 -0.25f, 0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f
 		};
 
 		std::shared_ptr<Karma::VertexBuffer> squareVB;
@@ -70,6 +71,7 @@ public:
 		{
 			Karma::BufferLayout layout = {
 				{ Karma::ShaderDataType::Float3, "a_Position" },
+				{ Karma::ShaderDataType::Float4, "lol" }
 			};
 
 			squareVB->SetLayout(layout);
@@ -82,7 +84,8 @@ public:
 		squareIB.reset(Karma::IndexBuffer::Create(indicesBSQ, sizeof(indicesBSQ) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
-		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", true));*/
+		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
+		m_SquareVA->SetShader(m_BlueSQShader);
 	}
 
 	virtual void OnUpdate(float deltaTime) override
@@ -96,9 +99,9 @@ public:
 		m_Camera.SetRotation(camData.angle);
 		
 		Karma::Renderer::BeginScene(m_Camera);
-
-		/*static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
-
+		
+		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
+		
 		for (int h = 0; h < 20; h++)
 		{
 			for (int i = 0; i < 20; i++)
@@ -107,7 +110,8 @@ public:
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
 				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader, transform);
 			}
-		}*/
+		}
+
 		Karma::Renderer::Submit(m_VertexArray, m_Shader);
 
 		Karma::Renderer::EndScene();

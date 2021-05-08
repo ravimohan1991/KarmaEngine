@@ -117,8 +117,12 @@ namespace Karma
 		shaderSources[GL_FRAGMENT_SHADER] = ReadFile(fragmentSrcFile);
 
 		Compile(shaderSources);
-		GenerateUniformBufferObject();
-		BindUniformBufferObject();
+		
+		if (ubo)
+		{
+			GenerateUniformBufferObject();
+			BindUniformBufferObject();
+		}
 	}
 
 	void OpenGLShader::GenerateUniformBufferObject()
@@ -131,24 +135,23 @@ namespace Karma
 		glBindBuffer(GL_UNIFORM_BUFFER, m_UniformsID);
 		glBufferData(GL_UNIFORM_BUFFER, GetUniformBuffer()->GetBufferSize(), NULL, GL_STATIC_DRAW);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-		glBindBufferRange(GL_UNIFORM_BUFFER, 0, m_UniformsID, 0, GetUniformBuffer()->GetBufferSize());
 	}
 
 	void OpenGLShader::UploadUniformBuffer()
-	{
+	{	
 		uint32_t index = 0;
+		m_UniformsID;
 		for (auto it : GetUniformBuffer()->GetUniformList())
 		{
 			uint32_t uniformSize = GetUniformBuffer()->GetUniformSize()[index];
 			uint32_t offset = GetUniformBuffer()->GetAlignedOffsets()[index++];
 				
-			std::shared_ptr<UniformBufferObject> lol = GetUniformBuffer();
-
 			glBindBuffer(GL_UNIFORM_BUFFER, m_UniformsID);
 			glBufferSubData(GL_UNIFORM_BUFFER, offset, uniformSize, it.GetDataPointer());
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
+
+		glBindBufferRange(GL_UNIFORM_BUFFER, GetUniformBuffer()->GetBindingPointIndex(), m_UniformsID, 0, GetUniformBuffer()->GetBufferSize());
 	}
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
