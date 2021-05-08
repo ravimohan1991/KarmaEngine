@@ -53,4 +53,28 @@ namespace Karma
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
+
+	OpenGLUniformBuffer::OpenGLUniformBuffer(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex) :
+		UniformBufferObject(dataTypes, bindingPointIndex)
+	{
+		GenerateUniformBufferObject();
+		BindUniformBufferObject();
+	}
+
+	OpenGLUniformBuffer::~OpenGLUniformBuffer()
+	{
+		glDeleteBuffers(1, &m_UniformsID);
+	}
+
+	void OpenGLUniformBuffer::GenerateUniformBufferObject()
+	{
+		glCreateBuffers(1, &m_UniformsID);
+	}
+
+	void OpenGLUniformBuffer::BindUniformBufferObject()
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, m_UniformsID);
+		glBufferData(GL_UNIFORM_BUFFER, GetBufferSize(), NULL, GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
 };

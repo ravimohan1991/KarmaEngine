@@ -40,6 +40,29 @@ namespace Karma
 		return nullptr;
 	}
 
+	UniformBufferObject* UniformBufferObject::Create(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::None:
+			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			return nullptr;
+		case RendererAPI::API::OpenGL:
+			return new OpenGLUniformBuffer(dataTypes, bindingPointIndex);
+		case RendererAPI::API::Vulkan:
+			KR_CORE_ASSERT(false, "RendererAPI::Vulkan is not supported");
+		}
+
+		KR_CORE_ASSERT(false, "Unknown RendererAPI specified");
+		return nullptr;
+	}
+
+	UniformBufferObject::UniformBufferObject(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex) :
+		m_UniformDataType(dataTypes), m_BindingPoint(bindingPointIndex)
+	{
+		CalculateOffsetsAndBufferSize();
+	}
+
 	void UniformBufferObject::CalculateOffsetsAndBufferSize()
 	{
 		uint32_t uPreviousAlignedOffset = 0;

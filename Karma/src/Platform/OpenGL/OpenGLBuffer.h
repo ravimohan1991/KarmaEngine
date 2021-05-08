@@ -42,4 +42,19 @@ namespace Karma
 		uint32_t m_RendererID;
 		uint32_t m_Count;
 	};
+
+	struct KARMA_API OpenGLUniformBuffer : public UniformBufferObject
+	{
+	public:
+		OpenGLUniformBuffer(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex);
+		uint32_t GetUniformsID() const { return m_UniformsID; }
+		virtual ~OpenGLUniformBuffer();
+
+	private:
+		void GenerateUniformBufferObject();
+		void BindUniformBufferObject();
+
+	private:
+		uint32_t m_UniformsID;
+	};
 }

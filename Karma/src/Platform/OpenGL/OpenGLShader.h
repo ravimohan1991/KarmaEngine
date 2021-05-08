@@ -7,6 +7,7 @@
 
 namespace Karma
 {
+	struct OpenGLUniformBuffer;
 	class KARMA_API OpenGLShader : public Shader
 	{
 	public:
@@ -17,8 +18,6 @@ namespace Karma
 		virtual void Bind() const override;
 		virtual void UnBind() const override;
 
-		virtual void GenerateUniformBufferObject() override;
-		virtual void BindUniformBufferObject() override;
 		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) override;
 		virtual void UploadUniformBuffer() override;
 
@@ -29,6 +28,6 @@ namespace Karma
 	private:
 		// OpenGL's identification scheme
 		uint32_t m_RendererID;
-		uint32_t m_UniformsID;
+		std::shared_ptr<OpenGLUniformBuffer> m_UniformBufferObject;
 	};
 }

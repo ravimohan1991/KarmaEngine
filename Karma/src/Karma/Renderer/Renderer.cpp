@@ -19,11 +19,11 @@ namespace Karma
 		{
 			shader->Bind();
 			
-			if (shader->GetUniformBuffer() != nullptr)
+			if (shader->GetUniformBufferObject() != nullptr)
 			{
 				UBODataPointer viewProjection(&m_SceneData->ViewProjectionMatrix);
 				UBODataPointer trans(&transform);
-				shader->GetUniformBuffer()->UpdateUniforms(viewProjection, trans);
+				shader->GetUniformBufferObject()->UpdateUniforms(viewProjection, trans);
 				shader->UploadUniformBuffer();
 			}
 		}

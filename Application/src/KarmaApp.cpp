@@ -2,22 +2,6 @@
 #include "GLFW/glfw3.h"
 #include "glm/gtc/matrix_transform.hpp"
 
-struct UboExample : public Karma::UniformBufferObject
-{
-	UboExample()
-	{
-		SetUniformDataType();
-		CalculateOffsetsAndBufferSize();
-		m_BindingPoint = 0;
-	}
-
-protected:
-	virtual void SetUniformDataType() override
-	{
-		m_UniformDataType = { Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 };
-	}
-};
-
 class ExampleLayer : public Karma::Layer
 {
 public:
@@ -51,7 +35,8 @@ public:
 		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		std::shared_ptr<Karma::UniformBufferObject> shaderUniform(new UboExample());
+		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
+		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
 		m_VertexArray->SetShader(m_Shader);
 
@@ -216,7 +201,8 @@ public:
 		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		std::shared_ptr<Karma::UniformBufferObject> shaderUniform(new UboExample());
+		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
+		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
 		m_VertexArray->SetShader(m_Shader);
 	}

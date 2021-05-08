@@ -1,6 +1,7 @@
 #include "OpenGLShader.h"
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
+#include "Platform/OpenGL/OpenGLBuffer.h"
 #include <fstream>
 
 namespace Karma
@@ -117,41 +118,24 @@ namespace Karma
 		shaderSources[GL_FRAGMENT_SHADER] = ReadFile(fragmentSrcFile);
 
 		Compile(shaderSources);
-		
-		if (ubo)
-		{
-			GenerateUniformBufferObject();
-			BindUniformBufferObject();
-		}
-	}
 
-	void OpenGLShader::GenerateUniformBufferObject()
-	{
-		glCreateBuffers(1, &m_UniformsID);
-	}
-
-	void OpenGLShader::BindUniformBufferObject()
-	{
-		glBindBuffer(GL_UNIFORM_BUFFER, m_UniformsID);
-		glBufferData(GL_UNIFORM_BUFFER, GetUniformBuffer()->GetBufferSize(), NULL, GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		m_UniformBufferObject = std::static_pointer_cast<OpenGLUniformBuffer>(ubo);
 	}
 
 	void OpenGLShader::UploadUniformBuffer()
 	{	
 		uint32_t index = 0;
-		m_UniformsID;
-		for (auto it : GetUniformBuffer()->GetUniformList())
+		for (auto it : m_UniformBufferObject->GetUniformList())
 		{
-			uint32_t uniformSize = GetUniformBuffer()->GetUniformSize()[index];
-			uint32_t offset = GetUniformBuffer()->GetAlignedOffsets()[index++];
+			uint32_t uniformSize = m_UniformBufferObject->GetUniformSize()[index];
+			uint32_t offset = m_UniformBufferObject->GetAlignedOffsets()[index++];
 				
-			glBindBuffer(GL_UNIFORM_BUFFER, m_UniformsID);
+			glBindBuffer(GL_UNIFORM_BUFFER, m_UniformBufferObject->GetUniformsID());
 			glBufferSubData(GL_UNIFORM_BUFFER, offset, uniformSize, it.GetDataPointer());
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 
-		glBindBufferRange(GL_UNIFORM_BUFFER, GetUniformBuffer()->GetBindingPointIndex(), m_UniformsID, 0, GetUniformBuffer()->GetBufferSize());
+		glBindBufferRange(GL_UNIFORM_BUFFER, m_UniformBufferObject->GetBindingPointIndex(), m_UniformBufferObject->GetUniformsID(), 0, m_UniformBufferObject->GetBufferSize());
 	}
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)

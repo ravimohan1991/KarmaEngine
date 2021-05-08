@@ -6,11 +6,6 @@
 
 namespace Karma
 {
-	Shader::Shader(std::shared_ptr<UniformBufferObject> ubo)
-	{
-		m_UniformBuffer = ubo;
-	}
-
 	Shader* Shader::Create(const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
 		switch (Renderer::GetAPI())

@@ -199,6 +199,11 @@ namespace Karma
 
 	struct KARMA_API UniformBufferObject
 	{
+		static UniformBufferObject* Create(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex);
+		
+		UniformBufferObject(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex);
+		virtual ~UniformBufferObject() = default;
+
 		template<typename... T>
 		void UpdateUniforms(T&&... uniforms)
 		{
@@ -236,8 +241,6 @@ namespace Karma
 		}
 
 	protected:
-		virtual void SetUniformDataType() = 0;
-
 		void CalculateOffsetsAndBufferSize();
 
 	protected:
