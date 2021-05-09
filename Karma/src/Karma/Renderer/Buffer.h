@@ -47,7 +47,7 @@ namespace Karma
 			case ShaderDataType::Int4:
 				return 4 * 4;
 			case ShaderDataType::Bool:
-				return 1;
+				return 4;
 		}
 
 		KR_CORE_ASSERT(false, "Unknown ShaderDataType");
@@ -186,15 +186,15 @@ namespace Karma
 	class KARMA_API UBODataPointer
 	{
 	public:
-		UBODataPointer(void* data) : m_DataPointer(data)
+		UBODataPointer(const void* data) : m_DataPointer(data)
 		{}
 
-		void* GetDataPointer() const
+		const void* GetDataPointer() const
 		{
 			return m_DataPointer;
 		}
 	private:
-		void* m_DataPointer;
+		const void* m_DataPointer;
 	};
 
 	struct KARMA_API UniformBufferObject

@@ -15,18 +15,8 @@ namespace Karma
 
 	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, glm::mat4& transform)
 	{
-		if (shader)
-		{
-			shader->Bind();
-			
-			if (shader->GetUniformBufferObject() != nullptr)
-			{
-				UBODataPointer viewProjection(&m_SceneData->ViewProjectionMatrix);
-				UBODataPointer trans(&transform);
-				shader->GetUniformBufferObject()->UpdateUniforms(viewProjection, trans);
-				shader->UploadUniformBuffer();
-			}
-		}
+		shader->Bind();
+		shader->UploadUniformBuffer();	
 		
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);

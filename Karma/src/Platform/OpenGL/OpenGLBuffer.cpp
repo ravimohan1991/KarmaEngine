@@ -71,7 +71,7 @@ namespace Karma
 		glCreateBuffers(1, &m_UniformsID);
 	}
 
-	void OpenGLUniformBuffer::BindUniformBufferObject()
+	void OpenGLUniformBuffer::BindUniformBufferObject() const
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, m_UniformsID);
 		glBufferData(GL_UNIFORM_BUFFER, GetBufferSize(), NULL, GL_STATIC_DRAW);

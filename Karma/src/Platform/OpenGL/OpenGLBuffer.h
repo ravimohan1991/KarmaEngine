@@ -52,7 +52,7 @@ namespace Karma
 
 	private:
 		void GenerateUniformBufferObject();
-		void BindUniformBufferObject();
+		void BindUniformBufferObject() const;
 
 	private:
 		uint32_t m_UniformsID;

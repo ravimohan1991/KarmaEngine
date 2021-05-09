@@ -86,18 +86,24 @@ public:
 		Karma::Renderer::BeginScene(m_Camera);
 		
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
-		
+		Karma::UBODataPointer uViewProjection(&m_Camera.GetViewProjectionMatrix());
+		glm::mat4 transform = glm::mat4(1.0f);
+		Karma::UBODataPointer uTransform(&transform);
+
+		m_Shader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
+		Karma::Renderer::Submit(m_VertexArray, m_Shader);
+
 		for (int h = 0; h < 20; h++)
 		{
 			for (int i = 0; i < 20; i++)
 			{
 				glm::vec3 pos(i * 0.11f, h * 0.11f, 0.0f);
-				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader, transform);
+				transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				m_BlueSQShader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
+				
+				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader);
 			}
 		}
-
-		Karma::Renderer::Submit(m_VertexArray, m_Shader);
 
 		Karma::Renderer::EndScene();
 	}

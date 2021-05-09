@@ -249,6 +249,4 @@ namespace Karma
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
-
-	//template void OpenGLShader::UploadUniform<glm::vec1>(glm::vec1&, uint32_t);
 }
