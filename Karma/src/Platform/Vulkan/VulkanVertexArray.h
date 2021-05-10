@@ -25,7 +25,10 @@ namespace Karma
 		virtual const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
 		virtual const std::shared_ptr<IndexBuffer> GetIndexBuffer() const override { return m_IndexBuffer; }
 
+		void CreateDescriptorSetLayout();
 		void CreateGraphicsPipeline();
+		void CreateDescriptorPool();
+		void CreateDescriptorSets();
 
 		void CreateCommandBuffers();
 
@@ -47,6 +50,8 @@ namespace Karma
 		inline std::vector<VkFence>& GetImagesInFlight() { return m_imagesInFlight; }
 		const std::vector<VkCommandBuffer>& GetCommandBuffers() const { return m_commandBuffers; }
 		const int GetMaxFramesInFlight() const { return MAX_FRAMES_IN_FLIGHT; }
+		std::shared_ptr<VulkanShader> GetShader() const { return m_Shader; }
+		const std::vector<VkDescriptorSet>& GetUBDescriptorSets() const { return m_descriptorSets; }
 
 	private:
 		std::shared_ptr<VulkanShader> m_Shader;
@@ -57,8 +62,11 @@ namespace Karma
 
 		VkDevice m_device;
 
+		VkDescriptorSetLayout m_descriptorSetLayout;
 		VkPipelineLayout m_pipelineLayout;
 		VkPipeline m_graphicsPipeline;
+		VkDescriptorPool m_descriptorPool;
+		std::vector<VkDescriptorSet> m_descriptorSets;
 
 		std::vector<VkCommandBuffer> m_commandBuffers;
 

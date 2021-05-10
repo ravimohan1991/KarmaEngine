@@ -122,6 +122,7 @@ namespace Karma
 		m_UniformBufferObject = std::static_pointer_cast<OpenGLUniformBuffer>(ubo);
 	}
 
+	// Move to OpenGLUniformBuffer
 	void OpenGLShader::UploadUniformBuffer()
 	{	
 		uint32_t index = 0;

@@ -50,7 +50,7 @@ namespace Karma
 			case RendererAPI::API::OpenGL:
 				return new OpenGLUniformBuffer(dataTypes, bindingPointIndex);
 			case RendererAPI::API::Vulkan:
-				KR_CORE_ASSERT(false, "RendererAPI::Vulkan is not supported");
+				return new VulkanUniformBuffer(dataTypes, bindingPointIndex);
 		}
 
 		KR_CORE_ASSERT(false, "Unknown RendererAPI specified");

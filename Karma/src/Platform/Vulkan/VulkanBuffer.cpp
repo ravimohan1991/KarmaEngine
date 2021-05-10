@@ -7,7 +7,7 @@ namespace Karma
 	VulkanVertexBuffer::VulkanVertexBuffer(float* vertices, uint32_t size)
 	{
 		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
-	
+
 		VkDeviceSize bufferSize = size;
 
 		VkBuffer stagingBuffer;
@@ -18,7 +18,7 @@ namespace Karma
 
 		void* data;
 		vkMapMemory(m_Device, stagingBufferMemory, 0, size, 0, &data);
-			memcpy(data, vertices, (size_t)size);
+		memcpy(data, vertices, (size_t)size);
 		vkUnmapMemory(m_Device, stagingBufferMemory);
 
 		CreateBuffer(size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -53,9 +53,9 @@ namespace Karma
 
 		vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
-			VkBufferCopy copyRegion{};
-			copyRegion.size = size;
-			vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+		VkBufferCopy copyRegion{};
+		copyRegion.size = size;
+		vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
 		vkEndCommandBuffer(commandBuffer);
 
@@ -128,7 +128,7 @@ namespace Karma
 	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* indices, uint32_t count) : m_Count(count)
 	{
 		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
-		
+
 		VkDeviceSize bufferSize = sizeof(uint32_t) * count;
 
 		VkBuffer stagingBuffer;
@@ -139,7 +139,7 @@ namespace Karma
 
 		void* data;
 		vkMapMemory(m_Device, stagingBufferMemory, 0, bufferSize, 0, &data);
-			memcpy(data, indices, (size_t)bufferSize);
+		memcpy(data, indices, (size_t)bufferSize);
 		vkUnmapMemory(m_Device, stagingBufferMemory);
 
 		CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -241,5 +241,92 @@ namespace Karma
 
 	void VulkanIndexBuffer::UnBind() const
 	{
+	}
+
+	// Uniform buffer
+	VulkanUniformBuffer::VulkanUniformBuffer(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex) :
+		UniformBufferObject(dataTypes, bindingPointIndex)
+	{
+		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+
+		VkDeviceSize bufferSize = GetBufferSize();
+
+		size_t swapChainImagesSize = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+
+		m_UniformBuffers.resize(swapChainImagesSize);
+		m_UniformBuffersMemory.resize(swapChainImagesSize);
+
+		for (size_t i = 0; i < swapChainImagesSize; i++)
+		{
+			CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+				VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_UniformBuffers[i], m_UniformBuffersMemory[i]);
+		}
+	}
+
+	VulkanUniformBuffer::~VulkanUniformBuffer()
+	{
+		for (size_t i = 0; i < VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(); i++)
+		{
+			vkDestroyBuffer(m_Device, m_UniformBuffers[i], nullptr);
+			vkFreeMemory(m_Device, m_UniformBuffersMemory[i], nullptr);
+		}
+	}
+
+	void VulkanUniformBuffer::UpdateUniformBuffer(size_t currentImage)
+	{
+		uint32_t index = 0;
+		for (auto& it : GetUniformList())
+		{
+			size_t uniformSize = GetUniformSize()[index];
+			size_t offset = GetAlignedOffsets()[index++];
+			void* data;
+			vkMapMemory(m_Device, m_UniformBuffersMemory[currentImage], offset, uniformSize, 0, &data);
+			memcpy(data, it.GetDataPointer(), uniformSize);
+			vkUnmapMemory(m_Device, m_UniformBuffersMemory[currentImage]);
+		}
+	}
+
+	void VulkanUniformBuffer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+		VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+	{
+		VkBufferCreateInfo bufferInfo{};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = size;
+		bufferInfo.usage = usage;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		VkResult result = vkCreateBuffer(m_Device, &bufferInfo, nullptr, &buffer);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create uniformbuffer");
+
+		VkMemoryRequirements memRequirements;
+		vkGetBufferMemoryRequirements(m_Device, buffer, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+
+		VkResult resultm = vkAllocateMemory(m_Device, &allocInfo, nullptr, &bufferMemory);
+
+		KR_CORE_ASSERT(resultm == VK_SUCCESS, "Failed to allocate uniformbuffer memory");
+		vkBindBufferMemory(m_Device, buffer, bufferMemory, 0);
+	}
+
+	uint32_t VulkanUniformBuffer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+	{
+		VkPhysicalDeviceMemoryProperties memProperties;
+		vkGetPhysicalDeviceMemoryProperties(VulkanHolder::GetVulkanContext()->GetPhysicalDevice(), &memProperties);
+
+		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+		{
+			if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+			{
+				return i;
+			}
+		}
+
+		KR_CORE_ASSERT(false, "Failed to find suitable memory type for uniformbuffer");
+		return 0;
 	}
 }

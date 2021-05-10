@@ -21,4 +21,13 @@ namespace Karma
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
 	}
+
+	void Renderer::DeleteData()
+	{
+		if (m_SceneData)
+		{
+			delete m_SceneData;
+			m_SceneData = 0;
+		}
+	}
 }

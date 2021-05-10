@@ -22,6 +22,8 @@ namespace Karma
 
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+		vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr);
+		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);
 	}
 
 	void VulkanVertexArray::Bind() const
@@ -36,6 +38,8 @@ namespace Karma
 
 		VulkanHolder::GetVulkanContext()->RecreateSwapChain();
 		CreateGraphicsPipeline();
+		CreateDescriptorPool();
+		CreateDescriptorSets();
 		CreateCommandBuffers();
 	}
 
@@ -44,6 +48,7 @@ namespace Karma
 		vkFreeCommandBuffers(m_device, VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);
 	}
 
 	void VulkanVertexArray::CreateSemaphores()
@@ -119,6 +124,7 @@ namespace Karma
 			
 			vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(m_commandBuffers[i], m_IndexBuffer->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+			vkCmdBindDescriptorSets(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1, &m_descriptorSets[i], 0, nullptr);
 
 			vkCmdDrawIndexed(m_commandBuffers[i], m_IndexBuffer->GetCount(), 1, 0, 0, 0);
 
@@ -134,7 +140,26 @@ namespace Karma
 	void VulkanVertexArray::SetShader(std::shared_ptr<Shader> shader)
 	{
 		m_Shader = std::static_pointer_cast<VulkanShader>(shader);
+		CreateDescriptorSetLayout();
 		GenerateVulkanVA();
+	}
+
+	void VulkanVertexArray::CreateDescriptorSetLayout()
+	{
+		VkDescriptorSetLayoutBinding uboLayoutBinding{};
+		uboLayoutBinding.binding = m_Shader->GetUniformBufferObject()->GetBindingPointIndex();// Suspicion: is it really that binding index?
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;// Warning: you may wanna consider for fagment shader too
+		uboLayoutBinding.pImmutableSamplers = nullptr;
+
+		VkDescriptorSetLayoutCreateInfo layoutInfo{};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = 1;
+		layoutInfo.pBindings = &uboLayoutBinding;
+
+		VkResult result = vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &m_descriptorSetLayout);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor set layout!");
 	}
 
 	void VulkanVertexArray::CreateGraphicsPipeline()
@@ -223,6 +248,8 @@ namespace Karma
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutInfo.setLayoutCount = 1;
+		pipelineLayoutInfo.pSetLayouts = &m_descriptorSetLayout;
 
 		VkResult result = vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr,
 			&m_pipelineLayout);
@@ -345,7 +372,60 @@ namespace Karma
 	void VulkanVertexArray::GenerateVulkanVA()
 	{
 		CreateGraphicsPipeline();
+		CreateDescriptorPool();
+		CreateDescriptorSets();
 		CreateCommandBuffers();
 		CreateSemaphores();
+	}
+
+	void VulkanVertexArray::CreateDescriptorPool()
+	{
+		VkDescriptorPoolSize poolSize{};
+		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSize.descriptorCount = static_cast<uint32_t>(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size());
+
+		VkDescriptorPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.poolSizeCount = 1;
+		poolInfo.pPoolSizes = &poolSize;
+		poolInfo.maxSets = static_cast<uint32_t>(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size());
+
+		VkResult result = vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &m_descriptorPool);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool!");
+	}
+
+	void VulkanVertexArray::CreateDescriptorSets()
+	{
+		std::vector<VkDescriptorSetLayout> layouts(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(),
+			m_descriptorSetLayout);
+		VkDescriptorSetAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = m_descriptorPool;
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size());
+		allocInfo.pSetLayouts = layouts.data();
+
+		m_descriptorSets.resize(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size());
+		VkResult result = vkAllocateDescriptorSets(m_device, &allocInfo, m_descriptorSets.data());
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to allocate descriptor sets!");
+
+		for (size_t i = 0; i < VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(); i++)
+		{
+			VkDescriptorBufferInfo bufferInfo{};
+			bufferInfo.buffer = m_Shader->GetUniformBufferObject()->GetUniformBuffers()[i];
+			bufferInfo.offset = 0;
+			bufferInfo.range = m_Shader->GetUniformBufferObject()->GetBufferSize();
+
+			VkWriteDescriptorSet descriptorWrite{};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_descriptorSets[i];
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pBufferInfo = &bufferInfo;
+
+			vkUpdateDescriptorSets(m_device, 1, &descriptorWrite, 0, nullptr);
+		}
 	}
 }

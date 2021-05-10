@@ -24,6 +24,8 @@ namespace Karma
 
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI();}
 
+		static void DeleteData();
+
 	private:
 		struct SceneData
 		{

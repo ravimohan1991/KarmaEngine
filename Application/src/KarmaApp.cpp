@@ -92,7 +92,7 @@ public:
 
 		m_Shader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
 		Karma::Renderer::Submit(m_VertexArray, m_Shader);
-
+		/*
 		for (int h = 0; h < 20; h++)
 		{
 			for (int i = 0; i < 20; i++)
@@ -103,7 +103,7 @@ public:
 				
 				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader);
 			}
-		}
+		}*/
 
 		Karma::Renderer::EndScene();
 	}

@@ -24,6 +24,7 @@ namespace Karma
 	Application::~Application()
 	{
 		Input::DeleteInstance();
+		Renderer::DeleteData();
 		s_Instance = nullptr;
 	}
 	

@@ -1,6 +1,7 @@
 #include "VulkanShader.h"
 #include "SPIRV/GlslangToSpv.h"
 #include "StandAlone/DirStackFileIncluder.h"
+#include "Platform/Vulkan/VulkanBuffer.h"
 
 namespace Karma
 {
@@ -11,6 +12,8 @@ namespace Karma
 
 		vString = ReadFile(fragmentSrc);
 		fragSpirV = Compile(fragmentSrc, vString, EShLangFragment);// fragment shader
+
+		m_UniformBufferObject = std::static_pointer_cast<VulkanUniformBuffer>(ubo);
 	}
 
 	VulkanShader::~VulkanShader()

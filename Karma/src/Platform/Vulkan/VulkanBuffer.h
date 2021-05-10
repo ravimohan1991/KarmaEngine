@@ -66,4 +66,23 @@ namespace Karma
 		VkBuffer m_IndexBuffer;
 		VkDeviceMemory m_IndexBufferMemory;
 	};
+
+	struct KARMA_API VulkanUniformBuffer : public UniformBufferObject
+	{
+	public:
+		VulkanUniformBuffer(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex);
+		virtual ~VulkanUniformBuffer();
+
+		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+		const std::vector<VkBuffer>& GetUniformBuffers() const { return m_UniformBuffers; }
+
+		void UpdateUniformBuffer(size_t currentImage);
+
+	private:
+		VkDevice m_Device;
+		std::vector<VkBuffer> m_UniformBuffers;
+		std::vector<VkDeviceMemory> m_UniformBuffersMemory;
+	};
 }

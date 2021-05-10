@@ -7,6 +7,7 @@
 
 namespace Karma
 {
+	struct VulkanUniformBuffer;
 	class KARMA_API VulkanShader : public Shader
 	{
 		enum Vkenum
@@ -34,10 +35,12 @@ namespace Karma
 		//Getters
 		const std::vector<uint32_t>& GetVertSpirV() const { return vertSpirV; }
 		const std::vector<uint32_t>& GetFragSpirV() const { return fragSpirV; }
+		std::shared_ptr<VulkanUniformBuffer> GetUniformBufferObject() const { return m_UniformBufferObject; }
 
 	private:
 		std::vector<uint32_t> vertSpirV;
 		std::vector<uint32_t> fragSpirV;
+		std::shared_ptr<VulkanUniformBuffer> m_UniformBufferObject;
 	};
 
 }
