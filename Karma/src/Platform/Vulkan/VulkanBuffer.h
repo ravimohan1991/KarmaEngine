@@ -78,7 +78,7 @@ namespace Karma
 		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		const std::vector<VkBuffer>& GetUniformBuffers() const { return m_UniformBuffers; }
 
-		void UpdateUniformBuffer(size_t currentImage);
+		void UploadUniformBuffer(size_t currentImage);
 
 	private:
 		VkDevice m_Device;

@@ -122,23 +122,6 @@ namespace Karma
 		m_UniformBufferObject = std::static_pointer_cast<OpenGLUniformBuffer>(ubo);
 	}
 
-	// Move to OpenGLUniformBuffer
-	void OpenGLShader::UploadUniformBuffer()
-	{	
-		uint32_t index = 0;
-		for (auto it : m_UniformBufferObject->GetUniformList())
-		{
-			uint32_t uniformSize = m_UniformBufferObject->GetUniformSize()[index];
-			uint32_t offset = m_UniformBufferObject->GetAlignedOffsets()[index++];
-				
-			glBindBuffer(GL_UNIFORM_BUFFER, m_UniformBufferObject->GetUniformsID());
-			glBufferSubData(GL_UNIFORM_BUFFER, offset, uniformSize, it.GetDataPointer());
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		}
-
-		glBindBufferRange(GL_UNIFORM_BUFFER, m_UniformBufferObject->GetBindingPointIndex(), m_UniformBufferObject->GetUniformsID(), 0, m_UniformBufferObject->GetBufferSize());
-	}
-
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		GLuint program = glCreateProgram();

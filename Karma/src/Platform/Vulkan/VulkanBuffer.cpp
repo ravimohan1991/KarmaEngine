@@ -272,7 +272,7 @@ namespace Karma
 		}
 	}
 
-	void VulkanUniformBuffer::UpdateUniformBuffer(size_t currentImage)
+	void VulkanUniformBuffer::UploadUniformBuffer(size_t currentImage)
 	{
 		uint32_t index = 0;
 		for (auto& it : GetUniformList())

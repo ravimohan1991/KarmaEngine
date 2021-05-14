@@ -210,6 +210,8 @@ namespace Karma
 			m_UniformList = { uniforms... };
 		}
 
+		virtual void UploadUniformBuffer() {}
+
 		uint32_t GetBufferSize() const
 		{
 			return m_BufferSize;

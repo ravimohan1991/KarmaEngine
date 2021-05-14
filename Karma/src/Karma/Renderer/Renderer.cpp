@@ -16,7 +16,7 @@ namespace Karma
 	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, glm::mat4& transform)
 	{
 		shader->Bind();
-		shader->UploadUniformBuffer();	
+		shader->GetUniformBufferObject()->UploadUniformBuffer();
 		
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);

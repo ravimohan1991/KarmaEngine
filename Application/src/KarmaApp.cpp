@@ -90,6 +90,8 @@ public:
 		glm::mat4 transform = glm::mat4(1.0f);
 		Karma::UBODataPointer uTransform(&transform);
 
+		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
+
 		m_Shader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
 		Karma::Renderer::Submit(m_VertexArray, m_Shader);
 		/*

@@ -38,7 +38,7 @@ namespace Karma
 
 		vulkanVA->GetImagesInFlight()[imageIndex] = vulkanVA->GetInFlightFence()[m_CurrentFrame];
 
-		vulkanVA->GetShader()->GetUniformBufferObject()->UpdateUniformBuffer(imageIndex);
+		vulkanVA->GetShader()->GetUniformBufferObject()->UploadUniformBuffer(imageIndex);
 
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

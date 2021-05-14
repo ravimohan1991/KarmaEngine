@@ -20,8 +20,6 @@ namespace Karma
 		virtual void GenerateUniformBufferObject() {}
 		virtual void BindUniformBufferObject() {}
 		std::shared_ptr<UniformBufferObject> GetUniformBufferObject() const { return m_UniformBufferObject; }
-		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {}
-		virtual void UploadUniformBuffer() {}
 
 		static Shader* Create(const std::string& vertexSrc, const std::string& fragmentSrc);
 		static Shader* Create(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile);

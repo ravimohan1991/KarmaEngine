@@ -30,7 +30,7 @@ namespace Karma
 		
 		virtual void GenerateUniformBufferObject() override {}
 		virtual void BindUniformBufferObject() override {}
-		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) override;
+		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 
 		//Getters
 		const std::vector<uint32_t>& GetVertSpirV() const { return vertSpirV; }

@@ -50,6 +50,8 @@ namespace Karma
 		uint32_t GetUniformsID() const { return m_UniformsID; }
 		virtual ~OpenGLUniformBuffer();
 
+		virtual void UploadUniformBuffer() override;
+
 	private:
 		void GenerateUniformBufferObject();
 		void BindUniformBufferObject() const;
