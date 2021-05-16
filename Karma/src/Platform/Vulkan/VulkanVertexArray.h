@@ -34,8 +34,6 @@ namespace Karma
 
 		void GenerateVulkanVA();
 
-		void CreateSemaphores();
-
 		void RecreateSwapChainAndPipeline();
 		void CleanupPipelineandCommandBuffers();
 
@@ -44,12 +42,7 @@ namespace Karma
 		VkShaderModule CreateShaderModule(const std::vector<uint32_t>& code);
 
 		// Getters
-		inline const std::vector<VkSemaphore>& GetImageAvailableSemaphore() const { return m_imageAvailableSemaphores; }
-		inline const std::vector<VkSemaphore>& GetRenderFinishedSemaphore() const { return m_renderFinishedSemaphores; }
-		inline std::vector<VkFence>& GetInFlightFence() { return m_inFlightFences; };
-		inline std::vector<VkFence>& GetImagesInFlight() { return m_imagesInFlight; }
 		const std::vector<VkCommandBuffer>& GetCommandBuffers() const { return m_commandBuffers; }
-		const int GetMaxFramesInFlight() const { return MAX_FRAMES_IN_FLIGHT; }
 		std::shared_ptr<VulkanShader> GetShader() const { return m_Shader; }
 		const std::vector<VkDescriptorSet>& GetUBDescriptorSets() const { return m_descriptorSets; }
 
@@ -70,15 +63,15 @@ namespace Karma
 
 		std::vector<VkCommandBuffer> m_commandBuffers;
 
-		std::vector<VkSemaphore> m_imageAvailableSemaphores;
+		/*std::vector<VkSemaphore> m_imageAvailableSemaphores;
 		std::vector<VkSemaphore> m_renderFinishedSemaphores;
 		std::vector<VkFence> m_inFlightFences;
-		std::vector<VkFence> m_imagesInFlight;
+		std::vector<VkFence> m_imagesInFlight;*/
 
 		VkVertexInputBindingDescription m_bindingDescription{};
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
 
-		const int MAX_FRAMES_IN_FLIGHT = 2;
+		//const int MAX_FRAMES_IN_FLIGHT = 2;
 	};
 
 }

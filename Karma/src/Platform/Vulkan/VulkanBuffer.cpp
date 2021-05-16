@@ -248,7 +248,16 @@ namespace Karma
 		UniformBufferObject(dataTypes, bindingPointIndex)
 	{
 		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+		BufferCreation();
+	}
 
+	VulkanUniformBuffer::~VulkanUniformBuffer()
+	{
+		ClearBuffer();
+	}
+
+	void VulkanUniformBuffer::BufferCreation()
+	{
 		VkDeviceSize bufferSize = GetBufferSize();
 
 		size_t swapChainImagesSize = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
@@ -263,7 +272,7 @@ namespace Karma
 		}
 	}
 
-	VulkanUniformBuffer::~VulkanUniformBuffer()
+	void VulkanUniformBuffer::ClearBuffer()
 	{
 		for (size_t i = 0; i < VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(); i++)
 		{

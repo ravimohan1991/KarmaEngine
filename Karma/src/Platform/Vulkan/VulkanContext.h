@@ -9,6 +9,9 @@
 
 namespace Karma
 {
+	class RendererAPI;
+	class VulkanRendererAPI;
+
 	struct QueueFamilyIndices
 	{
 		std::optional<uint32_t> graphicsFamily;
@@ -30,7 +33,7 @@ namespace Karma
 	class KARMA_API VulkanContext : public GraphicsContext
 	{
 	public:
-		VulkanContext(GLFWwindow* windowHandle);
+		VulkanContext(GLFWwindow* windowHandle, RendererAPI* rendererAPI);
 		virtual ~VulkanContext() override;
 
 		virtual void Init() override;
@@ -111,6 +114,8 @@ namespace Karma
 
 	private:
 		GLFWwindow* m_windowHandle;
+		VulkanRendererAPI* m_vulkanRendererAPI;
+
 		VkInstance instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
 

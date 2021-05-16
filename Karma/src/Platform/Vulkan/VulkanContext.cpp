@@ -2,6 +2,7 @@
 #include "GLFW/glfw3.h"
 #include "Platform/Vulkan/VulkanHolder.h"
 #include "glslang/Public/ShaderLang.h"
+#include "Platform/Vulkan/VulkanRendererAPI.h"
 #include <set>
 #include <cstdint>
 #include <fstream>
@@ -17,16 +18,18 @@ namespace Karma
 	bool VulkanContext::bEnableValidationLayers = false;
 #endif
 
-	VulkanContext::VulkanContext(GLFWwindow* windowHandle)
+	VulkanContext::VulkanContext(GLFWwindow* windowHandle, RendererAPI* rendererAPI)
 		: m_windowHandle(windowHandle)
 	{
 		KR_CORE_ASSERT(windowHandle, "windowHandle is null");
+		m_vulkanRendererAPI = static_cast<VulkanRendererAPI*> (rendererAPI);
 	}
 
 	VulkanContext::~VulkanContext()
 	{
 		vkDeviceWaitIdle(m_device);
 		
+		m_vulkanRendererAPI->RemoveSynchronicity();
 		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
@@ -66,6 +69,7 @@ namespace Karma
 		Initializeglslang();
 
 		VulkanHolder::SetVulkanContext(this);
+		m_vulkanRendererAPI->CreateSynchronicity();
 	}
 
 	void VulkanContext::Initializeglslang()

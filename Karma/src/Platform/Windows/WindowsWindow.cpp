@@ -71,7 +71,7 @@ namespace Karma
 				m_Context = new OpenGLContext(m_Window);
 				break;
 			case RendererAPI::API::Vulkan:
-				m_Context = new VulkanContext(m_Window);
+				m_Context = new VulkanContext(m_Window, RenderCommand::GetRendererAPI());
 				break;
 		}
 		

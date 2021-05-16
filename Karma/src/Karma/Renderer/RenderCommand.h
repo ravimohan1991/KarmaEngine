@@ -26,6 +26,8 @@ namespace Karma
 			s_RendererAPI->DrawIndexed(vertexArray);
 		}
 
+		inline static RendererAPI* GetRendererAPI() { return s_RendererAPI; }
+
 	private:
 		static RendererAPI* s_RendererAPI;
 	};

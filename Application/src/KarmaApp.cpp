@@ -80,6 +80,7 @@ public:
 		Karma::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Karma::RenderCommand::Clear();
 
+		// Move this to the InputPolling (in client) to reduce the matrix multiplication computation
 		m_Camera.SetPosition({ camData.x_Pos, camData.y_Pos, 0.0f });
 		m_Camera.SetRotation(camData.angle);
 		
@@ -95,9 +96,9 @@ public:
 		m_Shader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
 		Karma::Renderer::Submit(m_VertexArray, m_Shader);
 		/*
-		for (int h = 0; h < 20; h++)
+		for (int h = 0; h < 2; h++)
 		{
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 2; i++)
 			{
 				glm::vec3 pos(i * 0.11f, h * 0.11f, 0.0f);
 				transform = glm::translate(glm::mat4(1.0f), pos) * scale;

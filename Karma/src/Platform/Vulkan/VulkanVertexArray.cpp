@@ -11,14 +11,7 @@ namespace Karma
 
 	VulkanVertexArray::~VulkanVertexArray()
 	{
-		vkDeviceWaitIdle(m_device);
-
-		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-		{
-			vkDestroySemaphore(m_device, m_renderFinishedSemaphores[i], nullptr);
-			vkDestroySemaphore(m_device, m_imageAvailableSemaphores[i], nullptr);
-			vkDestroyFence(m_device, m_inFlightFences[i], nullptr);
-		}
+		vkDeviceWaitIdle(m_device);		
 
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
@@ -35,8 +28,10 @@ namespace Karma
 		vkDeviceWaitIdle(m_device);
 
 		CleanupPipelineandCommandBuffers();
+		m_Shader->GetUniformBufferObject()->ClearBuffer();
 
 		VulkanHolder::GetVulkanContext()->RecreateSwapChain();
+		m_Shader->GetUniformBufferObject()->BufferCreation();
 		CreateGraphicsPipeline();
 		CreateDescriptorPool();
 		CreateDescriptorSets();
@@ -49,33 +44,6 @@ namespace Karma
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);
-	}
-
-	void VulkanVertexArray::CreateSemaphores()
-	{
-		m_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-		m_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-		m_inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-		m_imagesInFlight.resize(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(), VK_NULL_HANDLE);
-		
-		VkSemaphoreCreateInfo semaphoreInfo{};
-		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-		VkFenceCreateInfo fenceInfo{};
-		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-		{
-			VkResult resulti = vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_imageAvailableSemaphores[i]);
-			KR_CORE_ASSERT(resulti == VK_SUCCESS, "Failed to create imageAvailableSemaphore");
-
-			VkResult resultr = vkCreateSemaphore(m_device, &semaphoreInfo, nullptr, &m_renderFinishedSemaphores[i]);
-			KR_CORE_ASSERT(resultr == VK_SUCCESS, "Failed to create renderFinishedSemaphore");
-
-			VkResult resultf = vkCreateFence(m_device, &fenceInfo, nullptr, &m_inFlightFences[i]);
-			KR_CORE_ASSERT(resultf == VK_SUCCESS, "Failed to create inFlightFence");
-		}
 	}
 
 	void VulkanVertexArray::CreateCommandBuffers()
@@ -140,17 +108,16 @@ namespace Karma
 	void VulkanVertexArray::SetShader(std::shared_ptr<Shader> shader)
 	{
 		m_Shader = std::static_pointer_cast<VulkanShader>(shader);
-		CreateDescriptorSetLayout();
 		GenerateVulkanVA();
 	}
 
 	void VulkanVertexArray::CreateDescriptorSetLayout()
 	{
 		VkDescriptorSetLayoutBinding uboLayoutBinding{};
-		uboLayoutBinding.binding = m_Shader->GetUniformBufferObject()->GetBindingPointIndex();// Suspicion: is it really that binding index?
+		uboLayoutBinding.binding = m_Shader->GetUniformBufferObject()->GetBindingPointIndex();
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding.descriptorCount = 1;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;// Warning: you may wanna consider for fagment shader too
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		uboLayoutBinding.pImmutableSamplers = nullptr;
 
 		VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -164,9 +131,6 @@ namespace Karma
 
 	void VulkanVertexArray::CreateGraphicsPipeline()
 	{
-		//auto vertShaderCode = ReadFile("../Resources/Shaders/vert.spv");
-		//auto fragShaderCode = ReadFile("../Resources/Shaders/frag.spv");
-
 		VkShaderModule vertShaderModule = CreateShaderModule(m_Shader->GetVertSpirV());
 		VkShaderModule fragShaderModule = CreateShaderModule(m_Shader->GetFragSpirV());
 
@@ -336,8 +300,6 @@ namespace Karma
 	{
 		KR_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "VertexBufferLayout empty.");
 
-		vertexBuffer->Bind();// What to do here?
-
 		uint32_t index = 0;
 		const auto& layout = vertexBuffer->GetLayout();
 
@@ -362,20 +324,16 @@ namespace Karma
 
 	void VulkanVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
 	{
-		indexBuffer->Bind();// What to do here?
-
 		m_IndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(indexBuffer);
-
-		//GenerateVulkanVA();
 	}
 
 	void VulkanVertexArray::GenerateVulkanVA()
 	{
+		CreateDescriptorSetLayout();
 		CreateGraphicsPipeline();
 		CreateDescriptorPool();
 		CreateDescriptorSets();
 		CreateCommandBuffers();
-		CreateSemaphores();
 	}
 
 	void VulkanVertexArray::CreateDescriptorPool()
@@ -419,7 +377,7 @@ namespace Karma
 			VkWriteDescriptorSet descriptorWrite{};
 			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			descriptorWrite.dstSet = m_descriptorSets[i];
-			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstBinding = m_Shader->GetUniformBufferObject()->GetBindingPointIndex();
 			descriptorWrite.dstArrayElement = 0;
 			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			descriptorWrite.descriptorCount = 1;
