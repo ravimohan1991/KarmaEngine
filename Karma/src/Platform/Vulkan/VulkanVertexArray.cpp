@@ -12,121 +12,35 @@ namespace Karma
 	VulkanVertexArray::~VulkanVertexArray()
 	{
 		vkDeviceWaitIdle(m_device);		
-
-		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
-		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-		vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr);
-		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);
+		CleanupPipeline();
 	}
 
 	void VulkanVertexArray::Bind() const
 	{
 	}
 
-	void VulkanVertexArray::RecreateSwapChainAndPipeline()
+	void VulkanVertexArray::RecreateVulkanVA()
 	{
-		vkDeviceWaitIdle(m_device);
-
-		CleanupPipelineandCommandBuffers();
-		m_Shader->GetUniformBufferObject()->ClearBuffer();
-
-		VulkanHolder::GetVulkanContext()->RecreateSwapChain();
-		m_Shader->GetUniformBufferObject()->BufferCreation();
+		CreateDescriptorSetLayout();
+		CreatePipelineLayout();
 		CreateGraphicsPipeline();
 		CreateDescriptorPool();
 		CreateDescriptorSets();
-		CreateCommandBuffers();
 	}
 
-	void VulkanVertexArray::CleanupPipelineandCommandBuffers()
-	{
-		vkFreeCommandBuffers(m_device, VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+	void VulkanVertexArray::CleanupPipeline()
+	{	
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);
-	}
-
-	void VulkanVertexArray::CreateCommandBuffers()
-	{
-		m_commandBuffers.resize(VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer().size());
-
-		VkCommandBufferAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.commandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandBufferCount = (uint32_t)m_commandBuffers.size();
-
-		VkResult result = vkAllocateCommandBuffers(m_device, &allocInfo, m_commandBuffers.data());
-
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffers!");
-
-		for (size_t i = 0; i < m_commandBuffers.size(); i++)
-		{
-			VkCommandBufferBeginInfo beginInfo{};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-			beginInfo.pInheritanceInfo = nullptr;
-
-			VkResult result = vkBeginCommandBuffer(m_commandBuffers[i], &beginInfo);
-
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin recording command buffer");
-
-			VkRenderPassBeginInfo renderPassInfo{};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
-			renderPassInfo.framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[i];
-			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
-
-			VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
-			renderPassInfo.clearValueCount = 1;
-			renderPassInfo.pClearValues = &clearColor;
-
-			vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-			vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
-
-			// Bind vertex/index buffers
-			VkBuffer vertexBuffers[] = {m_VertexBuffer->GetVertexBuffer()};
-			VkDeviceSize offsets[] = { 0 };
-			
-			vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
-			vkCmdBindIndexBuffer(m_commandBuffers[i], m_IndexBuffer->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-			vkCmdBindDescriptorSets(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1, &m_descriptorSets[i], 0, nullptr);
-
-			vkCmdDrawIndexed(m_commandBuffers[i], m_IndexBuffer->GetCount(), 1, 0, 0, 0);
-
-			vkCmdEndRenderPass(m_commandBuffers[i]);
-
-			VkResult resultCB = vkEndCommandBuffer(m_commandBuffers[i]);
-
-			KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
-		}
-
+		vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr);
+		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);// Descriptorsets get automatically get freed 
 	}
 
 	void VulkanVertexArray::SetShader(std::shared_ptr<Shader> shader)
 	{
 		m_Shader = std::static_pointer_cast<VulkanShader>(shader);
+		VulkanHolder::GetVulkanContext()->RegisterUBO(m_Shader->GetUniformBufferObject());
 		GenerateVulkanVA();
-	}
-
-	void VulkanVertexArray::CreateDescriptorSetLayout()
-	{
-		VkDescriptorSetLayoutBinding uboLayoutBinding{};
-		uboLayoutBinding.binding = m_Shader->GetUniformBufferObject()->GetBindingPointIndex();
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding.descriptorCount = 1;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-		uboLayoutBinding.pImmutableSamplers = nullptr;
-
-		VkDescriptorSetLayoutCreateInfo layoutInfo{};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = 1;
-		layoutInfo.pBindings = &uboLayoutBinding;
-
-		VkResult result = vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &m_descriptorSetLayout);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor set layout!");
 	}
 
 	void VulkanVertexArray::CreateGraphicsPipeline()
@@ -209,16 +123,6 @@ namespace Karma
 		colorBlending.blendConstants[1] = 0.0f;
 		colorBlending.blendConstants[2] = 0.0f;
 		colorBlending.blendConstants[3] = 0.0f;
-
-		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 1;
-		pipelineLayoutInfo.pSetLayouts = &m_descriptorSetLayout;
-
-		VkResult result = vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr,
-			&m_pipelineLayout);
-
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create pipeline layout!");
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -330,10 +234,10 @@ namespace Karma
 	void VulkanVertexArray::GenerateVulkanVA()
 	{
 		CreateDescriptorSetLayout();
+		CreatePipelineLayout();
 		CreateGraphicsPipeline();
 		CreateDescriptorPool();
 		CreateDescriptorSets();
-		CreateCommandBuffers();
 	}
 
 	void VulkanVertexArray::CreateDescriptorPool()
@@ -350,6 +254,37 @@ namespace Karma
 
 		VkResult result = vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &m_descriptorPool);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool!");
+	}
+
+	void VulkanVertexArray::CreateDescriptorSetLayout()
+	{
+		VkDescriptorSetLayoutBinding uboLayoutBinding{};
+		uboLayoutBinding.binding = m_Shader->GetUniformBufferObject()->GetBindingPointIndex();
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+		uboLayoutBinding.pImmutableSamplers = nullptr;
+
+		VkDescriptorSetLayoutCreateInfo layoutInfo{};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = 1;
+		layoutInfo.pBindings = &uboLayoutBinding;
+
+		VkResult result = vkCreateDescriptorSetLayout(m_device, &layoutInfo, nullptr, &m_descriptorSetLayout);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor set layout!");
+	}
+
+	void VulkanVertexArray::CreatePipelineLayout()
+	{
+		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutInfo.setLayoutCount = 1;
+		pipelineLayoutInfo.pSetLayouts = &m_descriptorSetLayout;
+
+		VkResult result = vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr,
+			&m_pipelineLayout);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create pipeline layout!");
 	}
 
 	void VulkanVertexArray::CreateDescriptorSets()

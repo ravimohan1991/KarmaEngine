@@ -253,7 +253,7 @@ namespace Karma
 
 	VulkanUniformBuffer::~VulkanUniformBuffer()
 	{
-		ClearBuffer();
+		//ClearBuffer();
 	}
 
 	void VulkanUniformBuffer::BufferCreation()
@@ -274,7 +274,7 @@ namespace Karma
 
 	void VulkanUniformBuffer::ClearBuffer()
 	{
-		for (size_t i = 0; i < VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(); i++)
+		for (size_t i = 0; i < m_UniformBuffers.size(); i++)
 		{
 			vkDestroyBuffer(m_Device, m_UniformBuffers[i], nullptr);
 			vkFreeMemory(m_Device, m_UniformBuffersMemory[i], nullptr);

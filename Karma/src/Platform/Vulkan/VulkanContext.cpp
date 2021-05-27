@@ -3,6 +3,9 @@
 #include "Platform/Vulkan/VulkanHolder.h"
 #include "glslang/Public/ShaderLang.h"
 #include "Platform/Vulkan/VulkanRendererAPI.h"
+#include "Karma/Renderer/RenderCommand.h"
+#include "Platform/Vulkan/VulkanVertexArray.h"
+#include "Platform/Vulkan/VulkanBuffer.h"
 #include <set>
 #include <cstdint>
 #include <fstream>
@@ -18,18 +21,17 @@ namespace Karma
 	bool VulkanContext::bEnableValidationLayers = false;
 #endif
 
-	VulkanContext::VulkanContext(GLFWwindow* windowHandle, RendererAPI* rendererAPI)
+	VulkanContext::VulkanContext(GLFWwindow* windowHandle)
 		: m_windowHandle(windowHandle)
 	{
 		KR_CORE_ASSERT(windowHandle, "windowHandle is null");
-		m_vulkanRendererAPI = static_cast<VulkanRendererAPI*> (rendererAPI);
+		m_vulkanRendererAPI = static_cast<VulkanRendererAPI*> (RenderCommand::GetRendererAPI());
 	}
 
 	VulkanContext::~VulkanContext()
-	{
-		vkDeviceWaitIdle(m_device);
-		
-		m_vulkanRendererAPI->RemoveSynchronicity();
+	{	
+		m_vulkanRendererAPI->ClearVulkanRendererAPI();
+		ClearUBO();
 		vkDestroyCommandPool(m_device, m_commandPool, nullptr);
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
@@ -52,6 +54,35 @@ namespace Karma
 		glslang::FinalizeProcess();
 	}
 
+	void VulkanContext::RegisterUBO(std::shared_ptr<VulkanUniformBuffer>& ubo)
+	{
+		m_VulkanUBO.insert(ubo);
+	}
+
+	void VulkanContext::UploadUBO(size_t currentImage)
+	{
+		for (auto ubo : m_VulkanUBO)
+		{
+			ubo->UploadUniformBuffer(currentImage);
+		}
+	}
+
+	void VulkanContext::ClearUBO()
+	{
+		for (auto ubo : m_VulkanUBO)
+		{
+			ubo->ClearBuffer();
+		}
+	}
+
+	void VulkanContext::RecreateUBO()
+	{
+		for (auto ubo : m_VulkanUBO)
+		{
+			ubo->BufferCreation();
+		}
+	}
+
 	void VulkanContext::Init()
 	{
 		CreateInstance();
@@ -65,11 +96,11 @@ namespace Karma
 		CreateFrameBuffers();
 		CreateCommandPool();
 
-		// For glslang
-		Initializeglslang();
-
 		VulkanHolder::SetVulkanContext(this);
 		m_vulkanRendererAPI->CreateSynchronicity();
+
+		// For glslang
+		Initializeglslang();
 	}
 
 	void VulkanContext::Initializeglslang()

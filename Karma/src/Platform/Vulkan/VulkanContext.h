@@ -5,12 +5,15 @@
 #include "Karma/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
+#include <set>
 #include <optional>
 
 namespace Karma
 {
 	class RendererAPI;
 	class VulkanRendererAPI;
+	class VulkanVertexArray;
+	struct VulkanUniformBuffer;
 
 	struct QueueFamilyIndices
 	{
@@ -33,7 +36,7 @@ namespace Karma
 	class KARMA_API VulkanContext : public GraphicsContext
 	{
 	public:
-		VulkanContext(GLFWwindow* windowHandle, RendererAPI* rendererAPI);
+		VulkanContext(GLFWwindow* windowHandle);
 		virtual ~VulkanContext() override;
 
 		virtual void Init() override;
@@ -99,6 +102,10 @@ namespace Karma
 		void SetVSync(bool bEnable);
 
 		void Initializeglslang();
+		void RegisterUBO(std::shared_ptr<VulkanUniformBuffer>& ubo);
+		void ClearUBO();
+		void RecreateUBO();
+		void UploadUBO(size_t currentImage);
 
 		// Getters
 		VkDevice GetLogicalDevice() const { return m_device; }
@@ -139,6 +146,8 @@ namespace Karma
 		
 		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 		VkCommandPool m_commandPool;
+
+		std::set<std::shared_ptr<VulkanUniformBuffer>> m_VulkanUBO;
 
 		bool bVSync = false;
 	};
