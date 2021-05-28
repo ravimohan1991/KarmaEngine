@@ -5,6 +5,8 @@
 #include "Karma/Events/MouseEvent.h"
 #include "GLFW/glfw3.h"
 #include "Platform/OpenGL/OpenGLContext.h"
+#include "Platform/Vulkan/VulkanContext.h"
+#include "Karma/Renderer/Renderer.h"
 
 namespace Karma
 {
@@ -48,14 +50,36 @@ namespace Karma
 			s_GLFWInitialized = true;
 		}
 
+		RendererAPI::API currentAPI = RendererAPI::GetAPI();
+		
+		if (currentAPI == RendererAPI::API::Vulkan)
+		{
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			uint32_t extensionCount = 0;
+			vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+			KR_CORE_INFO("{0} Vulkan extensions supported", extensionCount);
+		}
+		
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		
-		m_Context = new OpenGLContext(m_Window);
+		switch (currentAPI)
+		{
+			case RendererAPI::API::None:
+				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				break;
+			case RendererAPI::API::OpenGL:
+				m_Context = new OpenGLContext(m_Window);
+				break;
+			case RendererAPI::API::Vulkan:
+				m_Context = new VulkanContext(m_Window);
+				break;
+		}
+		
 		m_Context->Init();
+		SetVSync(true);
 		
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		SetVSync(true);
 
 		// Set glfw callbacks
 		SetGLFWCallbacks(m_Window);
@@ -165,6 +189,12 @@ namespace Karma
 	void WindowsWindow::ShutDown()
 	{
 		glfwDestroyWindow(m_Window);
+		glfwTerminate();
+		if (m_Context)
+		{
+			delete m_Context;
+			m_Context = 0;
+		}
 	}
 
 	void WindowsWindow::OnUpdate()
@@ -175,13 +205,23 @@ namespace Karma
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
-		if (enabled)
+		RendererAPI::API currentAPI = RendererAPI::GetAPI();
+		
+		switch (currentAPI)
 		{
-			glfwSwapInterval(1);
-		}
-		else
-		{ 
-			glfwSwapInterval(0);
+			case RendererAPI::API::OpenGL:
+				if (enabled)
+				{
+					glfwSwapInterval(1);
+				}
+				else
+				{
+					glfwSwapInterval(0);
+				}
+				break;
+			case RendererAPI::API::Vulkan:
+				VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
+				vContext->SetVSync(enabled);
 		}
 	}
 

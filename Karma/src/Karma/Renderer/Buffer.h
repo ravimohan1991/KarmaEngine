@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Karma/Core.h"
+#include "glm/gtc/type_ptr.hpp"
 #include <stdint.h>
 
 namespace Karma
@@ -46,7 +47,7 @@ namespace Karma
 			case ShaderDataType::Int4:
 				return 4 * 4;
 			case ShaderDataType::Bool:
-				return 1;
+				return 4;
 		}
 
 		KR_CORE_ASSERT(false, "Unknown ShaderDataType");
@@ -158,9 +159,7 @@ namespace Karma
 	class KARMA_API VertexBuffer
 	{
 	public:
-		virtual ~VertexBuffer()
-		{
-		}
+		virtual ~VertexBuffer() = default;
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
@@ -174,9 +173,7 @@ namespace Karma
 	class KARMA_API IndexBuffer
 	{
 	public:
-		virtual ~IndexBuffer()
-		{
-		}
+		virtual ~IndexBuffer() = default;
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;
@@ -184,5 +181,79 @@ namespace Karma
 		virtual uint32_t GetCount() const = 0;
 
 		static IndexBuffer* Create(uint32_t* vertices, uint32_t size);
+	};
+
+	class KARMA_API UBODataPointer
+	{
+	public:
+		UBODataPointer(const void* data) : m_DataPointer(data)
+		{}
+
+		const void* GetDataPointer() const
+		{
+			return m_DataPointer;
+		}
+	private:
+		const void* m_DataPointer;
+	};
+
+	struct KARMA_API UniformBufferObject
+	{
+		static UniformBufferObject* Create(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex);
+		
+		UniformBufferObject(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex);
+		virtual ~UniformBufferObject() = default;
+
+		template<typename... T>
+		void UpdateUniforms(T&&... uniforms)
+		{
+			m_UniformList = { uniforms... };
+		}
+
+		virtual void UploadUniformBuffer() {}
+
+		uint32_t GetBufferSize() const
+		{
+			return m_BufferSize;
+		}
+
+		const std::vector<UBODataPointer>& GetUniformList() const
+		{
+			return m_UniformList;
+		}
+
+		const std::vector<ShaderDataType>& GetUniformDataType() const
+		{
+			return m_UniformDataType;
+		}
+
+		const std::vector<uint32_t>& GetAlignedOffsets() const
+		{
+			return m_UniformAlignedOffsets;
+		}
+
+		const std::vector<uint32_t>& GetUniformSize() const
+		{
+			return m_UniformSizes;
+		}
+
+		uint32_t GetBindingPointIndex() const
+		{
+			return m_BindingPoint;
+		}
+
+	protected:
+		void CalculateOffsetsAndBufferSize();
+
+	protected:
+		uint32_t m_BufferSize;
+		uint32_t m_BindingPoint;
+		std::vector<UBODataPointer> m_UniformList;
+		std::vector<ShaderDataType> m_UniformDataType;
+		std::vector<uint32_t> m_UniformAlignedOffsets;
+		std::vector<uint32_t> m_UniformSizes;
+
+	private:
+		uint32_t ComputeBaseAlignment(ShaderDataType dataType);
 	};
 }

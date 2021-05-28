@@ -1,24 +1,30 @@
 #pragma once
 
 #include "Karma/Core.h"
-#include "glm/glm.hpp"
+#include "Karma/Renderer/Buffer.h"
 #include <string>
+#include "glm/glm.hpp"
 
 namespace Karma
 {
 	class KARMA_API Shader
 	{
 	public:
-		Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
-		~Shader();
+		Shader(std::shared_ptr<UniformBufferObject> ubo) : m_UniformBufferObject(ubo)
+		{}
+		virtual ~Shader() = default;
+		
+		virtual void Bind() const {}
+		virtual void UnBind() const {}
 
-		void Bind() const;
-		void UnBind() const;
+		virtual void GenerateUniformBufferObject() {}
+		virtual void BindUniformBufferObject() {}
+		std::shared_ptr<UniformBufferObject> GetUniformBufferObject() const { return m_UniformBufferObject; }
 
-		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+		static Shader* Create(const std::string& vertexSrc, const std::string& fragmentSrc);
+		static Shader* Create(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile);
 
 	private:
-		// OpenGL's identification scheme
-		uint32_t m_RendererID;
+		std::shared_ptr<UniformBufferObject> m_UniformBufferObject;
 	};
 }

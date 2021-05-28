@@ -16,8 +16,10 @@ namespace Karma
 		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
 		virtual void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
 
+		virtual void SetShader(std::shared_ptr<Shader> shader) override {}
+
 		virtual const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
-		virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const override { return m_IndexBuffer; }
+		virtual const IndexBuffer* GetIndexBuffer() const override { return m_IndexBuffer.get(); }
 
 	private:
 		uint32_t m_RendererID;

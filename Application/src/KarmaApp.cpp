@@ -1,5 +1,5 @@
 #include "Karma.h"
-#include "glfw/glfw3.h"
+#include "GLFW/glfw3.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 class ExampleLayer : public Karma::Layer
@@ -35,47 +35,19 @@ public:
 		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			out vec4 v_Color;
-			
-			void main()
-			{
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
-				v_Color = a_Color;
-			}
-		)";
-
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec4 v_Color;
-
-			void main()
-			{
-				color = vec4(0.8, 0.2, 0.3, 1.0);
-				color = v_Color;
-			}
-		)";
-		m_Shader.reset(new Karma::Shader(vertexSrc, fragmentSrc));
+		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
+		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
+		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
+		m_VertexArray->SetShader(m_Shader);
 
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
 
-		float verticesBSQ[3 * 4] = {
-			-0.25f, -0.25f, 0.0f,
-			 0.25f, -0.25f, 0.0f,
-			 0.25f, 0.25f, 0.0f,
-			 -0.25f, 0.25f, 0.0f
+		float verticesBSQ[7 * 4] = {
+			-0.25f, -0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+			 0.25f, -0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+			 0.25f, 0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+			 -0.25f, 0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f
 		};
 
 		std::shared_ptr<Karma::VertexBuffer> squareVB;
@@ -84,6 +56,7 @@ public:
 		{
 			Karma::BufferLayout layout = {
 				{ Karma::ShaderDataType::Float3, "a_Position" },
+				{ Karma::ShaderDataType::Float4, "lol" }
 			};
 
 			squareVB->SetLayout(layout);
@@ -96,60 +69,45 @@ public:
 		squareIB.reset(Karma::IndexBuffer::Create(indicesBSQ, sizeof(indicesBSQ) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
-
-		std::string vertexSrcBSQ = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-
-			void main()
-			{
-				gl_Position = u_ViewProjection * u_Transform* vec4(a_Position, 1.0f);
-			}
-		)";
-
-		std::string fragmentSrcBSQ = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			void main()
-			{
-				color = vec4(0.2, 0.3, 0.8, 1.0);
-			}
-		)";
-
-		m_BlueSQShader.reset(new Karma::Shader(vertexSrcBSQ, fragmentSrcBSQ));
+		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
+		m_SquareVA->SetShader(m_BlueSQShader);
 	}
 
 	virtual void OnUpdate(float deltaTime) override
 	{
 		KarmaAppInputPolling(deltaTime);
 
-		Karma::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+		Karma::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 		Karma::RenderCommand::Clear();
 
+		// Move this to the InputPolling (in client) to reduce the matrix multiplication computation
 		m_Camera.SetPosition({ camData.x_Pos, camData.y_Pos, 0.0f });
 		m_Camera.SetRotation(camData.angle);
 		
 		Karma::Renderer::BeginScene(m_Camera);
-
+		
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
+		Karma::UBODataPointer uViewProjection(&m_Camera.GetViewProjectionMatrix());
+		glm::mat4 transform = glm::mat4(1.0f);
+		Karma::UBODataPointer uTransform(&transform);
 
-		for (int h = 0; h < 20; h++)
+		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
+
+		m_Shader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
+		Karma::Renderer::Submit(m_VertexArray, m_Shader);
+		
+		for (int h = 0; h < 1; h++)
 		{
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 1; i++)
 			{
 				glm::vec3 pos(i * 0.11f, h * 0.11f, 0.0f);
-				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader, transform);
+				transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				m_BlueSQShader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
+				
+				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader);
 			}
 		}
-		Karma::Renderer::Submit(m_VertexArray, m_Shader);
-
+		
 		Karma::Renderer::EndScene();
 	}
 
@@ -214,12 +172,74 @@ private:
 	float cameraRotationSpeed = 180.0f;
 };
 
+class VulkanLayer : public Karma::Layer
+{
+public:
+	VulkanLayer() : m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	{
+		m_VertexArray.reset(Karma::VertexArray::Create());
+		/*float vertices[3 * 7] = {
+			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+		};*/
+
+		float vertices[7 * 5] = {
+			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			 -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f
+		};
+		
+		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
+		m_VertexBuffer.reset(Karma::VertexBuffer::Create(vertices, sizeof(vertices)));
+
+		{
+			Karma::BufferLayout layout = {
+				{Karma::ShaderDataType::Float3, "a_Positon"},
+				{Karma::ShaderDataType::Float4, "a_Color"} };
+		
+			m_VertexBuffer->SetLayout(layout);
+		}
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+
+		uint32_t indices[9] = { 0, 1, 2, 2, 3, 0, 2, 4, 3 };
+
+		std::shared_ptr<Karma::IndexBuffer> m_IndexBuffer;
+		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
+		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
+		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
+		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
+		m_VertexArray->SetShader(m_Shader);
+	}
+
+	virtual void OnUpdate(float deltaTime) override
+	{
+		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
+		
+		Karma::Renderer::BeginScene(m_Camera);
+
+		Karma::Renderer::Submit(m_VertexArray, m_Shader);
+
+		Karma::Renderer::EndScene();
+	}
+
+private:
+	std::shared_ptr<Karma::VertexArray> m_VertexArray;
+	Karma::OrthographicCamera m_Camera;
+	std::shared_ptr<Karma::Shader> m_Shader;
+};
+
 class KarmaApp : public Karma::Application
 {
 public:
 	KarmaApp()
 	{
 		PushLayer(new ExampleLayer());
+		//PushLayer(new VulkanLayer());
 	}
 
 };

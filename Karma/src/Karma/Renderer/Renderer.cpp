@@ -7,19 +7,29 @@ namespace Karma
 	void Renderer::BeginScene(OrthographicCamera& camera)
 	{
 		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+		RenderCommand::BeginScene();
 	}
 
 	void Renderer::EndScene()
 	{
+		RenderCommand::EndScene();
 	}
 
-	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform)
+	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, glm::mat4& transform)
 	{
 		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-		shader->UploadUniformMat4("u_Transform", transform);
-
+		shader->GetUniformBufferObject()->UploadUniformBuffer();
+		
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
+	}
+
+	void Renderer::DeleteData()
+	{
+		if (m_SceneData)
+		{
+			delete m_SceneData;
+			m_SceneData = 0;
+		}
 	}
 }

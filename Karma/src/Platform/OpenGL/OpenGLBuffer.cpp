@@ -53,4 +53,44 @@ namespace Karma
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
+
+	OpenGLUniformBuffer::OpenGLUniformBuffer(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex) :
+		UniformBufferObject(dataTypes, bindingPointIndex)
+	{
+		GenerateUniformBufferObject();
+		BindUniformBufferObject();
+	}
+
+	OpenGLUniformBuffer::~OpenGLUniformBuffer()
+	{
+		glDeleteBuffers(1, &m_UniformsID);
+	}
+
+	void OpenGLUniformBuffer::GenerateUniformBufferObject()
+	{
+		glCreateBuffers(1, &m_UniformsID);
+	}
+
+	void OpenGLUniformBuffer::BindUniformBufferObject() const
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, m_UniformsID);
+		glBufferData(GL_UNIFORM_BUFFER, GetBufferSize(), NULL, GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+
+	void OpenGLUniformBuffer::UploadUniformBuffer()
+	{
+		uint32_t index = 0;
+		for (auto it : GetUniformList())
+		{
+			uint32_t uniformSize = GetUniformSize()[index];
+			uint32_t offset = GetAlignedOffsets()[index++];
+
+			glBindBuffer(GL_UNIFORM_BUFFER, GetUniformsID());
+			glBufferSubData(GL_UNIFORM_BUFFER, offset, uniformSize, it.GetDataPointer());
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		}
+
+		glBindBufferRange(GL_UNIFORM_BUFFER, GetBindingPointIndex(), GetUniformsID(), 0, GetBufferSize());
+	}
 };
