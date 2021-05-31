@@ -5,6 +5,7 @@
 #include "Karma/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
+#include "Platform/Vulkan/VulkanBuffer.h"
 #include <set>
 #include <optional>
 
@@ -96,6 +97,13 @@ namespace Karma
 		// CommandPool
 		void CreateCommandPool();
 
+		// Texture image
+		void CreateTextureImage();
+		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+		void CreateTextureImageView();
+		void CreateTextureSampler();
+
 		void RecreateSwapChain();
 		void CleanupSwapChain();
 
@@ -118,6 +126,8 @@ namespace Karma
 		VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
 		VkQueue GetPresentQueue() const { return m_presentQueue; }
 		VkCommandPool GetCommandPool() const { return m_commandPool; }
+		VkImageView GetTextureImageView() const { return m_TextureImageView; }
+		VkSampler GetTextureSampler() const { return m_TextureSampler; }
 
 	private:
 		GLFWwindow* m_windowHandle;
@@ -150,5 +160,12 @@ namespace Karma
 		std::set<std::shared_ptr<VulkanUniformBuffer>> m_VulkanUBO;
 
 		bool bVSync = false;
+
+		// Prototype
+		VulkanImageBuffer* m_ImageBuffer;
+		VkImage m_TextureImage;
+		VkDeviceMemory m_TextureImageMemory;
+		VkImageView m_TextureImageView;
+		VkSampler m_TextureSampler;
 	};
 }

@@ -7,47 +7,14 @@ class ExampleLayer : public Karma::Layer
 public:
 	ExampleLayer() : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
-		m_VertexArray.reset(Karma::VertexArray::Create());
-
-		float vertices[3 * 7] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
-		};
-
-		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
-		m_VertexBuffer.reset(Karma::VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		{
-			Karma::BufferLayout layout = {
-				{ Karma::ShaderDataType::Float3, "a_Position" },
-				{ Karma::ShaderDataType::Float4, "a_Color"	}
-			};
-
-			m_VertexBuffer->SetLayout(layout);
-		}
-
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-
-		uint32_t indices[3] = { 0, 1, 2 };
-
-		std::shared_ptr<Karma::IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-
-		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
-		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
-		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
-		m_VertexArray->SetShader(m_Shader);
-
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
 
-		float verticesBSQ[7 * 4] = {
-			-0.25f, -0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.25f, -0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.25f, 0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 -0.25f, 0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f
+		float verticesBSQ[9 * 4] = {
+			-0.25f, -0.25f, 0.0f, 1.f, 0.f, 0.f, 1.0f, 1.f, 0.f,
+			 0.25f, -0.25f, 0.0f, 0.f, 1.f, 0.f, 1.0f, 0.f, 0.f,
+			 0.25f, 0.25f, 0.0f, 0.f, 0.f, 1.f, 1.0f, 0.f, 1.f,
+			 -0.25f, 0.25f, 0.0f, 1.f, 1.f, 1.f, 1.0f, 1.f, 1.f
 		};
 
 		std::shared_ptr<Karma::VertexBuffer> squareVB;
@@ -56,7 +23,8 @@ public:
 		{
 			Karma::BufferLayout layout = {
 				{ Karma::ShaderDataType::Float3, "a_Position" },
-				{ Karma::ShaderDataType::Float4, "lol" }
+				{ Karma::ShaderDataType::Float4, "a_Color" },
+				{ Karma::ShaderDataType::Float2, "a_UVs" }
 			};
 
 			squareVB->SetLayout(layout);
@@ -68,6 +36,9 @@ public:
 		std::shared_ptr<Karma::IndexBuffer> squareIB;
 		squareIB.reset(Karma::IndexBuffer::Create(indicesBSQ, sizeof(indicesBSQ) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(squareIB);
+
+		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
+		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 
 		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
 		m_SquareVA->SetShader(m_BlueSQShader);
@@ -93,20 +64,9 @@ public:
 
 		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
 
-		m_Shader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
-		Karma::Renderer::Submit(m_VertexArray, m_Shader);
-		
-		for (int h = 0; h < 1; h++)
-		{
-			for (int i = 0; i < 1; i++)
-			{
-				glm::vec3 pos(i * 0.11f, h * 0.11f, 0.0f);
-				transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				m_BlueSQShader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
-				
-				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader);
-			}
-		}
+		m_BlueSQShader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
+
+		Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader);
 		
 		Karma::Renderer::EndScene();
 	}
@@ -154,10 +114,8 @@ public:
 	}
 
 private:
-	std::shared_ptr<Karma::Shader> m_Shader;
 	std::shared_ptr<Karma::Shader> m_BlueSQShader;
 
-	std::shared_ptr<Karma::VertexArray> m_VertexArray;
 	std::shared_ptr<Karma::VertexArray> m_SquareVA;
 
 	Karma::OrthographicCamera m_Camera;
@@ -172,74 +130,12 @@ private:
 	float cameraRotationSpeed = 180.0f;
 };
 
-class VulkanLayer : public Karma::Layer
-{
-public:
-	VulkanLayer() : m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
-	{
-		m_VertexArray.reset(Karma::VertexArray::Create());
-		/*float vertices[3 * 7] = {
-			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
-		};*/
-
-		float vertices[7 * 5] = {
-			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			 -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f
-		};
-		
-		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
-		m_VertexBuffer.reset(Karma::VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		{
-			Karma::BufferLayout layout = {
-				{Karma::ShaderDataType::Float3, "a_Positon"},
-				{Karma::ShaderDataType::Float4, "a_Color"} };
-		
-			m_VertexBuffer->SetLayout(layout);
-		}
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-
-		uint32_t indices[9] = { 0, 1, 2, 2, 3, 0, 2, 4, 3 };
-
-		std::shared_ptr<Karma::IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-
-		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
-		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
-		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
-		m_VertexArray->SetShader(m_Shader);
-	}
-
-	virtual void OnUpdate(float deltaTime) override
-	{
-		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
-		
-		Karma::Renderer::BeginScene(m_Camera);
-
-		Karma::Renderer::Submit(m_VertexArray, m_Shader);
-
-		Karma::Renderer::EndScene();
-	}
-
-private:
-	std::shared_ptr<Karma::VertexArray> m_VertexArray;
-	Karma::OrthographicCamera m_Camera;
-	std::shared_ptr<Karma::Shader> m_Shader;
-};
-
 class KarmaApp : public Karma::Application
 {
 public:
 	KarmaApp()
 	{
 		PushLayer(new ExampleLayer());
-		//PushLayer(new VulkanLayer());
 	}
 
 };

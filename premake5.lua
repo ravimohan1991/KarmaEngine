@@ -21,6 +21,7 @@ IncludeDir["ImGui"] = "Karma/vendor/ImGui"
 IncludeDir["GLM"] = "Karma/vendor/GLM"
 IncludeDir["Vulkan"] = "C:/VulkanSDK/1.2.162.0/Include"
 IncludeDir["glslang"] = "Karma/vendor/glslang"
+IncludeDir["stb"] = "Karma/vendor/stb"
 
 include "Karma/vendor/GLFW"
 include "Karma/vendor/Glad"
@@ -53,7 +54,8 @@ project "Karma"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.Vulkan}",
-		"%{IncludeDir.glslang}"
+		"%{IncludeDir.glslang}",
+		"%{IncludeDir.stb}"
 	}
 
 	links

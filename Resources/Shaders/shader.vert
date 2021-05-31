@@ -3,8 +3,10 @@
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec4 inColor;
+layout(location = 2) in vec2 inUVs;
 
 layout(location = 0) out vec4 fragColor;
+layout(location = 1) out vec2 fragUVs;
 
 layout(std140, binding = 0) uniform MVPUniformBufferObject
 {
@@ -17,4 +19,5 @@ void main()
 {
 	gl_Position = u_ViewProjection *  u_Transform * vec4(inPosition, 1.0);
 	fragColor = inColor;
+	fragUVs = inUVs;
 }
