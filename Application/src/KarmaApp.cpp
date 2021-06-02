@@ -5,7 +5,7 @@
 class ExampleLayer : public Karma::Layer
 {
 public:
-	ExampleLayer() : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	ExampleLayer() : Layer("Example"), m_Camera(45.0f, 1280.f / 720.0f, 0.1f, 10.0f) /*m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)*/
 	{
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
@@ -47,6 +47,10 @@ public:
 
 		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
 		m_SquareVA->SetShader(m_BlueSQShader);
+
+		camData.x_Pos = m_Camera.GetPosition().x;
+		camData.y_Pos = m_Camera.GetPosition().y;
+		camData.z_Pos = m_Camera.GetPosition().z;
 	}
 
 	virtual void OnUpdate(float deltaTime) override
@@ -57,7 +61,7 @@ public:
 		Karma::RenderCommand::Clear();
 
 		// Move this to the InputPolling (in client) to reduce the matrix multiplication computation
-		m_Camera.SetPosition({ camData.x_Pos, camData.y_Pos, 0.0f });
+		m_Camera.SetPosition({ camData.x_Pos, camData.y_Pos, camData.z_Pos });
 		m_Camera.SetRotation(camData.angle);
 
 		Karma::Renderer::BeginScene(m_Camera);
@@ -123,11 +127,12 @@ private:
 
 	std::shared_ptr<Karma::VertexArray> m_SquareVA;
 
-	Karma::OrthographicCamera m_Camera;
+	Karma::PerspectiveCamera m_Camera;
 	struct CameraData
 	{
 		float x_Pos = 0.0f;
 		float y_Pos = 0.0f;
+		float z_Pos = 0.0f;
 		float angle = 0.0f;
 	};
 	CameraData camData;

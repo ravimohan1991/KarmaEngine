@@ -10,6 +10,7 @@
 #include "Karma/Renderer/Shader.h"
 #include "Karma/Renderer/VertexArray.h"
 #include "Karma/Renderer/Camera/OrthographicCamera.h"
+#include "Karma/Renderer/Camera/PerspectiveCamera.h"
 #include "Karma/Renderer/Renderer.h"
 #include "Karma/Renderer/RenderCommand.h"
 #include "Karma/Renderer/Buffer.h"

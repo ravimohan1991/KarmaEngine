@@ -3,12 +3,18 @@
 
 namespace Karma
 {
-	Camera::Camera()
+	Camera::Camera(glm::vec3& initialCameraPosition) : m_Position(initialCameraPosition)
 	{
 	}
 
 	Camera::~Camera()
 	{
+	}
+
+	void Camera::SetPosition(const glm::vec3& position)
+	{
+		m_Position = position;
+		RecalculateViewProjectionMatrices();
 	}
 
 	void Camera::RecalculateViewProjectionMatrices()
