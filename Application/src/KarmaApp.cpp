@@ -10,11 +10,16 @@ public:
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
 
-		float verticesBSQ[9 * 4] = {
-			-0.25f, -0.25f, 0.0f, 1.f, 0.f, 0.f, 1.0f, 1.f, 0.f,
-			 0.25f, -0.25f, 0.0f, 0.f, 1.f, 0.f, 1.0f, 0.f, 0.f,
-			 0.25f, 0.25f, 0.0f, 0.f, 0.f, 1.f, 1.0f, 0.f, 1.f,
-			 -0.25f, 0.25f, 0.0f, 1.f, 1.f, 1.f, 1.0f, 1.f, 1.f
+		float verticesBSQ[8 * 9] = {
+			-0.5f, -0.5f, 0.1f, 1.f, 0.f, 0.f, 1.0f, 0.f, 1.f,
+			 0.5f, -0.5f, 0.1f, 0.f, 1.f, 0.f, 1.0f, 1.f, 1.f,
+			 0.5f, 0.5f, 0.1f, 0.f, 0.f, 1.f, 1.0f, 1.f, 0.f,
+			 -0.5f, 0.5f, 0.1f, 1.f, 1.f, 1.f, 1.0f, 0.f, 0.f,
+
+			 -0.5f, -0.5f, -0.1f, 1.f, 0.f, 0.f, 1.0f, 0.f, 1.f,
+			 0.5f, -0.5f, -0.1f, 0.f, 1.f, 0.f, 1.0f, 1.f, 1.f,
+			 0.5f, 0.5f, -0.1f, 0.f, 0.f, 1.f, 1.0f, 1.f, 0.f,
+			 -0.5f, 0.5f, -0.1f, 1.f, 1.f, 1.f, 1.0f, 0.f, 0.f
 		};
 
 		std::shared_ptr<Karma::VertexBuffer> squareVB;
@@ -32,7 +37,7 @@ public:
 
 		m_SquareVA->AddVertexBuffer(squareVB);
 
-		uint32_t indicesBSQ[6] = { 0, 1, 2, 2, 3, 0 };
+		uint32_t indicesBSQ[12] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
 		std::shared_ptr<Karma::IndexBuffer> squareIB;
 		squareIB.reset(Karma::IndexBuffer::Create(indicesBSQ, sizeof(indicesBSQ) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(squareIB);
@@ -54,7 +59,7 @@ public:
 		// Move this to the InputPolling (in client) to reduce the matrix multiplication computation
 		m_Camera.SetPosition({ camData.x_Pos, camData.y_Pos, 0.0f });
 		m_Camera.SetRotation(camData.angle);
-		
+
 		Karma::Renderer::BeginScene(m_Camera);
 		
 		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
