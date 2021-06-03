@@ -7,7 +7,9 @@ namespace Karma
 	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top) :
 		Camera(glm::vec3(0.f))
 	{
-		m_ViewMatrix = glm::mat4(1.0f);
+		m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+		m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_CameraFront, m_CameraUp);
 		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::API::None:

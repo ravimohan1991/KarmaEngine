@@ -19,6 +19,7 @@ namespace Karma
 
 	void Camera::RecalculateViewProjectionMatrices()
 	{
+		KR_CORE_INFO("({0}, {1}, {2})", m_Position.x, m_Position.y, m_Position.z);
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Position)
 			* glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation), glm::vec3(0.0f, 0.0f, 1.0f));
 
