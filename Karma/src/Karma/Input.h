@@ -17,6 +17,10 @@ namespace Karma
 		{
 			return s_Instance->IsMouseButtonPressedImpl(button);
 		}
+		inline static bool IsMouseButtonReleased(int button)
+		{
+			return s_Instance->IsMouseButtonReleasedImpl(button);
+		}
 		inline static std::pair<float, float>GetMousePosition()
 		{
 			return s_Instance->GetMousePositionImpl();
@@ -42,6 +46,7 @@ namespace Karma
 	protected:
 		virtual bool IsKeyPressedImpl(int keycode) = 0;
 		virtual bool IsMouseButtonPressedImpl(int button) = 0;
+		virtual bool IsMouseButtonReleasedImpl(int button) = 0;
 		virtual std::pair<float, float> GetMousePositionImpl() = 0;
 		virtual float GetMouseXImpl() = 0;
 		virtual float GetMouseYImpl() = 0;

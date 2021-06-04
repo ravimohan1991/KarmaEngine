@@ -14,6 +14,10 @@ namespace Karma
 		const glm::vec3& GetPosition() const { return m_Position; }
 		float GetRotation() const { return m_Rotation; }
 
+		void LeftMouseButtonPressed();
+		void LeftMouseButtonReleased();
+		void ComputeCameraFront();
+		
 		void SetPosition(const glm::vec3& position);
 		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateViewProjectionMatrices(); }
 		inline void SetCameraFront(const glm::vec3& front) { m_CameraFront = front; }
@@ -28,6 +32,9 @@ namespace Karma
 
 	private:
 		void RecalculateViewProjectionMatrices();
+
+	protected:
+		void InitializePitchRoll();
 	
 	protected:
 		glm::mat4 m_ProjectionMatrix;
@@ -38,5 +45,12 @@ namespace Karma
 		glm::vec3 m_CameraFront;
 		glm::vec3 m_CameraUp;
 		float m_Rotation = 0.0f;
+
+		bool m_IsLeftMouseButtonPressed = false;
+		float m_LastMouseX, m_LastMouseY;
+
+		const float m_Sensitivity = 0.1f;
+		float m_Roll = 0.0f;
+		float m_Pitch = 0.0f;
 	};
 }

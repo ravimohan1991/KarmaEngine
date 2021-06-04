@@ -5,7 +5,7 @@
 class ExampleLayer : public Karma::Layer
 {
 public:
-	ExampleLayer() : Layer("Example"), /*m_Camera(45.0f, 1280.f / 720.0f, 0.1f, 10.0f)*/ m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	ExampleLayer() : Layer("Example"), m_Camera(45.0f, 1280.f / 720.0f, 0.1f, 10.0f) /*m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)*/
 	{
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
@@ -103,6 +103,21 @@ public:
 			m_Camera.MoveForward(-cameraTranslationSpeed * deltaTime);
 		}
 
+		if (Karma::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
+		{
+			m_Camera.LeftMouseButtonPressed();
+		}
+
+		if (Karma::Input::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_1))
+		{
+			m_Camera.LeftMouseButtonReleased();
+		}
+
+		if (Karma::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_2))
+		{
+			//KR_INFO("Mousebutton Right");
+		}
+		
 		/*if (Karma::Input::IsKeyPressed(GLFW_KEY_R))
 		{
 			camData.angle += cameraRotationSpeed * deltaTime;
@@ -119,7 +134,7 @@ private:
 
 	std::shared_ptr<Karma::VertexArray> m_SquareVA;
 
-	Karma::OrthographicCamera m_Camera;
+	Karma::PerspectiveCamera m_Camera;
 
 	float cameraTranslationSpeed = 1.0f;
 	float cameraRotationSpeed = 180.0f;
