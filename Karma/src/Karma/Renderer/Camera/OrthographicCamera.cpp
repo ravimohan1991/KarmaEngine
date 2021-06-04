@@ -8,6 +8,7 @@ namespace Karma
 		Camera(glm::vec3(0.f))
 	{
 		m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+		InitializePitchRoll();
 		m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_CameraFront, m_CameraUp);
 		switch (Renderer::GetAPI())

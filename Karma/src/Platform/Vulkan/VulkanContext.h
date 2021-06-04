@@ -84,6 +84,7 @@ namespace Karma
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 		// Image views
 		void CreateImageViews();
@@ -96,6 +97,12 @@ namespace Karma
 
 		// CommandPool
 		void CreateCommandPool();
+
+		// DepthImage
+		void CreateDepthResources();
+		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+		VkFormat FindDepthFormat();
+		bool HasStencilComponent(VkFormat format);
 
 		// Texture image
 		void CreateTextureImage();
@@ -160,6 +167,10 @@ namespace Karma
 		std::set<std::shared_ptr<VulkanUniformBuffer>> m_VulkanUBO;
 
 		bool bVSync = false;
+
+		VkImage m_DepthImage;
+		VkDeviceMemory m_DepthImageMemory;
+		VkImageView m_DepthImageView;
 
 		// Prototype
 		VulkanImageBuffer* m_ImageBuffer;
