@@ -5,7 +5,7 @@
 
 namespace Karma
 {
-	VulkanRendererAPI::VulkanRendererAPI()
+	VulkanRendererAPI::VulkanRendererAPI() : m_bAllocateCommandBuffers(true)
 	{
 	}
 
@@ -33,7 +33,11 @@ namespace Karma
 
 	void VulkanRendererAPI::BeginScene()
 	{
-		AllocateCommandBuffers();
+		if (m_bAllocateCommandBuffers)
+		{
+			AllocateCommandBuffers();
+			m_bAllocateCommandBuffers = false;
+		}
 	}
 
 	void VulkanRendererAPI::AllocateCommandBuffers()
@@ -106,6 +110,11 @@ namespace Karma
 	{
 		RecordCommandBuffers();
 		SubmitCommandBuffers();
+		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
+		for (size_t i = 0; i < m_commandBuffers.size(); i++)
+		{
+			vkResetCommandBuffer(m_commandBuffers[i], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		}
 		m_VulkaVertexArrays.clear();
 	}
 
@@ -223,6 +232,7 @@ namespace Karma
 		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
 
 		vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		m_bAllocateCommandBuffers = true;
 
 		for (auto vulkanVA : m_VulkaVertexArrays)
 		{
