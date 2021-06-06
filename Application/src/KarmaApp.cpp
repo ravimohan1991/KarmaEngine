@@ -49,14 +49,12 @@ public:
 
 		Karma::Renderer::BeginScene(m_Camera);
 		
-		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
-		Karma::UBODataPointer uViewProjection(&m_Camera.GetViewProjectionMatrix());
-		glm::mat4 transform = glm::mat4(1.0f);
-		Karma::UBODataPointer uTransform(&transform);
+		Karma::UBODataPointer uProjection(&m_Camera.GetProjectionMatrix());
+		Karma::UBODataPointer uView(&m_Camera.GetViewMatirx());
 
 		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
 
-		m_BlueSQShader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
+		m_BlueSQShader->GetUniformBufferObject()->UpdateUniforms(uProjection, uView);
 
 		Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader);
 		

@@ -10,14 +10,14 @@ layout(location = 1) out vec2 fragUVs;
 
 layout(std140, binding = 0) uniform MVPUniformBufferObject
 {
-	mat4 u_ViewProjection;
-	mat4 u_Transform;
+	mat4 u_Projection;
+	mat4 u_View;
 };
 
 
 void main()
 {
-	gl_Position = u_ViewProjection *  u_Transform * vec4(inPosition, 1.0);
+	gl_Position = u_Projection * u_View * vec4(inPosition, 1.0);
 	fragColor = inColor;
 	fragUVs = inUVs;
 }

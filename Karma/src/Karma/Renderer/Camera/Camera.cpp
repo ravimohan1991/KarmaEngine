@@ -15,13 +15,12 @@ namespace Karma
 	void Camera::SetPosition(const glm::vec3& position)
 	{
 		m_Position = position;
-		RecalculateViewProjectionMatrices();
+		RecalculateViewMatrix();
 	}
 
-	void Camera::RecalculateViewProjectionMatrices()
+	void Camera::RecalculateViewMatrix()
 	{
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_CameraFront, m_CameraUp);
-		m_ViewProjectionMatirx = m_ProjectionMatrix * m_ViewMatrix;
 	}
 
 	void Camera::LeftMouseButtonPressed()
@@ -45,7 +44,7 @@ namespace Karma
 			m_Roll += glm::radians(yOffset);
 
 			ComputeCameraFront();
-			RecalculateViewProjectionMatrices();
+			RecalculateViewMatrix();
 		}
 	}
 

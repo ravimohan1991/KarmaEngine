@@ -24,6 +24,5 @@ namespace Karma
 				m_ProjectionMatrix[1][1] *= -1.0f;
 				break;
 		}
-		m_ViewProjectionMatirx = m_ProjectionMatrix * m_ViewMatrix;
 	}
 }

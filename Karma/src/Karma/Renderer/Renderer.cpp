@@ -6,7 +6,7 @@ namespace Karma
 
 	void Renderer::BeginScene(Camera& camera)
 	{
-		m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+		m_SceneData->ProjectionMatrix = camera.GetProjectionMatrix();
 		RenderCommand::BeginScene();
 	}
 
