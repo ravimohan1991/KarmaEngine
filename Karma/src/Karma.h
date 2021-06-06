@@ -14,6 +14,7 @@
 #include "Karma/Renderer/Renderer.h"
 #include "Karma/Renderer/RenderCommand.h"
 #include "Karma/Renderer/Buffer.h"
+#include "Karma/Renderer/ModelLoader.h"
 
 #include "Karma/Input.h"
 

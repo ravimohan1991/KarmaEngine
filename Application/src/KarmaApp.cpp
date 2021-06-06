@@ -9,21 +9,15 @@ public:
 	{
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
-
-		float verticesBSQ[8 * 9] = {
-			-0.5f, -0.5f, 0.1f, 1.f, 0.f, 0.f, 1.0f, 0.f, 1.f,
-			 0.5f, -0.5f, 0.1f, 0.f, 1.f, 0.f, 1.0f, 1.f, 1.f,
-			 0.5f, 0.5f, 0.1f, 0.f, 0.f, 1.f, 1.0f, 1.f, 0.f,
-			 -0.5f, 0.5f, 0.1f, 1.f, 1.f, 1.f, 1.0f, 0.f, 0.f,
-
-			 -0.5f, -0.5f, -0.1f, 1.f, 0.f, 0.f, 1.0f, 0.f, 1.f,
-			 0.5f, -0.5f, -0.1f, 0.f, 1.f, 0.f, 1.0f, 1.f, 1.f,
-			 0.5f, 0.5f, -0.1f, 0.f, 0.f, 1.f, 1.0f, 1.f, 0.f,
-			 -0.5f, 0.5f, -0.1f, 1.f, 1.f, 1.f, 1.0f, 0.f, 0.f
-		};
+		vikingModel.reset(new Karma::ModelLoader("../Resources/Models/viking_room.obj"));
+		
+		float testVB[] = {
+			-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+			0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+			0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f };
 
 		std::shared_ptr<Karma::VertexBuffer> squareVB;
-		squareVB.reset(Karma::VertexBuffer::Create(verticesBSQ, sizeof(verticesBSQ)));
+		squareVB.reset(Karma::VertexBuffer::Create(vikingModel->GetVertexData(), vikingModel->GetVertexSize()));
 
 		{
 			Karma::BufferLayout layout = {
@@ -37,9 +31,9 @@ public:
 
 		m_SquareVA->AddVertexBuffer(squareVB);
 
-		uint32_t indicesBSQ[12] = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
+		uint32_t testIndex[] = { 0, 1, 2 };
 		std::shared_ptr<Karma::IndexBuffer> squareIB;
-		squareIB.reset(Karma::IndexBuffer::Create(indicesBSQ, sizeof(indicesBSQ) / sizeof(uint32_t)));
+		squareIB.reset(Karma::IndexBuffer::Create(vikingModel->GetIndexData(), vikingModel->GetIndexCount()));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
 		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
@@ -133,6 +127,7 @@ private:
 	std::shared_ptr<Karma::Shader> m_BlueSQShader;
 
 	std::shared_ptr<Karma::VertexArray> m_SquareVA;
+	std::shared_ptr<Karma::ModelLoader> vikingModel;
 
 	Karma::PerspectiveCamera m_Camera;
 
