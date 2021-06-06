@@ -102,9 +102,14 @@ public:
 			m_Camera.LeftMouseButtonReleased();
 		}
 
-		if (Karma::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_2))
+		if (Karma::Input::IsKeyPressed(GLFW_KEY_SPACE))
 		{
-			//KR_INFO("Mousebutton Right");
+			m_Camera.MoveUp(cameraTranslationSpeed * deltaTime);
+		}
+
+		if (Karma::Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL))
+		{
+			m_Camera.MoveUp(-cameraTranslationSpeed * deltaTime);
 		}
 		
 		/*if (Karma::Input::IsKeyPressed(GLFW_KEY_R))

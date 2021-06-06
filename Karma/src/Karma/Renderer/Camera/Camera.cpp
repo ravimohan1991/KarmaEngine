@@ -23,6 +23,24 @@ namespace Karma
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_CameraFront, m_CameraUp);
 	}
 
+	void Camera::MoveForward(float amount)
+	{
+		m_Position += amount * m_CameraFront;
+		RecalculateViewMatrix();
+	}
+
+	void Camera::MoveSideways(float amount)
+	{
+		m_Position += amount * glm::normalize(glm::cross(m_CameraFront, m_CameraUp));
+		RecalculateViewMatrix();
+	}
+
+	void Camera::MoveUp(float amount)
+	{
+		m_Position += amount * m_CameraUp;
+		RecalculateViewMatrix();
+	}
+
 	void Camera::LeftMouseButtonPressed()
 	{
 		std::pair mousePos = Input::GetMousePosition();

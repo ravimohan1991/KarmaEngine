@@ -23,8 +23,9 @@ namespace Karma
 		inline void SetCameraFront(const glm::vec3& front) { m_CameraFront = front; }
 		inline void SetCameraUp(const glm::vec3& up) { m_CameraUp = up; }
 
-		inline void MoveForward(float amount) { m_Position += amount * m_CameraFront; RecalculateViewMatrix(); }
-		inline void MoveSideways(float amount) { m_Position += amount * glm::normalize(glm::cross(m_CameraFront, m_CameraUp)); RecalculateViewMatrix(); }
+		void MoveForward(float amount);
+		void MoveSideways(float amount);
+		void MoveUp(float amount);
 
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4& GetViewMatirx() const { return m_ViewMatrix; }
