@@ -9,12 +9,7 @@ public:
 	{
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
-		vikingModel.reset(new Karma::ModelLoader("../Resources/Models/viking_room.obj"));
-		
-		float testVB[] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-			0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-			0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f };
+		Karma::ModelLoader* vikingModel = new Karma::ModelLoader("../Resources/Models/viking_room.obj");
 
 		std::shared_ptr<Karma::VertexBuffer> squareVB;
 		squareVB.reset(Karma::VertexBuffer::Create(vikingModel->GetVertexData(), vikingModel->GetVertexSize()));
@@ -41,6 +36,8 @@ public:
 
 		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
 		m_SquareVA->SetShader(m_BlueSQShader);
+		
+		delete vikingModel;
 	}
 
 	virtual void OnUpdate(float deltaTime) override
@@ -127,7 +124,6 @@ private:
 	std::shared_ptr<Karma::Shader> m_BlueSQShader;
 
 	std::shared_ptr<Karma::VertexArray> m_SquareVA;
-	std::shared_ptr<Karma::ModelLoader> vikingModel;
 
 	Karma::PerspectiveCamera m_Camera;
 

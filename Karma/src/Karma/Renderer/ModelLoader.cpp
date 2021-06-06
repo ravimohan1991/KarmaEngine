@@ -40,7 +40,8 @@ namespace Karma
 				m_VertexData[counter++] = 1.0f;
 				m_VertexData[counter++] = 1.0f;
 				m_VertexData[counter++] = attrib.texcoords[2 * index.texcoord_index + 0];
-				m_VertexData[counter++] = attrib.texcoords[2 * index.texcoord_index + 1];
+				// Vulkan/Opengl setting
+				m_VertexData[counter++] = 1.0f - attrib.texcoords[2 * index.texcoord_index + 1];
 				m_IndexData[indexCounter++] = indexCounter;
 			}
 		}
