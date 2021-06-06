@@ -1,3 +1,4 @@
+
 #include "Camera.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Karma/Input.h"
@@ -74,15 +75,15 @@ namespace Karma
 	void Camera::ComputeCameraFront()
 	{
 		glm::vec3 direction;
-		direction.x = cos(m_Pitch) * cos(m_Roll);
-		direction.y = sin(m_Roll);
-		direction.z = sin(m_Pitch) * cos(m_Roll);
+		direction.y = cos(m_Pitch) * cos(m_Roll);
+		direction.z = sin(m_Roll);
+		direction.x = sin(m_Pitch) * cos(m_Roll);
 		m_CameraFront = glm::normalize(direction);
 	}
 
 	void Camera::InitializePitchRoll()
 	{
-		m_Pitch = glm::atan(m_CameraFront.z / m_CameraFront.x);
-		m_Roll = glm::atan(m_CameraFront.y / glm::sqrt(glm::pow(m_CameraFront.x, 2) + glm::pow(m_CameraFront.z, 2)));
+		m_Pitch = glm::atan(m_CameraFront.x / m_CameraFront.y);
+		m_Roll = glm::atan(m_CameraFront.z / glm::sqrt(glm::pow(m_CameraFront.y, 2) + glm::pow(m_CameraFront.x, 2)));
 	}
 }

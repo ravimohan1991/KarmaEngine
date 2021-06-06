@@ -5,11 +5,11 @@
 namespace Karma
 {
 	PerspectiveCamera::PerspectiveCamera(float fovRad, float aspectRatio, float nearPlane, float farPlane) :
-		Camera(glm::vec3(0.0f, 0.0f, 1.5f))
+		Camera(glm::vec3(2.5f, 0.0f, 1.0f))
 	{
-		m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+		m_CameraFront = glm::vec3(-1.0f, 0.0f, 0.0f);
 		InitializePitchRoll();
-		m_CameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		m_CameraUp = glm::vec3(0.0f, 0.0f, 1.0f);
 		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_CameraFront, m_CameraUp);
 		switch (Renderer::GetAPI())
 		{
