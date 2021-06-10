@@ -111,16 +111,6 @@ public:
 		{
 			m_Camera.MoveUp(-cameraTranslationSpeed * deltaTime);
 		}
-		
-		/*if (Karma::Input::IsKeyPressed(GLFW_KEY_R))
-		{
-			camData.angle += cameraRotationSpeed * deltaTime;
-		}
-
-		if (Karma::Input::IsKeyPressed(GLFW_KEY_T))
-		{
-			camData.angle -= cameraRotationSpeed * deltaTime;
-		}*/
 	}
 
 private:

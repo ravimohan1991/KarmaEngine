@@ -1,6 +1,7 @@
 #include "ModelLoader.h"
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+#include <unordered_map>
 
 namespace Karma
 {
@@ -28,6 +29,7 @@ namespace Karma
 		m_IndexData = new uint32_t[m_IndexCount];
 		uint32_t counter = 0;
 		uint32_t indexCounter = 0;
+
 		for (const auto& shape : shapes)
 		{
 			for (const auto& index : shape.mesh.indices)
