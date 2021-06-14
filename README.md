@@ -1,12 +1,14 @@
-KarmaEngine (Vulkan)
+KarmaEngine (MAI)
 ===========
-![Alt Text](/repositoryfiles/Karma.png)
+![Alt Text](/repositoryfiles/MAI.jpeg)
 
-A cross-platform game engine for learning and research purposes.
+A cross-platform game engine for learning and research purposes. This branch is concerned with the AI and named Mohan Artificial Intelligence or MAI.
+
+This is the very begining of AI inclusion in Karma. At this stage we are mostly adressing the principles with which MAI is being designed to operate. This basically covers the grounds from the fundamental definition to the decision-making-complexities resulting in engaging gameplay.
 
 Clone
 ------
-This repository contains submodules, therefore use ``` git clone --recurse-submodules https://github.com/ravimohan1991/KarmaEngine.git``` to recursively download the submodules.
+This repository contains submodules, therefore use ``` git clone -b MAI --recurse-submodules https://github.com/ravimohan1991/KarmaEngine.git``` to recursively download the submodules.
 
 Building and Developing
 -----------------------
