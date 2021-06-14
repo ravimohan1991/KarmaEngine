@@ -1,4 +1,9 @@
 #pragma once
+/*
+Here we register, capture and analyze/reiterate the "aha" moments. We will start with the 
+sight.
+*/
+
 
 #include "Karma/Core.h"
 

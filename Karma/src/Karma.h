@@ -18,5 +18,7 @@
 
 #include "Karma/Input.h"
 
+#include "Karma/MAI/MAIController.h"
+
 // Entry point from Karma engine
 #include "Karma/EntryPoint.h"

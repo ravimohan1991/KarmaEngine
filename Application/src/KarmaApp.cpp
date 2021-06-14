@@ -124,14 +124,36 @@ private:
 	float cameraRotationSpeed = 180.0f;
 };
 
+class MAILayer : public Karma::Layer
+{
+public:
+	MAILayer()
+	{
+		Pucchi = new Karma::MAIController();
+	}
+
+	~MAILayer()
+	{
+		delete Pucchi;
+	}
+
+	virtual void OnUpdate(float deltaTime) override
+	{
+		Pucchi->Tick(deltaTime);
+	}
+
+private:
+	Karma::MAIController* Pucchi;
+};
+
 class KarmaApp : public Karma::Application
 {
 public:
 	KarmaApp()
 	{
 		PushLayer(new ExampleLayer());
+		PushLayer(new MAILayer());
 	}
-
 };
 
 Karma::Application* Karma::CreateApplication()
