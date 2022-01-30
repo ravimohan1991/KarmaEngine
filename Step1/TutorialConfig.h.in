@@ -1,0 +1,3 @@
+// the configured option and settings for Karma
+#define Karma_VERSION_MAJOR @Karma_VERSION_MAJOR@
+#define Karma_VERSION_MINOR @Karma_VERSION_MINOR@

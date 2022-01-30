@@ -63,7 +63,7 @@ project "Application"
 
 		defines
 		{
-			"KR_LINUX_PLATFORM"		
+			"KR_LINUX_PLATFORM"	
 		}	
 	
 
@@ -74,7 +74,8 @@ project "Application"
 			"dl",
 			"GLFW",
 			"Glad",
-			"ImGui"	
+			"ImGui",
+			"c"	
 		}
 
 	filter "system:macosx"
