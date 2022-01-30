@@ -30,7 +30,7 @@ add_executable(Karma tutorial.cxx)
 
 
 # now we link
-target_link_libraries(Karma PUBLIC MathFunctions)
+target_link_libraries(Karma PUBLIC ${EXTRA_LIBS})
 
 
 # the list of paths to search for include files
