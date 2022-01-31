@@ -21,7 +21,9 @@ configure_file(TutorialConfig.h.in TutorialConfig.h)
 if(USE_MYMATH)
   add_subdirectory(MathFunctions)
   list(APPEND EXTRA_LIBS MathFunctions)
-  list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/MathFunctions")
+  #Since we have declared and thus made MathFunctions CMakeLists as an INTERFACE
+  # we can remove extra the includes now
+  #list(APPEND EXTRA_INCLUDES "${PROJECT_SOURCE_DIR}/MathFunctions")
 endif()
 
 
@@ -36,5 +38,4 @@ target_link_libraries(Karma PUBLIC ${EXTRA_LIBS})
 # the list of paths to search for include files
 target_include_directories(Karma PUBLIC
   "${PROJECT_BINARY_DIR}"
-  "${EXTRA_INCLUDES}"
   )
