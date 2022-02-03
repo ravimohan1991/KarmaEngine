@@ -34,6 +34,15 @@ add_executable(Karma tutorial.cxx)
 # now we link
 target_link_libraries(Karma PUBLIC ${EXTRA_LIBS})
 
+# finally we install the static/dynamic libraries
+# @param TARGETS     The executable binary name (see the top declaration)
+# @param DESTINATION The directory where the binary form of library be copied to
+# @param FILES       The files to be copied
+install(TARGETS Karma DESTINATION bin)
+install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h"
+  DESTINATION include
+  )
+
 
 # the list of paths to search for include files
 target_include_directories(Karma PUBLIC
