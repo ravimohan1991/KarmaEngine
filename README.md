@@ -62,4 +62,5 @@ References
 ### Youtube Channels
 * [The Cherno](https://www.youtube.com/user/TheChernoProject)
 * [Travis Vroman](https://www.youtube.com/user/barzahd512)
+* [ThinMatrix](https://www.youtube.com/watch?v=f3Cr8Yx3GGA)
 
