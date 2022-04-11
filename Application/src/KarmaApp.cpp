@@ -9,7 +9,7 @@ public:
 	{
 		// Drawing square
 		m_SquareVA.reset(Karma::VertexArray::Create());
-		Karma::ModelLoader* vikingModel = new Karma::ModelLoader("../Resources/Models/viking_room.obj");
+		Karma::ModelLoader* vikingModel = new Karma::ModelLoader("../Resources/Models/BonedCylinder.obj");
 
 		std::shared_ptr<Karma::VertexBuffer> squareVB;
 		squareVB.reset(Karma::VertexBuffer::Create(vikingModel->GetVertexData(), vikingModel->GetVertexSize()));

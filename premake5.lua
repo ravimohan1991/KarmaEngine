@@ -23,11 +23,13 @@ IncludeDir["Vulkan"] = "C:/VulkanSDK/1.2.162.0/Include"
 IncludeDir["glslang"] = "Karma/vendor/glslang"
 IncludeDir["stb"] = "Karma/vendor/stb"
 IncludeDir["tinyobj"] = "Karma/vendor/objloader"
+IncludeDir["assimp"] = "Karma/vendor/assimp/include"
 
 include "Karma/vendor/GLFW"
 include "Karma/vendor/Glad"
 include "Karma/vendor/ImGui"
 include "Karma/vendor/glslang"
+include "Karma/vendor/assimp"
 
 project "Karma"
 	location "Karma"
@@ -57,7 +59,8 @@ project "Karma"
 		"%{IncludeDir.Vulkan}",
 		"%{IncludeDir.glslang}",
 		"%{IncludeDir.stb}",
-		"%{IncludeDir.tinyobj}"
+		"%{IncludeDir.tinyobj}",
+		"%{IncludeDir.assimp}"
 	}
 
 	links
@@ -65,7 +68,8 @@ project "Karma"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"glslang"
+		"glslang",
+		"assimp"
 	}
 
 	filter "system:windows"
@@ -162,7 +166,8 @@ project "Application"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glslang}",
 		"%{IncludeDir.stb}",
-		"%{IncludeDir.tinyobj}"				
+		"%{IncludeDir.tinyobj}",
+		"%{IncludeDir.assimp}"
 	}
 
 	links
