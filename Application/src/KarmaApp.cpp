@@ -7,12 +7,12 @@ class ExampleLayer : public Karma::Layer
 public:
 	ExampleLayer() : Layer("Example"), m_Camera(45.0f, 1280.f / 720.0f, 0.1f, 10.0f) /*m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)*/
 	{
-		// Drawing square
+		// Drawing boned cylinder
 		m_SquareVA.reset(Karma::VertexArray::Create());
-		Karma::ModelLoader* vikingModel = new Karma::ModelLoader("../Resources/Models/BonedCylinder.obj");
+		Karma::ModelLoader* twoBonedCylinder = new Karma::ModelLoader("../Resources/Models/BonedCylinder.obj");
 
 		std::shared_ptr<Karma::VertexBuffer> squareVB;
-		squareVB.reset(Karma::VertexBuffer::Create(vikingModel->GetVertexData(), vikingModel->GetVertexSize()));
+		squareVB.reset(Karma::VertexBuffer::Create(twoBonedCylinder->GetVertexData(), twoBonedCylinder->GetVertexSize()));
 
 		{
 			Karma::BufferLayout layout = {
@@ -26,9 +26,10 @@ public:
 
 		m_SquareVA->AddVertexBuffer(squareVB);
 
-		uint32_t testIndex[] = { 0, 1, 2 };
+
 		std::shared_ptr<Karma::IndexBuffer> squareIB;
-		squareIB.reset(Karma::IndexBuffer::Create(vikingModel->GetIndexData(), vikingModel->GetIndexCount()));
+		squareIB.reset(Karma::IndexBuffer::Create(twoBonedCylinder->GetIndexData(), twoBonedCylinder->GetIndexCount()));
+
 		m_SquareVA->SetIndexBuffer(squareIB);
 
 		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
@@ -36,8 +37,8 @@ public:
 
 		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
 		m_SquareVA->SetShader(m_BlueSQShader);
-		
-		delete vikingModel;
+
+		delete twoBonedCylinder;
 	}
 
 	virtual void OnUpdate(float deltaTime) override
