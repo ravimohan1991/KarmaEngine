@@ -2,6 +2,7 @@
 
 #include "Karma/Core.h"
 #include "glm/gtc/type_ptr.hpp"
+#include "stb_image.h"
 #include <stdint.h>
 
 namespace Karma
@@ -181,6 +182,12 @@ namespace Karma
 		virtual uint32_t GetCount() const = 0;
 
 		static IndexBuffer* Create(uint32_t* vertices, uint32_t size);
+	};
+
+	class KARMA_API ImageBuffer
+	{
+	public:
+		static ImageBuffer* Create(const char* filename);
 	};
 
 	class KARMA_API UBODataPointer

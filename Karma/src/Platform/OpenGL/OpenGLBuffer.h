@@ -43,6 +43,12 @@ namespace Karma
 		uint32_t m_Count;
 	};
 
+	class KARMA_API OpenGLImageBuffer : public ImageBuffer
+	{
+	public:
+		static void SetUpImageBuffer(const char* filenames);
+	};
+
 	struct KARMA_API OpenGLUniformBuffer : public UniformBufferObject
 	{
 	public:

@@ -105,7 +105,7 @@ namespace Karma
 			KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
 		}
 	}
-	
+	// Replace to DrawIndexed?
 	void VulkanRendererAPI::EndScene()
 	{
 		RecordCommandBuffers();
