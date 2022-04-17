@@ -69,6 +69,11 @@ namespace Karma
 		return true;
 	}
 
+	bool Application::OnWindowResize(WindowResizeEvent& event)
+	{
+		return m_Window->OnResize(event);
+	}
+
 	void Application::PushLayer(Layer* layer)
 	{
 		m_LayerStack.PushLayer(layer);
@@ -85,6 +90,7 @@ namespace Karma
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(KR_BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(KR_BIND_EVENT_FN(Application::OnWindowResize));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{

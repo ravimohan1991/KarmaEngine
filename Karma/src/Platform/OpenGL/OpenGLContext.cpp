@@ -22,4 +22,10 @@ namespace Karma
 	{
 		glfwSwapBuffers(m_windowHandle);
 	}
+
+	bool OpenGLContext::OnWindowResize(WindowResizeEvent& event)
+	{
+		glViewport(0, 0, event.GetWidth(), event.GetHeight());
+		return true;
+	}
 }

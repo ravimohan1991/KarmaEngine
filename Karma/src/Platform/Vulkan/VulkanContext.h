@@ -42,6 +42,7 @@ namespace Karma
 
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
+		virtual bool OnWindowResize(WindowResizeEvent& event) {/*No need for Vulkan for now.*/ return true; }
 
 		void CreateInstance();
 

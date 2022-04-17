@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Karma/Events/ApplicationEvent.h"
+
 namespace Karma
 {
 	class GraphicsContext
@@ -7,6 +9,7 @@ namespace Karma
 	public:
 		virtual void Init() = 0;
 		virtual void SwapBuffers() = 0;
+		virtual bool OnWindowResize(WindowResizeEvent& event) = 0;
 
 		virtual ~GraphicsContext()
 		{

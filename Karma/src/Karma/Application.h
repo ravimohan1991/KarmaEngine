@@ -28,6 +28,7 @@ namespace Karma
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
+		bool OnWindowResize(WindowResizeEvent& event);
 
 		std::unique_ptr<Window> m_Window;
 		//ImGuiLayer* m_ImGuiLayer;

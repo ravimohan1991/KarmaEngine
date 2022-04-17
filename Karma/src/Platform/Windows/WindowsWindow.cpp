@@ -7,6 +7,7 @@
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Platform/Vulkan/VulkanContext.h"
 #include "Karma/Renderer/Renderer.h"
+#include "stb_image.h"
 
 namespace Karma
 {
@@ -83,6 +84,17 @@ namespace Karma
 
 		// Set glfw callbacks
 		SetGLFWCallbacks(m_Window);
+
+		// Set the ICOOOOON
+		GLFWimage karmaEQ;
+		karmaEQ.pixels = stbi_load("../Resources/Textures/KarmaEQ.png", &karmaEQ.width, &karmaEQ.height, 0, 4); //rgba channels 
+		glfwSetWindowIcon(m_Window, 1, &karmaEQ);
+		stbi_image_free(karmaEQ.pixels);
+	}
+
+	bool WindowsWindow::OnResize(WindowResizeEvent& event)
+	{
+		return m_Context->OnWindowResize(event);
 	}
 
 	void WindowsWindow::SetGLFWCallbacks(GLFWwindow* glfwWindow)
