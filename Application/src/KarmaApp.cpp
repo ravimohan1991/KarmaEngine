@@ -108,6 +108,24 @@ public:
 			m_Camera->MoveForward(-cameraTranslationSpeed * deltaTime);
 		}
 
+
+		// Controller context begins
+		float mag = Karma::Input::ControllerAxisPivotMag(GLFW_GAMEPAD_AXIS_LEFT_Y, 0);
+
+		if (abs(mag) >= .1f)
+		{
+			m_Camera->MoveForward(-1.f * mag * cameraTranslationSpeed * deltaTime);
+		}
+
+		mag = Karma::Input::ControllerAxisPivotMag(GLFW_GAMEPAD_AXIS_LEFT_X, 0);
+
+		if (abs(mag) >= .1f)
+		{
+			m_Camera->MoveSideways(mag * cameraTranslationSpeed * deltaTime);
+		}
+		// Controller context ends
+
+
 		if (Karma::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
 		{
 			m_Camera->LeftMouseButtonPressed();
@@ -127,6 +145,31 @@ public:
 		{
 			m_Camera->MoveUp(-cameraTranslationSpeed * deltaTime);
 		}
+
+		// Controller context begins
+		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_A, 0))
+		{
+			m_Camera->MoveUp(-cameraTranslationSpeed * deltaTime);
+		}
+
+		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_B, 0))
+		{
+			m_Camera->MoveUp(cameraTranslationSpeed * deltaTime);
+		}
+
+		mag = Karma::Input::ControllerAxisPivotMag(GLFW_GAMEPAD_AXIS_RIGHT_X, 0);
+
+		if (abs(mag) > .1f)
+		{
+			m_Camera->RotateAboutYAxis(mag * cameraRotationSpeed * deltaTime);
+		}
+
+		mag = Karma::Input::ControllerAxisPivotMag(GLFW_GAMEPAD_AXIS_RIGHT_Y, 0);
+		if (abs(mag) > .1f)
+		{
+			m_Camera->RotateAboutXAxis(-1.f * mag * cameraRotationSpeed * deltaTime);
+		}
+		// Controller context ends
 	}
 
 private:
@@ -139,7 +182,7 @@ private:
 	std::shared_ptr<Karma::PerspectiveCamera> m_Camera;
 
 	float cameraTranslationSpeed = 1.0f;
-	float cameraRotationSpeed = 180.0f;
+	float cameraRotationSpeed = 80.0f;
 };
 
 class KarmaApp : public Karma::Application

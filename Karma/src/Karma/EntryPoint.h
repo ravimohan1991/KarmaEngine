@@ -7,6 +7,7 @@
 
 // CreateApplication should be implemented in client
 extern Karma::Application* Karma::CreateApplication();
+Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Windows;
 
 int main(int argc, char** argv)
 {
@@ -16,10 +17,16 @@ int main(int argc, char** argv)
 	KR_INFO("Hello Cowboy. Your lucky number is {0}", 7);
 	
 	auto app = Karma::CreateApplication();
+	
+	Karma::Input::Init();
+
+	app->PrepareApplicationForRun();
 	app->Run();
+
 	delete app;
 	
 	Karma::RenderCommand::DeInit();
+	Karma::Input::DeInit();
 
 	return 0;
 }

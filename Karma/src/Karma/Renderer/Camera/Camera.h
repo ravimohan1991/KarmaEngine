@@ -26,6 +26,8 @@ namespace Karma
 		void MoveForward(float amount);
 		void MoveSideways(float amount);
 		void MoveUp(float amount);
+		void RotateAboutYAxis(float amount);
+		void RotateAboutXAxis(float amount);
 
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4& GetViewMatirx() const { return m_ViewMatrix; }

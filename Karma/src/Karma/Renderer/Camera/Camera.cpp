@@ -67,6 +67,20 @@ namespace Karma
 		}
 	}
 
+	void Camera::RotateAboutYAxis(float amount)
+	{
+		m_Pitch += glm::radians(amount);
+		ComputeCameraFront();
+		RecalculateViewMatrix();
+	}
+
+	void Camera::RotateAboutXAxis(float amount)
+	{
+		m_Roll += glm::radians(amount);
+		ComputeCameraFront();
+		RecalculateViewMatrix();
+	}
+
 	void Camera::LeftMouseButtonReleased()
 	{
 		m_IsLeftMouseButtonPressed = false;
@@ -83,7 +97,7 @@ namespace Karma
 
 	void Camera::InitializePitchRoll()
 	{
-		m_Pitch = glm::atan(m_CameraFront.x / m_CameraFront.y);
-		m_Roll = glm::atan(m_CameraFront.z / glm::sqrt(glm::pow(m_CameraFront.y, 2) + glm::pow(m_CameraFront.x, 2)));
+		m_Pitch = (float) glm::atan(m_CameraFront.x / m_CameraFront.y);
+		m_Roll = (float) glm::atan(m_CameraFront.z / glm::sqrt(glm::pow(m_CameraFront.y, 2) + glm::pow(m_CameraFront.x, 2)));
 	}
 }
