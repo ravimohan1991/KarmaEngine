@@ -1,8 +1,6 @@
 #include "Karma.h"
 #include "GLFW/glfw3.h"
 #include "glm/gtc/matrix_transform.hpp"
-#include "Karma/Renderer/Material.h"
-#include "Karma/Renderer/Texture.h"
 
 class ExampleLayer : public Karma::Layer
 {
@@ -28,13 +26,20 @@ public:
 			squareVB->SetLayout(layout);
 		}
 
-		m_SquareVA->AddVertexBuffer(squareVB);
+		//m_SquareVA->AddVertexBuffer(squareVB);
 
 
 		std::shared_ptr<Karma::IndexBuffer> squareIB;
 		squareIB.reset(Karma::IndexBuffer::Create(twoBonedCylinder->GetIndexData(), twoBonedCylinder->GetIndexCount()));
 
-		m_SquareVA->SetIndexBuffer(squareIB);
+		//m_SquareVA->SetIndexBuffer(squareIB);
+
+		std::shared_ptr<Karma::Mesh> squareMesh;
+		squareMesh.reset(new Karma::Mesh(squareVB, squareIB, "Cigar"));
+
+		m_SquareVA->SetMesh(squareMesh);
+
+		// Mesh = VertexBuffer + IndexBuffer
 
 		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
 		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
@@ -110,18 +115,18 @@ public:
 
 
 		// Controller context begins
-		float mag = Karma::Input::ControllerAxisPivotMag(GLFW_GAMEPAD_AXIS_LEFT_Y, 0);
+		float val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_Y, 0);
 
-		if (abs(mag) >= .1f)
+		if (abs(val) >= .1f)
 		{
-			m_Camera->MoveForward(-1.f * mag * cameraTranslationSpeed * deltaTime);
+			m_Camera->MoveForward(-1.f * val * cameraTranslationSpeed * deltaTime);
 		}
 
-		mag = Karma::Input::ControllerAxisPivotMag(GLFW_GAMEPAD_AXIS_LEFT_X, 0);
+		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_X, 0);
 
-		if (abs(mag) >= .1f)
+		if (abs(val) >= .1f)
 		{
-			m_Camera->MoveSideways(mag * cameraTranslationSpeed * deltaTime);
+			m_Camera->MoveSideways(val * cameraTranslationSpeed * deltaTime);
 		}
 		// Controller context ends
 
@@ -147,27 +152,27 @@ public:
 		}
 
 		// Controller context begins
-		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_A, 0))
+		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_DOWN, 0))
 		{
 			m_Camera->MoveUp(-cameraTranslationSpeed * deltaTime);
 		}
 
-		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_B, 0))
+		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_UP, 0))
 		{
 			m_Camera->MoveUp(cameraTranslationSpeed * deltaTime);
 		}
 
-		mag = Karma::Input::ControllerAxisPivotMag(GLFW_GAMEPAD_AXIS_RIGHT_X, 0);
+		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_X, 0);
 
-		if (abs(mag) > .1f)
+		if (abs(val) > .1f)
 		{
-			m_Camera->RotateAboutYAxis(mag * cameraRotationSpeed * deltaTime);
+			m_Camera->RotateAboutYAxis(val * cameraRotationSpeed * deltaTime);
 		}
 
-		mag = Karma::Input::ControllerAxisPivotMag(GLFW_GAMEPAD_AXIS_RIGHT_Y, 0);
-		if (abs(mag) > .1f)
+		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_Y, 0);
+		if (abs(val) > .1f)
 		{
-			m_Camera->RotateAboutXAxis(-1.f * mag * cameraRotationSpeed * deltaTime);
+			m_Camera->RotateAboutXAxis(-1.f * val * cameraRotationSpeed * deltaTime);
 		}
 		// Controller context ends
 	}

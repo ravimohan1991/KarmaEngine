@@ -127,7 +127,7 @@ namespace Karma
 		return false;
 	}
 
-	float WindowsInput::ControllerAxisPivotMagImpl(int axis, int cID)
+	float WindowsInput::ControllerAxisPivotValImpl(int axis, int cID)
 	{
 		// Assuming glfw api
 		GLFWgamepadstate cState;

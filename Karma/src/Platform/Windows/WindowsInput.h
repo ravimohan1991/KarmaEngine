@@ -23,7 +23,7 @@ namespace Karma
 		virtual bool IsMouseButtonPressedImpl(int button) override;
 		virtual bool IsMouseButtonReleasedImpl(int button) override;
 		virtual bool IsControllerButtonPressedImpl(int button, int cID) override;
-		virtual float ControllerAxisPivotMagImpl(int axis, int cID) override;
+		virtual float ControllerAxisPivotValImpl(int axis, int cID) override;
 
 		virtual std::pair<float, float> GetMousePositionImpl() override;
 		virtual float GetMouseXImpl() override;

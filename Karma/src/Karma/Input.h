@@ -94,9 +94,9 @@ namespace Karma
 			return s_Instance->IsControllerButtonPressedImpl(button, cID);
 		}
 		
-		inline static float ControllerAxisPivotMag(int axis, int cID)
+		inline static float ControllerAxisPivotVal(int axis, int cID)
 		{
-			return s_Instance->ControllerAxisPivotMagImpl(axis, cID);
+			return s_Instance->ControllerAxisPivotValImpl(axis, cID);
 		}
 
 		inline static std::pair<float, float>GetMousePosition()
@@ -136,7 +136,7 @@ namespace Karma
 		virtual bool IsMouseButtonPressedImpl(int button) = 0;
 		virtual bool IsMouseButtonReleasedImpl(int button) = 0;
 		virtual bool IsControllerButtonPressedImpl(int button, int cID) = 0;
-		virtual float ControllerAxisPivotMagImpl(int axis, int cID) = 0;
+		virtual float ControllerAxisPivotValImpl(int axis, int cID) = 0;
 
 		virtual std::pair<float, float> GetMousePositionImpl() = 0;
 		virtual float GetMouseXImpl() = 0;
