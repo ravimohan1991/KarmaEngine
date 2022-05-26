@@ -17,10 +17,7 @@ namespace Karma
 		{
 			return m_Layout;
 		}
-		virtual void SetLayout(const BufferLayout& layout) override
-		{
-			m_Layout = layout;
-		}
+		virtual void SetLayout(const BufferLayout& layout) override;
 
 	private:
 		uint32_t m_RendererID;

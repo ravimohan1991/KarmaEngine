@@ -9,54 +9,8 @@ public:
 	{
 		m_Camera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
 		
-		// Drawing boned cylinder
-		m_SquareVA.reset(Karma::VertexArray::Create());
-		Karma::ModelLoader* twoBonedCylinder = new Karma::ModelLoader("../Resources/Models/BonedCylinder.obj");
-
-		std::shared_ptr<Karma::VertexBuffer> squareVB;
-		squareVB.reset(Karma::VertexBuffer::Create(twoBonedCylinder->GetVertexData(), twoBonedCylinder->GetVertexSize()));
-
-		{
-			Karma::BufferLayout layout = {
-				{ Karma::ShaderDataType::Float3, "a_Position" },
-				{ Karma::ShaderDataType::Float4, "a_Color" },
-				{ Karma::ShaderDataType::Float2, "a_UVs" }
-			};
-
-			squareVB->SetLayout(layout);
-		}
-
-		//m_SquareVA->AddVertexBuffer(squareVB);
-
-
-		std::shared_ptr<Karma::IndexBuffer> squareIB;
-		squareIB.reset(Karma::IndexBuffer::Create(twoBonedCylinder->GetIndexData(), twoBonedCylinder->GetIndexCount()));
-
-		//m_SquareVA->SetIndexBuffer(squareIB);
-
-		std::shared_ptr<Karma::Mesh> squareMesh;
-		squareMesh.reset(new Karma::Mesh(squareVB, squareIB, "Cigar"));
-
-		m_SquareVA->SetMesh(squareMesh);
-
-		// Mesh = VertexBuffer + IndexBuffer
-
-		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
-		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
-
-		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true, "CylinderShader"));
-		
-		m_SquareMat.reset(new Karma::Material());
-		m_SquareMat->AddShader(m_BlueSQShader);
-		m_SquareTex.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/viking_room.png", "VikingTex", "texSampler"));
-		m_SquareMat->AddTexture(m_SquareTex);
-		
-		m_SquareMat->AttatchMainCamera(m_Camera);
-
-		// Should be Material
-		m_SquareVA->SetShader(m_BlueSQShader);
-
-		delete twoBonedCylinder;
+		Karma::SceneModel* sModel = new Karma::SceneModel("../Resources/Models/BonedCylinder.obj");
+		delete sModel;
 	}
 
 	virtual void OnUpdate(float deltaTime) override
@@ -71,13 +25,13 @@ public:
 		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
 		
 		// May need entry point for Object's world transform
-		m_SquareMat->OnUpdate();
+		//m_SquareMat->OnUpdate();
 		
 		// Cluster in Vertex Array Process perhabs
-		m_SquareMat->ProcessForSubmission();
-		m_SquareVA->Bind();
+		//m_SquareMat->ProcessForSubmission();
+		//m_SquareVA->Bind();
 
-		Karma::Renderer::Submit(m_SquareVA);
+		//Karma::Renderer::Submit(m_SquareVA);
 		
 		Karma::Renderer::EndScene();
 	}

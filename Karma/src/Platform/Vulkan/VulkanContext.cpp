@@ -5,7 +5,7 @@
 #include "Platform/Vulkan/VulkanRendererAPI.h"
 #include "Karma/Renderer/RenderCommand.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
-#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
 #include <set>

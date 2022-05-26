@@ -24,4 +24,9 @@ namespace Karma
 
 		m_MeshName = meshName;
 	}
+
+	void Mesh::ProcessMesh()
+	{
+		
+	}
 }

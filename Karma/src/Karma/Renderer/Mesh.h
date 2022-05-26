@@ -4,17 +4,25 @@
 #include "Buffer.h"
 
 namespace Karma
-{
+{	
+	enum class MeshType
+	{
+		Mesh = 0,
+		SkeletalMesh
+	};
+	
 	// Wrapper for VertexBuffer + IndexBuffer
 	class KARMA_API Mesh
 	{
 	public:
 		Mesh(std::shared_ptr<VertexBuffer> vertexBuffer, std::shared_ptr<IndexBuffer> indexBuffer, const std::string& meshName = "NoName");
 
-		std::shared_ptr<VertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }
-		std::shared_ptr<IndexBuffer> GetIndexBuffer() { return m_IndexBuffer; }
+		virtual void ProcessMesh();
 
-	private:
+		std::shared_ptr<VertexBuffer> GetVertexBuffer() const { return m_VertexBuffer; }
+		std::shared_ptr<IndexBuffer> GetIndexBuffer() const { return m_IndexBuffer; }
+
+	protected:
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 

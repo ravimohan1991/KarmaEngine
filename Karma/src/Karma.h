@@ -16,8 +16,10 @@
 #include "Karma/Renderer/Buffer.h"
 #include "Karma/Renderer/ModelLoader.h"
 #include "Karma/Renderer/Mesh.h"
+#include "Karma/Renderer/SkeletalMesh.h"
 #include "Karma/Renderer/Material.h"
 #include "Karma/Renderer/Texture.h"
+#include "Karma/Renderer/SceneModel.h"
 
 #include "Karma/Input.h"
 
