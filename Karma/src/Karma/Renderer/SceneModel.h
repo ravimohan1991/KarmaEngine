@@ -16,7 +16,9 @@ namespace Karma
 		void ProcessNode(aiNode* nodeToProcess, const aiScene* theScene);
 		std::shared_ptr<Mesh> ProcessMesh(aiMesh* meshToProcess, const aiScene* theScene);
 
+		const std::vector<std::shared_ptr<Mesh>>&  GetMeshList() const { return m_Meshes; }
+
 	private:
-		std::list<std::shared_ptr<Mesh>> m_Meshes;
+		std::vector<std::shared_ptr<Mesh>> m_Meshes;
 	};
 }

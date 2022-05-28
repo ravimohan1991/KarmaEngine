@@ -22,6 +22,9 @@ namespace Karma
 		std::shared_ptr<VertexBuffer> GetVertexBuffer() const { return m_VertexBuffer; }
 		std::shared_ptr<IndexBuffer> GetIndexBuffer() const { return m_IndexBuffer; }
 
+		void SetVertexBuffer(std::shared_ptr<VertexBuffer> vBuffer) { m_VertexBuffer = vBuffer; }
+		void SetIndexBuffer(std::shared_ptr<IndexBuffer> iBuffer) { m_IndexBuffer = iBuffer; }
+
 	protected:
 		std::shared_ptr<VertexBuffer> m_VertexBuffer;
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;

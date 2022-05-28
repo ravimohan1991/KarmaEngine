@@ -38,33 +38,59 @@ namespace Karma
 		std::shared_ptr<VertexBuffer> vBuffer;
 		std::shared_ptr<IndexBuffer> iBuffer;
 
-		//vBuffer.reset(VertexBuffer::Create());
-		KR_CORE_INFO("Processing the mesh with bone status {0}", meshToProcess->HasBones());
-		
-		/*
-		productMesh.reset(new Mesh(vertexbuffer, indexbuffer, "name"));
-		
-		vector<Vertex> vertices;
-		vector<unsigned int> indices;
-		vector<Texture> textures;
+		float* vertexData = new float[meshToProcess->mNumVertices * (3 + 2)];// vec3d + vec2d (position + texture)
+		uint32_t vertexDataSize = sizeof(float) * meshToProcess->mNumVertices * (3 + 2);
 
-		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+		unsigned int indexDataSize = 0;
+
+		for (unsigned int i = 0; i < meshToProcess->mNumFaces; i++)
 		{
-			Vertex vertex;
-			// process vertex positions, normals and texture coordinates
-			[...]
-			vertices.push_back(vertex);
-		}
-		// process indices
-		[...]
-		// process material
-		if (mesh->mMaterialIndex >= 0)
-		{
-			[...]
+			indexDataSize += meshToProcess->mFaces[i].mNumIndices;
 		}
 
-		return Mesh(vertices, indices, textures);
-		*/
+		KR_CORE_INFO("The total indexDataSize is: {0}", indexDataSize);
+		uint32_t* indexData = new uint32_t[indexDataSize];
+
+		uint32_t counter = 0;
+		uint32_t indexCounter = 0;
+
+		for (unsigned int i = 0; i < meshToProcess->mNumVertices; i++)
+		{
+			vertexData[counter++] = meshToProcess->mVertices[i].x;
+			vertexData[counter++] = meshToProcess->mVertices[i].y;
+			vertexData[counter++] = meshToProcess->mVertices[i].z;
+			vertexData[counter++] = meshToProcess->mTextureCoords[0][i].x;
+			vertexData[counter++] = 1.0f - meshToProcess->mTextureCoords[0][i].y;
+		}
+
+		for (unsigned int i = 0; i < meshToProcess->mNumFaces; i++)
+		{
+			for (unsigned int j = 0; j < meshToProcess->mFaces[i].mNumIndices; j++)
+			{
+				indexData[indexCounter++] = meshToProcess->mFaces[i].mIndices[j];
+			}
+		}
+
+		vBuffer.reset(VertexBuffer::Create(vertexData, vertexDataSize));
+
+		// tentative scope
+		{
+			Karma::BufferLayout layout = {
+				{ Karma::ShaderDataType::Float3, "a_Position" },
+				{ Karma::ShaderDataType::Float2, "a_UVs" }
+			};
+
+			vBuffer->SetLayout(layout);
+		}
+
+
+		iBuffer.reset(IndexBuffer::Create(indexData, indexDataSize));
+
+		delete[] vertexData;
+		delete[] indexData;
+
+		productMesh.reset(new Mesh(vBuffer, iBuffer, "Cigar"));
+
 		return productMesh;
 	}
 }
