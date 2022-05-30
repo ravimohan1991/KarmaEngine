@@ -119,6 +119,8 @@ namespace Karma
 		inline uint32_t GetStride() const { return m_Stride; }
 		inline const std::vector<BufferElement>& GetElements() const { return m_Elements; }
 
+		inline void PushElement(const BufferElement& element) { m_Elements.push_back(element); CalculateOffsetsAndStride(); }
+
 		std::vector<BufferElement>::iterator begin()
 		{
 			return m_Elements.begin();

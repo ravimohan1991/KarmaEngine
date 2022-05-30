@@ -19,6 +19,6 @@ namespace Karma
 	public:
 		SkeletalMesh(std::shared_ptr<VertexBuffer> vertexBuffer, std::shared_ptr<IndexBuffer> indexBuffer, const std::string& meshName = "NoName");
 
-		virtual void ProcessMesh() override;
+		virtual void ProcessMesh(aiMesh* meshToProcess) override;
 	};
 }

@@ -14,7 +14,6 @@ namespace Karma
 		SceneModel(const std::string& filePath, MeshType mType = MeshType::Mesh);
 
 		void ProcessNode(aiNode* nodeToProcess, const aiScene* theScene);
-		std::shared_ptr<Mesh> ProcessMesh(aiMesh* meshToProcess, const aiScene* theScene);
 
 		const std::vector<std::shared_ptr<Mesh>>&  GetMeshList() const { return m_Meshes; }
 

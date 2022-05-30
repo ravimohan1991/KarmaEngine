@@ -11,12 +11,16 @@ public:
 		
 		m_SquareVA.reset(Karma::VertexArray::Create());
 
-		Karma::SceneModel* sModel = new Karma::SceneModel("../Resources/Models/BonedCylinder.obj");
-
+		/*
+		Karma::SceneModel* sModel = new Karma::SceneModel("../Resources/Models/viking_room.obj");
 		m_SquareVA->SetMesh(sModel->GetMeshList()[0]);
-
 		delete sModel;
-
+		*/
+		
+		std::shared_ptr<Karma::Mesh> trialMesh;
+		trialMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
+		m_SquareVA->SetMesh(trialMesh);
+		
 		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
 		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 

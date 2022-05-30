@@ -7,7 +7,7 @@ namespace Karma
 	{
 	}
 
-	void SkeletalMesh::ProcessMesh()
+	void SkeletalMesh::ProcessMesh(aiMesh* meshToProcess)
 	{
 
 	}

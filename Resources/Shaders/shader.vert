@@ -4,7 +4,8 @@
 #extension GL_ARB_separate_shader_objects : enable
 
 layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec2 inUVs;// location 1 is reserved for color?
+layout(location = 1) in vec2 inUV;
+layout(location = 2) in vec4 inColor;
 
 
 layout(location = 0) out vec4 fragColor;
@@ -21,7 +22,7 @@ void main()
 {
 	gl_Position = u_Projection * u_View * vec4(inPosition, 1.0);
 	fragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	fragUVs = inUVs;
+	fragUVs = inUV;
 }
 /*
 #version 450
