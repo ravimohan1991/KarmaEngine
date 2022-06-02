@@ -2,6 +2,7 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "Platform/OpenGL/OpenGLBuffer.h"
+#include "Karma/KarmaUtilites.h"
 #include <fstream>
 
 namespace Karma
@@ -117,8 +118,8 @@ namespace Karma
 		
 		std::unordered_map<GLenum, std::string> shaderSources;
 
-		shaderSources[GL_VERTEX_SHADER] = ReadFile(vertexSrcFile);
-		shaderSources[GL_FRAGMENT_SHADER] = ReadFile(fragmentSrcFile);
+		shaderSources[GL_VERTEX_SHADER] = KarmaUtilities::ReadFileToSpitString(vertexSrcFile);
+		shaderSources[GL_FRAGMENT_SHADER] = KarmaUtilities::ReadFileToSpitString(fragmentSrcFile);
 
 		Compile(shaderSources);
 
@@ -203,26 +204,6 @@ namespace Karma
 	OpenGLShader::~OpenGLShader()
 	{
 		glDeleteProgram(m_RendererID);
-	}
-
-	std::string OpenGLShader::ReadFile(const std::string& file)
-	{
-		std::string result;
-		std::ifstream in(file, std::ios::in, std::ios::binary);
-		if (in)
-		{
-			in.seekg(0, std::ios::end);
-			result.resize(in.tellg());
-			in.seekg(0, std::ios::beg);
-			in.read(&result[0], result.size());
-			in.close();
-		}
-		else
-		{
-			KR_CORE_ASSERT(false, "Could not open shader file " + file);
-		}
-
-		return result;
 	}
 
 	void OpenGLShader::Bind() const

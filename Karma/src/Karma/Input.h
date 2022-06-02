@@ -128,6 +128,8 @@ namespace Karma
 		using EventCallbackFn = std::function<void(Event&)>;
 		virtual void SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window) = 0;
 
+		void SetGamepadMapping();
+
 		// Debug purposes
 		static void DisplayControllerDevices();
 

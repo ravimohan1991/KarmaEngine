@@ -23,7 +23,6 @@ namespace Karma
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 
 	private:
-		std::string ReadFile(const std::string& file);
 		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
 
 	private:

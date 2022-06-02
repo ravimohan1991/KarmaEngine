@@ -1,6 +1,7 @@
 #include "Input.h"
 #include "Platform/Windows/WindowsInput.h"
 #include "GLFW/glfw3.h"
+#include "Karma/KarmaUtilites.h"
 
 namespace Karma
 {
@@ -18,7 +19,7 @@ namespace Karma
 				m_IsGamePad = glfwJoystickIsGamepad(cID);
 				if (m_IsGamePad)
 				{
-					KR_CORE_INFO("{0} has a gamepad mapping", dName);
+					KR_CORE_INFO("{0} has an XBox gamepad mapping", dName);
 				}
 			}
 			break;
@@ -63,6 +64,7 @@ namespace Karma
 					KR_CORE_WARN("GLFW can't be initialized. Input system won't support controller device functionality.");
 					return;
 				}
+				SetGamepadMapping();
 				SetConnectedJoySticks();
 				for (const auto& elem : m_ControllerDevices)
 				{
@@ -77,13 +79,22 @@ namespace Karma
 		}
 	}
 
+	void Input::SetGamepadMapping()
+	{
+		std::string testString = KarmaUtilities::ReadFileToSpitString("../Resources/Misc/GameControllerDB.txt");
+		
+		const char* mappings = testString.c_str();
+
+		glfwUpdateGamepadMappings(mappings);
+	}
+
 	Input::~Input()
 	{
 	}
 
 	void Input::SetConnectedJoySticks()
 	{	
-		int present = 0;
+		int present = 0;	
 		
 		for (int i = 0; i < GLFW_JOYSTICK_LAST; i++)
 		{
@@ -92,7 +103,17 @@ namespace Karma
 			if (present == 1)
 			{
 				std::shared_ptr<ControllerDevice> joyStick;
-				joyStick.reset(new ControllerDevice(i, glfwGetGamepadName(i)));
+				
+				if (glfwJoystickIsGamepad(i) == false)
+				{
+					KR_CORE_WARN("There is no XBox mapping for the detected device ({0}). Please check the mapping database");
+					continue;
+				}
+
+				if(true)
+				{
+					joyStick.reset(new ControllerDevice(i, glfwGetGamepadName(i)));
+				}
 				m_ControllerDevices.push_back(joyStick);
 			}
 		}

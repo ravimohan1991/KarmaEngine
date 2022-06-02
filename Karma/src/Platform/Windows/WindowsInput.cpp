@@ -112,7 +112,7 @@ namespace Karma
 			}
 		}
 
-		if (glfwGetGamepadState(cDevice->GetControllerID(), &cState))
+		if (cDevice && glfwGetGamepadState(cDevice->GetControllerID(), &cState) == GLFW_TRUE)
 		{
 			if (cState.buttons[button])
 			{
@@ -147,7 +147,7 @@ namespace Karma
 			}
 		}
 
-		if (glfwGetGamepadState(cDevice->GetControllerID(), &cState))
+		if (cDevice && glfwGetGamepadState(cDevice->GetControllerID(), &cState) == GLFW_TRUE)
 		{
 			//KR_CORE_INFO("Axis status: {0}", cState.axes[axis]);
 			return cState.axes[axis];
