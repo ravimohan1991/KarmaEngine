@@ -91,16 +91,17 @@ public:
 			m_Camera->MoveForward(-cameraTranslationSpeed * deltaTime);
 		}
 
+		static uint32_t testControllerID = 1;
 
 		// Controller context begins
-		float val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_Y, 0);
+		float val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_Y, testControllerID);
 
 		if (abs(val) >= .1f)
 		{
 			m_Camera->MoveForward(-1.f * val * cameraTranslationSpeed * deltaTime);
 		}
 
-		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_X, 0);
+		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_X, testControllerID);
 
 		if (abs(val) >= .1f)
 		{
@@ -130,24 +131,24 @@ public:
 		}
 
 		// Controller context begins
-		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_DOWN, 0))
+		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_DOWN, testControllerID))
 		{
 			m_Camera->MoveUp(-cameraTranslationSpeed * deltaTime);
 		}
 
-		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_UP, 0))
+		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_UP, testControllerID))
 		{
 			m_Camera->MoveUp(cameraTranslationSpeed * deltaTime);
 		}
 
-		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_X, 0);
+		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_X, testControllerID);
 
 		if (abs(val) > .1f)
 		{
 			m_Camera->RotateAboutYAxis(val * cameraRotationSpeed * deltaTime);
 		}
 
-		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_Y, 0);
+		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_Y, testControllerID);
 		if (abs(val) > .1f)
 		{
 			m_Camera->RotateAboutXAxis(-1.f * val * cameraRotationSpeed * deltaTime);

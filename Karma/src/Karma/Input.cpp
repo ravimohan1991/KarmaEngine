@@ -19,7 +19,7 @@ namespace Karma
 				m_IsGamePad = glfwJoystickIsGamepad(cID);
 				if (m_IsGamePad)
 				{
-					KR_CORE_INFO("{0} has an XBox gamepad mapping", dName);
+					KR_CORE_INFO("{0} has a XBox gamepad mapping (a good interpretation!)", dName);
 				}
 			}
 			break;
@@ -106,11 +106,10 @@ namespace Karma
 				
 				if (glfwJoystickIsGamepad(i) == false)
 				{
-					KR_CORE_WARN("There is no XBox mapping for the detected device ({0}). Please check the mapping database");
+					KR_CORE_WARN("There is no XBox mapping for the detected device ({0}).  Consequently, Karma can't (and won't) interpret the hardware.  Please check the mapping database", glfwGetJoystickName(i));
 					continue;
 				}
-
-				if(true)
+				else
 				{
 					joyStick.reset(new ControllerDevice(i, glfwGetGamepadName(i)));
 				}

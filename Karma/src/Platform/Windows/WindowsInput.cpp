@@ -104,11 +104,12 @@ namespace Karma
 			if (elem->GetControllerID() == cID)
 			{
 				cDevice = elem;
+				break;
 			}
 			else
 			{
 				KR_CORE_WARN("Can't find Controller Device corresponding to controller ID: {0}", cID);
-				return false;
+				continue;
 			}
 		}
 
@@ -139,11 +140,12 @@ namespace Karma
 			if (elem->GetControllerID() == cID)
 			{
 				cDevice = elem;
+				break;
 			}
 			else
 			{
 				KR_CORE_WARN("Can't find Controller Device corresponding to controller ID: {0}", cID);
-				return 0.f;
+				continue;
 			}
 		}
 
