@@ -91,7 +91,7 @@ public:
 			m_Camera->MoveForward(-cameraTranslationSpeed * deltaTime);
 		}
 
-		static uint32_t testControllerID = 1;
+		static uint32_t testControllerID = 0;
 
 		// Controller context begins
 		float val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_Y, testControllerID);
