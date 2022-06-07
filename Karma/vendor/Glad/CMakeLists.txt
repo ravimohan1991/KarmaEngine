@@ -1,8 +1,13 @@
 # For adding multiple files
 list(APPEND GladSource src/glad.c)
 
-#Use SHARED for .so/.dll extentions
-add_library(Glad STATIC ${GladSource})
+# Building the project (STATIC or DYNAMIC (SHARED))
+if (BUILD_SHARED_LIBS)
+    add_library(Glad SHARED ${GladSource})
+else()
+    add_library(Glad STATIC ${GladSource})
+endif()
+
 
 # INTERFACE (Something that Consumers require but Producers don't)
 # Since I am a library coder here, I am the Producer

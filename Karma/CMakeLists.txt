@@ -5,8 +5,12 @@ project(Karma VERSION 1.0) # Versioning shall change to something more appropria
 add_subdirectory(vendor/Glad)
 list(APPEND ESSENTIAL_LIBS Glad)
 
-# Building the project (use SHARED for .dll/.so)
-add_library(Karma STATIC Placeholder.cpp)
+# Building the project (STATIC or DYNAMIC (SHARED))
+if (BUILD_SHARED_LIBS)
+    add_library(Karma SHARED Placeholder.cpp)
+else()
+    add_library(Karma STATIC Placeholder.cpp)
+endif()
 
 # Linking and Interfacing and Definition for Upper Linking 
 target_link_libraries(Karma PUBLIC Glad)
