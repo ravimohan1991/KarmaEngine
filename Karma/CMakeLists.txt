@@ -1,23 +1,26 @@
-cmake_minimum_required(VERSION 3.4)
+# Set the project name and version
+project(Karma VERSION 1.0) # Versioning shall change to something more appropriate
 
-# Here is the begining of implementing our learning of build system
-# from official CMake tutorial to our Engine Karma!
-
-# set the project name and version
-project(KARMA VERSION 1.0) # Versioning shall change to something more appropriate
-
-# First we specify the C++ standard
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-# First we will try compiling Glad in Linux, switching to one level deep in Karma
+# Involved libraries and essentials
 add_subdirectory(vendor/Glad)
-# list(APPEND ESSENTIAL_LIBS Glad)
+list(APPEND ESSENTIAL_LIBS Glad)
 
-# Add the executable, no not here, we just want static library, but then again, what do I know
-# add_executable(Karma)
+# Building the project (use SHARED for .dll/.so)
+add_library(Karma STATIC Placeholder.cpp)
 
+# Linking and Interfacing and Definition for Upper Linking 
+target_link_libraries(Karma PUBLIC Glad)
 
-# Linking
-# target_link_libraries(Karma PUBLIC ${ESSENTIAL_LIBS})
+target_include_directories(Karma
+    PRIVATE
+        # where the library itself will look for its internal headers
+        
+    PUBLIC
+        # where top-level project will look for the library's public headers
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        # where external projects will look for the library's public headers
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+target_compile_definitions(Karma PUBLIC Karma)
 
