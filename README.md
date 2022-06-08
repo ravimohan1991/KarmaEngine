@@ -2,44 +2,61 @@ KarmaEngine
 ===========
 ![Alt Text](/repositoryfiles/Karma.png)
 
-A cross-platform game engine for learning and research purposes.
+A cross-platform Game Engine for practical learning and research purposes.
 
 Clone
 ------
 This repository contains submodules, therefore use ``` git clone --recurse-submodules https://github.com/ravimohan1991/KarmaEngine.git``` to recursively download the submodules.
 
-Building and Developing
+Developing
 -----------------------
+
+Karma rocks on ```Linux```, ```MacOS```, and ```Windows```.  The architecture is liberal enough to support Mobile, perhaps, in the future (I won't count stars for that though). 
+
+Make sure to install [CMake](https://cmake.org/) for mega convinence and null nuiances.
+
+#### Global Software Requirements ###
+* [Vulkan](https://www.vulkan.org/)
+
 ### Windows ###
-On Windows use Visual Studio 2017 or higher. Double click on ``` GenerateProjects.bat ``` and that will prepare VS solution in the root directory.
+#### Software Requirements:
+* [Visual Studio](https://visualstudio.microsoft.com/)
+
+Open the command prompt in the root directory and type the following commands
+```
+mkdir KarmaLightHouse
+cd KarmaLightHouse
+cmake ../
+```
+
+And that is it!  Visual Studio solution shall be generated in the folder ```KarmaLightHouse```.
+
 
 ### Linux ###
-Karma has been developed and tested on Ubuntu 16.04 but should work on any Linux platform. To build the binaries go to the repository directory 
-```
-cd KarmaEngine
-```
+#### Software Requirements:
+* [X11](https://www.glfw.org/docs/3.3/compile.html#compile_deps)
 
-and type
+Karma has been developed and tested on Ubuntu 22.04 but should work on any Linux platform. To build, go to the root directory and type
 ```
-vendor/bin/Premake/Linux/premake5 gmake
-make
+mkdir KarmaLightHouse
+cd KarmaLightHouse
+cmake ../
+cmake --build .
 ```
-This will create binaries in ``` build/Debug-linux-x86-64/Karma(or Application)```. Make sure to copy ``` libKarma.so ``` from ``` build/Debug-linux-x86-64/Karma ``` to ``` build/Debug-linux-x86-64/Application``` directory. This can be done by typing
-```
-cp build/Debug-linux-x86_64/Karma/libKarma.so build/Debug-linux-x86_64/Application/
-```
-Note: I am trying to add postbuildcommand in premake for Linux but I have not succeded yet. If you know how to do that, you are welcome to submit pull requests! You may want to look [here](https://github.com/ravimohan1991/KarmaEngine/commit/cfadad34b94c4c6154fee51ff16f514d3c2b511e#diff-305eff9084f83e9096ab2d18b9815c7b52c4d3603363d3d6a27e1c85f466ec45) (line 118).
+I'd recommend using [QTCreator](https://www.qt.io/product/development-tools) for development purposes because not only it is cross-platform IDE but also Industry level heavy code lifter.
 
-Now you are ready to run Karma
-```
-build/Debug-linux-x86_64/Application/Application 
-```
 
-To develop Karma in Linux type
+### MacOS ###
+#### Software Requirements:
+* [Xcode](https://developer.apple.com/xcode/) a must!
+
+Karma has been developed and tested on macOS Monterey and should work on any upper version. To build, go to the root directory and type
 ```
-./GenerateProjects.sh
+mkdir KarmaLightHouse
+cd KarmaLightHouse
+cmake -G Xcode ..
 ```
-This will generate [Codelite](https://codelite.org/) workspace in the root directory.
+This shall generate full-fledged Xcode project file bundle.  Then you are at the mercy of the IDE!
 
 References
 -----------

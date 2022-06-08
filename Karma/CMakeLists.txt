@@ -4,9 +4,11 @@ project(Karma VERSION 1.0) # Versioning shall change to something more appropria
 # Involved libraries and essentials
 add_subdirectory(vendor/Glad)
 add_subdirectory(vendor/GLFW)
+add_subdirectory(vendor/GLM)
 
 list(APPEND ESSENTIAL_LIBS Glad)
 list(APPEND ESSENTIAL_LIBS GLFW)
+list(APPEND ESSENTIAL_LIBS glm)
 
 # Building the project (STATIC or DYNAMIC (SHARED))
 if (BUILD_SHARED_LIBS)
@@ -18,6 +20,7 @@ endif()
 # Linking and Interfacing and Definition for Upper Linking 
 target_link_libraries(Karma PUBLIC Glad)
 target_link_libraries(Karma PUBLIC glfw)
+target_link_libraries(Karma PUBLIC glm)
 
 target_include_directories(Karma
     PRIVATE
