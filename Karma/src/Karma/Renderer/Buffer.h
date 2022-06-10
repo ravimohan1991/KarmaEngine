@@ -2,6 +2,9 @@
 
 #include "Karma/Core.h"
 #include <stdint.h>
+// PCH stuff
+#include <string>
+#include <vector>
 
 namespace Karma
 {

@@ -1,5 +1,5 @@
 # Finally the runnable file!
-add_executable(Application KarmaApp.cpp)
+add_executable(SandBox src/KarmaApp.cpp ${SPDFHEADERFILES})
 
-# Relevant linking!
-target_link_libraries(Application PUBLIC Karma)
+target_compile_definitions(SandBox PUBLIC SandBox)
+

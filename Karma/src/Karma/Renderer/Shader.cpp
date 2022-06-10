@@ -2,6 +2,9 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 
+// PCH stuff
+#include <vector>
+
 namespace Karma
 {
 	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
@@ -31,8 +34,8 @@ namespace Karma
 			// We don't need the shader anymore.
 			glDeleteShader(vertexShader);
 
-			KR_CORE_ERROR("{0}", infoLog.data());
-			KR_CORE_ASSERT(false, "Vertex shader compilation faliure!");
+            //KR_CORE_ERROR("{0}", infoLog.data());
+            KR_CORE_ASSERT(false, "Vertex shader compilation faliure! Message {0}", infoLog.data());
 			return;
 		}
 
@@ -62,8 +65,8 @@ namespace Karma
 			// Either of them. Don't leak shaders.
 			glDeleteShader(vertexShader);
 
-			KR_CORE_ERROR("{0}", infoLog.data());
-			KR_CORE_ASSERT(false, "Fragment shader compilation faliure!");
+            //KR_CORE_ERROR("{0}", infoLog.data());
+            KR_CORE_ASSERT(false, "Fragment shader compilation faliure! Message {0}", infoLog.data());
 			return;
 		}
 
@@ -98,8 +101,8 @@ namespace Karma
 			glDeleteShader(vertexShader);
 			glDeleteShader(fragmentShader);
 
-			KR_CORE_ERROR("{0}", infoLog.data());
-			KR_CORE_ASSERT(false, "Shader link faliure!");
+            //KR_CORE_ERROR("{0}", infoLog.data());
+            KR_CORE_ASSERT(false, "Shader link faliure! Message {0}", infoLog.data());
 			return;
 		}
 
