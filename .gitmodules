@@ -1,6 +1,6 @@
 [submodule "Karma/vendor/spdlog"]
 	path = Karma/vendor/spdlog
-	url = https://github.com/gabime/spdlog
+	url = https://github.com/ravimohan1991/spdlog
 [submodule "Karma/vendor/GLFW"]
 	path = Karma/vendor/GLFW
 	url = https://github.com/ravimohan1991/glfw
