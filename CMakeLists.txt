@@ -13,10 +13,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 cmake_policy(SET CMP0079 NEW)
 
 # Setting some options
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
-# Defines
+# Platform specific Defines
+if(WIN32)
+add_compile_definitions(KR_WINDOWS_PLATFORM)
+elseif(UNIX AND NOT APPLE)
 add_compile_definitions(KR_LINUX_PLATFORM)
+elseif(APPLE)
+add_compile_definitions(KR_MAC_PLATFORM)
+endif()
+
 #add_compile_definitions(KR_ENABLE_ASSERTS)
 
 
@@ -34,11 +41,45 @@ add_subdirectory(Karma)
 # Here we define essential libraries for proofing subsequent building
 list(APPEND ESSENTIAL_LIBS Karma)
 
-# Due to stupid property of spdf logging library(is it?) we are putting a jugaad
-#file(GLOB_RECURSE SPDFHEADERFILES ${CMAKE_CURRENT_SOURCE_DIR}/Karma/vendor/spdlog/include/*.h)
-
 # Build the Client
 add_subdirectory(Application)
 
-# Relevant linking!
+# Relevant linking of finished Application with the Engine!
 target_link_libraries(SandBox PUBLIC KarmaEngine)
+
+#[[
+ *                                          /\
+ *                                         / /
+ *                                      /\| |
+ *                                      | | |/\
+ *                                      | | / /
+ *                                      | `  /
+ *                                      `\  (___
+ *                                     _.->  ,-.-.
+ *                                  _.'      |  \ \
+ *                                 /    _____| 0 |0\
+ *                                |    /`    `^-.\.-'`-._
+ *                                |   |                  `-._
+ *                                |   :                      `.
+ *                                \    `._     `-.__         O.'
+ *         _.--,                   \     `._     __.^--._O_..-'
+ *        `---, `.                  `\     /` ` `
+ *             `\ `,                  `\   |
+ *              |   :                   ;  |
+ *              /    `.              ___|__|___
+ *             /       `.           (          )
+ *            /    `---.:____...---' `--------`.
+ *           /        (         `.      __      `.
+ *          |          `---------' _   /  \       \
+ *          |    .-.      _._     (_)  `--'        \
+ *          |   (   )    /   \                       \
+ *           \   `-'     \   /                       ;-._
+ *            \           `-'           \           .'   `.
+ *            /`.                  `\    `\     _.-'`-.    `.___
+ *           |   `-._                `\    `\.-'       `-.   ,--`
+ *            \      `--.___        ___`\    \           ||^\\
+ *             `._        | ``----''     `.   `\         `'  `
+ *                `--;     \  jgs          `.   `.
+ *                   //^||^\\               //^||^\\
+ *                   '  `'  `               '   '  `
+ ]]
