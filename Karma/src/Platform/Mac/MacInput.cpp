@@ -4,9 +4,30 @@
 
 namespace Karma
 {
-#ifdef KR_MAC_PLATFORM
-	Input* Input::s_Instance = new MacInput();
-#endif
+    MacInput::MacInput() : m_Data(), Input(m_Data)
+    {
+
+    }
+
+    void MacInput::SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window)
+    {
+
+    }
+    
+    bool MacInput::IsControllerButtonPressedImpl(int button, int cID)
+    {
+        return false;
+    }
+
+    bool MacInput::IsMouseButtonReleasedImpl(int button)
+    {
+        return false;
+    }
+
+    float MacInput::ControllerAxisPivotValImpl(int axis, int cID)
+    {
+        return 0.0f;
+    }
 
     bool MacInput::IsKeyPressedImpl(int keycode)
 	{

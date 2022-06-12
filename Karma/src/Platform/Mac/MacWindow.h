@@ -15,6 +15,8 @@ namespace Karma
 		virtual ~MacWindow();
 
 		void OnUpdate() override;
+        
+        virtual bool OnResize(WindowResizeEvent& event) override { return true; }
 
 		inline unsigned int GetWidth() const override { return m_Data.Width; }
 		inline unsigned int GetHeight() const override { return m_Data.Height; }
@@ -23,7 +25,7 @@ namespace Karma
 		{
 			m_Data.EventCallback = callback;
 		}
-        inline virtual void* GetNativeWindow() const { return m_Window; }
+        inline virtual void* GetNativeWindow() const override { return m_Window; }
         
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;

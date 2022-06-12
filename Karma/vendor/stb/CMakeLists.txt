@@ -1,6 +1,9 @@
 # For adding multiple files
 list(APPEND STBC dummy.cpp)
 
+# Set the project name and version
+project(stbimage VERSION 1.0) # Versioning shall change to something more appropriate
+
 add_compile_definitions(STB_IMAGE_IMPLEMENTATION)
 
 # Building the project (STATIC or DYNAMIC (SHARED))
