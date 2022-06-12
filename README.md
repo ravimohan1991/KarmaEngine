@@ -1,4 +1,4 @@
-KarmaEngine (Vulkan)
+KarmaEngine
 ===========
 ![Alt Text](/repositoryfiles/Karma.png)
 
@@ -16,7 +16,7 @@ Karma rocks on ```Linux```, ```MacOS```, and ```Windows```.  The architecture is
 Make sure to install [CMake](https://cmake.org/) for mega convinence and null nuiances.
 
 #### Global Software Requirements ###
-* [Vulkan](https://www.vulkan.org/)
+* [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) should be installed depending on your choice of development platform
 
 ### Windows ###
 #### Software Requirements:
@@ -35,6 +35,7 @@ And that is it!  Visual Studio solution shall be generated in the folder ```Karm
 ### Linux ###
 #### Software Requirements:
 * [X11](https://www.glfw.org/docs/3.3/compile.html#compile_deps)
+* [Vulkan SDK](https://vulkan.lunarg.com/doc/view/latest/linux/getting_started_ubuntu.html)
 
 Karma has been developed and tested on Ubuntu 22.04 but should work on any Linux platform. To build, go to the root directory and type
 ```
@@ -43,7 +44,7 @@ cd KarmaLightHouse
 cmake ../
 cmake --build .
 ```
-I'd recommend using [QTCreator](https://www.qt.io/product/development-tools) for development purposes because not only it is cross-platform IDE but also Industry level heavy code lifter.
+I'd recommend using [QTCreator](https://www.qt.io/product/development-tools) for development purposes because not only it is cross-platform IDE but also Industry level heavy code lifter. Furthermore try using OS package managers for Vulkan SDK for proper tracking and clean assignment.
 
 
 ### MacOS ###
