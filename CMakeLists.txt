@@ -25,6 +25,7 @@ add_compile_definitions(KR_MAC_PLATFORM)
 endif()
 
 #add_compile_definitions(KR_ENABLE_ASSERTS)
+add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_SO)
 
 
 # Configurations for Debug/Release candidates. Need more fluidity
