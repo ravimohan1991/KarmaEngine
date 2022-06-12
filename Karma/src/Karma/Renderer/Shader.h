@@ -5,6 +5,9 @@
 #include <string>
 #include "glm/glm.hpp"
 
+// PCH stuff
+#include <memory>
+
 namespace Karma
 {
 	class KARMA_API Shader

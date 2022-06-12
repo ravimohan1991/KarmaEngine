@@ -2,8 +2,12 @@
 
 #include "Karma/Core.h"
 #include "glm/gtc/type_ptr.hpp"
-#include "stb_image.h"
 #include <stdint.h>
+#include "stb_image.h"
+
+// PCH stuff
+#include <string>
+#include <vector>
 
 namespace Karma
 {

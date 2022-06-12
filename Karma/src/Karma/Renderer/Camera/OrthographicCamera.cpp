@@ -1,11 +1,12 @@
 #include "OrthographicCamera.h"
 #include "Karma/Renderer/Renderer.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "Camera.h"
 
 namespace Karma
 {	
 	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top) :
-		Camera(glm::vec3(0.f))
+        Camera(glm::vec3(0.f))
 	{
 		m_CameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 		InitializePitchRoll();

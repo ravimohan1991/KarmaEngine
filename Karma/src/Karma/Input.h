@@ -4,6 +4,9 @@
 #include "Karma/Log.h"
 #include "Karma/Events/Event.h"
 #include "Karma/Window.h"
+
+// PCH stuff
+#include <list>
 #include <utility>
 
 /*
@@ -14,10 +17,10 @@
 
 namespace Karma
 {
-	enum class InputRegisteringAPI
+    enum class InputRegisteringAPI
 	{
 		None = 0,
-		GLFW
+        GlfwInput
 	};
 	
 	struct InputData

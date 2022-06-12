@@ -2,8 +2,11 @@
 
 #include "Karma/Renderer/Shader.h"
 #include "glad/glad.h"
+
+// PCH stuff
 #include <string>
 #include <map>
+#include <unordered_map>
 
 namespace Karma
 {

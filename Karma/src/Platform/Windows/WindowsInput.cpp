@@ -20,7 +20,7 @@ namespace Karma
 
 		// We need to send event information  to Application class, somehow
 
-		if (Input::GetAPI() == InputRegisteringAPI::GLFW)
+        if (Input::GetAPI() == InputRegisteringAPI::GlfwInput)
 		{
 			glfwSetJoystickCallback([](int cID, int event)
 			{

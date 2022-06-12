@@ -6,6 +6,9 @@
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
+
+// PCH stuff
+#include <memory>
 #include <set>
 #include <optional>
 
@@ -118,7 +121,7 @@ namespace Karma
 		void SetVSync(bool bEnable);
 
 		void Initializeglslang();
-		void RegisterUBO(std::shared_ptr<VulkanUniformBuffer>& ubo);
+        void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
 		void ClearUBO();
 		void RecreateUBO();
 		void UploadUBO(size_t currentImage);

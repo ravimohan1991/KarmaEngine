@@ -10,7 +10,7 @@ namespace Karma
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
-			KR_CORE_ERROR("ERROR ASSIMP:: {0}", assImporter.GetErrorString());
+            KR_CORE_ERROR("ERROR ASSIMP:: {0}", assImporter.GetErrorString());
 		}
 
 		ProcessNode(scene->mRootNode, scene);

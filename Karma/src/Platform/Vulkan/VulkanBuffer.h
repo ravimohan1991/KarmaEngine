@@ -2,7 +2,6 @@
 
 #include "Karma/Renderer/Buffer.h"
 #include "vulkan/vulkan.h"
-#include "stb_image.h"
 
 namespace Karma
 {

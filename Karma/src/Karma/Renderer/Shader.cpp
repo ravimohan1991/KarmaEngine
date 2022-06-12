@@ -4,6 +4,9 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Platform/Vulkan/VulkanShader.h"
 
+// PCH stuff
+#include <vector>
+
 namespace Karma
 {
 	Shader* Shader::Create(const std::string& vertexSrc, const std::string& fragmentSrc)

@@ -1,11 +1,12 @@
 #include "Input.h"
 #include "Platform/Windows/WindowsInput.h"
+#include "Platform/Linux/LinuxInput.h"
 #include "GLFW/glfw3.h"
 #include "Karma/KarmaUtilites.h"
 
 namespace Karma
 {
-	InputRegisteringAPI Input::s_InputAPI = InputRegisteringAPI::GLFW;
+    InputRegisteringAPI Input::s_InputAPI = InputRegisteringAPI::GlfwInput;
 	std::shared_ptr<Input> Input::s_Instance;// Write a note of this linking stuff. Think what happens without this line. Also ensure singleton pattern.
 	std::list<std::shared_ptr<ControllerDevice>> Input::m_ControllerDevices;
 
@@ -14,7 +15,7 @@ namespace Karma
 		KR_CORE_INFO("Spawned instance for ControllerDevice: {0}, with id: {1}", dName, cID);
 		switch (Input::GetAPI())
 		{
-			case InputRegisteringAPI::GLFW:
+            case InputRegisteringAPI::GlfwInput:
 			{
 				m_IsGamePad = glfwJoystickIsGamepad(cID);
 				if (m_IsGamePad)
@@ -57,7 +58,7 @@ namespace Karma
 	{
 		switch (Input::GetAPI())
 		{
-			case InputRegisteringAPI::GLFW:
+            case InputRegisteringAPI::GlfwInput:
 			{
 				if (glfwInit() == 0)
 				{
@@ -129,7 +130,7 @@ namespace Karma
 		s_Instance.reset(new WindowsInput());
 #endif
 #ifdef KR_LINUX_PLATFORM
-		Input* Input::s_Instance = new LinuxInput();
+        s_Instance.reset(new LinuxInput());
 #endif
 	}
 }

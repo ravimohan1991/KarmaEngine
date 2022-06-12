@@ -6,6 +6,10 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+// PCH stuff
+#include <memory>
+#include "Karma/Log.h"
+
 namespace Karma
 {
 	class KARMA_API SceneModel

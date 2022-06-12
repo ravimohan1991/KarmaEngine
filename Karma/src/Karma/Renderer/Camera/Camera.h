@@ -8,7 +8,7 @@ namespace Karma
 	class KARMA_API Camera
 	{
 	public:
-		Camera(glm::vec3& initialCameraPosition);
+        Camera(const glm::vec3& initialCameraPosition);
 		virtual ~Camera();
 
 		const glm::vec3& GetPosition() const { return m_Position; }

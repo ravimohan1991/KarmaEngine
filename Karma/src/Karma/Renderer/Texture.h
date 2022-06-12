@@ -2,6 +2,9 @@
 
 #include "Karma/Core.h"
 
+// PCH stuff
+#include <string>
+
 namespace Karma
 {
 	enum class TextureType

@@ -7,7 +7,6 @@
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Platform/Vulkan/VulkanContext.h"
 #include "Karma/Renderer/Renderer.h"
-#include "stb_image.h"
 
 namespace Karma
 {

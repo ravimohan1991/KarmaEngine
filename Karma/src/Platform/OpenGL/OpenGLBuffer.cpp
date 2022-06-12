@@ -63,6 +63,7 @@ namespace Karma
 
 	void OpenGLImageBuffer::SetUpImageBuffer(const char* filenames)
 	{
+
 		// Load and create a texture. Need proper texture loading abstraction 
 		unsigned int texture1;
 		glGenTextures(1, &texture1);
@@ -92,6 +93,7 @@ namespace Karma
 			KR_CORE_ASSERT(data, "Failed to load textures image!");
 		}
 		stbi_image_free(data);
+
 	}
 
 	OpenGLUniformBuffer::OpenGLUniformBuffer(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex) :

@@ -5,8 +5,6 @@
 #include "Platform/Vulkan/VulkanRendererAPI.h"
 #include "Karma/Renderer/RenderCommand.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
-//#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
 #include <set>
 #include <cstdint>
@@ -68,7 +66,7 @@ namespace Karma
 		glslang::FinalizeProcess();
 	}
 
-	void VulkanContext::RegisterUBO(std::shared_ptr<VulkanUniformBuffer>& ubo)
+    void VulkanContext::RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo)
 	{
 		m_VulkanUBO.insert(ubo);
 	}

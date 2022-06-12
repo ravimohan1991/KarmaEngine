@@ -3,7 +3,10 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 #include "Karma/KarmaUtilites.h"
+
+// PCH stuff
 #include <fstream>
+#include "Karma/Log.h"
 
 namespace Karma
 {

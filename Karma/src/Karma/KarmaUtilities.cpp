@@ -1,4 +1,6 @@
 #include "KarmaUtilites.h"
+
+//PCH stuff
 #include <fstream>
 
 namespace Karma
@@ -6,7 +8,8 @@ namespace Karma
 	std::string KarmaUtilities::ReadFileToSpitString(const std::string& filePath)
 	{
 		std::string result;
-		std::ifstream in(filePath, std::ios::in, std::ios::binary);
+        //std::ifstream in(filePath, std::ios::in, std::ios::binary); found the bug in Linux only
+        std::ifstream in(filePath, std::ios::binary);
 		if (in)
 		{
 			in.seekg(0, std::ios::end);

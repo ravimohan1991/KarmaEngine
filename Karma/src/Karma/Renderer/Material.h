@@ -5,6 +5,10 @@
 #include "Texture.h"
 #include "Camera/Camera.h"
 
+// PCH stuff
+#include <list>
+#include "Karma/Log.h"
+
 namespace Karma
 {
 	class KARMA_API Material
