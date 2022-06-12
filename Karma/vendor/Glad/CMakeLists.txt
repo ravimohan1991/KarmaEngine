@@ -1,0 +1,31 @@
+# For adding multiple files
+list(APPEND GLADSRC src/glad.c)
+
+# Set the project name and version
+project(Glad VERSION 1.0) # Versioning shall change to something more appropriate
+
+# Building the project (STATIC or DYNAMIC (SHARED))
+if (BUILD_SHARED_LIBS)
+    add_library(Glad SHARED ${GLADSRC} include/glad/glad.h)
+else()
+    add_library(Glad STATIC ${GLADSRC} include/glad/glad.h)
+endif()
+
+
+
+# INTERFACE (Something that Consumers require but Producers don't)
+# Since I am a library coder here, I am the Producer
+# Rest of the Engine is Consumer here
+
+target_include_directories(Glad
+    PRIVATE
+        # where the library itself will look for its internal headers
+        ${CMAKE_CURRENT_SOURCE_DIR}
+    PUBLIC
+        # where top-level project will look for the library's public headers
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        # where external projects will look for the library's public headers
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+target_compile_definitions(Glad PUBLIC Glad)
