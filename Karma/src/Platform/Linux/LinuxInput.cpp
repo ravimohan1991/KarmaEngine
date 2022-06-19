@@ -4,10 +4,17 @@
 
 namespace Karma
 {
-#ifdef KR_LINUX_PLATFORM
-	Input* Input::s_Instance = new LinuxInput();
-#endif
     
+    LinuxInput::LinuxInput() : m_Data(), Input(m_Data)
+    {
+
+    }
+
+    void LinuxInput::SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window)
+    {
+
+    }
+
     bool LinuxInput::IsKeyPressedImpl(int keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
@@ -23,6 +30,21 @@ namespace Karma
 
 		return state == GLFW_PRESS;
 	}
+
+    bool LinuxInput::IsControllerButtonPressedImpl(int button, int cID)
+    {
+        return false;
+    }
+
+    bool LinuxInput::IsMouseButtonReleasedImpl(int button)
+    {
+        return false;
+    }
+
+    float LinuxInput::ControllerAxisPivotValImpl(int axis, int cID)
+    {
+        return 0.0f;
+    }
 
 	std::pair<float, float> LinuxInput::GetMousePositionImpl()
 	{

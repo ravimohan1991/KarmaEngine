@@ -5,7 +5,7 @@
 
 namespace Karma
 {
-	VulkanRendererAPI::VulkanRendererAPI()
+	VulkanRendererAPI::VulkanRendererAPI() : m_bAllocateCommandBuffers(true)
 	{
 	}
 
@@ -33,7 +33,11 @@ namespace Karma
 
 	void VulkanRendererAPI::BeginScene()
 	{
-		AllocateCommandBuffers();
+		if (m_bAllocateCommandBuffers)
+		{
+			AllocateCommandBuffers();
+			m_bAllocateCommandBuffers = false;
+		}
 	}
 
 	void VulkanRendererAPI::AllocateCommandBuffers()
@@ -71,9 +75,11 @@ namespace Karma
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
 
-			VkClearValue clearColor = { m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a };
-			renderPassInfo.clearValueCount = 1;
-			renderPassInfo.pClearValues = &clearColor;
+			std::array<VkClearValue, 2> clearValues{};
+			clearValues[0] = { m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a };
+			clearValues[1].depthStencil = { 1.0f, 0 };
+			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+			renderPassInfo.pClearValues = clearValues.data();
 
 			vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -99,11 +105,16 @@ namespace Karma
 			KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
 		}
 	}
-	
+	// Replace to DrawIndexed?
 	void VulkanRendererAPI::EndScene()
 	{
 		RecordCommandBuffers();
 		SubmitCommandBuffers();
+		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
+		for (size_t i = 0; i < m_commandBuffers.size(); i++)
+		{
+			vkResetCommandBuffer(m_commandBuffers[i], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		}
 		m_VulkaVertexArrays.clear();
 	}
 
@@ -221,6 +232,7 @@ namespace Karma
 		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
 
 		vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		m_bAllocateCommandBuffers = true;
 
 		for (auto vulkanVA : m_VulkaVertexArrays)
 		{

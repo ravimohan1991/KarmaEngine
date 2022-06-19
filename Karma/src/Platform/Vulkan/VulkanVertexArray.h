@@ -20,6 +20,8 @@ namespace Karma
 		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
 		virtual void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
 
+		virtual void SetMesh(std::shared_ptr<Mesh> mesh) override {}
+
 		virtual void SetShader(std::shared_ptr<Shader> shader) override;
 
 		void CreateDescriptorSetLayout();

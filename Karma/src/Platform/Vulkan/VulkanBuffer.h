@@ -4,7 +4,7 @@
 #include "vulkan/vulkan.h"
 
 namespace Karma
-{	
+{
 	class KARMA_API VulkanVertexBuffer : public VertexBuffer
 	{
 	public:
@@ -87,5 +87,20 @@ namespace Karma
 		VkDevice m_Device;
 		std::vector<VkBuffer> m_UniformBuffers;
 		std::vector<VkDeviceMemory> m_UniformBuffersMemory;
+	};
+
+	class KARMA_API VulkanImageBuffer
+	{
+	public:
+		VulkanImageBuffer(VkDeviceSize imageSize, stbi_uc* pixels);
+		virtual ~VulkanImageBuffer();
+		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+		const inline VkBuffer& GetBuffer() const { return m_StagingBuffer; }
+	private:
+		VkDevice m_Device;
+		VkBuffer m_StagingBuffer;
+		VkDeviceMemory m_StagingBufferMemory;
 	};
 }

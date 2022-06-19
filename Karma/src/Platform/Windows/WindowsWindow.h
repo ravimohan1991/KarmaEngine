@@ -14,7 +14,8 @@ namespace Karma
 		WindowsWindow(const WindowProps& props);
 		virtual ~WindowsWindow();
 
-		void OnUpdate() override;
+		virtual void OnUpdate() override;
+		virtual bool OnResize(WindowResizeEvent& event) override;
 
 		inline unsigned int GetWidth() const override { return m_Data.Width; }
 		inline unsigned int GetHeight() const override { return m_Data.Height; }
@@ -27,6 +28,8 @@ namespace Karma
 
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
+
+		GLFWwindow* GetHandle() const { return m_Window; }
 
 	private:
 		virtual void Init(const WindowProps& props);

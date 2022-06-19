@@ -17,10 +17,7 @@ namespace Karma
 		{
 			return m_Layout;
 		}
-		virtual void SetLayout(const BufferLayout& layout) override
-		{
-			m_Layout = layout;
-		}
+		virtual void SetLayout(const BufferLayout& layout) override;
 
 	private:
 		uint32_t m_RendererID;
@@ -41,6 +38,12 @@ namespace Karma
 	private:
 		uint32_t m_RendererID;
 		uint32_t m_Count;
+	};
+
+	class KARMA_API OpenGLImageBuffer : public ImageBuffer
+	{
+	public:
+		static void SetUpImageBuffer(const char* filenames);
 	};
 
 	struct KARMA_API OpenGLUniformBuffer : public UniformBufferObject

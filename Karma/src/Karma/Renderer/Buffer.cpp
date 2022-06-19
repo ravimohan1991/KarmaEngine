@@ -40,6 +40,25 @@ namespace Karma
 		return nullptr;
 	}
 
+	ImageBuffer* ImageBuffer::Create(const char* filename)
+	{
+		switch (Renderer::GetAPI())
+		{
+			case RendererAPI::API::None:
+				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				return nullptr;
+			case RendererAPI::API::OpenGL:
+				OpenGLImageBuffer::SetUpImageBuffer(filename);
+				return nullptr;
+			case RendererAPI::API::Vulkan:
+				KR_CORE_ASSERT(false, "Vulkan is not supported yet!");
+				return nullptr;
+		}
+
+		KR_CORE_ASSERT(false, "Unknown RendererAPI specified");
+		return nullptr;
+	}
+
 	UniformBufferObject* UniformBufferObject::Create(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex)
 	{
 		switch (Renderer::GetAPI())

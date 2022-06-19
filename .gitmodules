@@ -16,3 +16,7 @@
 	path = Karma/vendor/glslang
 	url = https://github.com/ravimohan1991/glslang
 	ignore = dirty
+[submodule "Karma/vendor/assimp"]
+	path = Karma/vendor/assimp
+	url = https://github.com/ravimohan1991/assimp.git
+	ignore = dirty

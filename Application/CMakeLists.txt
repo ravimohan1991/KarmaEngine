@@ -1,0 +1,40 @@
+# Platform specific Defines
+if(WIN32)
+    add_compile_definitions(KR_WINDOWS_PLATFORM)
+elseif(UNIX AND NOT APPLE)
+    add_compile_definitions(KR_LINUX_PLATFORM)
+elseif(APPLE)
+    add_compile_definitions(KR_MAC_PLATFORM)
+endif()
+
+
+# Handling MSVC static class members for dynamic linkage. I know!
+if(MSVC AND BUILD_SHARED_LIBS)
+    if(WIN32)
+        # Let Karma handle them
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
+        add_compile_definitions(KR_DYNAMIC_LINK)
+        # Disable stupid C4251 warnings due to STL's negligence
+        add_definitions(/wd4251)
+    elseif(APPLE)
+        add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_SO) # May need to find appropriate define name because Apple doesn't generate SO
+    endif()
+endif()
+
+
+# Finally the runnable file!
+add_executable(SandBox src/KarmaApp.cpp)
+
+target_include_directories(SandBox
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/spdlog/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/GLM
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/assimp/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/stb
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/GLFW/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/src/Karma/
+	${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+#target_compile_definitions(SandBox PRIVATE SandBox)
+

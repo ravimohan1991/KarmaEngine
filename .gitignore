@@ -1,7 +1,6 @@
 # Directories
 build/
 obj/
-Karma/vendor/Glad
 
 # Visual Studio files
 *.user

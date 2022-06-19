@@ -338,4 +338,65 @@ namespace Karma
 		KR_CORE_ASSERT(false, "Failed to find suitable memory type for uniformbuffer");
 		return 0;
 	}
+
+	// ImageBuffer
+	VulkanImageBuffer::VulkanImageBuffer(VkDeviceSize imageSize, stbi_uc* pixels)
+	{
+		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+		CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_StagingBuffer, m_StagingBufferMemory);
+		void* data;
+		vkMapMemory(m_Device, m_StagingBufferMemory, 0, imageSize, 0, &data);
+		memcpy(data, pixels, static_cast<size_t>(imageSize));
+		vkUnmapMemory(m_Device, m_StagingBufferMemory);
+	}
+
+	VulkanImageBuffer::~VulkanImageBuffer()
+	{
+		vkDestroyBuffer(m_Device, m_StagingBuffer, nullptr);
+		vkFreeMemory(m_Device, m_StagingBufferMemory, nullptr);
+	}
+
+	void VulkanImageBuffer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+		VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+	{
+		VkBufferCreateInfo bufferInfo{};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = size;
+		bufferInfo.usage = usage;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		VkResult result = vkCreateBuffer(m_Device, &bufferInfo, nullptr, &buffer);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create uniformbuffer");
+
+		VkMemoryRequirements memRequirements;
+		vkGetBufferMemoryRequirements(m_Device, buffer, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+
+		VkResult resultm = vkAllocateMemory(m_Device, &allocInfo, nullptr, &bufferMemory);
+
+		KR_CORE_ASSERT(resultm == VK_SUCCESS, "Failed to allocate imagebuffer memory");
+		vkBindBufferMemory(m_Device, buffer, bufferMemory, 0);
+	}
+
+	uint32_t VulkanImageBuffer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+	{
+		VkPhysicalDeviceMemoryProperties memProperties;
+		vkGetPhysicalDeviceMemoryProperties(VulkanHolder::GetVulkanContext()->GetPhysicalDevice(), &memProperties);
+
+		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+		{
+			if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+			{
+				return i;
+			}
+		}
+
+		KR_CORE_ASSERT(false, "Failed to find suitable memory type for imagebuffer");
+		return 0;
+	}
 }

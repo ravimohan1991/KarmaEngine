@@ -96,10 +96,11 @@ namespace Karma
 		return str.substr(0, found);
 	}
 
+    //std::ifstream in(file, std::ios::in std::ios::binary);
 	std::string VulkanShader::ReadFile(const std::string& file)
 	{
-		std::string result;
-		std::ifstream in(file, std::ios::in, std::ios::binary);
+        std::string result;
+        std::ifstream in(file, std::ios::binary);
 		if (in)
 		{
 			in.seekg(0, std::ios::end);

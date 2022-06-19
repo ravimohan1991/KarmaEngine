@@ -3,6 +3,11 @@
 #include "Karma/Core.h"
 #include "glm/gtc/type_ptr.hpp"
 #include <stdint.h>
+#include "stb_image.h"
+
+// PCH stuff
+#include <string>
+#include <vector>
 
 namespace Karma
 {
@@ -118,6 +123,8 @@ namespace Karma
 		inline uint32_t GetStride() const { return m_Stride; }
 		inline const std::vector<BufferElement>& GetElements() const { return m_Elements; }
 
+		inline void PushElement(const BufferElement& element) { m_Elements.push_back(element); CalculateOffsetsAndStride(); }
+
 		std::vector<BufferElement>::iterator begin()
 		{
 			return m_Elements.begin();
@@ -181,6 +188,12 @@ namespace Karma
 		virtual uint32_t GetCount() const = 0;
 
 		static IndexBuffer* Create(uint32_t* vertices, uint32_t size);
+	};
+
+	class KARMA_API ImageBuffer
+	{
+	public:
+		static ImageBuffer* Create(const char* filename);
 	};
 
 	class KARMA_API UBODataPointer

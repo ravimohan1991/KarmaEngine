@@ -1,4 +1,5 @@
 #pragma once
+#include "Karma.h"
 
 // Karma's entry point
 
@@ -16,10 +17,16 @@ int main(int argc, char** argv)
 	KR_INFO("Hello Cowboy. Your lucky number is {0}", 7);
 	
 	auto app = Karma::CreateApplication();
+	
+	Karma::Input::Init();
+
+	app->PrepareApplicationForRun();
 	app->Run();
+
 	delete app;
 	
 	Karma::RenderCommand::DeInit();
+	Karma::Input::DeInit();
 
 	return 0;
 }
@@ -34,13 +41,21 @@ int main(int argc, char** argv)
 {
 	// TODO: add engine initialization code for various systems
 	Karma::Log::Init();
-	KR_CORE_WARN("Initialized log");
+    Karma::RenderCommand::Init();
 	KR_INFO("Hello Cowboy. Your lucky number is {0}", 7);
 	
 	auto app = Karma::CreateApplication();
+
+    Karma::Input::Init();
+
+    app->PrepareApplicationForRun();
 	app->Run();
+
 	delete app;
 	
+    Karma::RenderCommand::DeInit();
+    Karma::Input::DeInit();
+
 	return 0;
 }
 

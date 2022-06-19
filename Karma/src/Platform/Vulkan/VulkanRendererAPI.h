@@ -40,5 +40,7 @@ namespace Karma
 		std::vector<VkFence> m_ImagesInFlight;
 
 		const int MAX_FRAMES_IN_FLIGHT = 2;
+
+		bool m_bAllocateCommandBuffers;
 	};
 }

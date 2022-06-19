@@ -85,4 +85,37 @@ namespace Karma
 
 		m_IndexBuffer = indexBuffer;
 	}
+
+	void OpenGLVertexArray::SetMesh(std::shared_ptr<Mesh> mesh)
+	{
+		// Vertexbuffer stuff
+		KR_CORE_ASSERT(mesh->GetVertexBuffer()->GetLayout().GetElements().size(), "VertexBufferLayout empty.");
+
+		glBindVertexArray(m_RendererID);
+		mesh->GetVertexBuffer()->Bind();
+
+		uint32_t index = 0;
+		const auto& layout = mesh->GetVertexBuffer()->GetLayout();
+		for (const auto& element : layout)
+		{
+			glEnableVertexAttribArray(index);
+			glVertexAttribPointer(index,
+				element.GetComponentCount(),
+				ShaderDataTypeToOpenGLBaseType(element.Type),
+				element.Normalized ? GL_TRUE : GL_FALSE,
+				layout.GetStride(),
+				(const void*)element.Offset);
+			index++;
+		}
+		// We are seperating VertexBuffers from Mesh.  Hopefully useful for batch rendering!
+		m_VertexBuffers.push_back(mesh->GetVertexBuffer());
+
+
+		// Index buffer stuff
+		glBindVertexArray(m_RendererID);
+		mesh->GetIndexBuffer()->Bind();
+
+		// May need modificaitons for batch rendering later.
+		m_IndexBuffer = mesh->GetIndexBuffer();
+	}
 }

@@ -5,71 +5,35 @@
 class ExampleLayer : public Karma::Layer
 {
 public:
-	ExampleLayer() : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	ExampleLayer() : Layer("Example") /*m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)*/
 	{
-		m_VertexArray.reset(Karma::VertexArray::Create());
-
-		float vertices[3 * 7] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
-		};
-
-		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
-		m_VertexBuffer.reset(Karma::VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		{
-			Karma::BufferLayout layout = {
-				{ Karma::ShaderDataType::Float3, "a_Position" },
-				{ Karma::ShaderDataType::Float4, "a_Color"	}
-			};
-
-			m_VertexBuffer->SetLayout(layout);
-		}
-
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-
-		uint32_t indices[3] = { 0, 1, 2 };
-
-		std::shared_ptr<Karma::IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-
-		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
-		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
-		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
-		m_VertexArray->SetShader(m_Shader);
-
-		// Drawing square
+		m_Camera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
+		
 		m_SquareVA.reset(Karma::VertexArray::Create());
 
-		float verticesBSQ[7 * 4] = {
-			-0.25f, -0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.25f, -0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.25f, 0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 -0.25f, 0.25f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f
-		};
+		/*
+		Karma::SceneModel* sModel = new Karma::SceneModel("../Resources/Models/viking_room.obj");
+		m_SquareVA->SetMesh(sModel->GetMeshList()[0]);
+		delete sModel;
+		*/
+		
+		std::shared_ptr<Karma::Mesh> trialMesh;
+		trialMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
+		m_SquareVA->SetMesh(trialMesh);
+		
+		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
+		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 
-		std::shared_ptr<Karma::VertexBuffer> squareVB;
-		squareVB.reset(Karma::VertexBuffer::Create(verticesBSQ, sizeof(verticesBSQ)));
+		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true, "CylinderShader"));
 
-		{
-			Karma::BufferLayout layout = {
-				{ Karma::ShaderDataType::Float3, "a_Position" },
-				{ Karma::ShaderDataType::Float4, "lol" }
-			};
+		m_SquareMat.reset(new Karma::Material());
+		m_SquareMat->AddShader(m_BlueSQShader);
+		m_SquareTex.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/viking_room.png", "VikingTex", "texSampler"));
+		m_SquareMat->AddTexture(m_SquareTex);
 
-			squareVB->SetLayout(layout);
-		}
+		m_SquareMat->AttatchMainCamera(m_Camera);
 
-		m_SquareVA->AddVertexBuffer(squareVB);
-
-		uint32_t indicesBSQ[6] = { 0, 1, 2, 2, 3, 0 };
-		std::shared_ptr<Karma::IndexBuffer> squareIB;
-		squareIB.reset(Karma::IndexBuffer::Create(indicesBSQ, sizeof(indicesBSQ) / sizeof(uint32_t)));
-		m_SquareVA->SetIndexBuffer(squareIB);
-
-		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
+		// Should be Material
 		m_SquareVA->SetShader(m_BlueSQShader);
 	}
 
@@ -80,33 +44,18 @@ public:
 		Karma::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 		Karma::RenderCommand::Clear();
 
-		// Move this to the InputPolling (in client) to reduce the matrix multiplication computation
-		m_Camera.SetPosition({ camData.x_Pos, camData.y_Pos, 0.0f });
-		m_Camera.SetRotation(camData.angle);
-		
-		Karma::Renderer::BeginScene(m_Camera);
-		
-		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f));
-		Karma::UBODataPointer uViewProjection(&m_Camera.GetViewProjectionMatrix());
-		glm::mat4 transform = glm::mat4(1.0f);
-		Karma::UBODataPointer uTransform(&transform);
+		Karma::Renderer::BeginScene(*m_Camera);
 
 		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
-
-		m_Shader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
-		Karma::Renderer::Submit(m_VertexArray, m_Shader);
 		
-		for (int h = 0; h < 1; h++)
-		{
-			for (int i = 0; i < 1; i++)
-			{
-				glm::vec3 pos(i * 0.11f, h * 0.11f, 0.0f);
-				transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				m_BlueSQShader->GetUniformBufferObject()->UpdateUniforms(uViewProjection, uTransform);
-				
-				Karma::Renderer::Submit(m_SquareVA, m_BlueSQShader);
-			}
-		}
+		// May need entry point for Object's world transform
+		m_SquareMat->OnUpdate();
+		
+		// Cluster in Vertex Array Process perhabs
+		m_SquareMat->ProcessForSubmission();
+		m_SquareVA->Bind();
+
+		Karma::Renderer::Submit(m_SquareVA);
 		
 		Karma::Renderer::EndScene();
 	}
@@ -124,113 +73,100 @@ public:
 		// Camera controls
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_A))
 		{
-			camData.x_Pos -= cameraTranslationSpeed * deltaTime;
+			m_Camera->MoveSideways(-cameraTranslationSpeed * deltaTime);
 		}
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_D))
 		{
-			camData.x_Pos += cameraTranslationSpeed * deltaTime;
+			m_Camera->MoveSideways(cameraTranslationSpeed * deltaTime);
 		}
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_W))
 		{
-			camData.y_Pos += cameraTranslationSpeed * deltaTime;
+			m_Camera->MoveForward(cameraTranslationSpeed * deltaTime);
 		}
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_S))
 		{
-			camData.y_Pos -= cameraTranslationSpeed * deltaTime;
+			m_Camera->MoveForward(-cameraTranslationSpeed * deltaTime);
 		}
 
-		if (Karma::Input::IsKeyPressed(GLFW_KEY_R))
+		static uint32_t testControllerID = 0;
+
+		// Controller context begins
+		float val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_Y, testControllerID);
+
+		if (abs(val) >= .1f)
 		{
-			camData.angle += cameraRotationSpeed * deltaTime;
+			m_Camera->MoveForward(-1.f * val * cameraTranslationSpeed * deltaTime);
 		}
 
-		if (Karma::Input::IsKeyPressed(GLFW_KEY_T))
+		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_X, testControllerID);
+
+		if (abs(val) >= .1f)
 		{
-			camData.angle -= cameraRotationSpeed * deltaTime;
+			m_Camera->MoveSideways(val * cameraTranslationSpeed * deltaTime);
 		}
+		// Controller context ends
+
+
+		if (Karma::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
+		{
+			m_Camera->LeftMouseButtonPressed();
+		}
+
+		if (Karma::Input::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_1))
+		{
+			m_Camera->LeftMouseButtonReleased();
+		}
+
+		if (Karma::Input::IsKeyPressed(GLFW_KEY_SPACE))
+		{
+			m_Camera->MoveUp(cameraTranslationSpeed * deltaTime);
+		}
+
+		if (Karma::Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL))
+		{
+			m_Camera->MoveUp(-cameraTranslationSpeed * deltaTime);
+		}
+
+		// Controller context begins
+		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_DOWN, testControllerID))
+		{
+			m_Camera->MoveUp(-cameraTranslationSpeed * deltaTime);
+		}
+
+		if (Karma::Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_UP, testControllerID))
+		{
+			m_Camera->MoveUp(cameraTranslationSpeed * deltaTime);
+		}
+
+		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_X, testControllerID);
+
+		if (abs(val) > .1f)
+		{
+			m_Camera->RotateAboutYAxis(val * cameraRotationSpeed * deltaTime);
+		}
+
+		val = Karma::Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_Y, testControllerID);
+		if (abs(val) > .1f)
+		{
+			m_Camera->RotateAboutXAxis(-1.f * val * cameraRotationSpeed * deltaTime);
+		}
+		// Controller context ends
 	}
 
 private:
-	std::shared_ptr<Karma::Shader> m_Shader;
 	std::shared_ptr<Karma::Shader> m_BlueSQShader;
 
-	std::shared_ptr<Karma::VertexArray> m_VertexArray;
 	std::shared_ptr<Karma::VertexArray> m_SquareVA;
+	std::shared_ptr<Karma::Material> m_SquareMat;
+	std::shared_ptr<Karma::Texture> m_SquareTex;
 
-	Karma::OrthographicCamera m_Camera;
-	struct CameraData
-	{
-		float x_Pos = 0.0f;
-		float y_Pos = 0.0f;
-		float angle = 0.0f;
-	};
-	CameraData camData;
+	std::shared_ptr<Karma::PerspectiveCamera> m_Camera;
+
 	float cameraTranslationSpeed = 1.0f;
-	float cameraRotationSpeed = 180.0f;
-};
-
-class VulkanLayer : public Karma::Layer
-{
-public:
-	VulkanLayer() : m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
-	{
-		m_VertexArray.reset(Karma::VertexArray::Create());
-		/*float vertices[3 * 7] = {
-			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
-		};*/
-
-		float vertices[7 * 5] = {
-			0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			 -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f
-		};
-		
-		std::shared_ptr<Karma::VertexBuffer> m_VertexBuffer;
-		m_VertexBuffer.reset(Karma::VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		{
-			Karma::BufferLayout layout = {
-				{Karma::ShaderDataType::Float3, "a_Positon"},
-				{Karma::ShaderDataType::Float4, "a_Color"} };
-		
-			m_VertexBuffer->SetLayout(layout);
-		}
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-
-		uint32_t indices[9] = { 0, 1, 2, 2, 3, 0, 2, 4, 3 };
-
-		std::shared_ptr<Karma::IndexBuffer> m_IndexBuffer;
-		m_IndexBuffer.reset(Karma::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-
-		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
-		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
-		m_Shader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true));
-		m_VertexArray->SetShader(m_Shader);
-	}
-
-	virtual void OnUpdate(float deltaTime) override
-	{
-		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
-		
-		Karma::Renderer::BeginScene(m_Camera);
-
-		Karma::Renderer::Submit(m_VertexArray, m_Shader);
-
-		Karma::Renderer::EndScene();
-	}
-
-private:
-	std::shared_ptr<Karma::VertexArray> m_VertexArray;
-	Karma::OrthographicCamera m_Camera;
-	std::shared_ptr<Karma::Shader> m_Shader;
+	float cameraRotationSpeed = 80.0f;
 };
 
 class KarmaApp : public Karma::Application
@@ -239,7 +175,6 @@ public:
 	KarmaApp()
 	{
 		PushLayer(new ExampleLayer());
-		//PushLayer(new VulkanLayer());
 	}
 
 };

@@ -2,6 +2,7 @@
 
 #include "Karma/Core.h"
 #include "Karma/Events/Event.h"
+#include "Karma/Events/ApplicationEvent.h"
 
 #include <string>
 #include <functional>
@@ -31,6 +32,7 @@ namespace Karma
 		{
 		}
 		virtual void OnUpdate() = 0;
+		virtual bool OnResize(WindowResizeEvent& event) = 0;
 
 		virtual unsigned int GetWidth() const = 0;
 		virtual unsigned int GetHeight() const = 0;

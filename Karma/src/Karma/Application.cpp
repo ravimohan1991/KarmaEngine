@@ -1,6 +1,5 @@
 #include "Application.h"
 #include "Karma/Log.h"
-#include "GLFW/glfw3.h"
 #include "Karma/Input.h"
 #include "Karma/Renderer/Renderer.h"
 #include "chrono"
@@ -8,14 +7,19 @@
 namespace Karma
 {
 	Application* Application::s_Instance = nullptr;
+#ifdef KR_WINDOWS_PLATFORM
+	Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Windows;
+#elif KR_LINUX_PLATFORM
+    Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Linux;
+#endif
 
 	Application::Application()
 	{
 		KR_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
-		
+
 		m_Window = std::unique_ptr<Window>(Window::Create());
-		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent));
+		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent)); // Setting the listener
 
 		//m_ImGuiLayer = new ImGuiLayer();
 		//PushOverlay(m_ImGuiLayer);
@@ -23,11 +27,21 @@ namespace Karma
 
 	Application::~Application()
 	{
-		Input::DeleteInstance();
 		Renderer::DeleteData();
 		s_Instance = nullptr;
 	}
 	
+	void Application::PrepareApplicationForRun()
+	{
+		HookInputSystem(Input::GetInputInstance());
+	}
+
+	// May need to uplift to more abstract implementation
+	void Application::HookInputSystem(std::shared_ptr<Input> input)
+	{
+		input->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent), m_Window);
+	}
+
 	void Application::Run()
 	{
 		std::chrono::high_resolution_clock::time_point begin, end;
@@ -69,6 +83,11 @@ namespace Karma
 		return true;
 	}
 
+	bool Application::OnWindowResize(WindowResizeEvent& event)
+	{
+		return m_Window->OnResize(event);
+	}
+
 	void Application::PushLayer(Layer* layer)
 	{
 		m_LayerStack.PushLayer(layer);
@@ -81,10 +100,25 @@ namespace Karma
 		layer->OnAttach();
 	}
 	
+	bool Application::OnControllerDeviceConnected(ControllerDeviceConnectedEvent& event)
+	{
+		KR_CORE_INFO("Application receieved Controller ConnectionEvent");
+		return true;
+	}
+	
+	bool Application::OnControllerDeviceDisconnected(ControllerDeviceDisconnectedEvent& event)
+	{
+		KR_CORE_INFO("Application receieved Controller DisconnectionEvent");
+		return true;
+	}
+
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(KR_BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(KR_BIND_EVENT_FN(Application::OnWindowResize));
+		dispatcher.Dispatch<ControllerDeviceConnectedEvent>(KR_BIND_EVENT_FN(Application::OnControllerDeviceConnected));
+		dispatcher.Dispatch<ControllerDeviceDisconnectedEvent>(KR_BIND_EVENT_FN(Application::OnControllerDeviceDisconnected));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{

@@ -2,7 +2,11 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "Platform/OpenGL/OpenGLBuffer.h"
+#include "Karma/KarmaUtilites.h"
+
+// PCH stuff
 #include <fstream>
+#include "Karma/Log.h"
 
 namespace Karma
 {
@@ -13,7 +17,7 @@ namespace Karma
 
 		// Send the vertex shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
-		const GLchar *source = vertexSrc.c_str();
+		const GLchar* source = vertexSrc.c_str();
 		glShaderSource(vertexShader, 1, &source, 0);
 
 		// Compile the vertex shader
@@ -106,20 +110,27 @@ namespace Karma
 		}
 
 		// Always detach shaders after a successful link.
-		glDetachShader(program, vertexShader);
+		glDetachShader(program, vertexShader); 
 		glDetachShader(program, fragmentShader);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile) : Shader(ubo)
+	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile, 
+		const std::string& shaderName) : Shader(ubo)
 	{	
+		m_ShaderName = shaderName;
+		
 		std::unordered_map<GLenum, std::string> shaderSources;
 
-		shaderSources[GL_VERTEX_SHADER] = ReadFile(vertexSrcFile);
-		shaderSources[GL_FRAGMENT_SHADER] = ReadFile(fragmentSrcFile);
+		shaderSources[GL_VERTEX_SHADER] = KarmaUtilities::ReadFileToSpitString(vertexSrcFile);
+		shaderSources[GL_FRAGMENT_SHADER] = KarmaUtilities::ReadFileToSpitString(fragmentSrcFile);
 
 		Compile(shaderSources);
 
 		m_UniformBufferObject = std::static_pointer_cast<OpenGLUniformBuffer>(ubo);
+		if (m_UniformBufferObject == nullptr)
+		{
+			KR_CORE_WARN("Cast to OpenGLUniformBuffer failed.");
+		}
 	}
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
@@ -198,29 +209,17 @@ namespace Karma
 		glDeleteProgram(m_RendererID);
 	}
 
-	std::string OpenGLShader::ReadFile(const std::string& file)
-	{
-		std::string result;
-		std::ifstream in(file, std::ios::in, std::ios::binary);
-		if (in)
-		{
-			in.seekg(0, std::ios::end);
-			result.resize(in.tellg());
-			in.seekg(0, std::ios::beg);
-			in.read(&result[0], result.size());
-			in.close();
-		}
-		else
-		{
-			KR_CORE_ASSERT(false, "Could not open shader file " + file);
-		}
-
-		return result;
-	}
-
 	void OpenGLShader::Bind() const
 	{
 		glUseProgram(m_RendererID);
+		glUniform1i(glGetUniformLocation(m_RendererID, "texSampler"), 0);
+	}
+
+	void OpenGLShader::Bind(const std::string& texShaderName) const
+	{
+		glUseProgram(m_RendererID);
+		// Hacky for now
+		glUniform1i(glGetUniformLocation(m_RendererID, texShaderName.c_str()), 0);
 	}
 
 	void OpenGLShader::UnBind() const
