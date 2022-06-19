@@ -101,6 +101,15 @@ if(WIN32)
     endif()
 endif()
 
+# Platform specific Defines
+if(WIN32)
+    add_compile_definitions(KR_WINDOWS_PLATFORM)
+elseif(UNIX AND NOT APPLE)
+    add_compile_definitions(KR_LINUX_PLATFORM)
+elseif(APPLE)
+    add_compile_definitions(KR_MAC_PLATFORM)
+endif()
+
 # Involved libraries and essentials
 add_subdirectory(vendor/Glad)
 add_subdirectory(vendor/GLFW)
@@ -123,16 +132,6 @@ list(APPEND ESSENTIAL_LIBS stbimage)
 
 # Set the project name and version
 project(KarmaEngine VERSION 1.0) # Versioning shall change to something more appropriate
-
-# Platform specific Defines
-if(WIN32)
-    add_compile_definitions(KR_WINDOWS_PLATFORM)
-elseif(UNIX AND NOT APPLE)
-    add_compile_definitions(KR_LINUX_PLATFORM)
-elseif(APPLE)
-    add_compile_definitions(KR_MAC_PLATFORM)
-endif()
-
 
 # Handling MSVC static class members for dynamic linkage. I know!
 if(MSVC AND BUILD_SHARED_LIBS)
