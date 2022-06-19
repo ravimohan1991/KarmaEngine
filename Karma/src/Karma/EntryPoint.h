@@ -1,4 +1,5 @@
 #pragma once
+#include "Karma.h"
 
 // Karma's entry point
 
@@ -35,7 +36,6 @@ int main(int argc, char** argv)
 
 // CreateApplication should be implemented in client
 extern Karma::Application* Karma::CreateApplication();
-Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Linux;
 
 int main(int argc, char** argv)
 {
