@@ -5,10 +5,11 @@ list(APPEND GLADSRC src/glad.c)
 project(Glad VERSION 1.0) # Versioning shall change to something more appropriate
 
 # Building the project (STATIC or DYNAMIC (SHARED))
-if (BUILD_SHARED_LIBS)
-    add_library(Glad SHARED ${GLADSRC} include/glad/glad.h)
-else()
+# Windows having issues with Dynamic linking. So we make consious efforts to relive Windows of the privilege.
+if (NOT BUILD_SHARED_LIBS OR WIN32)
     add_library(Glad STATIC ${GLADSRC} include/glad/glad.h)
+else()
+    add_library(Glad SHARED ${GLADSRC} include/glad/glad.h)
 endif()
 
 

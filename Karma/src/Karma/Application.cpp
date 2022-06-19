@@ -7,12 +7,17 @@
 namespace Karma
 {
 	Application* Application::s_Instance = nullptr;
+#ifdef KR_WINDOWS_PLATFORM
+	Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Windows;
+#elif KR_LINUX_PLATFORM
+	Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Linux
+#endif
 
 	Application::Application()
 	{
 		KR_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
-		
+
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent)); // Setting the listener
 

@@ -7,6 +7,13 @@ cmake_minimum_required(VERSION 3.4)
 # First we specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_C_STANDARD 17)
+
+# control where the static and shared libraries are built so that on windows
+# we don't need to tinker with the path to run the executable
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 
 # Finally we specify policies, if any
 # This one is for inter-directory linking
@@ -15,17 +22,8 @@ cmake_policy(SET CMP0079 NEW)
 # Setting some options
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
-# Platform specific Defines
-if(WIN32)
-add_compile_definitions(KR_WINDOWS_PLATFORM)
-elseif(UNIX AND NOT APPLE)
-add_compile_definitions(KR_LINUX_PLATFORM)
-elseif(APPLE)
-add_compile_definitions(KR_MAC_PLATFORM)
-endif()
-
 #add_compile_definitions(KR_ENABLE_ASSERTS)
-add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_SO)
+#add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_DLL)
 
 
 # Configurations for Debug/Release candidates. Need more fluidity

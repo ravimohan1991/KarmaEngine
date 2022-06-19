@@ -1,17 +1,16 @@
 # Macros
 MACRO(COLLECTIVEINCLUDES CurrentDir)
-  FILE(GLOB_RECURSE Children LIST_DIRECTORIES true RELATIVE ${CurrentDir} ${CurrentDir}/*)
-  FOREACH(Child ${Children})
-    IF(IS_DIRECTORY ${CurentDir}/${Child})
-      message(STATUS "foo include dir: ${curdir}/${child}")
-      target_include_directories(KarmaEngine
-        PRIVATE
-        ${CurrentDir}/${Child}
-        PUBLIC
-        $<BUILD_INTERFACE:${CurrentDir}/${Child}>
+    FILE(GLOB_RECURSE Children LIST_DIRECTORIES true RELATIVE ${CurrentDir} ${CurrentDir}/*)
+    FOREACH(Child ${Children})
+        IF(IS_DIRECTORY ${CurrentDir}/${Child})
+        target_include_directories(KarmaEngine
+            PRIVATE
+            ${CurrentDir}/${Child}
+            PUBLIC
+            $<BUILD_INTERFACE:${CurrentDir}/${Child}>
         )
-    ENDIF()
-  ENDFOREACH()
+        ENDIF()
+    ENDFOREACH()
 ENDMACRO()
 
 # Then the checks
@@ -96,6 +95,11 @@ if(UNIX AND NOT APPLE)
     mark_as_advanced(Vulkan_LIBRARY)
 endif()
 
+if(WIN32)
+    if(BUILD_SHARED_LIBS)
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    endif()
+endif()
 
 # Involved libraries and essentials
 add_subdirectory(vendor/Glad)
@@ -119,6 +123,29 @@ list(APPEND ESSENTIAL_LIBS stbimage)
 
 # Set the project name and version
 project(KarmaEngine VERSION 1.0) # Versioning shall change to something more appropriate
+
+# Platform specific Defines
+if(WIN32)
+    add_compile_definitions(KR_WINDOWS_PLATFORM)
+elseif(UNIX AND NOT APPLE)
+    add_compile_definitions(KR_LINUX_PLATFORM)
+elseif(APPLE)
+    add_compile_definitions(KR_MAC_PLATFORM)
+endif()
+
+
+# Handling MSVC static class members for dynamic linkage. I know!
+if(MSVC AND BUILD_SHARED_LIBS)
+    if(WIN32)
+        # Let Karma handle them
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
+        add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_DLL)
+        # Disable stupid C4251 warnings due to STL's negligence
+        add_definitions(/wd4251)
+    elseif(APPLE)
+        add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_SO) # May need to find appropriate define name because Apple doesn't generate SO
+    endif()
+endif()
 
 # Karma's personal code
 file(GLOB_RECURSE CPPFILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)

@@ -4,7 +4,7 @@
 
 namespace Karma
 {
-	class GraphicsContext
+	class KARMA_API GraphicsContext
 	{
 	public:
 		virtual void Init() = 0;

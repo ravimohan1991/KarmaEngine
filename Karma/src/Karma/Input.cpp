@@ -7,8 +7,8 @@
 namespace Karma
 {
     InputRegisteringAPI Input::s_InputAPI = InputRegisteringAPI::GlfwInput;
-	std::shared_ptr<Input> Input::s_Instance;// Write a note of this linking stuff. Think what happens without this line. Also ensure singleton pattern.
-	std::list<std::shared_ptr<ControllerDevice>> Input::m_ControllerDevices;
+	std::list<std::shared_ptr<ControllerDevice>> Karma::Input::m_ControllerDevices;
+	std::shared_ptr<Karma::Input> Karma::Input::s_Instance = nullptr;// Write a note of this linking stuff. Think what happens without this line. Also ensure singleton pattern.
 
 	ControllerDevice::ControllerDevice(int cID, const std::string& dName) : m_ControllerID(cID), m_DeviceName(dName)
 	{
@@ -127,7 +127,7 @@ namespace Karma
 	void Input::Init()
 	{
 #ifdef KR_WINDOWS_PLATFORM
-		s_Instance.reset(new WindowsInput());
+		Karma::Input::s_Instance.reset(new WindowsInput());
 #endif
 #ifdef KR_LINUX_PLATFORM
         s_Instance.reset(new LinuxInput());

@@ -7,7 +7,6 @@
 
 // CreateApplication should be implemented in client
 extern Karma::Application* Karma::CreateApplication();
-Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Windows;
 
 int main(int argc, char** argv)
 {
