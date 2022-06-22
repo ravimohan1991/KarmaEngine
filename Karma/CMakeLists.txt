@@ -1,4 +1,13 @@
+#[[
+    Abstractions and Models are NOT at WAR!
+                                            - Cobwoy's Talisman
+    But Abstractions don't care and Models can't understand!!
+                                            - Lul, Practicality
+ ]]
+
 # Macros
+# Recursive directory list generator
+# Snippet gracefully taken from https://stackoverflow.com/a/53017508
 MACRO(COLLECTIVEINCLUDES CurrentDir)
     FILE(GLOB_RECURSE Children LIST_DIRECTORIES true RELATIVE ${CurrentDir} ${CurrentDir}/*)
     FOREACH(Child ${Children})
@@ -13,13 +22,37 @@ MACRO(COLLECTIVEINCLUDES CurrentDir)
     ENDFOREACH()
 ENDMACRO()
 
+# Introducing the same directory hierarchy in the solution projects (for MSVC and Xcode)
+# Snippet gracefully taken from https://blog.audio-tk.com/2015/09/01/sorting-source-files-and-projects-in-folders-with-cmake-and-visual-studioxcode/
+MACRO(SOURCE_GROUP_BY_FOLDER Target)
+    SET(SOURCE_GROUP_DELIMITER "/")
+    SET(Last_Dir "")
+    SET(Files "")
+    message(STATUS "Organizing KarmaEngine's files by same, project directory hierarchy.")
+    FOREACH(File ${CPPFILES} ${HEADERFILES})
+        FILE(RELATIVE_PATH Relative_File "${PROJECT_SOURCE_DIR}/${Target}" ${File})
+        GET_FILENAME_COMPONENT(Dir "${Relative_File}" PATH)
+        IF (NOT "${Dir}" STREQUAL "${Last_Dir}")
+            IF (Files)
+                SOURCE_GROUP("${Last_Dir}" FILES ${Files})
+            ENDIF (Files)
+            SET(Files "")
+        ENDIF (NOT "${Dir}" STREQUAL "${Last_Dir}")
+        SET(Files ${Files} ${File})
+        SET(Last_Dir "${Dir}")
+    ENDFOREACH(File)
+    IF (Files)
+        SOURCE_GROUP("${Last_Dir}" FILES ${Files})
+    ENDIF (Files)
+ENDMACRO(SOURCE_GROUP_BY_FOLDER)
+
 # Then the checks
 find_package(Vulkan REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 message(STATUS "Checks are satisfied, we are good to proceed!")
 
-# Vulkan specific code
+# Vulkan detection specific code
 # also see https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/How-To-Write-Platform-Checks#platform-variables
 if(WIN32)
   set(_Vulkan_library_name vulkan-1)
@@ -95,22 +128,30 @@ if(UNIX AND NOT APPLE)
     mark_as_advanced(Vulkan_LIBRARY)
 endif()
 
-if(WIN32)
+# If using MSVC (Windows), we need dynamic libraries' members exported
+if(MSVC)
     if(BUILD_SHARED_LIBS)
         set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
     endif()
 endif()
 
-# Platform specific Defines
+# Platform specific defines
+# NOTE: These defines transcend libraries
 if(WIN32)
     add_compile_definitions(KR_WINDOWS_PLATFORM)
 	if(MSVC)
-	add_definitions(/MP)
+	    # For faster multithreaded compilation 
+        add_definitions(/MP)
 	endif()
 elseif(UNIX AND NOT APPLE)
     add_compile_definitions(KR_LINUX_PLATFORM)
 elseif(APPLE)
     add_compile_definitions(KR_MAC_PLATFORM)
+endif()
+
+# Configuration specific defines/settings
+if(NOT CMAKE_BUILD_TYPE STREQUAL RELEASE)
+    add_compile_definitions(KR_ENABLE_ASSERTS)
 endif()
 
 # Involved libraries and essentials
@@ -142,10 +183,11 @@ if(MSVC AND BUILD_SHARED_LIBS)
         # Let Karma handle them
         set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
         add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_DLL)
-        # Disable stupid C4251 warnings due to STL's negligence
+        # Disable stupid C4251 (dll-interface related) warnings due to STL's negligence
         add_definitions(/wd4251)
     elseif(APPLE)
-        add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_SO) # May need to find appropriate define name because Apple doesn't generate SO
+        # May need to find appropriate define name because Apple doesn't generate with lable SO
+        add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_SO)
     endif()
 endif()
 
@@ -153,6 +195,9 @@ endif()
 file(GLOB_RECURSE CPPFILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 # Shows the headerfile directory in project
 file(GLOB_RECURSE HEADERFILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h)
+
+# Organize the files in relevant groups
+SOURCE_GROUP_BY_FOLDER(src)
 
 # Building the project (STATIC or DYNAMIC (SHARED))
 if (BUILD_SHARED_LIBS)
@@ -191,7 +236,44 @@ target_include_directories(KarmaEngine
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-# Include sub-directories includes
+# Include sub-directories includes and interfacing
 COLLECTIVEINCLUDES(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_compile_definitions(KarmaEngine PUBLIC KarmaEngine)
+
+#[[
+ *                                          /\
+ *                                         / /
+ *                                      /\| |
+ *                                      | | |/\
+ *                                      | | / /
+ *                                      | `  /
+ *                                      `\  (___
+ *                                     _.->  ,-.-.
+ *                                  _.'      |  \ \
+ *                                 /    _____| 0 |0\
+ *                                |    /`    `^-.\.-'`-._
+ *                                |   |                  `-._
+ *                                |   :                      `.
+ *                                \    `._     `-.__         O.'
+ *         _.--,                   \     `._     __.^--._O_..-'
+ *        `---, `.                  `\     /` ` `
+ *             `\ `,                  `\   |
+ *              |   :                   ;  |
+ *              /    `.              ___|__|___
+ *             /       `.           (          )
+ *            /    `---.:____...---' `--------`.
+ *           /        (         `.      __      `.
+ *          |          `---------' _   /  \       \
+ *          |    .-.      _._     (_)  `--'        \
+ *          |   (   )    /   \                       \
+ *           \   `-'     \   /                       ;-._
+ *            \           `-'           \           .'   `.
+ *            /`.                  `\    `\     _.-'`-.    `.___
+ *           |   `-._                `\    `\.-'       `-.   ,--`
+ *            \      `--.___        ___`\    \           ||^\\
+ *             `._        | ``----''     `.   `\         `'  `
+ *                `--;     \  jgs          `.   `.
+ *                   //^||^\\               //^||^\\
+ *                   '  `'  `               '   '  `
+ ]]

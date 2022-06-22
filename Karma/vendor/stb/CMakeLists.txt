@@ -1,3 +1,10 @@
+#[[
+    Abstractions and Models are NOT at WAR!
+                                            - Cobwoy's Talisman
+    But Abstractions don't care and Models can't understand!!
+                                            - Lul, Practicality
+ ]]
+
 # For adding multiple files
 list(APPEND STBC dummy.cpp)
 
@@ -31,3 +38,40 @@ target_include_directories(stbimage
 )
 
 target_compile_definitions(stbimage PUBLIC stbimage)
+
+#[[
+ *                                          /\
+ *                                         / /
+ *                                      /\| |
+ *                                      | | |/\
+ *                                      | | / /
+ *                                      | `  /
+ *                                      `\  (___
+ *                                     _.->  ,-.-.
+ *                                  _.'      |  \ \
+ *                                 /    _____| 0 |0\
+ *                                |    /`    `^-.\.-'`-._
+ *                                |   |                  `-._
+ *                                |   :                      `.
+ *                                \    `._     `-.__         O.'
+ *         _.--,                   \     `._     __.^--._O_..-'
+ *        `---, `.                  `\     /` ` `
+ *             `\ `,                  `\   |
+ *              |   :                   ;  |
+ *              /    `.              ___|__|___
+ *             /       `.           (          )
+ *            /    `---.:____...---' `--------`.
+ *           /        (         `.      __      `.
+ *          |          `---------' _   /  \       \
+ *          |    .-.      _._     (_)  `--'        \
+ *          |   (   )    /   \                       \
+ *           \   `-'     \   /                       ;-._
+ *            \           `-'           \           .'   `.
+ *            /`.                  `\    `\     _.-'`-.    `.___
+ *           |   `-._                `\    `\.-'       `-.   ,--`
+ *            \      `--.___        ___`\    \           ||^\\
+ *             `._        | ``----''     `.   `\         `'  `
+ *                `--;     \  jgs          `.   `.
+ *                   //^||^\\               //^||^\\
+ *                   '  `'  `               '   '  `
+ ]]

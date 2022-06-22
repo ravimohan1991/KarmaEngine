@@ -1,6 +1,6 @@
 # Directories
-build/
-obj/
+KarmaLightHouse/
+KarmaBin/
 
 # Visual Studio files
 *.user
