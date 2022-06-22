@@ -17,9 +17,11 @@ set(CMAKE_C_STANDARD 17)
 # Control where the static and shared libraries are built
 # We would want a semi-packaging fashioned way where all bianries are together
 # whilst accessible from IDE (local debugger for instance!).
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../KarmaBin")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../KarmaBin")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../KarmaBin")
+set(REPOSITORYROOT "${CMAKE_CURRENT_SOURCE_DIR}")
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 
 # Finally we specify policies, if any
 # This one is for inter-directory linking

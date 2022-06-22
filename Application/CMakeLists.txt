@@ -50,7 +50,7 @@ target_compile_definitions(SandBox PRIVATE SandBox)
 
 if(MSVC)
     # Set local debugger path
-    set_target_properties(SandBox PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/../KarmaBin")
+    set_target_properties(SandBox PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 endif()
 
 #[[
