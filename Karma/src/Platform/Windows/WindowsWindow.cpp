@@ -221,6 +221,7 @@ namespace Karma
 		switch (currentAPI)
 		{
 			case RendererAPI::API::OpenGL:
+            {
 				if (enabled)
 				{
 					glfwSwapInterval(1);
@@ -230,9 +231,18 @@ namespace Karma
 					glfwSwapInterval(0);
 				}
 				break;
+            }
 			case RendererAPI::API::Vulkan:
+            {
 				VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
 				vContext->SetVSync(enabled);
+                break;
+            }
+            case RendererAPI::API::None:
+            {
+                KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+                break;
+            }
 		}
 	}
 

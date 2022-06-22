@@ -29,6 +29,8 @@ namespace Karma
 			return GL_INT;
 		case Karma::ShaderDataType::Bool:
 			return GL_INT;
+        case Karma::ShaderDataType::None:
+            return GL_NONE;
 		}
 
 		KR_CORE_ASSERT(false, "Unknown ShaderDataType!");

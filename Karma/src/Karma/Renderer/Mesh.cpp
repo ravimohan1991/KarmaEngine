@@ -175,7 +175,7 @@ namespace Karma
 	{
 		buffLayout.PushElement({ ShaderDataType::Float3, "v_Position" });
 
-		if (meshToProcess->mTextureCoords != nullptr)
+		if (meshToProcess->mTextureCoords[0] != nullptr)
 		{
 			buffLayout.PushElement({ ShaderDataType::Float2, "v_UV" });
 		}

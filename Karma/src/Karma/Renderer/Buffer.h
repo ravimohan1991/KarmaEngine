@@ -53,6 +53,9 @@ namespace Karma
 				return 4 * 4;
 			case ShaderDataType::Bool:
 				return 4;
+            case ShaderDataType::None:
+                KR_CORE_WARN("ShaderDataType is none. Size shal be considered 0.");
+                return 0;
 		}
 
 		KR_CORE_ASSERT(false, "Unknown ShaderDataType");

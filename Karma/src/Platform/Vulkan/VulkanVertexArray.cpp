@@ -195,15 +195,28 @@ namespace Karma
 	{
 		switch (type)
 		{
-		case ShaderDataType::Float:
-			return VK_FORMAT_R32_SFLOAT;
-		case ShaderDataType::Float2:
-			return VK_FORMAT_R32G32_SFLOAT;
-		case ShaderDataType::Float3:
-			return VK_FORMAT_R32G32B32_SFLOAT;
-		case ShaderDataType::Float4:
-			return VK_FORMAT_R32G32B32A32_SFLOAT;
-		}
+            case ShaderDataType::Float:
+                return VK_FORMAT_R32_SFLOAT;
+            case ShaderDataType::Float2:
+                return VK_FORMAT_R32G32_SFLOAT;
+            case ShaderDataType::Float3:
+                return VK_FORMAT_R32G32B32_SFLOAT;
+            case ShaderDataType::Float4:
+                return VK_FORMAT_R32G32B32A32_SFLOAT;
+            case ShaderDataType::None:
+            case ShaderDataType::Mat3:
+            case ShaderDataType::Mat4:
+            case ShaderDataType::Int:
+            case ShaderDataType::Int2:
+            case ShaderDataType::Int3:
+            case ShaderDataType::Int4:
+            case ShaderDataType::Bool:
+                // Refer Mesh::GaugeVertexDataLayout for usual datatype
+                // to be used in the context of vertex buffer
+                KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
+                return VK_FORMAT_UNDEFINED;
+                break;
+        }
 
 		KR_CORE_ASSERT(false, "Vulkan doesn't support this ShaderDatatype");
 		return VK_FORMAT_UNDEFINED;
