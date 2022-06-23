@@ -29,8 +29,8 @@ namespace Karma
 			return GL_INT;
 		case Karma::ShaderDataType::Bool:
 			return GL_INT;
-        case Karma::ShaderDataType::None:
-            return GL_NONE;
+		case Karma::ShaderDataType::None:
+			return GL_NONE;
 		}
 
 		KR_CORE_ASSERT(false, "Unknown ShaderDataType!");
@@ -40,8 +40,8 @@ namespace Karma
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
 		//glCreateVertexArrays(1, &m_RendererID);
-        glGenVertexArrays(1, &m_RendererID);
-        Bind();
+		glGenVertexArrays(1, &m_RendererID);
+		Bind();
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()

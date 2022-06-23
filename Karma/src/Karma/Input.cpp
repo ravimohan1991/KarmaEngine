@@ -7,7 +7,7 @@
 
 namespace Karma
 {
-    InputRegisteringAPI Input::s_InputAPI = InputRegisteringAPI::GlfwInput;
+	InputRegisteringAPI Input::s_InputAPI = InputRegisteringAPI::GlfwInput;
 	std::list<std::shared_ptr<ControllerDevice>> Karma::Input::m_ControllerDevices;
 	std::shared_ptr<Karma::Input> Karma::Input::s_Instance = nullptr;// Write a note of this linking stuff. Think what happens without this line. Also ensure singleton pattern.
 
@@ -16,7 +16,7 @@ namespace Karma
 		KR_CORE_INFO("Spawned instance for ControllerDevice: {0}, with id: {1}", dName, cID);
 		switch (Input::GetAPI())
 		{
-            case InputRegisteringAPI::GlfwInput:
+			case InputRegisteringAPI::GlfwInput:
 			{
 				m_IsGamePad = glfwJoystickIsGamepad(cID);
 				if (m_IsGamePad)
@@ -59,7 +59,7 @@ namespace Karma
 	{
 		switch (Input::GetAPI())
 		{
-            case InputRegisteringAPI::GlfwInput:
+			case InputRegisteringAPI::GlfwInput:
 			{
 				if (glfwInit() == 0)
 				{
@@ -130,9 +130,9 @@ namespace Karma
 #if KR_WINDOWS_PLATFORM
 		Karma::Input::s_Instance.reset(new WindowsInput());
 #elif KR_LINUX_PLATFORM
-        Karma::Input::s_Instance.reset(new LinuxInput());
+		Karma::Input::s_Instance.reset(new LinuxInput());
 #elif KR_MAC_PLATFORM
-        Karma::Input::s_Instance.reset(new MacInput());
+		Karma::Input::s_Instance.reset(new MacInput());
 #endif
 	}
 }

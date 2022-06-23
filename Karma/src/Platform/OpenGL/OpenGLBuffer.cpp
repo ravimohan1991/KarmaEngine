@@ -8,8 +8,8 @@ namespace Karma
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
 	{
 		//glCreateBuffers(1, &m_RendererID);
-        // Courtsey MacOS Monterey's OpenGL (v 4.1) bottle neck
-        glGenBuffers(1, &m_RendererID);
+		// Courtsey MacOS Monterey's OpenGL (v 4.1) bottle neck
+		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 		// Upload to GPU
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -41,8 +41,8 @@ namespace Karma
 		: m_Count(count)
 	{
 		//glCreateBuffers(1, &m_RendererID);
-        glGenBuffers(1, &m_RendererID);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+		glGenBuffers(1, &m_RendererID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
 		// Upload to GPU
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 	}
@@ -114,8 +114,8 @@ namespace Karma
 	void OpenGLUniformBuffer::GenerateUniformBufferObject()
 	{
 		//glCreateBuffers(1, &m_UniformsID);
-        glGenBuffers(1, &m_UniformsID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_UniformsID);
+		glGenBuffers(1, &m_UniformsID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_UniformsID);
 	}
 
 	void OpenGLUniformBuffer::BindUniformBufferObject() const
