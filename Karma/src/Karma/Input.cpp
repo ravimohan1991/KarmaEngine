@@ -1,6 +1,7 @@
 #include "Input.h"
 #include "Platform/Windows/WindowsInput.h"
 #include "Platform/Linux/LinuxInput.h"
+#include "Platform/Mac/MacInput.h"
 #include "GLFW/glfw3.h"
 #include "Karma/KarmaUtilites.h"
 
@@ -126,11 +127,12 @@ namespace Karma
 
 	void Input::Init()
 	{
-#ifdef KR_WINDOWS_PLATFORM
+#if KR_WINDOWS_PLATFORM
 		Karma::Input::s_Instance.reset(new WindowsInput());
-#endif
-#ifdef KR_LINUX_PLATFORM
-        s_Instance.reset(new LinuxInput());
+#elif KR_LINUX_PLATFORM
+        Karma::Input::s_Instance.reset(new LinuxInput());
+#elif KR_MAC_PLATFORM
+        Karma::Input::s_Instance.reset(new MacInput());
 #endif
 	}
 }

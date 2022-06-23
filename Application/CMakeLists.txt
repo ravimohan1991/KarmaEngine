@@ -51,6 +51,11 @@ target_compile_definitions(SandBox PRIVATE SandBox)
 if(MSVC)
     # Set local debugger path
     set_target_properties(SandBox PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
+elseif(XCODE)
+    # Set local debugger path
+    set_target_properties(SandBox PROPERTIES
+    XCODE_GENERATE_SCHEME TRUE
+    XCODE_SCHEME_WORKING_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 endif()
 
 #[[

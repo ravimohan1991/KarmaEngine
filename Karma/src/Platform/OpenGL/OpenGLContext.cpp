@@ -15,7 +15,9 @@ namespace Karma
 	{
 		glfwMakeContextCurrent(m_windowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);// Loads OpenGL extensions. Windows made OpenGL free!
-		KR_CORE_ASSERT(status, "Failed to initialize Glad");
+		
+        KR_CORE_ASSERT(status, "Failed to initialize Glad");
+        KR_CORE_INFO("Glad initialized with OpenGL version {0}", (const char *) glGetString(GL_VERSION));
 	}
 
 	void OpenGLContext::SwapBuffers()

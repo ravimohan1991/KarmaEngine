@@ -5,6 +5,7 @@
 #include "Karma/Events/MouseEvent.h"
 #include "GLFW/glfw3.h"
 #include "Platform/OpenGL/OpenGLContext.h"
+#include "stb_image.h"
 
 namespace Karma
 {
@@ -38,16 +39,23 @@ namespace Karma
 		m_Data.Height = props.Height;
 
 		KR_CORE_INFO("Creating Mac window {0} ({1}, {2})", props.Title, props.Width, props.Height);
-
+        
 		if (!s_GLFWInitialized)
 		{
 			int success = glfwInit();
 			KR_CORE_ASSERT(success, "GLFW not initialized");
-
+            
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+            
 			glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 		}
 
+        // Rendering API relevant stuff be here
+        
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		
 		m_Context = new OpenGLContext(m_Window);
@@ -56,6 +64,9 @@ namespace Karma
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
+        
+        // Used for event callbacks
+        glfwSetWindowUserPointer(m_Window, &m_Data);
 
 		// Set glfw callbacks
 		SetGLFWCallbacks(m_Window);

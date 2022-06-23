@@ -49,13 +49,6 @@ add_subdirectory(Application)
 # Relevant linking of finished Application with the Engine!
 target_link_libraries(SandBox PUBLIC KarmaEngine)
 
-# PostBuild processes, experimental now
-#add_custom_command(TARGET KarmaEngine POST_BUILD
-#    COMMAND ${CMAKE_COMMAND} -E copy
-#    "$(TargetPath)"
-#    "$(ProjectDir)$(Platform)\\$(Configuration)" 
-#)
-
 # Need to find a way to give access to the resources (assets and whatnot) to the built binaries
 
 

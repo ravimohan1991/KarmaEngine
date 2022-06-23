@@ -1,6 +1,6 @@
 // Shader needs be conforming to Mesh vertexdata. So we need an algorithm 
 // to gauge that.
-#version 450
+#version 410
 #extension GL_ARB_separate_shader_objects : enable
 
 layout(location = 0) in vec3 inPosition;
@@ -11,7 +11,8 @@ layout(location = 2) in vec4 inColor;
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec2 fragUVs;
 
-layout(std140, binding = 0) uniform MVPUniformBufferObject
+//layout(std140, binding = 0)
+uniform MVPUniformBufferObject
 {
 	mat4 u_Projection;
 	mat4 u_View;
