@@ -30,6 +30,10 @@ cmake_policy(SET CMP0079 NEW)
 # Setting some options
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
+# Setting some flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-enum-enum-conversion")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror-implicit-function-declaration")
+
 #----------------------------------------------------------------------------#
 
 # Set Engine project
