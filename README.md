@@ -29,7 +29,7 @@ cd KarmaLightHouse
 cmake ../
 ```
 
-And that is it!  Visual Studio solution shall be generated in the folder ```KarmaLightHouse```.
+And that is it!  Visual Studio solution shall be generated in the folder ```KarmaLightHouse```.  Also make sure to update the Windows SDK to [latest](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/) 
 
 
 ### Linux ###

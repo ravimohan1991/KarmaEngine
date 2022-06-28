@@ -30,22 +30,25 @@ cmake_policy(SET CMP0079 NEW)
 # Setting some options
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
-# Setting some flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-enum-enum-conversion")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror-implicit-function-declaration")
-
 #----------------------------------------------------------------------------#
 
 # Set Engine project
 project(KarmaBasedProjectName VERSION 1.0)
+
+# Setting some flags
+
+# For complete list of Compiler IDs check output_required_files
+# https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_ID.html#variable:CMAKE_%3CLANG%3E_COMPILER_ID
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-enum-enum-conversion")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror-implicit-function-declaration")
+endif()
 
 # Then we specify the involved libraries
 add_subdirectory(Karma)
 
 # Here we define essential libraries for proofing subsequent client building
 list(APPEND ESSENTIAL_LIBS Karma)
-
-message(STATUS "Libraries list ${ESSENTIAL_LIBS}")
 
 # Build the Client
 add_subdirectory(Application)

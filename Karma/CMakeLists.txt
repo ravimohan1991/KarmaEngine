@@ -46,6 +46,15 @@ MACRO(SOURCE_GROUP_BY_FOLDER Target)
     ENDIF (Files)
 ENDMACRO(SOURCE_GROUP_BY_FOLDER)
 
+# Print a list with style
+MACRO(PRINT_LIST PList)
+	SET(Counter 0)
+	FOREACH(Elem IN LISTS ${PList})
+		MATH(EXPR Counter "${Counter}+1")
+		message(STATUS "#${Counter}: ${Elem}")
+	ENDFOREACH(Elem)
+ENDMACRO(PRINT_LIST)
+
 # Then the checks
 find_package(Vulkan REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -173,6 +182,13 @@ list(APPEND ESSENTIAL_LIBS AssImp)
 list(APPEND ESSENTIAL_LIBS ${Vulkan_LIBRARY})
 list(APPEND ESSENTIAL_LIBS GlSlang)
 list(APPEND ESSENTIAL_LIBS stbimage)
+
+# Print Karma's libraries
+message(STATUS "########################")
+message(STATUS "##  Karma Libraries   ##")
+message(STATUS "########################")
+PRINT_LIST(ESSENTIAL_LIBS)
+message(STATUS "########################")
 
 # Set the project name and version
 project(KarmaEngine VERSION 1.0) # Versioning shall change to something more appropriate
