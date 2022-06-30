@@ -5,6 +5,8 @@
 #include "Karma/Events/MouseEvent.h"
 #include "GLFW/glfw3.h"
 #include "Platform/OpenGL/OpenGLContext.h"
+#include "Platform/Vulkan/VulkanContext.h"
+#include "Karma/Renderer/Renderer.h"
 
 namespace Karma
 {
@@ -19,7 +21,7 @@ namespace Karma
 	{
 		return new LinuxWindow(props);
 	}
-#endif   
+#endif
 
 	LinuxWindow::LinuxWindow(const WindowProps& props)
 	{
@@ -48,18 +50,57 @@ namespace Karma
 			s_GLFWInitialized = true;
 		}
 
+		RendererAPI::API currentAPI = RendererAPI::GetAPI();
+
+		if (currentAPI == RendererAPI::API::Vulkan)
+		{
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			uint32_t extensionCount = 0;
+			vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+			KR_CORE_INFO("{0} Vulkan extensions supported", extensionCount);
+		}
+		else if(currentAPI == RendererAPI::API::OpenGL)
+		{
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+			glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+			glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+		}
+
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		
-		m_Context = new OpenGLContext(m_Window);
+
+		switch (currentAPI)
+		{
+			case RendererAPI::API::None:
+				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				break;
+			case RendererAPI::API::OpenGL:
+				m_Context = new OpenGLContext(m_Window);
+				break;
+			case RendererAPI::API::Vulkan:
+				m_Context = new VulkanContext(m_Window);
+				break;
+		}
+
 		m_Context->Init();
+		SetVSync(true);
 
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-		SetVSync(true);
 
 		// Set glfw callbacks
 		SetGLFWCallbacks(m_Window);
+
+		// Set the ICOOOOON
+		GLFWimage karmaEQ;
+		karmaEQ.pixels = stbi_load("../Resources/Textures/KarmaEQ.png", &karmaEQ.width, &karmaEQ.height, 0, 4); //rgba channels
+		glfwSetWindowIcon(m_Window, 1, &karmaEQ);
+		stbi_image_free(karmaEQ.pixels);
 	}
+
+		bool LinuxWindow::OnResize(WindowResizeEvent& event)
+		{
+			return m_Context->OnWindowResize(event);
+		}
 
 	void LinuxWindow::SetGLFWCallbacks(GLFWwindow* glfwWindow)
 	{
@@ -115,11 +156,11 @@ namespace Karma
 			}
 
 		});
-        
-        glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
+
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			
+
 			KeyTypedEvent event(keycode);
 			data.EventCallback(event);
 		});
@@ -160,11 +201,23 @@ namespace Karma
 			MouseMovedEvent event((float) xPos, (float) yPos);
 			data.EventCallback(event);
 		});
+
+		/*
+		glfwSetWindowPosCallback(m_Window, [](GLFWwindow* window, int xpos, int ypos)
+		{
+		});
+		*/
 	}
 
 	void LinuxWindow::ShutDown()
 	{
 		glfwDestroyWindow(m_Window);
+		glfwTerminate();
+		if (m_Context)
+		{
+			delete m_Context;
+			m_Context = 0;
+		}
 	}
 
 	void LinuxWindow::OnUpdate()
@@ -175,13 +228,32 @@ namespace Karma
 
 	void LinuxWindow::SetVSync(bool enabled)
 	{
-		if (enabled)
+		RendererAPI::API currentAPI = RendererAPI::GetAPI();
+		switch (currentAPI)
 		{
-			glfwSwapInterval(1);
-		}
-		else
-		{ 
-			glfwSwapInterval(0);
+			case RendererAPI::API::OpenGL:
+			{
+				if (enabled)
+				{
+					glfwSwapInterval(1);
+				}
+				else
+				{
+					glfwSwapInterval(0);
+				}
+				break;
+			}
+			case RendererAPI::API::Vulkan:
+			{
+				VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
+				vContext->SetVSync(enabled);
+				break;
+			}
+			case RendererAPI::API::None:
+			{
+				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				break;
+			}
 		}
 	}
 

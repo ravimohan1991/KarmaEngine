@@ -32,10 +32,10 @@ namespace Karma
 		GLFWwindow* GetHandle() const { return m_Window; }
 
 	private:
-		virtual void Init(const WindowProps& props);
-		
+		void Init(const WindowProps& props);
+
 		void SetGLFWCallbacks(GLFWwindow* glfwWindow);
-		virtual void ShutDown();
+		void ShutDown();
 
 		GLFWwindow* m_Window;
 		GraphicsContext* m_Context;

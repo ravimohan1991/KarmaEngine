@@ -14,9 +14,9 @@ namespace Karma
 	class KARMA_API MacInput : public Input
 	{
     public:
-            MacInput();
+        MacInput();
 
-            void SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window) override;
+        void SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window) override;
         
 	protected:
 		virtual bool IsKeyPressedImpl(int keycode) override;

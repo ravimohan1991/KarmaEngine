@@ -8,7 +8,7 @@ namespace Karma
 {
 	WindowsInput::WindowsInput() : m_Data(), Input(m_Data)
 	{
-		
+
 	}
 
 	void WindowsInput::SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window)
@@ -20,7 +20,7 @@ namespace Karma
 
 		// We need to send event information  to Application class, somehow
 
-        if (Input::GetAPI() == InputRegisteringAPI::GlfwInput)
+		if (Input::GetAPI() == InputRegisteringAPI::GlfwInput)
 		{
 			glfwSetJoystickCallback([](int cID, int event)
 			{
@@ -41,7 +41,7 @@ namespace Karma
 				else if (event == GLFW_CONNECTED)
 				{
 					//void* test = glfwGetJoystickUserPointer(cID);// how to call application function when pointer is not set?
-					
+
 					//WindowsInputData& data = *static_cast<WindowsInputData*>(test);
 
 					ControllerDeviceConnectedEvent eve(cID, event);
@@ -65,10 +65,10 @@ namespace Karma
 
 	void WindowsInput::OnControllerDeviceDisconnected(ControllerDeviceDisconnectedEvent& e)
 	{
-		
+
 	}
 
-    bool WindowsInput::IsKeyPressedImpl(int keycode)
+	bool WindowsInput::IsKeyPressedImpl(int keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetKey(window, keycode);
