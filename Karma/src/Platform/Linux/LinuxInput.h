@@ -32,5 +32,4 @@ namespace Karma
 
 		LinuxInputData m_Data;
 	};
-
 }

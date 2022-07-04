@@ -6,6 +6,8 @@
 #include "GLFW/glfw3.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "stb_image.h"
+#include "Karma/Renderer/Renderer.h"
+#include "Platform/Vulkan/VulkanContext.h"
 
 namespace Karma
 {
@@ -55,14 +57,39 @@ namespace Karma
 		}
 
 		// Rendering API relevant stuff be here
+		
+		RendererAPI::API currentAPI = RendererAPI::GetAPI();
+
+		if (currentAPI == RendererAPI::API::Vulkan)
+		{
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			uint32_t extensionCount = 0;
+			vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+			KR_CORE_INFO("{0} Vulkan extensions supported", extensionCount);
+		}
+		else if(currentAPI == RendererAPI::API::OpenGL)
+		{
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+			glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+			glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+		}
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		
-		m_Context = new OpenGLContext(m_Window);
-		m_Context->Init();
+		switch (currentAPI)
+		{
+			case RendererAPI::API::None:
+				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				break;
+			case RendererAPI::API::OpenGL:
+				m_Context = new OpenGLContext(m_Window);
+				break;
+			case RendererAPI::API::Vulkan:
+				m_Context = new VulkanContext(m_Window);
+				break;
+		}
 
-		// Used for event callbacks
-		glfwSetWindowUserPointer(m_Window, &m_Data);
+		m_Context->Init();
 		SetVSync(true);
 
 		// Used for event callbacks
@@ -186,13 +213,32 @@ namespace Karma
 
 	void MacWindow::SetVSync(bool enabled)
 	{
-		if (enabled)
+		RendererAPI::API currentAPI = RendererAPI::GetAPI();
+		switch (currentAPI)
 		{
-			glfwSwapInterval(1);
-		}
-		else
-		{ 
-			glfwSwapInterval(0);
+			case RendererAPI::API::OpenGL:
+			{
+				if (enabled)
+				{
+					glfwSwapInterval(1);
+				}
+				else
+				{
+					glfwSwapInterval(0);
+				}
+				break;
+			}
+			case RendererAPI::API::Vulkan:
+			{
+				VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
+				vContext->SetVSync(enabled);
+				break;
+			}
+			case RendererAPI::API::None:
+			{
+				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				break;
+			}
 		}
 	}
 

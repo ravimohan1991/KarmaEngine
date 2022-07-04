@@ -4,32 +4,129 @@
 
 namespace Karma
 {
-    MacInput::MacInput() : m_Data(), Input(m_Data)
-    {
+	MacInput::MacInput() : m_Data(), Input(m_Data)
+	{
+	}
 
-    }
+	void MacInput::SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window)
+	{
+		m_Data.EventCallback = callback;
 
-    void MacInput::SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window)
-    {
+		//WindowsInputData data = *static_cast<WindowsInputData*>(glfwGetJoystickUserPointer(0));
+		//data.EventCallback;
 
-    }
-    
-    bool MacInput::IsControllerButtonPressedImpl(int button, int cID)
-    {
-        return false;
-    }
+		// We need to send event information  to Application class, somehow
 
-    bool MacInput::IsMouseButtonReleasedImpl(int button)
-    {
-        return false;
-    }
+		if (Input::GetAPI() == InputRegisteringAPI::GlfwInput)
+		{
+			glfwSetJoystickCallback([](int cID, int event)
+			{
+				if (event == GLFW_DISCONNECTED)
+				{
+			//WindowsInputData& data = *static_cast<WindowsInputData*>(glfwGetJoystickUserPointer(cID)); returns null after disconnection so no use
 
-    float MacInput::ControllerAxisPivotValImpl(int axis, int cID)
-    {
-        return 0.0f;
-    }
+					ControllerDeviceDisconnectedEvent eve(cID, event);
+					//data.EventCallback(eve);
 
-    bool MacInput::IsKeyPressedImpl(int keycode)
+					EventDispatcher dispatcher(eve);
+			dispatcher.Dispatch<ControllerDeviceDisconnectedEvent>([](ControllerDeviceDisconnectedEvent event) -> bool
+					{
+						KR_CORE_INFO("Event: {0}", event.ToString().c_str());
+						return true;
+					});
+				}
+				else if (event == GLFW_CONNECTED)
+				{
+			//void* test = glfwGetJoystickUserPointer(cID);// how to call application function when pointer is not set?
+
+					//WindowsInputData& data = *static_cast<WindowsInputData*>(test);
+
+					ControllerDeviceConnectedEvent eve(cID, event);
+					//data.EventCallback(eve);
+
+					EventDispatcher dispatcher(eve);
+					dispatcher.Dispatch<ControllerDeviceConnectedEvent>([](ControllerDeviceConnectedEvent event) -> bool
+					{
+					KR_CORE_INFO("Event: {0}", event.ToString().c_str());
+					return true;
+					});
+				}
+
+			});
+		}
+	}
+
+	bool MacInput::IsControllerButtonPressedImpl(int button, int cID)
+	{
+		// Assuming glfw api
+		GLFWgamepadstate cState;
+		std::shared_ptr<ControllerDevice> cDevice;
+		for (const auto& elem : m_ControllerDevices)
+		{
+			if (elem->GetControllerID() == cID)
+			{
+				cDevice = elem;
+				break;
+			}
+			else
+			{
+				KR_CORE_WARN("Can't find Controller Device corresponding to controller ID: {0}", cID);
+				continue;
+			}
+		}
+		if (cDevice && glfwGetGamepadState(cDevice->GetControllerID(), &cState) == GLFW_TRUE)
+		{
+			if (cState.buttons[button])
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		return false;
+	}
+
+	bool MacInput::IsMouseButtonReleasedImpl(int button)
+	{
+		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		auto state = glfwGetMouseButton(window, button);
+
+		return state == GLFW_RELEASE;
+	}
+
+	float MacInput::ControllerAxisPivotValImpl(int axis, int cID)
+	{
+		// Assuming glfw api
+		GLFWgamepadstate cState;
+
+		std::shared_ptr<ControllerDevice> cDevice;
+
+		for (const auto& elem : m_ControllerDevices)
+		{
+			if (elem->GetControllerID() == cID)
+			{
+				cDevice = elem;
+				break;
+			}
+			else
+			{
+				KR_CORE_WARN("Can't find Controller Device corresponding to controller ID: {0}", cID);
+				continue;
+			}
+		}
+
+		if (cDevice && glfwGetGamepadState(cDevice->GetControllerID(), &cState) == GLFW_TRUE)
+		{
+			//KR_CORE_INFO("Axis status: {0}", cState.axes[axis]);
+			return cState.axes[axis];
+		}
+
+		return 0.f;
+	}
+
+	bool MacInput::IsKeyPressedImpl(int keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetKey(window, keycode);
