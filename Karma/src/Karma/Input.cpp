@@ -3,7 +3,6 @@
 #include "Platform/Linux/LinuxInput.h"
 #include "Platform/Mac/MacInput.h"
 #include "GLFW/glfw3.h"
-#include "Karma/KarmaUtilites.h"
 
 namespace Karma
 {
@@ -47,12 +46,12 @@ namespace Karma
 
 	GameAction::GameAction()
 	{
-	
+
 	}
 
 	Button::Button()
 	{
-	
+
 	}
 
 	Input::Input(InputData& inputDatRef)
@@ -84,7 +83,7 @@ namespace Karma
 	void Input::SetGamepadMapping()
 	{
 		std::string testString = KarmaUtilities::ReadFileToSpitString("../Resources/Misc/GameControllerDB.txt");
-		
+
 		const char* mappings = testString.c_str();
 
 		glfwUpdateGamepadMappings(mappings);
@@ -95,9 +94,9 @@ namespace Karma
 	}
 
 	void Input::SetConnectedJoySticks()
-	{	
-		int present = 0;	
-		
+	{
+		int present = 0;
+
 		for (int i = 0; i < GLFW_JOYSTICK_LAST; i++)
 		{
 			present = glfwJoystickPresent(i);
@@ -105,7 +104,7 @@ namespace Karma
 			if (present == 1)
 			{
 				std::shared_ptr<ControllerDevice> joyStick;
-				
+
 				if (glfwJoystickIsGamepad(i) == false)
 				{
 					KR_CORE_WARN("There is no XBox mapping for the detected device ({0}).  Consequently, Karma can't (and won't) interpret the hardware.  Please check the mapping database", glfwGetJoystickName(i));

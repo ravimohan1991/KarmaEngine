@@ -109,7 +109,7 @@ namespace Karma
 		bool HasStencilComponent(VkFormat format);
 
 		// Texture image
-		void CreateTextureImage();
+		void CreateTextureImage(VulkanImageBuffer* vImageBuffer);
 		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 		void CreateTextureImageView();
@@ -121,7 +121,7 @@ namespace Karma
 		void SetVSync(bool bEnable);
 
 		void Initializeglslang();
-        void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
+		void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
 		void ClearUBO();
 		void RecreateUBO();
 		void UploadUBO(size_t currentImage);
@@ -164,7 +164,7 @@ namespace Karma
 		std::vector<VkImageView> m_swapChainImageViews;
 
 		VkRenderPass m_renderPass;
-		
+
 		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 		VkCommandPool m_commandPool;
 
@@ -177,7 +177,7 @@ namespace Karma
 		VkImageView m_DepthImageView;
 
 		// Prototype
-		VulkanImageBuffer* m_ImageBuffer;
+		//VulkanImageBuffer* m_ImageBuffer;
 		VkImage m_TextureImage;
 		VkDeviceMemory m_TextureImageMemory;
 		VkImageView m_TextureImageView;

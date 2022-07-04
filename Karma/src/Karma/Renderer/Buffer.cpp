@@ -51,8 +51,7 @@ namespace Karma
 				OpenGLImageBuffer::SetUpImageBuffer(filename);
 				return nullptr;
 			case RendererAPI::API::Vulkan:
-				KR_CORE_ASSERT(false, "Vulkan is not supported yet!");
-				return nullptr;
+				return(static_cast<ImageBuffer*>(new VulkanImageBuffer(filename)));
 		}
 
 		KR_CORE_ASSERT(false, "Unknown RendererAPI specified");

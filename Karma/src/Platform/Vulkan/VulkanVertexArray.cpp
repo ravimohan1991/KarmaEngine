@@ -3,7 +3,7 @@
 #include <fstream>
 
 namespace Karma
-{	
+{
 	VulkanVertexArray::VulkanVertexArray()
 	{
 		m_device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
@@ -11,7 +11,7 @@ namespace Karma
 
 	VulkanVertexArray::~VulkanVertexArray()
 	{
-		vkDeviceWaitIdle(m_device);		
+		vkDeviceWaitIdle(m_device);
 		CleanupPipeline();
 	}
 
@@ -29,11 +29,11 @@ namespace Karma
 	}
 
 	void VulkanVertexArray::CleanupPipeline()
-	{	
+	{
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 		vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr);
-		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);// Descriptorsets get automatically get freed 
+		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);// Descriptorsets get automatically get freed
 	}
 
 	void VulkanVertexArray::SetShader(std::shared_ptr<Shader> shader)
@@ -156,7 +156,22 @@ namespace Karma
 		vkDestroyShaderModule(m_device, fragShaderModule, nullptr);
 		vkDestroyShaderModule(m_device, vertShaderModule, nullptr);
 	}
-	
+
+	void VulkanVertexArray::SetMesh(std::shared_ptr<Mesh> mesh)
+	{
+		KR_CORE_ASSERT(mesh->GetVertexBuffer()->GetLayout().GetElements().size(), "VertexBufferLayout empty.");
+
+		//mesh->GetVertexBuffer()->Bind();
+		AddVertexBuffer(mesh->GetVertexBuffer());
+
+		// We are seperating VertexBuffers from Mesh.  Hopefully useful for batch rendering!
+		m_VertexBuffers.push_back(mesh->GetVertexBuffer());
+
+		// May need modificaitons for batch rendering later.
+		m_IndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer());
+	}
+
+	// Hook with Karma::Utilities
 	std::vector<char> VulkanVertexArray::ReadFile(const std::string& filename)
 	{
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
@@ -195,28 +210,28 @@ namespace Karma
 	{
 		switch (type)
 		{
-            case ShaderDataType::Float:
-                return VK_FORMAT_R32_SFLOAT;
-            case ShaderDataType::Float2:
-                return VK_FORMAT_R32G32_SFLOAT;
-            case ShaderDataType::Float3:
-                return VK_FORMAT_R32G32B32_SFLOAT;
-            case ShaderDataType::Float4:
-                return VK_FORMAT_R32G32B32A32_SFLOAT;
-            case ShaderDataType::None:
-            case ShaderDataType::Mat3:
-            case ShaderDataType::Mat4:
-            case ShaderDataType::Int:
-            case ShaderDataType::Int2:
-            case ShaderDataType::Int3:
-            case ShaderDataType::Int4:
-            case ShaderDataType::Bool:
-                // Refer Mesh::GaugeVertexDataLayout for usual datatype
-                // to be used in the context of vertex buffer
-                KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
-                return VK_FORMAT_UNDEFINED;
-                break;
-        }
+			case ShaderDataType::Float:
+				return VK_FORMAT_R32_SFLOAT;
+			case ShaderDataType::Float2:
+				return VK_FORMAT_R32G32_SFLOAT;
+			case ShaderDataType::Float3:
+				return VK_FORMAT_R32G32B32_SFLOAT;
+			case ShaderDataType::Float4:
+				return VK_FORMAT_R32G32B32A32_SFLOAT;
+			case ShaderDataType::None:
+			case ShaderDataType::Mat3:
+			case ShaderDataType::Mat4:
+			case ShaderDataType::Int:
+			case ShaderDataType::Int2:
+			case ShaderDataType::Int3:
+			case ShaderDataType::Int4:
+			case ShaderDataType::Bool:
+				// Refer Mesh::GaugeVertexDataLayout for usual datatype
+				// to be used in the context of vertex buffer
+				KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
+				return VK_FORMAT_UNDEFINED;
+				break;
+		}
 
 		KR_CORE_ASSERT(false, "Vulkan doesn't support this ShaderDatatype");
 		return VK_FORMAT_UNDEFINED;

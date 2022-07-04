@@ -89,18 +89,29 @@ namespace Karma
 		std::vector<VkDeviceMemory> m_UniformBuffersMemory;
 	};
 
-	class KARMA_API VulkanImageBuffer
+	class KARMA_API VulkanImageBuffer : public ImageBuffer
 	{
 	public:
-		VulkanImageBuffer(VkDeviceSize imageSize, stbi_uc* pixels);
+		VulkanImageBuffer(const char* filename);
 		virtual ~VulkanImageBuffer();
 		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
 			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		const inline VkBuffer& GetBuffer() const { return m_StagingBuffer; }
+
+		// Getters
+		int GetTextureWidth() const { return texWidth; }
+		int GetTextureHeight() const { return texHeight; }
+		int GetTextureChannels() const { return texChannels; }
+
 	private:
 		VkDevice m_Device;
 		VkBuffer m_StagingBuffer;
 		VkDeviceMemory m_StagingBufferMemory;
+
+		// Image props (properties)
+		int texWidth;
+		int texHeight;
+		int texChannels;
 	};
 }

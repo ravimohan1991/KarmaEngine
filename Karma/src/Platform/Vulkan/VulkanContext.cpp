@@ -29,8 +29,7 @@ namespace Karma
 	}
 
 	VulkanContext::~VulkanContext()
-	{	
-		delete m_ImageBuffer;
+	{
 		m_vulkanRendererAPI->ClearVulkanRendererAPI();
 		ClearUBO();
 
@@ -66,7 +65,7 @@ namespace Karma
 		glslang::FinalizeProcess();
 	}
 
-    void VulkanContext::RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo)
+	void VulkanContext::RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo)
 	{
 		m_VulkanUBO.insert(ubo);
 	}
@@ -110,9 +109,7 @@ namespace Karma
 		CreateFrameBuffers();
 
 		VulkanHolder::SetVulkanContext(this);
-		CreateTextureImage();
-		CreateTextureImageView();
-		CreateTextureSampler();
+
 		m_vulkanRendererAPI->CreateSynchronicity();
 
 		// For glslang
@@ -238,22 +235,13 @@ namespace Karma
 		return 0;
 	}
 
-	void VulkanContext::CreateTextureImage()
+	void VulkanContext::CreateTextureImage(VulkanImageBuffer* vImageBuffer)
 	{
-		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load("../Resources/Textures/viking_room.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-		VkDeviceSize imageSize = texWidth * texHeight * 4;
-
-		KR_CORE_ASSERT(pixels, "Failed to load textures image!");
-
-		m_ImageBuffer = new VulkanImageBuffer(imageSize, pixels);
-		stbi_image_free(pixels);
-
 		VkImageCreateInfo imageInfo{};
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		imageInfo.imageType = VK_IMAGE_TYPE_2D;
-		imageInfo.extent.width = static_cast<uint32_t>(texWidth);
-		imageInfo.extent.height = static_cast<uint32_t>(texHeight);
+		imageInfo.extent.width = static_cast<uint32_t>(vImageBuffer->GetTextureWidth());
+		imageInfo.extent.height = static_cast<uint32_t>(vImageBuffer->GetTextureHeight());
 		imageInfo.extent.depth = 1;
 		imageInfo.mipLevels = 1;
 		imageInfo.arrayLayers = 1;
@@ -280,7 +268,7 @@ namespace Karma
 		vkBindImageMemory(m_device, m_TextureImage, m_TextureImageMemory, 0);
 
 		TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		CopyBufferToImage(m_ImageBuffer->GetBuffer(), m_TextureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+		CopyBufferToImage(vImageBuffer->GetBuffer(), m_TextureImage, static_cast<uint32_t>(vImageBuffer->GetTextureWidth()), static_cast<uint32_t>(vImageBuffer->GetTextureHeight()));
 		TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
 
@@ -354,7 +342,7 @@ namespace Karma
 		VkPipelineStageFlags sourceStage;
 		VkPipelineStageFlags destinationStage;
 
-		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) 
+		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
 		{
 			barrier.srcAccessMask = 0;
 			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -362,7 +350,7 @@ namespace Karma
 			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		}
-		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
+		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 		{
 			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
@@ -378,7 +366,7 @@ namespace Karma
 			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		}
-		else 
+		else
 		{
 			KR_CORE_ASSERT(false, "Unsupported layout transition!");
 		}
@@ -633,7 +621,7 @@ namespace Karma
 		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), 
+		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(),
 		indices.presentFamily.value()};
 
 		if (bEnableValidationLayers)
@@ -860,7 +848,7 @@ namespace Karma
 		{
 			KR_CORE_WARN("Validation layers requested, but not available");
 		}
-		
+
 		// Optional information about the application (or Engine in our case)
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -869,7 +857,7 @@ namespace Karma
 		appInfo.pEngineName = "No Engine";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.apiVersion = VK_API_VERSION_1_2;
-		
+
 		// Tell Vulkan which global extensions and validation layers we want to use
 		VkInstanceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -1010,7 +998,7 @@ namespace Karma
 		PopulateDebugMessengerCreateInfo(createInfo);
 
 		VkResult result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger);
-		
+
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to set up debug messenger!");
 	}
 
@@ -1039,7 +1027,7 @@ namespace Karma
 	void VulkanContext::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
 	{
 		auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-		if (func != nullptr) 
+		if (func != nullptr)
 		{
 			func(instance, debugMessenger, pAllocator);
 		}
@@ -1091,7 +1079,7 @@ namespace Karma
 				static_cast<uint32_t>(height)
 			};
 
-			actualExtent.width = std::max(capabilities.minImageExtent.width, 
+			actualExtent.width = std::max(capabilities.minImageExtent.width,
 				std::min(capabilities.maxImageExtent.width, actualExtent.width));
 			actualExtent.height = std::max(capabilities.minImageExtent.height,
 				std::min(capabilities.maxImageExtent.height, actualExtent.height));

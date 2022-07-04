@@ -340,14 +340,23 @@ namespace Karma
 	}
 
 	// ImageBuffer
-	VulkanImageBuffer::VulkanImageBuffer(VkDeviceSize imageSize, stbi_uc* pixels)
+	VulkanImageBuffer::VulkanImageBuffer(const char* filename)
 	{
+		stbi_uc* pixels = stbi_load("../Resources/Textures/viking_room.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+		// Need more consideration on image size
+		VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+		KR_CORE_ASSERT(pixels, "Failed to load textures image!");
+
 		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
 		CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_StagingBuffer, m_StagingBufferMemory);
 		void* data;
 		vkMapMemory(m_Device, m_StagingBufferMemory, 0, imageSize, 0, &data);
 		memcpy(data, pixels, static_cast<size_t>(imageSize));
 		vkUnmapMemory(m_Device, m_StagingBufferMemory);
+
+		stbi_image_free(pixels);
 	}
 
 	VulkanImageBuffer::~VulkanImageBuffer()

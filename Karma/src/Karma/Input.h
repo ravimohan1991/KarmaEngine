@@ -8,6 +8,7 @@
 // PCH stuff
 #include <list>
 #include <utility>
+#include "Karma/KarmaUtilities.h"
 
 /*
 	Input system need complete revamp in the sense to provide enough context for input maping
@@ -22,7 +23,7 @@ namespace Karma
 		None = 0,
         GlfwInput
 	};
-	
+
 	struct InputData
 	{
 	};
@@ -81,12 +82,12 @@ namespace Karma
 		{
 			return s_Instance->IsKeyPressedImpl(keycode);
 		}
-		
+
 		inline static bool IsMouseButtonPressed(int button)
 		{
 			return s_Instance->IsMouseButtonPressedImpl(button);
 		}
-		
+
 		inline static bool IsMouseButtonReleased(int button)
 		{
 			return s_Instance->IsMouseButtonReleasedImpl(button);
@@ -96,7 +97,7 @@ namespace Karma
 		{
 			return s_Instance->IsControllerButtonPressedImpl(button, cID);
 		}
-		
+
 		inline static float ControllerAxisPivotVal(int axis, int cID)
 		{
 			return s_Instance->ControllerAxisPivotValImpl(axis, cID);
@@ -106,21 +107,21 @@ namespace Karma
 		{
 			return s_Instance->GetMousePositionImpl();
 		}
-		
+
 		inline static float GetMouseX()
 		{
 			return s_Instance->GetMouseXImpl();
 		}
-		
+
 		inline static float GetMouseY()
 		{
 			return s_Instance->GetMouseYImpl();
 		}
-		
+
 		inline static InputRegisteringAPI GetAPI() { return s_InputAPI; }
 
 		inline static void DeInit()
-		{		
+		{
 			KR_CORE_INFO("Shutting down input system");
 		}
 

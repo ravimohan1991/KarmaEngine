@@ -8,7 +8,7 @@ public:
 	ExampleLayer() : Layer("Example") /*m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)*/
 	{
 		m_Camera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
-		
+
 		m_SquareVA.reset(Karma::VertexArray::Create());
 
 		/*
@@ -16,11 +16,11 @@ public:
 		m_SquareVA->SetMesh(sModel->GetMeshList()[0]);
 		delete sModel;
 		*/
-		
+
 		std::shared_ptr<Karma::Mesh> trialMesh;
 		trialMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
 		m_SquareVA->SetMesh(trialMesh);
-		
+
 		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
 		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 
@@ -47,16 +47,16 @@ public:
 		Karma::Renderer::BeginScene(*m_Camera);
 
 		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
-		
+
 		// May need entry point for Object's world transform
 		m_SquareMat->OnUpdate();
-		
+
 		// Cluster in Vertex Array Process perhabs
 		m_SquareMat->ProcessForSubmission();
 		m_SquareVA->Bind();
 
 		Karma::Renderer::Submit(m_SquareVA);
-		
+
 		Karma::Renderer::EndScene();
 	}
 
@@ -180,6 +180,6 @@ public:
 };
 
 Karma::Application* Karma::CreateApplication()
-{ 
+{
 	return new KarmaApp();
 }

@@ -2,11 +2,6 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "Platform/OpenGL/OpenGLBuffer.h"
-#include "Karma/KarmaUtilites.h"
-
-// PCH stuff
-#include <fstream>
-#include "Karma/Log.h"
 
 namespace Karma
 {
@@ -110,15 +105,15 @@ namespace Karma
 		}
 
 		// Always detach shaders after a successful link.
-		glDetachShader(program, vertexShader); 
+		glDetachShader(program, vertexShader);
 		glDetachShader(program, fragmentShader);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile, 
+	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile,
 		const std::string& shaderName) : Shader(ubo)
-	{	
+	{
 		m_ShaderName = shaderName;
-		
+
 		std::unordered_map<GLenum, std::string> shaderSources;
 
 		shaderSources[GL_VERTEX_SHADER] = KarmaUtilities::ReadFileToSpitString(vertexSrcFile);
