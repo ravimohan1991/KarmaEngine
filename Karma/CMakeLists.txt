@@ -233,6 +233,22 @@ target_link_libraries(KarmaEngine PUBLIC ${Vulkan_LIBRARY})
 target_link_libraries(KarmaEngine PUBLIC GlSlang)
 target_link_libraries(KarmaEngine PUBLIC stbimage)
 
+# Cluster Karma's libraries into a single folder for project/solution visualization
+set_property(TARGET Glad PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET AssImp PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET ImGui PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET GlSlang PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET spdlogging PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET stbimage PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+
+if(BUILD_SHARED_LIBS)
+    set_property(TARGET glm_shared PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+#[[
+else()
+    set_property(TARGET glm_static PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+]]
+endif()
+
 # INTERFACE (Something that Consumers require but Producers don't)
 # Since I am a library coder here, I am the Producer
 # Rest of the Engine is Consumer here

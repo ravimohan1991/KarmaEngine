@@ -54,4 +54,14 @@ namespace Karma
 		KR_CORE_WARN("Couldn't find the Shader with name {0}", shaderName.c_str());
 		return nullptr;
 	}
+
+	std::shared_ptr<Shader> Material::GetShader(int index)
+	{
+		for (const auto& elem : m_Shaders)
+		{
+				return elem;
+		}
+		KR_CORE_WARN("Couldn't find the Shader with index {0}", index);
+		return nullptr;
+	}
 }

@@ -171,24 +171,21 @@ namespace Karma
 		m_IndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer());
 	}
 
-	// Hook with Karma::Utilities
-	std::vector<char> VulkanVertexArray::ReadFile(const std::string& filename)
+	void VulkanVertexArray::SetMaterial(std::shared_ptr<Material> material)
 	{
-		std::ifstream file(filename, std::ios::ate | std::ios::binary);
+		m_Materials.push_back(material);
+		m_Shader = std::static_pointer_cast<VulkanShader>(material->GetShader(0));
 
-		if (!file.is_open())
-		{
-			KR_CORE_ASSERT(false, "Failed to open file: " + filename);
-		}
+		VulkanHolder::GetVulkanContext()->RegisterUBO(m_Shader->GetUniformBufferObject());
+		GenerateVulkanVA();
+	}
 
-		size_t fileSize = (size_t)file.tellg();
-		std::vector<char> buffer(fileSize);
-
-		file.seekg(0);
-		file.read(buffer.data(), fileSize);
-
-		file.close();
-		return buffer;
+	void VulkanVertexArray::UpdateProcessAndSetReadyForSubmission() const
+	{
+		// May need entry point for Object's world transform
+		// also may need to shift a level up
+		m_Materials.at(0)->OnUpdate();
+		m_Materials.at(0)->ProcessForSubmission();
 	}
 
 	VkShaderModule VulkanVertexArray::CreateShaderModule(const std::vector<uint32_t>& code)

@@ -33,8 +33,10 @@ public:
 
 		m_SquareMat->AttatchMainCamera(m_Camera);
 
+		m_SquareVA->SetMaterial(m_SquareMat);
+		
 		// Should be Material
-		m_SquareVA->SetShader(m_BlueSQShader);
+		//m_SquareVA->SetShader(m_BlueSQShader);
 	}
 
 	virtual void OnUpdate(float deltaTime) override
@@ -47,12 +49,7 @@ public:
 		Karma::Renderer::BeginScene(*m_Camera);
 
 		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
-
-		// May need entry point for Object's world transform
-		m_SquareMat->OnUpdate();
-
-		// Cluster in Vertex Array Process perhabs
-		m_SquareMat->ProcessForSubmission();
+		m_SquareVA->UpdateProcessAndSetReadyForSubmission();
 		m_SquareVA->Bind();
 
 		Karma::Renderer::Submit(m_SquareVA);

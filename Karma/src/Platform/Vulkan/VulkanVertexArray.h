@@ -22,6 +22,8 @@ namespace Karma
 
 		virtual void SetMesh(std::shared_ptr<Mesh> mesh) override;
 
+		virtual void SetMaterial(std::shared_ptr<Material> material) override;
+
 		virtual void SetShader(std::shared_ptr<Shader> shader) override;
 
 		void CreateDescriptorSetLayout();
@@ -38,7 +40,6 @@ namespace Karma
 		void CleanupPipeline();
 
 		// Helper functions
-		static std::vector<char> ReadFile(const std::string& filename);
 		VkShaderModule CreateShaderModule(const std::vector<uint32_t>& code);
 
 		// Getters
@@ -48,17 +49,27 @@ namespace Karma
 		const std::vector<VkDescriptorSet>& GetUBDescriptorSets() const { return m_descriptorSets; }
 		std::shared_ptr<VulkanVertexBuffer> GetVertexBuffer() const { return m_VertexBuffer; }
 		std::vector<VkDescriptorSet> GetDescriptorSets() { return m_descriptorSets; }
+		
+		virtual std::shared_ptr<Material> GetMaterial() const override { return m_Materials.at(0); }
+
+		virtual void UpdateProcessAndSetReadyForSubmission() const override;
 
 		// Overrides
 		virtual const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const override { return m_VertexBuffers; }
 		virtual const VulkanIndexBuffer* GetIndexBuffer() const override { return m_IndexBuffer.get(); }
 
 	private:
-		std::shared_ptr<VulkanShader> m_Shader;
+		// May need to consider batching for components of Meshes and Materials
 
+		// Mesh relevant members
 		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffers;
 		std::shared_ptr<VulkanVertexBuffer> m_VertexBuffer;
 		std::shared_ptr<VulkanIndexBuffer> m_IndexBuffer;
+
+		// Material relevant members
+		std::vector<std::shared_ptr<Material>> m_Materials;
+		std::vector<std::shared_ptr<VulkanShader>> m_Shaders;
+		std::shared_ptr<VulkanShader> m_Shader;
 
 		VkDevice m_device;
 
