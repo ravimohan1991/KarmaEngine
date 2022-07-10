@@ -57,10 +57,10 @@ namespace Karma
 		vkDestroyDevice(m_device, nullptr);
 		if (bEnableValidationLayers)
 		{
-			DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+			DestroyDebugUtilsMessengerEXT(m_Instance, debugMessenger, nullptr);
 		}
-		vkDestroySurfaceKHR(instance, m_surface, nullptr);
-		vkDestroyInstance(instance, nullptr);
+		vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
+		vkDestroyInstance(m_Instance, nullptr);
 
 		glslang::FinalizeProcess();
 	}
@@ -611,7 +611,7 @@ namespace Karma
 
 	void VulkanContext::CreateSurface()
 	{
-		VkResult result = glfwCreateWindowSurface(instance, m_windowHandle, nullptr, &m_surface);
+		VkResult result = glfwCreateWindowSurface(m_Instance, m_windowHandle, nullptr, &m_surface);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create window surface");
 	}
@@ -679,7 +679,7 @@ namespace Karma
 	void VulkanContext::PickPhysicalDevice()
 	{
 		uint32_t deviceCount = 0;
-		vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
 
 		if (deviceCount == 0)
 		{
@@ -687,7 +687,7 @@ namespace Karma
 		}
 
 		std::vector<VkPhysicalDevice> devices(deviceCount);
-		vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, devices.data());
 
 		if (bEnableValidationLayers)
 		{
@@ -852,9 +852,13 @@ namespace Karma
 		// Optional information about the application (or Engine in our case)
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		appInfo.pApplicationName = "Karma Engine";
+#ifdef KR_APPLICATION_NAME
+		appInfo.pApplicationName = KR_APPLICATION_NAME;
+#else
+		appInfo.pApplicationName = "No Name";
+#endif
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.pEngineName = "No Engine";
+		appInfo.pEngineName = "Karma";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.apiVersion = VK_API_VERSION_1_2;
 
@@ -863,7 +867,7 @@ namespace Karma
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
 
-			// Validation layers
+		// Validation layers
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 		if (bEnableValidationLayers)
 		{
@@ -883,9 +887,9 @@ namespace Karma
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
 
-		VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
+		VkResult result = vkCreateInstance(&createInfo, nullptr, &m_Instance);
 
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create Vulkan instance.");
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create Vulkan m_Instance.");
 	}
 
 	void VulkanContext::PrintAvailableExtensions()
@@ -997,7 +1001,7 @@ namespace Karma
 		VkDebugUtilsMessengerCreateInfoEXT createInfo;
 		PopulateDebugMessengerCreateInfo(createInfo);
 
-		VkResult result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger);
+		VkResult result = CreateDebugUtilsMessengerEXT(m_Instance, &createInfo, nullptr, &debugMessenger);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to set up debug messenger!");
 	}

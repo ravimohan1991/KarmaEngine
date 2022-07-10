@@ -197,6 +197,12 @@ namespace Karma
 	{
 	public:
 		static ImageBuffer* Create(const char* filename);
+		uint32_t GetBindingPointIndex() const
+		{
+			return m_BindingPoint;
+		}
+	protected:
+		uint32_t m_BindingPoint;
 	};
 
 	class KARMA_API UBODataPointer

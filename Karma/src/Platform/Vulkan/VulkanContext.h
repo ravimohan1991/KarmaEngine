@@ -141,10 +141,12 @@ namespace Karma
 		VkSampler GetTextureSampler() const { return m_TextureSampler; }
 
 	private:
+		// Apologies for little out-of-sync naming convention, was dealing with flood of lines when
+		// learning Vulkan!
 		GLFWwindow* m_windowHandle;
 		VulkanRendererAPI* m_vulkanRendererAPI;
 
-		VkInstance instance;
+		VkInstance m_Instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
 
 		static bool bEnableValidationLayers;
@@ -177,7 +179,7 @@ namespace Karma
 		VkImageView m_DepthImageView;
 
 		// Prototype
-		//VulkanImageBuffer* m_ImageBuffer;
+		// VulkanImageBuffer* m_ImageBuffer;
 		VkImage m_TextureImage;
 		VkDeviceMemory m_TextureImageMemory;
 		VkImageView m_TextureImageView;

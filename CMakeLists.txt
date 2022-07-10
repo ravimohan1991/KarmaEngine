@@ -25,6 +25,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 
+# Set the GameName
+set(KARMA_GAME_NAME "Game_Of_Lands")
+
 # Finally we specify policies, if any
 # This one is for inter-directory linking
 cmake_policy(SET CMP0079 NEW)
@@ -36,14 +39,15 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 # For grouping Libraries in folder
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Clustering ALL_BUILD and related crap projects (within the context of IDE)
-# set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "")
+ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Si")
 # If want to disable ZERO_CHECK
 # set(CMAKE_SUPPRESS_REGENERATION true)
 
 #----------------------------------------------------------------------------#
 
 # Set Engine project
-project(KarmaBasedProjectName VERSION 1.0)
+project(${KARMA_GAME_NAME} VERSION 1.0)
+add_compile_definitions(KR_APPLICATION_NAME="${KARMA_GAME_NAME}")
 
 # Setting some flags
 

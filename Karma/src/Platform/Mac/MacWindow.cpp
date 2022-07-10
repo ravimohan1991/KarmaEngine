@@ -203,6 +203,12 @@ namespace Karma
 	void MacWindow::ShutDown()
 	{
 		glfwDestroyWindow(m_Window);
+		glfwTerminate();
+		if (m_Context)
+		{
+			delete m_Context;
+			m_Context = 0;
+		}
 	}
 
 	void MacWindow::OnUpdate()

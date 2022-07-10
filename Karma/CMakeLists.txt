@@ -159,8 +159,11 @@ elseif(APPLE)
 endif()
 
 # Configuration specific defines/settings
-if(NOT CMAKE_BUILD_TYPE STREQUAL RELEASE)
-    add_compile_definitions(KR_ENABLE_ASSERTS)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+	add_compile_definitions(KR_ENABLE_ASSERTS)
+endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_compile_definitions(KR_DEBUG)
 endif()
 
 # Involved libraries and essentials
