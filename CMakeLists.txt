@@ -39,7 +39,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 # For grouping Libraries in folder
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Clustering ALL_BUILD and related crap projects (within the context of IDE)
- set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Si")
+# set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Si")
 # If want to disable ZERO_CHECK
 # set(CMAKE_SUPPRESS_REGENERATION true)
 
