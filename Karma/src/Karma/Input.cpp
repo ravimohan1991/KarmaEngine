@@ -107,7 +107,7 @@ namespace Karma
 
 				if (glfwJoystickIsGamepad(i) == false)
 				{
-					KR_CORE_WARN("There is no XBox mapping for the detected device ({0}).  Consequently, Karma can't (and won't) interpret the hardware.  Please check the mapping database", glfwGetJoystickName(i));
+					KR_CORE_WARN("There is no XBox mapping for the detected device ({0}).  Consequently, Karma can't (and won't) interpret the hardware.  Please check the mapping database.", glfwGetJoystickName(i));
 					continue;
 				}
 				else

@@ -34,7 +34,7 @@ public:
 		m_SquareMat->AttatchMainCamera(m_Camera);
 
 		m_SquareVA->SetMaterial(m_SquareMat);
-		
+
 		// Should be Material
 		//m_SquareVA->SetShader(m_BlueSQShader);
 	}

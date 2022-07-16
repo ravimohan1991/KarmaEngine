@@ -11,7 +11,7 @@ namespace Karma
 
 	VulkanRendererAPI::~VulkanRendererAPI()
 	{
-		
+
 	}
 
 	void VulkanRendererAPI::ClearVulkanRendererAPI()
