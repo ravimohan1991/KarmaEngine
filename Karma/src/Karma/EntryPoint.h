@@ -75,7 +75,8 @@ int main(int argc, char** argv)
 	auto app = Karma::CreateApplication();
 	
 	Karma::Input::Init();
-	
+
+	app->PrepareApplicationForRun();
 	app->Run();
 	delete app;
 	

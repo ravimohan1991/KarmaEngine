@@ -13,7 +13,8 @@
 namespace Karma
 {
 	const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
-	const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+	// Subject to change based on available hardware scrutiny
+	std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 #ifdef KR_DEBUG
 	bool VulkanContext::bEnableValidationLayers = true;
@@ -753,14 +754,33 @@ namespace Karma
 
 		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+		
+		// Case by case query for required extensions
+		// One for MacOS: VK_KHR_portability_subset
+		for(auto anExtention : availableExtensions)
+		{
+			if(strcmp(anExtention.extensionName, "VK_KHR_portability_subset") != 0)
+			{
+				deviceExtensions.push_back("VK_KHR_portability_subset");
+				break;
+			}
+		}
 
 		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
 		if (bEnableValidationLayers)
 		{
 			KR_CORE_INFO("+-------------------------------------------------");
-			KR_CORE_INFO("| Swapchain Extensions:");
+			KR_CORE_INFO("| Available Extensions:");
 			uint32_t index = 1;
+			for (auto anExtension : availableExtensions)
+			{
+				KR_CORE_INFO("| {0}. {1}", index++, anExtension.extensionName);
+			}
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("| Required Extensions (shall be enabled...):");
+			index = 1;
 			for (auto swapchainExtension : requiredExtensions)
 			{
 				KR_CORE_INFO("| {0}. {1}", index++, swapchainExtension);
@@ -889,6 +909,7 @@ namespace Karma
 		auto extensions = GetRequiredExtensions();
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
+		createInfo.flags |= flagToBeSet;
 
 		VkResult result = vkCreateInstance(&createInfo, nullptr, &m_Instance);
 
@@ -943,7 +964,7 @@ namespace Karma
 		return true;
 	}
 
-	// Return the required list of extensions based on whether validation layers are
+	// Return the required list of instance extensions based on whether validation layers are
 	// enabled or not
 	std::vector<const char*> VulkanContext::GetRequiredExtensions()
 	{
@@ -953,13 +974,32 @@ namespace Karma
 
 		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
+		// Case by case query for required instance extensions
+		// One for MacOS: VK_KHR_portability_enumeration
+		uint32_t extensionCount = 0;
+
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		std::vector<VkExtensionProperties> vulkanExtensions(extensionCount);
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, vulkanExtensions.data());
+		
+		uint32_t index = 1;
+		for(auto anExtension : vulkanExtensions)
+		{
+			if(strcmp(anExtension.extensionName, "VK_KHR_portability_enumeration"))
+			{
+				extensions.push_back("VK_KHR_portability_enumeration");
+				flagToBeSet |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+				break;
+			}
+		}
+
 		if (bEnableValidationLayers)
 		{
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
-			int32_t index = 1;
+			uint32_t index = 1;
 			KR_CORE_INFO("+-------------------------------------------------");
-			KR_CORE_INFO("| GLFW required extensions:");
+			KR_CORE_INFO("| GLFW and other required instance extensions:");
 			for (auto extension : extensions)
 			{
 				KR_CORE_INFO("| {0}. {1}", index++, extension);

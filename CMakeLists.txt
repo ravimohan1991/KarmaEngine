@@ -19,7 +19,7 @@ set(CMAKE_C_STANDARD 17)
 # whilst accessible from IDE (local debugger for instance!).
 set(REPOSITORYROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 # Global variable for Karma's Libraries
-set(KARMALIBRARYFOLDER "KarmaLibraries")
+set(KARMALIBRARYFOLDER "CompanionLibraries")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")

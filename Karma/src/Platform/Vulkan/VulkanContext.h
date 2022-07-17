@@ -187,5 +187,7 @@ namespace Karma
 		VkDeviceMemory m_TextureImageMemory;
 		VkImageView m_TextureImageView;
 		VkSampler m_TextureSampler;
+		
+		VkInstanceCreateFlags flagToBeSet;
 	};
 }
