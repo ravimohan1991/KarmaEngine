@@ -906,10 +906,11 @@ namespace Karma
 			createInfo.pNext = nullptr;
 		}
 
-		auto extensions = GetRequiredExtensions();
+		VkInstanceCreateFlags flagsToBeSet;
+		auto extensions = GetRequiredExtensions(flagsToBeSet);
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
-		createInfo.flags |= flagToBeSet;
+		createInfo.flags |= flagsToBeSet;
 
 		VkResult result = vkCreateInstance(&createInfo, nullptr, &m_Instance);
 
@@ -966,7 +967,7 @@ namespace Karma
 
 	// Return the required list of instance extensions based on whether validation layers are
 	// enabled or not
-	std::vector<const char*> VulkanContext::GetRequiredExtensions()
+	std::vector<const char*> VulkanContext::GetRequiredExtensions(VkInstanceCreateFlags& flagsToBeSet)
 	{
 		uint32_t glfwExtensionCount = 0;
 		const char** glfwExtensions;
@@ -988,7 +989,7 @@ namespace Karma
 			if(strcmp(anExtension.extensionName, "VK_KHR_portability_enumeration"))
 			{
 				extensions.push_back("VK_KHR_portability_enumeration");
-				flagToBeSet |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+				flagsToBeSet = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 				break;
 			}
 		}

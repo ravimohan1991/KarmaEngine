@@ -54,7 +54,7 @@ namespace Karma
 
 		// Validation layers
 		bool CheckValidationLayerSupport();
-		std::vector<const char*> GetRequiredExtensions();
+		std::vector<const char*> GetRequiredExtensions(VkInstanceCreateFlags& flagsToBeSet);
 
 		static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 			VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -187,7 +187,5 @@ namespace Karma
 		VkDeviceMemory m_TextureImageMemory;
 		VkImageView m_TextureImageView;
 		VkSampler m_TextureSampler;
-		
-		VkInstanceCreateFlags flagToBeSet;
 	};
 }
