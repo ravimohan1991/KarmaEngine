@@ -649,7 +649,10 @@ namespace Karma
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.samplerAnisotropy = VK_TRUE;
-		deviceFeatures.logicOp = VK_TRUE;
+		if(m_SupportedDeviceFeatures.logicOp)
+		{
+			deviceFeatures.logicOp = VK_TRUE;
+		}
 
 		VkDeviceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -737,10 +740,9 @@ namespace Karma
 			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 		}
 
-		VkPhysicalDeviceFeatures supportedFeatures;
-		vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+		vkGetPhysicalDeviceFeatures(device, &m_SupportedDeviceFeatures);
 
-		return indices.IsComplete() && bExtensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy && supportedFeatures.logicOp;
+		return indices.IsComplete() && bExtensionsSupported && swapChainAdequate && m_SupportedDeviceFeatures.samplerAnisotropy;
 	}
 
 	// Check if all the required extensions are there

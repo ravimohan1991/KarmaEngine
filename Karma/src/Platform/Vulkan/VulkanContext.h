@@ -139,6 +139,7 @@ namespace Karma
 		VkCommandPool GetCommandPool() const { return m_commandPool; }
 		VkImageView GetTextureImageView() const { return m_TextureImageView; }
 		VkSampler GetTextureSampler() const { return m_TextureSampler; }
+		const VkPhysicalDeviceFeatures& GetSupportedDeviceFeatures() const { return m_SupportedDeviceFeatures; }
 
 	private:
 		// Apologies for little out-of-sync naming convention, was dealing with flood of lines when
@@ -148,6 +149,8 @@ namespace Karma
 
 		VkInstance m_Instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
+
+		VkPhysicalDeviceFeatures m_SupportedDeviceFeatures;
 
 		static bool bEnableValidationLayers;
 

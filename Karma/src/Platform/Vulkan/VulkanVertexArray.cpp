@@ -4,9 +4,10 @@
 
 namespace Karma
 {
-	VulkanVertexArray::VulkanVertexArray()
+	VulkanVertexArray::VulkanVertexArray() : m_SupportedDeviceFeatures(VulkanHolder::GetVulkanContext()->GetSupportedDeviceFeatures()),
+		m_device(VulkanHolder::GetVulkanContext()->GetLogicalDevice())
 	{
-		m_device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
@@ -117,13 +118,22 @@ namespace Karma
 		depthStencil.depthBoundsTestEnable = VK_FALSE;
 		depthStencil.stencilTestEnable = VK_FALSE;
 
+		VkBool32 bLogicalOperationsAllowed = m_SupportedDeviceFeatures.logicOp;
+
 		// Mix the old and new value to produce a final color
 		// finalColor.rgb = newAlpha * newColor + (1 - newAlpha) * oldColor;
 		// finalColor.a = newAlpha.a;
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
 			| VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		colorBlendAttachment.blendEnable = VK_FALSE;
+		if(!bLogicalOperationsAllowed)
+		{
+			colorBlendAttachment.blendEnable = VK_TRUE;
+		}
+		else
+		{
+			colorBlendAttachment.blendEnable = VK_FALSE;
+		}
 		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
 		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
@@ -134,7 +144,14 @@ namespace Karma
 		// Combine the old and new value using a bitwise operation
 		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-		colorBlending.logicOpEnable = VK_TRUE;
+		if(bLogicalOperationsAllowed)
+		{
+			colorBlending.logicOpEnable = VK_TRUE;
+		}
+		else
+		{
+			colorBlending.logicOpEnable = VK_FALSE;
+		}
 		colorBlending.logicOp = VK_LOGIC_OP_COPY;
 		colorBlending.attachmentCount = 1;
 		colorBlending.pAttachments = &colorBlendAttachment;

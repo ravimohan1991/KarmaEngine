@@ -49,7 +49,7 @@ namespace Karma
 		const std::vector<VkDescriptorSet>& GetUBDescriptorSets() const { return m_descriptorSets; }
 		std::shared_ptr<VulkanVertexBuffer> GetVertexBuffer() const { return m_VertexBuffer; }
 		std::vector<VkDescriptorSet> GetDescriptorSets() { return m_descriptorSets; }
-		
+
 		virtual std::shared_ptr<Material> GetMaterial() const override { return m_Materials.at(0); }
 
 		virtual void UpdateProcessAndSetReadyForSubmission() const override;
@@ -82,6 +82,8 @@ namespace Karma
 
 		VkVertexInputBindingDescription m_bindingDescription{};
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
+
+		const VkPhysicalDeviceFeatures& m_SupportedDeviceFeatures;
 	};
 
 }
