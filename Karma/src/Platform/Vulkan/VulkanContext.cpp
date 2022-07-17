@@ -649,6 +649,7 @@ namespace Karma
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.samplerAnisotropy = VK_TRUE;
+		deviceFeatures.logicOp = VK_TRUE;
 
 		VkDeviceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -739,7 +740,7 @@ namespace Karma
 		VkPhysicalDeviceFeatures supportedFeatures;
 		vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
-		return indices.IsComplete() && bExtensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+		return indices.IsComplete() && bExtensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy && supportedFeatures.logicOp;
 	}
 
 	// Check if all the required extensions are there
