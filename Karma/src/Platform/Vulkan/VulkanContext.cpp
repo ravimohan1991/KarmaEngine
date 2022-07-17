@@ -754,7 +754,8 @@ namespace Karma
 
 		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-		
+
+#ifdef KR_MAC_PLATFORM
 		// Case by case query for required extensions
 		// One for MacOS: VK_KHR_portability_subset
 		for(auto anExtention : availableExtensions)
@@ -765,6 +766,7 @@ namespace Karma
 				break;
 			}
 		}
+#endif
 
 		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
@@ -906,7 +908,7 @@ namespace Karma
 			createInfo.pNext = nullptr;
 		}
 
-		VkInstanceCreateFlags flagsToBeSet;
+		VkInstanceCreateFlags flagsToBeSet{};
 		auto extensions = GetRequiredExtensions(flagsToBeSet);
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
@@ -975,6 +977,7 @@ namespace Karma
 
 		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
+#ifdef KR_MAC_PLATFORM
 		// Case by case query for required instance extensions
 		// One for MacOS: VK_KHR_portability_enumeration
 		uint32_t extensionCount = 0;
@@ -982,7 +985,7 @@ namespace Karma
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 		std::vector<VkExtensionProperties> vulkanExtensions(extensionCount);
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, vulkanExtensions.data());
-		
+
 		uint32_t index = 1;
 		for(auto anExtension : vulkanExtensions)
 		{
@@ -993,7 +996,7 @@ namespace Karma
 				break;
 			}
 		}
-
+#endif
 		if (bEnableValidationLayers)
 		{
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
