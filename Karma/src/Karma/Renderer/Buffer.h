@@ -53,15 +53,15 @@ namespace Karma
 				return 4 * 4;
 			case ShaderDataType::Bool:
 				return 4;
-            case ShaderDataType::None:
-                KR_CORE_WARN("ShaderDataType is none. Size shal be considered 0.");
-                return 0;
+			case ShaderDataType::None:
+				KR_CORE_WARN("ShaderDataType is none. Size shall be considered 0.");
+				return 0;
 		}
 
 		KR_CORE_ASSERT(false, "Unknown ShaderDataType");
 		return 0;
 	}
-	
+
 	struct BufferElement
 	{
 		std::string Name;
@@ -70,8 +70,9 @@ namespace Karma
 		ShaderDataType Type;
 		bool Normalized;
 
-		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
-			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized)
+		// May need to think about the custom default offsets
+		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false, uint64_t offset = 0)
+			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(offset), Normalized(normalized)
 		{
 		}
 
@@ -116,7 +117,7 @@ namespace Karma
 		BufferLayout()
 		{
 		}
-		
+
 		BufferLayout(const std::initializer_list<BufferElement>& elements)
 			: m_Elements(elements)
 		{
@@ -147,7 +148,7 @@ namespace Karma
 		{
 			return m_Elements.end();
 		}
-	
+
 	private:
 		void CalculateOffsetsAndStride()
 		{
@@ -160,12 +161,12 @@ namespace Karma
 				m_Stride += element.Size;
 			}
 		}
-	
+
 	private:
 		std::vector<BufferElement> m_Elements;
 		uint32_t m_Stride = 0;
 	};
-	
+
 	class KARMA_API VertexBuffer
 	{
 	public:
@@ -222,7 +223,7 @@ namespace Karma
 	struct KARMA_API UniformBufferObject
 	{
 		static UniformBufferObject* Create(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex);
-		
+
 		UniformBufferObject(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex);
 		virtual ~UniformBufferObject() = default;
 

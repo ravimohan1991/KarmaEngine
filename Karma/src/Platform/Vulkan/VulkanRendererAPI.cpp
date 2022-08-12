@@ -105,11 +105,9 @@ namespace Karma
 			KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
 		}
 	}
-	// Replace to DrawIndexed?
+
 	void VulkanRendererAPI::EndScene()
 	{
-		RecordCommandBuffers();
-		SubmitCommandBuffers();
 		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
 		for (size_t i = 0; i < m_commandBuffers.size(); i++)
 		{
@@ -255,5 +253,7 @@ namespace Karma
 	{
 		std::shared_ptr<VulkanVertexArray> vulkanVA = std::static_pointer_cast<VulkanVertexArray>(vertexArray);
 		m_VulkaVertexArrays.push_back(vulkanVA);
+		RecordCommandBuffers();
+		SubmitCommandBuffers();
 	}
 }
