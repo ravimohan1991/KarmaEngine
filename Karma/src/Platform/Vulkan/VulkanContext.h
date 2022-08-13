@@ -1,16 +1,12 @@
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
-#include "Karma/Core.h"
+#include "krpch.h"
+
 #include "Karma/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
-
-// PCH stuff
-#include <memory>
-#include <set>
-#include <optional>
 
 namespace Karma
 {

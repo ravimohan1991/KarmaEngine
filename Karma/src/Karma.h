@@ -20,6 +20,8 @@
 #include "Karma/Renderer/Texture.h"
 #include "Karma/Renderer/SceneModel.h"
 
+#include "Karma/KarmaUtilities.h"
+
 #include "Karma/Input.h"
 
 // Entry point from Karma engine

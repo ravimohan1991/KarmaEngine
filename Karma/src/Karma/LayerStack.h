@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Karma/Core.h"
-#include "Karma/Layer.h"
+#include "krpch.h"
 
-#include <vector>
+#include "Karma/Layer.h"
 
 namespace Karma
 {

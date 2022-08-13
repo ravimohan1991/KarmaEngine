@@ -1,7 +1,8 @@
 #pragma once
 
+#include "krpch.h"
+
 #include "Karma/Renderer/RendererAPI.h"
-#include "Karma/Core.h"
 #include "vulkan/vulkan.h"
 
 namespace Karma

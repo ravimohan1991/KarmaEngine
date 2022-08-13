@@ -1,14 +1,11 @@
 #pragma once
 
-#include "Karma/Core.h"
+#include "krpch.h"
+
 #include "Buffer.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
-// PCH stuff
-#include <memory>
-#include "Karma/Log.h"
 
 namespace Karma
 {	

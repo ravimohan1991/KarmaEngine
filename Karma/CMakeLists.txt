@@ -276,6 +276,12 @@ COLLECTIVEINCLUDES(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_compile_definitions(KarmaEngine PUBLIC KarmaEngine)
 
+# Precompiled headers
+target_precompile_headers(KarmaEngine 
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/krpch.h
+)
+
 #[[
  *                                          /\
  *                                         / /

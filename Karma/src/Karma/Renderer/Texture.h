@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Karma/Core.h"
-
-// PCH stuff
-#include <string>
+#include "krpch.h"
 
 namespace Karma
 {

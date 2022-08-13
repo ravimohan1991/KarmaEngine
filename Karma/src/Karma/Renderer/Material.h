@@ -1,13 +1,10 @@
 #pragma once
 
-#include "Karma/Core.h"
+#include "krpch.h"
+
 #include "Karma/Renderer/Shader.h"
 #include "Texture.h"
 #include "Camera/Camera.h"
-
-// PCH stuff
-#include <list>
-#include "Karma/Log.h"
 
 namespace Karma
 {

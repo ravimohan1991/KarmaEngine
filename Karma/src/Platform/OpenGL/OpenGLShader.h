@@ -1,13 +1,9 @@
 #pragma once
 
+#include "krpch.h"
+
 #include "Karma/Renderer/Shader.h"
 #include "glad/glad.h"
-
-// PCH stuff
-#include <string>
-#include <map>
-#include <unordered_map>
-#include "Karma/Log.h"
 #include "Karma/KarmaUtilities.h"
 
 namespace Karma

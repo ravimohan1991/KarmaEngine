@@ -1,12 +1,9 @@
 #pragma once
 
+#include "krpch.h"
+
 #include "Karma/Renderer/Shader.h"
 #include "glslang/Public/ShaderLang.h"
-
-// PCH stuff
-#include <string>
-#include <map>
-#include "Karma/Log.h"
 #include "Karma/KarmaUtilities.h"
 
 namespace Karma

@@ -1,11 +1,10 @@
 #pragma once
 
+#include "krpch.h"
+
 #include "Karma/Core.h"
 #include "Karma/Events/Event.h"
 #include "Karma/Events/ApplicationEvent.h"
-
-#include <string>
-#include <functional>
 
 namespace Karma
 {

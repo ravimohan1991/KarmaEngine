@@ -1,13 +1,10 @@
 #pragma once
 
-#include "Karma/Core.h"
+#include "krpch.h"
+
 #include "Karma/Log.h"
 #include "Karma/Events/Event.h"
 #include "Karma/Window.h"
-
-// PCH stuff
-#include <list>
-#include <utility>
 #include "Karma/KarmaUtilities.h"
 
 /*

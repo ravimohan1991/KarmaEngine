@@ -1,12 +1,11 @@
 #pragma once
 
+#include "krpch.h"
+
 #include "Karma/Renderer/Buffer.h"
-#include "Karma/Core.h"
 #include "Karma/Renderer/Shader.h"
 #include "Karma/Renderer/Mesh.h"
 #include "Karma/Renderer/Material.h"
-
-#include <memory>
 
 namespace Karma
 {

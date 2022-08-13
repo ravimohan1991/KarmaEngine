@@ -1,13 +1,9 @@
 #pragma once
 
-#include "Karma/Core.h"
-#include "glm/gtc/type_ptr.hpp"
-#include <stdint.h>
-#include "stb_image.h"
+#include "krpch.h"
 
-// PCH stuff
-#include <string>
-#include <vector>
+#include "glm/gtc/type_ptr.hpp"
+#include "stb_image.h"
 
 namespace Karma
 {
