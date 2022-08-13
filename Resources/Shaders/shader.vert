@@ -1,4 +1,4 @@
-// Shader needs be conforming to Mesh vertexdata. So we need an algorithm 
+// Shader needs be conforming to Mesh vertexdata. So we need an algorithm
 // to gauge that.
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
