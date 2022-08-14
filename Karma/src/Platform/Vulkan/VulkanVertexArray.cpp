@@ -3,15 +3,16 @@
 #include <fstream>
 
 namespace Karma
-{	
-	VulkanVertexArray::VulkanVertexArray()
+{
+	VulkanVertexArray::VulkanVertexArray() : m_SupportedDeviceFeatures(VulkanHolder::GetVulkanContext()->GetSupportedDeviceFeatures()),
+		m_device(VulkanHolder::GetVulkanContext()->GetLogicalDevice())
 	{
-		m_device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
 	{
-		vkDeviceWaitIdle(m_device);		
+		vkDeviceWaitIdle(m_device);
 		CleanupPipeline();
 	}
 
@@ -29,11 +30,11 @@ namespace Karma
 	}
 
 	void VulkanVertexArray::CleanupPipeline()
-	{	
+	{
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
 		vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr);
-		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);// Descriptorsets get automatically get freed 
+		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);// Descriptorsets get automatically get freed
 	}
 
 	void VulkanVertexArray::SetShader(std::shared_ptr<Shader> shader)
@@ -103,6 +104,7 @@ namespace Karma
 		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 
+		// Antialiasing
 		VkPipelineMultisampleStateCreateInfo multisampling{};
 		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 		multisampling.sampleShadingEnable = VK_FALSE;
@@ -116,14 +118,40 @@ namespace Karma
 		depthStencil.depthBoundsTestEnable = VK_FALSE;
 		depthStencil.stencilTestEnable = VK_FALSE;
 
+		VkBool32 bLogicalOperationsAllowed = m_SupportedDeviceFeatures.logicOp;
+
+		// Mix the old and new value to produce a final color
+		// finalColor.rgb = newAlpha * newColor + (1 - newAlpha) * oldColor;
+		// finalColor.a = newAlpha.a;
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
 			| VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		colorBlendAttachment.blendEnable = VK_FALSE;
+		if(!bLogicalOperationsAllowed)
+		{
+			colorBlendAttachment.blendEnable = VK_TRUE;
+		}
+		else
+		{
+			colorBlendAttachment.blendEnable = VK_FALSE;
+		}
+		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
+		// Combine the old and new value using a bitwise operation
 		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-		colorBlending.logicOpEnable = VK_FALSE;
+		if(bLogicalOperationsAllowed)
+		{
+			colorBlending.logicOpEnable = VK_TRUE;
+		}
+		else
+		{
+			colorBlending.logicOpEnable = VK_FALSE;
+		}
 		colorBlending.logicOp = VK_LOGIC_OP_COPY;
 		colorBlending.attachmentCount = 1;
 		colorBlending.pAttachments = &colorBlendAttachment;
@@ -156,24 +184,36 @@ namespace Karma
 		vkDestroyShaderModule(m_device, fragShaderModule, nullptr);
 		vkDestroyShaderModule(m_device, vertShaderModule, nullptr);
 	}
-	
-	std::vector<char> VulkanVertexArray::ReadFile(const std::string& filename)
+
+	void VulkanVertexArray::SetMesh(std::shared_ptr<Mesh> mesh)
 	{
-		std::ifstream file(filename, std::ios::ate | std::ios::binary);
+		KR_CORE_ASSERT(mesh->GetVertexBuffer()->GetLayout().GetElements().size(), "VertexBufferLayout empty.");
 
-		if (!file.is_open())
-		{
-			KR_CORE_ASSERT(false, "Failed to open file: " + filename);
-		}
+		//mesh->GetVertexBuffer()->Bind();
+		AddVertexBuffer(mesh->GetVertexBuffer());
 
-		size_t fileSize = (size_t)file.tellg();
-		std::vector<char> buffer(fileSize);
+		// We are seperating VertexBuffers from Mesh.  Hopefully useful for batch rendering!
+		m_VertexBuffers.push_back(mesh->GetVertexBuffer());
 
-		file.seekg(0);
-		file.read(buffer.data(), fileSize);
+		// May need modificaitons for batch rendering later.
+		m_IndexBuffer = std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer());
+	}
 
-		file.close();
-		return buffer;
+	void VulkanVertexArray::SetMaterial(std::shared_ptr<Material> material)
+	{
+		m_Materials.push_back(material);
+		m_Shader = std::static_pointer_cast<VulkanShader>(material->GetShader(0));
+
+		VulkanHolder::GetVulkanContext()->RegisterUBO(m_Shader->GetUniformBufferObject());
+		GenerateVulkanVA();
+	}
+
+	void VulkanVertexArray::UpdateProcessAndSetReadyForSubmission() const
+	{
+		// May need entry point for Object's world transform
+		// also may need to shift a level up
+		m_Materials.at(0)->OnUpdate();
+		m_Materials.at(0)->ProcessForSubmission();
 	}
 
 	VkShaderModule VulkanVertexArray::CreateShaderModule(const std::vector<uint32_t>& code)
@@ -195,14 +235,27 @@ namespace Karma
 	{
 		switch (type)
 		{
-		case ShaderDataType::Float:
-			return VK_FORMAT_R32_SFLOAT;
-		case ShaderDataType::Float2:
-			return VK_FORMAT_R32G32_SFLOAT;
-		case ShaderDataType::Float3:
-			return VK_FORMAT_R32G32B32_SFLOAT;
-		case ShaderDataType::Float4:
-			return VK_FORMAT_R32G32B32A32_SFLOAT;
+			case ShaderDataType::Float:
+				return VK_FORMAT_R32_SFLOAT;
+			case ShaderDataType::Float2:
+				return VK_FORMAT_R32G32_SFLOAT;
+			case ShaderDataType::Float3:
+				return VK_FORMAT_R32G32B32_SFLOAT;
+			case ShaderDataType::Float4:
+				return VK_FORMAT_R32G32B32A32_SFLOAT;
+			case ShaderDataType::None:
+			case ShaderDataType::Mat3:
+			case ShaderDataType::Mat4:
+			case ShaderDataType::Int:
+			case ShaderDataType::Int2:
+			case ShaderDataType::Int3:
+			case ShaderDataType::Int4:
+			case ShaderDataType::Bool:
+				// Refer Mesh::GaugeVertexDataLayout for usual datatype
+				// to be used in the context of vertex buffer
+				KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
+				return VK_FORMAT_UNDEFINED;
+				break;
 		}
 
 		KR_CORE_ASSERT(false, "Vulkan doesn't support this ShaderDatatype");
@@ -249,6 +302,19 @@ namespace Karma
 		CreateDescriptorSets();
 	}
 
+	void VulkanVertexArray::CreatePipelineLayout()
+	{
+		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutInfo.setLayoutCount = 1;
+		pipelineLayoutInfo.pSetLayouts = &m_descriptorSetLayout;
+
+		VkResult result = vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr,
+			&m_pipelineLayout);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create pipeline layout!");
+	}
+
 	void VulkanVertexArray::CreateDescriptorPool()
 	{
 		std::array<VkDescriptorPoolSize, 2> poolSizes{};
@@ -293,19 +359,6 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor set layout!");
 	}
 
-	void VulkanVertexArray::CreatePipelineLayout()
-	{
-		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 1;
-		pipelineLayoutInfo.pSetLayouts = &m_descriptorSetLayout;
-
-		VkResult result = vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr,
-			&m_pipelineLayout);
-
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create pipeline layout!");
-	}
-
 	void VulkanVertexArray::CreateDescriptorSets()
 	{
 		std::vector<VkDescriptorSetLayout> layouts(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(),
@@ -334,6 +387,7 @@ namespace Karma
 			imageInfo.sampler = VulkanHolder::GetVulkanContext()->GetTextureSampler();
 
 			std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+
 			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			descriptorWrites[0].dstSet = m_descriptorSets[i];
 			descriptorWrites[0].dstBinding = m_Shader->GetUniformBufferObject()->GetBindingPointIndex();

@@ -46,6 +46,15 @@ MACRO(SOURCE_GROUP_BY_FOLDER Target)
     ENDIF (Files)
 ENDMACRO(SOURCE_GROUP_BY_FOLDER)
 
+# Print a list with style
+MACRO(PRINT_LIST PList)
+	SET(Counter 0)
+	FOREACH(Elem IN LISTS ${PList})
+		MATH(EXPR Counter "${Counter}+1")
+		message(STATUS "#${Counter}: ${Elem}")
+	ENDFOREACH(Elem)
+ENDMACRO(PRINT_LIST)
+
 # Then the checks
 find_package(Vulkan REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -150,8 +159,11 @@ elseif(APPLE)
 endif()
 
 # Configuration specific defines/settings
-if(NOT CMAKE_BUILD_TYPE STREQUAL RELEASE)
-    add_compile_definitions(KR_ENABLE_ASSERTS)
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+	add_compile_definitions(KR_ENABLE_ASSERTS)
+endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_compile_definitions(KR_DEBUG)
 endif()
 
 # Involved libraries and essentials
@@ -173,6 +185,13 @@ list(APPEND ESSENTIAL_LIBS AssImp)
 list(APPEND ESSENTIAL_LIBS ${Vulkan_LIBRARY})
 list(APPEND ESSENTIAL_LIBS GlSlang)
 list(APPEND ESSENTIAL_LIBS stbimage)
+
+# Print Karma's libraries
+message(STATUS "########################")
+message(STATUS "##  Karma Libraries   ##")
+message(STATUS "########################")
+PRINT_LIST(ESSENTIAL_LIBS)
+message(STATUS "########################")
 
 # Set the project name and version
 project(KarmaEngine VERSION 1.0) # Versioning shall change to something more appropriate
@@ -217,6 +236,22 @@ target_link_libraries(KarmaEngine PUBLIC ${Vulkan_LIBRARY})
 target_link_libraries(KarmaEngine PUBLIC GlSlang)
 target_link_libraries(KarmaEngine PUBLIC stbimage)
 
+# Cluster Karma's libraries into a single folder for project/solution visualization
+set_property(TARGET Glad PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET AssImp PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET ImGui PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET GlSlang PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET spdlogging PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET stbimage PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+
+if(BUILD_SHARED_LIBS)
+    set_property(TARGET glm_shared PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+#[[
+else()
+    set_property(TARGET glm_static PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+]]
+endif()
+
 # INTERFACE (Something that Consumers require but Producers don't)
 # Since I am a library coder here, I am the Producer
 # Rest of the Engine is Consumer here
@@ -240,6 +275,12 @@ target_include_directories(KarmaEngine
 COLLECTIVEINCLUDES(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_compile_definitions(KarmaEngine PUBLIC KarmaEngine)
+
+# Precompiled headers
+target_precompile_headers(KarmaEngine 
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/krpch.h
+)
 
 #[[
  *                                          /\

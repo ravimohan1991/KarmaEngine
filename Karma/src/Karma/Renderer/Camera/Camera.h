@@ -1,7 +1,8 @@
 #pragma once
 
+#include "krpch.h"
+
 #include "glm/glm.hpp"
-#include "Karma/Core.h"
 
 namespace Karma
 {

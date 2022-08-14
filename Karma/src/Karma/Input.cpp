@@ -1,12 +1,12 @@
 #include "Input.h"
 #include "Platform/Windows/WindowsInput.h"
 #include "Platform/Linux/LinuxInput.h"
+#include "Platform/Mac/MacInput.h"
 #include "GLFW/glfw3.h"
-#include "Karma/KarmaUtilites.h"
 
 namespace Karma
 {
-    InputRegisteringAPI Input::s_InputAPI = InputRegisteringAPI::GlfwInput;
+	InputRegisteringAPI Input::s_InputAPI = InputRegisteringAPI::GlfwInput;
 	std::list<std::shared_ptr<ControllerDevice>> Karma::Input::m_ControllerDevices;
 	std::shared_ptr<Karma::Input> Karma::Input::s_Instance = nullptr;// Write a note of this linking stuff. Think what happens without this line. Also ensure singleton pattern.
 
@@ -15,7 +15,7 @@ namespace Karma
 		KR_CORE_INFO("Spawned instance for ControllerDevice: {0}, with id: {1}", dName, cID);
 		switch (Input::GetAPI())
 		{
-            case InputRegisteringAPI::GlfwInput:
+			case InputRegisteringAPI::GlfwInput:
 			{
 				m_IsGamePad = glfwJoystickIsGamepad(cID);
 				if (m_IsGamePad)
@@ -46,19 +46,19 @@ namespace Karma
 
 	GameAction::GameAction()
 	{
-	
+
 	}
 
 	Button::Button()
 	{
-	
+
 	}
 
 	Input::Input(InputData& inputDatRef)
 	{
 		switch (Input::GetAPI())
 		{
-            case InputRegisteringAPI::GlfwInput:
+			case InputRegisteringAPI::GlfwInput:
 			{
 				if (glfwInit() == 0)
 				{
@@ -83,7 +83,7 @@ namespace Karma
 	void Input::SetGamepadMapping()
 	{
 		std::string testString = KarmaUtilities::ReadFileToSpitString("../Resources/Misc/GameControllerDB.txt");
-		
+
 		const char* mappings = testString.c_str();
 
 		glfwUpdateGamepadMappings(mappings);
@@ -94,9 +94,9 @@ namespace Karma
 	}
 
 	void Input::SetConnectedJoySticks()
-	{	
-		int present = 0;	
-		
+	{
+		int present = 0;
+
 		for (int i = 0; i < GLFW_JOYSTICK_LAST; i++)
 		{
 			present = glfwJoystickPresent(i);
@@ -104,10 +104,10 @@ namespace Karma
 			if (present == 1)
 			{
 				std::shared_ptr<ControllerDevice> joyStick;
-				
+
 				if (glfwJoystickIsGamepad(i) == false)
 				{
-					KR_CORE_WARN("There is no XBox mapping for the detected device ({0}).  Consequently, Karma can't (and won't) interpret the hardware.  Please check the mapping database", glfwGetJoystickName(i));
+					KR_CORE_WARN("There is no XBox mapping for the detected device ({0}).  Consequently, Karma can't (and won't) interpret the hardware.  Please check the mapping database.", glfwGetJoystickName(i));
 					continue;
 				}
 				else
@@ -126,11 +126,12 @@ namespace Karma
 
 	void Input::Init()
 	{
-#ifdef KR_WINDOWS_PLATFORM
+#if KR_WINDOWS_PLATFORM
 		Karma::Input::s_Instance.reset(new WindowsInput());
-#endif
-#ifdef KR_LINUX_PLATFORM
-        s_Instance.reset(new LinuxInput());
+#elif KR_LINUX_PLATFORM
+		Karma::Input::s_Instance.reset(new LinuxInput());
+#elif KR_MAC_PLATFORM
+		Karma::Input::s_Instance.reset(new MacInput());
 #endif
 	}
 }

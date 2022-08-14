@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Karma/Core.h"
+#include "krpch.h"
+
 #include "Event.h"
-#include <sstream>
 
 namespace Karma
 {

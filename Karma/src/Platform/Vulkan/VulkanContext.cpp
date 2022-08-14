@@ -13,7 +13,8 @@
 namespace Karma
 {
 	const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
-	const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+	// Subject to change based on available hardware scrutiny
+	std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 #ifdef KR_DEBUG
 	bool VulkanContext::bEnableValidationLayers = true;
@@ -29,8 +30,7 @@ namespace Karma
 	}
 
 	VulkanContext::~VulkanContext()
-	{	
-		delete m_ImageBuffer;
+	{
 		m_vulkanRendererAPI->ClearVulkanRendererAPI();
 		ClearUBO();
 
@@ -58,15 +58,15 @@ namespace Karma
 		vkDestroyDevice(m_device, nullptr);
 		if (bEnableValidationLayers)
 		{
-			DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+			DestroyDebugUtilsMessengerEXT(m_Instance, debugMessenger, nullptr);
 		}
-		vkDestroySurfaceKHR(instance, m_surface, nullptr);
-		vkDestroyInstance(instance, nullptr);
+		vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
+		vkDestroyInstance(m_Instance, nullptr);
 
 		glslang::FinalizeProcess();
 	}
 
-    void VulkanContext::RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo)
+	void VulkanContext::RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo)
 	{
 		m_VulkanUBO.insert(ubo);
 	}
@@ -110,9 +110,7 @@ namespace Karma
 		CreateFrameBuffers();
 
 		VulkanHolder::SetVulkanContext(this);
-		CreateTextureImage();
-		CreateTextureImageView();
-		CreateTextureSampler();
+
 		m_vulkanRendererAPI->CreateSynchronicity();
 
 		// For glslang
@@ -238,22 +236,13 @@ namespace Karma
 		return 0;
 	}
 
-	void VulkanContext::CreateTextureImage()
+	void VulkanContext::CreateTextureImage(VulkanImageBuffer* vImageBuffer)
 	{
-		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load("../Resources/Textures/viking_room.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-		VkDeviceSize imageSize = texWidth * texHeight * 4;
-
-		KR_CORE_ASSERT(pixels, "Failed to load textures image!");
-
-		m_ImageBuffer = new VulkanImageBuffer(imageSize, pixels);
-		stbi_image_free(pixels);
-
 		VkImageCreateInfo imageInfo{};
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		imageInfo.imageType = VK_IMAGE_TYPE_2D;
-		imageInfo.extent.width = static_cast<uint32_t>(texWidth);
-		imageInfo.extent.height = static_cast<uint32_t>(texHeight);
+		imageInfo.extent.width = static_cast<uint32_t>(vImageBuffer->GetTextureWidth());
+		imageInfo.extent.height = static_cast<uint32_t>(vImageBuffer->GetTextureHeight());
 		imageInfo.extent.depth = 1;
 		imageInfo.mipLevels = 1;
 		imageInfo.arrayLayers = 1;
@@ -280,7 +269,7 @@ namespace Karma
 		vkBindImageMemory(m_device, m_TextureImage, m_TextureImageMemory, 0);
 
 		TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		CopyBufferToImage(m_ImageBuffer->GetBuffer(), m_TextureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+		CopyBufferToImage(vImageBuffer->GetBuffer(), m_TextureImage, static_cast<uint32_t>(vImageBuffer->GetTextureWidth()), static_cast<uint32_t>(vImageBuffer->GetTextureHeight()));
 		TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
 
@@ -354,7 +343,7 @@ namespace Karma
 		VkPipelineStageFlags sourceStage;
 		VkPipelineStageFlags destinationStage;
 
-		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) 
+		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
 		{
 			barrier.srcAccessMask = 0;
 			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -362,7 +351,7 @@ namespace Karma
 			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		}
-		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) 
+		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 		{
 			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
@@ -378,7 +367,7 @@ namespace Karma
 			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		}
-		else 
+		else
 		{
 			KR_CORE_ASSERT(false, "Unsupported layout transition!");
 		}
@@ -623,7 +612,7 @@ namespace Karma
 
 	void VulkanContext::CreateSurface()
 	{
-		VkResult result = glfwCreateWindowSurface(instance, m_windowHandle, nullptr, &m_surface);
+		VkResult result = glfwCreateWindowSurface(m_Instance, m_windowHandle, nullptr, &m_surface);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create window surface");
 	}
@@ -633,7 +622,7 @@ namespace Karma
 		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), 
+		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(),
 		indices.presentFamily.value()};
 
 		if (bEnableValidationLayers)
@@ -661,6 +650,10 @@ namespace Karma
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.samplerAnisotropy = VK_TRUE;
+		if(m_SupportedDeviceFeatures.logicOp)
+		{
+			deviceFeatures.logicOp = VK_TRUE;
+		}
 
 		VkDeviceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -691,7 +684,7 @@ namespace Karma
 	void VulkanContext::PickPhysicalDevice()
 	{
 		uint32_t deviceCount = 0;
-		vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
 
 		if (deviceCount == 0)
 		{
@@ -699,7 +692,7 @@ namespace Karma
 		}
 
 		std::vector<VkPhysicalDevice> devices(deviceCount);
-		vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, devices.data());
 
 		if (bEnableValidationLayers)
 		{
@@ -748,10 +741,9 @@ namespace Karma
 			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 		}
 
-		VkPhysicalDeviceFeatures supportedFeatures;
-		vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
+		vkGetPhysicalDeviceFeatures(device, &m_SupportedDeviceFeatures);
 
-		return indices.IsComplete() && bExtensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+		return indices.IsComplete() && bExtensionsSupported && swapChainAdequate && m_SupportedDeviceFeatures.samplerAnisotropy;
 	}
 
 	// Check if all the required extensions are there
@@ -763,13 +755,34 @@ namespace Karma
 		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
+#ifdef KR_MAC_PLATFORM
+		// Case by case query for required extensions
+		// One for MacOS: VK_KHR_portability_subset
+		for(auto anExtention : availableExtensions)
+		{
+			if(strcmp(anExtention.extensionName, "VK_KHR_portability_subset") != 0)
+			{
+				deviceExtensions.push_back("VK_KHR_portability_subset");
+				break;
+			}
+		}
+#endif
+
 		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
 		if (bEnableValidationLayers)
 		{
 			KR_CORE_INFO("+-------------------------------------------------");
-			KR_CORE_INFO("| Swapchain Extensions:");
+			KR_CORE_INFO("| Available Extensions:");
 			uint32_t index = 1;
+			for (auto anExtension : availableExtensions)
+			{
+				KR_CORE_INFO("| {0}. {1}", index++, anExtension.extensionName);
+			}
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("| Required Extensions (shall be enabled...):");
+			index = 1;
 			for (auto swapchainExtension : requiredExtensions)
 			{
 				KR_CORE_INFO("| {0}. {1}", index++, swapchainExtension);
@@ -860,22 +873,26 @@ namespace Karma
 		{
 			KR_CORE_WARN("Validation layers requested, but not available");
 		}
-		
+
 		// Optional information about the application (or Engine in our case)
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		appInfo.pApplicationName = "Karma Engine";
+#ifdef KR_APPLICATION_NAME
+		appInfo.pApplicationName = KR_APPLICATION_NAME;
+#else
+		appInfo.pApplicationName = "No Name";
+#endif
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.pEngineName = "No Engine";
+		appInfo.pEngineName = "Karma";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.apiVersion = VK_API_VERSION_1_2;
-		
+
 		// Tell Vulkan which global extensions and validation layers we want to use
 		VkInstanceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
 
-			// Validation layers
+		// Validation layers
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 		if (bEnableValidationLayers)
 		{
@@ -891,13 +908,15 @@ namespace Karma
 			createInfo.pNext = nullptr;
 		}
 
-		auto extensions = GetRequiredExtensions();
+		VkInstanceCreateFlags flagsToBeSet{};
+		auto extensions = GetRequiredExtensions(flagsToBeSet);
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
+		createInfo.flags |= flagsToBeSet;
 
-		VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
+		VkResult result = vkCreateInstance(&createInfo, nullptr, &m_Instance);
 
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create Vulkan instance.");
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create Vulkan m_Instance.");
 	}
 
 	void VulkanContext::PrintAvailableExtensions()
@@ -948,9 +967,9 @@ namespace Karma
 		return true;
 	}
 
-	// Return the required list of extensions based on whether validation layers are
+	// Return the required list of instance extensions based on whether validation layers are
 	// enabled or not
-	std::vector<const char*> VulkanContext::GetRequiredExtensions()
+	std::vector<const char*> VulkanContext::GetRequiredExtensions(VkInstanceCreateFlags& flagsToBeSet)
 	{
 		uint32_t glfwExtensionCount = 0;
 		const char** glfwExtensions;
@@ -958,13 +977,33 @@ namespace Karma
 
 		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
+#ifdef KR_MAC_PLATFORM
+		// Case by case query for required instance extensions
+		// One for MacOS: VK_KHR_portability_enumeration
+		uint32_t extensionCount = 0;
+
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		std::vector<VkExtensionProperties> vulkanExtensions(extensionCount);
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, vulkanExtensions.data());
+
+		uint32_t index = 1;
+		for(auto anExtension : vulkanExtensions)
+		{
+			if(strcmp(anExtension.extensionName, "VK_KHR_portability_enumeration"))
+			{
+				extensions.push_back("VK_KHR_portability_enumeration");
+				flagsToBeSet = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+				break;
+			}
+		}
+#endif
 		if (bEnableValidationLayers)
 		{
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
-			int32_t index = 1;
+			uint32_t index = 1;
 			KR_CORE_INFO("+-------------------------------------------------");
-			KR_CORE_INFO("| GLFW required extensions:");
+			KR_CORE_INFO("| GLFW and other required instance extensions:");
 			for (auto extension : extensions)
 			{
 				KR_CORE_INFO("| {0}. {1}", index++, extension);
@@ -1009,8 +1048,8 @@ namespace Karma
 		VkDebugUtilsMessengerCreateInfoEXT createInfo;
 		PopulateDebugMessengerCreateInfo(createInfo);
 
-		VkResult result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger);
-		
+		VkResult result = CreateDebugUtilsMessengerEXT(m_Instance, &createInfo, nullptr, &debugMessenger);
+
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to set up debug messenger!");
 	}
 
@@ -1039,7 +1078,7 @@ namespace Karma
 	void VulkanContext::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
 	{
 		auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-		if (func != nullptr) 
+		if (func != nullptr)
 		{
 			func(instance, debugMessenger, pAllocator);
 		}
@@ -1091,7 +1130,7 @@ namespace Karma
 				static_cast<uint32_t>(height)
 			};
 
-			actualExtent.width = std::max(capabilities.minImageExtent.width, 
+			actualExtent.width = std::max(capabilities.minImageExtent.width,
 				std::min(capabilities.maxImageExtent.width, actualExtent.width));
 			actualExtent.height = std::max(capabilities.minImageExtent.height,
 				std::min(capabilities.maxImageExtent.height, actualExtent.height));

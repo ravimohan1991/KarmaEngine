@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "RenderCommand.h"
 
 namespace Karma
 {
@@ -6,7 +7,7 @@ namespace Karma
 	// Make sure to add elements to dictionary for vertex attribute extension
 	std::shared_ptr<std::unordered_map<std::string, MeshAttribute>> Mesh::m_NameToAttributeDictionary = std::make_shared<std::unordered_map<std::string, MeshAttribute>>();
 
-	Mesh::Mesh(std::shared_ptr<VertexBuffer> vertexBuffer, std::shared_ptr<IndexBuffer> indexBuffer, const std::string& meshName, 
+	Mesh::Mesh(std::shared_ptr<VertexBuffer> vertexBuffer, std::shared_ptr<IndexBuffer> indexBuffer, const std::string& meshName,
 		MeshType mType)
 	{
 		InitializeAttributeDictionary();
@@ -38,10 +39,17 @@ namespace Karma
 	Mesh::Mesh(const std::string& filePath)
 	{
 		InitializeAttributeDictionary();
-		
+
 		Assimp::Importer assImporter;
 
-		const aiScene* scene = assImporter.ReadFile(filePath, aiProcess_Triangulate);
+		uint32_t importFlags = aiProcess_Triangulate;
+
+		if(RenderCommand::GetRendererAPI()->GetAPI() == RendererAPI::API::Vulkan)
+		{
+			importFlags = importFlags | aiProcess_FlipUVs;
+		}
+
+		const aiScene* scene = assImporter.ReadFile(filePath, importFlags);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -73,7 +81,7 @@ namespace Karma
 	std::shared_ptr<Mesh> Mesh::ProcessTheRawMesh(aiMesh* meshToProcess, const std::string& mName)
 	{
 		InitializeAttributeDictionary();
-		
+
 		std::shared_ptr<Mesh> productMesh;
 		std::shared_ptr<VertexBuffer> vBuffer;
 		std::shared_ptr<IndexBuffer> iBuffer;
@@ -127,9 +135,9 @@ namespace Karma
 		{
 			layoutSlots += elem.GetComponentCount();
 		}
-		
+
 		uint32_t vertexDataLength = meshToProcess->mNumVertices * layoutSlots;
-		
+
 		vertexData = new float[vertexDataLength];
 		vertexDataSize = sizeof(float) * vertexDataLength;
 
@@ -149,7 +157,7 @@ namespace Karma
 		for (unsigned int i = 0; i < meshToProcess->mNumVertices; i++)
 		{
 			// Now, based on the gauged layout, we interleave all of the
-			// attributes		
+			// attributes
 			for (const auto& layoutElem : buffLayout.GetElements())
 			{
 				for (uint32_t j = 0; j < layoutElem.GetComponentCount(); j++)
@@ -157,7 +165,7 @@ namespace Karma
 					vertexData[counter++] = LayoutElementToAttributeValue(i, j, meshToProcess, layoutElem);
 				}
 			}
-			
+
 		}
 
 		counter = 0;
@@ -175,7 +183,7 @@ namespace Karma
 	{
 		buffLayout.PushElement({ ShaderDataType::Float3, "v_Position" });
 
-		if (meshToProcess->mTextureCoords != nullptr)
+		if (meshToProcess->mTextureCoords[0] != nullptr)
 		{
 			buffLayout.PushElement({ ShaderDataType::Float2, "v_UV" });
 		}
@@ -217,10 +225,10 @@ namespace Karma
 						}
 					}
 				break;
-			
+
 			// We assume that AI_MAX_NUMBER_OF_TEXTURECOORDS = 1.  This simplifies but may have
 			// some future extention IF we delve deep into Textures.
-			// For now we interleave the UV coordinates 
+			// For now we interleave the UV coordinates
 			case MeshAttribute::TextureCoords:
 					{
 						if (counter == 0)
@@ -294,7 +302,7 @@ namespace Karma
 				return 101.0f;
 				break;
 		}
-		
+
 		KR_CORE_WARN("Outside the scope of Switch.  This should never happen!  Check the leakages.");
 		return 101.0f;
 	}

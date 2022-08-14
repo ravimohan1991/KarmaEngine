@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Karma/Core.h"
-
-// PCH stuff
-#include <string>
+#include "krpch.h"
 
 namespace Karma
 {
@@ -14,7 +11,7 @@ namespace Karma
 		LightMap,
 		DiffusionMap
 	};
-	
+
 	class KARMA_API Texture
 	{
 	public:
@@ -29,5 +26,8 @@ namespace Karma
 		std::string m_TName;
 		// Name to be used for identification in the shaders
 		std::string m_TShaderName;
+
+		// For Vulkan specific purposes
+
 	};
 }

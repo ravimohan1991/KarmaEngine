@@ -1,16 +1,12 @@
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
-#include "Karma/Core.h"
+#include "krpch.h"
+
 #include "Karma/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
-
-// PCH stuff
-#include <memory>
-#include <set>
-#include <optional>
 
 namespace Karma
 {
@@ -45,7 +41,7 @@ namespace Karma
 
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
-		virtual bool OnWindowResize(WindowResizeEvent& event) {/*No need for Vulkan for now.*/ return true; }
+		virtual bool OnWindowResize(WindowResizeEvent& event) override {/*No need for Vulkan for now.*/ return true; }
 
 		void CreateInstance();
 
@@ -54,7 +50,7 @@ namespace Karma
 
 		// Validation layers
 		bool CheckValidationLayerSupport();
-		std::vector<const char*> GetRequiredExtensions();
+		std::vector<const char*> GetRequiredExtensions(VkInstanceCreateFlags& flagsToBeSet);
 
 		static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 			VkDebugUtilsMessageTypeFlagsEXT messageType,
@@ -109,7 +105,7 @@ namespace Karma
 		bool HasStencilComponent(VkFormat format);
 
 		// Texture image
-		void CreateTextureImage();
+		void CreateTextureImage(VulkanImageBuffer* vImageBuffer);
 		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 		void CreateTextureImageView();
@@ -121,7 +117,7 @@ namespace Karma
 		void SetVSync(bool bEnable);
 
 		void Initializeglslang();
-        void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
+		void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
 		void ClearUBO();
 		void RecreateUBO();
 		void UploadUBO(size_t currentImage);
@@ -139,13 +135,18 @@ namespace Karma
 		VkCommandPool GetCommandPool() const { return m_commandPool; }
 		VkImageView GetTextureImageView() const { return m_TextureImageView; }
 		VkSampler GetTextureSampler() const { return m_TextureSampler; }
+		const VkPhysicalDeviceFeatures& GetSupportedDeviceFeatures() const { return m_SupportedDeviceFeatures; }
 
 	private:
+		// Apologies for little out-of-sync naming convention, was dealing with flood of lines when
+		// learning Vulkan!
 		GLFWwindow* m_windowHandle;
 		VulkanRendererAPI* m_vulkanRendererAPI;
 
-		VkInstance instance;
+		VkInstance m_Instance;
 		VkDebugUtilsMessengerEXT debugMessenger;
+
+		VkPhysicalDeviceFeatures m_SupportedDeviceFeatures;
 
 		static bool bEnableValidationLayers;
 
@@ -164,7 +165,7 @@ namespace Karma
 		std::vector<VkImageView> m_swapChainImageViews;
 
 		VkRenderPass m_renderPass;
-		
+
 		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 		VkCommandPool m_commandPool;
 
@@ -177,7 +178,7 @@ namespace Karma
 		VkImageView m_DepthImageView;
 
 		// Prototype
-		VulkanImageBuffer* m_ImageBuffer;
+		// VulkanImageBuffer* m_ImageBuffer;
 		VkImage m_TextureImage;
 		VkDeviceMemory m_TextureImageMemory;
 		VkImageView m_TextureImageView;

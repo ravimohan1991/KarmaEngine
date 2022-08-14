@@ -4,8 +4,8 @@
 #include "Karma/Input.h"
 
 namespace Karma
-{	
-    Camera::Camera(const glm::vec3& initialCameraPosition) : m_Position(initialCameraPosition), m_LastMouseX(0.0f), m_LastMouseY(0.0f)
+{
+	Camera::Camera(const glm::vec3& initialCameraPosition) : m_Position(initialCameraPosition), m_LastMouseX(0.0f), m_LastMouseY(0.0f)
 	{
 	}
 

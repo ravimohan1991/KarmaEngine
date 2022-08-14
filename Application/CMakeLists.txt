@@ -21,7 +21,8 @@ if(MSVC AND BUILD_SHARED_LIBS)
         set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
         add_compile_definitions(KR_DYNAMIC_LINK)
         # Disable stupid C4251 warnings due to STL's negligence
-        add_definitions(/wd4251)
+		# https://docs.microsoft.com/en-us/cpp/build/reference/compiler-option-warning-level?view=msvc-170#remarks
+        add_compile_options(/wd4251)
     elseif(APPLE)
         add_compile_definitions(KR_DYNAMIC_LINK KR_BUILD_SO) # May need to find appropriate define name because Apple doesn't generate SO
     endif()
@@ -51,6 +52,11 @@ target_compile_definitions(SandBox PRIVATE SandBox)
 if(MSVC)
     # Set local debugger path
     set_target_properties(SandBox PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
+elseif(XCODE)
+    # Set local debugger path
+    set_target_properties(SandBox PROPERTIES
+    XCODE_GENERATE_SCHEME TRUE
+    XCODE_SCHEME_WORKING_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 endif()
 
 #[[

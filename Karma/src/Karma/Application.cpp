@@ -10,7 +10,9 @@ namespace Karma
 #ifdef KR_WINDOWS_PLATFORM
 	Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Windows;
 #elif KR_LINUX_PLATFORM
-    Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Linux;
+	Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Linux;
+#elif KR_MAC_PLATFORM
+	Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Mac;
 #endif
 
 	Application::Application()

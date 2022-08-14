@@ -1,13 +1,10 @@
 #pragma once
 
-#include "Karma/Core.h"
+#include "krpch.h"
+
 #include "Karma/Renderer/Shader.h"
 #include "Texture.h"
 #include "Camera/Camera.h"
-
-// PCH stuff
-#include <list>
-#include "Karma/Log.h"
 
 namespace Karma
 {
@@ -27,6 +24,7 @@ namespace Karma
 
 		// Getters
 		std::shared_ptr<Shader> GetShader(const std::string& shaderName) const;
+		std::shared_ptr<Shader> GetShader(int index);
 
 		// May add Physics-relevant features in future.
 

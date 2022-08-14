@@ -11,7 +11,7 @@ namespace Karma
 
 	VulkanRendererAPI::~VulkanRendererAPI()
 	{
-		
+
 	}
 
 	void VulkanRendererAPI::ClearVulkanRendererAPI()
@@ -105,11 +105,9 @@ namespace Karma
 			KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
 		}
 	}
-	// Replace to DrawIndexed?
+
 	void VulkanRendererAPI::EndScene()
 	{
-		RecordCommandBuffers();
-		SubmitCommandBuffers();
 		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
 		for (size_t i = 0; i < m_commandBuffers.size(); i++)
 		{
@@ -123,7 +121,6 @@ namespace Karma
 		m_ImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		m_RenderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		m_InFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-		m_ImagesInFlight.resize(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(), VK_NULL_HANDLE);
 
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -174,13 +171,6 @@ namespace Karma
 		{
 			KR_CORE_ASSERT(false, "Failed to acquire swapchain image");
 		}
-
-		if (m_ImagesInFlight[imageIndex] != VK_NULL_HANDLE)
-		{
-			vkWaitForFences(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), 1, &m_ImagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
-		}
-
-		m_ImagesInFlight[imageIndex] = m_InFlightFences[m_CurrentFrame];
 
 		VulkanHolder::GetVulkanContext()->UploadUBO(imageIndex);
 		VkSubmitInfo submitInfo{};
@@ -255,5 +245,7 @@ namespace Karma
 	{
 		std::shared_ptr<VulkanVertexArray> vulkanVA = std::static_pointer_cast<VulkanVertexArray>(vertexArray);
 		m_VulkaVertexArrays.push_back(vulkanVA);
+		RecordCommandBuffers();
+		SubmitCommandBuffers();
 	}
 }

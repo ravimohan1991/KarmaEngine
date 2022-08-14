@@ -1,12 +1,10 @@
 #pragma once
 
+#include "krpch.h"
+
 #include "Karma/Renderer/Shader.h"
 #include "glad/glad.h"
-
-// PCH stuff
-#include <string>
-#include <map>
-#include <unordered_map>
+#include "Karma/KarmaUtilities.h"
 
 namespace Karma
 {
@@ -15,7 +13,7 @@ namespace Karma
 	{
 	public:
 		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
-		OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile, 
+		OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile,
 			const std::string& shaderName);
 		virtual ~OpenGLShader() override;
 

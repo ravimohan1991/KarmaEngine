@@ -1,12 +1,9 @@
 #pragma once
 
-#include "Karma/Core.h"
-#include "Karma/Renderer/Buffer.h"
-#include <string>
-#include "glm/glm.hpp"
+#include "krpch.h"
 
-// PCH stuff
-#include <memory>
+#include "Karma/Renderer/Buffer.h"
+#include "glm/glm.hpp"
 
 namespace Karma
 {

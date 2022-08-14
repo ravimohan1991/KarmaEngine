@@ -21,7 +21,7 @@ namespace Karma
 	{
 		return new WindowsWindow(props);
 	}
-#endif   
+#endif
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
@@ -51,7 +51,7 @@ namespace Karma
 		}
 
 		RendererAPI::API currentAPI = RendererAPI::GetAPI();
-		
+
 		if (currentAPI == RendererAPI::API::Vulkan)
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -59,9 +59,9 @@ namespace Karma
 			vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 			KR_CORE_INFO("{0} Vulkan extensions supported", extensionCount);
 		}
-		
+
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		
+
 		switch (currentAPI)
 		{
 			case RendererAPI::API::None:
@@ -74,10 +74,10 @@ namespace Karma
 				m_Context = new VulkanContext(m_Window);
 				break;
 		}
-		
+
 		m_Context->Init();
 		SetVSync(true);
-		
+
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
@@ -86,7 +86,7 @@ namespace Karma
 
 		// Set the ICOOOOON
 		GLFWimage karmaEQ;
-		karmaEQ.pixels = stbi_load("../Resources/Textures/KarmaEQ.png", &karmaEQ.width, &karmaEQ.height, 0, 4); //rgba channels 
+		karmaEQ.pixels = stbi_load("../Resources/Textures/KarmaEQ.png", &karmaEQ.width, &karmaEQ.height, 0, 4); //rgba channels
 		glfwSetWindowIcon(m_Window, 1, &karmaEQ);
 		stbi_image_free(karmaEQ.pixels);
 	}
@@ -154,7 +154,7 @@ namespace Karma
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			
+
 			KeyTypedEvent event(keycode);
 			data.EventCallback(event);
 		});
@@ -217,10 +217,11 @@ namespace Karma
 	void WindowsWindow::SetVSync(bool enabled)
 	{
 		RendererAPI::API currentAPI = RendererAPI::GetAPI();
-		
+
 		switch (currentAPI)
 		{
 			case RendererAPI::API::OpenGL:
+			{
 				if (enabled)
 				{
 					glfwSwapInterval(1);
@@ -230,9 +231,18 @@ namespace Karma
 					glfwSwapInterval(0);
 				}
 				break;
+			}
 			case RendererAPI::API::Vulkan:
+			{
 				VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
 				vContext->SetVSync(enabled);
+				break;
+			}
+			case RendererAPI::API::None:
+			{
+				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				break;
+			}
 		}
 	}
 

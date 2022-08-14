@@ -1,12 +1,10 @@
 #pragma once
 
+#include "krpch.h"
+
 #include "Karma/Renderer/Shader.h"
 #include "glslang/Public/ShaderLang.h"
-
-// PCH stuff
-#include <string>
-#include <map>
-#include "Karma/Log.h"
+#include "Karma/KarmaUtilities.h"
 
 namespace Karma
 {
@@ -28,9 +26,6 @@ namespace Karma
 
 		std::vector<uint32_t> Compile(const std::string& src, const std::string& source, EShLanguage lang);
 
-		std::string ReadFile(const std::string& file);
-		std::string GetFilePath(const std::string& str);
-		
 		virtual void GenerateUniformBufferObject() override {}
 		virtual void BindUniformBufferObject() override {}
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);

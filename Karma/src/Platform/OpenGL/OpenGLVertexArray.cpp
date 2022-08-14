@@ -29,6 +29,8 @@ namespace Karma
 			return GL_INT;
 		case Karma::ShaderDataType::Bool:
 			return GL_INT;
+		case Karma::ShaderDataType::None:
+			return GL_NONE;
 		}
 
 		KR_CORE_ASSERT(false, "Unknown ShaderDataType!");
@@ -37,7 +39,9 @@ namespace Karma
 
 	OpenGLVertexArray::OpenGLVertexArray()
 	{
-		glCreateVertexArrays(1, &m_RendererID);
+		//glCreateVertexArrays(1, &m_RendererID);
+		glGenVertexArrays(1, &m_RendererID);
+		Bind();
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray()
@@ -117,5 +121,19 @@ namespace Karma
 
 		// May need modificaitons for batch rendering later.
 		m_IndexBuffer = mesh->GetIndexBuffer();
+	}
+
+	void OpenGLVertexArray::SetMaterial(std::shared_ptr<Material> material)
+	{
+		m_Materials.push_back(material);
+		m_Shader = std::static_pointer_cast<OpenGLShader>(material->GetShader(0));
+	}
+
+	void OpenGLVertexArray::UpdateProcessAndSetReadyForSubmission() const
+	{
+		// May need entry point for Object's world transform
+		// also may need to shift a level up
+		m_Materials.at(0)->OnUpdate();
+		m_Materials.at(0)->ProcessForSubmission();
 	}
 }

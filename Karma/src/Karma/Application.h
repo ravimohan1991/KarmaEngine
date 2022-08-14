@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Karma/Core.h"
+#include "krpch.h"
+
 #include "Karma/Window.h"
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/Events/ControllerDeviceEvent.h"
@@ -24,7 +25,7 @@ namespace Karma
 	public:
 		Application();
 		~Application();
-		
+
 		void Run();
 
 		void OnEvent(Event& e);
