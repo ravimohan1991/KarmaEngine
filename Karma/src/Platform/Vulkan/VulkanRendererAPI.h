@@ -38,7 +38,6 @@ namespace Karma
 		std::vector<VkSemaphore> m_ImageAvailableSemaphores;
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores;
 		std::vector<VkFence> m_InFlightFences;
-		std::vector<VkFence> m_ImagesInFlight;
 
 		const int MAX_FRAMES_IN_FLIGHT = 2;
 
