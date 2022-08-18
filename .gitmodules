@@ -20,3 +20,6 @@
 	path = Karma/vendor/assimp
 	url = https://github.com/ravimohan1991/assimp.git
 	ignore = dirty
+[submodule "Karma/vendor/SDL"]
+	path = Karma/vendor/SDL
+	url = https://github.com/ravimohan1991/SDL.git
