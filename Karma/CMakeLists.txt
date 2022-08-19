@@ -144,6 +144,9 @@ if(MSVC)
     endif()
 endif()
 
+# Some defines
+add_compile_definitions(IMGUI_IMPL_VULKAN_NO_PROTOTYPES)
+
 # Platform specific defines
 # NOTE: These defines transcend libraries
 if(WIN32)
