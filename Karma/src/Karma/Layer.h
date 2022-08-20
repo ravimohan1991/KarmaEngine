@@ -12,18 +12,11 @@ namespace Karma
 		Layer(const std::string& name = "Layer");
 		virtual ~Layer();
 
-		virtual void OnAttach()
-		{
-		}
-		virtual void OnDetach()
-		{
-		}
-		virtual void OnUpdate(float deltaTime)
-		{
-		}
-		virtual void OnImGuiRender()
-		{
-		}
+		virtual void OnAttach() = 0;
+		virtual void OnDetach() = 0;
+		virtual void OnUpdate(float deltaTime) = 0;
+		virtual void OnImGuiRender() = 0;
+		
 		virtual void OnEvent(Event& event)
 		{
 		}

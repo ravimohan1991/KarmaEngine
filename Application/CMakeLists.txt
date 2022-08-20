@@ -46,6 +46,12 @@ if(MSVC)
     )
 endif()
 
+# Experimental
+    target_include_directories(SandBox
+        PRIVATE
+        ${Vulkan_INCLUDE_DIR}
+    )
+
 target_compile_definitions(SandBox PRIVATE SandBox)
 
 

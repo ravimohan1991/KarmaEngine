@@ -2,5 +2,5 @@
 
 namespace Karma
 {
-	RendererAPI::API RendererAPI::s_API = RendererAPI::API::Vulkan;
+	RendererAPI::API RendererAPI::s_API = RendererAPI::API::OpenGL;
 }

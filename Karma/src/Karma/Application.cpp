@@ -23,8 +23,9 @@ namespace Karma
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent)); // Setting the listener
 
-		//m_ImGuiLayer = new ImGuiLayer();
-		//PushOverlay(m_ImGuiLayer);
+		// Graphics API Vulkan or OpenGL should have been completely initialized by here
+		m_ImGuiLayer = new ImGuiLayer(m_Window);
+		PushOverlay(m_ImGuiLayer);
 	}
 
 	Application::~Application()
@@ -67,13 +68,14 @@ namespace Karma
 				layer->OnUpdate(deltaTime);
 			}
 			
-			/*m_ImGuiLayer->Begin();
+			// ImGui rendering sequence cue trickling through stack
+			m_ImGuiLayer->Begin();
 			for (auto layer : m_LayerStack)
 			{
 				layer->OnImGuiRender();
 			}
-			m_ImGuiLayer->End();*/
-
+			m_ImGuiLayer->End();
+			
 			m_Window->OnUpdate();
 		}
 	}

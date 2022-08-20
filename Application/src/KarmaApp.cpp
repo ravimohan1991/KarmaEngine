@@ -16,7 +16,7 @@ public:
 		m_SquareVA->SetMesh(sModel->GetMeshList()[0]);
 		delete sModel;
 		*/
-
+		/*
 		std::shared_ptr<Karma::Mesh> trialMesh;
 		trialMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
 		m_SquareVA->SetMesh(trialMesh);
@@ -36,14 +36,15 @@ public:
 		m_SquareVA->SetMaterial(m_SquareMat);
 
 		// Should be Material
-		//m_SquareVA->SetShader(m_BlueSQShader);
+		//m_SquareVA->SetShader(m_BlueSQShader);*/
 	}
 
 	virtual void OnUpdate(float deltaTime) override
 	{
 		KarmaAppInputPolling(deltaTime);
-
+		
 		Karma::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
+		/*
 		Karma::RenderCommand::Clear();
 
 		Karma::Renderer::BeginScene(*m_Camera);
@@ -54,7 +55,7 @@ public:
 
 		Karma::Renderer::Submit(m_SquareVA);
 
-		Karma::Renderer::EndScene();
+		Karma::Renderer::EndScene();*/
 	}
 
 	virtual void OnImGuiRender() override
@@ -151,6 +152,14 @@ public:
 			m_Camera->RotateAboutXAxis(-1.f * val * cameraRotationSpeed * deltaTime);
 		}
 		// Controller context ends
+	}
+	
+	virtual void OnAttach() override
+	{
+	}
+	
+	virtual void OnDetach() override
+	{
 	}
 
 private:
