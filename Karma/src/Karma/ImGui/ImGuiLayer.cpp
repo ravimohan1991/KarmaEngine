@@ -53,9 +53,7 @@ namespace Karma
 			
 			// Allocate ImGui resources for frames_in_flight, accordingly
 			m_AllocatedCommandBuffers.resize(m_VulkanWindowData.ImageCount);
-			m_ResourceFreeQueue.resize(m_VulkanWindowData.ImageCount);
-			
-			
+			m_ResourceFreeQueue.resize(m_VulkanWindowData.ImageCount);	
 		}
 	}
 
@@ -133,7 +131,7 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_TRUE, "No WSI support found on physical device");
 
 		// Select Surface Format
-		const VkFormat requestSurfaceImageFormat[] = { VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM };
+		const VkFormat requestSurfaceImageFormat[] = { VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM, VK_FORMAT_B8G8R8A8_SRGB };
 		const VkColorSpaceKHR requestSurfaceColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
 		vulkanWindowData->SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(physicalDevice, vulkanWindowData->Surface, requestSurfaceImageFormat, (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
 
@@ -145,6 +143,13 @@ namespace Karma
 #endif
 		vulkanWindowData->PresentMode = ImGui_ImplVulkanH_SelectPresentMode(physicalDevice, vulkanWindowData->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
 
+		
+		// A hacky way to let Dear ImGui deal with swapchain and all that
+		// https://computergraphics.stackexchange.com/a/8910
+
+		// Also Author's note: I shouldn't be using the functions ImGui_ImplVUlkanH_*(). Should be useful when attempting to bring ImGui Layer and ExampleLayer (with Cylinder mesh + material) 
+		vulkanWindowData->Swapchain = VulkanHolder::GetVulkanContext()->GetSwapChain();
+		
 		// Create SwapChain, RenderPass, Framebuffer, CommandPool etc.
 		ImGui_ImplVulkanH_CreateOrResizeWindow(VulkanHolder::GetVulkanContext()->GetInstance(), physicalDevice, m_Device, vulkanWindowData, VulkanHolder::GetVulkanContext()->FindQueueFamilies(physicalDevice).graphicsFamily.value(), VK_NULL_HANDLE, width, height, m_MinImageCount);
 	}
