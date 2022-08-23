@@ -19,7 +19,10 @@ namespace Karma
 		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
 
 		RemoveSynchronicity();
-		vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		if(m_commandBuffers.size() > 0)
+		{
+			vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		}
 	}
 
 	void VulkanRendererAPI::SetClearColor(const glm::vec4& color)

@@ -44,11 +44,14 @@ namespace Karma
 		bool OnWindowResize(WindowResizeEvent& event);
 		bool OnControllerDeviceConnected(ControllerDeviceConnectedEvent& event);
 		bool OnControllerDeviceDisconnected(ControllerDeviceDisconnectedEvent& event);
-
-		std::shared_ptr<Window> m_Window;
+		
+		// We are using raw pointers because we want necessary control over the lifetime of
+		// the objects. Especially for clearing up Vulkan relevant parts.
+		Window* m_Window;
+		LayerStack* m_LayerStack;
+		
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
-		LayerStack m_LayerStack;// Created on stack. For entire lifetime of the program (singleton?)
 
 		static Application* s_Instance;
 		static RunningPlatform m_RPlatform;

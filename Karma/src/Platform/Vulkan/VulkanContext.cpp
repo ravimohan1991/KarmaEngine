@@ -34,11 +34,22 @@ namespace Karma
 		m_vulkanRendererAPI->ClearVulkanRendererAPI();
 		ClearUBO();
 
-		vkDestroySampler(m_device, m_TextureSampler, nullptr);
-		vkDestroyImageView(m_device, m_TextureImageView, nullptr);
+		/*
+		if(m_TextureSampler != VK_NULL_HANDLE)
+		{
+			vkDestroySampler(m_device, m_TextureSampler, nullptr);
+		}
+		if(m_TextureImageView != VK_NULL_HANDLE)
+		{
+			vkDestroyImageView(m_device, m_TextureImageView, nullptr);
+		}
 		vkDestroyImage(m_device, m_TextureImage, nullptr);
-		vkFreeMemory(m_device, m_TextureImageMemory, nullptr);
-
+		if(m_TextureImageMemory != VK_NULL_HANDLE)
+		{
+			vkFreeMemory(m_device, m_TextureImageMemory, nullptr);
+		}
+		*/
+		
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
 			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
@@ -60,7 +71,10 @@ namespace Karma
 		{
 			DestroyDebugUtilsMessengerEXT(m_Instance, debugMessenger, nullptr);
 		}
-		vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
+		
+		// Maybe ImGui took care of it
+		//vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
+
 		vkDestroyInstance(m_Instance, nullptr);
 
 		glslang::FinalizeProcess();
@@ -236,6 +250,7 @@ namespace Karma
 		return 0;
 	}
 
+	/*
 	void VulkanContext::CreateTextureImage(VulkanImageBuffer* vImageBuffer)
 	{
 		VkImageCreateInfo imageInfo{};
@@ -300,7 +315,8 @@ namespace Karma
 		VkResult result = vkCreateSampler(m_device, &samplerInfo, nullptr, &m_TextureSampler);
 		KR_CORE_ASSERT(result == false, "Failed to create texture sampler!");
 	}
-
+	*/
+	 
 	void VulkanContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 	{
 		VkCommandBufferAllocateInfo allocInfo{};
@@ -394,6 +410,7 @@ namespace Karma
 		vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);
 	}
 
+	/*
 	void VulkanContext::CreateTextureImageView()
 	{
 		VkImageViewCreateInfo viewInfo{};
@@ -411,6 +428,7 @@ namespace Karma
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create texture image view");
 	}
+	*/
 
 	void VulkanContext::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 	{

@@ -25,6 +25,7 @@ namespace Karma
 		// Getters
 		std::shared_ptr<Shader> GetShader(const std::string& shaderName) const;
 		std::shared_ptr<Shader> GetShader(int index);
+		std::shared_ptr<Texture> GetTexture(int index);
 
 		// May add Physics-relevant features in future.
 

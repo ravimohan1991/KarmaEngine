@@ -20,8 +20,10 @@ namespace Karma
 		KR_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
-		m_Window = std::unique_ptr<Window>(Window::Create());
+		m_Window = Window::Create();
 		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent)); // Setting the listener
+		
+		m_LayerStack = new LayerStack();
 
 		// Graphics API Vulkan or OpenGL should have been completely initialized by here
 		m_ImGuiLayer = new ImGuiLayer(m_Window);
@@ -31,6 +33,12 @@ namespace Karma
 	Application::~Application()
 	{
 		Renderer::DeleteData();
+		// We want to clear off layers and their rendering components before the m_Window
+		// and its context.
+		KR_CORE_INFO("Deleting stacks");
+		delete m_LayerStack;
+		KR_CORE_INFO("Deleting window");
+		delete m_Window;
 		s_Instance = nullptr;
 	}
 	
@@ -63,19 +71,20 @@ namespace Karma
 
 			// The range based for loop valid because we have implemented begin()
 			// and end() in LayerStack.h
-			for (auto layer : m_LayerStack)
+			for (auto layer : *m_LayerStack)
 			{
 				layer->OnUpdate(deltaTime);
 			}
 			
 			// ImGui rendering sequence cue trickling through stack
+
 			m_ImGuiLayer->Begin();
-			for (auto layer : m_LayerStack)
+			for (auto layer : *m_LayerStack)
 			{
 				layer->OnImGuiRender();
 			}
 			m_ImGuiLayer->End();
-			
+
 			m_Window->OnUpdate();
 		}
 	}
@@ -94,13 +103,13 @@ namespace Karma
 
 	void Application::PushLayer(Layer* layer)
 	{
-		m_LayerStack.PushLayer(layer);
+		m_LayerStack->PushLayer(layer);
 		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* layer)
 	{
-		m_LayerStack.PushOverlay(layer);
+		m_LayerStack->PushOverlay(layer);
 		layer->OnAttach();
 	}
 	
@@ -124,7 +133,7 @@ namespace Karma
 		dispatcher.Dispatch<ControllerDeviceConnectedEvent>(KR_BIND_EVENT_FN(Application::OnControllerDeviceConnected));
 		dispatcher.Dispatch<ControllerDeviceDisconnectedEvent>(KR_BIND_EVENT_FN(Application::OnControllerDeviceDisconnected));
 
-		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
+		for (auto it = m_LayerStack->end(); it != m_LayerStack->begin(); )
 		{
 			(*--it)->OnEvent(e);
 			if (e.IsHandled())

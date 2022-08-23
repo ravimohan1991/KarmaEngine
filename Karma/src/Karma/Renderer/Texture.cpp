@@ -5,6 +5,10 @@
 
 namespace Karma
 {
+	Texture::Texture()
+	{
+	}
+	
 	Texture::Texture(TextureType tType, const char* filename, std::string textureName, std::string textureShaderName) : m_TType(tType),
 		m_TName(textureName), m_TShaderName(textureShaderName)
 	{
@@ -24,7 +28,10 @@ namespace Karma
 						VulkanImageBuffer* vImageBuffer = static_cast<VulkanImageBuffer*>(ImageBuffer::Create(filename));
 						if(vImageBuffer != nullptr)
 						{
-							VulkanTexture::GenerateVulkanTexture(vImageBuffer);
+							// Instantiate Vulkan texture rather
+							// VulkanTexture::GenerateVulkanTexture(vImageBuffer);
+							m_VulkanTexture = new VulkanTexture();
+							m_VulkanTexture->GenerateVulkanTexture(vImageBuffer);
 						}
 						delete vImageBuffer;
 						break;
@@ -37,5 +44,11 @@ namespace Karma
 				KR_CORE_ASSERT(false, "Other maps not supported yet.");
 				break;
 		}
+	}
+
+	Texture::~Texture()
+	{
+		// Experimental. Need to track the lifetime.
+		delete m_VulkanTexture;
 	}
 }

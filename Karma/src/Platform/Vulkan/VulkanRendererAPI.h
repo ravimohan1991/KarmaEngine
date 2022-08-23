@@ -30,7 +30,6 @@ namespace Karma
 
 	private:
 		size_t m_CurrentFrame = 0;
-		glm::vec4 m_ClearColor;
 
 		std::vector<VkCommandBuffer> m_commandBuffers;
 		std::vector<std::shared_ptr<VulkanVertexArray>> m_VulkaVertexArrays;

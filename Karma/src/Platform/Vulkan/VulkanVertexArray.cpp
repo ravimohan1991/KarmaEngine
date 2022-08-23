@@ -1,5 +1,6 @@
 #include "VulkanVertexArray.h"
 #include "Platform/Vulkan/VulkanHolder.h"
+#include "Platform/Vulkan/VulkanTexutre.h"
 #include <fstream>
 
 namespace Karma
@@ -33,7 +34,7 @@ namespace Karma
 	{
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-		vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr);
+		//vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr); //Seems like ImGui layer takes care of this
 		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);// Descriptorsets get automatically get freed
 	}
 
@@ -381,10 +382,14 @@ namespace Karma
 			bufferInfo.offset = 0;
 			bufferInfo.range = m_Shader->GetUniformBufferObject()->GetBufferSize();
 
+			// Fetch right texture pointer first whose image is to be considered.
+			// Caution: GetTexture index is with temporary assumption that needs addressing.
+			VulkanTexture* vTexture = m_Materials[0]->GetTexture(0)->GetVulkanTexture();
+
 			VkDescriptorImageInfo imageInfo{};
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = VulkanHolder::GetVulkanContext()->GetTextureImageView();
-			imageInfo.sampler = VulkanHolder::GetVulkanContext()->GetTextureSampler();
+			imageInfo.imageView = vTexture->GetImageView();
+			imageInfo.sampler = vTexture->GetImageSampler();
 
 			std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 

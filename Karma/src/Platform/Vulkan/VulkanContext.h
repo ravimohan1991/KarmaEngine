@@ -104,12 +104,12 @@ namespace Karma
 		VkFormat FindDepthFormat();
 		bool HasStencilComponent(VkFormat format);
 
-		// Texture image
-		void CreateTextureImage(VulkanImageBuffer* vImageBuffer);
+		// Texture relevant
+		//void CreateTextureImage(VulkanImageBuffer* vImageBuffer);
 		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-		void CreateTextureImageView();
-		void CreateTextureSampler();
+		//void CreateTextureImageView();
+		//void CreateTextureSampler();
 
 		void RecreateSwapChain();
 		void CleanupSwapChain();
@@ -130,13 +130,16 @@ namespace Karma
 		const std::vector<VkFramebuffer>& GetSwapChainFrameBuffer() const { return m_swapChainFrameBuffers; }
 		VkSwapchainKHR GetSwapChain() const { return m_swapChain; }
 		inline const std::vector<VkImage>& GetSwapChainImages() const { return m_swapChainImages; }
+		VkFormat GetSwapChainImageFormat() const { return m_swapChainImageFormat; }
 		VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
 		VkQueue GetPresentQueue() const { return m_presentQueue; }
 		VkCommandPool GetCommandPool() const { return m_commandPool; }
-		VkImageView GetTextureImageView() const { return m_TextureImageView; }
-		VkSampler GetTextureSampler() const { return m_TextureSampler; }
+		//VkImageView GetTextureImageView() const { return m_TextureImageView; }
+		//VkSampler GetTextureSampler() const { return m_TextureSampler; }
 		const VkPhysicalDeviceFeatures& GetSupportedDeviceFeatures() const { return m_SupportedDeviceFeatures; }
 		VkInstance GetInstance() const { return m_Instance; }
+		uint32_t GetImageCount() const { return m_swapChainImages.size(); }
+		VkSurfaceKHR GetSurface() const { return m_surface; }
 
 	private:
 		// Apologies for little out-of-sync naming convention, was dealing with flood of lines when
@@ -177,12 +180,12 @@ namespace Karma
 		VkImage m_DepthImage;
 		VkDeviceMemory m_DepthImageMemory;
 		VkImageView m_DepthImageView;
-
-		// Prototype
-		// VulkanImageBuffer* m_ImageBuffer;
-		VkImage m_TextureImage;
+		
+		//VkImage m_TextureImage;
+		/*
 		VkDeviceMemory m_TextureImageMemory;
 		VkImageView m_TextureImageView;
 		VkSampler m_TextureSampler;
+		 */
 	};
 }

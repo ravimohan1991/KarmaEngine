@@ -8,7 +8,7 @@ namespace Karma
 	{
 	}
 
-	void MacInput::SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window)
+	void MacInput::SetEventCallback(const EventCallbackFn& callback, Window* window)
 	{
 		m_Data.EventCallback = callback;
 
