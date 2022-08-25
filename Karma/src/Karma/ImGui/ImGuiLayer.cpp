@@ -78,7 +78,7 @@ namespace Karma
 		pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 		pool_info.maxSets = 1000;
-		pool_info.poolSizeCount = std::size(pool_sizes);
+		pool_info.poolSizeCount = uint32_t (std::size(pool_sizes));
 		pool_info.pPoolSizes = pool_sizes;
 
 		VkResult result = vkCreateDescriptorPool(m_Device, &pool_info, nullptr, &m_ImGuiDescriptorPool);
@@ -680,7 +680,7 @@ namespace Karma
 	bool ImGuiLayer::OnWindowResizeEvent(WindowResizeEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2(e.GetWidth(), e.GetHeight());
+		io.DisplaySize = ImVec2(float (e.GetWidth()), float (e.GetHeight()));
 		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 		
 		return false;

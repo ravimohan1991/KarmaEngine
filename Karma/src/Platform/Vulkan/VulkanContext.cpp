@@ -592,7 +592,7 @@ namespace Karma
 		VkResult result = vkCreateSwapchainKHR(m_device, &createInfo, nullptr, &m_swapChain);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create swapchain!");
-
+		
 		vkGetSwapchainImagesKHR(m_device, m_swapChain, &imageCount, nullptr);
 		m_swapChainImages.resize(imageCount);
 		vkGetSwapchainImagesKHR(m_device, m_swapChain, &imageCount, m_swapChainImages.data());

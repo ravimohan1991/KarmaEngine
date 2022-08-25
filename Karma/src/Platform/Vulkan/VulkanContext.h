@@ -138,7 +138,7 @@ namespace Karma
 		//VkSampler GetTextureSampler() const { return m_TextureSampler; }
 		const VkPhysicalDeviceFeatures& GetSupportedDeviceFeatures() const { return m_SupportedDeviceFeatures; }
 		VkInstance GetInstance() const { return m_Instance; }
-		uint32_t GetImageCount() const { return m_swapChainImages.size(); }
+		uint32_t GetImageCount() const { return uint32_t (m_swapChainImages.size()); }
 		VkSurfaceKHR GetSurface() const { return m_surface; }
 
 	private:
