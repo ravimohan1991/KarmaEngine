@@ -26,26 +26,29 @@ namespace Karma
 		virtual void OnDetach() override;
 		virtual void OnImGuiRender() override;
 		virtual void OnUpdate(float deltaTime) override;
-		
+
 		// Only for ImGui layer
 		void Begin();
 		void End();
-		
+
 		virtual void OnEvent(Event& event) override;
-		
+
 		void SetMenubarCallback(const std::function<void()>& menubarCallback) { m_MenubarCallback = menubarCallback; }
-		
+
 		// Vulkan relevant functions
-		VkCommandBuffer AllocateImGuiCommandBuffers(bool bBegin);
 		void CreateDescriptorPool();
-		void GatherVulkanWindowData(ImGui_ImplVulkanH_Window* vulkanWindowData, VkSurfaceKHR surface, int width, int height);
+		void GatherVulkanWindowData(ImGui_ImplVulkanH_Window* vulkanWindowData, int width, int height);
 		void GiveLoopBeginControlToVulkan();
 		void GiveLoopEndControlToVulkan();
 		void FrameRender(ImGui_ImplVulkanH_Window* windowData, ImDrawData* draw_data);
 		void FramePresent(ImGui_ImplVulkanH_Window* windowData);
 		void CleanUpVulkanAndWindowData();
 		void GracefulVulkanShutDown();
-	
+		void ShareVulkanContextOfMainWindow(ImGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
+		void ClearVulkanWindowData(ImGui_ImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity = false);
+		void DestroyWindowDataFrame(ImGui_ImplVulkanH_Frame* frame);
+		void DestroyFramesOnFlightData(ImGui_Vulkan_Frame_On_Flight* frameSyncronicityData);
+
 	private:
 		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& e);
 		bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e);
@@ -58,23 +61,22 @@ namespace Karma
 
 	private:
 		float m_Time = 0.0f;
-		uint32_t m_CommandBuffersSize = 1;
-		
+		int MAX_FRAMES_IN_FLIGHT = 0;
+		size_t m_CurrentFrame = 0;
+		uint32_t imageIndex = 0;
+
 		Window* m_AssociatedWindow;
-		
+
 		// Vulkan specific members
 		VkDescriptorPool m_ImGuiDescriptorPool;
 		VkDevice m_Device;
-		bool m_SwapChainRebuild;
-		uint32_t m_CurrentFrameIndex;
+		VkInstance m_Instance;
+		bool m_SwapChainRebuild = true;
+
 		ImGui_ImplVulkanH_Window m_VulkanWindowData;
-		
+
 		uint32_t m_MinImageCount = 3;
-		
-		// Per-frame-in-flight
-		std::vector<std::vector<VkCommandBuffer>> m_AllocatedCommandBuffers;
-		std::vector<std::vector<std::function<void()>>> m_ResourceFreeQueue;
-		
+
 		std::function<void()> m_MenubarCallback;
 	};
 }

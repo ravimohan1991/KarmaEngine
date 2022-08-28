@@ -17,7 +17,9 @@
 #include <list>
 #include <utility>
 #include <set>
+#include <cstdint>
 #include <optional>
+#include <fstream>
 
 // Karma's general includes
 #include "Karma/Core.h"

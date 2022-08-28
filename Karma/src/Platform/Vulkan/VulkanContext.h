@@ -7,11 +7,12 @@
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
+#include "Platform/Vulkan/VulkanRendererAPI.h"
 
 namespace Karma
 {
 	class RendererAPI;
-	class VulkanRendererAPI;
+	//class VulkanRendererAPI;
 	class VulkanVertexArray;
 	struct VulkanUniformBuffer;
 
@@ -131,6 +132,8 @@ namespace Karma
 		VkSwapchainKHR GetSwapChain() const { return m_swapChain; }
 		inline const std::vector<VkImage>& GetSwapChainImages() const { return m_swapChainImages; }
 		VkFormat GetSwapChainImageFormat() const { return m_swapChainImageFormat; }
+		const std::vector<VkImageView>& GetSwapChainImageViews() const { return m_swapChainImageViews; }
+		VkSurfaceFormatKHR GetSurfaceFormat() const { return m_surfaceFormat; }
 		VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
 		VkQueue GetPresentQueue() const { return m_presentQueue; }
 		VkCommandPool GetCommandPool() const { return m_commandPool; }
@@ -140,6 +143,7 @@ namespace Karma
 		VkInstance GetInstance() const { return m_Instance; }
 		uint32_t GetImageCount() const { return uint32_t (m_swapChainImages.size()); }
 		VkSurfaceKHR GetSurface() const { return m_surface; }
+		VkPresentModeKHR GetPresentMode() const { return m_presentMode; }
 
 	private:
 		// Apologies for little out-of-sync naming convention, was dealing with flood of lines when
@@ -160,12 +164,14 @@ namespace Karma
 
 		VkSurfaceKHR m_surface;
 		VkQueue m_presentQueue;
+		VkPresentModeKHR m_presentMode;
+
+		VkSurfaceFormatKHR m_surfaceFormat;
 
 		VkSwapchainKHR m_swapChain;
 		std::vector<VkImage> m_swapChainImages;
 		VkFormat m_swapChainImageFormat;
 		VkExtent2D m_swapChainExtent;
-
 		std::vector<VkImageView> m_swapChainImageViews;
 
 		VkRenderPass m_renderPass;
@@ -180,7 +186,7 @@ namespace Karma
 		VkImage m_DepthImage;
 		VkDeviceMemory m_DepthImageMemory;
 		VkImageView m_DepthImageView;
-		
+
 		//VkImage m_TextureImage;
 		/*
 		VkDeviceMemory m_TextureImageMemory;

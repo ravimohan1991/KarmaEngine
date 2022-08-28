@@ -22,24 +22,25 @@ namespace Karma
 	{
 		if(RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
 		{
-			// Cache the VkDevice from context already created
+			// Cache the VkDevice and rest of the information from context already created
 			m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
-			
+			m_Instance = VulkanHolder::GetVulkanContext()->GetInstance();
+
 			// Create descriptor pool for IMGUI (code taken from from imgui demo)
+			// Compare with the VulkanContext pool
 			CreateDescriptorPool();
-			
+
 			// Need this else get confronted by assertion in imgui_impl_vulkan.cpp
 			// "Need to call ImGui_ImplVulkan_LoadFunctions() if IMGUI_IMPL_VULKAN_NO_PROTOTYPES or VK_NO_PROTOTYPES are set!"
 			ImGui_ImplVulkan_LoadFunctions([](const char* function_name, void*) { return vkGetInstanceProcAddr(VulkanHolder::GetVulkanContext()->GetInstance(), function_name); });
-			
-			// Create Framebuffers, gather Window data
+
+			// Curate the data associated with Window context and VulkanAPI
 			int width, height;
 			GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
-			
+
 			glfwGetFramebufferSize(window, &width, &height);
-			ImGui_ImplVulkanH_Window* windowData = &m_VulkanWindowData;
-			GatherVulkanWindowData(windowData, VulkanHolder::GetVulkanContext()->GetSurface(), width, height);
-			
+			GatherVulkanWindowData(&m_VulkanWindowData, width, height);
+
 			// Let me see what data we have gathered so far
 			/*
 			KR_CORE_INFO("+-----------------------------------------");
@@ -50,10 +51,6 @@ namespace Karma
 			KR_CORE_INFO("+-----------------------------------------");
 			KR_CORE_ASSERT(false, "That is it folks!")
 			*/
-			
-			// Allocate ImGui resources for frames_in_flight, accordingly
-			m_AllocatedCommandBuffers.resize(m_VulkanWindowData.ImageCount);
-			m_ResourceFreeQueue.resize(m_VulkanWindowData.ImageCount);	
 		}
 	}
 
@@ -84,78 +81,240 @@ namespace Karma
 		VkResult result = vkCreateDescriptorPool(m_Device, &pool_info, nullptr, &m_ImGuiDescriptorPool);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool for ImGui");
 	}
-	
-	VkCommandBuffer ImGuiLayer::AllocateImGuiCommandBuffers(bool bBegin)
+
+	// Here we fill up the Vulkan relevant fields associated with GLFW window and Context created earlier
+	void ImGuiLayer::GatherVulkanWindowData(ImGui_ImplVulkanH_Window* vulkanWindowData, int width, int height)
 	{
-		ImGui_ImplVulkanH_Window* windowData = &m_VulkanWindowData;
+		vulkanWindowData->Surface = VulkanHolder::GetVulkanContext()->GetSurface();
 
-		// Use any command queue
-		// We will use the one created by ImGui like so
-		// https://github.com/ravimohan1991/imgui/blob/83c4d0108c730531a916ace1d6b5bf5fc7d2f1ee/backends/imgui_impl_vulkan.cpp#L1073
-		VkCommandPool command_pool = windowData->Frames[windowData->FrameIndex].CommandPool;
-		
-		VkCommandBufferAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.commandPool = command_pool;//VulkanHolder::GetVulkanContext()->GetCommandPool(); <--- The less inter-class dependence, the better!
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandBufferCount = 1;// Ponder why 1
-		
-		VkCommandBuffer& command_buffer = m_AllocatedCommandBuffers[windowData->FrameIndex].emplace_back();
-		VkResult result = vkAllocateCommandBuffers(m_Device, &allocInfo, &command_buffer);
+		// Fetch the image count, format, and mode from VulkanContext
+		vulkanWindowData->ImageCount = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+		vulkanWindowData->SurfaceFormat = VulkanHolder::GetVulkanContext()->GetSurfaceFormat();
+		vulkanWindowData->PresentMode = VulkanHolder::GetVulkanContext()->GetPresentMode();
 
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffers!");
-		
-		if(bBegin)
-		{
-			VkCommandBufferBeginInfo begin_info = {};
-			begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-			result = vkBeginCommandBuffer(command_buffer, &begin_info);
-			
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin command buffers!");
-		}
+		// Start with nullptr for these
+		vulkanWindowData->Frames = nullptr;
+		vulkanWindowData->FramesOnFlight = nullptr;
 
-		return command_buffer;
-	}
-
-	// Here we fill up the Vulkan relevant fields associated with GLFW window (?)
-	void ImGuiLayer::GatherVulkanWindowData(ImGui_ImplVulkanH_Window* vulkanWindowData, VkSurfaceKHR surface, int width, int height)
-	{
-		VkPhysicalDevice physicalDevice = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
-		
-		vulkanWindowData->Surface = surface;
-
-		// Check for WSI support
-		VkBool32 result;
-		vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, VulkanHolder::GetVulkanContext()->FindQueueFamilies(physicalDevice).graphicsFamily.value(), vulkanWindowData->Surface, &result);
-		KR_CORE_ASSERT(result == VK_TRUE, "No WSI support found on physical device");
-
-		// Select Surface Format
-		const VkFormat requestSurfaceImageFormat[] = { VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM, VK_FORMAT_B8G8R8A8_SRGB };
-		const VkColorSpaceKHR requestSurfaceColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
-		vulkanWindowData->SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(physicalDevice, vulkanWindowData->Surface, requestSurfaceImageFormat, (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
-
-		// Select Present Mode
-#ifdef IMGUI_UNLIMITED_FRAME_RATE
-		VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_FIFO_KHR };
-#else
-		VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR };
-#endif
-		vulkanWindowData->PresentMode = ImGui_ImplVulkanH_SelectPresentMode(physicalDevice, vulkanWindowData->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
-
-		
-		// A hacky way to let Dear ImGui deal with swapchain and all that
 		// https://computergraphics.stackexchange.com/a/8910
+		// Author's note: I shouldn't be using the functions ImGui_ImplVUlkanH_*(). Should be useful when attempting to bring ImGui Layer and ExampleLayer (with Cylinder mesh + material)
+		// vulkanWindowData->Swapchain = VulkanHolder::GetVulkanContext()->GetSwapChain();
 
-		// Also Author's note: I shouldn't be using the functions ImGui_ImplVUlkanH_*(). Should be useful when attempting to bring ImGui Layer and ExampleLayer (with Cylinder mesh + material) 
-		vulkanWindowData->Swapchain = VulkanHolder::GetVulkanContext()->GetSwapChain();
-		
-		// Create SwapChain, RenderPass, Framebuffer, CommandPool etc.
-		ImGui_ImplVulkanH_CreateOrResizeWindow(VulkanHolder::GetVulkanContext()->GetInstance(), physicalDevice, m_Device, vulkanWindowData, VulkanHolder::GetVulkanContext()->FindQueueFamilies(physicalDevice).graphicsFamily.value(), VK_NULL_HANDLE, width, height, m_MinImageCount);
+		// Share SwapChain, RenderPass, Framebuffer, CommandPool, and Semaphores & Fence etc.
+		ShareVulkanContextOfMainWindow(vulkanWindowData, true);
 	}
 
 	ImGuiLayer::~ImGuiLayer()
 	{
+	}
+
+	// ImGui (ImGui_ImplVulkanH_CreateOrResizeWindow) equivalent
+	void ImGuiLayer::ShareVulkanContextOfMainWindow(ImGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
+	{
+		// Clear the structure with now redundant information
+		ClearVulkanWindowData(windowData, bCreateSyncronicity);
+
+		// Fill relevant information
+		// Assuming new swapchain and all that has been created
+		windowData->Swapchain = VulkanHolder::GetVulkanContext()->GetSwapChain();
+		windowData->ImageCount = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+		windowData->RenderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
+		windowData->RenderArea.offset = { 0, 0 };
+
+		// For the render pass
+		// We may need to consider the the notion of depthAttachment that we wrote in the VulkanContext which is not present in ImGui's take
+		{
+			VkAttachmentDescription attachment = {};
+			attachment.format = windowData->SurfaceFormat.format;
+			attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+			attachment.loadOp = windowData->ClearEnable ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			VkAttachmentReference color_attachment = {};
+			color_attachment.attachment = 0;
+			color_attachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			VkSubpassDescription subpass = {};
+			subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+			subpass.colorAttachmentCount = 1;
+			subpass.pColorAttachments = &color_attachment;
+			VkSubpassDependency dependency = {};
+			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependency.dstSubpass = 0;
+			dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependency.srcAccessMask = 0;
+			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			VkRenderPassCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+			info.attachmentCount = 1;
+			info.pAttachments = &attachment;
+			info.subpassCount = 1;
+			info.pSubpasses = &subpass;
+			info.dependencyCount = 1;
+			info.pDependencies = &dependency;
+			//VkResult result = vkCreateRenderPass(m_Device, &info, VK_NULL_HANDLE, &windowData->RenderPass);
+			//KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create renderpass for ImGui");
+		}
+		windowData->RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
+
+		RendererAPI* rAPI = RenderCommand::GetRendererAPI();
+		VulkanRendererAPI* vulkanAPI = nullptr;
+
+		if(rAPI->GetAPI() == RendererAPI::API::Vulkan)
+		{
+			vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
+		}
+		else
+		{
+			KR_CORE_ASSERT(false, "How is this even possible?");
+		}
+
+		KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
+
+		MAX_FRAMES_IN_FLIGHT = vulkanAPI->GetMaxFramesInFlight();
+
+		// Recreate the structure with right amount of number
+		// Cowboy's Note: Seems like ImGui guys have confused notion of ImageCount (deciding number of SwapChainImages, framebuffer & commandbuffer size, and so on)
+		// (https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Swap_chain#page_Retrieving-the-swap-chain-images)
+		// and MAX_FRAMES_IN_FLIGHT, which is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen
+		// whilst the rendering is being done on GPU. That should determine the semaphore and fence size.
+		// https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Frames_in_flight
+		// The argument is elicited by the comment line https://github.com/ravimohan1991/imgui/blob/e4967701b67edd491e884632f239ab1f38867d86/backends/imgui_impl_vulkan.h#L144
+		// I shall continue with the official tutorial and leave the manipulation of numbers to, well, my later self.
+
+		// So in order to do that, we need to do some reinterpretation of the data structure ImGui_ImplVulkanH_Frame so that ImGui's unofficial support may
+		// conform to Vulkan's official instructions.
+
+		// We instantiate the Frames with same number as SwapChainImages number and give an interpretational label ImageFrame
+		KR_CORE_ASSERT(windowData->Frames == nullptr, "Somehow frames are still occupied. Please clear them.");
+		windowData->Frames = new ImGui_ImplVulkanH_Frame[windowData->ImageCount];
+
+		for(uint32_t counter = 0; counter < windowData->ImageCount; counter++)
+		{
+			ImGui_ImplVulkanH_Frame* frameData = &windowData->Frames[counter];
+
+			// VulkanContext ImageView equivalent
+			frameData->BackbufferView = VulkanHolder::GetVulkanContext()->GetSwapChainImageViews()[counter];
+
+			// Framebuffer
+			frameData->Framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[counter];
+
+			// Backbuffers could be VulkanContext m_swapChainImages equivalent
+			frameData->Backbuffer = VulkanHolder::GetVulkanContext()->GetSwapChainImages()[counter];
+
+			// Commandpool
+			frameData->CommandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
+
+			// Allotted in my implementation of VulkanAPI
+			vulkanAPI->AllocateCommandBuffers();
+			frameData->CommandBuffer = vulkanAPI->GetCommandBuffers()[counter];
+		}
+
+		// We create seperate syncronicity resources for Dear ImGui
+		if(bCreateSyncronicity)
+		{
+			// For syncronicity, we instantiate FramesOnFlight with MAX_FRAMES_IN_FLIGHT number and label them RealFrameInFlight
+			KR_CORE_ASSERT(windowData->FramesOnFlight == nullptr, "Somehow frames-on-flight are still occupied. Please clear them.");
+			windowData->FramesOnFlight = new ImGui_Vulkan_Frame_On_Flight[MAX_FRAMES_IN_FLIGHT];
+
+			for(uint32_t counter = 0; counter < MAX_FRAMES_IN_FLIGHT; counter++)
+			{
+				ImGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
+
+
+				VkFenceCreateInfo fenceInfo = {};
+				fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+				fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+				VkResult result = vkCreateFence(m_Device, &fenceInfo, VK_NULL_HANDLE, &frameOnFlight->Fence);
+
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create fence");
+
+				VkSemaphoreCreateInfo semaphoreInfo = {};
+				semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+				result = vkCreateSemaphore(m_Device, &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->ImageAcquiredSemaphore);
+
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create ImageAcquiredSemaphore");
+
+				result = vkCreateSemaphore(m_Device, &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->RenderCompleteSemaphore);
+
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create RenderCompleteSemaphore");
+			}
+		}
+	}
+
+	void ImGuiLayer::ClearVulkanWindowData(ImGui_ImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity)
+	{
+		// We are assuming that VulkanRendererAPI::RecreateCommandBuffersPipelineSwapchain()
+		// has been called, thereby rendering the Swapchain handle of vulkanWindowData redundant.
+		vulkanWindowData->Swapchain = VK_NULL_HANDLE;
+
+		// We won't be needing to wait, because VulkanRendererAPI should take care of the waiting
+		vkDeviceWaitIdle(m_Device);
+
+		for (uint32_t i = 0; i < vulkanWindowData->ImageCount; i++)
+		{
+			if(vulkanWindowData->Frames != nullptr)
+			{
+				DestroyWindowDataFrame(&vulkanWindowData->Frames[i]);
+			}
+			if(vulkanWindowData->FramesOnFlight != nullptr && bDestroySyncronicity)
+			{
+				DestroyFramesOnFlightData(&vulkanWindowData->FramesOnFlight[i]);
+			}
+		}
+
+		if(vulkanWindowData->Frames != nullptr)
+		{
+			delete[] vulkanWindowData->Frames;
+			vulkanWindowData->Frames = nullptr;
+		}
+
+		if(bDestroySyncronicity && vulkanWindowData->FramesOnFlight != nullptr)
+		{
+			delete[] vulkanWindowData->FramesOnFlight;
+			vulkanWindowData->FramesOnFlight = nullptr;
+		}
+		vulkanWindowData->ImageCount = 0;
+		if(vulkanWindowData->RenderPass)
+		{
+			vkDestroyRenderPass(m_Device, vulkanWindowData->RenderPass, VK_NULL_HANDLE);
+		}
+		if(vulkanWindowData->Pipeline)
+		{
+			vkDestroyPipeline(m_Device, vulkanWindowData->Pipeline, VK_NULL_HANDLE);
+		}
+	}
+
+	void ImGuiLayer::DestroyWindowDataFrame(ImGui_ImplVulkanH_Frame* frame)
+	{
+		if(frame == nullptr)
+		{
+			return;
+		}
+
+		frame->CommandBuffer = VK_NULL_HANDLE;
+		frame->CommandPool = VK_NULL_HANDLE;
+
+		frame->Backbuffer = VK_NULL_HANDLE;
+		frame->Framebuffer = VK_NULL_HANDLE;
+	}
+
+	void ImGuiLayer::DestroyFramesOnFlightData(ImGui_Vulkan_Frame_On_Flight* frameSyncronicityData)
+	{
+		if(frameSyncronicityData == nullptr)
+		{
+			return;
+		}
+
+		vkDestroyFence(m_Device, frameSyncronicityData->Fence, VK_NULL_HANDLE);
+		frameSyncronicityData->Fence = VK_NULL_HANDLE;
+
+		vkDestroySemaphore(m_Device, frameSyncronicityData->ImageAcquiredSemaphore, VK_NULL_HANDLE);
+		vkDestroySemaphore(m_Device, frameSyncronicityData->RenderCompleteSemaphore, VK_NULL_HANDLE);
+		frameSyncronicityData->ImageAcquiredSemaphore = frameSyncronicityData->RenderCompleteSemaphore = VK_NULL_HANDLE;
 	}
 
 	void ImGuiLayer::OnAttach()
@@ -163,7 +322,7 @@ namespace Karma
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		
+
 		ImGuiIO& io = ImGui::GetIO();
 		(void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;	// Enable Keyboard Controls
@@ -183,14 +342,14 @@ namespace Karma
 
 		Application& app = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());//static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
-		
+
 		// Setup Platform/Renderer bindings
 		if(RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
 		{
 			// Exposing Karma's Vulkan components to Dear ImGui
 			ImGui_ImplGlfw_InitForVulkan(window, true);
 			ImGui_ImplVulkan_InitInfo init_info = {};
-			init_info.Instance = VulkanHolder::GetVulkanContext()->GetInstance();
+			init_info.Instance = m_Instance;
 			init_info.PhysicalDevice = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
 			init_info.Device = m_Device;
 			init_info.QueueFamily = VulkanHolder::GetVulkanContext()->FindQueueFamilies(init_info.PhysicalDevice).graphicsFamily.value();
@@ -199,9 +358,9 @@ namespace Karma
 			init_info.MinImageCount = m_MinImageCount;
 			init_info.ImageCount = VulkanHolder::GetVulkanContext()->GetImageCount();
 			init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-			
+
 			ImGui_ImplVulkan_Init(&init_info, m_VulkanWindowData.RenderPass);
-			
+
 			// Load default font
 			ImFontConfig fontConfig;
 			fontConfig.FontDataOwnedByAtlas = false;
@@ -216,7 +375,7 @@ namespace Karma
 
 				VkResult result = vkResetCommandPool(m_Device, command_pool, 0);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset command pool!");
-				
+
 				VkCommandBufferBeginInfo begin_info = {};
 				begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 				begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -224,20 +383,20 @@ namespace Karma
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin recording(?) command buffer!");
 
 				ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
-				
+
 				VkSubmitInfo end_info = {};
 				end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 				end_info.commandBufferCount = 1;
 				end_info.pCommandBuffers = &command_buffer;
 				result = vkEndCommandBuffer(command_buffer);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end recording(?) command buffer!");
-				
+
 				result = vkQueueSubmit(VulkanHolder::GetVulkanContext()->GetGraphicsQueue(), 1, &end_info, VK_NULL_HANDLE);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer!");
-				
+
 				result = vkDeviceWaitIdle(m_Device);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait!");
-				
+
 				ImGui_ImplVulkan_DestroyFontUploadObjects();
 			}
 		}
@@ -267,7 +426,7 @@ namespace Karma
 				KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
 				break;
 		}
-		
+
 		KR_CORE_INFO("Shutting down ImGuiLayer");
 	}
 
@@ -297,7 +456,7 @@ namespace Karma
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
-		
+
 		// Rendering
 		ImGui::Render();
 		switch (RendererAPI::GetAPI())
@@ -315,7 +474,7 @@ namespace Karma
 				KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
 				break;
 		}
-		
+
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			GLFWwindow* backup_current_context = glfwGetCurrentContext();
@@ -337,12 +496,12 @@ namespace Karma
 			{
 				ImGui_ImplVulkan_SetMinImageCount(m_MinImageCount);
 				VkPhysicalDevice physicalDevice = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
-				ImGui_ImplVulkanH_CreateOrResizeWindow(VulkanHolder::GetVulkanContext()->GetInstance(), physicalDevice, m_Device, &m_VulkanWindowData, VulkanHolder::GetVulkanContext()->FindQueueFamilies(physicalDevice).graphicsFamily.value(), VK_NULL_HANDLE, width, height, m_MinImageCount);
+				ShareVulkanContextOfMainWindow(&m_VulkanWindowData);
 				m_VulkanWindowData.FrameIndex = 0;
 				m_SwapChainRebuild = false;
 			}
 		}
-		
+
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 	}
@@ -352,7 +511,7 @@ namespace Karma
 		// 1. Show the big demo window. For debug purpose!!
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);
-		
+
 		// 2. Something that I don't fully understand, but relevant to demo window docking mechanism maybe
 		{
 			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -415,17 +574,17 @@ namespace Karma
 		ImGui::Render();
 		ImDrawData* main_draw_data = ImGui::GetDrawData();
 		const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-		
+
 		glm::vec4 clear_color = RenderCommand::GetClearColor();
-		
+
 		m_VulkanWindowData.ClearValue.color.float32[0] = clear_color.x * clear_color.w;
 		m_VulkanWindowData.ClearValue.color.float32[1] = clear_color.y * clear_color.w;
 		m_VulkanWindowData.ClearValue.color.float32[2] = clear_color.z * clear_color.w;
 		m_VulkanWindowData.ClearValue.color.float32[3] = clear_color.w;
-		
+
 		if (!main_is_minimized)
 			FrameRender(&m_VulkanWindowData, main_draw_data);
-		
+
 		// Update and Render additional Platform Windows
 		/*
 		ImGuiIO& io = ImGui::GetIO();
@@ -438,6 +597,12 @@ namespace Karma
 		// Present Main Platform Window
 		if (!main_is_minimized)
 			FramePresent(&m_VulkanWindowData);
+
+		vkDeviceWaitIdle(m_Device);
+		for (size_t i = 0; i < m_VulkanWindowData.ImageCount; i++)
+		{
+			vkResetCommandBuffer(m_VulkanWindowData.Frames[i].CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		}
 	}
 
 	// Helper taken from https://github.com/TheCherno/Walnut/blob/cc26ee1cc875db50884fe244e0a3195dd730a1ef/Walnut/src/Walnut/Application.cpp#L270 who probably took help from official example https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/examples/example_glfw_vulkan/main.cpp#L261, with chiefly naming modifications.
@@ -445,70 +610,59 @@ namespace Karma
 	{
 		VkResult result;
 
-		VkSemaphore image_acquired_semaphore = windowData->FrameSemaphores[windowData->SemaphoreIndex].ImageAcquiredSemaphore;
-		VkSemaphore render_complete_semaphore = windowData->FrameSemaphores[windowData->SemaphoreIndex].RenderCompleteSemaphore;
-		result = vkAcquireNextImageKHR(m_Device, windowData->Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &windowData->FrameIndex);
+		VkSemaphore image_acquired_semaphore = windowData->FramesOnFlight[m_CurrentFrame].ImageAcquiredSemaphore;
+		VkSemaphore render_complete_semaphore = windowData->FramesOnFlight[m_CurrentFrame].RenderCompleteSemaphore;
+
+		result = vkAcquireNextImageKHR(m_Device, windowData->Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &imageIndex);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
 			return;
 		}
-		
+
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image from swapchain");
 
-		m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % m_VulkanWindowData.ImageCount;
-
-		ImGui_ImplVulkanH_Frame* frameData = &windowData->Frames[windowData->FrameIndex];
+		ImGui_ImplVulkanH_Frame* frameData = &windowData->Frames[imageIndex];
 		{
-			result = vkWaitForFences(m_Device, 1, &frameData->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
-			
+			result = vkWaitForFences(m_Device, 1, &windowData->FramesOnFlight[m_CurrentFrame].Fence, VK_TRUE, UINT64_MAX);
+
 			// Little strange to check for vkWaitForFences something we didn't do in Vulkan renderer
 			// https://github.com/ravimohan1991/KarmaEngine/blob/d718f6ede15770890de5d00a45cc07fef39652fd/Karma/src/Platform/Vulkan/VulkanRendererAPI.cpp#L161
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
 
-			result = vkResetFences(m_Device, 1, &frameData->Fence);
-			
+			result = vkResetFences(m_Device, 1, &windowData->FramesOnFlight[m_CurrentFrame].Fence);
+
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
 		}
 
 		{
-			// Free resources in queue
-			for (auto& func : m_ResourceFreeQueue[m_CurrentFrameIndex])
-			func();
-			m_ResourceFreeQueue[m_CurrentFrameIndex].clear();
-		}
-		
-		{
-			// Free command buffers allocated by ImGuiLayer::AllocateImGuiCommandBuffers
-			// These use m_VulkanWindowData.FrameIndex and not m_CurrentFrameIndex because they're tied to the swapchain image index. Ponder ...
-			auto& allocatedCommandBuffers = m_AllocatedCommandBuffers[windowData->FrameIndex];
-			if (allocatedCommandBuffers.size() > 0)
-			{
-				vkFreeCommandBuffers(m_Device, frameData->CommandPool, (uint32_t)allocatedCommandBuffers.size(), allocatedCommandBuffers.data());
-				allocatedCommandBuffers.clear();
-			}
-
 			result = vkResetCommandPool(m_Device, frameData->CommandPool, 0);
-			
+
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset command pool");
-			
+
 			VkCommandBufferBeginInfo info = {};
 			info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 			result = vkBeginCommandBuffer(frameData->CommandBuffer, &info);
-			
+
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin command buffer");
 		}
-		
+
 		{
 			VkRenderPassBeginInfo info = {};
 			info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			info.renderPass = windowData->RenderPass;
+
+			info.renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();//windowData->RenderPass;
 			info.framebuffer = frameData->Framebuffer;
-			info.renderArea.extent.width = windowData->Width;
-			info.renderArea.extent.height = windowData->Height;
-			info.clearValueCount = 1;
-			info.pClearValues = &windowData->ClearValue;
+			info.renderArea.extent = windowData->RenderArea.extent;
+
+			std::array<VkClearValue, 2> clearValues{};
+			clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
+			clearValues[1].depthStencil = { 1.0f, 0 };
+			info.clearValueCount = static_cast<uint32_t>(clearValues.size());
+
+			info.pClearValues = clearValues.data();
+
 			vkCmdBeginRenderPass(frameData->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 		}
 
@@ -529,11 +683,11 @@ namespace Karma
 			info.signalSemaphoreCount = 1;
 			info.pSignalSemaphores = &render_complete_semaphore;
 			result = vkEndCommandBuffer(frameData->CommandBuffer);
-			
+
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end command buffer");
-			
+
 			result = vkQueueSubmit(VulkanHolder::GetVulkanContext()->GetGraphicsQueue(), 1, &info, frameData->Fence);
-			
+
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 		}
 	}
@@ -541,54 +695,49 @@ namespace Karma
 	void ImGuiLayer::FramePresent(ImGui_ImplVulkanH_Window* windowData)
 	{
 		if (m_SwapChainRebuild)
+		{
 			return;
-			
-		VkSemaphore render_complete_semaphore = windowData->FrameSemaphores[windowData->SemaphoreIndex].RenderCompleteSemaphore;
+		}
+
+		VkSemaphore render_complete_semaphore = windowData->FramesOnFlight[m_CurrentFrame].RenderCompleteSemaphore;
+
 		VkPresentInfoKHR info = {};
 		info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		info.waitSemaphoreCount = 1;
 		info.pWaitSemaphores = &render_complete_semaphore;
 		info.swapchainCount = 1;
 		info.pSwapchains = &windowData->Swapchain;
-		info.pImageIndices = &windowData->FrameIndex;
+		info.pImageIndices = &imageIndex;
 		VkResult result = vkQueuePresentKHR(VulkanHolder::GetVulkanContext()->GetGraphicsQueue(), &info);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
 			return;
 		}
-		
+
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
-		
-		windowData->SemaphoreIndex = (windowData->SemaphoreIndex + 1) % windowData->ImageCount; // Now we can use the next set of semaphores
+
+		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT; // Now we can use the next set of semaphores
 	}
 
 	void ImGuiLayer::GracefulVulkanShutDown()
 	{
 		VkResult result = vkDeviceWaitIdle(m_Device);
-		
+
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait for the completion of command buffers");
 
-		// Free resources in queue
-		for (auto& queue : m_ResourceFreeQueue)
-		{
-			for (auto& func : queue)
-				func();
-		}
-		m_ResourceFreeQueue.clear();
-		
 		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
-		
+
 		CleanUpVulkanAndWindowData();
 	}
 
 	void ImGuiLayer::CleanUpVulkanAndWindowData()
 	{
 		// Clean up Window
-		ImGui_ImplVulkanH_DestroyWindow(VulkanHolder::GetVulkanContext()->GetInstance(), m_Device, &m_VulkanWindowData, VK_NULL_HANDLE);
-		
+		ImGui_ImplVulkanH_DestroyWindow(m_Instance, m_Device, &m_VulkanWindowData, VK_NULL_HANDLE);
+
 		// Clean up Vulkan's pool component instantiated earlier here
 		vkDestroyDescriptorPool(m_Device, m_ImGuiDescriptorPool, VK_NULL_HANDLE);
 	}
@@ -597,7 +746,7 @@ namespace Karma
 	{
 		// Nothing to do
 	}
-	 
+
 	void ImGuiLayer::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
@@ -615,7 +764,7 @@ namespace Karma
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.MouseDown[e.GetMouseButton()] = true;
-		
+
 		return false;
 	}
 
@@ -682,7 +831,7 @@ namespace Karma
 		ImGuiIO& io = ImGui::GetIO();
 		io.DisplaySize = ImVec2(float (e.GetWidth()), float (e.GetHeight()));
 		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
-		
+
 		return false;
 	}
 }

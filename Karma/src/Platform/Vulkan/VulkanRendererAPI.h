@@ -28,6 +28,13 @@ namespace Karma
 		void RemoveSynchronicity();
 		void RecreateCommandBuffersPipelineSwapchain();
 
+		// Getters. Depending on detailed implementation of other API (such as OpenGL), we may promote the getter to abstract
+		const std::vector<VkCommandBuffer>& GetCommandBuffers() const { return m_commandBuffers; }
+		const int& GetMaxFramesInFlight() const { return MAX_FRAMES_IN_FLIGHT; }
+		const std::vector<VkFence>& GetFences() const { return m_InFlightFences; }
+		const std::vector<VkSemaphore>& GetImageAvailableSemaphores() const { return m_ImageAvailableSemaphores; }
+		const std::vector<VkSemaphore> GetRenderFinishedSemaphore() const { return m_RenderFinishedSemaphores; }
+
 	private:
 		size_t m_CurrentFrame = 0;
 

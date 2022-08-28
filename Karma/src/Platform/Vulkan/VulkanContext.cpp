@@ -6,9 +6,6 @@
 #include "Karma/Renderer/RenderCommand.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
-#include <set>
-#include <cstdint>
-#include <fstream>
 
 namespace Karma
 {
@@ -49,7 +46,7 @@ namespace Karma
 			vkFreeMemory(m_device, m_TextureImageMemory, nullptr);
 		}
 		*/
-		
+
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
 			vkDestroyFramebuffer(m_device, framebuffer, nullptr);
@@ -71,7 +68,7 @@ namespace Karma
 		{
 			DestroyDebugUtilsMessengerEXT(m_Instance, debugMessenger, nullptr);
 		}
-		
+
 		// Maybe ImGui took care of it
 		//vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
 
@@ -316,7 +313,7 @@ namespace Karma
 		KR_CORE_ASSERT(result == false, "Failed to create texture sampler!");
 	}
 	*/
-	 
+
 	void VulkanContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 	{
 		VkCommandBufferAllocateInfo allocInfo{};
@@ -546,8 +543,10 @@ namespace Karma
 	{
 		SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(m_physicalDevice);
 
-		VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
-		VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);// Analogous to v-sync
+		// Dear ImGui may have, MAY, different requirements.
+		m_surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
+		m_presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);// Analogous to v-sync
+
 		VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
 
 		uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
@@ -560,8 +559,8 @@ namespace Karma
 		createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 		createInfo.surface = m_surface;
 		createInfo.minImageCount = imageCount;
-		createInfo.imageFormat = surfaceFormat.format;
-		createInfo.imageColorSpace = surfaceFormat.colorSpace;
+		createInfo.imageFormat = m_surfaceFormat.format;
+		createInfo.imageColorSpace = m_surfaceFormat.colorSpace;
 		createInfo.imageExtent = extent;
 		createInfo.imageArrayLayers = 1;
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -585,19 +584,19 @@ namespace Karma
 
 		createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
 		createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-		createInfo.presentMode = presentMode;
+		createInfo.presentMode = m_presentMode;
 		createInfo.clipped = VK_TRUE;
 		createInfo.oldSwapchain = VK_NULL_HANDLE;
 
 		VkResult result = vkCreateSwapchainKHR(m_device, &createInfo, nullptr, &m_swapChain);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create swapchain!");
-		
+
 		vkGetSwapchainImagesKHR(m_device, m_swapChain, &imageCount, nullptr);
 		m_swapChainImages.resize(imageCount);
 		vkGetSwapchainImagesKHR(m_device, m_swapChain, &imageCount, m_swapChainImages.data());
 
-		m_swapChainImageFormat = surfaceFormat.format;
+		m_swapChainImageFormat = m_surfaceFormat.format;
 		m_swapChainExtent = extent;
 	}
 

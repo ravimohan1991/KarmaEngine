@@ -8,15 +8,15 @@ public:
 	ExampleLayer() : Layer("Example") /*m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)*/
 	{
 		m_Camera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
-		/*
+
 		m_SquareVA.reset(Karma::VertexArray::Create());
 
-		
+		/*
 		Karma::SceneModel* sModel = new Karma::SceneModel("../Resources/Models/viking_room.obj");
 		m_SquareVA->SetMesh(sModel->GetMeshList()[0]);
-		delete sModel;
-		*/
-		/*
+		delete sModel;*/
+
+
 		std::shared_ptr<Karma::Mesh> trialMesh;
 		trialMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
 		m_SquareVA->SetMesh(trialMesh);
@@ -33,7 +33,7 @@ public:
 
 		m_SquareMat->AttatchMainCamera(m_Camera);
 
-		m_SquareVA->SetMaterial(m_SquareMat);*/
+		m_SquareVA->SetMaterial(m_SquareMat);
 
 		// Should be Material
 		//m_SquareVA->SetShader(m_BlueSQShader);
@@ -42,11 +42,11 @@ public:
 	virtual void OnUpdate(float deltaTime) override
 	{
 		KarmaAppInputPolling(deltaTime);
-		
+
 		Karma::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
-		/*
+
 		Karma::RenderCommand::Clear();
-		
+
 		Karma::Renderer::BeginScene(*m_Camera);
 
 		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
@@ -55,7 +55,7 @@ public:
 
 		Karma::Renderer::Submit(m_SquareVA);
 
-		Karma::Renderer::EndScene();*/
+		Karma::Renderer::EndScene();
 	}
 
 	virtual void OnImGuiRender() override
@@ -153,11 +153,11 @@ public:
 		}
 		// Controller context ends
 	}
-	
+
 	virtual void OnAttach() override
 	{
 	}
-	
+
 	virtual void OnDetach() override
 	{
 	}
