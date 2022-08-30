@@ -40,17 +40,6 @@ namespace Karma
 
 			glfwGetFramebufferSize(window, &width, &height);
 			GatherVulkanWindowData(&m_VulkanWindowData, width, height);
-
-			// Let me see what data we have gathered so far
-			/*
-			KR_CORE_INFO("+-----------------------------------------");
-			KR_CORE_INFO("| Window Width: {0}", vulkanWindowData.Width);
-			KR_CORE_INFO("| Window Height: {0}", vulkanWindowData.Height);
-			KR_CORE_INFO("| PresentMode: {0}", vulkanWindowData.PresentMode);
-			KR_CORE_INFO("| ImageCount: {0}", vulkanWindowData.ImageCount);
-			KR_CORE_INFO("+-----------------------------------------");
-			KR_CORE_ASSERT(false, "That is it folks!")
-			*/
 		}
 	}
 
@@ -209,7 +198,10 @@ namespace Karma
 			frameData->CommandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
 
 			// Allotted in my implementation of VulkanAPI
-			vulkanAPI->AllocateCommandBuffers();
+			if(m_SwapChainRebuild)
+			{
+				vulkanAPI->AllocateCommandBuffers();
+			}
 			frameData->CommandBuffer = vulkanAPI->GetCommandBuffers()[counter];
 		}
 
@@ -224,7 +216,6 @@ namespace Karma
 			{
 				ImGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
 
-
 				VkFenceCreateInfo fenceInfo = {};
 				fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 				fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
@@ -234,6 +225,7 @@ namespace Karma
 
 				VkSemaphoreCreateInfo semaphoreInfo = {};
 				semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+				
 				result = vkCreateSemaphore(m_Device, &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->ImageAcquiredSemaphore);
 
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create ImageAcquiredSemaphore");
@@ -252,7 +244,7 @@ namespace Karma
 		vulkanWindowData->Swapchain = VK_NULL_HANDLE;
 
 		// We won't be needing to wait, because VulkanRendererAPI should take care of the waiting
-		vkDeviceWaitIdle(m_Device);
+		//vkDeviceWaitIdle(m_Device);
 
 		for (uint32_t i = 0; i < vulkanWindowData->ImageCount; i++)
 		{
@@ -262,6 +254,7 @@ namespace Karma
 			}
 			if(vulkanWindowData->FramesOnFlight != nullptr && bDestroySyncronicity)
 			{
+				// Remove syncronicity resources using Vulkan API
 				DestroyFramesOnFlightData(&vulkanWindowData->FramesOnFlight[i]);
 			}
 		}
@@ -277,14 +270,12 @@ namespace Karma
 			delete[] vulkanWindowData->FramesOnFlight;
 			vulkanWindowData->FramesOnFlight = nullptr;
 		}
+		
 		vulkanWindowData->ImageCount = 0;
+		
 		if(vulkanWindowData->RenderPass)
 		{
-			vkDestroyRenderPass(m_Device, vulkanWindowData->RenderPass, VK_NULL_HANDLE);
-		}
-		if(vulkanWindowData->Pipeline)
-		{
-			vkDestroyPipeline(m_Device, vulkanWindowData->Pipeline, VK_NULL_HANDLE);
+			vulkanWindowData->RenderPass = VK_NULL_HANDLE;
 		}
 	}
 
@@ -309,6 +300,8 @@ namespace Karma
 			return;
 		}
 
+		vkDeviceWaitIdle(m_Device);
+		
 		vkDestroyFence(m_Device, frameSyncronicityData->Fence, VK_NULL_HANDLE);
 		frameSyncronicityData->Fence = VK_NULL_HANDLE;
 
@@ -355,7 +348,7 @@ namespace Karma
 			init_info.QueueFamily = VulkanHolder::GetVulkanContext()->FindQueueFamilies(init_info.PhysicalDevice).graphicsFamily.value();
 			init_info.Queue = VulkanHolder::GetVulkanContext()->GetGraphicsQueue();// An inter-class communication
 			init_info.DescriptorPool = m_ImGuiDescriptorPool;
-			init_info.MinImageCount = m_MinImageCount;
+			init_info.MinImageCount = VulkanHolder::GetVulkanContext()->GetMinImageCount();
 			init_info.ImageCount = VulkanHolder::GetVulkanContext()->GetImageCount();
 			init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
@@ -494,11 +487,10 @@ namespace Karma
 			glfwGetFramebufferSize(window, &width, &height);
 			if (width > 0 && height > 0)
 			{
-				ImGui_ImplVulkan_SetMinImageCount(m_MinImageCount);
-				VkPhysicalDevice physicalDevice = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
+				//ImGui_ImplVulkan_SetMinImageCount(m_MinImageCount);
 				ShareVulkanContextOfMainWindow(&m_VulkanWindowData);
-				m_VulkanWindowData.FrameIndex = 0;
-				m_SwapChainRebuild = false;
+				//m_VulkanWindowData.FrameIndex = 0;
+				//m_SwapChainRebuild = false;
 			}
 		}
 
@@ -513,6 +505,7 @@ namespace Karma
 		ImGui::ShowDemoWindow(&show);
 
 		// 2. Something that I don't fully understand, but relevant to demo window docking mechanism maybe
+		/*
 		{
 			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
@@ -565,6 +558,29 @@ namespace Karma
 			}
 
 			ImGui::End();
+		}*/
+		
+		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+		{
+			static float f = 0.0f;
+			static int counter = 0;
+			
+			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and appeninto it
+			
+			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+			ImGui::Checkbox("Demo Window", &show);                  // Edit bools storing our window open/close state
+			ImGui::Checkbox("Another Window", &show);
+			
+			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+			//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a colo
+			
+			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets returtrue when edited/activated)
+				counter++;
+			ImGui::SameLine();
+			
+			ImGui::Text("counter = %d", counter);
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::End();
 		}
 	}
 
@@ -610,6 +626,11 @@ namespace Karma
 	{
 		VkResult result;
 
+		{
+			result = vkWaitForFences(m_Device, 1, &windowData->FramesOnFlight[m_CurrentFrame].Fence, VK_TRUE, UINT64_MAX);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
+		}
+
 		VkSemaphore image_acquired_semaphore = windowData->FramesOnFlight[m_CurrentFrame].ImageAcquiredSemaphore;
 		VkSemaphore render_complete_semaphore = windowData->FramesOnFlight[m_CurrentFrame].RenderCompleteSemaphore;
 
@@ -622,55 +643,54 @@ namespace Karma
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image from swapchain");
 
-		ImGui_ImplVulkanH_Frame* frameData = &windowData->Frames[imageIndex];
+		// Record begins:
+		for(uint32_t imageCounter = 0; imageCounter < windowData->ImageCount; imageCounter++)
 		{
-			result = vkWaitForFences(m_Device, 1, &windowData->FramesOnFlight[m_CurrentFrame].Fence, VK_TRUE, UINT64_MAX);
-
-			// Little strange to check for vkWaitForFences something we didn't do in Vulkan renderer
-			// https://github.com/ravimohan1991/KarmaEngine/blob/d718f6ede15770890de5d00a45cc07fef39652fd/Karma/src/Platform/Vulkan/VulkanRendererAPI.cpp#L161
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
-
-			result = vkResetFences(m_Device, 1, &windowData->FramesOnFlight[m_CurrentFrame].Fence);
-
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
-		}
-
-		{
-			result = vkResetCommandPool(m_Device, frameData->CommandPool, 0);
-
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset command pool");
-
+			ImGui_ImplVulkanH_Frame* frameData = &windowData->Frames[imageCounter];
+			
+			//result = vkResetCommandPool(m_Device, frameData->CommandPool, 0);
+	
+			//KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset command pool");
+	
 			VkCommandBufferBeginInfo info = {};
 			info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+			info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+				
 			result = vkBeginCommandBuffer(frameData->CommandBuffer, &info);
-
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin command buffer");
+			
+				// Render Pass
+				
+				VkRenderPassBeginInfo renderPassInfo = {};
+				renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	
+				renderPassInfo.renderPass = windowData->RenderPass;
+				renderPassInfo.framebuffer = frameData->Framebuffer;
+				renderPassInfo.renderArea.extent = windowData->RenderArea.extent;
+	
+				std::array<VkClearValue, 2> clearValues{};
+				clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], 		windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
+				clearValues[1].depthStencil = { 1.0f, 0 };
+				
+				renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+				renderPassInfo.pClearValues = clearValues.data();
+	
+				vkCmdBeginRenderPass(frameData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+				
+				{
+					// Record dear imgui primitives into command buffer
+					ImGui_ImplVulkan_RenderDrawData(draw_data, frameData->CommandBuffer);
+				
+				}
+				
+				vkCmdEndRenderPass(frameData->CommandBuffer);
+			
+			result = vkEndCommandBuffer(frameData->CommandBuffer);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end command buffer");
 		}
-
-		{
-			VkRenderPassBeginInfo info = {};
-			info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-
-			info.renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();//windowData->RenderPass;
-			info.framebuffer = frameData->Framebuffer;
-			info.renderArea.extent = windowData->RenderArea.extent;
-
-			std::array<VkClearValue, 2> clearValues{};
-			clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
-			clearValues[1].depthStencil = { 1.0f, 0 };
-			info.clearValueCount = static_cast<uint32_t>(clearValues.size());
-
-			info.pClearValues = clearValues.data();
-
-			vkCmdBeginRenderPass(frameData->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
-		}
-
-		// Record dear imgui primitives into command buffer
-		ImGui_ImplVulkan_RenderDrawData(draw_data, frameData->CommandBuffer);
-
+		// Recording ends:
+		
 		// Submit command buffer
-		vkCmdEndRenderPass(frameData->CommandBuffer);
 		{
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			VkSubmitInfo info = {};
@@ -679,14 +699,14 @@ namespace Karma
 			info.pWaitSemaphores = &image_acquired_semaphore;
 			info.pWaitDstStageMask = &wait_stage;
 			info.commandBufferCount = 1;
-			info.pCommandBuffers = &frameData->CommandBuffer;
+			info.pCommandBuffers = &(windowData->Frames[imageIndex].CommandBuffer);
 			info.signalSemaphoreCount = 1;
 			info.pSignalSemaphores = &render_complete_semaphore;
-			result = vkEndCommandBuffer(frameData->CommandBuffer);
 
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end command buffer");
-
-			result = vkQueueSubmit(VulkanHolder::GetVulkanContext()->GetGraphicsQueue(), 1, &info, frameData->Fence);
+			result = vkResetFences(m_Device, 1, &windowData->FramesOnFlight[m_CurrentFrame].Fence);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
+			
+			result = vkQueueSubmit(VulkanHolder::GetVulkanContext()->GetGraphicsQueue(), 1, &info, windowData->FramesOnFlight[m_CurrentFrame].Fence);
 
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 		}
@@ -694,11 +714,6 @@ namespace Karma
 
 	void ImGuiLayer::FramePresent(ImGui_ImplVulkanH_Window* windowData)
 	{
-		if (m_SwapChainRebuild)
-		{
-			return;
-		}
-
 		VkSemaphore render_complete_semaphore = windowData->FramesOnFlight[m_CurrentFrame].RenderCompleteSemaphore;
 
 		VkPresentInfoKHR info = {};
@@ -736,7 +751,8 @@ namespace Karma
 	void ImGuiLayer::CleanUpVulkanAndWindowData()
 	{
 		// Clean up Window
-		ImGui_ImplVulkanH_DestroyWindow(m_Instance, m_Device, &m_VulkanWindowData, VK_NULL_HANDLE);
+		ClearVulkanWindowData(&m_VulkanWindowData, true);
+		//ImGui_ImplVulkanH_DestroyWindow(m_Instance, m_Device, &m_VulkanWindowData, VK_NULL_HANDLE);
 
 		// Clean up Vulkan's pool component instantiated earlier here
 		vkDestroyDescriptorPool(m_Device, m_ImGuiDescriptorPool, VK_NULL_HANDLE);

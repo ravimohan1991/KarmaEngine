@@ -565,6 +565,8 @@ namespace Karma
 		createInfo.imageArrayLayers = 1;
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
+		m_MinImageCount = imageCount;
+		
 		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
 		uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(),
 			indices.presentFamily.value()};

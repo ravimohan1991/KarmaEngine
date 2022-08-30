@@ -11,8 +11,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_vulkan.h"
+//#include "imgui_impl_sdl.h"
+#include "ImGuiVulkanHandler.h"
 
 namespace Karma
 {
@@ -74,8 +74,6 @@ namespace Karma
 		bool m_SwapChainRebuild = true;
 
 		ImGui_ImplVulkanH_Window m_VulkanWindowData;
-
-		uint32_t m_MinImageCount = 3;
 
 		std::function<void()> m_MenubarCallback;
 	};
