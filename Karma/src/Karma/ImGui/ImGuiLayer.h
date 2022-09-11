@@ -11,7 +11,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
-//#include "imgui_impl_sdl.h"
 #include "ImGuiVulkanHandler.h"
 
 namespace Karma
@@ -37,17 +36,26 @@ namespace Karma
 
 		// Vulkan relevant functions
 		void CreateDescriptorPool();
-		void GatherVulkanWindowData(ImGui_ImplVulkanH_Window* vulkanWindowData, int width, int height);
+		void GiveLoopBeginControlToVulkan();
+		void FrameRender(ImGui_KarmaImplVulkanH_Window* windowData, ImDrawData* drawData);
+		void FramePresent(ImGui_KarmaImplVulkanH_Window* windowData);
+		void GiveLoopEndControlToVulkan();
+		void GracefulVulkanShutDown();
+		void CleanUpVulkanAndWindowData();
+		
+		/*
+		void GatherVulkanWindowData(ImGui_KarmaImplVulkanH_Window* vulkanWindowData, int width, int height);
 		void GiveLoopBeginControlToVulkan();
 		void GiveLoopEndControlToVulkan();
-		void FrameRender(ImGui_ImplVulkanH_Window* windowData, ImDrawData* draw_data);
-		void FramePresent(ImGui_ImplVulkanH_Window* windowData);
+		void FrameRender(ImGui_KarmaImplVulkanH_Window* windowData, ImDrawData* draw_data);
+		void FramePresent(ImGui_KarmaImplVulkanH_Window* windowData);
 		void CleanUpVulkanAndWindowData();
 		void GracefulVulkanShutDown();
-		void ShareVulkanContextOfMainWindow(ImGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
-		void ClearVulkanWindowData(ImGui_ImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity = false);
-		void DestroyWindowDataFrame(ImGui_ImplVulkanH_Frame* frame);
+		void ShareVulkanContextOfMainWindow(ImGui_KarmaImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
+		void ClearVulkanWindowData(ImGui_KarmaImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity = false);
+		void DestroyWindowDataFrame(ImGui_KarmaImplVulkanH_ImageFrame* frame);
 		void DestroyFramesOnFlightData(ImGui_Vulkan_Frame_On_Flight* frameSyncronicityData);
+		*/
 
 	private:
 		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& e);
@@ -61,19 +69,23 @@ namespace Karma
 
 	private:
 		float m_Time = 0.0f;
-		int MAX_FRAMES_IN_FLIGHT = 0;
-		size_t m_CurrentFrame = 0;
-		uint32_t imageIndex = 0;
+		//int MAX_FRAMES_IN_FLIGHT = 0;
+		//size_t m_CurrentFrame = 0;
+		//uint32_t imageIndex = 0;
 
 		Window* m_AssociatedWindow;
 
 		// Vulkan specific members
 		VkDescriptorPool m_ImGuiDescriptorPool;
-		VkDevice m_Device;
-		VkInstance m_Instance;
+
+		//VkDevice m_Device;
+		//VkInstance m_Instance;
+		
+		
 		bool m_SwapChainRebuild = true;
 
-		ImGui_ImplVulkanH_Window m_VulkanWindowData;
+		// Seems like main window Vulkan data associated to m_AssociatedWindow
+		ImGui_KarmaImplVulkanH_Window m_VulkanWindowData;
 
 		std::function<void()> m_MenubarCallback;
 	};

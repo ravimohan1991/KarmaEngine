@@ -220,6 +220,16 @@ namespace Karma
 		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	}
 
+	void VulkanRendererAPI::RecreateCommandBuffersAndSwapChain()
+	{
+		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
+		vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		
+		VulkanHolder::GetVulkanContext()->RecreateSwapChain();
+		AllocateCommandBuffers();
+		m_bAllocateCommandBuffers = false;
+	}
+
 	void VulkanRendererAPI::RecreateCommandBuffersPipelineSwapchain()
 	{
 		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());

@@ -27,6 +27,7 @@ namespace Karma
 		void ClearVulkanRendererAPI();
 		void RemoveSynchronicity();
 		void RecreateCommandBuffersPipelineSwapchain();
+		void RecreateCommandBuffersAndSwapChain();
 
 		// Getters. Depending on detailed implementation of other API (such as OpenGL), we may promote the getter to abstract
 		const std::vector<VkCommandBuffer>& GetCommandBuffers() const { return m_commandBuffers; }

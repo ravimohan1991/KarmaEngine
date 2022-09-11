@@ -1,168 +1,245 @@
-// dear imgui: Renderer Backend for Vulkan
-// This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
-
-// Implemented features:
-//  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
-//  [x] Renderer: Multi-viewport / platform windows. With issues (flickering when creating a new viewport).
-//  [!] Renderer: User texture binding. Use 'VkDescriptorSet' as ImTextureID. Read the FAQ about ImTextureID! See https://github.com/ocornut/imgui/pull/914 for discussions.
-
-// Important: on 32-bit systems, user texture binding is only supported if your imconfig file has '#define ImTextureID ImU64'.
-// See imgui_impl_vulkan.cpp file for details.
-
-// You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
-// Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
-// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
-// Read online: https://github.com/ocornut/imgui/tree/master/docs
-
-// The aim of imgui_impl_vulkan.h/.cpp is to be usable in your engine without any modification.
-// IF YOU FEEL YOU NEED TO MAKE ANY CHANGE TO THIS CODE, please share them and your feedback at https://github.com/ocornut/imgui/
-
-// Important note to the reader who wish to integrate imgui_impl_vulkan.cpp/.h in their own engine/app.
-// - Common ImGui_ImplVulkan_XXX functions and structures are used to interface with imgui_impl_vulkan.cpp/.h.
-//   You will use those if you want to use this rendering backend in your engine/app.
-// - Helper ImGui_ImplVulkanH_XXX functions and structures are only used by this example (main.cpp) and by
-//   the backend itself (imgui_impl_vulkan.cpp), but should PROBABLY NOT be used by your own engine/app code.
-// Read comments in imgui_impl_vulkan.h.
+// Major and heavy modifications of the original Dear ImGUI's take on Vulkan implementation
+// https://github.com/ravimohan1991/imgui/blob/9068fd1afbaba56247aacd452bbadebb286800c7/backends/imgui_impl_vulkan.h
 
 #pragma once
-#include "imgui.h"      // IMGUI_IMPL_API
 
-// [Configuration] in order to use a custom Vulkan function loader:
-// (1) You'll need to disable default Vulkan function prototypes.
-//     We provide a '#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES' convenience configuration flag.
-//     In order to make sure this is visible from the imgui_impl_vulkan.cpp compilation unit:
-//     - Add '#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES' in your imconfig.h file
-//     - Or as a compilation flag in your build system
-//     - Or uncomment here (not recommended because you'd be modifying imgui sources!)
-//     - Do not simply add it in a .cpp file!
-// (2) Call ImGui_ImplVulkan_LoadFunctions() before ImGui_ImplVulkan_Init() with your custom function.
-// If you have no idea what this is, leave it alone!
-//#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES
+#include "krpch.h"
 
-// Vulkan includes
-#if defined(IMGUI_IMPL_VULKAN_NO_PROTOTYPES) && !defined(VK_NO_PROTOTYPES)
-#define VK_NO_PROTOTYPES
-#endif
+#include "imgui.h"
 #include <vulkan/vulkan.h>
 
-// Initialization data, for ImGui_ImplVulkan_Init()
-// [Please zero-clear before use!]
-struct ImGui_ImplVulkan_InitInfo
+namespace Karma
 {
-    VkInstance                      Instance;
-    VkPhysicalDevice                PhysicalDevice;
-    VkDevice                        Device;
-    uint32_t                        QueueFamily;
-    VkQueue                         Queue;
-    VkPipelineCache                 PipelineCache;
-    VkDescriptorPool                DescriptorPool;
-    uint32_t                        Subpass;
-    uint32_t                        MinImageCount;          // >= 2
-    uint32_t                        ImageCount;             // >= MinImageCount
-    VkSampleCountFlagBits           MSAASamples;            // >= VK_SAMPLE_COUNT_1_BIT (0 -> default to VK_SAMPLE_COUNT_1_BIT)
-    const VkAllocationCallbacks*    Allocator;
-    void                            (*CheckVkResultFn)(VkResult err);
-};
+	// Initialization data, for ImGui_KarmaImplVulkan_Init()
+	// [Please zero-clear before use!]
+	struct ImGui_KarmaImplVulkan_InitInfo
+	{
+	    VkInstance                      Instance;
+	    VkPhysicalDevice                PhysicalDevice;
+	    VkDevice                        Device;
+	    uint32_t                        QueueFamily;
+	    VkQueue                         Queue;
+	    VkPipelineCache                 PipelineCache;
+	    VkDescriptorPool                DescriptorPool;
+		VkRenderPass                    RenderPass; // Very experimental here
+	    uint32_t                        Subpass;
+	    uint32_t                        MinImageCount;          // >= 2
+	    uint32_t                        ImageCount;             // >= MinImageCount
+	    VkSampleCountFlagBits           MSAASamples;            // >= VK_SAMPLE_COUNT_1_BIT (0 -> default to VK_SAMPLE_COUNT_1_BIT)
+	    const VkAllocationCallbacks*    Allocator;
+	    void                            (*CheckVkResultFn)(VkResult result);
+	};
+	
+	//-------------------------------------------------------------------------
+	// Internal / Miscellaneous Vulkan Helpers
+	// (Used by example's main.cpp. Used by multi-viewport features. PROBABLY NOT used by your own engine/app.)
+	//-------------------------------------------------------------------------
+	// You probably do NOT need to use or care about those functions.
+	// Those functions only exist because:
+	//   1) they facilitate the readability and maintenance of the multiple main.cpp examples files.
+	//   2) the multi-viewport / platform window implementation needs them internally.
+	// Generally we avoid exposing any kind of superfluous high-level helpers in the bindings,
+	// but it is too much code to duplicate everywhere so we exceptionally expose them.
+	//
+	// Your engine/app will likely _already_ have code to setup all that stuff (swap chain, render pass, frame buffers, etc.).
+	// You may read this code to learn about Vulkan, but it is recommended you use you own custom tailored code to do equivalent work.
+	// (The ImGui_KarmaImplVulkanH_XXX functions do not interact with any of the state used by the regular ImGui_KarmaImplVulkan_XXX 	functions)
+	//-------------------------------------------------------------------------
+		
+	// Cowboy's confusion clarification concept!
+	// It seems the ImGUI author(s) have mixed and/or confused notion of
+	// ImageCount, which decides the number of SwapChainImages, framebuffer & commandbuffer size, and so on (contained within
+	// ImGui_KarmaImplVulkanH_ImageFrame structure).
+	// (https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Swap_chain#page_Retrieving-the-swap-chain-images)
+	// and MAX_FRAMES_IN_FLIGHT, which is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore and fence size.
+	// https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Frames_in_flight
+	// The argument is elicited by the comment line https://github.com/ravimohan1991/imgui/blob/e4967701b67edd491e884632f239ab1f38867d86/backends/imgui_impl_vulkan.h#L144
+	struct ImGui_Vulkan_Frame_On_Flight
+	{
+		VkFence             Fence;
+		VkSemaphore         ImageAcquiredSemaphore;
+		VkSemaphore         RenderCompleteSemaphore;
+	};
 
-// Called by user code
-IMGUI_IMPL_API bool         ImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* info, VkRenderPass render_pass);
-IMGUI_IMPL_API void         ImGui_ImplVulkan_Shutdown();
-IMGUI_IMPL_API void         ImGui_ImplVulkan_NewFrame();
-IMGUI_IMPL_API void         ImGui_ImplVulkan_RenderDrawData(ImDrawData* draw_data, VkCommandBuffer command_buffer, VkPipeline pipeline = VK_NULL_HANDLE);
-IMGUI_IMPL_API bool         ImGui_ImplVulkan_CreateFontsTexture(VkCommandBuffer command_buffer);
-IMGUI_IMPL_API void         ImGui_ImplVulkan_DestroyFontUploadObjects();
-IMGUI_IMPL_API void         ImGui_ImplVulkan_SetMinImageCount(uint32_t min_image_count); // To override MinImageCount after initialization (e.g. if swap chain is recreated)
+	// Helper structure to hold the data needed by one rendering ImageFrame (different from the FRAME_IN_FLIGHT frame!)
+	// (Used by multi-viewport features. We gonna just use this.)
+	// [Please zero-clear before use!]
+	struct ImGui_KarmaImplVulkanH_ImageFrame
+	{
+		VkCommandPool       CommandPool;
+		VkCommandBuffer     CommandBuffer;
+		VkImage             Backbuffer;                   // VulkanContext m_swapChainImages equivalent
+		VkImageView         BackbufferView;               // VulkanContext m_swapChainImageViews equivalent
+		VkFramebuffer       Framebuffer;
+	};
+	
+	// Helper structure to hold the data needed by one rendering context into one OS window
+	// Seems like the appropriate inherited instantiation of our Window class (written in Window.h),
+	// created in Application (https://github.com/ravimohan1991/KarmaEngine/blob/main/Karma/src/Karma/Application.cpp)
+	// (Used by multi-viewport features. We gonna just use this.)
+	struct ImGui_KarmaImplVulkanH_Window
+	{
+	    int                 Width;
+	    int                 Height;
+	    VkSwapchainKHR      Swapchain;
+	    VkSurfaceKHR        Surface;
+	    VkSurfaceFormatKHR  SurfaceFormat;
+	    VkPresentModeKHR    PresentMode;
+	    VkRenderPass        RenderPass;
+	    VkPipeline          Pipeline;               // Caution: The window pipeline may use a different VkRenderPass than the one passed in ImGui_KarmaImplVulkan_InitInfo. Need to investigate why.
+	    bool                ClearEnable;
+	    VkClearValue        ClearValue;
+	    uint32_t            ImageFrameIndex;             // Number of the image (returned by vkGetSwapchainImagesKHR, usually derived from min_image_count) to be addressed for frame (each loop iteration) rendering logic.
+	    uint32_t            TotalImageCount;             // Total Number of the images supported by swapchain
+	    uint32_t            SemaphoreIndex;         // Current set of swapchain wait semaphores we're using (0 <= SemaphoreIndex < MAX_FRAMES_IN_FLIGHT)
+		int                 MAX_FRAMES_IN_FLIGHT;
+		ImGui_KarmaImplVulkanH_ImageFrame*            ImageFrames; // Cowboy's Note: Not the regular frame sense. Just a container for buffers and all those sizes depending on  VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+	    //ImGui_KarmaImplVulkanH_ImageFrameSemaphores*  FrameSemaphores; // Cowboy's Note: Redundant now
+	
+	    // Cowboy's Modification
+	    ImGui_Vulkan_Frame_On_Flight*       FramesOnFlight; // The syncronicity data for in-flight frames
+	    VkRect2D                            RenderArea;
+	
+	    ImGui_KarmaImplVulkanH_Window()
+	    {
+	        memset((void*)this, 0, sizeof(*this));
+	        PresentMode = (VkPresentModeKHR)~0;     // Ensure we get an error if user doesn't set this.
+	        ClearEnable = true;
+	    }
+	};
 
-// Register a texture (VkDescriptorSet == ImTextureID)
-// FIXME: This is experimental in the sense that we are unsure how to best design/tackle this problem, please post to https://github.com/ocornut/imgui/pull/914 if you have suggestions.
-IMGUI_IMPL_API VkDescriptorSet ImGui_ImplVulkan_AddTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout);
+	// Reusable buffers used for rendering 1 current in-flight ImageFrame, for ImGui_KarmaImplVulkan_RenderDrawData()
+	// Seems like data structure with single instantiation for each of the ImageFrame.
+	// [Please zero-clear before use!]
+	struct ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers
+	{
+		VkDeviceMemory      VertexBufferMemory;
+		VkDeviceMemory      IndexBufferMemory;
+		VkDeviceSize        VertexBufferSize;
+		VkDeviceSize        IndexBufferSize;
+		VkBuffer            VertexBuffer;
+		VkBuffer            IndexBuffer;
+		
+	public:
+		ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers()
+		{
+			VertexBufferSize = IndexBufferSize = 0;
+		}
+	};
+	
+	// Each viewport will hold 1 ImGui_KarmaImplVulkanH_WindowRenderBuffers
+	// [Please zero-clear before use!]
+	struct ImGui_KarmaImplVulkanH_WindowRenderBuffers
+	{
+		uint32_t            Index;
+		uint32_t            Count;
+		ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers*   FrameRenderBuffers;
+	};
+	
+	// For multi-viewport support:
+	// Helper structure we store in the void* RenderUserData field of each ImGuiViewport to easily retrieve our backend data.
+	struct ImGui_KarmaImplVulkan_ViewportData
+	{
+		bool                                    WindowOwned;
+		ImGui_KarmaImplVulkanH_Window                Window;             // Used by secondary viewports only
+		ImGui_KarmaImplVulkanH_WindowRenderBuffers   RenderBuffers;      // Used by all viewports
+		
+		ImGui_KarmaImplVulkan_ViewportData()         { WindowOwned = false; memset(&RenderBuffers, 0, sizeof(RenderBuffers)); }
+		~ImGui_KarmaImplVulkan_ViewportData()        { }
+	};
+	
+	// Vulkan data
+	// Seems for single ImGUI context (which can have multiple window)
+	struct ImGui_KarmaImplVulkan_Data
+	{
+		ImGui_KarmaImplVulkan_InitInfo   VulkanInitInfo;
+		VkRenderPass                RenderPass;
+		VkDeviceSize                BufferMemoryAlignment;
+		VkPipelineCreateFlags       PipelineCreateFlags;
+		VkDescriptorSetLayout       DescriptorSetLayout;
+		VkPipelineLayout            PipelineLayout;
+		VkPipeline                  Pipeline;
+		uint32_t                    Subpass;
+		VkShaderModule              ShaderModuleVert;
+		VkShaderModule              ShaderModuleFrag;
+		
+		// Font data
+		VkSampler                   FontSampler;
+		VkDeviceMemory              FontMemory;
+		VkImage                     FontImage;
+		VkImageView                 FontView;
+		VkDescriptorSet             FontDescriptorSet;
+		VkDeviceMemory              UploadBufferMemory;
+		VkBuffer                    UploadBuffer;
+		
+		// Render buffers for main window
+		ImGui_KarmaImplVulkanH_WindowRenderBuffers MainWindowRenderBuffers;
+		
+		ImGui_KarmaImplVulkan_Data()
+		{
+			memset((void*)this, 0, sizeof(*this));
+			BufferMemoryAlignment = 256;
+		}
+	};
 
-// Optional: load Vulkan functions with a custom function loader
-// This is only useful with IMGUI_IMPL_VULKAN_NO_PROTOTYPES / VK_NO_PROTOTYPES
-IMGUI_IMPL_API bool         ImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data = NULL);
-
-//-------------------------------------------------------------------------
-// Internal / Miscellaneous Vulkan Helpers
-// (Used by example's main.cpp. Used by multi-viewport features. PROBABLY NOT used by your own engine/app.)
-//-------------------------------------------------------------------------
-// You probably do NOT need to use or care about those functions.
-// Those functions only exist because:
-//   1) they facilitate the readability and maintenance of the multiple main.cpp examples files.
-//   2) the multi-viewport / platform window implementation needs them internally.
-// Generally we avoid exposing any kind of superfluous high-level helpers in the bindings,
-// but it is too much code to duplicate everywhere so we exceptionally expose them.
-//
-// Your engine/app will likely _already_ have code to setup all that stuff (swap chain, render pass, frame buffers, etc.).
-// You may read this code to learn about Vulkan, but it is recommended you use you own custom tailored code to do equivalent work.
-// (The ImGui_ImplVulkanH_XXX functions do not interact with any of the state used by the regular ImGui_ImplVulkan_XXX functions)
-//-------------------------------------------------------------------------
-
-struct ImGui_ImplVulkanH_Frame;
-struct ImGui_ImplVulkanH_Window;
-
-// Helpers
-IMGUI_IMPL_API void                 ImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevice physical_device, VkDevice device, ImGui_ImplVulkanH_Window* wnd, uint32_t queue_family, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count);
-IMGUI_IMPL_API void                 ImGui_ImplVulkanH_DestroyWindow(VkInstance instance, VkDevice device, ImGui_ImplVulkanH_Window* wnd, const VkAllocationCallbacks* allocator);
-IMGUI_IMPL_API VkSurfaceFormatKHR   ImGui_ImplVulkanH_SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkFormat* request_formats, int request_formats_count, VkColorSpaceKHR request_color_space);
-IMGUI_IMPL_API VkPresentModeKHR     ImGui_ImplVulkanH_SelectPresentMode(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkPresentModeKHR* request_modes, int request_modes_count);
-IMGUI_IMPL_API int                  ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(VkPresentModeKHR present_mode);
-
-// Helper structure to hold the data needed by one rendering frame
-// (Used by example's main.cpp. Used by multi-viewport features. Probably NOT used by your own engine/app.)
-// [Please zero-clear before use!]
-struct ImGui_ImplVulkanH_Frame
-{
-    VkCommandPool       CommandPool;
-    VkCommandBuffer     CommandBuffer;
-    VkFence             Fence;
-    VkImage             Backbuffer;
-    VkImageView         BackbufferView;
-    VkFramebuffer       Framebuffer;
-};
-
-struct ImGui_ImplVulkanH_FrameSemaphores
-{
-    VkSemaphore         ImageAcquiredSemaphore;
-    VkSemaphore         RenderCompleteSemaphore;
-};
-
-// Cowboy's selective hybrid magic
-struct ImGui_Vulkan_Frame_On_Flight
-{
-	VkFence             Fence;
-	VkSemaphore         ImageAcquiredSemaphore;
-	VkSemaphore         RenderCompleteSemaphore;
-};
-
-// Helper structure to hold the data needed by one rendering context into one OS window
-// (Used by example's main.cpp. Used by multi-viewport features. Probably NOT used by your own engine/app.)
-struct ImGui_ImplVulkanH_Window
-{
-    int                 Width;
-    int                 Height;
-    VkSwapchainKHR      Swapchain;
-    VkSurfaceKHR        Surface;
-    VkSurfaceFormatKHR  SurfaceFormat;
-    VkPresentModeKHR    PresentMode;
-    VkRenderPass        RenderPass;
-    VkPipeline          Pipeline;               // The window pipeline may uses a different VkRenderPass than the one passed in ImGui_ImplVulkan_InitInfo
-    bool                ClearEnable;
-    VkClearValue        ClearValue;
-    uint32_t            FrameIndex;             // Current frame being rendered to (0 <= FrameIndex < FrameInFlightCount)
-    uint32_t            ImageCount;             // Number of simultaneous in-flight frames (returned by vkGetSwapchainImagesKHR, usually derived from min_image_count)
-    uint32_t            SemaphoreIndex;         // Current set of swapchain wait semaphores we're using (needs to be distinct from per frame data)
-    ImGui_ImplVulkanH_Frame*            Frames; // Cowboy's Note: Not the regular frame sense. Just a container for buffers and all those sizes depending on  VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
-    ImGui_ImplVulkanH_FrameSemaphores*  FrameSemaphores; // Cowboy's Note: Redundant now
-
-    // Cowboy's Modification
-    ImGui_Vulkan_Frame_On_Flight*       FramesOnFlight; // The syncronicity data for in-flight frames
-    VkRect2D                            RenderArea;
-
-    ImGui_ImplVulkanH_Window()
-    {
-        memset((void*)this, 0, sizeof(*this));
-        PresentMode = (VkPresentModeKHR)~0;     // Ensure we get an error if user doesn't set this.
-        ClearEnable = true;
-    }
-};
-
+	class KARMA_API ImGuiVulkanHandler
+	{
+	public:
+		// Backend data stored in io.BackendRendererUserData to allow support for multiple Dear ImGui contexts
+		// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple windows) 	instead of multiple Dear ImGui contexts.
+		// FIXME: multi-context support is not tested and probably dysfunctional in this backend.
+		// Allow me to make an attempt, good programmer! ~ The_Cowboy
+		inline static ImGui_KarmaImplVulkan_Data* ImGui_KarmaImplVulkan_GetBackendData()
+		{
+			return ImGui::GetCurrentContext() ? (ImGui_KarmaImplVulkan_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
+		}
+		// GetIO should fetche the configuration settings and whatnot, which in this case is the struct ImGui_KarmaImplVulkan_Data
+		
+		static uint32_t ImGui_KarmaImplVulkan_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits);
+		static void CheckVulkanResult(VkResult result);
+		static void CheckVulkanResult_Impl(VkResult result);
+		static void CreateOrResizeBuffer(VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkDeviceSize& pBufferSize, size_t newSize, VkBufferUsageFlagBits usage);
+		static void ImGui_KarmaImplVulkan_SetupRenderState(ImDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, 	ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height);
+		static void ImGui_KarmaImplVulkan_CreateShaderModules(VkDevice device, const VkAllocationCallbacks* allocator);
+		static void ImGui_KarmaImplVulkan_CreateFontSampler(VkDevice device, const VkAllocationCallbacks* allocator);
+		static void ImGui_KarmaImplVulkan_CreateDescriptorSetLayout(VkDevice device, const VkAllocationCallbacks* allocator);
+		static void ImGui_KarmaImplVulkan_CreatePipelineLayout(VkDevice device, const VkAllocationCallbacks* allocator);
+		static void ImGui_KarmaImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass);
+		static void ImGui_KarmaImplVulkan_CreateWindow(ImGuiViewport* viewport);
+		// Overload
+		static void ImGui_KarmaImplVulkan_DestroyWindow(ImGuiViewport* viewport);
+		static void ImGui_KarmaImplVulkan_DestroyWindow(ImGui_KarmaImplVulkanH_Window* windowData);
+		static void ImGui_KarmaImplVulkan_SetWindowSize(ImGuiViewport* viewport, ImVec2 size);
+		static void ImGui_KarmaImplVulkan_RenderWindow(ImGuiViewport* viewport, void*);
+		static void ImGui_KarmaImplVulkan_RenderDrawData(ImDrawData* drawData, VkCommandBuffer commandBuffer, VkPipeline pipeline, uint32_t imageFrameIndex);
+		static void ImGui_KarmaImplVulkan_SwapBuffers(ImGuiViewport* viewport, void*);
+		static void ShareVulkanContextResourcesOfMainWindow(ImGui_KarmaImplVulkanH_Window* windowData, bool bCreateSyncronicity = false, bool bRecreateSwapChainAndCommandBuffers = false);
+		static void ClearVulkanWindowData(ImGui_KarmaImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity = false);
+		static void DestroyWindowDataFrame(ImGui_KarmaImplVulkanH_ImageFrame* frame);
+		static void DestroyFramesOnFlightData(ImGui_Vulkan_Frame_On_Flight* frameSyncronicityData);
+		static void ImGui_KarmaImplVulkan_CreateOrResizeWindow(ImGui_KarmaImplVulkanH_Window* windowData, bool bCreateSyncronicity, bool bRecreateSwapChainAndCommandBuffers);
+		static void ImGui_KarmaImplVulkan_DestroyAllViewportsRenderBuffers(VkDevice device, const VkAllocationCallbacks* allocator);
+		static void ImGui_KarmaImplVulkan_ShivaWindowRenderBuffers(VkDevice device, ImGui_KarmaImplVulkanH_WindowRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
+		static void ImGui_KarmaImplVulkan_ShivaFrameRenderBuffers(VkDevice device, ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
+		static void ImGui_ImplVulkan_DestroyFrameRenderBuffers(VkDevice device, ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
+		
+		static bool ImGui_KarmaImplVulkan_CreateFontsTexture(VkCommandBuffer commandBuffer);
+		static bool ImGui_KarmaImplVulkan_CreateDeviceObjects();
+		static void ImGui_KarmaImplVulkan_DestroyFontUploadObjects();
+		static void ImGui_KarmaImplVulkan_DestroyDeviceObjects();
+		
+		static void ImGui_KarmaImplVulkan_ClearUndFreeResources(ImDrawData* drawData);
+		
+		// Optional: load Vulkan functions with a custom function loader
+		// This is only useful with IMGUI_IMPL_VULKAN_NO_PROTOTYPES / VK_NO_PROTOTYPES
+		bool ImGui_KarmaImplVulkan_LoadFunctions(PFN_vkVoidFunction(*loaderFunc)(const char* functionName, void* userData), void* userData);
+		static bool ImGui_KarmaImplVulkan_Init(ImGui_KarmaImplVulkan_InitInfo* info);
+		static void ImGui_KarmaImplVulkan_Shutdown();
+		static void ImGui_KarmaImplVulkan_NewFrame();
+		// Register a texture (VkDescriptorSet == ImTextureID)
+		// FIXME: This is experimental in the sense that we are unsure how to best design/tackle this problem, please post to 	https://github.com/ocornut/imgui/pull/914 if you have suggestions.
+		static VkDescriptorSet ImGui_KarmaImplVulkan_AddTexture(VkSampler sampler, VkImageView imageView, VkImageLayout imageLayout);
+		static void ImGui_KarmaImplVulkan_InitPlatformInterface();
+		static void ImGui_KarmaImplVulkan_ShutdownPlatformInterface();
+	};
+}

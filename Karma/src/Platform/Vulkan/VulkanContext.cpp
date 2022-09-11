@@ -549,7 +549,9 @@ namespace Karma
 
 		VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
 
-		uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+		m_MinImageCount = swapChainSupport.capabilities.minImageCount;
+		uint32_t imageCount = m_MinImageCount + 1;
+
 		if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
 		{
 			imageCount = swapChainSupport.capabilities.maxImageCount;
@@ -564,8 +566,6 @@ namespace Karma
 		createInfo.imageExtent = extent;
 		createInfo.imageArrayLayers = 1;
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-		m_MinImageCount = imageCount;
 		
 		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
 		uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(),
