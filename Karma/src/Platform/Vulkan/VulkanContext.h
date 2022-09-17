@@ -121,7 +121,7 @@ namespace Karma
 		void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
 		void ClearUBO();
 		void RecreateUBO();
-		void UploadUBO(size_t currentImage);
+		void UploadUBO(int frameIndex);
 
 		// Getters
 		VkDevice GetLogicalDevice() const { return m_device; }

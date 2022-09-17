@@ -82,11 +82,11 @@ namespace Karma
 		m_VulkanUBO.insert(ubo);
 	}
 
-	void VulkanContext::UploadUBO(size_t currentImage)
+	void VulkanContext::UploadUBO(int frameIndex)
 	{
 		for (auto ubo : m_VulkanUBO)
 		{
-			ubo->UploadUniformBuffer(currentImage);
+			ubo->UploadUniformBuffer(frameIndex);
 		}
 	}
 

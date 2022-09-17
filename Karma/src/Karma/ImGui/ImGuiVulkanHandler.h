@@ -27,7 +27,6 @@ namespace Karma
 	    uint32_t                        ImageCount;             // >= MinImageCount
 	    VkSampleCountFlagBits           MSAASamples;            // >= VK_SAMPLE_COUNT_1_BIT (0 -> default to VK_SAMPLE_COUNT_1_BIT)
 	    const VkAllocationCallbacks*    Allocator;
-	    void                            (*CheckVkResultFn)(VkResult result);
 	};
 	
 	//-------------------------------------------------------------------------
@@ -48,10 +47,10 @@ namespace Karma
 		
 	// Cowboy's confusion clarification concept!
 	// It seems the ImGUI author(s) have mixed and/or confused notion of
-	// ImageCount, which decides the number of SwapChainImages, framebuffer & commandbuffer size, and so on (contained within
+	// ImageCount, which decides the number of SwapChainImages, framebuffer, and so on (contained within
 	// ImGui_KarmaImplVulkanH_ImageFrame structure).
 	// (https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Swap_chain#page_Retrieving-the-swap-chain-images)
-	// and MAX_FRAMES_IN_FLIGHT, which is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore and fence size.
+	// and MAX_FRAMES_IN_FLIGHT, which is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore, fence, and commandbuffer size.
 	// https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Frames_in_flight
 	// The argument is elicited by the comment line https://github.com/ravimohan1991/imgui/blob/e4967701b67edd491e884632f239ab1f38867d86/backends/imgui_impl_vulkan.h#L144
 	struct ImGui_Vulkan_Frame_On_Flight
@@ -59,6 +58,7 @@ namespace Karma
 		VkFence             Fence;
 		VkSemaphore         ImageAcquiredSemaphore;
 		VkSemaphore         RenderCompleteSemaphore;
+		VkCommandBuffer     CommandBuffer;
 	};
 
 	// Helper structure to hold the data needed by one rendering ImageFrame (different from the FRAME_IN_FLIGHT frame!)
@@ -66,8 +66,8 @@ namespace Karma
 	// [Please zero-clear before use!]
 	struct ImGui_KarmaImplVulkanH_ImageFrame
 	{
-		VkCommandPool       CommandPool;
-		VkCommandBuffer     CommandBuffer;
+		//VkCommandPool       CommandPool;
+		//VkCommandBuffer     CommandBuffer;
 		VkImage             Backbuffer;                   // VulkanContext m_swapChainImages equivalent
 		VkImageView         BackbufferView;               // VulkanContext m_swapChainImageViews equivalent
 		VkFramebuffer       Framebuffer;
@@ -81,7 +81,9 @@ namespace Karma
 	{
 	    int                 Width;
 	    int                 Height;
+		//bool                bIsImGUILayerWindow;
 	    VkSwapchainKHR      Swapchain;
+		VkCommandPool       CommandPool;
 	    VkSurfaceKHR        Surface;
 	    VkSurfaceFormatKHR  SurfaceFormat;
 	    VkPresentModeKHR    PresentMode;
@@ -91,7 +93,7 @@ namespace Karma
 	    VkClearValue        ClearValue;
 	    uint32_t            ImageFrameIndex;             // Number of the image (returned by vkGetSwapchainImagesKHR, usually derived from min_image_count) to be addressed for frame (each loop iteration) rendering logic.
 	    uint32_t            TotalImageCount;             // Total Number of the images supported by swapchain
-	    uint32_t            SemaphoreIndex;         // Current set of swapchain wait semaphores we're using (0 <= SemaphoreIndex < MAX_FRAMES_IN_FLIGHT)
+	    uint32_t            SemaphoreIndex;         // Current set of swapchain wait semaphores and command buffers we're using (0 <= SemaphoreIndex < MAX_FRAMES_IN_FLIGHT)
 		int                 MAX_FRAMES_IN_FLIGHT;
 		ImGui_KarmaImplVulkanH_ImageFrame*            ImageFrames; // Cowboy's Note: Not the regular frame sense. Just a container for buffers and all those sizes depending on  VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
 	    //ImGui_KarmaImplVulkanH_ImageFrameSemaphores*  FrameSemaphores; // Cowboy's Note: Redundant now
@@ -105,11 +107,12 @@ namespace Karma
 	        memset((void*)this, 0, sizeof(*this));
 	        PresentMode = (VkPresentModeKHR)~0;     // Ensure we get an error if user doesn't set this.
 	        ClearEnable = true;
+			//bIsImGUILayerWindow = false;
 	    }
 	};
 
 	// Reusable buffers used for rendering 1 current in-flight ImageFrame, for ImGui_KarmaImplVulkan_RenderDrawData()
-	// Seems like data structure with single instantiation for each of the ImageFrame.
+	// Seems like data structure with single instantiation for each of the FrameIndex
 	// [Please zero-clear before use!]
 	struct ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers
 	{
@@ -143,8 +146,13 @@ namespace Karma
 		bool                                    WindowOwned;
 		ImGui_KarmaImplVulkanH_Window                Window;             // Used by secondary viewports only
 		ImGui_KarmaImplVulkanH_WindowRenderBuffers   RenderBuffers;      // Used by all viewports
+		//ImGui_KarmaImplVulkanH_Window*               ImGUILayerWindowData;
 		
-		ImGui_KarmaImplVulkan_ViewportData()         { WindowOwned = false; memset(&RenderBuffers, 0, sizeof(RenderBuffers)); }
+		ImGui_KarmaImplVulkan_ViewportData()
+		{
+			WindowOwned = false;
+			memset(&RenderBuffers, 0, sizeof(RenderBuffers));
+		}
 		~ImGui_KarmaImplVulkan_ViewportData()        { }
 	};
 	
@@ -196,8 +204,6 @@ namespace Karma
 		// GetIO should fetche the configuration settings and whatnot, which in this case is the struct ImGui_KarmaImplVulkan_Data
 		
 		static uint32_t ImGui_KarmaImplVulkan_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits);
-		static void CheckVulkanResult(VkResult result);
-		static void CheckVulkanResult_Impl(VkResult result);
 		static void CreateOrResizeBuffer(VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkDeviceSize& pBufferSize, size_t newSize, VkBufferUsageFlagBits usage);
 		static void ImGui_KarmaImplVulkan_SetupRenderState(ImDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, 	ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height);
 		static void ImGui_KarmaImplVulkan_CreateShaderModules(VkDevice device, const VkAllocationCallbacks* allocator);
@@ -213,7 +219,7 @@ namespace Karma
 		static void ImGui_KarmaImplVulkan_RenderWindow(ImGuiViewport* viewport, void*);
 		static void ImGui_KarmaImplVulkan_RenderDrawData(ImDrawData* drawData, VkCommandBuffer commandBuffer, VkPipeline pipeline, uint32_t imageFrameIndex);
 		static void ImGui_KarmaImplVulkan_SwapBuffers(ImGuiViewport* viewport, void*);
-		static void ShareVulkanContextResourcesOfMainWindow(ImGui_KarmaImplVulkanH_Window* windowData, bool bCreateSyncronicity = false, bool bRecreateSwapChainAndCommandBuffers = false);
+		static void ShareVulkanContextResourcesOfMainWindow(ImGui_KarmaImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
 		static void ClearVulkanWindowData(ImGui_KarmaImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity = false);
 		static void DestroyWindowDataFrame(ImGui_KarmaImplVulkanH_ImageFrame* frame);
 		static void DestroyFramesOnFlightData(ImGui_Vulkan_Frame_On_Flight* frameSyncronicityData);
@@ -228,11 +234,7 @@ namespace Karma
 		static void ImGui_KarmaImplVulkan_DestroyFontUploadObjects();
 		static void ImGui_KarmaImplVulkan_DestroyDeviceObjects();
 		
-		static void ImGui_KarmaImplVulkan_ClearUndFreeResources(ImDrawData* drawData);
-		
-		// Optional: load Vulkan functions with a custom function loader
-		// This is only useful with IMGUI_IMPL_VULKAN_NO_PROTOTYPES / VK_NO_PROTOTYPES
-		bool ImGui_KarmaImplVulkan_LoadFunctions(PFN_vkVoidFunction(*loaderFunc)(const char* functionName, void* userData), void* userData);
+		static void ImGui_KarmaImplVulkan_ClearUndFreeResources(ImDrawData* drawData, uint32_t imageIndex);
 		static bool ImGui_KarmaImplVulkan_Init(ImGui_KarmaImplVulkan_InitInfo* info);
 		static void ImGui_KarmaImplVulkan_Shutdown();
 		static void ImGui_KarmaImplVulkan_NewFrame();

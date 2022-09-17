@@ -42,7 +42,7 @@ public:
 	virtual void OnUpdate(float deltaTime) override
 	{
 		KarmaAppInputPolling(deltaTime);
-
+/*
 		Karma::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 
 		Karma::RenderCommand::Clear();
@@ -56,6 +56,7 @@ public:
 		Karma::Renderer::Submit(m_SquareVA);
 
 		Karma::Renderer::EndScene();
+ */
 	}
 
 	virtual void OnImGuiRender() override

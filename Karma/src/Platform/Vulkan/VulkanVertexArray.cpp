@@ -1,7 +1,7 @@
 #include "VulkanVertexArray.h"
 #include "Platform/Vulkan/VulkanHolder.h"
 #include "Platform/Vulkan/VulkanTexutre.h"
-#include <fstream>
+#include "Karma/Renderer/RenderCommand.h"
 
 namespace Karma
 {
@@ -34,6 +34,7 @@ namespace Karma
 	{
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
+		// Ponder over this
 		//vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr); //Seems like ImGui layer takes care of this
 		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);// Descriptorsets get automatically get freed
 	}
@@ -362,20 +363,33 @@ namespace Karma
 
 	void VulkanVertexArray::CreateDescriptorSets()
 	{
-		std::vector<VkDescriptorSetLayout> layouts(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(),
-			m_descriptorSetLayout);
+		RendererAPI* rAPI = RenderCommand::GetRendererAPI();
+		VulkanRendererAPI* vulkanAPI = nullptr;
+		
+		if(rAPI->GetAPI() == RendererAPI::API::Vulkan)
+		{
+			vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
+		}
+		else
+		{
+			KR_CORE_ASSERT(false, "How is this even possible?");
+		}
+		
+		int maxFramesInFlight = vulkanAPI->GetMaxFramesInFlight();
+		
+		std::vector<VkDescriptorSetLayout> layouts(maxFramesInFlight, m_descriptorSetLayout);
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		allocInfo.descriptorPool = m_descriptorPool;
-		allocInfo.descriptorSetCount = static_cast<uint32_t>(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size());
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(maxFramesInFlight);
 		allocInfo.pSetLayouts = layouts.data();
 
-		m_descriptorSets.resize(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size());
+		m_descriptorSets.resize(maxFramesInFlight);
 		VkResult result = vkAllocateDescriptorSets(m_device, &allocInfo, m_descriptorSets.data());
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to allocate descriptor sets!");
 
-		for (size_t i = 0; i < VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(); i++)
+		for (size_t i = 0; i < maxFramesInFlight; i++)
 		{
 			VkDescriptorBufferInfo bufferInfo{};
 			bufferInfo.buffer = m_Shader->GetUniformBufferObject()->GetUniformBuffers()[i];

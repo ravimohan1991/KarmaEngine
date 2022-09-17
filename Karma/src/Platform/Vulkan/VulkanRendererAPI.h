@@ -21,7 +21,7 @@ namespace Karma
 		virtual void EndScene() override;
 
 		void AllocateCommandBuffers();
-		void RecordCommandBuffers();
+		void RecordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 		void SubmitCommandBuffers();
 		void CreateSynchronicity();
 		void ClearVulkanRendererAPI();
@@ -46,6 +46,8 @@ namespace Karma
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores;
 		std::vector<VkFence> m_InFlightFences;
 
+		// Number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1
+		// Clearly, MAX_FRAMES_IN_FLIGHT shouldn't exceed m_SwapChainImages.size()
 		const int MAX_FRAMES_IN_FLIGHT = 2;
 
 		bool m_bAllocateCommandBuffers;

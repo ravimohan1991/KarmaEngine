@@ -81,7 +81,7 @@ namespace Karma
 		void ClearBuffer();
 		void BufferCreation();
 
-		void UploadUniformBuffer(size_t currentImage);
+		void UploadUniformBuffer(int frameIndex);
 
 	private:
 		VkDevice m_Device;

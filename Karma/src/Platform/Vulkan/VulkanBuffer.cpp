@@ -1,5 +1,6 @@
 #include "VulkanBuffer.h"
 #include "Platform/Vulkan/VulkanHolder.h"
+#include "Karma/Renderer/RenderCommand.h"
 
 namespace Karma
 {
@@ -259,13 +260,25 @@ namespace Karma
 	void VulkanUniformBuffer::BufferCreation()
 	{
 		VkDeviceSize bufferSize = GetBufferSize();
+		
+		RendererAPI* rAPI = RenderCommand::GetRendererAPI();
+		VulkanRendererAPI* vulkanAPI = nullptr;
+		
+		if(rAPI->GetAPI() == RendererAPI::API::Vulkan)
+		{
+			vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
+		}
+		else
+		{
+			KR_CORE_ASSERT(false, "How is this even possible?");
+		}
+		
+		int maxFramesInFlight = vulkanAPI->GetMaxFramesInFlight();
 
-		size_t swapChainImagesSize = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+		m_UniformBuffers.resize(maxFramesInFlight);
+		m_UniformBuffersMemory.resize(maxFramesInFlight);
 
-		m_UniformBuffers.resize(swapChainImagesSize);
-		m_UniformBuffersMemory.resize(swapChainImagesSize);
-
-		for (size_t i = 0; i < swapChainImagesSize; i++)
+		for (size_t i = 0; i < maxFramesInFlight; i++)
 		{
 			CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 				VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_UniformBuffers[i], m_UniformBuffersMemory[i]);
@@ -281,7 +294,7 @@ namespace Karma
 		}
 	}
 
-	void VulkanUniformBuffer::UploadUniformBuffer(size_t currentImage)
+	void VulkanUniformBuffer::UploadUniformBuffer(int frameIndex)
 	{
 		uint32_t index = 0;
 		for (auto& it : GetUniformList())
@@ -289,9 +302,9 @@ namespace Karma
 			size_t uniformSize = GetUniformSize()[index];
 			size_t offset = GetAlignedOffsets()[index++];
 			void* data;
-			vkMapMemory(m_Device, m_UniformBuffersMemory[currentImage], offset, uniformSize, 0, &data);
+			vkMapMemory(m_Device, m_UniformBuffersMemory[frameIndex], offset, uniformSize, 0, &data);
 			memcpy(data, it.GetDataPointer(), uniformSize);
-			vkUnmapMemory(m_Device, m_UniformBuffersMemory[currentImage]);
+			vkUnmapMemory(m_Device, m_UniformBuffersMemory[frameIndex]);
 		}
 	}
 

@@ -45,10 +45,10 @@ namespace Karma
 		// Getters
 		VkPipeline GetGraphicsPipeline() const { return m_graphicsPipeline; }
 		VkPipelineLayout GetGraphicsPipelineLayout() const { return m_pipelineLayout; }
-		std::shared_ptr<VulkanShader> GetShader() const { return m_Shader; }
-		const std::vector<VkDescriptorSet>& GetUBDescriptorSets() const { return m_descriptorSets; }
-		std::shared_ptr<VulkanVertexBuffer> GetVertexBuffer() const { return m_VertexBuffer; }
-		std::vector<VkDescriptorSet> GetDescriptorSets() { return m_descriptorSets; }
+		const std::shared_ptr<VulkanShader>& GetShader() const { return m_Shader; }
+		//const std::vector<VkDescriptorSet>& GetUBDescriptorSets() const { return m_descriptorSets; }
+		const std::shared_ptr<VulkanVertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
+		const std::vector<VkDescriptorSet>& GetDescriptorSets() const { return m_descriptorSets; }
 
 		virtual std::shared_ptr<Material> GetMaterial() const override { return m_Materials.at(0); }
 
