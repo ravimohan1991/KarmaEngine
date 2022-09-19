@@ -14,82 +14,78 @@ namespace Karma
 	//-----------------------------------------------------------------------------
 	static uint32_t __glsl_shader_vert_spv[] =
 	{
-	    0x07230203,0x00010000,0x00080001,0x0000002e,0x00000000,0x00020011,0x00000001,0x0006000b,
-	    0x00000001,0x4c534c47,0x6474732e,0x3035342e,0x00000000,0x0003000e,0x00000000,0x00000001,
-	    0x000a000f,0x00000000,0x00000004,0x6e69616d,0x00000000,0x0000000b,0x0000000f,0x00000015,
-	    0x0000001b,0x0000001c,0x00030003,0x00000002,0x000001c2,0x00040005,0x00000004,0x6e69616d,
-	    0x00000000,0x00030005,0x00000009,0x00000000,0x00050006,0x00000009,0x00000000,0x6f6c6f43,
-	    0x00000072,0x00040006,0x00000009,0x00000001,0x00005655,0x00030005,0x0000000b,0x0074754f,
-	    0x00040005,0x0000000f,0x6c6f4361,0x0000726f,0x00030005,0x00000015,0x00565561,0x00060005,
-	    0x00000019,0x505f6c67,0x65567265,0x78657472,0x00000000,0x00060006,0x00000019,0x00000000,
-	    0x505f6c67,0x7469736f,0x006e6f69,0x00030005,0x0000001b,0x00000000,0x00040005,0x0000001c,
-	    0x736f5061,0x00000000,0x00060005,0x0000001e,0x73755075,0x6e6f4368,0x6e617473,0x00000074,
-	    0x00050006,0x0000001e,0x00000000,0x61635375,0x0000656c,0x00060006,0x0000001e,0x00000001,
-	    0x61725475,0x616c736e,0x00006574,0x00030005,0x00000020,0x00006370,0x00040047,0x0000000b,
-	    0x0000001e,0x00000000,0x00040047,0x0000000f,0x0000001e,0x00000002,0x00040047,0x00000015,
-	    0x0000001e,0x00000001,0x00050048,0x00000019,0x00000000,0x0000000b,0x00000000,0x00030047,
-	    0x00000019,0x00000002,0x00040047,0x0000001c,0x0000001e,0x00000000,0x00050048,0x0000001e,
-	    0x00000000,0x00000023,0x00000000,0x00050048,0x0000001e,0x00000001,0x00000023,0x00000008,
-	    0x00030047,0x0000001e,0x00000002,0x00020013,0x00000002,0x00030021,0x00000003,0x00000002,
-	    0x00030016,0x00000006,0x00000020,0x00040017,0x00000007,0x00000006,0x00000004,0x00040017,
-	    0x00000008,0x00000006,0x00000002,0x0004001e,0x00000009,0x00000007,0x00000008,0x00040020,
-	    0x0000000a,0x00000003,0x00000009,0x0004003b,0x0000000a,0x0000000b,0x00000003,0x00040015,
-	    0x0000000c,0x00000020,0x00000001,0x0004002b,0x0000000c,0x0000000d,0x00000000,0x00040020,
-	    0x0000000e,0x00000001,0x00000007,0x0004003b,0x0000000e,0x0000000f,0x00000001,0x00040020,
-	    0x00000011,0x00000003,0x00000007,0x0004002b,0x0000000c,0x00000013,0x00000001,0x00040020,
-	    0x00000014,0x00000001,0x00000008,0x0004003b,0x00000014,0x00000015,0x00000001,0x00040020,
-	    0x00000017,0x00000003,0x00000008,0x0003001e,0x00000019,0x00000007,0x00040020,0x0000001a,
-	    0x00000003,0x00000019,0x0004003b,0x0000001a,0x0000001b,0x00000003,0x0004003b,0x00000014,
-	    0x0000001c,0x00000001,0x0004001e,0x0000001e,0x00000008,0x00000008,0x00040020,0x0000001f,
-	    0x00000009,0x0000001e,0x0004003b,0x0000001f,0x00000020,0x00000009,0x00040020,0x00000021,
-	    0x00000009,0x00000008,0x0004002b,0x00000006,0x00000028,0x00000000,0x0004002b,0x00000006,
-	    0x00000029,0x3f800000,0x00050036,0x00000002,0x00000004,0x00000000,0x00000003,0x000200f8,
-	    0x00000005,0x0004003d,0x00000007,0x00000010,0x0000000f,0x00050041,0x00000011,0x00000012,
-	    0x0000000b,0x0000000d,0x0003003e,0x00000012,0x00000010,0x0004003d,0x00000008,0x00000016,
-	    0x00000015,0x00050041,0x00000017,0x00000018,0x0000000b,0x00000013,0x0003003e,0x00000018,
-	    0x00000016,0x0004003d,0x00000008,0x0000001d,0x0000001c,0x00050041,0x00000021,0x00000022,
-	    0x00000020,0x0000000d,0x0004003d,0x00000008,0x00000023,0x00000022,0x00050085,0x00000008,
-	    0x00000024,0x0000001d,0x00000023,0x00050041,0x00000021,0x00000025,0x00000020,0x00000013,
-	    0x0004003d,0x00000008,0x00000026,0x00000025,0x00050081,0x00000008,0x00000027,0x00000024,
-	    0x00000026,0x00050051,0x00000006,0x0000002a,0x00000027,0x00000000,0x00050051,0x00000006,
-	    0x0000002b,0x00000027,0x00000001,0x00070050,0x00000007,0x0000002c,0x0000002a,0x0000002b,
-	    0x00000028,0x00000029,0x00050041,0x00000011,0x0000002d,0x0000001b,0x0000000d,0x0003003e,
-	    0x0000002d,0x0000002c,0x000100fd,0x00010038
+		0x07230203,0x00010000,0x00080001,0x0000002e,0x00000000,0x00020011,0x00000001,0x0006000b,
+		0x00000001,0x4c534c47,0x6474732e,0x3035342e,0x00000000,0x0003000e,0x00000000,0x00000001,
+		0x000a000f,0x00000000,0x00000004,0x6e69616d,0x00000000,0x0000000b,0x0000000f,0x00000015,
+		0x0000001b,0x0000001c,0x00030003,0x00000002,0x000001c2,0x00040005,0x00000004,0x6e69616d,
+		0x00000000,0x00030005,0x00000009,0x00000000,0x00050006,0x00000009,0x00000000,0x6f6c6f43,
+		0x00000072,0x00040006,0x00000009,0x00000001,0x00005655,0x00030005,0x0000000b,0x0074754f,
+		0x00040005,0x0000000f,0x6c6f4361,0x0000726f,0x00030005,0x00000015,0x00565561,0x00060005,
+		0x00000019,0x505f6c67,0x65567265,0x78657472,0x00000000,0x00060006,0x00000019,0x00000000,
+		0x505f6c67,0x7469736f,0x006e6f69,0x00030005,0x0000001b,0x00000000,0x00040005,0x0000001c,
+		0x736f5061,0x00000000,0x00060005,0x0000001e,0x73755075,0x6e6f4368,0x6e617473,0x00000074,
+		0x00050006,0x0000001e,0x00000000,0x61635375,0x0000656c,0x00060006,0x0000001e,0x00000001,
+		0x61725475,0x616c736e,0x00006574,0x00030005,0x00000020,0x00006370,0x00040047,0x0000000b,
+		0x0000001e,0x00000000,0x00040047,0x0000000f,0x0000001e,0x00000002,0x00040047,0x00000015,
+		0x0000001e,0x00000001,0x00050048,0x00000019,0x00000000,0x0000000b,0x00000000,0x00030047,
+		0x00000019,0x00000002,0x00040047,0x0000001c,0x0000001e,0x00000000,0x00050048,0x0000001e,
+		0x00000000,0x00000023,0x00000000,0x00050048,0x0000001e,0x00000001,0x00000023,0x00000008,
+		0x00030047,0x0000001e,0x00000002,0x00020013,0x00000002,0x00030021,0x00000003,0x00000002,
+		0x00030016,0x00000006,0x00000020,0x00040017,0x00000007,0x00000006,0x00000004,0x00040017,
+		0x00000008,0x00000006,0x00000002,0x0004001e,0x00000009,0x00000007,0x00000008,0x00040020,
+		0x0000000a,0x00000003,0x00000009,0x0004003b,0x0000000a,0x0000000b,0x00000003,0x00040015,
+		0x0000000c,0x00000020,0x00000001,0x0004002b,0x0000000c,0x0000000d,0x00000000,0x00040020,
+		0x0000000e,0x00000001,0x00000007,0x0004003b,0x0000000e,0x0000000f,0x00000001,0x00040020,
+		0x00000011,0x00000003,0x00000007,0x0004002b,0x0000000c,0x00000013,0x00000001,0x00040020,
+		0x00000014,0x00000001,0x00000008,0x0004003b,0x00000014,0x00000015,0x00000001,0x00040020,
+		0x00000017,0x00000003,0x00000008,0x0003001e,0x00000019,0x00000007,0x00040020,0x0000001a,
+		0x00000003,0x00000019,0x0004003b,0x0000001a,0x0000001b,0x00000003,0x0004003b,0x00000014,
+		0x0000001c,0x00000001,0x0004001e,0x0000001e,0x00000008,0x00000008,0x00040020,0x0000001f,
+		0x00000009,0x0000001e,0x0004003b,0x0000001f,0x00000020,0x00000009,0x00040020,0x00000021,
+		0x00000009,0x00000008,0x0004002b,0x00000006,0x00000028,0x00000000,0x0004002b,0x00000006,
+		0x00000029,0x3f800000,0x00050036,0x00000002,0x00000004,0x00000000,0x00000003,0x000200f8,
+		0x00000005,0x0004003d,0x00000007,0x00000010,0x0000000f,0x00050041,0x00000011,0x00000012,
+		0x0000000b,0x0000000d,0x0003003e,0x00000012,0x00000010,0x0004003d,0x00000008,0x00000016,
+		0x00000015,0x00050041,0x00000017,0x00000018,0x0000000b,0x00000013,0x0003003e,0x00000018,
+		0x00000016,0x0004003d,0x00000008,0x0000001d,0x0000001c,0x00050041,0x00000021,0x00000022,
+		0x00000020,0x0000000d,0x0004003d,0x00000008,0x00000023,0x00000022,0x00050085,0x00000008,
+		0x00000024,0x0000001d,0x00000023,0x00050041,0x00000021,0x00000025,0x00000020,0x00000013,
+		0x0004003d,0x00000008,0x00000026,0x00000025,0x00050081,0x00000008,0x00000027,0x00000024,
+		0x00000026,0x00050051,0x00000006,0x0000002a,0x00000027,0x00000000,0x00050051,0x00000006,
+		0x0000002b,0x00000027,0x00000001,0x00070050,0x00000007,0x0000002c,0x0000002a,0x0000002b,
+		0x00000028,0x00000029,0x00050041,0x00000011,0x0000002d,0x0000001b,0x0000000d,0x0003003e,
+		0x0000002d,0x0000002c,0x000100fd,0x00010038
 	};
 
 	static uint32_t __glsl_shader_frag_spv[] =
 	{
-	    0x07230203,0x00010000,0x00080001,0x0000001e,0x00000000,0x00020011,0x00000001,0x0006000b,
-	    0x00000001,0x4c534c47,0x6474732e,0x3035342e,0x00000000,0x0003000e,0x00000000,0x00000001,
-	    0x0007000f,0x00000004,0x00000004,0x6e69616d,0x00000000,0x00000009,0x0000000d,0x00030010,
-	    0x00000004,0x00000007,0x00030003,0x00000002,0x000001c2,0x00040005,0x00000004,0x6e69616d,
-	    0x00000000,0x00040005,0x00000009,0x6c6f4366,0x0000726f,0x00030005,0x0000000b,0x00000000,
-	    0x00050006,0x0000000b,0x00000000,0x6f6c6f43,0x00000072,0x00040006,0x0000000b,0x00000001,
-	    0x00005655,0x00030005,0x0000000d,0x00006e49,0x00050005,0x00000016,0x78655473,0x65727574,
-	    0x00000000,0x00040047,0x00000009,0x0000001e,0x00000000,0x00040047,0x0000000d,0x0000001e,
-	    0x00000000,0x00040047,0x00000016,0x00000022,0x00000000,0x00040047,0x00000016,0x00000021,
-	    0x00000000,0x00020013,0x00000002,0x00030021,0x00000003,0x00000002,0x00030016,0x00000006,
-	    0x00000020,0x00040017,0x00000007,0x00000006,0x00000004,0x00040020,0x00000008,0x00000003,
-	    0x00000007,0x0004003b,0x00000008,0x00000009,0x00000003,0x00040017,0x0000000a,0x00000006,
-	    0x00000002,0x0004001e,0x0000000b,0x00000007,0x0000000a,0x00040020,0x0000000c,0x00000001,
-	    0x0000000b,0x0004003b,0x0000000c,0x0000000d,0x00000001,0x00040015,0x0000000e,0x00000020,
-	    0x00000001,0x0004002b,0x0000000e,0x0000000f,0x00000000,0x00040020,0x00000010,0x00000001,
-	    0x00000007,0x00090019,0x00000013,0x00000006,0x00000001,0x00000000,0x00000000,0x00000000,
-	    0x00000001,0x00000000,0x0003001b,0x00000014,0x00000013,0x00040020,0x00000015,0x00000000,
-	    0x00000014,0x0004003b,0x00000015,0x00000016,0x00000000,0x0004002b,0x0000000e,0x00000018,
-	    0x00000001,0x00040020,0x00000019,0x00000001,0x0000000a,0x00050036,0x00000002,0x00000004,
-	    0x00000000,0x00000003,0x000200f8,0x00000005,0x00050041,0x00000010,0x00000011,0x0000000d,
-	    0x0000000f,0x0004003d,0x00000007,0x00000012,0x00000011,0x0004003d,0x00000014,0x00000017,
-	    0x00000016,0x00050041,0x00000019,0x0000001a,0x0000000d,0x00000018,0x0004003d,0x0000000a,
-	    0x0000001b,0x0000001a,0x00050057,0x00000007,0x0000001c,0x00000017,0x0000001b,0x00050085,
-	    0x00000007,0x0000001d,0x00000012,0x0000001c,0x0003003e,0x00000009,0x0000001d,0x000100fd,
-	    0x00010038
+		0x07230203,0x00010000,0x00080001,0x0000001e,0x00000000,0x00020011,0x00000001,0x0006000b,
+		0x00000001,0x4c534c47,0x6474732e,0x3035342e,0x00000000,0x0003000e,0x00000000,0x00000001,
+		0x0007000f,0x00000004,0x00000004,0x6e69616d,0x00000000,0x00000009,0x0000000d,0x00030010,
+		0x00000004,0x00000007,0x00030003,0x00000002,0x000001c2,0x00040005,0x00000004,0x6e69616d,
+		0x00000000,0x00040005,0x00000009,0x6c6f4366,0x0000726f,0x00030005,0x0000000b,0x00000000,
+		0x00050006,0x0000000b,0x00000000,0x6f6c6f43,0x00000072,0x00040006,0x0000000b,0x00000001,
+		0x00005655,0x00030005,0x0000000d,0x00006e49,0x00050005,0x00000016,0x78655473,0x65727574,
+		0x00000000,0x00040047,0x00000009,0x0000001e,0x00000000,0x00040047,0x0000000d,0x0000001e,
+		0x00000000,0x00040047,0x00000016,0x00000022,0x00000000,0x00040047,0x00000016,0x00000021,
+		0x00000000,0x00020013,0x00000002,0x00030021,0x00000003,0x00000002,0x00030016,0x00000006,
+		0x00000020,0x00040017,0x00000007,0x00000006,0x00000004,0x00040020,0x00000008,0x00000003,
+		0x00000007,0x0004003b,0x00000008,0x00000009,0x00000003,0x00040017,0x0000000a,0x00000006,
+		0x00000002,0x0004001e,0x0000000b,0x00000007,0x0000000a,0x00040020,0x0000000c,0x00000001,
+		0x0000000b,0x0004003b,0x0000000c,0x0000000d,0x00000001,0x00040015,0x0000000e,0x00000020,
+		0x00000001,0x0004002b,0x0000000e,0x0000000f,0x00000000,0x00040020,0x00000010,0x00000001,
+		0x00000007,0x00090019,0x00000013,0x00000006,0x00000001,0x00000000,0x00000000,0x00000000,
+		0x00000001,0x00000000,0x0003001b,0x00000014,0x00000013,0x00040020,0x00000015,0x00000000,
+		0x00000014,0x0004003b,0x00000015,0x00000016,0x00000000,0x0004002b,0x0000000e,0x00000018,
+		0x00000001,0x00040020,0x00000019,0x00000001,0x0000000a,0x00050036,0x00000002,0x00000004,
+		0x00000000,0x00000003,0x000200f8,0x00000005,0x00050041,0x00000010,0x00000011,0x0000000d,
+		0x0000000f,0x0004003d,0x00000007,0x00000012,0x00000011,0x0004003d,0x00000014,0x00000017,
+		0x00000016,0x00050041,0x00000019,0x0000001a,0x0000000d,0x00000018,0x0004003d,0x0000000a,
+		0x0000001b,0x0000001a,0x00050057,0x00000007,0x0000001c,0x00000017,0x0000001b,0x00050085,
+		0x00000007,0x0000001d,0x00000012,0x0000001c,0x0003003e,0x00000009,0x0000001d,0x000100fd,
+		0x00010038
 	};
-	
-	//-----------------------------------------------------------------------------
-	// FUNCTIONS
-	//-----------------------------------------------------------------------------
-	
+
 	uint32_t ImGuiVulkanHandler::ImGui_KarmaImplVulkan_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits)
 	{
 		ImGui_KarmaImplVulkan_Data* bd = ImGui_KarmaImplVulkan_GetBackendData();
@@ -102,63 +98,33 @@ namespace Karma
 		return 0xFFFFFFFF; // Unable to find memoryType
 	}
 
-	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_ClearUndFreeResources(ImDrawData* drawData, uint32_t imageIndex)
-	{
-		ImGui_KarmaImplVulkan_ViewportData* viewportRendererData = (ImGui_KarmaImplVulkan_ViewportData*) drawData->OwnerViewport->RendererUserData;
-		KR_CORE_ASSERT(viewportRendererData != nullptr, "Couldn't unearth backend data!");
-
-		ImGui_KarmaImplVulkanH_WindowRenderBuffers* windowRenderBuffers = &viewportRendererData->RenderBuffers;
-		if (windowRenderBuffers->FrameRenderBuffers == nullptr)
-		{
-			return;
-		}
-		
-		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
-		ImGui_KarmaImplVulkan_InitInfo* vulkanInitInfo = &backendData->VulkanInitInfo;
-		
-		ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* renderBuffer = &windowRenderBuffers->FrameRenderBuffers[imageIndex];
-		
-		if (renderBuffer->IndexBuffer != VK_NULL_HANDLE)
-		{
-			vkDestroyBuffer(vulkanInitInfo->Device, renderBuffer->IndexBuffer, vulkanInitInfo->Allocator);
-		}
-		
-		if (renderBuffer->VertexBuffer != VK_NULL_HANDLE)
-		{
-			vkDestroyBuffer(vulkanInitInfo->Device, renderBuffer->VertexBuffer, vulkanInitInfo->Allocator);
-		}
-
-		/*
-		if (renderBuffer->IndexBufferMemory != VK_NULL_HANDLE)
-		{
-			vkFreeMemory(vulkanInitInfo->Device, renderBuffer->IndexBufferMemory, vulkanInitInfo->Allocator);
-		}
-		
-		if (renderBuffer->VertexBufferMemory != VK_NULL_HANDLE)
-		{
-			vkFreeMemory(vulkanInitInfo->Device, renderBuffer->VertexBufferMemory , vulkanInitInfo->Allocator);
-		}
-		 */
-	}
-	
 	void ImGuiVulkanHandler::CreateOrResizeBuffer(VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkDeviceSize& bufferSize, size_t newSize, VkBufferUsageFlagBits usage)
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInitInfo = &backendData->VulkanInitInfo;
 
+		if (buffer != VK_NULL_HANDLE)
+		{
+			vkDestroyBuffer(vulkanInitInfo->Device, buffer, vulkanInitInfo->Allocator);
+		}
+		if (bufferMemory != VK_NULL_HANDLE)
+		{
+			vkFreeMemory(vulkanInitInfo->Device, bufferMemory, vulkanInitInfo->Allocator);
+		}
+
 		VkResult result;
-	
+
 		VkDeviceSize vertexBufferSizeAligned = ((newSize - 1) / backendData->BufferMemoryAlignment + 1) * backendData->BufferMemoryAlignment;
-		
+
 		VkBufferCreateInfo bufferInfo = {};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = vertexBufferSizeAligned;
 		bufferInfo.usage = usage;
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		
+
 		result = vkCreateBuffer(vulkanInitInfo->Device, &bufferInfo, vulkanInitInfo->Allocator, &buffer);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create the buffer");
-	
+
 		VkMemoryRequirements requirements;
 		vkGetBufferMemoryRequirements(vulkanInitInfo->Device, buffer, &requirements);
 		backendData->BufferMemoryAlignment = (backendData->BufferMemoryAlignment > requirements.alignment) ? backendData->BufferMemoryAlignment : requirements.alignment;
@@ -167,16 +133,16 @@ namespace Karma
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = requirements.size;
 		allocInfo.memoryTypeIndex = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_MemoryType(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, requirements.memoryTypeBits);
-		
+
 		result = vkAllocateMemory(vulkanInitInfo->Device, &allocInfo, vulkanInitInfo->Allocator, &bufferMemory);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
-		
+
 		result = vkBindBufferMemory(vulkanInitInfo->Device, buffer, bufferMemory, 0);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind memory. Oh crappp");
-		
+
 		bufferSize = requirements.size;
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_SetupRenderState(ImDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height)
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
@@ -192,9 +158,9 @@ namespace Karma
 			VkBuffer vertexBuffers[1] = { remderingBufferData->VertexBuffer };
 			VkDeviceSize vertexOffset[1] = { 0 };
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, vertexOffset);
-			vkCmdBindIndexBuffer(commandBuffer, remderingBufferData->IndexBuffer, 0, sizeof(ImDrawIdx) == 2 ? VK_INDEX_TYPE_UINT16 : 	VK_INDEX_TYPE_UINT32);
+			vkCmdBindIndexBuffer(commandBuffer, remderingBufferData->IndexBuffer, 0, sizeof(ImDrawIdx) == 2 ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32);
 		}
-	
+
 		// Setup viewport:
 		{
 			VkViewport viewport;
@@ -206,7 +172,7 @@ namespace Karma
 			viewport.maxDepth = 1.0f;
 			vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 		}
-	
+
 		// Cowboy's Note: May need to use uniform buffer objects.
 		// Setup scale and translation:
 		// Our visible imgui space lies from drawData->DisplayPps (top left) to drawData->DisplayPos + darawData->DisplaySize (bottom right). DisplayPos is (0,0) for single viewport apps.
@@ -221,7 +187,7 @@ namespace Karma
 			vkCmdPushConstants(commandBuffer, backendData->PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(float) * 2, sizeof(float) * 2, translate);
 		}
 	}
-	
+
 	// Render function
 	// As a side project, ponder over this rendering and Vulkan rendering logic of Karma. Maybe there is a scheme
 	// to bring them together!!
@@ -229,7 +195,7 @@ namespace Karma
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_RenderDrawData(ImDrawData* drawData, VkCommandBuffer commandBuffer, VkPipeline pipeline, uint32_t frameIndex)
 	{
 		// frameIndex parameter based algorithm, completely independent of windowData->ImageFrameIndex
-		
+
 		// Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
 		// Interesting insight, says the Cowboy! I think official tutorial mentions something too.
 		int width = (int)(drawData->DisplaySize.x * drawData->FramebufferScale.x);
@@ -238,7 +204,7 @@ namespace Karma
 		{
 			return;
 		}
-	
+
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
@@ -246,9 +212,9 @@ namespace Karma
 		{
 			pipeline = backendData->Pipeline;
 		}
-	
+
 		// Allocate array to store enough vertex/index buffers. Each unique viewport gets its own storage.
-		ImGui_KarmaImplVulkan_ViewportData* viewportRendererData = (ImGui_KarmaImplVulkan_ViewportData*) drawData->OwnerViewport->RendererUserData;
+		ImGui_KarmaImplVulkan_ViewportData* viewportRendererData = (ImGui_KarmaImplVulkan_ViewportData*)drawData->OwnerViewport->RendererUserData;
 		KR_CORE_ASSERT(viewportRendererData != nullptr, "Couldn't unearth viewport data!");
 
 		ImGui_KarmaImplVulkanH_WindowRenderBuffers* windowRenderBuffers = &viewportRendererData->RenderBuffers;
@@ -260,8 +226,8 @@ namespace Karma
 		{
 			RendererAPI* rAPI = RenderCommand::GetRendererAPI();
 			VulkanRendererAPI* vulkanAPI = nullptr;
-			
-			if(rAPI->GetAPI() == RendererAPI::API::Vulkan)
+
+			if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
 			{
 				vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
 			}
@@ -271,15 +237,15 @@ namespace Karma
 			}
 
 			KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-			
+
 			windowRenderBuffers->Count = vulkanAPI->GetMaxFramesInFlight();
-			
+
 			// Caution: Need to think about the object instantiation and resource management
 			windowRenderBuffers->FrameRenderBuffers = new ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers[windowRenderBuffers->Count];
 		}
-		
+
 		ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* renderBuffer = &windowRenderBuffers->FrameRenderBuffers[windowRenderBuffers->Index];
-	
+
 		if (drawData->TotalVtxCount > 0)
 		{
 			// Create or resize the vertex/index buffers
@@ -293,16 +259,16 @@ namespace Karma
 			{
 				CreateOrResizeBuffer(renderBuffer->IndexBuffer, renderBuffer->IndexBufferMemory, renderBuffer->IndexBufferSize, indexSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 			}
-	
+
 			// Upload vertex/index data into a single contiguous GPU buffer
 			ImDrawVert* vertexData = nullptr;
 			ImDrawIdx* indexData = nullptr;
-			
+
 			VkResult result = vkMapMemory(vulkanInfo->Device, renderBuffer->VertexBufferMemory, 0, renderBuffer->VertexBufferSize, 0, (void**)(&vertexData));
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't map the Vertex memory")
-			
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't map the Vertex memory");
+
 			result = vkMapMemory(vulkanInfo->Device, renderBuffer->IndexBufferMemory, 0, renderBuffer->IndexBufferSize, 0, (void**)(&indexData));
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't map the Index memory")
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't map the Index memory");
 
 			for (int n = 0; n < drawData->CmdListsCount; n++)
 			{
@@ -320,28 +286,28 @@ namespace Karma
 			range[1].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 			range[1].memory = renderBuffer->IndexBufferMemory;
 			range[1].size = VK_WHOLE_SIZE;
-			
+
 			result = vkFlushMappedMemoryRanges(vulkanInfo->Device, 2, range);
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't flush the decohered memory range")
-			
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't flush the decohered memory range");
+
 			vkUnmapMemory(vulkanInfo->Device, renderBuffer->VertexBufferMemory);
 			vkUnmapMemory(vulkanInfo->Device, renderBuffer->IndexBufferMemory);
-			
+
 			//vkFreeMemory(vulkanInfo->Device, renderBuffer->VertexBufferMemory, vulkanInfo->Allocator);
 			//vkFreeMemory(vulkanInfo->Device, renderBuffer->IndexBufferMemory, vulkanInfo->Allocator);
-			
+
 			// No use of destroying buffer because we will resize it instead of creating the next iteration
+			// vkDestroyBuffer(vulkanInfo->Device, renderBuffer->VertexBuffer, vulkanInfo->Allocator);
 			// vkDestroyBuffer(vulkanInfo->Device, renderBuffer->IndexBuffer, vulkanInfo->Allocator);
-			
 		}
-	
+
 		// Setup desired Vulkan state
 		ImGui_KarmaImplVulkan_SetupRenderState(drawData, pipeline, commandBuffer, renderBuffer, width, height);
-	
+
 		// Will project scissor/clipping rectangles into framebuffer space
 		ImVec2 clipOff = drawData->DisplayPos;         // (0,0) unless using multi-viewports
 		ImVec2 clipScale = drawData->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
-	
+
 		// Render command lists
 		// (Because we merged all buffers into a single one, we maintain our own offset into them)
 		// Aah the interleaving, I was wondering when this'd show up...
@@ -373,17 +339,17 @@ namespace Karma
 					// Project scissor/clipping rectangles into framebuffer space
 					ImVec2 clipMin((drawCommand->ClipRect.x - clipOff.x) * clipScale.x, (drawCommand->ClipRect.y - clipOff.y) * clipScale.y);
 					ImVec2 clipMax((drawCommand->ClipRect.z - clipOff.x) * clipScale.x, (drawCommand->ClipRect.w - clipOff.y) * clipScale.y);
-	
+
 					// Clamp to viewport as vkCmdSetScissor() won't accept values that are off bounds
 					if (clipMin.x < 0.0f) { clipMin.x = 0.0f; }
 					if (clipMin.y < 0.0f) { clipMin.y = 0.0f; }
-					if (clipMax.x > width) { clipMax.x = (float) width; }
-					if (clipMax.y > height) { clipMax.y = (float) height; }
+					if (clipMax.x > width) { clipMax.x = (float)width; }
+					if (clipMax.y > height) { clipMax.y = (float)height; }
 					if (clipMax.x <= clipMin.x || clipMax.y <= clipMin.y)
 					{
 						continue;
 					}
-	
+
 					// Apply scissor/clipping rectangle
 					VkRect2D scissor;
 					scissor.offset.x = (int32_t)(clipMin.x);
@@ -391,17 +357,17 @@ namespace Karma
 					scissor.extent.width = (uint32_t)(clipMax.x - clipMin.x);
 					scissor.extent.height = (uint32_t)(clipMax.y - clipMin.y);
 					vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-	
+
 					// Bind DescriptorSet with font or user texture
-					VkDescriptorSet descSet[1] = { (VkDescriptorSet) drawCommand->TextureId };
+					VkDescriptorSet descSet[1] = { (VkDescriptorSet)drawCommand->TextureId };
 					if (sizeof(ImTextureID) < sizeof(ImU64))
 					{
 						// We don't support texture switches if ImTextureID hasn't been redefined to be 64-bit. Do a flaky check that other textures haven't been used.
-						KR_CORE_ASSERT(drawCommand->TextureId == (ImTextureID) backendData->FontDescriptorSet, "ID mismatch");
+						KR_CORE_ASSERT(drawCommand->TextureId == (ImTextureID)backendData->FontDescriptorSet, "ID mismatch");
 						descSet[0] = backendData->FontDescriptorSet;
 					}
 					vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->PipelineLayout, 0, 1, descSet, 0, nullptr);
-	
+
 					// Draw
 					vkCmdDrawIndexed(commandBuffer, drawCommand->ElemCount, 1, drawCommand->IdxOffset + globalIndexOffset, drawCommand->VtxOffset + globalVertexOffset, 0);
 				}
@@ -409,7 +375,7 @@ namespace Karma
 			globalIndexOffset += commandList->IdxBuffer.Size;
 			globalVertexOffset += commandList->VtxBuffer.Size;
 		}
-	
+
 		// Note: at this point both vkCmdSetViewport() and vkCmdSetScissor() have been called.
 		// Our last values will leak into user/application rendering IF:
 		// - Your app uses a pipeline with VK_DYNAMIC_STATE_VIEWPORT or VK_DYNAMIC_STATE_SCISSOR dynamic state
@@ -417,7 +383,7 @@ namespace Karma
 		// If you use VK_DYNAMIC_STATE_VIEWPORT or VK_DYNAMIC_STATE_SCISSOR you are responsible for setting the values before rendering.
 		// In theory we should aim to backup/restore those values but I am not sure this is possible.
 		// We perform a call to vkCmdSetScissor() to set back a full viewport which is likely to fix things for 99% users but technically this is not perfect. (See github #4644)
-		VkRect2D scissor = { { 0, 0 }, { (uint32_t) width, (uint32_t) height } };
+		VkRect2D scissor = { { 0, 0 }, { (uint32_t)width, (uint32_t)height } };
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 	}
 
@@ -426,14 +392,14 @@ namespace Karma
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-	
+
 		unsigned char* pixels;
 		int width, height;
 		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
 		size_t uploadSize = width * height * 4 * sizeof(char);
-	
+
 		VkResult result;
-	
+
 		// Create the Image:
 		{
 			VkImageCreateInfo info = {};
@@ -453,7 +419,7 @@ namespace Karma
 
 			result = vkCreateImage(vulkanInfo->Device, &info, vulkanInfo->Allocator, &backendData->FontImage);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
-			
+
 			VkMemoryRequirements req;
 			vkGetImageMemoryRequirements(vulkanInfo->Device, backendData->FontImage, &req);
 			VkMemoryAllocateInfo allocInfo = {};
@@ -463,11 +429,11 @@ namespace Karma
 
 			result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &backendData->FontMemory);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
-			
+
 			result = vkBindImageMemory(vulkanInfo->Device, backendData->FontImage, backendData->FontMemory, 0);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind image memory");
 		}
-	
+
 		// Create the Image View:
 		{
 			VkImageViewCreateInfo info = {};
@@ -482,10 +448,10 @@ namespace Karma
 			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &backendData->FontView);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create image view");
 		}
-	
+
 		// Create the Descriptor Set:
-		backendData->FontDescriptorSet = (VkDescriptorSet)ImGui_KarmaImplVulkan_AddTexture(backendData->FontSampler, backendData->FontView, 	VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-	
+		backendData->FontDescriptorSet = (VkDescriptorSet)ImGui_KarmaImplVulkan_AddTexture(backendData->FontSampler, backendData->FontView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
 		// Create the Upload Buffer:
 		{
 			VkBufferCreateInfo bufferInfo = {};
@@ -511,7 +477,7 @@ namespace Karma
 			result = vkBindBufferMemory(vulkanInfo->Device, backendData->UploadBuffer, backendData->UploadBufferMemory, 0);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind buffer memory");
 		}
-	
+
 		// Upload to Buffer:
 		{
 			char* map = nullptr;
@@ -529,7 +495,7 @@ namespace Karma
 
 			vkUnmapMemory(vulkanInfo->Device, backendData->UploadBufferMemory);
 		}
-	
+
 		// Copy to Image:
 		{
 			VkImageMemoryBarrier copyBarrier[1] = {};
@@ -544,7 +510,7 @@ namespace Karma
 			copyBarrier[0].subresourceRange.levelCount = 1;
 			copyBarrier[0].subresourceRange.layerCount = 1;
 			vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, copyBarrier);
-	
+
 			VkBufferImageCopy region = {};
 			region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			region.imageSubresource.layerCount = 1;
@@ -552,7 +518,7 @@ namespace Karma
 			region.imageExtent.height = height;
 			region.imageExtent.depth = 1;
 			vkCmdCopyBufferToImage(commandBuffer, backendData->UploadBuffer, backendData->FontImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-	
+
 			VkImageMemoryBarrier useBarrier[1] = {};
 			useBarrier[0].sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 			useBarrier[0].srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -587,19 +553,19 @@ namespace Karma
 			VkResult result = vkCreateShaderModule(device, &vertexInfo, allocator, &backendData->ShaderModuleVert);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create shader module");
 		}
-		
+
 		if (backendData->ShaderModuleFrag == VK_NULL_HANDLE)
 		{
 			VkShaderModuleCreateInfo fragmentInfo = {};
 			fragmentInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 			fragmentInfo.codeSize = sizeof(__glsl_shader_frag_spv);
 			fragmentInfo.pCode = (uint32_t*)__glsl_shader_frag_spv;
-			
+
 			VkResult result = vkCreateShaderModule(device, &fragmentInfo, allocator, &backendData->ShaderModuleFrag);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Create shader module");
 		}
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateFontSampler(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
@@ -607,7 +573,7 @@ namespace Karma
 		{
 			return;
 		}
-	
+
 		// Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 	'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
 		VkSamplerCreateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -624,7 +590,7 @@ namespace Karma
 		VkResult result = vkCreateSampler(device, &info, allocator, &backendData->FontSampler);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateDescriptorSetLayout(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
@@ -632,7 +598,7 @@ namespace Karma
 		{
 			return;
 		}
-	
+
 		ImGui_KarmaImplVulkan_CreateFontSampler(device, allocator);
 		VkSampler sampler[1] = { backendData->FontSampler };
 		VkDescriptorSetLayoutBinding binding[1] = {};
@@ -648,7 +614,7 @@ namespace Karma
 		VkResult result = vkCreateDescriptorSetLayout(device, &info, allocator, &backendData->DescriptorSetLayout);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create descriptor set layout");
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreatePipelineLayout(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
@@ -656,7 +622,7 @@ namespace Karma
 		{
 			return;
 		}
-	
+
 		// Constants: we are using 'vec2 offset' and 'vec2 scale' instead of a full 3d projection matrix
 		ImGui_KarmaImplVulkan_CreateDescriptorSetLayout(device, allocator);
 		VkPushConstantRange pushConstants[1] = {};
@@ -674,12 +640,12 @@ namespace Karma
 		VkResult result = vkCreatePipelineLayout(device, &layoutInfo, allocator, &backendData->PipelineLayout);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create pipeline layout");
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache 	pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass)
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_CreateShaderModules(device, allocator);
-	
+
 		VkPipelineShaderStageCreateInfo stage[2] = {};
 		stage[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		stage[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -689,11 +655,11 @@ namespace Karma
 		stage[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 		stage[1].module = backendData->ShaderModuleFrag;
 		stage[1].pName = "main";
-	
+
 		VkVertexInputBindingDescription bindingDesc[1] = {};
 		bindingDesc[0].stride = sizeof(ImDrawVert);
 		bindingDesc[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-	
+
 		VkVertexInputAttributeDescription attributeDesc[3] = {};
 		attributeDesc[0].location = 0;
 		attributeDesc[0].binding = bindingDesc[0].binding;
@@ -707,34 +673,34 @@ namespace Karma
 		attributeDesc[2].binding = bindingDesc[0].binding;
 		attributeDesc[2].format = VK_FORMAT_R8G8B8A8_UNORM;
 		attributeDesc[2].offset = IM_OFFSETOF(ImDrawVert, col);
-	
+
 		VkPipelineVertexInputStateCreateInfo vertexInfo = {};
 		vertexInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertexInfo.vertexBindingDescriptionCount = 1;
 		vertexInfo.pVertexBindingDescriptions = bindingDesc;
 		vertexInfo.vertexAttributeDescriptionCount = 3;
 		vertexInfo.pVertexAttributeDescriptions = attributeDesc;
-	
+
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = {};
 		inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	
+
 		VkPipelineViewportStateCreateInfo viewportInfo = {};
 		viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		viewportInfo.viewportCount = 1;
 		viewportInfo.scissorCount = 1;
-	
+
 		VkPipelineRasterizationStateCreateInfo rasterInfo = {};
 		rasterInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		rasterInfo.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterInfo.cullMode = VK_CULL_MODE_NONE;
 		rasterInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterInfo.lineWidth = 1.0f;
-	
+
 		VkPipelineMultisampleStateCreateInfo multiSampleInfo = {};
 		multiSampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 		multiSampleInfo.rasterizationSamples = (MSAASamples != 0) ? MSAASamples : VK_SAMPLE_COUNT_1_BIT;
-	
+
 		VkPipelineColorBlendAttachmentState colorAttachment[1] = {};
 		colorAttachment[0].blendEnable = VK_TRUE;
 		colorAttachment[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
@@ -744,7 +710,7 @@ namespace Karma
 		colorAttachment[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		colorAttachment[0].alphaBlendOp = VK_BLEND_OP_ADD;
 		colorAttachment[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-	
+
 		VkPipelineDepthStencilStateCreateInfo depthInfo = {};
 		depthInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 
@@ -752,15 +718,15 @@ namespace Karma
 		blendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		blendInfo.attachmentCount = 1;
 		blendInfo.pAttachments = colorAttachment;
-	
+
 		VkDynamicState dynamicStates[2] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 		VkPipelineDynamicStateCreateInfo dynamicState = {};
 		dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 		dynamicState.dynamicStateCount = (uint32_t)IM_ARRAYSIZE(dynamicStates);
 		dynamicState.pDynamicStates = dynamicStates;
-	
+
 		ImGui_KarmaImplVulkan_CreatePipelineLayout(device, allocator);
-	
+
 		VkGraphicsPipelineCreateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		info.flags = backendData->PipelineCreateFlags;
@@ -781,13 +747,13 @@ namespace Karma
 		VkResult result = vkCreateGraphicsPipelines(device, pipelineCache, 1, &info, allocator, pipeline);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create graphics pipelines");
 	}
-	
+
 	bool ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateDeviceObjects()
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 		VkResult result;
-	
+
 		if (!backendData->FontSampler)
 		{
 			VkSamplerCreateInfo info = {};
@@ -804,10 +770,10 @@ namespace Karma
 			result = vkCreateSampler(vulkanInfo->Device, &info, vulkanInfo->Allocator, &backendData->FontSampler);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create sampler");
 		}
-	
+
 		if (!backendData->DescriptorSetLayout)
 		{
-			VkSampler sampler[1] = {backendData->FontSampler};
+			VkSampler sampler[1] = { backendData->FontSampler };
 			VkDescriptorSetLayoutBinding binding[1] = {};
 			binding[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			binding[0].descriptorCount = 1;
@@ -821,7 +787,7 @@ namespace Karma
 			result = vkCreateDescriptorSetLayout(vulkanInfo->Device, &info, vulkanInfo->Allocator, &backendData->DescriptorSetLayout);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create descriptor set layout");
 		}
-	
+
 		if (!backendData->PipelineLayout)
 		{
 			// Constants: we are using 'vec2 offset' and 'vec2 scale' instead of a full 3d projection matrix
@@ -839,12 +805,12 @@ namespace Karma
 			result = vkCreatePipelineLayout(vulkanInfo->Device, &layoutInfo, vulkanInfo->Allocator, &backendData->PipelineLayout);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create pipeline layout");
 		}
-	
+
 		ImGui_KarmaImplVulkan_CreatePipeline(vulkanInfo->Device, vulkanInfo->Allocator, vulkanInfo->PipelineCache, backendData->RenderPass, vulkanInfo->MSAASamples, &backendData->Pipeline, backendData->Subpass);
-	
+
 		return true;
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_DestroyFontUploadObjects()
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
@@ -860,15 +826,15 @@ namespace Karma
 			backendData->UploadBufferMemory = VK_NULL_HANDLE;
 		}
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_DestroyDeviceObjects()
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
 		ImGuiVulkanHandler::ImGui_KarmaImplVulkan_DestroyAllViewportsRenderBuffers(vulkanInfo->Device, vulkanInfo->Allocator);
 		ImGui_KarmaImplVulkan_DestroyFontUploadObjects();
-	
+
 		if (backendData->ShaderModuleVert)
 		{
 			vkDestroyShaderModule(vulkanInfo->Device, backendData->ShaderModuleVert, vulkanInfo->Allocator);
@@ -919,7 +885,7 @@ namespace Karma
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_DestroyAllViewportsRenderBuffers(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
 		ImGuiPlatformIO& platformIO = ImGui::GetPlatformIO();
-		
+
 		// Starts from 0, ponder over since mainviewport is handeled seperately?
 		for (int counter = 0; counter < platformIO.Viewports.Size; counter++)
 		{
@@ -935,10 +901,10 @@ namespace Karma
 	{
 		for (uint32_t counter = 0; counter < buffers->Count; counter++)
 		{
-				ImGui_KarmaImplVulkan_ShivaFrameRenderBuffers(device, &buffers->FrameRenderBuffers[counter], allocator);
+			ImGui_KarmaImplVulkan_ShivaFrameRenderBuffers(device, &buffers->FrameRenderBuffers[counter], allocator);
 		}
 
-		delete [] buffers->FrameRenderBuffers;
+		delete[] buffers->FrameRenderBuffers;
 		buffers->FrameRenderBuffers = nullptr;
 		buffers->Index = 0;
 		buffers->Count = 0;
@@ -970,20 +936,22 @@ namespace Karma
 		buffers->VertexBufferSize = 0;
 		buffers->IndexBufferSize = 0;
 	}
-	
+
 	// Seems like used for initializing the Vulkan relevant variables
 	bool ImGuiVulkanHandler::ImGui_KarmaImplVulkan_Init(ImGui_KarmaImplVulkan_InitInfo* info)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		KR_CORE_ASSERT(io.BackendRendererUserData == nullptr, "Already initialized a renderer backend!");
-	
+
 		// Setup backend capabilities flags
 		ImGui_KarmaImplVulkan_Data* backendData = new ImGui_KarmaImplVulkan_Data();
-		io.BackendRendererUserData = (void*) backendData;
+		io.BackendRendererUserData = (void*)backendData;
 		io.BackendRendererName = "Vulkan_Got_Back";
 		io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
-		io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
-	
+
+		// Maybe chore for toofani mood!
+		// io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
+
 		KR_CORE_ASSERT(info->Instance != VK_NULL_HANDLE, "No instance found");
 		KR_CORE_ASSERT(info->PhysicalDevice != VK_NULL_HANDLE, "No physical device found");
 		KR_CORE_ASSERT(info->Device != VK_NULL_HANDLE, "No device found");
@@ -992,19 +960,19 @@ namespace Karma
 		KR_CORE_ASSERT(info->MinImageCount <= 2, "Minimum image count exceeding limit");
 		KR_CORE_ASSERT(info->ImageCount >= info->MinImageCount, "Not enough pitch for ImageCount");
 		KR_CORE_ASSERT(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
-	
+
 		backendData->VulkanInitInfo = *info;
 		backendData->RenderPass = info->RenderPass;
 		backendData->Subpass = info->Subpass;
-	
+
 		// Font, descriptor, and pipeline
 		ImGui_KarmaImplVulkan_CreateDeviceObjects();
-	
+
 		// Our render function expect RendererUserData to be storing the window render buffer we need (for the main viewport we won't use ->Window)
 		ImGuiViewport* mainViewport = ImGui::GetMainViewport();
-		
+
 		mainViewport->RendererUserData = new ImGui_KarmaImplVulkan_ViewportData();
-	
+
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			// Setting up Dear ImGUI's window operations (create, resize, and all that)
@@ -1013,17 +981,17 @@ namespace Karma
 
 		return true;
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_Shutdown()
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		KR_CORE_ASSERT(backendData != nullptr, "No renderer backend to shutdown, or already shutdown?");
 
 		ImGuiIO& io = ImGui::GetIO();
-	
+
 		// First destroy objects in all viewports
 		ImGui_KarmaImplVulkan_DestroyDeviceObjects();
-	
+
 		// Manually delete main viewport render data in-case we haven't initialized for viewports
 		ImGuiViewport* mainViewport = ImGui::GetMainViewport();
 		if (ImGui_KarmaImplVulkan_ViewportData* viewportData = (ImGui_KarmaImplVulkan_ViewportData*)mainViewport->RendererUserData)
@@ -1032,21 +1000,21 @@ namespace Karma
 			viewportData = nullptr;
 		}
 		mainViewport->RendererUserData = nullptr;
-	
+
 		// Clean up windows
 		ImGui_KarmaImplVulkan_ShutdownPlatformInterface();
-	
+
 		io.BackendRendererName = nullptr;
 		io.BackendRendererUserData = nullptr;
 		delete backendData;
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_NewFrame()
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
-		
+
 		KR_CORE_ASSERT(backendData != nullptr, "Did you call ImGui_KarmaImplVulkan_Init()?");
-		
+
 		//IM_UNUSED(backendData);
 	}
 
@@ -1056,7 +1024,7 @@ namespace Karma
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-	
+
 		// Create Descriptor Set:
 		VkDescriptorSet descriptorSet;
 		{
@@ -1068,7 +1036,7 @@ namespace Karma
 			VkResult result = vkAllocateDescriptorSets(vulkanInfo->Device, &allocInfo, &descriptorSet);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate descriptor sets");
 		}
-	
+
 		// Update the Descriptor Set:
 		{
 			VkDescriptorImageInfo descImage[1] = {};
@@ -1093,17 +1061,17 @@ namespace Karma
 	void ImGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(ImGui_KarmaImplVulkanH_Window* windowData, bool bCreateSyncronicity)
 	{
 		// Still need to address bRecreateSwapChainAndCommandBuffers?
-		
+
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
 		// Clear the structure with now redundant information
 		ClearVulkanWindowData(windowData, bCreateSyncronicity);
-		
+
 		RendererAPI* rAPI = RenderCommand::GetRendererAPI();
 		VulkanRendererAPI* vulkanAPI = nullptr;
-		
-		if(rAPI->GetAPI() == RendererAPI::API::Vulkan)
+
+		if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
 		{
 			vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
 		}
@@ -1113,22 +1081,22 @@ namespace Karma
 		}
 
 		KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-		
+
 		// Fill relevant information gathered from VulkanContext
 		// Assuming new swapchain and all that has been created in the ImGuiLayer::GiveLoopBeginControlToVulkan
 		windowData->Swapchain = VulkanHolder::GetVulkanContext()->GetSwapChain();
-		windowData->TotalImageCount = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+		windowData->TotalImageCount = (uint32_t)VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
 		windowData->RenderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
 		windowData->RenderArea.offset = { 0, 0 };
 		windowData->RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
 		windowData->MAX_FRAMES_IN_FLIGHT = vulkanAPI->GetMaxFramesInFlight();
 		windowData->CommandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
 		windowData->ImageFrameIndex = 0;
-		
+
 		KR_CORE_ASSERT(windowData->ImageFrames == nullptr, "Somehow frames are still occupied. Please clear them.");
 		windowData->ImageFrames = new ImGui_KarmaImplVulkanH_ImageFrame[windowData->TotalImageCount];
 
-		for(uint32_t counter = 0; counter < windowData->TotalImageCount; counter++)
+		for (uint32_t counter = 0; counter < windowData->TotalImageCount; counter++)
 		{
 			ImGui_KarmaImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[counter];
 
@@ -1143,14 +1111,14 @@ namespace Karma
 		}
 
 		// We create seperate syncronicity resources for Dear ImGui
-		if(bCreateSyncronicity)
+		if (bCreateSyncronicity)
 		{
 			// For syncronicity, we instantiate FramesOnFlight with MAX_FRAMES_IN_FLIGHT number and label them the Real-Frames-On-Flight in our mind
 			KR_CORE_ASSERT(windowData->FramesOnFlight == nullptr, "Somehow frames-on-flight are still occupied. Please clear them.");
 
 			windowData->FramesOnFlight = new ImGui_Vulkan_Frame_On_Flight[windowData->MAX_FRAMES_IN_FLIGHT];
-			
-			for(uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
+
+			for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
 			{
 				ImGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
 
@@ -1163,7 +1131,7 @@ namespace Karma
 
 				VkSemaphoreCreateInfo semaphoreInfo = {};
 				semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-				
+
 				result = vkCreateSemaphore(vulkanInfo->Device, &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->ImageAcquiredSemaphore);
 
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create ImageAcquiredSemaphore");
@@ -1175,11 +1143,11 @@ namespace Karma
 
 			windowData->SemaphoreIndex = 0;
 		}
-		
+
 		KR_CORE_ASSERT(windowData->FramesOnFlight != nullptr, "Commandbuffers are being assigned without enough resources");
 		vulkanAPI->AllocateCommandBuffers();
-		
-		for(uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
+
+		for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
 		{
 			ImGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
 			frameOnFlight->CommandBuffer = vulkanAPI->GetCommandBuffers()[counter];
@@ -1195,17 +1163,17 @@ namespace Karma
 
 		for (uint32_t counter = 0; counter < vulkanWindowData->TotalImageCount; counter++)
 		{
-			if(vulkanWindowData->ImageFrames != nullptr)
+			if (vulkanWindowData->ImageFrames != nullptr)
 			{
 				DestroyWindowDataFrame(&vulkanWindowData->ImageFrames[counter]);
 			}
 		}
-		
-		if(bDestroySyncronicity)
+
+		if (bDestroySyncronicity)
 		{
-			for(uint32_t counter = 0; counter < vulkanWindowData->MAX_FRAMES_IN_FLIGHT; counter++)
+			for (uint32_t counter = 0; counter < vulkanWindowData->MAX_FRAMES_IN_FLIGHT; counter++)
 			{
-				if(vulkanWindowData->FramesOnFlight != nullptr)
+				if (vulkanWindowData->FramesOnFlight != nullptr)
 				{
 					// Remove syncronicity resources using Vulkan API
 					DestroyFramesOnFlightData(&vulkanWindowData->FramesOnFlight[counter]);
@@ -1213,18 +1181,18 @@ namespace Karma
 			}
 		}
 
-		if(vulkanWindowData->ImageFrames != nullptr)
+		if (vulkanWindowData->ImageFrames != nullptr)
 		{
 			delete[] vulkanWindowData->ImageFrames;
 			vulkanWindowData->ImageFrames = nullptr;
 		}
 
-		if(bDestroySyncronicity && vulkanWindowData->FramesOnFlight != nullptr)
+		if (bDestroySyncronicity && vulkanWindowData->FramesOnFlight != nullptr)
 		{
 			delete[] vulkanWindowData->FramesOnFlight;
 			vulkanWindowData->FramesOnFlight = nullptr;
 		}
-		
+
 		vulkanWindowData->TotalImageCount = 0;
 		vulkanWindowData->SemaphoreIndex = 0;
 		vulkanWindowData->CommandPool = VK_NULL_HANDLE;
@@ -1232,7 +1200,7 @@ namespace Karma
 
 	void ImGuiVulkanHandler::DestroyWindowDataFrame(ImGui_KarmaImplVulkanH_ImageFrame* frame)
 	{
-		if(frame == nullptr)
+		if (frame == nullptr)
 		{
 			return;
 		}
@@ -1243,36 +1211,36 @@ namespace Karma
 
 	void ImGuiVulkanHandler::DestroyFramesOnFlightData(ImGui_Vulkan_Frame_On_Flight* frameSyncronicityData)
 	{
-		if(frameSyncronicityData == nullptr)
+		if (frameSyncronicityData == nullptr)
 		{
 			return;
 		}
 
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
 		vkDeviceWaitIdle(vulkanInfo->Device);
-	
+
 		vkDestroyFence(vulkanInfo->Device, frameSyncronicityData->Fence, VK_NULL_HANDLE);
 		frameSyncronicityData->Fence = VK_NULL_HANDLE;
-		
+
 		vkDestroySemaphore(vulkanInfo->Device, frameSyncronicityData->ImageAcquiredSemaphore, VK_NULL_HANDLE);
 		vkDestroySemaphore(vulkanInfo->Device, frameSyncronicityData->RenderCompleteSemaphore, VK_NULL_HANDLE);
 		frameSyncronicityData->ImageAcquiredSemaphore = frameSyncronicityData->RenderCompleteSemaphore = VK_NULL_HANDLE;
-		
+
 		// Seems bit odd, should make smooth in subsequent iterations
 		frameSyncronicityData->CommandBuffer = VK_NULL_HANDLE;
 	}
-	
+
 	// Create or resize window
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateOrResizeWindow(ImGui_KarmaImplVulkanH_Window* windowData, bool bCreateSyncronicity, bool bRecreateSwapChainAndCommandBuffers)
 	{
-		if(bRecreateSwapChainAndCommandBuffers)
+		if (bRecreateSwapChainAndCommandBuffers)
 		{
 			RendererAPI* rAPI = RenderCommand::GetRendererAPI();
 			VulkanRendererAPI* vulkanAPI = nullptr;
-			
-			if(rAPI->GetAPI() == RendererAPI::API::Vulkan)
+
+			if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
 			{
 				vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
 			}
@@ -1282,10 +1250,10 @@ namespace Karma
 			}
 
 			KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-			
+
 			vulkanAPI->RecreateCommandBuffersAndSwapChain();
 		}
-		
+
 		ImGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(windowData, bCreateSyncronicity);
 	}
 
@@ -1293,11 +1261,11 @@ namespace Karma
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
 		//vkDeviceWaitIdle(vulkanInfo->Device); // FIXME: We could wait on the Queue if we had the queue in windowData-> (otherwise VulkanH functions can't use globals)
 
 		ClearVulkanWindowData(windowData, true);
-	
+
 		// Seems like each window has seperate instantiation of the resources below
 		// Ponder over them
 		/*
@@ -1313,7 +1281,7 @@ namespace Karma
 	// This is an _advanced_ and _optional_ feature, allowing the backend to create and handle multiple viewports simultaneously.
 	// If you are new to dear imgui or creating a new binding for dear imgui, it is recommended that you completely ignore this section first..
 	//--------------------------------------------------------------------------------------------------------
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateWindow(ImGuiViewport* viewport)
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
@@ -1321,9 +1289,9 @@ namespace Karma
 		viewport->RendererUserData = viewportData;
 		ImGui_KarmaImplVulkanH_Window* windowData = &viewportData->Window;
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
 		VkSurfaceKHR vulkanSurface = VulkanHolder::GetVulkanContext()->GetSurface();
-		
+
 		// Check for Window System Integration (WSI) support
 		VkBool32 bResult;
 		vkGetPhysicalDeviceSurfaceSupportKHR(vulkanInfo->PhysicalDevice, vulkanInfo->QueueFamily, vulkanSurface, &bResult);
@@ -1334,15 +1302,15 @@ namespace Karma
 		}
 		windowData->SurfaceFormat = VulkanHolder::GetVulkanContext()->GetSurfaceFormat();
 		windowData->PresentMode = VulkanHolder::GetVulkanContext()->GetPresentMode();
-	
+
 		// No clue about the utility
 		windowData->ClearEnable = (viewport->Flags & ImGuiViewportFlags_NoRendererClear) ? false : true;
-		
+
 		// Create SwapChain, RenderPass, Framebuffer, etc.
 		ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateOrResizeWindow(windowData, true, false);
 		viewportData->WindowOwned = true;
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_DestroyWindow(ImGuiViewport* viewport)
 	{
 		// The main viewport (owned by the application) will always have RendererUserData == NULL since we didn't create the data for it.
@@ -1361,7 +1329,7 @@ namespace Karma
 		}
 		viewport->RendererUserData = nullptr;
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_SetWindowSize(ImGuiViewport* viewport, ImVec2 size)
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
@@ -1374,7 +1342,7 @@ namespace Karma
 		viewportData->Window.ClearEnable = (viewport->Flags & ImGuiViewportFlags_NoRendererClear) ? false : true;
 		ImGui_KarmaImplVulkan_CreateOrResizeWindow(&viewportData->Window, false, true);
 	}
-	
+
 	// May need extra scrutiny especially when we decoupled imageIndex and FrameOnFlightIndex.
 	void ImGuiVulkanHandler::ImGuiVulkanHandler::ImGui_KarmaImplVulkan_RenderWindow(ImGuiViewport* viewport, void*)
 	{
@@ -1385,7 +1353,7 @@ namespace Karma
 
 		VkResult result;
 		//windowData->SemaphoreIndex = 0;
-	
+
 		ImGui_KarmaImplVulkanH_ImageFrame* frameData = nullptr;
 		ImGui_Vulkan_Frame_On_Flight* frameFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		{
@@ -1398,28 +1366,28 @@ namespace Karma
 				result = vkWaitForFences(vulkanInfo->Device, 1, &frameFlightData->Fence, VK_TRUE, 100);
 				if (result == VK_SUCCESS) break;
 				if (result == VK_TIMEOUT) continue;
-				
+
 				KR_CORE_ASSERT((result == VK_SUCCESS || VK_TIMEOUT), "Something not right");
 			}
 			{
-				result = vkResetCommandPool(vulkanInfo->Device, windowData->CommandPool, 0);
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't resent the commandpool");
-				
+				//result = vkResetCommandPool(vulkanInfo->Device, windowData->CommandPool, 0);
+				//KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't resent the commandpool");
+
 				VkCommandBufferBeginInfo info = {};
 				info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 				info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-				
+
 				result = vkBeginCommandBuffer(frameFlightData->CommandBuffer, &info);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't begin commandbuffer recording");
 			}
 			{
 				ImVec4 clearColor = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
 				memcpy(&windowData->ClearValue.color.float32[0], &clearColor, 4 * sizeof(float));
-	
+
 				std::array<VkClearValue, 2> clearValues{};
 				clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], 		windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
 				clearValues[1].depthStencil = { 1.0f, 0 };
-				
+
 				VkRenderPassBeginInfo info = {};
 				info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 				info.renderPass = windowData->RenderPass;
@@ -1428,13 +1396,13 @@ namespace Karma
 				info.renderArea.extent.height = windowData->Height;
 				info.clearValueCount = static_cast<uint32_t>(clearValues.size());
 				info.pClearValues = clearValues.data();
-				
+
 				vkCmdBeginRenderPass(frameFlightData->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 			}
 		}
-	
+
 		ImGui_KarmaImplVulkan_RenderDrawData(viewport->DrawData, frameFlightData->CommandBuffer, windowData->Pipeline, windowData->SemaphoreIndex);
-	
+
 		{
 			vkCmdEndRenderPass(frameFlightData->CommandBuffer);
 			{
@@ -1448,11 +1416,11 @@ namespace Karma
 				info.pCommandBuffers = &frameFlightData->CommandBuffer;
 				info.signalSemaphoreCount = 1;
 				info.pSignalSemaphores = &frameFlightData->RenderCompleteSemaphore;
-	
+
 				result = vkEndCommandBuffer(frameFlightData->CommandBuffer);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Coudn't finish the commandbuffer recording")
 
-				result = vkResetFences(vulkanInfo->Device, 1, &frameFlightData->Fence);
+					result = vkResetFences(vulkanInfo->Device, 1, &frameFlightData->Fence);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't reset the fences");
 
 				result = vkQueueSubmit(vulkanInfo->Queue, 1, &info, frameFlightData->Fence);
@@ -1460,7 +1428,7 @@ namespace Karma
 			}
 		}
 	}
-	
+
 	// Need reconsideration because of the same decoupling
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_SwapBuffers(ImGuiViewport* viewport, void*)
 	{
@@ -1468,13 +1436,13 @@ namespace Karma
 		ImGui_KarmaImplVulkan_ViewportData* viewportData = (ImGui_KarmaImplVulkan_ViewportData*)viewport->RendererUserData;
 		ImGui_KarmaImplVulkanH_Window* windowData = &viewportData->Window;
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-	
+
 		ImGuiViewport* mainViewPort = ImGui::GetMainViewport();
 		ImGui_KarmaImplVulkan_ViewportData* mainViewPortData = static_cast<ImGui_KarmaImplVulkan_ViewportData*>(mainViewPort->RendererUserData);
-		
+
 		VkResult result;
 		uint32_t presentIndex = windowData->ImageFrameIndex;
-	
+
 		ImGui_Vulkan_Frame_On_Flight* frameFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		VkPresentInfoKHR info = {};
 		info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -1483,9 +1451,9 @@ namespace Karma
 		info.swapchainCount = 1;
 		info.pSwapchains = &windowData->Swapchain;
 		info.pImageIndices = &presentIndex;
-		
+
 		result = vkQueuePresentKHR(vulkanInfo->Queue, &info);
-		
+
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			ImGui_KarmaImplVulkan_CreateOrResizeWindow(&viewportData->Window, false, true);
@@ -1494,10 +1462,10 @@ namespace Karma
 		{
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't queue the image for presentation");
 		}
-	
+
 		windowData->SemaphoreIndex = (windowData->SemaphoreIndex + 1) % windowData->MAX_FRAMES_IN_FLIGHT; // Now we can use the next set of semaphores
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_InitPlatformInterface()
 	{
 		ImGuiPlatformIO& platformIO = ImGui::GetPlatformIO();
@@ -1511,7 +1479,7 @@ namespace Karma
 		platformIO.Renderer_RenderWindow = ImGui_KarmaImplVulkan_RenderWindow;
 		platformIO.Renderer_SwapBuffers = ImGui_KarmaImplVulkan_SwapBuffers;
 	}
-	
+
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_ShutdownPlatformInterface()
 	{
 		ImGui::DestroyPlatformWindows();

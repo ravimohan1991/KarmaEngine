@@ -294,7 +294,7 @@ namespace Karma
 		}
 	}
 
-	void VulkanUniformBuffer::UploadUniformBuffer(int frameIndex)
+	void VulkanUniformBuffer::UploadUniformBuffer(size_t frameIndex)
 	{
 		uint32_t index = 0;
 		for (auto& it : GetUniformList())

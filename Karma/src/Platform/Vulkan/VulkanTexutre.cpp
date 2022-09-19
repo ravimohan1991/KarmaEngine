@@ -104,7 +104,7 @@ namespace Karma
 		samplerInfo.maxLod = 0.0f;
 
 		VkResult result = vkCreateSampler(m_Device, &samplerInfo, nullptr, &m_TextureSampler);
-		
+
 		KR_CORE_ASSERT(result == false, "Failed to create texture sampler!");
 	}
 }

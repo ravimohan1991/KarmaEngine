@@ -4,7 +4,7 @@
 
 namespace Karma
 {
-class VulkanTexture;
+	class VulkanTexture;
 
 	enum class TextureType
 	{
@@ -19,13 +19,13 @@ class VulkanTexture;
 	public:
 		Texture();
 		Texture(TextureType tType, const char* filename, std::string textureName, std::string textureShaderName);
-		
+
 		~Texture();
 
 		// Getters
 		const std::string& GetTextureName() const { return m_TName; }
 		const std::string& GetTextureShaderName() const { return m_TShaderName; }
-		VulkanTexture* GetVulkanTexture() const { return m_VulkanTexture; }
+		std::shared_ptr<VulkanTexture> GetVulkanTexture() const { return m_VulkanTexture; }
 
 	private:
 		TextureType m_TType;
@@ -34,6 +34,6 @@ class VulkanTexture;
 		std::string m_TShaderName;
 
 		// For Vulkan specific purposes
-		VulkanTexture* m_VulkanTexture;
+		std::shared_ptr<VulkanTexture> m_VulkanTexture;
 	};
 }

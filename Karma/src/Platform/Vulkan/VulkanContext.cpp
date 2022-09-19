@@ -11,7 +11,7 @@ namespace Karma
 {
 	const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 	// Subject to change based on available hardware scrutiny
-	std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+	std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 #ifdef KR_DEBUG
 	bool VulkanContext::bEnableValidationLayers = true;
@@ -30,22 +30,6 @@ namespace Karma
 	{
 		m_vulkanRendererAPI->ClearVulkanRendererAPI();
 		ClearUBO();
-
-		/*
-		if(m_TextureSampler != VK_NULL_HANDLE)
-		{
-			vkDestroySampler(m_device, m_TextureSampler, nullptr);
-		}
-		if(m_TextureImageView != VK_NULL_HANDLE)
-		{
-			vkDestroyImageView(m_device, m_TextureImageView, nullptr);
-		}
-		vkDestroyImage(m_device, m_TextureImage, nullptr);
-		if(m_TextureImageMemory != VK_NULL_HANDLE)
-		{
-			vkFreeMemory(m_device, m_TextureImageMemory, nullptr);
-		}
-		*/
 
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
@@ -69,8 +53,7 @@ namespace Karma
 			DestroyDebugUtilsMessengerEXT(m_Instance, debugMessenger, nullptr);
 		}
 
-		// Maybe ImGui took care of it
-		//vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
+		vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
 
 		vkDestroyInstance(m_Instance, nullptr);
 
@@ -82,7 +65,7 @@ namespace Karma
 		m_VulkanUBO.insert(ubo);
 	}
 
-	void VulkanContext::UploadUBO(int frameIndex)
+	void VulkanContext::UploadUBO(size_t frameIndex)
 	{
 		for (auto ubo : m_VulkanUBO)
 		{
@@ -566,10 +549,10 @@ namespace Karma
 		createInfo.imageExtent = extent;
 		createInfo.imageArrayLayers = 1;
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-		
+
 		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
-		uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(),
-			indices.presentFamily.value()};
+		uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(),
+			indices.presentFamily.value() };
 
 		if (indices.graphicsFamily != indices.presentFamily)
 		{
@@ -641,8 +624,8 @@ namespace Karma
 		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(),
-		indices.presentFamily.value()};
+		std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(),
+		indices.presentFamily.value() };
 
 		if (bEnableValidationLayers)
 		{
@@ -669,7 +652,7 @@ namespace Karma
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.samplerAnisotropy = VK_TRUE;
-		if(m_SupportedDeviceFeatures.logicOp)
+		if (m_SupportedDeviceFeatures.logicOp)
 		{
 			deviceFeatures.logicOp = VK_TRUE;
 		}
@@ -718,7 +701,7 @@ namespace Karma
 			PrintAvailablePhysicalDevices(devices);
 		}
 
-		for (const auto & device : devices)
+		for (const auto& device : devices)
 		{
 			if (IsDeviceSuitable(device))
 			{
@@ -777,9 +760,9 @@ namespace Karma
 #ifdef KR_MAC_PLATFORM
 		// Case by case query for required extensions
 		// One for MacOS: VK_KHR_portability_subset
-		for(auto anExtention : availableExtensions)
+		for (auto anExtention : availableExtensions)
 		{
-			if(strcmp(anExtention.extensionName, "VK_KHR_portability_subset") != 0)
+			if (strcmp(anExtention.extensionName, "VK_KHR_portability_subset") != 0)
 			{
 				deviceExtensions.push_back("VK_KHR_portability_subset");
 				break;
@@ -919,7 +902,7 @@ namespace Karma
 			createInfo.ppEnabledLayerNames = validationLayers.data();
 
 			PopulateDebugMessengerCreateInfo(debugCreateInfo);
-			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) (&debugCreateInfo);
+			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)(&debugCreateInfo);
 		}
 		else
 		{
@@ -1006,9 +989,9 @@ namespace Karma
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, vulkanExtensions.data());
 
 		uint32_t index = 1;
-		for(auto anExtension : vulkanExtensions)
+		for (auto anExtension : vulkanExtensions)
 		{
-			if(strcmp(anExtension.extensionName, "VK_KHR_portability_enumeration"))
+			if (strcmp(anExtension.extensionName, "VK_KHR_portability_enumeration"))
 			{
 				extensions.push_back("VK_KHR_portability_enumeration");
 				flagsToBeSet = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;

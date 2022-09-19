@@ -16,10 +16,8 @@ namespace Karma
 	ImGuiLayer::ImGuiLayer(Window* relevantWindow)
 		: Layer("ImGuiLayer"), m_AssociatedWindow(relevantWindow)
 	{
-		if(RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
 		{
-			CreateDescriptorPool();
-
 			// Curate the data associated with Window context and VulkanAPI
 			int width, height;
 			GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
@@ -49,7 +47,7 @@ namespace Karma
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 		poolInfo.maxSets = 1000;
-		poolInfo.poolSizeCount = uint32_t (std::size(pool_sizes));
+		poolInfo.poolSizeCount = uint32_t(std::size(pool_sizes));
 		poolInfo.pPoolSizes = pool_sizes;
 
 		VkResult result = vkCreateDescriptorPool(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), &poolInfo, nullptr, &m_ImGuiDescriptorPool);
@@ -86,11 +84,11 @@ namespace Karma
 		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());//static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
 		// Setup Platform/Renderer bindings
-		if(RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
 		{
 			// Exposing Karma's Vulkan components to Dear ImGui
 			ImGui_ImplGlfw_InitForVulkan(window, true);
-			
+
 			ImGui_KarmaImplVulkan_InitInfo initInfo = {};
 			// An inter-class communication
 			initInfo.Instance = VulkanHolder::GetVulkanContext()->GetInstance();
@@ -101,14 +99,14 @@ namespace Karma
 			initInfo.MinImageCount = VulkanHolder::GetVulkanContext()->GetMinImageCount();
 			initInfo.ImageCount = VulkanHolder::GetVulkanContext()->GetImageCount();
 			initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-			
+
 			// Stuff created and dedicated to Dear ImGUI
 			CreateDescriptorPool();
 			initInfo.DescriptorPool = m_ImGuiDescriptorPool;
 			initInfo.RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
 
 			ImGuiVulkanHandler::ImGui_KarmaImplVulkan_Init(&initInfo);
-			
+
 			// Fresh start with newly instantiated Vulkan data
 			// Since VulkanContext has already instantiated fresh swapchain and commandbuffers, we send that false
 			ImGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
@@ -164,19 +162,19 @@ namespace Karma
 	{
 		switch (RendererAPI::GetAPI())
 		{
-			case RendererAPI::API::Vulkan:
-				GracefulVulkanShutDown();
-				break;
-			case RendererAPI::API::OpenGL:
-				ImGui_ImplOpenGL3_Shutdown();
-				ImGui_ImplGlfw_Shutdown();
-				ImGui::DestroyContext();
-				break;
-			case RendererAPI::API::None:
-				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
-				break;
-			default:
-				KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
+		case RendererAPI::API::Vulkan:
+			GracefulVulkanShutDown();
+			break;
+		case RendererAPI::API::OpenGL:
+			ImGui_ImplOpenGL3_Shutdown();
+			ImGui_ImplGlfw_Shutdown();
+			ImGui::DestroyContext();
+			break;
+		case RendererAPI::API::None:
+			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			break;
+		default:
+			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
 				break;
 		}
 
@@ -187,18 +185,18 @@ namespace Karma
 	{
 		switch (RendererAPI::GetAPI())
 		{
-			case RendererAPI::API::Vulkan:
-				GiveLoopBeginControlToVulkan();
-				break;
-			case RendererAPI::API::OpenGL:
-				ImGui_ImplOpenGL3_NewFrame();
-				ImGui_ImplGlfw_NewFrame();
-				break;
-			case RendererAPI::API::None:
-				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
-				break;
-			default:
-				KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
+		case RendererAPI::API::Vulkan:
+			GiveLoopBeginControlToVulkan();
+			break;
+		case RendererAPI::API::OpenGL:
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			break;
+		case RendererAPI::API::None:
+			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			break;
+		default:
+			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
 				break;
 		}
 		ImGui::NewFrame();
@@ -214,24 +212,24 @@ namespace Karma
 		ImGui::Render();
 		switch (RendererAPI::GetAPI())
 		{
-			case RendererAPI::API::Vulkan:
-				GiveLoopEndControlToVulkan();
-				break;
-			case RendererAPI::API::OpenGL:
-				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-				if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-				{
-					GLFWwindow* backup_current_context = glfwGetCurrentContext();
-					ImGui::UpdatePlatformWindows();
-					ImGui::RenderPlatformWindowsDefault();
-					glfwMakeContextCurrent(backup_current_context);
-				}
-				break;
-			case RendererAPI::API::None:
-				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
-				break;
-			default:
-				KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
+		case RendererAPI::API::Vulkan:
+			GiveLoopEndControlToVulkan();
+			break;
+		case RendererAPI::API::OpenGL:
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				GLFWwindow* backup_current_context = glfwGetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				glfwMakeContextCurrent(backup_current_context);
+			}
+			break;
+		case RendererAPI::API::None:
+			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			break;
+		default:
+			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
 				break;
 		}
 	}
@@ -249,8 +247,8 @@ namespace Karma
 			{
 				RendererAPI* rAPI = RenderCommand::GetRendererAPI();
 				VulkanRendererAPI* vulkanAPI = nullptr;
-				
-				if(rAPI->GetAPI() == RendererAPI::API::Vulkan)
+
+				if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
 				{
 					vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
 				}
@@ -260,9 +258,9 @@ namespace Karma
 				}
 
 				KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-				
+
 				vulkanAPI->RecreateCommandBuffersAndSwapChain();
-				
+
 				ImGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, false);
 				m_SwapChainRebuild = false;
 			}
@@ -333,25 +331,25 @@ namespace Karma
 
 			ImGui::End();
 		}*/
-		
+
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 		{
 			static float f = 0.0f;
 			static int counter = 0;
-			
+
 			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and appeninto it
-			
+
 			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 			ImGui::Checkbox("Demo Window", &show);                  // Edit bools storing our window open/close state
 			ImGui::Checkbox("Another Window", &show);
-			
+
 			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 			//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a colo
-			
+
 			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets returtrue when edited/activated)
 				counter++;
 			ImGui::SameLine();
-			
+
 			ImGui::Text("counter = %d", counter);
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
@@ -383,16 +381,16 @@ namespace Karma
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 		}
-		
+
 		// Present Main Platform Window
 		if (!mainIsMinimized)
 			FramePresent(&m_VulkanWindowData);
-	
+
 		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		vkDeviceWaitIdle(vulkanInfo->Device);
-	
+
 		for (size_t i = 0; i < m_VulkanWindowData.MAX_FRAMES_IN_FLIGHT; i++)
 		{
 			vkResetCommandBuffer(m_VulkanWindowData.FramesOnFlight[i].CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
@@ -404,7 +402,7 @@ namespace Karma
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
 		// Pointer to the per frame data for instance fence, semaphores, and commandbuffer
 		// Remember windowData->SemaphoreIndex is m_CurrentFrame equivalent of VulkanRendererAPI
 		ImGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
@@ -421,10 +419,10 @@ namespace Karma
 
 		// Pointer to the container of CommandPool, swapchainImages und views
 		ImGui_KarmaImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
-		
+
 		// May be try to free resources here
 		//ImGuiVulkanHandler::ImGui_KarmaImplVulkan_ClearUndFreeResources(drawData, windowData->ImageFrameIndex);
-		
+
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
@@ -432,50 +430,50 @@ namespace Karma
 		}
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image from swapchain");
-			
+
 		//result = vkResetCommandPool(m_Device, frameData->CommandPool, 0);
 		//KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset command pool");
-	
+
 		VkCommandBufferBeginInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-				
+
 		// Recording begins:
 		result = vkBeginCommandBuffer(frameOnFlightData->CommandBuffer, &info);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin command buffer");
-			
-			// Render Pass
-			// Ponder over here for UI and 3D model depth stuff
-			VkRenderPassBeginInfo renderPassInfo = {};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	
-			renderPassInfo.renderPass = windowData->RenderPass;
-			renderPassInfo.framebuffer = frameData->Framebuffer;
-			renderPassInfo.renderArea.extent = windowData->RenderArea.extent;
-	
-			std::array<VkClearValue, 2> clearValues{};
-			clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], 		windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
-			clearValues[1].depthStencil = { 1.0f, 0 };
-				
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-			renderPassInfo.pClearValues = clearValues.data();
-	
-			vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-				
-			{
-				// Record dear imgui primitives into command buffer
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_RenderDrawData(drawData, frameOnFlightData->CommandBuffer, VK_NULL_HANDLE, windowData->SemaphoreIndex);
-			}
-			
-			vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
-			
+
+		// Render Pass
+		// Ponder over here for UI and 3D model depth stuff
+		VkRenderPassBeginInfo renderPassInfo = {};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+
+		renderPassInfo.renderPass = windowData->RenderPass;
+		renderPassInfo.framebuffer = frameData->Framebuffer;
+		renderPassInfo.renderArea.extent = windowData->RenderArea.extent;
+
+		std::array<VkClearValue, 2> clearValues{};
+		clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], 		windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
+		clearValues[1].depthStencil = { 1.0f, 0 };
+
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
+
+		vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+		{
+			// Record dear imgui primitives into command buffer
+			ImGuiVulkanHandler::ImGui_KarmaImplVulkan_RenderDrawData(drawData, frameOnFlightData->CommandBuffer, VK_NULL_HANDLE, windowData->SemaphoreIndex);
+		}
+
+		vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
+
 		result = vkEndCommandBuffer(frameOnFlightData->CommandBuffer);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end command buffer");
 		// Recording ends:
-		
+
 		// Submit command buffer
 		VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		
+
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.waitSemaphoreCount = 1;
@@ -488,18 +486,18 @@ namespace Karma
 
 		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
-			
+
 		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 	}
 
 	void ImGuiLayer::FramePresent(ImGui_KarmaImplVulkanH_Window* windowData)
 	{
-		if(m_SwapChainRebuild)
+		if (m_SwapChainRebuild)
 		{
 			return;
 		}
-		
+
 		VkSemaphore renderCompleteSemaphore = windowData->FramesOnFlight[windowData->SemaphoreIndex].RenderCompleteSemaphore;
 
 		VkPresentInfoKHR info = {};
@@ -509,12 +507,12 @@ namespace Karma
 		info.swapchainCount = 1;
 		info.pSwapchains = &windowData->Swapchain;
 		info.pImageIndices = &windowData->ImageFrameIndex;
-		
+
 		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
 		VkResult result = vkQueuePresentKHR(vulkanInfo->Queue, &info);
-		
+
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
@@ -530,16 +528,16 @@ namespace Karma
 	{
 		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
 		VkResult result = vkDeviceWaitIdle(vulkanInfo->Device);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait for the completion of command buffers");
 
+		CleanUpVulkanAndWindowData();
+
 		ImGuiVulkanHandler::ImGui_KarmaImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
-
-		CleanUpVulkanAndWindowData();
 	}
 
 	void ImGuiLayer::CleanUpVulkanAndWindowData()
@@ -550,7 +548,7 @@ namespace Karma
 
 		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
 		// Clean up Vulkan's pool component instantiated earlier here
 		vkDestroyDescriptorPool(vulkanInfo->Device, m_ImGuiDescriptorPool, VK_NULL_HANDLE);
 	}
@@ -642,7 +640,7 @@ namespace Karma
 	bool ImGuiLayer::OnWindowResizeEvent(WindowResizeEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2(float (e.GetWidth()), float (e.GetHeight()));
+		io.DisplaySize = ImVec2(float(e.GetWidth()), float(e.GetHeight()));
 		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 
 		return false;

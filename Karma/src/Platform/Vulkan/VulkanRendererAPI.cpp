@@ -11,7 +11,6 @@ namespace Karma
 
 	VulkanRendererAPI::~VulkanRendererAPI()
 	{
-
 	}
 
 	void VulkanRendererAPI::ClearVulkanRendererAPI()
@@ -19,7 +18,7 @@ namespace Karma
 		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
 
 		RemoveSynchronicity();
-		if(m_commandBuffers.size() > 0)
+		if (m_commandBuffers.size() > 0)
 		{
 			vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
 		}
@@ -53,7 +52,7 @@ namespace Karma
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.commandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandBufferCount = (uint32_t) m_commandBuffers.size();
+		allocInfo.commandBufferCount = (uint32_t)m_commandBuffers.size();
 
 		VkResult result = vkAllocateCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), &allocInfo, m_commandBuffers.data());
 
@@ -96,7 +95,7 @@ namespace Karma
 
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(commandBuffer, vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-			
+
 			// DescriptorSets number needs be depending upon MAX_FRAMES_IN_FLIGHT or swapchainimages size
 			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[m_CurrentFrame], 0, nullptr);
 
@@ -177,14 +176,14 @@ namespace Karma
 		}
 
 		VulkanHolder::GetVulkanContext()->UploadUBO(m_CurrentFrame);
-		
+
 		//updateUniformBuffer(currentFrame);
 
 		vkResetFences(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
 		vkResetCommandBuffer(m_commandBuffers[m_CurrentFrame], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
-	
+
 		RecordCommandBuffers(m_commandBuffers[m_CurrentFrame], imageIndex);
-		
+
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -232,7 +231,7 @@ namespace Karma
 	{
 		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
 		vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
-		
+
 		VulkanHolder::GetVulkanContext()->RecreateSwapChain();
 		AllocateCommandBuffers();
 		m_bAllocateCommandBuffers = false;

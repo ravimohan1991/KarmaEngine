@@ -121,7 +121,7 @@ namespace Karma
 		void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
 		void ClearUBO();
 		void RecreateUBO();
-		void UploadUBO(int frameIndex);
+		void UploadUBO(size_t frameIndex);
 
 		// Getters
 		VkDevice GetLogicalDevice() const { return m_device; }
@@ -141,7 +141,7 @@ namespace Karma
 		//VkSampler GetTextureSampler() const { return m_TextureSampler; }
 		const VkPhysicalDeviceFeatures& GetSupportedDeviceFeatures() const { return m_SupportedDeviceFeatures; }
 		VkInstance GetInstance() const { return m_Instance; }
-		uint32_t GetImageCount() const { return uint32_t (m_swapChainImages.size()); }
+		uint32_t GetImageCount() const { return uint32_t(m_swapChainImages.size()); }
 		uint32_t GetMinImageCount() const { return m_MinImageCount; }
 		VkSurfaceKHR GetSurface() const { return m_surface; }
 		VkPresentModeKHR GetPresentMode() const { return m_presentMode; }
@@ -187,7 +187,7 @@ namespace Karma
 		VkImage m_DepthImage;
 		VkDeviceMemory m_DepthImageMemory;
 		VkImageView m_DepthImageView;
-		
+
 		uint32_t m_MinImageCount = 0;
 
 		//VkImage m_TextureImage;

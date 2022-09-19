@@ -8,7 +8,6 @@ namespace Karma
 	VulkanVertexArray::VulkanVertexArray() : m_SupportedDeviceFeatures(VulkanHolder::GetVulkanContext()->GetSupportedDeviceFeatures()),
 		m_device(VulkanHolder::GetVulkanContext()->GetLogicalDevice())
 	{
-
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
@@ -34,8 +33,7 @@ namespace Karma
 	{
 		vkDestroyPipeline(m_device, m_graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(m_device, m_pipelineLayout, nullptr);
-		// Ponder over this
-		//vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr); //Seems like ImGui layer takes care of this
+		vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, nullptr);
 		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);// Descriptorsets get automatically get freed
 	}
 
@@ -128,7 +126,7 @@ namespace Karma
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
 			| VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		if(!bLogicalOperationsAllowed)
+		if (!bLogicalOperationsAllowed)
 		{
 			colorBlendAttachment.blendEnable = VK_TRUE;
 		}
@@ -146,7 +144,7 @@ namespace Karma
 		// Combine the old and new value using a bitwise operation
 		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-		if(bLogicalOperationsAllowed)
+		if (bLogicalOperationsAllowed)
 		{
 			colorBlending.logicOpEnable = VK_TRUE;
 		}
@@ -237,27 +235,27 @@ namespace Karma
 	{
 		switch (type)
 		{
-			case ShaderDataType::Float:
-				return VK_FORMAT_R32_SFLOAT;
-			case ShaderDataType::Float2:
-				return VK_FORMAT_R32G32_SFLOAT;
-			case ShaderDataType::Float3:
-				return VK_FORMAT_R32G32B32_SFLOAT;
-			case ShaderDataType::Float4:
-				return VK_FORMAT_R32G32B32A32_SFLOAT;
-			case ShaderDataType::None:
-			case ShaderDataType::Mat3:
-			case ShaderDataType::Mat4:
-			case ShaderDataType::Int:
-			case ShaderDataType::Int2:
-			case ShaderDataType::Int3:
-			case ShaderDataType::Int4:
-			case ShaderDataType::Bool:
-				// Refer Mesh::GaugeVertexDataLayout for usual datatype
-				// to be used in the context of vertex buffer
-				KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
+		case ShaderDataType::Float:
+			return VK_FORMAT_R32_SFLOAT;
+		case ShaderDataType::Float2:
+			return VK_FORMAT_R32G32_SFLOAT;
+		case ShaderDataType::Float3:
+			return VK_FORMAT_R32G32B32_SFLOAT;
+		case ShaderDataType::Float4:
+			return VK_FORMAT_R32G32B32A32_SFLOAT;
+		case ShaderDataType::None:
+		case ShaderDataType::Mat3:
+		case ShaderDataType::Mat4:
+		case ShaderDataType::Int:
+		case ShaderDataType::Int2:
+		case ShaderDataType::Int3:
+		case ShaderDataType::Int4:
+		case ShaderDataType::Bool:
+			// Refer Mesh::GaugeVertexDataLayout for usual datatype
+			// to be used in the context of vertex buffer
+			KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
 				return VK_FORMAT_UNDEFINED;
-				break;
+			break;
 		}
 
 		KR_CORE_ASSERT(false, "Vulkan doesn't support this ShaderDatatype");
@@ -365,8 +363,8 @@ namespace Karma
 	{
 		RendererAPI* rAPI = RenderCommand::GetRendererAPI();
 		VulkanRendererAPI* vulkanAPI = nullptr;
-		
-		if(rAPI->GetAPI() == RendererAPI::API::Vulkan)
+
+		if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
 		{
 			vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
 		}
@@ -374,9 +372,9 @@ namespace Karma
 		{
 			KR_CORE_ASSERT(false, "How is this even possible?");
 		}
-		
+
 		int maxFramesInFlight = vulkanAPI->GetMaxFramesInFlight();
-		
+
 		std::vector<VkDescriptorSetLayout> layouts(maxFramesInFlight, m_descriptorSetLayout);
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -398,7 +396,7 @@ namespace Karma
 
 			// Fetch right texture pointer first whose image is to be considered.
 			// Caution: GetTexture index is with temporary assumption that needs addressing.
-			VulkanTexture* vTexture = m_Materials[0]->GetTexture(0)->GetVulkanTexture();
+			std::shared_ptr<VulkanTexture> vTexture = m_Materials[0]->GetTexture(0)->GetVulkanTexture();
 
 			VkDescriptorImageInfo imageInfo{};
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
