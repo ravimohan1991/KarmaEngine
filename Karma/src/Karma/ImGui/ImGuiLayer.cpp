@@ -1,4 +1,6 @@
 #include "ImGuiLayer.h"
+#include "glad/glad.h"
+#define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 #include "Karma/Application.h"
 #include "backends/imgui_impl_glfw.h"
@@ -9,7 +11,7 @@
 #include "glm/glm.hpp"
 
 // Emedded font
-#include "Karma/ImGui/Roboto-Regular.h"//
+#include "Karma/ImGui/Roboto-Regular.h"
 
 namespace Karma
 {
@@ -80,8 +82,7 @@ namespace Karma
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		Application& app = Application::Get();
-		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());//static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
 
 		// Setup Platform/Renderer bindings
 		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
@@ -155,6 +156,12 @@ namespace Karma
 		{
 			ImGui_ImplGlfw_InitForOpenGL(window, true);
 			ImGui_ImplOpenGL3_Init("#version 410");
+
+			// Load default font
+			ImFontConfig fontConfig;
+			fontConfig.FontDataOwnedByAtlas = false;
+			ImFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
+			io.FontDefault = robotoFont;
 		}
 	}
 
@@ -210,12 +217,20 @@ namespace Karma
 
 		// Rendering
 		ImGui::Render();
+		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
+
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::Vulkan:
 			GiveLoopEndControlToVulkan();
 			break;
 		case RendererAPI::API::OpenGL:
+			int displayWidth, displayHeight;
+			glfwGetFramebufferSize(window, &displayWidth, &displayHeight);
+			glViewport(0, 0, displayWidth, displayHeight);
+			glm::vec4 clearColor = RenderCommand::GetClearColor();
+			glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
+			glClear(GL_COLOR_BUFFER_BIT);
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 			{

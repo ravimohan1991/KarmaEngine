@@ -7,10 +7,6 @@
 #include "Karma/Events/MouseEvent.h"
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/Window.h"
-#include "vulkan/vulkan_core.h"
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#include <vulkan/vulkan.h>
 #include "ImGuiVulkanHandler.h"
 
 namespace Karma
@@ -42,20 +38,6 @@ namespace Karma
 		void GiveLoopEndControlToVulkan();
 		void GracefulVulkanShutDown();
 		void CleanUpVulkanAndWindowData();
-		
-		/*
-		void GatherVulkanWindowData(ImGui_KarmaImplVulkanH_Window* vulkanWindowData, int width, int height);
-		void GiveLoopBeginControlToVulkan();
-		void GiveLoopEndControlToVulkan();
-		void FrameRender(ImGui_KarmaImplVulkanH_Window* windowData, ImDrawData* draw_data);
-		void FramePresent(ImGui_KarmaImplVulkanH_Window* windowData);
-		void CleanUpVulkanAndWindowData();
-		void GracefulVulkanShutDown();
-		void ShareVulkanContextOfMainWindow(ImGui_KarmaImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
-		void ClearVulkanWindowData(ImGui_KarmaImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity = false);
-		void DestroyWindowDataFrame(ImGui_KarmaImplVulkanH_ImageFrame* frame);
-		void DestroyFramesOnFlightData(ImGui_Vulkan_Frame_On_Flight* frameSyncronicityData);
-		*/
 
 	private:
 		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& e);
@@ -69,19 +51,12 @@ namespace Karma
 
 	private:
 		float m_Time = 0.0f;
-		//int MAX_FRAMES_IN_FLIGHT = 0;
-		//size_t m_CurrentFrame = 0;
-		//uint32_t imageIndex = 0;
 
 		Window* m_AssociatedWindow;
 
 		// Vulkan specific members
 		VkDescriptorPool m_ImGuiDescriptorPool;
 
-		//VkDevice m_Device;
-		//VkInstance m_Instance;
-		
-		
 		bool m_SwapChainRebuild = true;
 
 		// Seems like main window Vulkan data associated to m_AssociatedWindow
