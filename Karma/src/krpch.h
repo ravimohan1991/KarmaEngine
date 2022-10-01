@@ -21,6 +21,14 @@
 #include <cstdint>
 #include <optional>
 #include <fstream>
+#include <ctype.h>
+#include <limits.h>
+#include <stdlib.h>
+
+// No clue about this ImGui include. May or maynot be excluded in future.
+#if defined(_MSC_VER) && _MSC_VER <= 1500 // MSVC 2008 or earlier
+#include <stddef.h>
+#endif
 
 // Karma's general includes
 #include "Karma/Core.h"

@@ -28,8 +28,6 @@ namespace Karma
 
 		virtual void OnEvent(Event& event) override;
 
-		void SetMenubarCallback(const std::function<void()>& menubarCallback) { m_MenubarCallback = menubarCallback; }
-
 		// Vulkan relevant functions
 		void CreateDescriptorPool();
 		void GiveLoopBeginControlToVulkan();
@@ -61,7 +59,5 @@ namespace Karma
 
 		// Seems like main window Vulkan data associated to m_AssociatedWindow
 		ImGui_KarmaImplVulkanH_Window m_VulkanWindowData;
-
-		std::function<void()> m_MenubarCallback;
 	};
 }

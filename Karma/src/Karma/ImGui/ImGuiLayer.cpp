@@ -9,6 +9,7 @@
 #include "Karma/Renderer/RendererAPI.h"
 #include "Karma/Renderer/RenderCommand.h"
 #include "glm/glm.hpp"
+#include "ImGuiMesa.h"
 
 // Emedded font
 #include "Karma/ImGui/Roboto-Regular.h"
@@ -81,6 +82,9 @@ namespace Karma
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
+
+		// Setting Dear ImGui ini file
+		io.IniFilename = "../Resources/Misc/DearImGuiEditor.ini";//"yeehaw!";
 
 		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
 
@@ -225,27 +229,29 @@ namespace Karma
 			GiveLoopEndControlToVulkan();
 			break;
 		case RendererAPI::API::OpenGL:
-			int displayWidth, displayHeight;
-			glfwGetFramebufferSize(window, &displayWidth, &displayHeight);
-			glViewport(0, 0, displayWidth, displayHeight);
-			glm::vec4 clearColor = RenderCommand::GetClearColor();
-			glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
-			glClear(GL_COLOR_BUFFER_BIT);
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 			{
-				GLFWwindow* backup_current_context = glfwGetCurrentContext();
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
-				glfwMakeContextCurrent(backup_current_context);
+				int displayWidth, displayHeight;
+				glfwGetFramebufferSize(window, &displayWidth, &displayHeight);
+				glViewport(0, 0, displayWidth, displayHeight);
+				glm::vec4 clearColor = RenderCommand::GetClearColor();
+				glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, 	clearColor.w);
+				glClear(GL_COLOR_BUFFER_BIT);
+				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+				if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+				{
+					GLFWwindow* backup_current_context = glfwGetCurrentContext();
+					ImGui::UpdatePlatformWindows();
+					ImGui::RenderPlatformWindowsDefault();
+					glfwMakeContextCurrent(backup_current_context);
+				}
 			}
 			break;
 		case RendererAPI::API::None:
 			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 			break;
 		default:
-			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
-				break;
+			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.");
+			break;
 		}
 	}
 
@@ -287,87 +293,51 @@ namespace Karma
 
 	void ImGuiLayer::OnImGuiRender()
 	{
+		ImGuiID dockspaceID;
+
 		// 1. Show the big demo window. For debug purpose!!
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);
 
-		// 2. Something that I don't fully understand, but relevant to demo window docking mechanism maybe
-		/*
+		// 2. A UI canvas, if I may, for the main window!!
 		{
-			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-
-			// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-			// because it would be confusing to have two docking targets within each others.
-			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-			if (m_MenubarCallback)
-				window_flags |= ImGuiWindowFlags_MenuBar;
+			static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+			ImGuiWindowFlags windowFlags = ImGuiDockNodeFlags_None;
 
 			const ImGuiViewport* viewport = ImGui::GetMainViewport();
 			ImGui::SetNextWindowPos(viewport->WorkPos);
 			ImGui::SetNextWindowSize(viewport->WorkSize);
 			ImGui::SetNextWindowViewport(viewport->ID);
+
+			// No clue
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-			// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-			// and handle the pass-thru hole, so we ask Begin() to not render a background.
-			if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-				window_flags |= ImGuiWindowFlags_NoBackground;
+			windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+
+			windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 			// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
 			// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
 			// all active windows docked into it will lose their parent and become undocked.
 			// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
 			// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
+			// hmm
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-			ImGui::Begin("DockSpace Demo", nullptr, window_flags);
-			ImGui::PopStyleVar();
 
+			ImGui::Begin("KarmaSafetyDockSpace", nullptr, windowFlags);
+			ImGui::PopStyleVar();
 			ImGui::PopStyleVar(2);
 
-			// Submit the DockSpace
-			ImGuiIO& io = ImGui::GetIO();
-			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-			{
-				ImGuiID dockspace_id = ImGui::GetID("VulkanAppDockspace");
-				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-			}
-
-			if (m_MenubarCallback)
-			{
-				if (ImGui::BeginMenuBar())
-				{
-					m_MenubarCallback();
-					ImGui::EndMenuBar();
-				}
-			}
+			dockspaceID = ImGui::GetID("KarmaSafetyDockSpace");
+			ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
 
 			ImGui::End();
-		}*/
+		}
 
-		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset
 		{
-			static float f = 0.0f;
-			static int counter = 0;
-
-			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and appeninto it
-
-			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			ImGui::Checkbox("Demo Window", &show);                  // Edit bools storing our window open/close state
-			ImGui::Checkbox("Another Window", &show);
-
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-			//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a colo
-
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets returtrue when edited/activated)
-				counter++;
-			ImGui::SameLine();
-
-			ImGui::Text("counter = %d", counter);
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::End();
+			ImGuiMesa::RevealMainFrame(dockspaceID);
 		}
 	}
 

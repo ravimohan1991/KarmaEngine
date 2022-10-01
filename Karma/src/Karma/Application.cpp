@@ -69,21 +69,23 @@ namespace Karma
 			
 			deltaTime /= 1000000.0f;
 
-			// The range based for loop valid because we have implemented begin()
-			// and end() in LayerStack.h
+			//RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
+			//RenderCommand::Clear();
+			
 			for (auto layer : *m_LayerStack)
 			{
 				layer->OnUpdate(deltaTime);
 			}
 			
 			// ImGui rendering sequence cue trickling through stack
-
 			m_ImGuiLayer->Begin();
 			for (auto layer : *m_LayerStack)
 			{
 				layer->OnImGuiRender();
 			}
 			m_ImGuiLayer->End();
+
+			//Karma::Renderer::EndScene();
 
 			m_Window->OnUpdate();
 		}

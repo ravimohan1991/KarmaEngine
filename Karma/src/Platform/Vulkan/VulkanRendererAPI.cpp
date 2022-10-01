@@ -177,8 +177,6 @@ namespace Karma
 
 		VulkanHolder::GetVulkanContext()->UploadUBO(m_CurrentFrame);
 
-		//updateUniformBuffer(currentFrame);
-
 		vkResetFences(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
 		vkResetCommandBuffer(m_commandBuffers[m_CurrentFrame], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 

@@ -15,10 +15,10 @@
 
 namespace Karma
 {
-    enum class InputRegisteringAPI
+	enum class InputRegisteringAPI
 	{
 		None = 0,
-        GlfwInput
+		GlfwInput
 	};
 
 	struct InputData
