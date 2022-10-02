@@ -1,8 +1,5 @@
 #include "KarmaUtilities.h"
 
-//PCH stuff
-#include <fstream>
-
 namespace Karma
 {
 	std::string KarmaUtilities::ReadFileToSpitString(const std::string& filePath)
@@ -30,5 +27,10 @@ namespace Karma
 	{
 		size_t found = str.find_last_of("/\\");
 		return str.substr(0, found);
+	}
+
+	unsigned char* KarmaUtilities::GetImagePixelData(char const* fileName, int* width, int* height, int* channels, int req_comp)
+	{
+		return stbi_load(fileName, width, height, channels, req_comp);
 	}
 }

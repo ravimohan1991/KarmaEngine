@@ -138,7 +138,13 @@ namespace Karma
 				result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin recording(?) command buffer!");
 
+				// Load Fonts
 				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateFontsTexture(commandBuffer);
+
+				// Load Images
+
+				//	1. The wall
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/The_Source_Wall.jpg");
 
 				VkSubmitInfo endInfo = {};
 				endInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -229,23 +235,23 @@ namespace Karma
 			GiveLoopEndControlToVulkan();
 			break;
 		case RendererAPI::API::OpenGL:
+		{
+			int displayWidth, displayHeight;
+			glfwGetFramebufferSize(window, &displayWidth, &displayHeight);
+			glViewport(0, 0, displayWidth, displayHeight);
+			glm::vec4 clearColor = RenderCommand::GetClearColor();
+			glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 			{
-				int displayWidth, displayHeight;
-				glfwGetFramebufferSize(window, &displayWidth, &displayHeight);
-				glViewport(0, 0, displayWidth, displayHeight);
-				glm::vec4 clearColor = RenderCommand::GetClearColor();
-				glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, 	clearColor.w);
-				glClear(GL_COLOR_BUFFER_BIT);
-				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-				if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-				{
-					GLFWwindow* backup_current_context = glfwGetCurrentContext();
-					ImGui::UpdatePlatformWindows();
-					ImGui::RenderPlatformWindowsDefault();
-					glfwMakeContextCurrent(backup_current_context);
-				}
+				GLFWwindow* backup_current_context = glfwGetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				glfwMakeContextCurrent(backup_current_context);
 			}
-			break;
+		}
+		break;
 		case RendererAPI::API::None:
 			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 			break;

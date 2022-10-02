@@ -76,11 +76,11 @@ namespace Karma
 			ImGui::Separator();
 			ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-			if(clear)
+			if (clear)
 			{
 				Clear();
 			}
-			if(copy)
+			if (copy)
 			{
 				ImGui::LogToClipboard();
 			}
@@ -90,7 +90,7 @@ namespace Karma
 			const char* buAlpha = TextBuffer.begin();
 			const char* buOmega = TextBuffer.end();
 
-			if(TextFilter.IsActive())
+			if (TextFilter.IsActive())
 			{
 				// In this example we don't use the clipper when TextFilter is enabled.
 				// This is because we don't have a random access on the result on our filter.
@@ -129,7 +129,7 @@ namespace Karma
 					for (int lineNumber = clipper.DisplayStart; lineNumber < clipper.DisplayEnd; lineNumber++)
 					{
 						const char* lineStart = buAlpha + LineOffsets[lineNumber];
-						const char* lineEnd = (lineNumber + 1 < LineOffsets.Size) ? (buAlpha + LineOffsets[lineNumber + 1] - 1) : 	buOmega;
+						const char* lineEnd = (lineNumber + 1 < LineOffsets.Size) ? (buAlpha + LineOffsets[lineNumber + 1] - 1) : buOmega;
 						ImGui::TextUnformatted(lineStart, lineEnd);
 					}
 				}
@@ -147,42 +147,24 @@ namespace Karma
 		}
 	};
 
-struct ImGuiDockPreviewData
-{
-	ImGuiDockNode   FutureNode;
-	bool            IsDropAllowed;
-	bool            IsCenterAvailable;
-	bool            IsSidesAvailable;           // Hold your breath, grammar freaks..
-	bool            IsSplitDirExplicit;         // Set when hovered the drop rect (vs. implicit SplitDir==None when hovered the window)
-	ImGuiDockNode*  SplitNode;
-	ImGuiDir        SplitDir;
-	float           SplitRatio;
-	ImRect          DropRectsDraw[ImGuiDir_COUNT + 1];  // May be slightly different from hit-testing drop rects used in DockNodeCalcDropRects()
+	struct ImGuiDockPreviewData
+	{
+		ImGuiDockNode   FutureNode;
+		bool            IsDropAllowed;
+		bool            IsCenterAvailable;
+		bool            IsSidesAvailable;           // Hold your breath, grammar freaks..
+		bool            IsSplitDirExplicit;         // Set when hovered the drop rect (vs. implicit SplitDir==None when hovered the window)
+		ImGuiDockNode* SplitNode;
+		ImGuiDir        SplitDir;
+		float           SplitRatio;
+		ImRect          DropRectsDraw[ImGuiDir_COUNT + 1];  // May be slightly different from hit-testing drop rects used in DockNodeCalcDropRects()
 
-	ImGuiDockPreviewData() : FutureNode(0) { IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false; SplitNode = NULL; SplitDir = ImGuiDir_None; SplitRatio = 0.f; for (int n = 0; n < IM_ARRAYSIZE(DropRectsDraw); n++) DropRectsDraw[n] = ImRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX); }
-};
+		ImGuiDockPreviewData() : FutureNode(0) { IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false; SplitNode = NULL; SplitDir = ImGuiDir_None; SplitRatio = 0.f; for (int n = 0; n < IM_ARRAYSIZE(DropRectsDraw); n++) DropRectsDraw[n] = ImRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX); }
+	};
 
 	class KARMA_API ImGuiMesa
 	{
 	public:
-		/*
-		static void ShowAppDockSpace(bool* p_open);
-		static void ShowAppDocuments(bool* p_open);
-		static void ShowAppMainMenuBar();
-		static void ShowAppConsole(bool* p_open);
-		static void ShowAppLog(bool* p_open);
-		static void ShowAppLayout(bool* p_open);
-		static void ShowAppPropertyEditor(bool* p_open);
-		static void ShowAppLongText(bool* p_open);
-		static void ShowAppAutoResize(bool* p_open);
-		static void ShowAppConstrainedResize(bool* p_open);
-		static void ShowAppSimpleOverlay(bool* p_open);
-		static void ShowAppFullscreen(bool* p_open);
-		static void ShowAppWindowTitles(bool* p_open);
-		static void ShowAppCustomRendering(bool* p_open);
-		static void ShowMenuFile();
-		*/
-
 		// Showtime!
 		static void RevealMainFrame(ImGuiID mainMesaDockID);
 		static void DrawKarmaMainMenuBarMesa();
@@ -190,6 +172,12 @@ struct ImGuiDockPreviewData
 		static void DrawKarmaLogMesa(ImGuiID mainMesaDockID);
 		static void DrawKarmaSceneHierarchyPanelMesa();
 
+		// Mesas!
+		static void ShowAboutKarmaMesa(bool* pbOpen);
+
 		static ImGuiDockNode* DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node);
+
+		// Helpers
+		static int ImStrlenW(const ImWchar* str);
 	};
 }

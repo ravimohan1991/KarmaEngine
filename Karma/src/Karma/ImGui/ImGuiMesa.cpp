@@ -3,14 +3,17 @@
  Courtsey https://en.wikipedia.org/wiki/Mesa
  */
 
-/*
- Following code snippets are heavily influenced from the official Dear ImGUI windows (isn't that always the scenario?). Please see https://github.com/ravimohan1991/imgui/blob/9068fd1afbaba56247aacd452bbadebb286800c7/imgui_demo.cpp for the historical and legacy purposes.
+ /*
+  Following code snippets are heavily influenced from the official Dear ImGUI windows (isn't that always the scenario?). Please see https://github.com/ravimohan1991/imgui/blob/9068fd1afbaba56247aacd452bbadebb286800c7/imgui_demo.cpp for the historical and legacy purposes.
 
- Also see https://en.wikipedia.org/wiki/Indian_Mesa, since I am Indian! And I still love my country!!
- */
+  Also see https://en.wikipedia.org/wiki/Indian_Mesa, since I am Indian! And I still love my country!!
+  */
 
 #include "ImGuiMesa.h"
 #include "imgui.h"
+
+  // Experimental
+#include "ImGuiVulkanHandler.h"
 
 namespace Karma
 {
@@ -50,8 +53,8 @@ namespace Karma
 
 			ImGui::Text("Node ID = %d at position x = %f, y = %f on docking box %d", node != nullptr ? node->ID : 0, ImGui::GetMousePos().x, ImGui::GetMousePos().y, boxNumber);
 
-			if(payloadWindow)
-			ImGui::Text("Karma: Log window is of dimension width = %f und height = %f", payloadWindow->Size.x, payloadWindow->Size.y);
+			if (payloadWindow)
+				ImGui::Text("Karma: Log window is of dimension width = %f und height = %f", payloadWindow->Size.x, payloadWindow->Size.y);
 			ImGui::End();
 		}
 
@@ -67,16 +70,16 @@ namespace Karma
 		}
 	}
 
-ImGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node)
-{
-	if (node->IsLeafNode())
-		return node;
-	if (ImGuiDockNode* leaf_node = DockNodeTreeFindFallbackLeafNode(node->ChildNodes[0]))
-		return leaf_node;
-	if (ImGuiDockNode* leaf_node = DockNodeTreeFindFallbackLeafNode(node->ChildNodes[1]))
-		return leaf_node;
-	return NULL;
-}
+	ImGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node)
+	{
+		if (node->IsLeafNode())
+			return node;
+		if (ImGuiDockNode* leaf_node = DockNodeTreeFindFallbackLeafNode(node->ChildNodes[0]))
+			return leaf_node;
+		if (ImGuiDockNode* leaf_node = DockNodeTreeFindFallbackLeafNode(node->ChildNodes[1]))
+			return leaf_node;
+		return NULL;
+	}
 
 	void ImGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
 	{
@@ -93,6 +96,8 @@ ImGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node)
 	// MM bar
 	void ImGuiMesa::DrawKarmaMainMenuBarMesa()
 	{
+		static bool showKarmaAbout = false;
+
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
@@ -102,10 +107,15 @@ ImGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node)
 			}
 			if (ImGui::BeginMenu("Details"))
 			{
-				if(ImGui::MenuItem("About")) {}
+				if (ImGui::MenuItem("About", nullptr, &showKarmaAbout));
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
+		}
+
+		if (showKarmaAbout)
+		{
+			ShowAboutKarmaMesa(&showKarmaAbout);
 		}
 	}
 
@@ -119,14 +129,14 @@ ImGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node)
 		ImGuiCond conditions = ImGuiCond_Once;//ImGuiCond_FirstUseEver;
 
 		// So here goes the reverse engineering
-		// 1. imgui.ini is looked. If not found, then window->SizeFull is set to windowSize else 
+		// 1. imgui.ini is looked. If not found, then window->SizeFull is set to windowSize else
 		// 2. well I failed, partially. Ini to the rescue
 		// 3. maybe I will find it later, and NOT the cherno later.
 		ImGui::SetNextWindowSize(windowSize, conditions);
 
 		ImGuiWindow* payloadWindow;
 
-		// Disable user resize, 
+		// Disable user resize,
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize;
 
 		ImGui::Begin("Karma: Log", nullptr, windowFlags, &payloadWindow);
@@ -179,5 +189,112 @@ ImGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node)
 		{
 			// write logic to quit
 		}
+	}
+
+	//-----------------------------------------------------------------------------
+	// [SECTION] A variety of Dear ImGui mesas
+	//-----------------------------------------------------------------------------
+
+	// About mesa
+	void ImGuiMesa::ShowAboutKarmaMesa(bool* pbOpen)
+	{
+		if (!ImGui::Begin("Karma Engine", pbOpen, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::End();
+			return;
+		}
+
+		//-----------------------------------------------------------------------------------------------------------//
+
+		// Precomputation based on text, for gauging the image dimensions
+		const char* tagLine = "Nothing is impossible once you have the Source Code (and know how to use it)!";
+		ImVec2 tagLineDimensions = ImGui::CalcTextSize(tagLine, nullptr, false, 0.0f);
+
+		const char* authorName = "The_Cowboy";
+		ImVec2 authorNameDimensions = ImGui::CalcTextSize(authorName, nullptr, false, 0.0f);
+
+		//-----------------------------------------------------------------------------------------------------------//
+
+		// Vulkan experiment
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui_KarmaImplVulkan_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_KarmaImplVulkan_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
+
+		ImGui_KarmaImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(0);
+
+		ImTextureID aboutImageTextureID = (ImTextureID)mesaDecalElement->TextureDescriptorSet;
+		uint32_t width = mesaDecalElement->width;
+		uint32_t height = mesaDecalElement->height;
+
+		{
+			ImVec2 position = ImGui::GetCursorScreenPos();
+
+			ImVec2 uvMin = ImVec2(0.0f, 0.0f);                 // Top-left
+			ImVec2 uvMax = ImVec2(1.0f, 1.0f);                 // Lower-right
+			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
+			ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
+			ImGui::Image(aboutImageTextureID, ImVec2(width, height), uvMin, uvMax, tint_col, border_col);
+		}
+
+		//-----------------------------------------------------------------------------------------------------------//
+
+		ImGui::Text(tagLine);
+		ImGui::Text(" "); ImGui::SameLine(tagLineDimensions.x - authorNameDimensions.x); ImGui::Text(authorName);
+
+		ImGui::Separator();
+
+		//-----------------------------------------------------------------------------------------------------------//
+
+		const char* licenseLine_1 = "Karma Engine is a copyleft software and distributed under the umbrella of";
+		const char* licenseLine_2 = "GNU GPL v3 https://github.com/ravimohan1991/KarmaEngine/blob/main/LICENSE";
+		const char* licenseLine_3 = "Although careful and mindful tending of the \"web of companion libraries\"";
+		const char* licenseLine_4 = "lincences has been undertaken, it is a work in progress with the hope of";
+		const char* licenseLine_5 = "eliminating the concept of software licensing itself.";
+
+		ImGui::Text(licenseLine_1);
+		ImGui::Text(licenseLine_2);
+		ImGui::Text(licenseLine_3);
+		ImGui::Text(licenseLine_4);
+		ImGui::Text(licenseLine_5);
+
+		ImGui::Separator();
+
+		//-----------------------------------------------------------------------------------------------------------//
+
+		static bool showPhysicalRigInformation = false;
+		ImGui::Checkbox("Config/Build Information", &showPhysicalRigInformation);
+		if (showPhysicalRigInformation)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			ImGuiStyle& style = ImGui::GetStyle();
+
+			bool copy_to_clipboard = ImGui::Button("Copy to clipboard");
+		}
+
+		ImGui::Separator();
+
+		//-----------------------------------------------------------------------------------------------------------//
+
+		ImGui::Text("Credits und Acknowledgements");
+		ImGui::Text("Cherno");
+		ImGui::Text("Travis V Roman");
+		ImGui::Text("GitHub");
+		ImGui::Text("Companion Libraries Authors");
+		ImGui::Text("Sumo India");
+
+		//-----------------------------------------------------------------------------------------------------------//
+
+		ImGui::End();
+	}
+
+	//-----------------------------------------------------------------------------
+	// [SECTION] MISC HELPERS/UTILITIES (String, Format, Hash functions)
+	//-----------------------------------------------------------------------------
+
+	int ImGuiMesa::ImStrlenW(const ImWchar* str)
+	{
+		//return (int)wcslen((const wchar_t*)str);  // FIXME-OPT: Could use this when wchar_t are 16-bit
+		int n = 0;
+		while (*str++) n++;
+		return n;
 	}
 }

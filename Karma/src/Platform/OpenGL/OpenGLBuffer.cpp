@@ -66,8 +66,7 @@ namespace Karma
 
 	void OpenGLImageBuffer::SetUpImageBuffer(const char* filenames)
 	{
-
-		// Load and create a texture. Need proper texture loading abstraction 
+		// Load and create a texture. Need proper texture loading abstraction
 		unsigned int texture1;
 		glGenTextures(1, &texture1);
 		glBindTexture(GL_TEXTURE_2D, texture1);
@@ -81,7 +80,7 @@ namespace Karma
 		// enable z-test
 		glEnable(GL_DEPTH_TEST);
 
-		// load image, create texture and generate mipmaps
+		// load image, create texture, and generate mipmaps
 		int width, height, nrChannels;
 		stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
 		// The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
@@ -96,7 +95,6 @@ namespace Karma
 			KR_CORE_ASSERT(data, "Failed to load textures image!");
 		}
 		stbi_image_free(data);
-
 	}
 
 	OpenGLUniformBuffer::OpenGLUniformBuffer(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex) :

@@ -1,6 +1,7 @@
 #include "ImGuiVulkanHandler.h"
 #include "Vulkan/VulkanHolder.h"
 #include "Renderer/RenderCommand.h"
+#include "KarmaUtilities.h"
 
 // Visual Studio warnings
 /*#ifdef _MSC_VER
@@ -385,6 +386,166 @@ namespace Karma
 		// We perform a call to vkCmdSetScissor() to set back a full viewport which is likely to fix things for 99% users but technically this is not perfect. (See github #4644)
 		VkRect2D scissor = { { 0, 0 }, { (uint32_t)width, (uint32_t)height } };
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+	}
+
+	bool ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(VkCommandBuffer commandBuffer, char const* fileName)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui_KarmaImplVulkan_Image_TextureData* imageData = new ImGui_KarmaImplVulkan_Image_TextureData();
+		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
+		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+
+		int width, height, channels;
+		unsigned char* imagePixelData;
+
+		imagePixelData = KarmaUtilities::GetImagePixelData("../Resources/Textures/The_Source_Wall.jpg", &width, &height, &channels, STBI_rgb_alpha);
+
+		size_t uploadSize = width * height * 4 * sizeof(char);
+
+		VkResult result;
+
+		// Create the Image:
+		{
+			VkImageCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			info.imageType = VK_IMAGE_TYPE_2D;
+			info.format = VK_FORMAT_R8G8B8A8_UNORM;
+			info.extent.width = width;
+			info.extent.height = height;
+			info.extent.depth = 1;
+			info.mipLevels = 1;
+			info.arrayLayers = 1;
+			info.samples = VK_SAMPLE_COUNT_1_BIT;
+			info.tiling = VK_IMAGE_TILING_OPTIMAL;
+			info.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+			result = vkCreateImage(vulkanInfo->Device, &info, vulkanInfo->Allocator, &imageData->TextureImage);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
+
+			VkMemoryRequirements req;
+			vkGetImageMemoryRequirements(vulkanInfo->Device, imageData->TextureImage, &req);
+			VkMemoryAllocateInfo allocInfo = {};
+			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			allocInfo.allocationSize = req.size;
+			allocInfo.memoryTypeIndex = ImGui_KarmaImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
+
+			result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &imageData->TextureMemory);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
+
+			result = vkBindImageMemory(vulkanInfo->Device, imageData->TextureImage, imageData->TextureMemory, 0);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind image memory");
+		}
+
+		// Create the Image View:
+		{
+			VkImageViewCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			info.image = imageData->TextureImage;
+			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			info.format = VK_FORMAT_R8G8B8A8_UNORM;
+			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			info.subresourceRange.levelCount = 1;
+			info.subresourceRange.layerCount = 1;
+
+			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &imageData->TextureView);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create image view");
+		}
+
+		// Create the Descriptor Set:
+		imageData->TextureDescriptorSet = (VkDescriptorSet)ImGui_KarmaImplVulkan_AddTexture(imageData->TextureSampler, imageData->TextureView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+		// Create the Upload Buffer:
+		{
+			VkBufferCreateInfo bufferInfo = {};
+			bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+			bufferInfo.size = uploadSize;
+			bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+			bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+			result = vkCreateBuffer(vulkanInfo->Device, &bufferInfo, vulkanInfo->Allocator, &imageData->UploadBuffer);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create buffer");
+
+			VkMemoryRequirements requirements;
+			vkGetBufferMemoryRequirements(vulkanInfo->Device, imageData->UploadBuffer, &requirements);
+			backendData->BufferMemoryAlignment = (backendData->BufferMemoryAlignment > requirements.alignment) ? backendData->BufferMemoryAlignment : requirements.alignment;
+			VkMemoryAllocateInfo allocInfo = {};
+			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			allocInfo.allocationSize = requirements.size;
+			allocInfo.memoryTypeIndex = ImGui_KarmaImplVulkan_MemoryType(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, requirements.memoryTypeBits);
+
+			result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &imageData->UploadBufferMemory);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
+
+			result = vkBindBufferMemory(vulkanInfo->Device, imageData->UploadBuffer, imageData->UploadBufferMemory, 0);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind buffer memory");
+		}
+
+		// Upload to Buffer:
+		{
+			char* map = nullptr;
+			result = vkMapMemory(vulkanInfo->Device, imageData->UploadBufferMemory, 0, uploadSize, 0, (void**)(&map));
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't map memory");
+
+			memcpy(map, imagePixelData, uploadSize);
+			VkMappedMemoryRange range[1] = {};
+			range[0].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+			range[0].memory = imageData->UploadBufferMemory;
+			range[0].size = uploadSize;
+
+			result = vkFlushMappedMemoryRanges(vulkanInfo->Device, 1, range);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't flush memory range");
+
+			vkUnmapMemory(vulkanInfo->Device, imageData->UploadBufferMemory);
+		}
+
+		// Copy to Image:
+		{
+			VkImageMemoryBarrier copyBarrier[1] = {};
+			copyBarrier[0].sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+			copyBarrier[0].dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			copyBarrier[0].oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			copyBarrier[0].newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			copyBarrier[0].srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			copyBarrier[0].dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			copyBarrier[0].image = imageData->TextureImage;
+			copyBarrier[0].subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			copyBarrier[0].subresourceRange.levelCount = 1;
+			copyBarrier[0].subresourceRange.layerCount = 1;
+			vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, copyBarrier);
+
+			VkBufferImageCopy region = {};
+			region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			region.imageSubresource.layerCount = 1;
+			region.imageExtent.width = width;
+			region.imageExtent.height = height;
+			region.imageExtent.depth = 1;
+			vkCmdCopyBufferToImage(commandBuffer, imageData->UploadBuffer, imageData->TextureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+			VkImageMemoryBarrier useBarrier[1] = {};
+			useBarrier[0].sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+			useBarrier[0].srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			useBarrier[0].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			useBarrier[0].oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			useBarrier[0].newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			useBarrier[0].srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			useBarrier[0].dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			useBarrier[0].image = imageData->TextureImage;
+			useBarrier[0].subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			useBarrier[0].subresourceRange.levelCount = 1;
+			useBarrier[0].subresourceRange.layerCount = 1;
+			vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, useBarrier);
+		}
+
+		imageData->height = (uint32_t)height;
+		imageData->width = (uint32_t)width;
+		imageData->channels = (uint32_t)channels;
+		imageData->size = (uint32_t)uploadSize;
+
+		backendData->mesaDecalDataList.push_back(imageData);
+
+		return true;
 	}
 
 	bool ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateFontsTexture(VkCommandBuffer commandBuffer)
@@ -879,6 +1040,47 @@ namespace Karma
 		{
 			vkDestroyPipeline(vulkanInfo->Device, backendData->Pipeline, vulkanInfo->Allocator);
 			backendData->Pipeline = VK_NULL_HANDLE;
+		}
+
+		for (auto& elem : backendData->mesaDecalDataList)
+		{
+			if (elem->TextureView)
+			{
+				vkDestroyImageView(vulkanInfo->Device, elem->TextureView, vulkanInfo->Allocator);
+				elem->TextureView = VK_NULL_HANDLE;
+			}
+			if (elem->TextureImage)
+			{
+				vkDestroyImage(vulkanInfo->Device, elem->TextureImage, vulkanInfo->Allocator);
+				elem->TextureImage = VK_NULL_HANDLE;
+			}
+			if (elem->TextureMemory)
+			{
+				vkFreeMemory(vulkanInfo->Device, elem->TextureMemory, vulkanInfo->Allocator);
+				elem->TextureMemory;
+			}
+			if (elem->TextureSampler)
+			{
+				vkDestroySampler(vulkanInfo->Device, elem->TextureSampler, vulkanInfo->Allocator);
+				elem->TextureSampler = VK_NULL_HANDLE;
+			}
+			if (elem->TextureDescriptorSet)
+			{
+				elem->TextureDescriptorSet = VK_NULL_HANDLE;
+			}
+			if (elem->UploadBuffer)
+			{
+				vkDestroyBuffer(vulkanInfo->Device, elem->UploadBuffer, vulkanInfo->Allocator);
+				elem->UploadBuffer = VK_NULL_HANDLE;
+			}
+			if (elem->UploadBufferMemory)
+			{
+				vkFreeMemory(vulkanInfo->Device, elem->UploadBufferMemory, vulkanInfo->Allocator);
+				elem->UploadBufferMemory = VK_NULL_HANDLE;
+			}
+
+			delete elem;
+			elem = nullptr;
 		}
 	}
 

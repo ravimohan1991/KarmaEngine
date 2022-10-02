@@ -155,6 +155,24 @@ namespace Karma
 		~ImGui_KarmaImplVulkan_ViewportData() { }
 	};
 
+	// Vulkan Image data
+	struct ImGui_KarmaImplVulkan_Image_TextureData
+	{
+		std::string                 TextureLable;
+		uint32_t                    width;
+		uint32_t                    height;
+		uint32_t                    channels;
+		size_t                      size;
+
+		VkSampler                   TextureSampler;
+		VkDeviceMemory              TextureMemory;
+		VkImage                     TextureImage;
+		VkImageView                 TextureView;
+		VkDescriptorSet             TextureDescriptorSet;
+		VkDeviceMemory              UploadBufferMemory;
+		VkBuffer                    UploadBuffer;
+	};
+
 	// Vulkan data
 	// Seems for single ImGUI context (which can have multiple window)
 	struct ImGui_KarmaImplVulkan_Data
@@ -178,6 +196,9 @@ namespace Karma
 		VkDescriptorSet             FontDescriptorSet;
 		VkDeviceMemory              UploadBufferMemory;
 		VkBuffer                    UploadBuffer;
+
+		// Image data
+		std::vector<ImGui_KarmaImplVulkan_Image_TextureData*>         mesaDecalDataList;
 
 		// Render buffers for main window
 		ImGui_KarmaImplVulkanH_WindowRenderBuffers MainWindowRenderBuffers;
@@ -230,6 +251,8 @@ namespace Karma
 		static void ImGui_KarmaImplVulkan_ShivaFrameRenderBuffers(VkDevice device, ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
 
 		static bool ImGui_KarmaImplVulkan_CreateFontsTexture(VkCommandBuffer commandBuffer);
+		static bool ImGui_KarmaImplVulkan_CreateTexture(VkCommandBuffer commandBuffer, char const* fileName);
+
 		static bool ImGui_KarmaImplVulkan_CreateDeviceObjects();
 		static void ImGui_KarmaImplVulkan_DestroyFontUploadObjects();
 		static void ImGui_KarmaImplVulkan_DestroyDeviceObjects();

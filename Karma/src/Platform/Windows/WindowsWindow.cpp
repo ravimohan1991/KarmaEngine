@@ -36,10 +36,12 @@ namespace Karma
 	void WindowsWindow::Init(const WindowProps& props)
 	{
 		m_Data.Title = props.Title;
-		m_Data.Width = props.Width;
-		m_Data.Height = props.Height;
 
-		KR_CORE_INFO("Creating Windows window {0} ({1}, {2})", props.Title, props.Width, props.Height);
+		// Need to find a algorithm for gauging the default window resolution and work the dimensions accrodingly
+		m_Data.Width = 2 * props.Width;
+		m_Data.Height = 2 * props.Height;
+
+		KR_CORE_INFO("Creating Windows window {0} ({1}, {2})", props.Title, m_Data.Width, m_Data.Height);
 
 		if (!s_GLFWInitialized)
 		{
@@ -60,19 +62,19 @@ namespace Karma
 			KR_CORE_INFO("{0} Vulkan extensions supported", extensionCount);
 		}
 
-		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+		m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
 		switch (currentAPI)
 		{
-			case RendererAPI::API::None:
-				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
-				break;
-			case RendererAPI::API::OpenGL:
-				m_Context = new OpenGLContext(m_Window);
-				break;
-			case RendererAPI::API::Vulkan:
-				m_Context = new VulkanContext(m_Window);
-				break;
+		case RendererAPI::API::None:
+			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			break;
+		case RendererAPI::API::OpenGL:
+			m_Context = new OpenGLContext(m_Window);
+			break;
+		case RendererAPI::API::Vulkan:
+			m_Context = new VulkanContext(m_Window);
+			break;
 		}
 
 		m_Context->Init();
@@ -129,26 +131,25 @@ namespace Karma
 
 			switch (action)
 			{
-				case GLFW_PRESS:
-				{
-					KeyPressedEvent event(key, 0);
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_RELEASE:
-				{
-					KeyReleasedEvent event(key);
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_REPEAT:
-				{
-					KeyPressedEvent event(key, 1);
-					data.EventCallback(event);
-					break;
-				}
+			case GLFW_PRESS:
+			{
+				KeyPressedEvent event(key, 0);
+				data.EventCallback(event);
+				break;
 			}
-
+			case GLFW_RELEASE:
+			{
+				KeyReleasedEvent event(key);
+				data.EventCallback(event);
+				break;
+			}
+			case GLFW_REPEAT:
+			{
+				KeyPressedEvent event(key, 1);
+				data.EventCallback(event);
+				break;
+			}
+			}
 		});
 
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
@@ -165,18 +166,18 @@ namespace Karma
 
 			switch (action)
 			{
-				case GLFW_PRESS:
-				{
-					MouseButtonPressedEvent event(button);
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_RELEASE:
-				{
-					MouseButtonReleasedEvent event(button);
-					data.EventCallback(event);
-					break;
-				}
+			case GLFW_PRESS:
+			{
+				MouseButtonPressedEvent event(button);
+				data.EventCallback(event);
+				break;
+			}
+			case GLFW_RELEASE:
+			{
+				MouseButtonReleasedEvent event(button);
+				data.EventCallback(event);
+				break;
+			}
 			}
 		});
 
@@ -192,7 +193,7 @@ namespace Karma
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			MouseMovedEvent event((float) xPos, (float) yPos);
+			MouseMovedEvent event((float)xPos, (float)yPos);
 			data.EventCallback(event);
 		});
 	}
@@ -220,29 +221,29 @@ namespace Karma
 
 		switch (currentAPI)
 		{
-			case RendererAPI::API::OpenGL:
+		case RendererAPI::API::OpenGL:
+		{
+			if (enabled)
 			{
-				if (enabled)
-				{
-					glfwSwapInterval(1);
-				}
-				else
-				{
-					glfwSwapInterval(0);
-				}
-				break;
+				glfwSwapInterval(1);
 			}
-			case RendererAPI::API::Vulkan:
+			else
 			{
-				VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
-				vContext->SetVSync(enabled);
-				break;
+				glfwSwapInterval(0);
 			}
-			case RendererAPI::API::None:
-			{
-				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
-				break;
-			}
+			break;
+		}
+		case RendererAPI::API::Vulkan:
+		{
+			VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
+			vContext->SetVSync(enabled);
+			break;
+		}
+		case RendererAPI::API::None:
+		{
+			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			break;
+		}
 		}
 	}
 
