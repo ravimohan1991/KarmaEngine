@@ -179,6 +179,7 @@ add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/assimp)
 add_subdirectory(vendor/glslang)
 add_subdirectory(vendor/stb)
+add_subdirectory(vendor/BiosReader)
 
 list(APPEND ESSENTIAL_LIBS Glad)
 list(APPEND ESSENTIAL_LIBS GLFW)
@@ -194,6 +195,7 @@ list(APPEND ESSENTIAL_LIBS AssImp)
 list(APPEND ESSENTIAL_LIBS ${Vulkan_LIBRARY})
 list(APPEND ESSENTIAL_LIBS GlSlang)
 list(APPEND ESSENTIAL_LIBS stbimage)
+list(APPEND ESSENTIAL_LIBS BiosReader)
 
 # Print Karma's libraries
 message(STATUS "########################")
@@ -250,6 +252,7 @@ target_link_libraries(KarmaEngine PUBLIC AssImp)
 target_link_libraries(KarmaEngine PUBLIC ${Vulkan_LIBRARY})
 target_link_libraries(KarmaEngine PUBLIC GlSlang)
 target_link_libraries(KarmaEngine PUBLIC stbimage)
+target_link_libraries(KarmaEngine PUBLIC BiosReader)
 
 # Cluster Karma's libraries into a single folder for project/solution visualization
 set_property(TARGET Glad PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
@@ -271,6 +274,8 @@ else()
     set_property(TARGET glm_static PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 ]]
 endif()
+
+set_property(TARGET BiosReader PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 
 # INTERFACE (Something that Consumers require but Producers don't)
 # Since I am a library coder here, I am the Producer

@@ -23,3 +23,6 @@
 [submodule "Karma/vendor/SDL"]
 	path = Karma/vendor/SDL
 	url = https://github.com/ravimohan1991/SDL.git
+[submodule "Karma/vendor/BiosReader"]
+	path = Karma/vendor/BiosReader
+	url = https://github.com/ravimohan1991/BiosReader.git
