@@ -1,8 +1,5 @@
 #include "KarmaUtilities.h"
 
-//PCH stuff
-#include <fstream>
-
 namespace Karma
 {
 	std::string KarmaUtilities::ReadFileToSpitString(const std::string& filePath)

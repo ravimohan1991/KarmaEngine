@@ -2,6 +2,9 @@
 #include "GLFW/glfw3.h"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include <dmidecode.h>
+
+
 class ExampleLayer : public Karma::Layer
 {
 public:
@@ -34,6 +37,9 @@ public:
 		m_SquareMat->AttatchMainCamera(m_Camera);
 
 		m_SquareVA->SetMaterial(m_SquareMat);
+
+
+		electronics_spit(ss_bios);
 
 		// Should be Material
 		//m_SquareVA->SetShader(m_BlueSQShader);
@@ -174,6 +180,8 @@ private:
 
 	float cameraTranslationSpeed = 1.0f;
 	float cameraRotationSpeed = 80.0f;
+
+	bool queryForElectronics = false;
 };
 
 class KarmaApp : public Karma::Application

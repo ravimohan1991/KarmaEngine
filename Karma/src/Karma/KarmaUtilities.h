@@ -1,5 +1,7 @@
 #pragma once
 
+#include "krpch.h"
+
 #include "Karma/KarmaUtilities.h"
 
 namespace Karma

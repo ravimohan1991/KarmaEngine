@@ -288,6 +288,7 @@ target_include_directories(KarmaEngine
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/assimp/contrib
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/assimp/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/BiosReader/src/public
         ${Vulkan_INCLUDE_DIR}
     PUBLIC
         # where top-level project will look for the library's public headers
