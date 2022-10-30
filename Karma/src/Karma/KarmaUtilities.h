@@ -1,6 +1,7 @@
 #pragma once
 
 #include "krpch.h"
+#include "Karma/KarmaUtilities.h"
 
 #include "stb_image.h"
 
