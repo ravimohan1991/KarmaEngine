@@ -162,6 +162,23 @@ namespace Karma
 		ImGuiDockPreviewData() : FutureNode(0) { IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false; SplitNode = NULL; SplitDir = ImGuiDir_None; SplitRatio = 0.f; for (int n = 0; n < IM_ARRAYSIZE(DropRectsDraw); n++) DropRectsDraw[n] = ImRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX); }
 	};
 
+	struct KarmaTuringMachineElectronics
+	{
+		bool bHasQueried;
+
+		// Bios Information
+		std::string vendorName;
+		std::string biosVersion;
+		std::string biosReleaseDate;
+		std::string biosCharacteristics;
+		std::string biosROMSize;
+
+		KarmaTuringMachineElectronics()
+		{
+			bHasQueried = false;
+		}
+	};
+
 	class KARMA_API ImGuiMesa
 	{
 	public:
@@ -179,5 +196,9 @@ namespace Karma
 
 		// Helpers
 		static int ImStrlenW(const ImWchar* str);
+		static void QueryForTuringMachineElectronics();
+
+	private:
+		static KarmaTuringMachineElectronics electronicsItems;
 	};
 }

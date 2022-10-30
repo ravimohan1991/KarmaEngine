@@ -2,9 +2,6 @@
 #include "GLFW/glfw3.h"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include <dmidecode.h>
-
-
 class ExampleLayer : public Karma::Layer
 {
 public:
@@ -18,7 +15,6 @@ public:
 		Karma::SceneModel* sModel = new Karma::SceneModel("../Resources/Models/viking_room.obj");
 		m_SquareVA->SetMesh(sModel->GetMeshList()[0]);
 		delete sModel;*/
-
 
 		std::shared_ptr<Karma::Mesh> trialMesh;
 		trialMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
@@ -37,9 +33,6 @@ public:
 		m_SquareMat->AttatchMainCamera(m_Camera);
 
 		m_SquareVA->SetMaterial(m_SquareMat);
-
-
-		electronics_spit(ss_bios);
 
 		// Should be Material
 		//m_SquareVA->SetShader(m_BlueSQShader);
@@ -113,7 +106,6 @@ public:
 			m_Camera->MoveSideways(val * cameraTranslationSpeed * deltaTime);
 		}
 		// Controller context ends
-
 
 		if (Karma::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
 		{
@@ -191,7 +183,6 @@ public:
 	{
 		PushLayer(new ExampleLayer());
 	}
-
 };
 
 Karma::Application* Karma::CreateApplication()

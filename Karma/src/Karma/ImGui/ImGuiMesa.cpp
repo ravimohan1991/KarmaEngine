@@ -11,12 +11,20 @@
 
 #include "ImGuiMesa.h"
 #include "imgui.h"
+extern "C" {
+#include "dmidecode.h"
+}
 
-  // Experimental
+// Experimental
 #include "ImGuiVulkanHandler.h"
 
 namespace Karma
 {
+	KarmaTuringMachineElectronics  ImGuiMesa::electronicsItems;
+
+	//char* bios_vendor;
+	//char* bios_vendor = nullptr;
+
 	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID)
 	{
 		// The MM (Main Menu) menu bar
@@ -204,6 +212,9 @@ namespace Karma
 			return;
 		}
 
+		// Gather relevant data
+		QueryForTuringMachineElectronics();
+
 		//-----------------------------------------------------------------------------------------------------------//
 
 		// Precomputation based on text, for gauging the image dimensions
@@ -281,9 +292,124 @@ namespace Karma
 		ImGui::Text("Companion Libraries Authors");
 		ImGui::Text("Sumo India");
 
+		ImGui::Separator();
+
 		//-----------------------------------------------------------------------------------------------------------//
 
+		// Finally the Turing Machine's electronics information presentation!
+		static bool bShowTuringElectronics = false;
+		ImGui::Checkbox("Turing Machine Information", &bShowTuringElectronics);
+		if (bShowTuringElectronics)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			ImGuiStyle& style = ImGui::GetStyle();
+
+			bool bCopyToClipboard = ImGui::Button("Copy to clipboard");
+			ImVec2 childSize = ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 18);
+			ImGui::BeginChildFrame(ImGui::GetID("cfg_infos"), childSize, ImGuiWindowFlags_NoMove);
+
+			if (bCopyToClipboard)
+			{
+				ImGui::LogToClipboard();
+				ImGui::LogText("```\n"); // Back quotes will make text appears without formatting when pasting on GitHub
+			}
+
+			ImGui::Text("Machine BIOS (v%s)", electronicsItems.biosVersion.c_str());
+			ImGui::Separator();
+
+			ImGui::Text("Vendor: %s", electronicsItems.vendorName.c_str());
+			ImGui::Text("Supplied On: %s", electronicsItems.biosReleaseDate.c_str());
+			ImGui::Text("ROM Size: %s", electronicsItems.biosROMSize.c_str());
+			ImGui::Separator();
+
+			ImGui::Text("sizeof(size_t): %d, sizeof(ImDrawIdx): %d, sizeof(ImDrawVert): %d", (int)sizeof(size_t), (int)sizeof(ImDrawIdx), (int)sizeof(ImDrawVert));
+			ImGui::Text("define: __cplusplus=%d", (int)__cplusplus);
+			ImGui::Separator();
+			ImGui::Text("io.BackendPlatformName: %s", io.BackendPlatformName ? io.BackendPlatformName : "NULL");
+			ImGui::Text("io.BackendRendererName: %s", io.BackendRendererName ? io.BackendRendererName : "NULL");
+			ImGui::Text("io.ConfigFlags: 0x%08X", io.ConfigFlags);
+			if (io.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard)        ImGui::Text(" NavEnableKeyboard");
+			if (io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad)         ImGui::Text(" NavEnableGamepad");
+			if (io.ConfigFlags & ImGuiConfigFlags_NavEnableSetMousePos)     ImGui::Text(" NavEnableSetMousePos");
+			if (io.ConfigFlags & ImGuiConfigFlags_NavNoCaptureKeyboard)     ImGui::Text(" NavNoCaptureKeyboard");
+			if (io.ConfigFlags & ImGuiConfigFlags_NoMouse)                  ImGui::Text(" NoMouse");
+			if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange)      ImGui::Text(" NoMouseCursorChange");
+			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)            ImGui::Text(" DockingEnable");
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)          ImGui::Text(" ViewportsEnable");
+			if (io.ConfigFlags & ImGuiConfigFlags_DpiEnableScaleViewports)  ImGui::Text(" DpiEnableScaleViewports");
+			if (io.ConfigFlags & ImGuiConfigFlags_DpiEnableScaleFonts)      ImGui::Text(" DpiEnableScaleFonts");
+			if (io.MouseDrawCursor)                                         ImGui::Text("io.MouseDrawCursor");
+			if (io.ConfigViewportsNoAutoMerge)                              ImGui::Text("io.ConfigViewportsNoAutoMerge");
+			if (io.ConfigViewportsNoTaskBarIcon)                            ImGui::Text("io.ConfigViewportsNoTaskBarIcon");
+			if (io.ConfigViewportsNoDecoration)                             ImGui::Text("io.ConfigViewportsNoDecoration");
+			if (io.ConfigViewportsNoDefaultParent)                          ImGui::Text("io.ConfigViewportsNoDefaultParent");
+			if (io.ConfigDockingNoSplit)                                    ImGui::Text("io.ConfigDockingNoSplit");
+			if (io.ConfigDockingWithShift)                                  ImGui::Text("io.ConfigDockingWithShift");
+			if (io.ConfigDockingAlwaysTabBar)                               ImGui::Text("io.ConfigDockingAlwaysTabBar");
+			if (io.ConfigDockingTransparentPayload)                         ImGui::Text("io.ConfigDockingTransparentPayload");
+			if (io.ConfigMacOSXBehaviors)                                   ImGui::Text("io.ConfigMacOSXBehaviors");
+			if (io.ConfigInputTextCursorBlink)                              ImGui::Text("io.ConfigInputTextCursorBlink");
+			if (io.ConfigWindowsResizeFromEdges)                            ImGui::Text("io.ConfigWindowsResizeFromEdges");
+			if (io.ConfigWindowsMoveFromTitleBarOnly)                       ImGui::Text("io.ConfigWindowsMoveFromTitleBarOnly");
+			if (io.ConfigMemoryCompactTimer >= 0.0f)                        ImGui::Text("io.ConfigMemoryCompactTimer = %.1f", io.ConfigMemoryCompactTimer);
+			ImGui::Text("io.BackendFlags: 0x%08X", io.BackendFlags);
+			if (io.BackendFlags & ImGuiBackendFlags_HasGamepad)             ImGui::Text(" HasGamepad");
+			if (io.BackendFlags & ImGuiBackendFlags_HasMouseCursors)        ImGui::Text(" HasMouseCursors");
+			if (io.BackendFlags & ImGuiBackendFlags_HasSetMousePos)         ImGui::Text(" HasSetMousePos");
+			if (io.BackendFlags & ImGuiBackendFlags_PlatformHasViewports)   ImGui::Text(" PlatformHasViewports");
+			if (io.BackendFlags & ImGuiBackendFlags_HasMouseHoveredViewport)ImGui::Text(" HasMouseHoveredViewport");
+			if (io.BackendFlags & ImGuiBackendFlags_RendererHasVtxOffset)   ImGui::Text(" RendererHasVtxOffset");
+			if (io.BackendFlags & ImGuiBackendFlags_RendererHasViewports)   ImGui::Text(" RendererHasViewports");
+			ImGui::Separator();
+			ImGui::Text("io.Fonts: %d fonts, Flags: 0x%08X, TexSize: %d,%d", io.Fonts->Fonts.Size, io.Fonts->Flags, io.Fonts->TexWidth, io.Fonts->TexHeight);
+			ImGui::Text("io.DisplaySize: %.2f,%.2f", io.DisplaySize.x, io.DisplaySize.y);
+			ImGui::Text("io.DisplayFramebufferScale: %.2f,%.2f", io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+			ImGui::Separator();
+			ImGui::Text("style.WindowPadding: %.2f,%.2f", style.WindowPadding.x, style.WindowPadding.y);
+			ImGui::Text("style.WindowBorderSize: %.2f", style.WindowBorderSize);
+			ImGui::Text("style.FramePadding: %.2f,%.2f", style.FramePadding.x, style.FramePadding.y);
+			ImGui::Text("style.FrameRounding: %.2f", style.FrameRounding);
+			ImGui::Text("style.FrameBorderSize: %.2f", style.FrameBorderSize);
+			ImGui::Text("style.ItemSpacing: %.2f,%.2f", style.ItemSpacing.x, style.ItemSpacing.y);
+			ImGui::Text("style.ItemInnerSpacing: %.2f,%.2f", style.ItemInnerSpacing.x, style.ItemInnerSpacing.y);
+
+			if (bCopyToClipboard)
+			{
+				ImGui::LogText("\n```\n");
+				ImGui::LogFinish();
+			}
+			ImGui::EndChildFrame();
+		}
+
 		ImGui::End();
+	}
+
+	// Strings are copied in this not-so-cheap function. Hence the check!!
+	// First copying is done within BiosReader for apporpriate seperation into structures. Prevents multiple queries
+	// at the cost of bulk (pun intended!).
+	// Next copying is done here, in the routine.
+	void ImGuiMesa::QueryForTuringMachineElectronics()
+	{
+		if (electronicsItems.bHasQueried)
+		{
+			return;
+		}
+
+		// Catcher rhymes with Hatcher, the Topologist, just for information!
+		void* catcher = electronics_spit(ss_bios);
+
+		if (bios_information* bInfo = static_cast<bios_information*>(catcher))
+		{
+			electronicsItems.vendorName = bInfo->vendor != nullptr ? bInfo->vendor : "Kasturi Trishna (The MuskThirst)";
+			electronicsItems.biosVersion = bInfo->version != nullptr ? bInfo->version : "Kasturi Trishna (The MuskThirst)";
+			electronicsItems.biosReleaseDate = bInfo->biosreleasedate != nullptr ? bInfo->biosreleasedate : "Kasturi Trishna (The MuskThirst)";
+			electronicsItems.biosROMSize = bInfo->biosromsize ? bInfo->biosromsize : "Kasturi Trishna (The MuskThirst)";
+
+			electronicsItems.bHasQueried = true;
+		}
+
+		// Should be called when "about" mesa is closed
+		reset_electronics_structures();
 	}
 
 	//-----------------------------------------------------------------------------
