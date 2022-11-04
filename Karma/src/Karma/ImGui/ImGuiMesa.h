@@ -5,6 +5,10 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
+extern "C" {
+#include "dmidecode.h"
+}
+
 namespace Karma
 {
 	struct KarmaLogMesa
@@ -162,21 +166,74 @@ namespace Karma
 		ImGuiDockPreviewData() : FutureNode(0) { IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false; SplitNode = NULL; SplitDir = ImGuiDir_None; SplitRatio = 0.f; for (int n = 0; n < IM_ARRAYSIZE(DropRectsDraw); n++) DropRectsDraw[n] = ImRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX); }
 	};
 
-	struct KarmaTuringMachineElectronics
+	struct KARMA_API KarmaTuringMachineElectronics
 	{
 		bool bHasQueried;
 
 		// Bios Information
-		std::string vendorName;
+		std::string biosVendorName;
 		std::string biosVersion;
 		std::string biosReleaseDate;
 		std::string biosCharacteristics;
 		std::string biosROMSize;
 
+		// System Memory (RAM) overview
+		uint32_t numberOfMemoryDevices;// An estimation. I shall manually introduce logical checks
+
+		// I named estimated because of the lies
+		// https://github.com/ravimohan1991/BiosReader/wiki/The-Life-and-Lies-of-the-BIOS
+		std::string estimatedCapacity;
+		std::string supportingArea;
+
+		struct SystemRAM
+		{
+			std::string formFactor;
+			std::string ramSize;
+			std::string locator;
+			std::string ramType;
+			std::string bankLocator;
+			std::string manufacturer;
+
+			std::string serialNumber;
+			std::string partNumber;
+			std::string assetTag;
+
+			std::string memorySpeed;
+			std::string configuredMemorySpeed;
+
+			std::string operatingVoltage;
+			std::string rank;
+		};
+		SystemRAM* ramInformation;
+
+		// Let me tell the story of naming. Since the physical slots are the ones
+		// present on board, the array slots in software side, getting filled on a query to BIOS,
+		// naturally get the name "...SoftSlots" from BiosReader's allocation POV
+		std::vector<uint32_t> ramSoftSlots;
+
+		uint32_t totalRamSize;
+		std::string ramSizeDimensions;
+
 		KarmaTuringMachineElectronics()
 		{
 			bHasQueried = false;
+			numberOfMemoryDevices = 0;
+			ramInformation = nullptr;
 		}
+
+		~KarmaTuringMachineElectronics();
+
+		// Gauging Ram devices
+		static void GaugeSystemMemoryDevices(random_access_memory* ramCluster);
+
+		// Obtain the real RAM information
+		static void FindRealCapacityOfRam();
+
+		// No-ram conditions. Bit'o hacky stuff
+		static bool IsPhysicalRamPresent(const random_access_memory& ramScam);
+
+		// Filling the SystemRAM structure with relevant information
+		static void FillTheSystemRamStructure(SystemRAM& destinationStructure, random_access_memory& sourceStructure);
 	};
 
 	class KARMA_API ImGuiMesa
@@ -194,9 +251,18 @@ namespace Karma
 
 		static ImGuiDockNode* DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node);
 
+		// Getters
+		static KarmaTuringMachineElectronics& GetGatheredElectronicsInformationForModification() { return electronicsItems; }
+		static const KarmaTuringMachineElectronics& GetGatheredElectronicsInformation() { return electronicsItems; }
+
+		// Setters
+		static void SetElectronicsRamInformationToNull();
+
 		// Helpers
 		static int ImStrlenW(const ImWchar* str);
 		static void QueryForTuringMachineElectronics();
+		static uint32_t ChernUint32FromString(const std::string& ramString);
+		static std::string ChernDimensionsFromString(const std::string& ramString);
 
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;

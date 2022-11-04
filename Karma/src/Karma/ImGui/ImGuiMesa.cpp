@@ -11,19 +11,14 @@
 
 #include "ImGuiMesa.h"
 #include "imgui.h"
-extern "C" {
-#include "dmidecode.h"
-}
 
-// Experimental
+  // Experimental
 #include "ImGuiVulkanHandler.h"
 
 namespace Karma
 {
-	KarmaTuringMachineElectronics  ImGuiMesa::electronicsItems;
-
-	//char* bios_vendor;
-	//char* bios_vendor = nullptr;
+	KarmaTuringMachineElectronics ImGuiMesa::electronicsItems;
+	//std::vector<uint32_t> KarmaTuringMachineElectronics::ramSoftSlots;
 
 	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID)
 	{
@@ -124,6 +119,17 @@ namespace Karma
 		if (showKarmaAbout)
 		{
 			ShowAboutKarmaMesa(&showKarmaAbout);
+		}
+		else
+		{
+			// Should be called when "about" mesa is closed, the first time
+			if (electronicsItems.bHasQueried)
+			{
+				reset_electronics_structures();
+				ImGuiMesa::SetElectronicsRamInformationToNull();
+				electronicsItems.ramSoftSlots.clear();
+				electronicsItems.bHasQueried = false;
+			}
 		}
 	}
 
@@ -317,9 +323,51 @@ namespace Karma
 			ImGui::Text("Machine BIOS (v%s)", electronicsItems.biosVersion.c_str());
 			ImGui::Separator();
 
-			ImGui::Text("Vendor: %s", electronicsItems.vendorName.c_str());
+			ImGui::Text("Vendor: %s", electronicsItems.biosVendorName.c_str());
 			ImGui::Text("Supplied On: %s", electronicsItems.biosReleaseDate.c_str());
 			ImGui::Text("ROM Size: %s", electronicsItems.biosROMSize.c_str());
+			ImGui::Text("BIOS Characteristics: %s", electronicsItems.biosCharacteristics.c_str());
+			ImGui::Separator();
+
+			ImGui::Text("Machine System Memory (RAM and all that)");
+			ImGui::Separator();
+
+			ImGui::Text("Supporting Area: %s", electronicsItems.supportingArea.c_str());
+			ImGui::Text("Estimated Capacity: %s", electronicsItems.estimatedCapacity.c_str());
+			ImGui::Text("Total such devices (est): %d", electronicsItems.numberOfMemoryDevices);
+			ImGui::Text("Physical devices present:");
+
+			for (uint32_t counter = 0; counter < electronicsItems.ramSoftSlots.size(); counter++)
+			{
+				ImGui::Text("RAM %d", counter + 1);
+				ImGui::Text("Manufacturer: %s", electronicsItems.ramInformation[counter].manufacturer.c_str());
+
+				ImGui::Text("Identification Parameters");
+
+				ImGui::Indent();
+				ImGui::Text("Ram Type: %s", electronicsItems.ramInformation[counter].ramType.c_str());
+				ImGui::Text("Part Number: %s", electronicsItems.ramInformation[counter].partNumber.c_str());
+				ImGui::Text("Serial Number: %s", electronicsItems.ramInformation[counter].serialNumber.c_str());
+				ImGui::Text("Bank Locator / Locator: %s / %s", electronicsItems.ramInformation[counter].bankLocator.c_str(),
+					electronicsItems.ramInformation[counter].locator.c_str());
+				ImGui::Text("Asset Tag: %s", electronicsItems.ramInformation[counter].assetTag.c_str());
+				ImGui::Unindent();
+
+				ImGui::Text("Ram Conditions");
+				ImGui::Indent();
+				ImGui::Text("Size: %s", electronicsItems.ramInformation[counter].ramSize.c_str());
+				ImGui::Text("Operating Voltage: %s", electronicsItems.ramInformation[counter].operatingVoltage.c_str());
+				ImGui::Text("Memory / Configured Memory Speed: %s / %s", electronicsItems.ramInformation[counter].memorySpeed.c_str(),
+					electronicsItems.ramInformation[counter].configuredMemorySpeed.c_str());
+				ImGui::Text("Form Factor: %s", electronicsItems.ramInformation[counter].formFactor.c_str());
+				ImGui::Unindent();
+			}
+
+			ImGui::Text("RAM Logistics");
+			ImGui::Indent();
+			ImGui::Text("Total Ram Size: %d %s", electronicsItems.totalRamSize, electronicsItems.ramSizeDimensions.c_str());
+			ImGui::Unindent();
+
 			ImGui::Separator();
 
 			ImGui::Text("sizeof(size_t): %d, sizeof(ImDrawIdx): %d, sizeof(ImDrawVert): %d", (int)sizeof(size_t), (int)sizeof(ImDrawIdx), (int)sizeof(ImDrawVert));
@@ -400,16 +448,62 @@ namespace Karma
 
 		if (bios_information* bInfo = static_cast<bios_information*>(catcher))
 		{
-			electronicsItems.vendorName = bInfo->vendor != nullptr ? bInfo->vendor : "Kasturi Trishna (The MuskThirst)";
+			electronicsItems.biosVendorName = bInfo->vendor != nullptr ? bInfo->vendor : "Kasturi Trishna (The MuskThirst)";
 			electronicsItems.biosVersion = bInfo->version != nullptr ? bInfo->version : "Kasturi Trishna (The MuskThirst)";
 			electronicsItems.biosReleaseDate = bInfo->biosreleasedate != nullptr ? bInfo->biosreleasedate : "Kasturi Trishna (The MuskThirst)";
 			electronicsItems.biosROMSize = bInfo->biosromsize ? bInfo->biosromsize : "Kasturi Trishna (The MuskThirst)";
-
-			electronicsItems.bHasQueried = true;
+			electronicsItems.biosCharacteristics = bInfo->bioscharacteristics ? bInfo->bioscharacteristics : "Kasturi Trishna (The MuskThirst)";
+		}
+		else
+		{
+			KR_CORE_WARN("BiosReader isn't behaving normally.");
 		}
 
-		// Should be called when "about" mesa is closed
-		reset_electronics_structures();
+		catcher = electronics_spit(pi_systemmemory);
+		if (turing_machine_system_memory* tInfo = static_cast<turing_machine_system_memory*>(catcher))
+		{
+			electronicsItems.estimatedCapacity = tInfo->total_grand_capacity;
+			electronicsItems.numberOfMemoryDevices = tInfo->number_of_ram_or_system_memory_devices;
+			electronicsItems.supportingArea = tInfo->mounting_location;
+		}
+		else
+		{
+			KR_CORE_WARN("BiosReader isn't behaving normally.");
+		}
+
+		catcher = electronics_spit(ps_systemmemory);
+
+		// Now since there may be more than one Ram type of electronics, and given that BIOS lies, we need a mechanism
+		// to gauge the true amount of every estimation we obtained earlier
+		// Please see https://github.com/ravimohan1991/BiosReader/blob/37e1179f876b940b3f483a398091f44a479692ea/src/private/dmidecode.c#L4980
+		if (random_access_memory* rInfo = static_cast<random_access_memory*>(catcher))
+		{
+			KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(rInfo);
+
+			if (electronicsItems.ramInformation == nullptr)
+			{
+				electronicsItems.ramInformation = new KarmaTuringMachineElectronics::SystemRAM[electronicsItems.ramSoftSlots.size()];
+			}
+			else
+			{
+				KR_CORE_WARN("ramInformation is already allocated which should have been cleared in the first place.");
+			}
+
+			uint32_t counter = 0;
+
+			for (auto& elem : electronicsItems.ramSoftSlots)
+			{
+				KarmaTuringMachineElectronics::FillTheSystemRamStructure(electronicsItems.ramInformation[counter++], *fetch_access_memory_members(elem));
+			}
+
+			KarmaTuringMachineElectronics::FindRealCapacityOfRam();
+		}
+		else
+		{
+			KR_CORE_WARN("BiosReader isn't behaving normally.");
+		}
+
+		electronicsItems.bHasQueried = true;
 	}
 
 	//-----------------------------------------------------------------------------
@@ -422,5 +516,125 @@ namespace Karma
 		int n = 0;
 		while (*str++) n++;
 		return n;
+	}
+
+	uint32_t ImGuiMesa::ChernUint32FromString(const std::string& ramString)
+	{
+		std::string digitString;
+		//bool ctype = std::isdigit(ramString[0]);
+
+		for (char c : ramString)
+		{
+			if (std::isdigit(c))
+			{
+				digitString.push_back(c);
+			}
+		}
+
+		// object from the class stringstream
+		std::stringstream ramSize(digitString);
+
+		uint32_t value = 0;
+		ramSize >> value;
+
+		return value;
+	}
+
+	std::string ImGuiMesa::ChernDimensionsFromString(const std::string& ramString)
+	{
+		std::string dimensionString;
+
+		for (char c : ramString)
+		{
+			if (!std::isdigit(c) && !std::isspace(c))
+			{
+				dimensionString.push_back(c);
+			}
+		}
+
+		return dimensionString;
+	}
+
+	void ImGuiMesa::SetElectronicsRamInformationToNull()
+	{
+		if (electronicsItems.ramInformation != nullptr)
+		{
+			delete[] electronicsItems.ramInformation;
+			electronicsItems.ramInformation = nullptr;
+		}
+	}
+
+	void KarmaTuringMachineElectronics::FindRealCapacityOfRam()
+	{
+		uint32_t ramSizeFound = 0;
+
+		// Assumption dimension of memory is GB only
+		for (uint32_t counter = 0; counter < ImGuiMesa::GetGatheredElectronicsInformation().ramSoftSlots.size(); counter++)
+		{
+			ramSizeFound += ImGuiMesa::ChernUint32FromString(ImGuiMesa::GetGatheredElectronicsInformation().ramInformation[counter].ramSize);
+		}
+
+		ImGuiMesa::GetGatheredElectronicsInformationForModification().totalRamSize = ramSizeFound;
+
+		// Hoping for GB only dimension
+		ImGuiMesa::GetGatheredElectronicsInformationForModification().ramSizeDimensions = ImGuiMesa::ChernDimensionsFromString(ImGuiMesa::GetGatheredElectronicsInformation().ramInformation[0].ramSize);
+	}
+
+	void KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(random_access_memory* ramCluster)
+	{
+		if (ramCluster == nullptr)
+		{
+			KR_CORE_WARN("Memory devices pointer is null. No Ram(s) shall be detected and reported");
+			return;
+		}
+
+		KarmaTuringMachineElectronics selfRefrentialVariable = ImGuiMesa::GetGatheredElectronicsInformationForModification();
+
+		uint32_t biosReportedNumber = selfRefrentialVariable.numberOfMemoryDevices;
+
+		for (uint32_t counter = 0; counter < biosReportedNumber; counter++)
+		{
+			random_access_memory* aMemoryBeingScanned = fetch_access_memory_members(counter);
+
+			if (aMemoryBeingScanned != nullptr && IsPhysicalRamPresent(*aMemoryBeingScanned))
+			{
+				ImGuiMesa::GetGatheredElectronicsInformationForModification().ramSoftSlots.push_back(counter);
+			}
+		}
+	}
+
+	void KarmaTuringMachineElectronics::FillTheSystemRamStructure(SystemRAM& destinationStructure, random_access_memory& sourceStructure)
+	{
+		destinationStructure.assetTag = sourceStructure.assettag;
+		destinationStructure.bankLocator = sourceStructure.banklocator;
+		destinationStructure.configuredMemorySpeed = sourceStructure.configuredmemoryspeed;
+		destinationStructure.memorySpeed = sourceStructure.memoryspeed;
+		destinationStructure.formFactor = sourceStructure.formfactor;
+		destinationStructure.locator = sourceStructure.locator;
+		destinationStructure.manufacturer = sourceStructure.manufacturer;
+		destinationStructure.operatingVoltage = sourceStructure.operatingvoltage;
+		destinationStructure.partNumber = sourceStructure.partnumber;
+		destinationStructure.ramSize = sourceStructure.ramsize;
+		destinationStructure.ramType = sourceStructure.ramtype;
+		//destinationStructure.rank = sourceStructure.rank; Not a big fan of rank, reminds me of my JEE AIR 4729
+		destinationStructure.serialNumber = sourceStructure.serialnumber;
+	}
+
+	bool KarmaTuringMachineElectronics::IsPhysicalRamPresent(const random_access_memory& ramScam)
+	{
+		if (ramScam.memoryspeed == nullptr || ramScam.configuredmemoryspeed == nullptr || ramScam.banklocator == nullptr
+			|| ramScam.formfactor == nullptr || ramScam.operatingvoltage == nullptr)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	KarmaTuringMachineElectronics::~KarmaTuringMachineElectronics()
+	{
+		//ImGuiMesa::SetElectronicsRamInformationToNull();
 	}
 }
