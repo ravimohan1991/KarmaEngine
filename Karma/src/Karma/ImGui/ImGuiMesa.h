@@ -214,6 +214,35 @@ namespace Karma
 		uint32_t totalRamSize;
 		std::string ramSizeDimensions;
 
+		// Processor information
+		// Asssuming only 1 processor
+		std::string cpuDesignation;// Socket designation
+		std::string cpuType; // In order to distinguish from GPU processor :) or DSP https://en.wikipedia.org/wiki/Digital_signal_processor
+		std::string cpuProcessingfamily;
+		std::string cpuManufacturer;
+		std::string cpuFlags;
+		// Kind of the most important element of this struct. eg Intel(R) Core(TM) i5-7400 CPU @ 3.00GHz (completeprocessingunitidentifier)
+		std::string cpuVersion;
+
+		std::string cpuOperatingVoltage;
+		std::string cpuExternalClock;
+		std::string cpuMaximumSpeed;
+		std::string cpuCurrentSpeed;
+
+		// Some OEM specific numbers
+		std::string cpuSerialNumber;
+		std::string cpuPartNumber;
+		std::string cpuAssettag;
+
+		std::string cpuCorescount;
+		std::string cpuEnabledCoresCount;
+		std::string cpuThreadCount;
+		std::string cpuTheCharacterstics;
+
+		// The Cpu ID field contains processor - specific information that describes the processor’s features.
+		std::string cpuid; // in the context of motherboard components
+		std::string cpuSignature;
+
 		KarmaTuringMachineElectronics()
 		{
 			bHasQueried = false;

@@ -326,7 +326,10 @@ namespace Karma
 			ImGui::Text("Vendor: %s", electronicsItems.biosVendorName.c_str());
 			ImGui::Text("Supplied On: %s", electronicsItems.biosReleaseDate.c_str());
 			ImGui::Text("ROM Size: %s", electronicsItems.biosROMSize.c_str());
-			ImGui::Text("BIOS Characteristics: %s", electronicsItems.biosCharacteristics.c_str());
+			ImGui::Text("BIOS Characteristics:");
+			ImGui::Indent();
+			ImGui::Text("%s", electronicsItems.biosCharacteristics.c_str());
+			ImGui::Unindent();
 			ImGui::Separator();
 
 			ImGui::Text("Machine System Memory (RAM and all that)");
@@ -366,6 +369,39 @@ namespace Karma
 			ImGui::Text("RAM Logistics");
 			ImGui::Indent();
 			ImGui::Text("Total Ram Size: %d %s", electronicsItems.totalRamSize, electronicsItems.ramSizeDimensions.c_str());
+			ImGui::Unindent();
+
+			ImGui::Separator();
+
+			ImGui::Text("Central Processor Unit");
+			ImGui::Separator();
+
+			ImGui::Text("Manufacturer: %s", electronicsItems.cpuManufacturer.c_str());
+			ImGui::Text("Processor Family: %s", electronicsItems.cpuProcessingfamily.c_str());
+			ImGui::Text("Version: %s", electronicsItems.cpuVersion.c_str());
+			ImGui::Text("CPU Conditions");
+			ImGui::Indent();
+			ImGui::Text("Speed (Current / Maximum): %s / %s", electronicsItems.cpuCurrentSpeed.c_str(), electronicsItems.cpuMaximumSpeed.c_str());
+			ImGui::Text("External Clock: %s", electronicsItems.cpuExternalClock.c_str());
+			ImGui::Text("Cores Enabled / Threads Count: %s / %s", electronicsItems.cpuEnabledCoresCount.c_str(), electronicsItems.cpuThreadCount.c_str());
+			ImGui::Text("Cores Count: %s", electronicsItems.cpuCorescount.c_str());
+			ImGui::Text("Operating Voltage: %s", electronicsItems.cpuOperatingVoltage.c_str());
+			ImGui::Unindent();
+			ImGui::Text("CPU Tags or Numbers");
+			ImGui::Indent();
+			ImGui::Text("Signature: %s", electronicsItems.cpuSignature.c_str());
+			ImGui::Text("ID: %s", electronicsItems.cpuid.c_str());
+			ImGui::Text("Part Number: %s", electronicsItems.cpuPartNumber.c_str());
+			ImGui::Text("Serial Number: %s", electronicsItems.cpuSerialNumber.c_str());
+			ImGui::Text("Asset Tag: %s", electronicsItems.cpuAssettag.c_str());
+			ImGui::Unindent();
+			ImGui::Text("CPU Characteristics");
+			ImGui::Indent();
+			ImGui::Text("%s", electronicsItems.cpuTheCharacterstics.c_str());
+			ImGui::Unindent();
+			ImGui::Text("Flags:");
+			ImGui::Indent();
+			ImGui::Text("%s", electronicsItems.cpuFlags.c_str());
 			ImGui::Unindent();
 
 			ImGui::Separator();
@@ -501,6 +537,34 @@ namespace Karma
 		else
 		{
 			KR_CORE_WARN("BiosReader isn't behaving normally.");
+		}
+
+		catcher = electronics_spit(ps_processor);
+
+		if (central_processing_unit* pInfo = static_cast<central_processing_unit*>(catcher))
+		{
+			//electronicsItems.cpuDesignation = pInfo->designation; <----- Please refer to central_processing_unit struct
+			electronicsItems.cpuFlags = pInfo->cpuflags;
+			electronicsItems.cpuid = pInfo->cpuid;
+			electronicsItems.cpuManufacturer = pInfo->manufacturer;
+			electronicsItems.cpuProcessingfamily = pInfo->processingfamily;
+			electronicsItems.cpuVersion = pInfo->version;
+			electronicsItems.cpuPartNumber = pInfo->partnumber;
+			electronicsItems.cpuSerialNumber = pInfo->serialnumber;
+			electronicsItems.cpuAssettag = pInfo->assettag;
+			electronicsItems.cpuOperatingVoltage = pInfo->operatingvoltage;
+			electronicsItems.cpuCurrentSpeed = pInfo->currentspeed;
+			electronicsItems.cpuMaximumSpeed = pInfo->maximumspeed;
+			electronicsItems.cpuExternalClock = pInfo->externalclock;
+			electronicsItems.cpuCorescount = pInfo->corescount;
+			electronicsItems.cpuThreadCount = pInfo->threadcount;
+			electronicsItems.cpuEnabledCoresCount = pInfo->enabledcorescount;
+			electronicsItems.cpuTheCharacterstics = pInfo->characterstics;
+			electronicsItems.cpuSignature = pInfo->signature;
+		}
+		else
+		{
+			KR_CORE_WARN("BiosReader isn't behaving normally");
 		}
 
 		electronicsItems.bHasQueried = true;
