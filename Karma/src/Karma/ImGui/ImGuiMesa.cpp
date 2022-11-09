@@ -326,6 +326,11 @@ namespace Karma
 			ImGui::Text("Vendor: %s", electronicsItems.biosVendorName.c_str());
 			ImGui::Text("Supplied On: %s", electronicsItems.biosReleaseDate.c_str());
 			ImGui::Text("ROM Size: %s", electronicsItems.biosROMSize.c_str());
+			ImGui::Text("Current Language: %s", electronicsItems.biosCurrentSetLanguage.c_str());
+			ImGui::Text("Supported Languages:");
+			ImGui::Indent();
+			ImGui::Text("%s", electronicsItems.biosRestOfTheSupportedLanguages.c_str());
+			ImGui::Unindent();
 			ImGui::Text("BIOS Characteristics:");
 			ImGui::Indent();
 			ImGui::Text("%s", electronicsItems.biosCharacteristics.c_str());
@@ -351,7 +356,7 @@ namespace Karma
 				ImGui::Text("Ram Type: %s", electronicsItems.ramInformation[counter].ramType.c_str());
 				ImGui::Text("Part Number: %s", electronicsItems.ramInformation[counter].partNumber.c_str());
 				ImGui::Text("Serial Number: %s", electronicsItems.ramInformation[counter].serialNumber.c_str());
-				ImGui::Text("Bank Locator / Locator: %s / %s", electronicsItems.ramInformation[counter].bankLocator.c_str(),
+				ImGui::Text("(Bank | Device) Locator: %s | %s", electronicsItems.ramInformation[counter].bankLocator.c_str(),
 					electronicsItems.ramInformation[counter].locator.c_str());
 				ImGui::Text("Asset Tag: %s", electronicsItems.ramInformation[counter].assetTag.c_str());
 				ImGui::Unindent();
@@ -360,8 +365,8 @@ namespace Karma
 				ImGui::Indent();
 				ImGui::Text("Size: %s", electronicsItems.ramInformation[counter].ramSize.c_str());
 				ImGui::Text("Operating Voltage: %s", electronicsItems.ramInformation[counter].operatingVoltage.c_str());
-				ImGui::Text("Memory / Configured Memory Speed: %s / %s", electronicsItems.ramInformation[counter].memorySpeed.c_str(),
-					electronicsItems.ramInformation[counter].configuredMemorySpeed.c_str());
+				ImGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.ramInformation[counter].configuredMemorySpeed.c_str(),
+					electronicsItems.ramInformation[counter].memorySpeed.c_str());
 				ImGui::Text("Form Factor: %s", electronicsItems.ramInformation[counter].formFactor.c_str());
 				ImGui::Unindent();
 			}
@@ -381,10 +386,10 @@ namespace Karma
 			ImGui::Text("Version: %s", electronicsItems.cpuVersion.c_str());
 			ImGui::Text("CPU Conditions");
 			ImGui::Indent();
-			ImGui::Text("Speed (Current / Maximum): %s / %s", electronicsItems.cpuCurrentSpeed.c_str(), electronicsItems.cpuMaximumSpeed.c_str());
+			ImGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.cpuCurrentSpeed.c_str(), electronicsItems.cpuMaximumSpeed.c_str());
 			ImGui::Text("External Clock: %s", electronicsItems.cpuExternalClock.c_str());
-			ImGui::Text("Cores Enabled / Threads Count: %s / %s", electronicsItems.cpuEnabledCoresCount.c_str(), electronicsItems.cpuThreadCount.c_str());
-			ImGui::Text("Cores Count: %s", electronicsItems.cpuCorescount.c_str());
+			ImGui::Text("Cores (Current | Maximum): %s | %s", electronicsItems.cpuEnabledCoresCount.c_str(), electronicsItems.cpuCorescount.c_str());
+			ImGui::Text("Threads Count: %s", electronicsItems.cpuThreadCount.c_str());
 			ImGui::Text("Operating Voltage: %s", electronicsItems.cpuOperatingVoltage.c_str());
 			ImGui::Unindent();
 			ImGui::Text("CPU Tags or Numbers");
@@ -489,6 +494,18 @@ namespace Karma
 			electronicsItems.biosReleaseDate = bInfo->biosreleasedate != nullptr ? bInfo->biosreleasedate : "Kasturi Trishna (The MuskThirst)";
 			electronicsItems.biosROMSize = bInfo->biosromsize ? bInfo->biosromsize : "Kasturi Trishna (The MuskThirst)";
 			electronicsItems.biosCharacteristics = bInfo->bioscharacteristics ? bInfo->bioscharacteristics : "Kasturi Trishna (The MuskThirst)";
+		}
+		else
+		{
+			KR_CORE_WARN("BiosReader isn't behaving normally.");
+		}
+
+		catcher = electronics_spit(pi_bioslanguages);
+
+		if (mb_language_modules* mbLangModules = static_cast<mb_language_modules*>(catcher))
+		{
+			electronicsItems.biosCurrentSetLanguage = mbLangModules->currentactivemodule;
+			electronicsItems.biosRestOfTheSupportedLanguages = mbLangModules->supportedlanguagemodules;
 		}
 		else
 		{

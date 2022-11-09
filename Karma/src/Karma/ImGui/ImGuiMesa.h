@@ -176,6 +176,8 @@ namespace Karma
 		std::string biosReleaseDate;
 		std::string biosCharacteristics;
 		std::string biosROMSize;
+		std::string biosCurrentSetLanguage;
+		std::string biosRestOfTheSupportedLanguages;
 
 		// System Memory (RAM) overview
 		uint32_t numberOfMemoryDevices;// An estimation. I shall manually introduce logical checks
