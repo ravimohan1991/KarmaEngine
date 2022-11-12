@@ -245,6 +245,11 @@ namespace Karma
 		std::string cpuid; // in the context of motherboard components
 		std::string cpuSignature;
 
+		// For now, with due respect, let there be enough content with just model number
+		// und vendor. Would be dope to read the GPU just like RAM or CPU, from SMBIOS!!
+		std::string gpuVendor;
+		std::string gpuModelIdentification;
+
 		KarmaTuringMachineElectronics()
 		{
 			bHasQueried = false;
@@ -279,6 +284,9 @@ namespace Karma
 
 		// Mesas!
 		static void ShowAboutKarmaMesa(bool* pbOpen);
+
+		// Shiva the Mesa and rest
+		static void MesaShutDownRoutine();
 
 		static ImGuiDockNode* DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node);
 

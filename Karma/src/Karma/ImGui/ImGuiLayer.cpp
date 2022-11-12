@@ -58,6 +58,7 @@ namespace Karma
 	}
 	ImGuiLayer::~ImGuiLayer()
 	{
+		ImGuiMesa::MesaShutDownRoutine();
 	}
 
 	void ImGuiLayer::OnAttach()
