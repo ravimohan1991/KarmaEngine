@@ -427,6 +427,7 @@ namespace Karma
 
 			ImGui::Text("Manufacturer: %s", electronicsItems.gpuVendor.c_str());
 			ImGui::Text("Model: %s", electronicsItems.gpuModelIdentification.c_str());
+			ImGui::Text("VRam: %s", electronicsItems.gpuVMemory.c_str());
 
 			ImGui::Separator();
 
@@ -558,6 +559,7 @@ namespace Karma
 		{
 			electronicsItems.gpuModelIdentification = gInfo->gpuModel;
 			electronicsItems.gpuVendor = gInfo->vendor;
+			electronicsItems.gpuVMemory = gInfo->grandtotalvideomemory;
 		}
 		else
 		{

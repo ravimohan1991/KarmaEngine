@@ -249,6 +249,7 @@ namespace Karma
 		// und vendor. Would be dope to read the GPU just like RAM or CPU, from SMBIOS!!
 		std::string gpuVendor;
 		std::string gpuModelIdentification;
+		std::string gpuVMemory;
 
 		KarmaTuringMachineElectronics()
 		{
