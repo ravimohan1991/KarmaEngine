@@ -304,6 +304,9 @@ namespace Karma
 		static uint32_t ChernUint32FromString(const std::string& ramString);
 		static std::string ChernDimensionsFromString(const std::string& ramString);
 
+	public:
+		static std::string notAvailableText;
+
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;
 	};

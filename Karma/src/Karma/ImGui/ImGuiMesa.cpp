@@ -18,7 +18,7 @@
 namespace Karma
 {
 	KarmaTuringMachineElectronics ImGuiMesa::electronicsItems;
-	//std::vector<uint32_t> KarmaTuringMachineElectronics::ramSoftSlots;
+	std::string ImGuiMesa::notAvailableText = "Kasturi Trishna (The MuskThirst)";
 
 	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID)
 	{
@@ -265,8 +265,8 @@ namespace Karma
 
 		//-----------------------------------------------------------------------------------------------------------//
 
-		ImGui::Text(tagLine);
-		ImGui::Text(" "); ImGui::SameLine(tagLineDimensions.x - authorNameDimensions.x); ImGui::Text(authorName);
+		ImGui::Text("%s", tagLine);
+		ImGui::Text(" "); ImGui::SameLine(tagLineDimensions.x - authorNameDimensions.x); ImGui::Text("%s", authorName);
 
 		ImGui::Separator();
 
@@ -278,11 +278,11 @@ namespace Karma
 		const char* licenseLine_4 = "lincences has been undertaken, it is a work in progress with the hope of";
 		const char* licenseLine_5 = "eliminating the concept of software licensing itself.";
 
-		ImGui::Text(licenseLine_1);
-		ImGui::Text(licenseLine_2);
-		ImGui::Text(licenseLine_3);
-		ImGui::Text(licenseLine_4);
-		ImGui::Text(licenseLine_5);
+		ImGui::Text("%s", licenseLine_1);
+		ImGui::Text("%s", licenseLine_2);
+		ImGui::Text("%s", licenseLine_3);
+		ImGui::Text("%s", licenseLine_4);
+		ImGui::Text("%s", licenseLine_5);
 
 		ImGui::Separator();
 
@@ -458,11 +458,11 @@ namespace Karma
 
 		if (bios_information* bInfo = static_cast<bios_information*>(catcher))
 		{
-			electronicsItems.biosVendorName = bInfo->vendor != nullptr ? bInfo->vendor : "Kasturi Trishna (The MuskThirst)";
-			electronicsItems.biosVersion = bInfo->version != nullptr ? bInfo->version : "Kasturi Trishna (The MuskThirst)";
-			electronicsItems.biosReleaseDate = bInfo->biosreleasedate != nullptr ? bInfo->biosreleasedate : "Kasturi Trishna (The MuskThirst)";
-			electronicsItems.biosROMSize = bInfo->biosromsize ? bInfo->biosromsize : "Kasturi Trishna (The MuskThirst)";
-			electronicsItems.biosCharacteristics = bInfo->bioscharacteristics ? bInfo->bioscharacteristics : "Kasturi Trishna (The MuskThirst)";
+			electronicsItems.biosVendorName = bInfo->vendor != nullptr ? bInfo->vendor : notAvailableText;
+			electronicsItems.biosVersion = bInfo->version != nullptr ? bInfo->version : notAvailableText;
+			electronicsItems.biosReleaseDate = bInfo->biosreleasedate != nullptr ? bInfo->biosreleasedate : notAvailableText;
+			electronicsItems.biosROMSize = bInfo->biosromsize != nullptr ? bInfo->biosromsize : notAvailableText;
+			electronicsItems.biosCharacteristics = bInfo->bioscharacteristics[0] != '\0' ? bInfo->bioscharacteristics : notAvailableText;
 		}
 		else
 		{
@@ -473,8 +473,8 @@ namespace Karma
 
 		if (mb_language_modules* mbLangModules = static_cast<mb_language_modules*>(catcher))
 		{
-			electronicsItems.biosCurrentSetLanguage = mbLangModules->currentactivemodule;
-			electronicsItems.biosRestOfTheSupportedLanguages = mbLangModules->supportedlanguagemodules;
+			electronicsItems.biosCurrentSetLanguage = mbLangModules->currentactivemodule != nullptr ? mbLangModules->currentactivemodule : notAvailableText;
+			electronicsItems.biosRestOfTheSupportedLanguages = mbLangModules->supportedlanguagemodules != nullptr ? mbLangModules->supportedlanguagemodules : notAvailableText;
 		}
 		else
 		{
@@ -484,9 +484,9 @@ namespace Karma
 		catcher = electronics_spit(pi_systemmemory);
 		if (turing_machine_system_memory* tInfo = static_cast<turing_machine_system_memory*>(catcher))
 		{
-			electronicsItems.estimatedCapacity = tInfo->total_grand_capacity;
-			electronicsItems.numberOfMemoryDevices = tInfo->number_of_ram_or_system_memory_devices;
-			electronicsItems.supportingArea = tInfo->mounting_location;
+			electronicsItems.estimatedCapacity = tInfo->total_grand_capacity != nullptr ? tInfo->total_grand_capacity : notAvailableText;
+			electronicsItems.numberOfMemoryDevices = tInfo->number_of_ram_or_system_memory_devices != 0 ? tInfo->number_of_ram_or_system_memory_devices : 0;
+			electronicsItems.supportingArea = tInfo->mounting_location != nullptr ? tInfo->mounting_location : notAvailableText;
 		}
 		else
 		{
@@ -530,23 +530,23 @@ namespace Karma
 		if (central_processing_unit* pInfo = static_cast<central_processing_unit*>(catcher))
 		{
 			//electronicsItems.cpuDesignation = pInfo->designation; <----- Please refer to central_processing_unit struct
-			electronicsItems.cpuFlags = pInfo->cpuflags;
-			electronicsItems.cpuid = pInfo->cpuid;
-			electronicsItems.cpuManufacturer = pInfo->manufacturer;
-			electronicsItems.cpuProcessingfamily = pInfo->processingfamily;
-			electronicsItems.cpuVersion = pInfo->version;
-			electronicsItems.cpuPartNumber = pInfo->partnumber;
-			electronicsItems.cpuSerialNumber = pInfo->serialnumber;
-			electronicsItems.cpuAssettag = pInfo->assettag;
-			electronicsItems.cpuOperatingVoltage = pInfo->operatingvoltage;
-			electronicsItems.cpuCurrentSpeed = pInfo->currentspeed;
-			electronicsItems.cpuMaximumSpeed = pInfo->maximumspeed;
-			electronicsItems.cpuExternalClock = pInfo->externalclock;
-			electronicsItems.cpuCorescount = pInfo->corescount;
-			electronicsItems.cpuThreadCount = pInfo->threadcount;
-			electronicsItems.cpuEnabledCoresCount = pInfo->enabledcorescount;
-			electronicsItems.cpuTheCharacterstics = pInfo->characterstics;
-			electronicsItems.cpuSignature = pInfo->signature;
+			electronicsItems.cpuFlags = pInfo->cpuflags != nullptr ? pInfo->cpuflags : notAvailableText;
+			electronicsItems.cpuid = pInfo->cpuid != nullptr ? pInfo->cpuid : notAvailableText;
+			electronicsItems.cpuManufacturer = pInfo->manufacturer ? pInfo->manufacturer : notAvailableText;
+			electronicsItems.cpuProcessingfamily = pInfo->processingfamily ? pInfo->processingfamily : notAvailableText;
+			electronicsItems.cpuVersion = pInfo->version ? pInfo->version : notAvailableText;
+			electronicsItems.cpuPartNumber = pInfo->partnumber ? pInfo->partnumber : notAvailableText;
+			electronicsItems.cpuSerialNumber = pInfo->serialnumber ? pInfo->serialnumber : notAvailableText;
+			electronicsItems.cpuAssettag = pInfo->assettag ? pInfo->assettag : notAvailableText;
+			electronicsItems.cpuOperatingVoltage = pInfo->operatingvoltage ? pInfo->operatingvoltage : notAvailableText;
+			electronicsItems.cpuCurrentSpeed = pInfo->currentspeed ? pInfo->currentspeed : notAvailableText;
+			electronicsItems.cpuMaximumSpeed = pInfo->maximumspeed ? pInfo->maximumspeed : notAvailableText;
+			electronicsItems.cpuExternalClock = pInfo->externalclock ? pInfo->externalclock : notAvailableText;
+			electronicsItems.cpuCorescount = pInfo->corescount ? pInfo->corescount : notAvailableText;
+			electronicsItems.cpuThreadCount = pInfo->threadcount ? pInfo->threadcount : notAvailableText;
+			electronicsItems.cpuEnabledCoresCount = pInfo->enabledcorescount ? pInfo->enabledcorescount : notAvailableText;
+			electronicsItems.cpuTheCharacterstics = pInfo->characterstics ? pInfo->characterstics : notAvailableText;
+			electronicsItems.cpuSignature = pInfo->signature ? pInfo->signature : notAvailableText;
 		}
 		else
 		{
@@ -557,9 +557,9 @@ namespace Karma
 
 		if (graphics_processing_unit* gInfo = static_cast<graphics_processing_unit*>(catcher))
 		{
-			electronicsItems.gpuModelIdentification = gInfo->gpuModel;
-			electronicsItems.gpuVendor = gInfo->vendor;
-			electronicsItems.gpuVMemory = gInfo->grandtotalvideomemory;
+			electronicsItems.gpuModelIdentification = gInfo->gpuModel != nullptr ? gInfo->gpuModel : notAvailableText;
+			electronicsItems.gpuVendor = gInfo->vendor ? gInfo->vendor : notAvailableText;
+			electronicsItems.gpuVMemory = gInfo->grandtotalvideomemory ? gInfo->grandtotalvideomemory : notAvailableText;
 		}
 		else
 		{
@@ -668,19 +668,19 @@ namespace Karma
 
 	void KarmaTuringMachineElectronics::FillTheSystemRamStructure(SystemRAM& destinationStructure, random_access_memory& sourceStructure)
 	{
-		destinationStructure.assetTag = sourceStructure.assettag;
-		destinationStructure.bankLocator = sourceStructure.banklocator;
-		destinationStructure.configuredMemorySpeed = sourceStructure.configuredmemoryspeed;
-		destinationStructure.memorySpeed = sourceStructure.memoryspeed;
-		destinationStructure.formFactor = sourceStructure.formfactor;
-		destinationStructure.locator = sourceStructure.locator;
-		destinationStructure.manufacturer = sourceStructure.manufacturer;
-		destinationStructure.operatingVoltage = sourceStructure.operatingvoltage;
-		destinationStructure.partNumber = sourceStructure.partnumber;
-		destinationStructure.ramSize = sourceStructure.ramsize;
-		destinationStructure.ramType = sourceStructure.ramtype;
+		destinationStructure.assetTag = sourceStructure.assettag != nullptr ? sourceStructure.assettag : ImGuiMesa::notAvailableText;
+		destinationStructure.bankLocator = sourceStructure.banklocator != nullptr ? sourceStructure.banklocator : ImGuiMesa::notAvailableText;
+		destinationStructure.configuredMemorySpeed = sourceStructure.configuredmemoryspeed != nullptr ? sourceStructure.configuredmemoryspeed : ImGuiMesa::notAvailableText;
+		destinationStructure.memorySpeed = sourceStructure.memoryspeed != nullptr ? sourceStructure.memoryspeed : ImGuiMesa::notAvailableText;
+		destinationStructure.formFactor = sourceStructure.formfactor != nullptr ? sourceStructure.formfactor : ImGuiMesa::notAvailableText;
+		destinationStructure.locator = sourceStructure.locator != nullptr ? sourceStructure.locator : ImGuiMesa::notAvailableText;
+		destinationStructure.manufacturer = sourceStructure.manufacturer != nullptr ? sourceStructure.manufacturer : ImGuiMesa::notAvailableText;
+		destinationStructure.operatingVoltage = sourceStructure.operatingvoltage != nullptr ? sourceStructure.operatingvoltage : ImGuiMesa::notAvailableText;
+		destinationStructure.partNumber = sourceStructure.partnumber != nullptr ? sourceStructure.partnumber : ImGuiMesa::notAvailableText;
+		destinationStructure.ramSize = sourceStructure.ramsize != nullptr ? sourceStructure.ramsize : ImGuiMesa::notAvailableText;
+		destinationStructure.ramType = sourceStructure.ramtype != nullptr ? sourceStructure.ramtype : ImGuiMesa::notAvailableText;
 		//destinationStructure.rank = sourceStructure.rank; Not a big fan of rank, reminds me of my JEE AIR 4729
-		destinationStructure.serialNumber = sourceStructure.serialnumber;
+		destinationStructure.serialNumber = sourceStructure.serialnumber != nullptr ? sourceStructure.serialnumber : ImGuiMesa::notAvailableText;
 	}
 
 	bool KarmaTuringMachineElectronics::IsPhysicalRamPresent(const random_access_memory& ramScam)
