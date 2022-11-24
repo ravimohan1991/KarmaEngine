@@ -1,6 +1,6 @@
 KarmaEngine
 ===========
-![Alt Text](/repositoryfiles/Karma.png)
+<img width="1283" alt="Screenshot 2022-11-25 at 05 02 53" src="https://user-images.githubusercontent.com/2173654/203874546-56150d26-2ef5-48d2-9356-5127f72c5a8a.png">
 
 A cross-platform Game Engine for practical learning and research purposes.
 
