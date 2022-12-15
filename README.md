@@ -1,6 +1,6 @@
 KarmaEngine
 ===========
-![image](https://user-images.githubusercontent.com/2173654/207259129-7b24e8c5-db0a-4f10-9141-0e8e99c872e6.png)
+![image](https://user-images.githubusercontent.com/2173654/207840133-e219bcbd-9f99-4536-a731-3b94eae92dd8.png)
 
 A cross-platform Game Engine for practical learning and research purposes.
 
