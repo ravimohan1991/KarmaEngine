@@ -33,6 +33,7 @@ Karma.txt
 
 # ImGui files
 imgui.ini
+DearImGuiEditor.ini
 
 # SPIR-V bytecode
 *.spv
