@@ -2,12 +2,13 @@
 
 #include "krpch.h"
 
-#include "Karma/Layer.h"
-#include "Karma/Events/KeyEvent.h"
-#include "Karma/Events/MouseEvent.h"
-#include "Karma/Events/ApplicationEvent.h"
-#include "Karma/Window.h"
+#include "Layer.h"
+#include "Events/KeyEvent.h"
+#include "Events/MouseEvent.h"
+#include "Events/ApplicationEvent.h"
+#include "Window.h"
 #include "ImGuiVulkanHandler.h"
+#include "Scene.h"
 
 namespace Karma
 {
@@ -19,7 +20,7 @@ namespace Karma
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
-		virtual void OnImGuiRender() override;
+		virtual void ImGuiRender(float deltaTime) override;
 		virtual void OnUpdate(float deltaTime) override;
 
 		// Only for ImGui layer
@@ -51,6 +52,7 @@ namespace Karma
 		float m_Time = 0.0f;
 
 		Window* m_AssociatedWindow;
+		static std::shared_ptr<Scene> m_Scene;
 
 		// Vulkan specific members
 		VkDescriptorPool m_ImGuiDescriptorPool;

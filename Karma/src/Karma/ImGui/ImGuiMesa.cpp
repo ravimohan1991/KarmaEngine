@@ -20,12 +20,12 @@ namespace Karma
 	KarmaTuringMachineElectronics ImGuiMesa::electronicsItems;
 	std::string ImGuiMesa::notAvailableText = "Kasturi Trishna (The MuskThirst)";
 
-	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID)
+	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene)
 	{
 		// The MM (Main Menu) menu bar
 		DrawKarmaMainMenuBarMesa();
 
-		// 2. Show a simple window, soon to be the content and relevant information browser.
+		// 2. Show a simple sampling and experiment window
 		{
 			static bool show = true;
 			static float fValue = 0.0f;
@@ -71,6 +71,11 @@ namespace Karma
 		{
 			DrawKarmaSceneHierarchyPanelMesa();
 		}
+
+		// 5. A window for 3D rendering part
+		{
+			Draw3DModelExhibitorMesa(scene);
+		}
 	}
 
 	ImGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node)
@@ -82,6 +87,27 @@ namespace Karma
 		if (ImGuiDockNode* leaf_node = DockNodeTreeFindFallbackLeafNode(node->ChildNodes[1]))
 			return leaf_node;
 		return NULL;
+	}
+
+	//-----------------------------------------------------------------------------
+	// [SECTION] A variety of Dear ImGui mesas
+	//-----------------------------------------------------------------------------
+
+	void ImGuiMesa::Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene)
+	{
+		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+
+		ImGui::Begin("3D Exhibitor");
+
+		ImVec4 bgColor;
+		bgColor.x = scene->GetClearColor().x;
+		bgColor.y = scene->GetClearColor().y;
+		bgColor.z = scene->GetClearColor().z;
+		bgColor.w = scene->GetClearColor().w;
+
+		ImGui::RenderKarma3DScene(scene.get(), bgColor);
+
+		ImGui::End();
 	}
 
 	void ImGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
@@ -96,7 +122,7 @@ namespace Karma
 		ImGui::End();
 	}
 
-	// MM bar
+	// MM bar mesa
 	void ImGuiMesa::DrawKarmaMainMenuBarMesa()
 	{
 		static bool showKarmaAbout = false;
@@ -133,6 +159,7 @@ namespace Karma
 		}
 	}
 
+	// Log mesa
 	// The lougging window with basic filtering.
 	void ImGuiMesa::DrawKarmaLogMesa(ImGuiID mainMesaDockID)
 	{
@@ -145,7 +172,7 @@ namespace Karma
 		// So here goes the reverse engineering
 		// 1. imgui.ini is looked. If not found, then window->SizeFull is set to windowSize else
 		// 2. well I failed, partially. Ini to the rescue
-		// 3. maybe I will find it later, and NOT the cherno later.
+		// 3. maybe I will find it later, and NOT the cherno later. Ok maybe cherno later because ini is the way to go.
 		ImGui::SetNextWindowSize(windowSize, conditions);
 
 		ImGuiWindow* payloadWindow;
@@ -188,6 +215,7 @@ namespace Karma
 		*/
 	}
 
+	// Menu mesa
 	void ImGuiMesa::DrawMainMenuFileListMesa()
 	{
 		if (ImGui::MenuItem("Open", "Ctrl+O")) {}
@@ -204,21 +232,6 @@ namespace Karma
 			// write logic to quit
 		}
 	}
-
-	void ImGuiMesa::MesaShutDownRoutine()
-	{
-		if (electronicsItems.bHasQueried)
-		{
-			reset_electronics_structures();
-			ImGuiMesa::SetElectronicsRamInformationToNull();
-			electronicsItems.ramSoftSlots.clear();
-			electronicsItems.bHasQueried = false;
-		}
-	}
-
-	//-----------------------------------------------------------------------------
-	// [SECTION] A variety of Dear ImGui mesas
-	//-----------------------------------------------------------------------------
 
 	// About mesa
 	void ImGuiMesa::ShowAboutKarmaMesa(bool* pbOpen)
@@ -244,6 +257,8 @@ namespace Karma
 		//-----------------------------------------------------------------------------------------------------------//
 
 		// Vulkan experiment
+		// Need to think how OpenGL shall handle this
+		// Of course nothing should be changed frontend, ie here. Something must be done at backend.
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_KarmaImplVulkan_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
 
@@ -693,6 +708,21 @@ namespace Karma
 		else
 		{
 			return true;
+		}
+	}
+
+	//-----------------------------------------------------------------------------
+	// [SECTION] Omega stuff!
+	//-----------------------------------------------------------------------------
+
+	void ImGuiMesa::MesaShutDownRoutine()
+	{
+		if (electronicsItems.bHasQueried)
+		{
+			reset_electronics_structures();
+			ImGuiMesa::SetElectronicsRamInformationToNull();
+			electronicsItems.ramSoftSlots.clear();
+			electronicsItems.bHasQueried = false;
 		}
 	}
 

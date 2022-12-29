@@ -5,6 +5,8 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
+#include "Renderer/Scene.h"
+
 extern "C" {
 #include "dmidecode.h"
 }
@@ -277,11 +279,12 @@ namespace Karma
 	{
 	public:
 		// Showtime!
-		static void RevealMainFrame(ImGuiID mainMesaDockID);
+		static void RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene);
 		static void DrawKarmaMainMenuBarMesa();
 		static void DrawMainMenuFileListMesa();
 		static void DrawKarmaLogMesa(ImGuiID mainMesaDockID);
 		static void DrawKarmaSceneHierarchyPanelMesa();
+		static void Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene);
 
 		// Mesas!
 		static void ShowAboutKarmaMesa(bool* pbOpen);

@@ -6,16 +6,19 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "Vulkan/VulkanHolder.h"
-#include "Karma/Renderer/RendererAPI.h"
-#include "Karma/Renderer/RenderCommand.h"
+#include "Renderer/RendererAPI.h"
+#include "Renderer/RenderCommand.h"
 #include "glm/glm.hpp"
-#include "ImGuiMesa.h"
+#include "ImGui/ImGuiMesa.h"
+#include "Renderer/Renderer.h"
 
 // Emedded font
 #include "Karma/ImGui/Roboto-Regular.h"
 
 namespace Karma
 {
+	std::shared_ptr<Karma::Scene> ImGuiLayer::m_Scene = nullptr;
+
 	ImGuiLayer::ImGuiLayer(Window* relevantWindow)
 		: Layer("ImGuiLayer"), m_AssociatedWindow(relevantWindow)
 	{
@@ -199,69 +202,6 @@ namespace Karma
 		KR_CORE_INFO("Shutting down ImGuiLayer");
 	}
 
-	void ImGuiLayer::Begin()
-	{
-		switch (RendererAPI::GetAPI())
-		{
-		case RendererAPI::API::Vulkan:
-			GiveLoopBeginControlToVulkan();
-			break;
-		case RendererAPI::API::OpenGL:
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			break;
-		case RendererAPI::API::None:
-			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
-			break;
-		default:
-			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
-				break;
-		}
-		ImGui::NewFrame();
-	}
-
-	void ImGuiLayer::End()
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::Get();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
-
-		// Rendering
-		ImGui::Render();
-		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
-
-		switch (RendererAPI::GetAPI())
-		{
-		case RendererAPI::API::Vulkan:
-			GiveLoopEndControlToVulkan();
-			break;
-		case RendererAPI::API::OpenGL:
-		{
-			int displayWidth, displayHeight;
-			glfwGetFramebufferSize(window, &displayWidth, &displayHeight);
-			glViewport(0, 0, displayWidth, displayHeight);
-			glm::vec4 clearColor = RenderCommand::GetClearColor();
-			glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
-			glClear(GL_COLOR_BUFFER_BIT);
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			{
-				GLFWwindow* backup_current_context = glfwGetCurrentContext();
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
-				glfwMakeContextCurrent(backup_current_context);
-			}
-		}
-		break;
-		case RendererAPI::API::None:
-			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
-			break;
-		default:
-			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.");
-			break;
-		}
-	}
-
 	void ImGuiLayer::GiveLoopBeginControlToVulkan()
 	{
 		// Resize swap chain?
@@ -298,7 +238,31 @@ namespace Karma
 		ImGui_ImplGlfw_NewFrame();
 	}
 
-	void ImGuiLayer::OnImGuiRender()
+	// The ImGuiLayer sequence begins
+	void ImGuiLayer::Begin()
+	{
+		m_Scene = Renderer::GetScene();
+
+		switch (RendererAPI::GetAPI())
+		{
+		case RendererAPI::API::Vulkan:
+			GiveLoopBeginControlToVulkan();
+			break;
+		case RendererAPI::API::OpenGL:
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			break;
+		case RendererAPI::API::None:
+			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			break;
+		default:
+			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
+				break;
+		}
+		ImGui::NewFrame();
+	}
+
+	void ImGuiLayer::ImGuiRender(float deltaTime)
 	{
 		ImGuiID dockspaceID;
 
@@ -344,9 +308,52 @@ namespace Karma
 
 		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset
 		{
-			ImGuiMesa::RevealMainFrame(dockspaceID);
+			ImGuiMesa::RevealMainFrame(dockspaceID, m_Scene);
 		}
 	}
+
+	void ImGuiLayer::End()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		Application& app = Application::Get();
+		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+
+		// Rendering
+		ImGui::Render();
+		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
+
+		switch (RendererAPI::GetAPI())
+		{
+		case RendererAPI::API::Vulkan:
+			GiveLoopEndControlToVulkan();
+			break;
+		case RendererAPI::API::OpenGL:
+		{
+			int displayWidth, displayHeight;
+			glfwGetFramebufferSize(window, &displayWidth, &displayHeight);
+			glViewport(0, 0, displayWidth, displayHeight);
+			glm::vec4 clearColor = RenderCommand::GetClearColor();
+			glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
+			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				GLFWwindow* backup_current_context = glfwGetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				glfwMakeContextCurrent(backup_current_context);
+			}
+		}
+		break;
+		case RendererAPI::API::None:
+			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+			break;
+		default:
+			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.");
+			break;
+		}
+	}
+	// The ImGuiLayer sequence ends
 
 	void ImGuiLayer::GiveLoopEndControlToVulkan()
 	{

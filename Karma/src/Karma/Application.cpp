@@ -3,6 +3,7 @@
 #include "Karma/Input.h"
 #include "Karma/Renderer/Renderer.h"
 #include "chrono"
+#include "Scene.h"
 
 namespace Karma
 {
@@ -22,7 +23,7 @@ namespace Karma
 
 		m_Window = Window::Create();
 		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent)); // Setting the listener
-		
+
 		m_LayerStack = new LayerStack();
 
 		// Graphics API Vulkan or OpenGL should have been completely initialized by here
@@ -41,7 +42,7 @@ namespace Karma
 		delete m_Window;
 		s_Instance = nullptr;
 	}
-	
+
 	void Application::PrepareApplicationForRun()
 	{
 		HookInputSystem(Input::GetInputInstance());
@@ -63,29 +64,26 @@ namespace Karma
 		{
 			end = std::chrono::high_resolution_clock::now();
 
-			float deltaTime = (float) std::chrono::duration_cast<std::chrono::microseconds>
+			float deltaTime = (float)std::chrono::duration_cast<std::chrono::microseconds>
 				(end - begin).count();
 			begin = end;
-			
+
 			deltaTime /= 1000000.0f;
 
-			//RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
-			//RenderCommand::Clear();
-			
 			for (auto layer : *m_LayerStack)
 			{
 				layer->OnUpdate(deltaTime);
 			}
-			
+
 			// ImGui rendering sequence cue trickling through stack
 			m_ImGuiLayer->Begin();
+
 			for (auto layer : *m_LayerStack)
 			{
-				layer->OnImGuiRender();
+				layer->ImGuiRender(deltaTime);
 			}
-			m_ImGuiLayer->End();
 
-			//Karma::Renderer::EndScene();
+			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
 		}
@@ -114,13 +112,13 @@ namespace Karma
 		m_LayerStack->PushOverlay(layer);
 		layer->OnAttach();
 	}
-	
+
 	bool Application::OnControllerDeviceConnected(ControllerDeviceConnectedEvent& event)
 	{
 		KR_CORE_INFO("Application receieved Controller ConnectionEvent");
 		return true;
 	}
-	
+
 	bool Application::OnControllerDeviceDisconnected(ControllerDeviceDisconnectedEvent& event)
 	{
 		KR_CORE_INFO("Application receieved Controller DisconnectionEvent");

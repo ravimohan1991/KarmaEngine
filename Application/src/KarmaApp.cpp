@@ -36,6 +36,16 @@ public:
 
 		// Should be Material
 		//m_SquareVA->SetShader(m_BlueSQShader);
+
+		// Initialize the scene
+		m_Scene.reset(new Karma::Scene());
+
+		m_Scene->AddCamera(m_Camera);
+		m_Scene->AddVertexArray(m_SquareVA);
+
+		m_Scene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
+
+		Karma::Renderer::SetScene(m_Scene);
 	}
 
 	virtual void OnUpdate(float deltaTime) override
@@ -54,12 +64,26 @@ public:
 
 		Karma::Renderer::Submit(m_SquareVA);
 
-		//Karma::Renderer::EndScene();
-		 */
+		Karma::Renderer::EndScene();*/
 	}
 
-	virtual void OnImGuiRender() override
+	virtual void ImGuiRender(float deltaTime) override
 	{
+		/*
+		KarmaAppInputPolling(deltaTime);
+		Karma::RenderCommand::SetClearColor(m_Scene->GetClearColor());
+
+		Karma::RenderCommand::Clear();
+
+		Karma::Renderer::BeginScene(m_Scene);
+
+		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
+		m_SquareVA->UpdateProcessAndSetReadyForSubmission();
+		m_SquareVA->Bind();
+
+		Karma::Renderer::Submit(m_Scene);
+		Karma::Renderer::EndScene();
+		*/
 	}
 
 	virtual void OnEvent(Karma::Event& e) override
@@ -169,6 +193,7 @@ private:
 	std::shared_ptr<Karma::Texture> m_SquareTex;
 
 	std::shared_ptr<Karma::PerspectiveCamera> m_Camera;
+	std::shared_ptr<Karma::Scene> m_Scene;
 
 	float cameraTranslationSpeed = 1.0f;
 	float cameraRotationSpeed = 80.0f;

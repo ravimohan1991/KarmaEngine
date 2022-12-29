@@ -3,6 +3,7 @@
 #include "krpch.h"
 
 #include "Karma/Events/Event.h"
+#include "Renderer/Scene.h"
 
 namespace Karma
 {
@@ -15,8 +16,9 @@ namespace Karma
 		virtual void OnAttach() = 0;
 		virtual void OnDetach() = 0;
 		virtual void OnUpdate(float deltaTime) = 0;
-		virtual void OnImGuiRender() = 0;
-		
+		// If we want DearImGui to render the scene
+		virtual void ImGuiRender(float deltaTime) = 0;
+
 		virtual void OnEvent(Event& event)
 		{
 		}

@@ -398,7 +398,7 @@ namespace Karma
 		int width, height, channels;
 		unsigned char* imagePixelData;
 
-		imagePixelData = KarmaUtilities::GetImagePixelData("../Resources/Textures/The_Source_Wall.jpg", &width, &height, &channels, STBI_rgb_alpha);
+		imagePixelData = KarmaUtilities::GetImagePixelData(fileName, &width, &height, &channels, STBI_rgb_alpha);
 
 		size_t uploadSize = width * height * 4 * sizeof(char);
 

@@ -8,8 +8,7 @@
 #include "Karma/LayerStack.h"
 #include "Karma/ImGui/ImGuiLayer.h"
 #include "Karma/Input.h"
-
-#include <memory>
+#include "Scene.h"
 
 namespace Karma
 {
@@ -44,12 +43,12 @@ namespace Karma
 		bool OnWindowResize(WindowResizeEvent& event);
 		bool OnControllerDeviceConnected(ControllerDeviceConnectedEvent& event);
 		bool OnControllerDeviceDisconnected(ControllerDeviceDisconnectedEvent& event);
-		
+
 		// We are using raw pointers because we want necessary control over the lifetime of
 		// the objects. Especially for clearing up Vulkan relevant parts.
 		Window* m_Window;
 		LayerStack* m_LayerStack;
-		
+
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 
