@@ -8,6 +8,7 @@
 #include "Events/ApplicationEvent.h"
 #include "Window.h"
 #include "ImGuiVulkanHandler.h"
+#include "ImGuiOpenGLHandler.h"
 #include "Scene.h"
 
 namespace Karma

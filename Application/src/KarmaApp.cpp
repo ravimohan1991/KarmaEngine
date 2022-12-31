@@ -15,37 +15,6 @@ public:
 		Karma::SceneModel* sModel = new Karma::SceneModel("../Resources/Models/viking_room.obj");
 		m_SquareVA->SetMesh(sModel->GetMeshList()[0]);
 		delete sModel;*/
-
-		std::shared_ptr<Karma::Mesh> trialMesh;
-		trialMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
-		m_SquareVA->SetMesh(trialMesh);
-
-		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
-		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
-
-		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true, "CylinderShader"));
-
-		m_SquareMat.reset(new Karma::Material());
-		m_SquareMat->AddShader(m_BlueSQShader);
-		m_SquareTex.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/viking_room.png", "VikingTex", "texSampler"));
-		m_SquareMat->AddTexture(m_SquareTex);
-
-		m_SquareMat->AttatchMainCamera(m_Camera);
-
-		m_SquareVA->SetMaterial(m_SquareMat);
-
-		// Should be Material
-		//m_SquareVA->SetShader(m_BlueSQShader);
-
-		// Initialize the scene
-		m_Scene.reset(new Karma::Scene());
-
-		m_Scene->AddCamera(m_Camera);
-		m_Scene->AddVertexArray(m_SquareVA);
-
-		m_Scene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
-
-		Karma::Renderer::SetScene(m_Scene);
 	}
 
 	virtual void OnUpdate(float deltaTime) override

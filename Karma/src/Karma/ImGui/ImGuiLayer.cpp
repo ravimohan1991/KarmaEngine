@@ -4,7 +4,6 @@
 #include "GLFW/glfw3.h"
 #include "Karma/Application.h"
 #include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
 #include "Vulkan/VulkanHolder.h"
 #include "Renderer/RendererAPI.h"
 #include "Renderer/RenderCommand.h"
@@ -169,7 +168,7 @@ namespace Karma
 		else if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
 		{
 			ImGui_ImplGlfw_InitForOpenGL(window, true);
-			ImGui_ImplOpenGL3_Init("#version 410");
+			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_Init("#version 410");
 
 			// Load default font
 			ImFontConfig fontConfig;
@@ -187,7 +186,7 @@ namespace Karma
 			GracefulVulkanShutDown();
 			break;
 		case RendererAPI::API::OpenGL:
-			ImGui_ImplOpenGL3_Shutdown();
+			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_Shutdown();
 			ImGui_ImplGlfw_Shutdown();
 			ImGui::DestroyContext();
 			break;
@@ -249,7 +248,7 @@ namespace Karma
 			GiveLoopBeginControlToVulkan();
 			break;
 		case RendererAPI::API::OpenGL:
-			ImGui_ImplOpenGL3_NewFrame();
+			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			break;
 		case RendererAPI::API::None:
@@ -335,7 +334,7 @@ namespace Karma
 			glm::vec4 clearColor = RenderCommand::GetClearColor();
 			glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
 			glClear(GL_COLOR_BUFFER_BIT);
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 			{
 				GLFWwindow* backup_current_context = glfwGetCurrentContext();
