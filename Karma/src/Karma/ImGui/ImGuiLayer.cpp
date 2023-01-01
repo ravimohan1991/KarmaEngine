@@ -175,6 +175,40 @@ namespace Karma
 			fontConfig.FontDataOwnedByAtlas = false;
 			ImFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
 			io.FontDefault = robotoFont;
+
+			// Load images
+			unsigned int aboutTexture;
+			glGenTextures(1, &aboutTexture);
+			glBindTexture(GL_TEXTURE_2D, aboutTexture);
+			// set the texture wrapping parameters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			// set texture filtering parameters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			// get filename and create opengl texture
+			int width, height, nrChannels;
+			// The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
+			unsigned char* data = stbi_load("../Resources/Textures/The_Source_Wall.jpg", &width, &height, &nrChannels, 0);
+			if (data)
+			{
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			}
+			else
+			{
+				KR_CORE_ASSERT(data, "Failed to load textures image!");
+			}
+			stbi_image_free(data);
+
+			ImGui_ImplOpenGL3_Data* bd = ImGuiOpenGLHandler::ImGui_ImplOpenGL3_GetBackendData();
+
+			MesaDecalData mDData;
+			mDData.height = height;
+			mDData.width = width;
+			mDData.DecalRef = aboutTexture;
+
+			bd->mesaDecalDataList.push_back(mDData);
 		}
 	}
 

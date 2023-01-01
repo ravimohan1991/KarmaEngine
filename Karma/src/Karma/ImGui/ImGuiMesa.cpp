@@ -12,8 +12,11 @@
 #include "ImGuiMesa.h"
 #include "imgui.h"
 
+#include "Karma/Renderer/RendererAPI.h"
+
   // Experimental
 #include "ImGuiVulkanHandler.h"
+#include "ImGuiOpenGLHandler.h"
 
 namespace Karma
 {
@@ -100,10 +103,10 @@ namespace Karma
 		ImGui::Begin("3D Exhibitor");
 
 		ImVec4 bgColor;
-		bgColor.x = scene->GetClearColor().x;
-		bgColor.y = scene->GetClearColor().y;
-		bgColor.z = scene->GetClearColor().z;
-		bgColor.w = scene->GetClearColor().w;
+		bgColor.x = 0.0f;
+		bgColor.y = 0.0f;
+		bgColor.z = 0.0f;
+		bgColor.w = 1.0f;
 
 		ImGui::RenderKarma3DScene(scene.get(), bgColor);
 
@@ -260,13 +263,30 @@ namespace Karma
 		// Need to think how OpenGL shall handle this
 		// Of course nothing should be changed frontend, ie here. Something must be done at backend.
 		ImGuiIO& io = ImGui::GetIO();
-		ImGui_KarmaImplVulkan_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_KarmaImplVulkan_Data*)ImGui::GetIO().BackendRendererUserData : nullptr;
 
-		ImGui_KarmaImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(0);
+		ImTextureID aboutImageTextureID;
+		uint32_t width;
+		uint32_t height;
 
-		ImTextureID aboutImageTextureID = (ImTextureID)mesaDecalElement->TextureDescriptorSet;
-		uint32_t width = mesaDecalElement->width;
-		uint32_t height = mesaDecalElement->height;
+		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		{
+			ImGui_KarmaImplVulkan_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_KarmaImplVulkan_Data*)io.BackendRendererUserData : nullptr;
+			ImGui_KarmaImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(0);
+			aboutImageTextureID = (ImTextureID)mesaDecalElement->TextureDescriptorSet;
+			width = mesaDecalElement->width;
+			height = mesaDecalElement->height;
+		}
+
+		if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
+		{
+			ImGui_ImplOpenGL3_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_ImplOpenGL3_Data*)io.BackendRendererUserData : nullptr;
+			MesaDecalData mDData = backendData->mesaDecalDataList.at(0);
+
+			aboutImageTextureID = (ImTextureID)mDData.DecalID;
+
+			width = mDData.width;
+			height = mDData.height;
+		}
 
 		{
 			ImVec2 position = ImGui::GetCursorScreenPos();
