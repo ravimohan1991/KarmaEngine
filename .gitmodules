@@ -8,7 +8,6 @@
 [submodule "Karma/vendor/ImGui"]
 	path = Karma/vendor/ImGui
 	url = https://github.com/ravimohan1991/imgui
-	ignore = dirty
 [submodule "Karma/vendor/GLM"]
 	path = Karma/vendor/GLM
 	url = https://github.com/ravimohan1991/glm
