@@ -108,7 +108,7 @@ namespace Karma
 		bgColor.z = 0.0f;
 		bgColor.w = 1.0f;
 
-		ImGui::RenderKarma3DScene(scene.get(), bgColor);
+		ImGui::SetWindowBackGroundColor(bgColor);
 
 		ImGui::End();
 	}
@@ -183,7 +183,8 @@ namespace Karma
 		// Disable user resize,
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize;
 
-		ImGui::Begin("Karma: Log", nullptr, windowFlags, &payloadWindow);
+		ImGui::Begin("Karma: Log", nullptr, windowFlags);
+		payloadWindow = ImGui::GetCurrentContext()->CurrentWindow;
 
 		if (ImGui::SmallButton("[Debug] Add 5 entries"))
 		{
