@@ -60,7 +60,7 @@ public:
 	virtual void ImGuiRender(float deltaTime) override
 	{
 		
-		//KarmaAppInputPolling(deltaTime);
+		KarmaAppInputPolling(deltaTime);
 		//Karma::RenderCommand::SetClearColor(m_Scene->GetClearColor());
 
 		//Karma::RenderCommand::Clear();
@@ -121,6 +121,7 @@ public:
 		}
 		// Controller context ends
 
+		/*
 		if (Karma::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
 		{
 			m_Camera->LeftMouseButtonPressed();
@@ -129,7 +130,7 @@ public:
 		if (Karma::Input::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_1))
 		{
 			m_Camera->LeftMouseButtonReleased();
-		}
+		}*/
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_SPACE))
 		{

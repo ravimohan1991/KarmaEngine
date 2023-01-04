@@ -4,6 +4,7 @@ namespace Karma
 {
 	Scene::Scene()
 	{
+		m_WindowResize = false;
 	}
 
 	Scene::~Scene()

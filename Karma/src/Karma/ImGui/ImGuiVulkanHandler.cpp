@@ -145,45 +145,29 @@ namespace Karma
 		bufferSize = requirements.size;
 	}
 
-	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer)
+	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer, ImDrawData* drawData)
 	{
+		std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
 
 		// Bind 3D Vertex And Index Buffer:
 		{
-			VkBuffer vertexBuffers[1] = { static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->GetVertexBuffer()->GetVertexBuffer() };// remderingBufferData->VertexBuffer };
+			VkBuffer vertexBuffers[1] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
 			VkDeviceSize vertexOffset[1] = { 0 };
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, vertexOffset);
-			vkCmdBindIndexBuffer(commandBuffer, static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+			vkCmdBindIndexBuffer(commandBuffer, vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		}
 
 		// Setup viewport:
 		{
-			VkViewport viewport;
-			ImGuiWindow* windowToRenderWithin = sceneToDraw->GetRenderingWindow();
-
-			static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->CreateExternalViewPort(windowToRenderWithin->Pos.x, windowToRenderWithin->Pos.y,
-			windowToRenderWithin->Size.x, windowToRenderWithin->Size.y);
-
-			static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->CleanupPipeline();
-			static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->RecreateVulkanVA();
-
-			/*
-			viewport.x = windowToRenderWithin->Pos.x;
-			viewport.y = windowToRenderWithin->Pos.y;
-			viewport.width = windowToRenderWithin->Size.x;
-			viewport.height = windowToRenderWithin->Size.y;
-			viewport.minDepth = 0.0f;
-			viewport.maxDepth = 1.0f;
-
-			//KR_CORE_INFO("x: {0}, y: {1}, width: {2}, height: {3}", viewport.x, viewport.y, viewport.width, viewport.height);
-
-			if (viewport.width == 0 || viewport.height == 0)
+			if(sceneToDraw->GetWindowToRenderWithinResizeStatus())
 			{
-				KR_CORE_INFO("{0} Not ready for viewport", windowToRenderWithin->Name);
-				return;
-			}
+				ImGuiWindow* windowToRenderWithin = sceneToDraw->GetRenderingWindow();
 
-			vkCmdSetViewport(commandBuffer, 0, 1, &viewport);*/
+				vulkanVA->CreateExternalViewPort(windowToRenderWithin->Pos.x * drawData->FramebufferScale.x, windowToRenderWithin->Pos.y * drawData->FramebufferScale.y, windowToRenderWithin->Size.x * drawData->FramebufferScale.x, windowToRenderWithin->Size.y * drawData->FramebufferScale.y);
+				KR_CORE_INFO("Resizing ViewPort!");
+				vulkanVA->CleanupPipeline();
+				vulkanVA->RecreateVulkanVA();
+			}
 		}
 
 		// Bind pipeline:
@@ -380,7 +364,7 @@ namespace Karma
 						if (sceneToDraw)
 						{
 							// Assuming only one such callback
-							ImGui_KarmaImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer);
+							ImGui_KarmaImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer, drawData);
 							bDoneSettingRenderState = false;
 
 							std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());

@@ -22,6 +22,8 @@ namespace Karma
 		void SetClearColor(const glm::vec4& clearColor) { m_ClearColor = clearColor; }
 		void SetRenderWindow(ImGuiWindow* window) { m_WindowToRenderWithin = window; };
 
+		void SetWindowToRenderWithinResize(bool bStatus) { m_WindowResize = bStatus; }
+
 		// Getters
 		std::shared_ptr<VertexArray> GetRenderableVertexArray() const;
 		std::shared_ptr<Camera> GetSceneCamera() const;
@@ -32,6 +34,7 @@ namespace Karma
 		const std::vector<std::shared_ptr<Camera>>& GetAllCameras() const { return m_Cameras; }
 
 		inline ImGuiWindow* GetRenderingWindow() const { return m_WindowToRenderWithin; }
+		inline bool GetWindowToRenderWithinResizeStatus() const { return m_WindowResize; }
 
 	private:
 		std::vector<std::shared_ptr<VertexArray>> m_VertexArrays;
@@ -41,5 +44,6 @@ namespace Karma
 		
 		// Caution: raw pointer, courtsey authors of Dear ImGui
 		ImGuiWindow* m_WindowToRenderWithin;
+		bool m_WindowResize;
 	};
 }

@@ -230,7 +230,7 @@ namespace Karma
 		static void ImGui_KarmaImplVulkan_SetupRenderState(ImDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height);
 		
 		// Experimental
-		static void ImGui_KarmaImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer);
+		static void ImGui_KarmaImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer, ImDrawData* drawData);
 		
 		static void ImGui_KarmaImplVulkan_CreateShaderModules(VkDevice device, const VkAllocationCallbacks* allocator);
 		static void ImGui_KarmaImplVulkan_CreateFontSampler(VkDevice device, const VkAllocationCallbacks* allocator);

@@ -23,6 +23,8 @@ namespace Karma
 	KarmaTuringMachineElectronics ImGuiMesa::electronicsItems;
 	std::string ImGuiMesa::notAvailableText = "Kasturi Trishna (The MuskThirst)";
 
+	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
+
 	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene)
 	{
 		// The MM (Main Menu) menu bar
@@ -116,9 +118,30 @@ namespace Karma
 			//KR_CORE_INFO("Scene Callback");
 		};
 
-		scene->SetRenderWindow(ImGui::GetCurrentWindow());
-		ImGui::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
+		ImGuiWindow* theWindow = ImGui::GetCurrentWindow();
+		scene->SetRenderWindow(theWindow);
 
+		if(theWindow->Size.x != m_3DExhibitor.widthCache || theWindow->Size.y != m_3DExhibitor.heightCache
+		   || theWindow->Pos.x != m_3DExhibitor.startXCache || theWindow->Pos.y != m_3DExhibitor.startYCache)
+		{
+			scene->SetWindowToRenderWithinResize(true);
+
+			m_3DExhibitor.widthCache = theWindow->Size.x;
+			m_3DExhibitor.heightCache = theWindow->Size.y;
+			m_3DExhibitor.startYCache = theWindow->Pos.y;
+			m_3DExhibitor.startXCache = theWindow->Pos.x;
+		}
+		else
+		{
+			scene->SetWindowToRenderWithinResize(false);
+		}
+
+		//ImVec2 view = ImGui::GetContentRegionAvail();
+
+		//KR_CORE_INFO("view.x: {0}, view.y: {1}, sizefull.x: {2}, sizefull.y: {3}, size.x: {4}, size.y: {5}",
+					// view.x, view.y, theWindow->SizeFull.x, theWindow->SizeFull.y, theWindow->Size.x, theWindow->Size.y);
+
+		ImGui::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
 
 		ImGui::End();
 		ImGui::PopStyleColor();
@@ -189,13 +212,12 @@ namespace Karma
 		// 3. maybe I will find it later, and NOT the cherno later. Ok maybe cherno later because ini is the way to go.
 		ImGui::SetNextWindowSize(windowSize, conditions);
 
-		ImGuiWindow* payloadWindow;
-
 		// Disable user resize,
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize;
 
 		ImGui::Begin("Karma: Log", nullptr, windowFlags);
-		payloadWindow = ImGui::GetCurrentWindow();
+
+		ImGuiWindow* payloadWindow = ImGui::GetCurrentWindow();
 
 		if (ImGui::SmallButton("[Debug] Add 5 entries"))
 		{

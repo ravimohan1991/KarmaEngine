@@ -275,6 +275,14 @@ namespace Karma
 		static void FillTheSystemRamStructure(SystemRAM& destinationStructure, random_access_memory& sourceStructure);
 	};
 
+	struct WindowManipulationGaugeData
+	{
+		float widthCache;
+		float heightCache;
+		float startXCache;
+		float startYCache;
+	};
+
 	class KARMA_API ImGuiMesa
 	{
 	public:
@@ -312,5 +320,6 @@ namespace Karma
 
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;
+		static WindowManipulationGaugeData m_3DExhibitor;
 	};
 }
