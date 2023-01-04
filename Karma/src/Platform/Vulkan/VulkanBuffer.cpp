@@ -10,6 +10,7 @@ namespace Karma
 		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
 
 		VkDeviceSize bufferSize = size;
+		m_BufferSize = size;
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
@@ -131,6 +132,7 @@ namespace Karma
 		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
 
 		VkDeviceSize bufferSize = sizeof(uint32_t) * count;
+		m_BufferSize = bufferSize;
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;

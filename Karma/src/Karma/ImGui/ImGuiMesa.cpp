@@ -103,13 +103,32 @@ namespace Karma
 		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
 
 		ImVec4 bgColor;
-		bgColor.x = 0.0f;
-		bgColor.y = 0.0f;
-		bgColor.z = 0.0f;
+		bgColor.x = 1.0f;
+		bgColor.y = 1.0f;
+		bgColor.z = 1.0f;
 		bgColor.w = 1.0f;
 
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetColorU32(bgColor));
-		ImGui::Begin("3D Exhibitor");
+
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar;
+
+		ImGui::Begin("3D Exhibitor", nullptr, windowFlags);
+
+		ImGuiIO& io = ImGui::GetIO();
+
+		ImTextureID aboutImageTextureID = 0;
+
+		uint32_t width = 0;
+		uint32_t height = 0;
+
+		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		{
+			ImGui_KarmaImplVulkan_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_KarmaImplVulkan_Data*)io.BackendRendererUserData : nullptr;
+			ImGui_KarmaImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(1);
+			aboutImageTextureID = (ImTextureID)mesaDecalElement->TextureDescriptorSet;
+			width = mesaDecalElement->width;
+			height = mesaDecalElement->height;
+		}
 
 		//ImGui::GetCurrentWindow()->DrawList->SetWindowBackgroundColor(bgColor);
 		
@@ -121,15 +140,36 @@ namespace Karma
 		ImGuiWindow* theWindow = ImGui::GetCurrentWindow();
 		scene->SetRenderWindow(theWindow);
 
-		if(theWindow->Size.x != m_3DExhibitor.widthCache || theWindow->Size.y != m_3DExhibitor.heightCache
-		   || theWindow->Pos.x != m_3DExhibitor.startXCache || theWindow->Pos.y != m_3DExhibitor.startYCache)
+		{
+			ImVec2 position = ImGui::GetCursorScreenPos();
+
+			ImVec2 uvMin = ImVec2(0.0f, 0.0f);                 // Top-left
+			ImVec2 uvMax = ImVec2(1.0f, 1.0f);                 // Lower-right
+			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
+			ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
+			ImGui::Image(aboutImageTextureID, ImVec2(theWindow->Size.x, theWindow->Size.y), uvMin, uvMax, tint_col, border_col);
+		}
+
+		if(theWindow->Size.x != m_3DExhibitor.widthCache || theWindow->Size.y != m_3DExhibitor.heightCache)
 		{
 			scene->SetWindowToRenderWithinResize(true);
 
 			m_3DExhibitor.widthCache = theWindow->Size.x;
 			m_3DExhibitor.heightCache = theWindow->Size.y;
+		}
+		else if (theWindow->Pos.x != m_3DExhibitor.startXCache || theWindow->Pos.y != m_3DExhibitor.startYCache)
+		{
+			scene->SetWindowToRenderWithinResize(true);
+
 			m_3DExhibitor.startYCache = theWindow->Pos.y;
 			m_3DExhibitor.startXCache = theWindow->Pos.x;
+		}
+		else if(io.DisplaySize.x != m_3DExhibitor.ioDisplayXCache || io.DisplaySize.y != m_3DExhibitor.ioDisplayYCache)
+		{
+			scene->SetWindowToRenderWithinResize(true);
+
+			m_3DExhibitor.ioDisplayXCache = io.DisplaySize.x;
+			m_3DExhibitor.ioDisplayYCache = io.DisplaySize.y;
 		}
 		else
 		{

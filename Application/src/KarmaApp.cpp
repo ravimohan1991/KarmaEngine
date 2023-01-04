@@ -11,7 +11,7 @@ public:
 
 		m_SquareVA.reset(Karma::VertexArray::Create());
 		std::shared_ptr<Karma::Mesh> trialMesh;
-		trialMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
+		trialMesh.reset(new Karma::Mesh("../Resources/Models/viking_room.obj"));
 		m_SquareVA->SetMesh(trialMesh);
 
 		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
@@ -121,7 +121,7 @@ public:
 		}
 		// Controller context ends
 
-		/*
+		
 		if (Karma::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
 		{
 			m_Camera->LeftMouseButtonPressed();
@@ -130,7 +130,7 @@ public:
 		if (Karma::Input::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_1))
 		{
 			m_Camera->LeftMouseButtonReleased();
-		}*/
+		}
 
 		if (Karma::Input::IsKeyPressed(GLFW_KEY_SPACE))
 		{

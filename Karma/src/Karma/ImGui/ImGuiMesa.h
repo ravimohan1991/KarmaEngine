@@ -281,6 +281,8 @@ namespace Karma
 		float heightCache;
 		float startXCache;
 		float startYCache;
+		float ioDisplayXCache;
+		float ioDisplayYCache;
 	};
 
 	class KARMA_API ImGuiMesa

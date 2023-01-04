@@ -164,7 +164,7 @@ namespace Karma
 				ImGuiWindow* windowToRenderWithin = sceneToDraw->GetRenderingWindow();
 
 				vulkanVA->CreateExternalViewPort(windowToRenderWithin->Pos.x * drawData->FramebufferScale.x, windowToRenderWithin->Pos.y * drawData->FramebufferScale.y, windowToRenderWithin->Size.x * drawData->FramebufferScale.x, windowToRenderWithin->Size.y * drawData->FramebufferScale.y);
-				KR_CORE_INFO("Resizing ViewPort!");
+
 				vulkanVA->CleanupPipeline();
 				vulkanVA->RecreateVulkanVA();
 			}

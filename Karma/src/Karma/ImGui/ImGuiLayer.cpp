@@ -148,6 +148,7 @@ namespace Karma
 
 				//	1. The wall
 				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/The_Source_Wall.jpg");
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/Measures.png");
 
 				VkSubmitInfo endInfo = {};
 				endInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
