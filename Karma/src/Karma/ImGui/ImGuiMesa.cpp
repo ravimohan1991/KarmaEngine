@@ -100,17 +100,28 @@ namespace Karma
 	{
 		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
 
-		ImGui::Begin("3D Exhibitor");
-
 		ImVec4 bgColor;
 		bgColor.x = 0.0f;
 		bgColor.y = 0.0f;
 		bgColor.z = 0.0f;
 		bgColor.w = 1.0f;
 
-		ImGui::SetWindowBackGroundColor(bgColor);
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetColorU32(bgColor));
+		ImGui::Begin("3D Exhibitor");
+
+		//ImGui::GetCurrentWindow()->DrawList->SetWindowBackgroundColor(bgColor);
+		
+		ImDrawCallback sceneCallBack = [](const ImDrawList* parentList, const ImDrawCmd* drawCommand)
+		{
+			//KR_CORE_INFO("Scene Callback");
+		};
+
+		scene->SetRenderWindow(ImGui::GetCurrentWindow());
+		ImGui::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
+
 
 		ImGui::End();
+		ImGui::PopStyleColor();
 	}
 
 	void ImGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
@@ -184,7 +195,7 @@ namespace Karma
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize;
 
 		ImGui::Begin("Karma: Log", nullptr, windowFlags);
-		payloadWindow = ImGui::GetCurrentContext()->CurrentWindow;
+		payloadWindow = ImGui::GetCurrentWindow();
 
 		if (ImGui::SmallButton("[Debug] Add 5 entries"))
 		{
@@ -265,9 +276,10 @@ namespace Karma
 		// Of course nothing should be changed frontend, ie here. Something must be done at backend.
 		ImGuiIO& io = ImGui::GetIO();
 
-		ImTextureID aboutImageTextureID;
-		uint32_t width;
-		uint32_t height;
+		ImTextureID aboutImageTextureID = 0;
+
+		uint32_t width = 0;
+		uint32_t height = 0;
 
 		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
 		{

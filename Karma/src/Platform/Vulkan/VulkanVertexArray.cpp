@@ -8,6 +8,7 @@ namespace Karma
 	VulkanVertexArray::VulkanVertexArray() : m_SupportedDeviceFeatures(VulkanHolder::GetVulkanContext()->GetSupportedDeviceFeatures()),
 		m_device(VulkanHolder::GetVulkanContext()->GetLogicalDevice())
 	{
+		m_UseExternalViewPort = false;
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
@@ -42,6 +43,18 @@ namespace Karma
 		m_Shader = std::static_pointer_cast<VulkanShader>(shader);
 		VulkanHolder::GetVulkanContext()->RegisterUBO(m_Shader->GetUniformBufferObject());
 		GenerateVulkanVA();
+	}
+
+	void VulkanVertexArray::CreateExternalViewPort(float startX, float startY, float width, float height)
+	{
+		m_ExternalViewPort.x = startX;
+		m_ExternalViewPort.y = startY;
+		m_ExternalViewPort.width = width;
+		m_ExternalViewPort.height = height;
+		m_ExternalViewPort.minDepth = 0.0f;
+		m_ExternalViewPort.maxDepth = 1.0f;
+
+		m_UseExternalViewPort = true;
 	}
 
 	void VulkanVertexArray::CreateGraphicsPipeline()
@@ -90,7 +103,15 @@ namespace Karma
 		VkPipelineViewportStateCreateInfo viewportState{};
 		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		viewportState.viewportCount = 1;
-		viewportState.pViewports = &viewport;
+		if (m_UseExternalViewPort)
+		{
+			viewportState.pViewports = &m_ExternalViewPort;
+		}
+		else
+		{
+			viewportState.pViewports = &viewport;
+		}
+		
 		viewportState.scissorCount = 1;
 		viewportState.pScissors = &scissor;
 

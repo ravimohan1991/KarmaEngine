@@ -32,6 +32,8 @@ namespace Karma
 		void CreateDescriptorPool();
 		void CreateDescriptorSets();
 
+		void CreateExternalViewPort(float startX, float startY, float width, float height);
+
 		//void CreateCommandBuffers();
 
 		void GenerateVulkanVA();
@@ -84,6 +86,9 @@ namespace Karma
 		std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
 
 		const VkPhysicalDeviceFeatures& m_SupportedDeviceFeatures;
+
+		VkViewport m_ExternalViewPort;
+		bool m_UseExternalViewPort;
 	};
 
 }

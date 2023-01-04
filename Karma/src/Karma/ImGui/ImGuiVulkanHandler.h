@@ -6,6 +6,8 @@
 #include "krpch.h"
 
 #include "imgui.h"
+#include "imgui_internal.h"
+#include "Karma/Renderer/Scene.h"
 #include <vulkan/vulkan.h>
 
 namespace Karma
@@ -226,6 +228,10 @@ namespace Karma
 		static uint32_t ImGui_KarmaImplVulkan_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits);
 		static void CreateOrResizeBuffer(VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkDeviceSize& pBufferSize, size_t newSize, VkBufferUsageFlagBits usage);
 		static void ImGui_KarmaImplVulkan_SetupRenderState(ImDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height);
+		
+		// Experimental
+		static void ImGui_KarmaImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer);
+		
 		static void ImGui_KarmaImplVulkan_CreateShaderModules(VkDevice device, const VkAllocationCallbacks* allocator);
 		static void ImGui_KarmaImplVulkan_CreateFontSampler(VkDevice device, const VkAllocationCallbacks* allocator);
 		static void ImGui_KarmaImplVulkan_CreateDescriptorSetLayout(VkDevice device, const VkAllocationCallbacks* allocator);

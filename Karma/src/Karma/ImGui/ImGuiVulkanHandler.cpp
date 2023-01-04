@@ -2,6 +2,7 @@
 #include "Vulkan/VulkanHolder.h"
 #include "Renderer/RenderCommand.h"
 #include "KarmaUtilities.h"
+#include "Platform/Vulkan/VulkanVertexArray.h"
 
 // Visual Studio warnings
 /*#ifdef _MSC_VER
@@ -142,6 +143,54 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind memory. Oh crappp");
 
 		bufferSize = requirements.size;
+	}
+
+	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer)
+	{
+
+		// Bind 3D Vertex And Index Buffer:
+		{
+			VkBuffer vertexBuffers[1] = { static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->GetVertexBuffer()->GetVertexBuffer() };// remderingBufferData->VertexBuffer };
+			VkDeviceSize vertexOffset[1] = { 0 };
+			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, vertexOffset);
+			vkCmdBindIndexBuffer(commandBuffer, static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+		}
+
+		// Setup viewport:
+		{
+			VkViewport viewport;
+			ImGuiWindow* windowToRenderWithin = sceneToDraw->GetRenderingWindow();
+
+			static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->CreateExternalViewPort(windowToRenderWithin->Pos.x, windowToRenderWithin->Pos.y,
+			windowToRenderWithin->Size.x, windowToRenderWithin->Size.y);
+
+			static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->CleanupPipeline();
+			static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->RecreateVulkanVA();
+
+			/*
+			viewport.x = windowToRenderWithin->Pos.x;
+			viewport.y = windowToRenderWithin->Pos.y;
+			viewport.width = windowToRenderWithin->Size.x;
+			viewport.height = windowToRenderWithin->Size.y;
+			viewport.minDepth = 0.0f;
+			viewport.maxDepth = 1.0f;
+
+			//KR_CORE_INFO("x: {0}, y: {1}, width: {2}, height: {3}", viewport.x, viewport.y, viewport.width, viewport.height);
+
+			if (viewport.width == 0 || viewport.height == 0)
+			{
+				KR_CORE_INFO("{0} Not ready for viewport", windowToRenderWithin->Name);
+				return;
+			}
+
+			vkCmdSetViewport(commandBuffer, 0, 1, &viewport);*/
+		}
+
+		// Bind pipeline:
+		{
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->GetGraphicsPipeline());
+		}
+
 	}
 
 	void ImGuiVulkanHandler::ImGui_KarmaImplVulkan_SetupRenderState(ImDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height)
@@ -293,27 +342,21 @@ namespace Karma
 
 			vkUnmapMemory(vulkanInfo->Device, renderBuffer->VertexBufferMemory);
 			vkUnmapMemory(vulkanInfo->Device, renderBuffer->IndexBufferMemory);
-
-			//vkFreeMemory(vulkanInfo->Device, renderBuffer->VertexBufferMemory, vulkanInfo->Allocator);
-			//vkFreeMemory(vulkanInfo->Device, renderBuffer->IndexBufferMemory, vulkanInfo->Allocator);
-
-			// No use of destroying buffer because we will resize it instead of creating the next iteration
-			// vkDestroyBuffer(vulkanInfo->Device, renderBuffer->VertexBuffer, vulkanInfo->Allocator);
-			// vkDestroyBuffer(vulkanInfo->Device, renderBuffer->IndexBuffer, vulkanInfo->Allocator);
 		}
-
-		// Setup desired Vulkan state
-		ImGui_KarmaImplVulkan_SetupRenderState(drawData, pipeline, commandBuffer, renderBuffer, width, height);
 
 		// Will project scissor/clipping rectangles into framebuffer space
 		ImVec2 clipOff = drawData->DisplayPos;         // (0,0) unless using multi-viewports
 		ImVec2 clipScale = drawData->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
+
+		bool bDoneSettingRenderState = false;
 
 		// Render command lists
 		// (Because we merged all buffers into a single one, we maintain our own offset into them)
 		// Aah the interleaving, I was wondering when this'd show up...
 		int globalVertexOffset = 0;
 		int globalIndexOffset = 0;
+
+		Scene* sceneToDraw = nullptr;
 
 		for (int n = 0; n < drawData->CmdListsCount; n++)
 		{
@@ -333,10 +376,37 @@ namespace Karma
 					else
 					{
 						drawCommand->UserCallback(commandList, drawCommand);
+						sceneToDraw = static_cast<Scene*>(drawCommand->UserCallbackData);
+						if (sceneToDraw)
+						{
+							// Assuming only one such callback
+							ImGui_KarmaImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer);
+							bDoneSettingRenderState = false;
+
+							std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
+
+							// Hmm
+							vulkanVA->UpdateProcessAndSetReadyForSubmission();
+							vulkanVA->Bind();
+
+							VulkanHolder::GetVulkanContext()->UploadUBO(frameIndex);
+
+							vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[frameIndex], 0, nullptr);
+							vkCmdDrawIndexed(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
+						}
 					}
 				}
 				else
 				{
+					// Setup desired Vulkan state
+					// vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdBindIndexBuffer, setup display viewport, and upload pushconstants or UBOs
+					// specific to ImGui's not so 3d rendering types (windows etc)
+					if (!bDoneSettingRenderState)
+					{
+						ImGui_KarmaImplVulkan_SetupRenderState(drawData, pipeline, commandBuffer, renderBuffer, width, height);
+						bDoneSettingRenderState = true;
+					}
+
 					// Project scissor/clipping rectangles into framebuffer space
 					ImVec2 clipMin((drawCommand->ClipRect.x - clipOff.x) * clipScale.x, (drawCommand->ClipRect.y - clipOff.y) * clipScale.y);
 					ImVec2 clipMax((drawCommand->ClipRect.z - clipOff.x) * clipScale.x, (drawCommand->ClipRect.w - clipOff.y) * clipScale.y);
