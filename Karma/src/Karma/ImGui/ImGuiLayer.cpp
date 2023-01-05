@@ -16,8 +16,6 @@
 
 namespace Karma
 {
-	std::shared_ptr<Karma::Scene> ImGuiLayer::m_Scene = nullptr;
-
 	ImGuiLayer::ImGuiLayer(Window* relevantWindow)
 		: Layer("ImGuiLayer"), m_AssociatedWindow(relevantWindow)
 	{
@@ -275,8 +273,6 @@ namespace Karma
 	// The ImGuiLayer sequence begins
 	void ImGuiLayer::Begin()
 	{
-		m_Scene = Renderer::GetScene();
-
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::Vulkan:
@@ -298,53 +294,6 @@ namespace Karma
 
 	void ImGuiLayer::ImGuiRender(float deltaTime)
 	{
-		/*
-		ImGuiID dockspaceID;
-
-		// 1. Show the big demo window. For debug purpose!!
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
-
-		// 2. A UI canvas, if I may, for the main window!!
-		{
-			static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-			ImGuiWindowFlags windowFlags = ImGuiDockNodeFlags_None;
-
-			const ImGuiViewport* viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(viewport->WorkPos);
-			ImGui::SetNextWindowSize(viewport->WorkSize);
-			ImGui::SetNextWindowViewport(viewport->ID);
-
-			// No clue
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-
-			windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-
-			windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-			// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-			// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
-			// all active windows docked into it will lose their parent and become undocked.
-			// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
-			// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
-			// hmm
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-			ImGui::Begin("KarmaSafetyDockSpace", nullptr, windowFlags);
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar(2);
-
-			dockspaceID = ImGui::GetID("KarmaSafetyDockSpace");
-			ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
-
-			ImGui::End();
-		}
-
-		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset
-		{
-			ImGuiMesa::RevealMainFrame(dockspaceID, m_Scene);
-		}*/
 	}
 
 	void ImGuiLayer::End()

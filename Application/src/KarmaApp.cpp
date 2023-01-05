@@ -35,7 +35,7 @@ public:
 
 		m_Scene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 
-		Karma::Renderer::SetScene(m_Scene);
+		//Karma::Renderer::SetScene(m_Scene);
 	}
 
 	virtual void OnUpdate(float deltaTime) override

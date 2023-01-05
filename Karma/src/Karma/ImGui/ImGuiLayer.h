@@ -53,7 +53,6 @@ namespace Karma
 		float m_Time = 0.0f;
 
 		Window* m_AssociatedWindow;
-		static std::shared_ptr<Scene> m_Scene;
 
 		// Vulkan specific members
 		VkDescriptorPool m_ImGuiDescriptorPool;

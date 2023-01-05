@@ -1,4 +1,7 @@
 #include "EditorLayer.h"
+#include "Karma/ImGui/ImGuiMesa.h"
+
+#include "GLFW/glfw3.h"
 
 namespace Karma
 {
@@ -40,7 +43,7 @@ namespace Karma
 		m_ModelTexture.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/viking_room.png", "VikingTex", "texSampler"));
 
 		m_ModelMaterial->AddTexture(m_ModelTexture);
-		//m_ModelMaterial->AttatchMainCamera(m_EditorCamera); Is this needed?
+		m_ModelMaterial->AttatchMainCamera(m_EditorCamera); //Is this needed?
 
 		m_ModelVertexArray->SetMaterial(m_ModelMaterial);
 
@@ -48,8 +51,6 @@ namespace Karma
 		m_EditorScene->AddCamera(m_EditorCamera);
 		m_EditorScene->AddVertexArray(m_ModelVertexArray);
 		m_EditorScene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
-
-		//Karma::Renderer::SetScene(m_EditorScene);
 	}
 
 	void EditorLayer::OnAttach()
@@ -64,7 +65,7 @@ namespace Karma
 
 	void EditorLayer::OnUpdate(float deltaTime)
 	{
-
+		InputPolling(deltaTime);
 	}
 
 	void EditorLayer::ImGuiRender(float deltaTime)
@@ -109,7 +110,101 @@ namespace Karma
 
 			ImGui::End();
 		}
+
+		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset
+		{
+			ImGuiMesa::RevealMainFrame(dockspaceID, m_EditorScene);
+		}
 	}
+
+	void EditorLayer::InputPolling(float deltaTime)
+	{
+		// Camera controls
+		if (Input::IsKeyPressed(GLFW_KEY_A))
+		{
+			m_EditorCamera->MoveSideways(-cameraTranslationSpeed * deltaTime);
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_D))
+		{
+			m_EditorCamera->MoveSideways(cameraTranslationSpeed * deltaTime);
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_W))
+		{
+			m_EditorCamera->MoveForward(cameraTranslationSpeed * deltaTime);
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_S))
+		{
+			m_EditorCamera->MoveForward(-cameraTranslationSpeed * deltaTime);
+		}
+
+		static uint32_t testControllerID = 0;
+
+		// Controller context begins
+		float val = Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_Y, testControllerID);
+
+		if (abs(val) >= .1f)
+		{
+			m_EditorCamera->MoveForward(-1.f * val * cameraTranslationSpeed * deltaTime);
+		}
+
+		val = Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_LEFT_X, testControllerID);
+
+		if (abs(val) >= .1f)
+		{
+			m_EditorCamera->MoveSideways(val * cameraTranslationSpeed * deltaTime);
+		}
+		// Controller context ends
+
+
+		if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
+		{
+			m_EditorCamera->LeftMouseButtonPressed();
+		}
+
+		if (Input::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_1))
+		{
+			m_EditorCamera->LeftMouseButtonReleased();
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_SPACE))
+		{
+			m_EditorCamera->MoveUp(cameraTranslationSpeed * deltaTime);
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_LEFT_CONTROL))
+		{
+			m_EditorCamera->MoveUp(-cameraTranslationSpeed * deltaTime);
+		}
+
+		// Controller context begins
+		if (Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_DOWN, testControllerID))
+		{
+			m_EditorCamera->MoveUp(-cameraTranslationSpeed * deltaTime);
+		}
+
+		if (Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_DPAD_UP, testControllerID))
+		{
+			m_EditorCamera->MoveUp(cameraTranslationSpeed * deltaTime);
+		}
+
+		val = Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_X, testControllerID);
+
+		if (abs(val) > .1f)
+		{
+			m_EditorCamera->RotateAboutYAxis(val * cameraRotationSpeed * deltaTime);
+		}
+
+		val = Input::ControllerAxisPivotVal(GLFW_GAMEPAD_AXIS_RIGHT_Y, testControllerID);
+		if (abs(val) > .1f)
+		{
+			m_EditorCamera->RotateAboutXAxis(-1.f * val * cameraRotationSpeed * deltaTime);
+		}
+		// Controller context ends
+	}
+
 }
 
 class KarmaApp : public Karma::Application

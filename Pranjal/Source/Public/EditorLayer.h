@@ -18,6 +18,7 @@ namespace Karma
 		virtual void ImGuiRender(float deltaTime) override;
 
 		void OpenScene();
+		void InputPolling(float deltaTime);
 
 	private:
 		std::shared_ptr<Karma::Shader> m_ModelShader;

@@ -31,6 +31,9 @@ Karma.txt
 *.xcodeproj
 *.xcworkspace
 
+# Mac store stuff
+*.DS_Store
+
 # ImGui files
 imgui.ini
 DearImGuiEditor.ini
