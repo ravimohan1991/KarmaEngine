@@ -298,6 +298,7 @@ namespace Karma
 
 	void ImGuiLayer::ImGuiRender(float deltaTime)
 	{
+		/*
 		ImGuiID dockspaceID;
 
 		// 1. Show the big demo window. For debug purpose!!
@@ -343,7 +344,7 @@ namespace Karma
 		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset
 		{
 			ImGuiMesa::RevealMainFrame(dockspaceID, m_Scene);
-		}
+		}*/
 	}
 
 	void ImGuiLayer::End()

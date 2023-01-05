@@ -163,7 +163,7 @@ namespace Karma
 			{
 				ImGuiWindow* windowToRenderWithin = sceneToDraw->GetRenderingWindow();
 
-				vulkanVA->CreateExternalViewPort(windowToRenderWithin->Pos.x * drawData->FramebufferScale.x, windowToRenderWithin->Pos.y * drawData->FramebufferScale.y, windowToRenderWithin->Size.x * drawData->FramebufferScale.x, windowToRenderWithin->Size.y * drawData->FramebufferScale.y);
+				vulkanVA->CreateExternalViewPort(windowToRenderWithin->Pos.x * drawData->FramebufferScale.x, (windowToRenderWithin->Pos.y + windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y , windowToRenderWithin->Size.x * drawData->FramebufferScale.x , (windowToRenderWithin->Size.y - windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y);
 
 				vulkanVA->CleanupPipeline();
 				vulkanVA->RecreateVulkanVA();
