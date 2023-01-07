@@ -324,6 +324,13 @@ namespace Karma
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;
 		static WindowManipulationGaugeData m_3DExhibitor;
+
+		// Content browser
+		static std::filesystem::path m_CurrentDirectory;
+
+			// Need agnostic naming scheme
+			static uint32_t m_DirectoryIcon;
+			static uint32_t m_FileIcon;
 		
 	public:
 		static bool m_ViewportFocused;

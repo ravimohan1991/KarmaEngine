@@ -151,12 +151,12 @@ namespace Karma
 				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/Measures.png", "Primitive Background");
 
 				// 3. Icons Packa
-				/*
+
 				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/File.png", "File icon");
 				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/Folder.png", "Folder icon");
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/OpenFolder.png", "Opened Folder incon");*/
-				//ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/LeftArrow.png", "Left Arrow icon");
-				/*ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/RightArrow.png"); */
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/OpenFolder.png", "Opened Folder incon");
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/LeftArrow.png", "Left Arrow icon");
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/RightArrow.png"); 
 
 				VkSubmitInfo endInfo = {};
 				endInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
