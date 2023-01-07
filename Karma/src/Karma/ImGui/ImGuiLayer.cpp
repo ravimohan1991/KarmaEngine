@@ -145,8 +145,18 @@ namespace Karma
 				// Load Images
 
 				//	1. The wall
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/The_Source_Wall.jpg");
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/Measures.png");
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/The_Source_Wall.jpg", "The Source");
+				
+				// 2. 3D Exhibitor large image (primitive theme)
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/Measures.png", "Primitive Background");
+
+				// 3. Icons Packa
+				/*
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/File.png", "File icon");
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/Folder.png", "Folder icon");
+				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/OpenFolder.png", "Opened Folder incon");*/
+				//ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/LeftArrow.png", "Left Arrow icon");
+				/*ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/RightArrow.png"); */
 
 				VkSubmitInfo endInfo = {};
 				endInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -189,7 +199,7 @@ namespace Karma
 			// get filename and create opengl texture
 			int width, height, nrChannels;
 			// The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-			unsigned char* data = stbi_load("../Resources/Textures/The_Source_Wall.jpg", &width, &height, &nrChannels, 0);
+			unsigned char* data = KarmaUtilities::GetImagePixelData("../Resources/Textures/The_Source_Wall.jpg", &width, &height, &nrChannels, 0);
 			if (data)
 			{
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);

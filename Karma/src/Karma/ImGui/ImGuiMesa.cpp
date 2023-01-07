@@ -11,7 +11,7 @@
 
 #include "ImGuiMesa.h"
 #include "imgui.h"
-
+#include "Karma/Application.h"
 #include "Karma/Renderer/RendererAPI.h"
 
   // Experimental
@@ -22,6 +22,8 @@ namespace Karma
 {
 	KarmaTuringMachineElectronics ImGuiMesa::electronicsItems;
 	std::string ImGuiMesa::notAvailableText = "Kasturi Trishna (The MuskThirst)";
+	bool ImGuiMesa::m_ViewportFocused = false;
+	bool ImGuiMesa::m_ViewportHovered = false;
 
 	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
 
@@ -81,6 +83,11 @@ namespace Karma
 		{
 			Draw3DModelExhibitorMesa(scene);
 		}
+
+		// 6. The content browser
+		{
+			DrawContentBrowser();
+		}
 	}
 
 	ImGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node)
@@ -98,6 +105,15 @@ namespace Karma
 	// [SECTION] A variety of Dear ImGui mesas
 	//-----------------------------------------------------------------------------
 
+	void ImGuiMesa::DrawContentBrowser()
+	{
+		ImGui::Begin("Content Browser");
+
+
+
+		ImGui::End();
+	}
+
 	void ImGuiMesa::Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene)
 	{
 		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
@@ -113,6 +129,11 @@ namespace Karma
 		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar;
 
 		ImGui::Begin("3D Exhibitor", nullptr, windowFlags);
+
+		ImGuiWindow* window = ImGui::FindWindowByName("3D Exhibitor");
+
+		m_ViewportFocused = ImGui::IsWindowFocused();
+		m_ViewportHovered = ImGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * ImGui::GetIO().DisplayFramebufferScale.y > ImGui::GetMousePos().y);
 
 		ImGuiIO& io = ImGui::GetIO();
 
@@ -306,7 +327,7 @@ namespace Karma
 
 		if (ImGui::MenuItem("Quit", "Alt+F4"))
 		{
-			// write logic to quit
+			Application::Get().CloseApplication();
 		}
 	}
 

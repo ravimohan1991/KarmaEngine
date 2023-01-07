@@ -1,6 +1,7 @@
 #include "VulkanBuffer.h"
 #include "Platform/Vulkan/VulkanHolder.h"
 #include "Karma/Renderer/RenderCommand.h"
+#include "Karma/KarmaUtilities.h"
 
 namespace Karma
 {
@@ -357,7 +358,7 @@ namespace Karma
 	// ImageBuffer
 	VulkanImageBuffer::VulkanImageBuffer(const char* filename)
 	{
-		stbi_uc* pixels = stbi_load("../Resources/Textures/viking_room.png", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		stbi_uc* pixels = KarmaUtilities::GetImagePixelData(filename, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
 		// Need more consideration on image size
 		VkDeviceSize imageSize = texWidth * texHeight * 4;

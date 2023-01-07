@@ -295,6 +295,7 @@ namespace Karma
 		static void DrawKarmaLogMesa(ImGuiID mainMesaDockID);
 		static void DrawKarmaSceneHierarchyPanelMesa();
 		static void Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene);
+		static void DrawContentBrowser();
 
 		// Mesas!
 		static void ShowAboutKarmaMesa(bool* pbOpen);
@@ -323,5 +324,9 @@ namespace Karma
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;
 		static WindowManipulationGaugeData m_3DExhibitor;
+		
+	public:
+		static bool m_ViewportFocused;
+		static bool m_ViewportHovered;
 	};
 }

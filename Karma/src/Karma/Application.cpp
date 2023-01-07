@@ -96,6 +96,13 @@ namespace Karma
 		return true;
 	}
 
+	void Application::CloseApplication()
+	{
+		m_Running = false;
+
+		// Do leftover work like memorizing window size and all that
+	}
+
 	bool Application::OnWindowResize(WindowResizeEvent& event)
 	{
 		return m_Window->OnResize(event);

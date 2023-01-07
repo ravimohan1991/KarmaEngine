@@ -18,7 +18,7 @@ namespace Karma
 		{
 			// Get hold of model
 			std::shared_ptr<Karma::Mesh> modelMesh;
-			modelMesh.reset(new Karma::Mesh("../Resources/Models/viking_room.obj"));
+			modelMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
 
 			// Set the mesh in vertex array
 			m_ModelVertexArray->SetMesh(modelMesh);
@@ -40,7 +40,7 @@ namespace Karma
 		}
 
 		// Then we set texture
-		m_ModelTexture.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/viking_room.png", "VikingTex", "texSampler"));
+		m_ModelTexture.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/UnrealGrid.png", "VikingTex", "texSampler"));
 
 		m_ModelMaterial->AddTexture(m_ModelTexture);
 		m_ModelMaterial->AttatchMainCamera(m_EditorCamera); //Is this needed?
@@ -117,6 +117,38 @@ namespace Karma
 		}
 	}
 
+	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+	{
+		if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_1)
+		{
+			if (ImGuiMesa::m_ViewportHovered)
+			{
+			}
+		}
+		return false;
+	}
+
+	bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
+	{
+		m_EditorCamera->LeftMouseButtonReleased();
+		return false;
+	}
+
+	void EditorLayer::OnEvent(Event& e)
+	{
+		EventDispatcher dispatcher(e);
+
+		dispatcher.Dispatch<KeyPressedEvent>(KR_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(KR_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
+
+		dispatcher.Dispatch<MouseButtonReleasedEvent>(KR_BIND_EVENT_FN(EditorLayer::OnMouseButtonReleased));
+	}
+
+	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+	{
+		return false;
+	}
+
 	void EditorLayer::InputPolling(float deltaTime)
 	{
 		// Camera controls
@@ -159,14 +191,17 @@ namespace Karma
 		// Controller context ends
 
 
-		if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
+		if (ImGuiMesa::m_ViewportHovered)
 		{
-			m_EditorCamera->LeftMouseButtonPressed();
-		}
+			if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
+			{
+				m_EditorCamera->LeftMouseButtonPressed();
+			}
 
-		if (Input::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_1))
-		{
-			m_EditorCamera->LeftMouseButtonReleased();
+			if (Input::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_1))
+			{
+				m_EditorCamera->LeftMouseButtonReleased();
+			}
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_SPACE))

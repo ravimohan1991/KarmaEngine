@@ -442,12 +442,14 @@ namespace Karma
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 	}
 
-	bool ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(VkCommandBuffer commandBuffer, char const* fileName)
+	bool ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(VkCommandBuffer commandBuffer, char const* fileName, const std::string& lable)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui_KarmaImplVulkan_Image_TextureData* imageData = new ImGui_KarmaImplVulkan_Image_TextureData();
 		ImGui_KarmaImplVulkan_Data* backendData = ImGui_KarmaImplVulkan_GetBackendData();
 		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+
+		imageData->TextureLable = lable;
 
 		int width, height, channels;
 		unsigned char* imagePixelData;

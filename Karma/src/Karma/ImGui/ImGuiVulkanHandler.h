@@ -173,6 +173,11 @@ namespace Karma
 		VkDescriptorSet             TextureDescriptorSet;
 		VkDeviceMemory              UploadBufferMemory;
 		VkBuffer                    UploadBuffer;
+
+		ImGui_KarmaImplVulkan_Image_TextureData()
+		{
+			TextureLable = "NO LABLE YET";
+		}
 	};
 
 	// Vulkan data
@@ -257,7 +262,7 @@ namespace Karma
 		static void ImGui_KarmaImplVulkan_ShivaFrameRenderBuffers(VkDevice device, ImGui_KarmaImplVulkanH_ImageFrameRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
 
 		static bool ImGui_KarmaImplVulkan_CreateFontsTexture(VkCommandBuffer commandBuffer);
-		static bool ImGui_KarmaImplVulkan_CreateTexture(VkCommandBuffer commandBuffer, char const* fileName);
+		static bool ImGui_KarmaImplVulkan_CreateTexture(VkCommandBuffer commandBuffer, char const* fileName, const std::string& lable = "");
 
 		static bool ImGui_KarmaImplVulkan_CreateDeviceObjects();
 		static void ImGui_KarmaImplVulkan_DestroyFontUploadObjects();

@@ -7,6 +7,7 @@
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Platform/Vulkan/VulkanContext.h"
 #include "Karma/Renderer/Renderer.h"
+#include "Karma/KarmaUtilities.h"
 
 namespace Karma
 {
@@ -92,7 +93,7 @@ namespace Karma
 
 		// Set the ICOOOOON
 		GLFWimage karmaEQ;
-		karmaEQ.pixels = stbi_load("../Resources/Textures/KarmaEQ.png", &karmaEQ.width, &karmaEQ.height, 0, 4); //rgba channels
+		karmaEQ.pixels = KarmaUtilities::GetImagePixelData("../Resources/Textures/KarmaEQ.png", &karmaEQ.width, &karmaEQ.height, 0, 4); //rgba channels
 		glfwSetWindowIcon(m_Window, 1, &karmaEQ);
 		stbi_image_free(karmaEQ.pixels);
 	}

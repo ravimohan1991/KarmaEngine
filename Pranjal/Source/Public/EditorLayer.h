@@ -18,6 +18,10 @@ namespace Karma
 		virtual void ImGuiRender(float deltaTime) override;
 
 		void OpenScene();
+		virtual void OnEvent(Event& event) override;
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+		bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
+		bool OnKeyPressed(KeyPressedEvent& e);
 		void InputPolling(float deltaTime);
 
 	private:
