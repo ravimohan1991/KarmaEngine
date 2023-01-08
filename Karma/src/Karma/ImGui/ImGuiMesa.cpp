@@ -170,6 +170,10 @@ namespace Karma
 				{
 					m_CurrentDirectory /= path.filename();
 				}
+				else if(directoryEntry.is_regular_file() && (path.filename().extension() == ".obj"))
+				{
+
+				}
 			}
 
 			ImGui::TextWrapped("%s", filenameString.c_str());
