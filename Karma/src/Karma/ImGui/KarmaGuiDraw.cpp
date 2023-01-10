@@ -419,7 +419,7 @@ void KGDrawList::_ClearFreeMemory()
     CmdBuffer.clear();
     IdxBuffer.clear();
     VtxBuffer.clear();
-    Flags = ImDrawListFlags_None;
+    Flags = KGDrawListFlags_None;
     _VtxCurrentIdx = 0;
     _VtxWritePtr = NULL;
     _IdxWritePtr = NULL;
@@ -626,7 +626,7 @@ void KGDrawList::PrimReserve(int idx_count, int vtx_count)
 {
     // Large mesh support (when enabled)
     IM_ASSERT_PARANOID(idx_count >= 0 && vtx_count >= 0);
-    if (sizeof(KGDrawIdx) == 2 && (_VtxCurrentIdx + vtx_count >= (1 << 16)) && (Flags & ImDrawListFlags_AllowVtxOffset))
+    if (sizeof(KGDrawIdx) == 2 && (_VtxCurrentIdx + vtx_count >= (1 << 16)) && (Flags & KGDrawListFlags_AllowVtxOffset))
     {
         // FIXME: In theory we should be testing that vtx_count <64k here.
         // In practice, RenderText() relies on reserving ahead for a worst case scenario so it is currently useful for us
@@ -717,12 +717,12 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
     if (points_count < 2)
         return;
 
-    const bool closed = (flags & ImDrawFlags_Closed) != 0;
+    const bool closed = (flags & KGDrawFlags_Closed) != 0;
     const ImVec2 opaque_uv = _Data->TexUvWhitePixel;
     const int count = closed ? points_count : points_count - 1; // The number of line segments we need to draw
     const bool thick_line = (thickness > _FringeScale);
 
-    if (Flags & ImDrawListFlags_AntiAliasedLines)
+    if (Flags & KGDrawListFlags_AntiAliasedLines)
     {
         // Anti-aliased stroke
         const float AA_SIZE = _FringeScale;
@@ -736,10 +736,10 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
         // Do we want to draw this line using a texture?
         // - For now, only draw integer-width lines using textures to avoid issues with the way scaling occurs, could be improved.
         // - If AA_SIZE is not 1.0f we cannot use the texture path.
-        const bool use_texture = (Flags & ImDrawListFlags_AntiAliasedLinesUseTex) && (integer_thickness < IM_DRAWLIST_TEX_LINES_WIDTH_MAX) && (fractional_thickness <= 0.00001f) && (AA_SIZE == 1.0f);
+        const bool use_texture = (Flags & KGDrawListFlags_AntiAliasedLinesUseTex) && (integer_thickness < IM_DRAWLIST_TEX_LINES_WIDTH_MAX) && (fractional_thickness <= 0.00001f) && (AA_SIZE == 1.0f);
 
-        // We should never hit this, because NewFrame() doesn't set ImDrawListFlags_AntiAliasedLinesUseTex unless ImFontAtlasFlags_NoBakedLines is off
-        IM_ASSERT_PARANOID(!use_texture || !(_Data->Font->ContainerAtlas->Flags & ImFontAtlasFlags_NoBakedLines));
+        // We should never hit this, because NewFrame() doesn't set KGDrawListFlags_AntiAliasedLinesUseTex unless KGFontAtlasFlags_NoBakedLines is off
+        IM_ASSERT_PARANOID(!use_texture || !(_Data->Font->ContainerAtlas->Flags & KGFontAtlasFlags_NoBakedLines));
 
         const int idx_count = use_texture ? (count * 6) : (thick_line ? count * 18 : count * 12);
         const int vtx_count = use_texture ? (points_count * 2) : (thick_line ? points_count * 4 : points_count * 3);
@@ -977,7 +977,7 @@ void KGDrawList::AddConvexPolyFilled(const ImVec2* points, const int points_coun
 
     const ImVec2 uv = _Data->TexUvWhitePixel;
 
-    if (Flags & ImDrawListFlags_AntiAliasedFill)
+    if (Flags & KGDrawListFlags_AntiAliasedFill)
     {
         // Anti-aliased Fill
         const float AA_SIZE = _FringeScale;
@@ -1243,7 +1243,7 @@ ImVec2 ImBezierQuadraticCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p
 }
 
 // Closely mimics ImBezierCubicClosestPointCasteljau() in imgui.cpp
-static void PathBezierCubicCurveToCasteljau(ImVector<ImVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)
+static void PathBezierCubicCurveToCasteljau(KGVector<ImVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)
 {
     float dx = x4 - x1;
     float dy = y4 - y1;
@@ -1268,7 +1268,7 @@ static void PathBezierCubicCurveToCasteljau(ImVector<ImVec2>* path, float x1, fl
     }
 }
 
-static void PathBezierQuadraticCurveToCasteljau(ImVector<ImVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float tess_tol, int level)
+static void PathBezierQuadraticCurveToCasteljau(KGVector<ImVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float tess_tol, int level)
 {
     float dx = x3 - x1, dy = y3 - y1;
     float det = (x2 - x3) * dy - (y2 - y3) * dx;
@@ -1318,37 +1318,37 @@ void KGDrawList::PathBezierQuadraticCurveTo(const ImVec2& p2, const ImVec2& p3, 
     }
 }
 
-IM_STATIC_ASSERT(ImDrawFlags_RoundCornersTopLeft == (1 << 4));
+IM_STATIC_ASSERT(KGDrawFlags_RoundCornersTopLeft == (1 << 4));
 static inline KGDrawFlags FixRectCornerFlags(KGDrawFlags flags)
 {
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
     // Obsoleted in 1.82 (from February 2021)
     // Legacy Support for hard coded ~0 (used to be a suggested equivalent to ImDrawCornerFlags_All)
-    //   ~0   --> ImDrawFlags_RoundCornersAll or 0
+    //   ~0   --> KGDrawFlags_RoundCornersAll or 0
     if (flags == ~0)
-        return ImDrawFlags_RoundCornersAll;
+        return KGDrawFlags_RoundCornersAll;
 
     // Legacy Support for hard coded 0x01 to 0x0F (matching 15 out of 16 old flags combinations)
-    //   0x01 --> ImDrawFlags_RoundCornersTopLeft (VALUE 0x01 OVERLAPS ImDrawFlags_Closed but ImDrawFlags_Closed is never valid in this path!)
-    //   0x02 --> ImDrawFlags_RoundCornersTopRight
-    //   0x03 --> ImDrawFlags_RoundCornersTopLeft | ImDrawFlags_RoundCornersTopRight
-    //   0x04 --> ImDrawFlags_RoundCornersBotLeft
-    //   0x05 --> ImDrawFlags_RoundCornersTopLeft | ImDrawFlags_RoundCornersBotLeft
+    //   0x01 --> KGDrawFlags_RoundCornersTopLeft (VALUE 0x01 OVERLAPS KGDrawFlags_Closed but KGDrawFlags_Closed is never valid in this path!)
+    //   0x02 --> KGDrawFlags_RoundCornersTopRight
+    //   0x03 --> KGDrawFlags_RoundCornersTopLeft | KGDrawFlags_RoundCornersTopRight
+    //   0x04 --> KGDrawFlags_RoundCornersBotLeft
+    //   0x05 --> KGDrawFlags_RoundCornersTopLeft | KGDrawFlags_RoundCornersBotLeft
     //   ...
-    //   0x0F --> ImDrawFlags_RoundCornersAll or 0
+    //   0x0F --> KGDrawFlags_RoundCornersAll or 0
     // (See all values in ImDrawCornerFlags_)
     if (flags >= 0x01 && flags <= 0x0F)
         return (flags << 4);
 
-    // We cannot support hard coded 0x00 with 'float rounding > 0.0f' --> replace with ImDrawFlags_RoundCornersNone or use 'float rounding = 0.0f'
+    // We cannot support hard coded 0x00 with 'float rounding > 0.0f' --> replace with KGDrawFlags_RoundCornersNone or use 'float rounding = 0.0f'
 #endif
 
-    // If this triggers, please update your code replacing hardcoded values with new ImDrawFlags_RoundCorners* values.
-    // Note that ImDrawFlags_Closed (== 0x01) is an invalid flag for AddRect(), AddRectFilled(), PathRect() etc...
+    // If this triggers, please update your code replacing hardcoded values with new KGDrawFlags_RoundCorners* values.
+    // Note that KGDrawFlags_Closed (== 0x01) is an invalid flag for AddRect(), AddRectFilled(), PathRect() etc...
     IM_ASSERT((flags & 0x0F) == 0 && "Misuse of legacy hardcoded ImDrawCornerFlags values!");
 
-    if ((flags & ImDrawFlags_RoundCornersMask_) == 0)
-        flags |= ImDrawFlags_RoundCornersAll;
+    if ((flags & KGDrawFlags_RoundCornersMask_) == 0)
+        flags |= KGDrawFlags_RoundCornersAll;
 
     return flags;
 }
@@ -1356,10 +1356,10 @@ static inline KGDrawFlags FixRectCornerFlags(KGDrawFlags flags)
 void KGDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, KGDrawFlags flags)
 {
     flags = FixRectCornerFlags(flags);
-    rounding = ImMin(rounding, ImFabs(b.x - a.x) * ( ((flags & ImDrawFlags_RoundCornersTop)  == ImDrawFlags_RoundCornersTop)  || ((flags & ImDrawFlags_RoundCornersBottom) == ImDrawFlags_RoundCornersBottom) ? 0.5f : 1.0f ) - 1.0f);
-    rounding = ImMin(rounding, ImFabs(b.y - a.y) * ( ((flags & ImDrawFlags_RoundCornersLeft) == ImDrawFlags_RoundCornersLeft) || ((flags & ImDrawFlags_RoundCornersRight)  == ImDrawFlags_RoundCornersRight)  ? 0.5f : 1.0f ) - 1.0f);
+    rounding = ImMin(rounding, ImFabs(b.x - a.x) * ( ((flags & KGDrawFlags_RoundCornersTop)  == KGDrawFlags_RoundCornersTop)  || ((flags & KGDrawFlags_RoundCornersBottom) == KGDrawFlags_RoundCornersBottom) ? 0.5f : 1.0f ) - 1.0f);
+    rounding = ImMin(rounding, ImFabs(b.y - a.y) * ( ((flags & KGDrawFlags_RoundCornersLeft) == KGDrawFlags_RoundCornersLeft) || ((flags & KGDrawFlags_RoundCornersRight)  == KGDrawFlags_RoundCornersRight)  ? 0.5f : 1.0f ) - 1.0f);
 
-    if (rounding < 0.5f || (flags & ImDrawFlags_RoundCornersMask_) == ImDrawFlags_RoundCornersNone)
+    if (rounding < 0.5f || (flags & KGDrawFlags_RoundCornersMask_) == KGDrawFlags_RoundCornersNone)
     {
         PathLineTo(a);
         PathLineTo(ImVec2(b.x, a.y));
@@ -1368,10 +1368,10 @@ void KGDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, KGDr
     }
     else
     {
-        const float rounding_tl = (flags & ImDrawFlags_RoundCornersTopLeft)     ? rounding : 0.0f;
-        const float rounding_tr = (flags & ImDrawFlags_RoundCornersTopRight)    ? rounding : 0.0f;
-        const float rounding_br = (flags & ImDrawFlags_RoundCornersBottomRight) ? rounding : 0.0f;
-        const float rounding_bl = (flags & ImDrawFlags_RoundCornersBottomLeft)  ? rounding : 0.0f;
+        const float rounding_tl = (flags & KGDrawFlags_RoundCornersTopLeft)     ? rounding : 0.0f;
+        const float rounding_tr = (flags & KGDrawFlags_RoundCornersTopRight)    ? rounding : 0.0f;
+        const float rounding_br = (flags & KGDrawFlags_RoundCornersBottomRight) ? rounding : 0.0f;
+        const float rounding_bl = (flags & KGDrawFlags_RoundCornersBottomLeft)  ? rounding : 0.0f;
         PathArcToFast(ImVec2(a.x + rounding_tl, a.y + rounding_tl), rounding_tl, 6, 9);
         PathArcToFast(ImVec2(b.x - rounding_tr, a.y + rounding_tr), rounding_tr, 9, 12);
         PathArcToFast(ImVec2(b.x - rounding_br, b.y - rounding_br), rounding_br, 0, 3);
@@ -1394,18 +1394,18 @@ void KGDrawList::AddRect(const ImVec2& p_min, const ImVec2& p_max, KGU32 col, fl
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
-    if (Flags & ImDrawListFlags_AntiAliasedLines)
+    if (Flags & KGDrawListFlags_AntiAliasedLines)
         PathRect(p_min + ImVec2(0.50f, 0.50f), p_max - ImVec2(0.50f, 0.50f), rounding, flags);
     else
         PathRect(p_min + ImVec2(0.50f, 0.50f), p_max - ImVec2(0.49f, 0.49f), rounding, flags); // Better looking lower-right corner and rounded non-AA shapes.
-    PathStroke(col, ImDrawFlags_Closed, thickness);
+    PathStroke(col, KGDrawFlags_Closed, thickness);
 }
 
 void KGDrawList::AddRectFilled(const ImVec2& p_min, const ImVec2& p_max, KGU32 col, float rounding, KGDrawFlags flags)
 {
     if ((col & IM_COL32_A_MASK) == 0)
         return;
-    if (rounding < 0.5f || (flags & ImDrawFlags_RoundCornersMask_) == ImDrawFlags_RoundCornersNone)
+    if (rounding < 0.5f || (flags & KGDrawFlags_RoundCornersMask_) == KGDrawFlags_RoundCornersNone)
     {
         PrimReserve(6, 4);
         PrimRect(p_min, p_max, col);
@@ -1442,7 +1442,7 @@ void KGDrawList::AddQuad(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, c
     PathLineTo(p2);
     PathLineTo(p3);
     PathLineTo(p4);
-    PathStroke(col, ImDrawFlags_Closed, thickness);
+    PathStroke(col, KGDrawFlags_Closed, thickness);
 }
 
 void KGDrawList::AddQuadFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col)
@@ -1465,7 +1465,7 @@ void KGDrawList::AddTriangle(const ImVec2& p1, const ImVec2& p2, const ImVec2& p
     PathLineTo(p1);
     PathLineTo(p2);
     PathLineTo(p3);
-    PathStroke(col, ImDrawFlags_Closed, thickness);
+    PathStroke(col, KGDrawFlags_Closed, thickness);
 }
 
 void KGDrawList::AddTriangleFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col)
@@ -1500,7 +1500,7 @@ void KGDrawList::AddCircle(const ImVec2& center, float radius, KGU32 col, int nu
         PathArcTo(center, radius - 0.5f, 0.0f, a_max, num_segments - 1);
     }
 
-    PathStroke(col, ImDrawFlags_Closed, thickness);
+    PathStroke(col, KGDrawFlags_Closed, thickness);
 }
 
 void KGDrawList::AddCircleFilled(const ImVec2& center, float radius, KGU32 col, int num_segments)
@@ -1536,7 +1536,7 @@ void KGDrawList::AddNgon(const ImVec2& center, float radius, KGU32 col, int num_
     // Because we are filling a closed shape we remove 1 from the count of segments/points
     const float a_max = (IM_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
     PathArcTo(center, radius - 0.5f, 0.0f, a_max, num_segments - 1);
-    PathStroke(col, ImDrawFlags_Closed, thickness);
+    PathStroke(col, KGDrawFlags_Closed, thickness);
 }
 
 // Guaranteed to honor 'num_segments'
@@ -1645,7 +1645,7 @@ void KGDrawList::AddImageRounded(KGTextureID user_texture_id, const ImVec2& p_mi
         return;
 
     flags = FixRectCornerFlags(flags);
-    if (rounding < 0.5f || (flags & ImDrawFlags_RoundCornersMask_) == ImDrawFlags_RoundCornersNone)
+    if (rounding < 0.5f || (flags & KGDrawFlags_RoundCornersMask_) == KGDrawFlags_RoundCornersNone)
     {
         AddImage(user_texture_id, p_min, p_max, uv_min, uv_max, col);
         return;
@@ -1805,7 +1805,7 @@ void KGDrawListSplitter::SetCurrentChannel(KGDrawList* draw_list, int idx)
     if (_Current == idx)
         return;
 
-    // Overwrite ImVector (12/16 bytes), four times. This is merely a silly optimization instead of doing .swap()
+    // Overwrite KGVector (12/16 bytes), four times. This is merely a silly optimization instead of doing .swap()
     memcpy(&_Channels.Data[_Current]._CmdBuffer, &draw_list->CmdBuffer, sizeof(draw_list->CmdBuffer));
     memcpy(&_Channels.Data[_Current]._IdxBuffer, &draw_list->IdxBuffer, sizeof(draw_list->IdxBuffer));
     _Current = idx;
@@ -1830,7 +1830,7 @@ void KGDrawListSplitter::SetCurrentChannel(KGDrawList* draw_list, int idx)
 // For backward compatibility: convert all buffers from indexed to de-indexed, in case you cannot render indexed. Note: this is slow and most likely a waste of resources. Always prefer indexed rendering!
 void KGDrawData::DeIndexAllBuffers()
 {
-    ImVector<KGDrawVert> new_vtx_buffer;
+    KGVector<KGDrawVert> new_vtx_buffer;
     TotalVtxCount = TotalIdxCount = 0;
     for (int i = 0; i < CmdListsCount; i++)
     {
@@ -2214,7 +2214,7 @@ int KGFontAtlas::AddCustomRectRegular(int width, int height)
 {
     IM_ASSERT(width > 0 && width <= 0xFFFF);
     IM_ASSERT(height > 0 && height <= 0xFFFF);
-    ImFontAtlasCustomRect r;
+    KGFontAtlasCustomRect r;
     r.Width = (unsigned short)width;
     r.Height = (unsigned short)height;
     CustomRects.push_back(r);
@@ -2229,7 +2229,7 @@ int KGFontAtlas::AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int
     IM_ASSERT(font != NULL);
     IM_ASSERT(width > 0 && width <= 0xFFFF);
     IM_ASSERT(height > 0 && height <= 0xFFFF);
-    ImFontAtlasCustomRect r;
+    KGFontAtlasCustomRect r;
     r.Width = (unsigned short)width;
     r.Height = (unsigned short)height;
     r.GlyphID = id;
@@ -2240,7 +2240,7 @@ int KGFontAtlas::AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int
     return CustomRects.Size - 1; // Return index
 }
 
-void KGFontAtlas::CalcCustomRectUV(const ImFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max) const
+void KGFontAtlas::CalcCustomRectUV(const KGFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max) const
 {
     IM_ASSERT(TexWidth > 0 && TexHeight > 0);   // Font atlas needs to be built before we can calculate UV coordinates
     IM_ASSERT(rect->IsPacked());                // Make sure the rectangle has been packed
@@ -2252,11 +2252,11 @@ bool KGFontAtlas::GetMouseCursorTexData(KarmaGuiMouseCursor cursor_type, ImVec2*
 {
     if (cursor_type <= KGGuiMouseCursor_None || cursor_type >= KGGuiMouseCursor_COUNT)
         return false;
-    if (Flags & ImFontAtlasFlags_NoMouseCursors)
+    if (Flags & KGFontAtlasFlags_NoMouseCursors)
         return false;
 
     IM_ASSERT(PackIdMouseCursors != -1);
-    ImFontAtlasCustomRect* r = GetCustomRectByIndex(PackIdMouseCursors);
+    KGFontAtlasCustomRect* r = GetCustomRectByIndex(PackIdMouseCursors);
     ImVec2 pos = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][0] + ImVec2((float)r->X, (float)r->Y);
     ImVec2 size = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][1];
     *out_size = size;
@@ -2318,7 +2318,7 @@ void    ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsig
 
 #ifdef IMGUI_ENABLE_STB_TRUETYPE
 // Temporary data for one source font (multiple source fonts can be merged into one destination KGFont)
-// (C++03 doesn't allow instancing ImVector<> with function-local types so we declare the type here.)
+// (C++03 doesn't allow instancing KGVector<> with function-local types so we declare the type here.)
 struct ImFontBuildSrcData
 {
     stbtt_fontinfo      FontInfo;
@@ -2330,7 +2330,7 @@ struct ImFontBuildSrcData
     int                 GlyphsHighest;      // Highest requested codepoint
     int                 GlyphsCount;        // Glyph count (excluding missing glyphs and glyphs already set by an earlier source font)
     ImBitVector         GlyphsSet;          // Glyph bit map (random access, 1-bit per codepoint. This will be a maximum of 8KB)
-    ImVector<int>       GlyphsList;         // Glyph codepoints list (flattened version of GlyphsSet)
+    KGVector<int>       GlyphsList;         // Glyph codepoints list (flattened version of GlyphsSet)
 };
 
 // Temporary data for one destination KGFont* (multiple source fonts can be merged into one destination KGFont)
@@ -2342,7 +2342,7 @@ struct ImFontBuildDstData
     ImBitVector         GlyphsSet;          // This is used to resolve collision when multiple sources are merged into a same destination font.
 };
 
-static void UnpackBitVectorToFlatIndexList(const ImBitVector* in, ImVector<int>* out)
+static void UnpackBitVectorToFlatIndexList(const ImBitVector* in, KGVector<int>* out)
 {
     IM_ASSERT(sizeof(in->Storage.Data[0]) == sizeof(int));
     const KGU32* it_begin = in->Storage.begin();
@@ -2368,8 +2368,8 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
     atlas->ClearTexData();
 
     // Temporary storage for building
-    ImVector<ImFontBuildSrcData> src_tmp_array;
-    ImVector<ImFontBuildDstData> dst_tmp_array;
+    KGVector<ImFontBuildSrcData> src_tmp_array;
+    KGVector<ImFontBuildDstData> dst_tmp_array;
     src_tmp_array.resize(atlas->ConfigData.Size);
     dst_tmp_array.resize(atlas->Fonts.Size);
     memset(src_tmp_array.Data, 0, (size_t)src_tmp_array.size_in_bytes());
@@ -2449,8 +2449,8 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 
     // Allocate packing character data and flag packed characters buffer as non-packed (x0=y0=x1=y1=0)
     // (We technically don't need to zero-clear buf_rects, but let's do it for the sake of sanity)
-    ImVector<stbrp_rect> buf_rects;
-    ImVector<stbtt_packedchar> buf_packedchars;
+    KGVector<stbrp_rect> buf_rects;
+    KGVector<stbtt_packedchar> buf_packedchars;
     buf_rects.resize(total_glyphs_count);
     buf_packedchars.resize(total_glyphs_count);
     memset(buf_rects.Data, 0, (size_t)buf_rects.size_in_bytes());
@@ -2530,7 +2530,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
     }
 
     // 7. Allocate texture
-    atlas->TexHeight = (atlas->Flags & ImFontAtlasFlags_NoPowerOfTwoHeight) ? (atlas->TexHeight + 1) : ImUpperPowerOfTwo(atlas->TexHeight);
+    atlas->TexHeight = (atlas->Flags & KGFontAtlasFlags_NoPowerOfTwoHeight) ? (atlas->TexHeight + 1) : ImUpperPowerOfTwo(atlas->TexHeight);
     atlas->TexUvScale = ImVec2(1.0f / atlas->TexWidth, 1.0f / atlas->TexHeight);
     atlas->TexPixelsAlpha8 = (unsigned char*)IM_ALLOC(atlas->TexWidth * atlas->TexHeight);
     memset(atlas->TexPixelsAlpha8, 0, atlas->TexWidth * atlas->TexHeight);
@@ -2635,10 +2635,10 @@ void ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opa
     stbrp_context* pack_context = (stbrp_context*)stbrp_context_opaque;
     IM_ASSERT(pack_context != NULL);
 
-    ImVector<ImFontAtlasCustomRect>& user_rects = atlas->CustomRects;
+    KGVector<KGFontAtlasCustomRect>& user_rects = atlas->CustomRects;
     IM_ASSERT(user_rects.Size >= 1); // We expect at least the default custom rects to be registered, else something went wrong.
 
-    ImVector<stbrp_rect> pack_rects;
+    KGVector<stbrp_rect> pack_rects;
     pack_rects.resize(user_rects.Size);
     memset(pack_rects.Data, 0, (size_t)pack_rects.size_in_bytes());
     for (int i = 0; i < user_rects.Size; i++)
@@ -2679,11 +2679,11 @@ void ImFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y,
 
 static void ImFontAtlasBuildRenderDefaultTexData(KGFontAtlas* atlas)
 {
-    ImFontAtlasCustomRect* r = atlas->GetCustomRectByIndex(atlas->PackIdMouseCursors);
+    KGFontAtlasCustomRect* r = atlas->GetCustomRectByIndex(atlas->PackIdMouseCursors);
     IM_ASSERT(r->IsPacked());
 
     const int w = atlas->TexWidth;
-    if (!(atlas->Flags & ImFontAtlasFlags_NoMouseCursors))
+    if (!(atlas->Flags & KGFontAtlasFlags_NoMouseCursors))
     {
         // Render/copy pixels
         IM_ASSERT(r->Width == FONT_ATLAS_DEFAULT_TEX_DATA_W * 2 + 1 && r->Height == FONT_ATLAS_DEFAULT_TEX_DATA_H);
@@ -2719,11 +2719,11 @@ static void ImFontAtlasBuildRenderDefaultTexData(KGFontAtlas* atlas)
 
 static void ImFontAtlasBuildRenderLinesTexData(KGFontAtlas* atlas)
 {
-    if (atlas->Flags & ImFontAtlasFlags_NoBakedLines)
+    if (atlas->Flags & KGFontAtlasFlags_NoBakedLines)
         return;
 
     // This generates a triangular shape in the texture, with the various line widths stacked on top of each other to allow interpolation between them
-    ImFontAtlasCustomRect* r = atlas->GetCustomRectByIndex(atlas->PackIdLines);
+    KGFontAtlasCustomRect* r = atlas->GetCustomRectByIndex(atlas->PackIdLines);
     IM_ASSERT(r->IsPacked());
     for (unsigned int n = 0; n < IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 1; n++) // +1 because of the zero-width row
     {
@@ -2774,7 +2774,7 @@ void ImFontAtlasBuildInit(KGFontAtlas* atlas)
     // Register texture region for mouse cursors or standard white pixels
     if (atlas->PackIdMouseCursors < 0)
     {
-        if (!(atlas->Flags & ImFontAtlasFlags_NoMouseCursors))
+        if (!(atlas->Flags & KGFontAtlasFlags_NoMouseCursors))
             atlas->PackIdMouseCursors = atlas->AddCustomRectRegular(FONT_ATLAS_DEFAULT_TEX_DATA_W * 2 + 1, FONT_ATLAS_DEFAULT_TEX_DATA_H);
         else
             atlas->PackIdMouseCursors = atlas->AddCustomRectRegular(2, 2);
@@ -2784,7 +2784,7 @@ void ImFontAtlasBuildInit(KGFontAtlas* atlas)
     // The +2 here is to give space for the end caps, whilst height +1 is to accommodate the fact we have a zero-width row
     if (atlas->PackIdLines < 0)
     {
-        if (!(atlas->Flags & ImFontAtlasFlags_NoBakedLines))
+        if (!(atlas->Flags & KGFontAtlasFlags_NoBakedLines))
             atlas->PackIdLines = atlas->AddCustomRectRegular(IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 2, IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 1);
     }
 }
@@ -2800,7 +2800,7 @@ void ImFontAtlasBuildFinish(KGFontAtlas* atlas)
     // Register custom rectangle glyphs
     for (int i = 0; i < atlas->CustomRects.Size; i++)
     {
-        const ImFontAtlasCustomRect* r = &atlas->CustomRects[i];
+        const KGFontAtlasCustomRect* r = &atlas->CustomRects[i];
         if (r->Font == NULL || r->GlyphID == 0)
             continue;
 
@@ -3108,7 +3108,7 @@ void KGFontGlyphRangesBuilder::AddRanges(const KGWchar* ranges)
             AddChar((KGWchar)c);
 }
 
-void KGFontGlyphRangesBuilder::BuildRanges(ImVector<KGWchar>* out_ranges)
+void KGFontGlyphRangesBuilder::BuildRanges(KGVector<KGWchar>* out_ranges)
 {
     const int max_codepoint = IM_UNICODE_CODEPOINT_MAX;
     for (int n = 0; n <= max_codepoint; n++)
@@ -3921,14 +3921,14 @@ void ImGui::RenderRectFilledWithHole(KGDrawList* draw_list, const ImRect& outer,
     const bool fill_R = (inner.Max.x < outer.Max.x);
     const bool fill_U = (inner.Min.y > outer.Min.y);
     const bool fill_D = (inner.Max.y < outer.Max.y);
-    if (fill_L) draw_list->AddRectFilled(ImVec2(outer.Min.x, inner.Min.y), ImVec2(inner.Min.x, inner.Max.y), col, rounding, ImDrawFlags_RoundCornersNone | (fill_U ? 0 : ImDrawFlags_RoundCornersTopLeft)    | (fill_D ? 0 : ImDrawFlags_RoundCornersBottomLeft));
-    if (fill_R) draw_list->AddRectFilled(ImVec2(inner.Max.x, inner.Min.y), ImVec2(outer.Max.x, inner.Max.y), col, rounding, ImDrawFlags_RoundCornersNone | (fill_U ? 0 : ImDrawFlags_RoundCornersTopRight)   | (fill_D ? 0 : ImDrawFlags_RoundCornersBottomRight));
-    if (fill_U) draw_list->AddRectFilled(ImVec2(inner.Min.x, outer.Min.y), ImVec2(inner.Max.x, inner.Min.y), col, rounding, ImDrawFlags_RoundCornersNone | (fill_L ? 0 : ImDrawFlags_RoundCornersTopLeft)    | (fill_R ? 0 : ImDrawFlags_RoundCornersTopRight));
-    if (fill_D) draw_list->AddRectFilled(ImVec2(inner.Min.x, inner.Max.y), ImVec2(inner.Max.x, outer.Max.y), col, rounding, ImDrawFlags_RoundCornersNone | (fill_L ? 0 : ImDrawFlags_RoundCornersBottomLeft) | (fill_R ? 0 : ImDrawFlags_RoundCornersBottomRight));
-    if (fill_L && fill_U) draw_list->AddRectFilled(ImVec2(outer.Min.x, outer.Min.y), ImVec2(inner.Min.x, inner.Min.y), col, rounding, ImDrawFlags_RoundCornersTopLeft);
-    if (fill_R && fill_U) draw_list->AddRectFilled(ImVec2(inner.Max.x, outer.Min.y), ImVec2(outer.Max.x, inner.Min.y), col, rounding, ImDrawFlags_RoundCornersTopRight);
-    if (fill_L && fill_D) draw_list->AddRectFilled(ImVec2(outer.Min.x, inner.Max.y), ImVec2(inner.Min.x, outer.Max.y), col, rounding, ImDrawFlags_RoundCornersBottomLeft);
-    if (fill_R && fill_D) draw_list->AddRectFilled(ImVec2(inner.Max.x, inner.Max.y), ImVec2(outer.Max.x, outer.Max.y), col, rounding, ImDrawFlags_RoundCornersBottomRight);
+    if (fill_L) draw_list->AddRectFilled(ImVec2(outer.Min.x, inner.Min.y), ImVec2(inner.Min.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopLeft)    | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomLeft));
+    if (fill_R) draw_list->AddRectFilled(ImVec2(inner.Max.x, inner.Min.y), ImVec2(outer.Max.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopRight)   | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomRight));
+    if (fill_U) draw_list->AddRectFilled(ImVec2(inner.Min.x, outer.Min.y), ImVec2(inner.Max.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_L ? 0 : KGDrawFlags_RoundCornersTopLeft)    | (fill_R ? 0 : KGDrawFlags_RoundCornersTopRight));
+    if (fill_D) draw_list->AddRectFilled(ImVec2(inner.Min.x, inner.Max.y), ImVec2(inner.Max.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_L ? 0 : KGDrawFlags_RoundCornersBottomLeft) | (fill_R ? 0 : KGDrawFlags_RoundCornersBottomRight));
+    if (fill_L && fill_U) draw_list->AddRectFilled(ImVec2(outer.Min.x, outer.Min.y), ImVec2(inner.Min.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersTopLeft);
+    if (fill_R && fill_U) draw_list->AddRectFilled(ImVec2(inner.Max.x, outer.Min.y), ImVec2(outer.Max.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersTopRight);
+    if (fill_L && fill_D) draw_list->AddRectFilled(ImVec2(outer.Min.x, inner.Max.y), ImVec2(inner.Min.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersBottomLeft);
+    if (fill_R && fill_D) draw_list->AddRectFilled(ImVec2(inner.Max.x, inner.Max.y), ImVec2(outer.Max.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersBottomRight);
 }
 
 KGDrawFlags ImGui::CalcRoundingFlagsForRectInRect(const ImRect& r_in, const ImRect& r_outer, float threshold)
@@ -3937,9 +3937,9 @@ KGDrawFlags ImGui::CalcRoundingFlagsForRectInRect(const ImRect& r_in, const ImRe
     bool round_r = r_in.Max.x >= r_outer.Max.x - threshold;
     bool round_t = r_in.Min.y <= r_outer.Min.y + threshold;
     bool round_b = r_in.Max.y >= r_outer.Max.y - threshold;
-    return ImDrawFlags_RoundCornersNone
-        | ((round_t && round_l) ? ImDrawFlags_RoundCornersTopLeft : 0) | ((round_t && round_r) ? ImDrawFlags_RoundCornersTopRight : 0)
-        | ((round_b && round_l) ? ImDrawFlags_RoundCornersBottomLeft : 0) | ((round_b && round_r) ? ImDrawFlags_RoundCornersBottomRight : 0);
+    return KGDrawFlags_RoundCornersNone
+        | ((round_t && round_l) ? KGDrawFlags_RoundCornersTopLeft : 0) | ((round_t && round_r) ? KGDrawFlags_RoundCornersTopRight : 0)
+        | ((round_b && round_l) ? KGDrawFlags_RoundCornersBottomLeft : 0) | ((round_b && round_r) ? KGDrawFlags_RoundCornersBottomRight : 0);
 }
 
 // Helper for ColorPicker4()
@@ -3948,8 +3948,8 @@ KGDrawFlags ImGui::CalcRoundingFlagsForRectInRect(const ImRect& r_in, const ImRe
 // FIXME: uses ImGui::GetColorU32
 void ImGui::RenderColorRectWithAlphaCheckerboard(KGDrawList* draw_list, ImVec2 p_min, ImVec2 p_max, KGU32 col, float grid_step, ImVec2 grid_off, float rounding, KGDrawFlags flags)
 {
-    if ((flags & ImDrawFlags_RoundCornersMask_) == 0)
-        flags = ImDrawFlags_RoundCornersDefault_;
+    if ((flags & KGDrawFlags_RoundCornersMask_) == 0)
+        flags = KGDrawFlags_RoundCornersDefault_;
     if (((col & IM_COL32_A_MASK) >> IM_COL32_A_SHIFT) < 0xFF)
     {
         KGU32 col_bg1 = GetColorU32(ImAlphaBlendColors(IM_COL32(204, 204, 204, 255), col));
@@ -3967,12 +3967,12 @@ void ImGui::RenderColorRectWithAlphaCheckerboard(KGDrawList* draw_list, ImVec2 p
                 float x1 = ImClamp(x, p_min.x, p_max.x), x2 = ImMin(x + grid_step, p_max.x);
                 if (x2 <= x1)
                     continue;
-                KGDrawFlags cell_flags = ImDrawFlags_RoundCornersNone;
-                if (y1 <= p_min.y) { if (x1 <= p_min.x) cell_flags |= ImDrawFlags_RoundCornersTopLeft; if (x2 >= p_max.x) cell_flags |= ImDrawFlags_RoundCornersTopRight; }
-                if (y2 >= p_max.y) { if (x1 <= p_min.x) cell_flags |= ImDrawFlags_RoundCornersBottomLeft; if (x2 >= p_max.x) cell_flags |= ImDrawFlags_RoundCornersBottomRight; }
+                KGDrawFlags cell_flags = KGDrawFlags_RoundCornersNone;
+                if (y1 <= p_min.y) { if (x1 <= p_min.x) cell_flags |= KGDrawFlags_RoundCornersTopLeft; if (x2 >= p_max.x) cell_flags |= KGDrawFlags_RoundCornersTopRight; }
+                if (y2 >= p_max.y) { if (x1 <= p_min.x) cell_flags |= KGDrawFlags_RoundCornersBottomLeft; if (x2 >= p_max.x) cell_flags |= KGDrawFlags_RoundCornersBottomRight; }
 
                 // Combine flags
-                cell_flags = (flags == ImDrawFlags_RoundCornersNone || cell_flags == ImDrawFlags_RoundCornersNone) ? ImDrawFlags_RoundCornersNone : (cell_flags & flags);
+                cell_flags = (flags == KGDrawFlags_RoundCornersNone || cell_flags == KGDrawFlags_RoundCornersNone) ? KGDrawFlags_RoundCornersNone : (cell_flags & flags);
                 draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col_bg2, rounding, cell_flags);
             }
         }

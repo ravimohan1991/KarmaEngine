@@ -121,8 +121,8 @@ static void             FindHoveredWindow();
 static ImGuiWindow*     CreateNewWindow(const char* name, KarmaGuiWindowFlags flags);
 static ImVec2           CalcNextScrollFromScrollTargetAndClamp(ImGuiWindow* window);
 
-static void             AddDrawListToDrawData(ImVector<KGDrawList*>* out_list, KGDrawList* draw_list);
-static void             AddWindowToSortBuffer(ImVector<ImGuiWindow*>* out_sorted_windows, ImGuiWindow* window);
+static void             AddDrawListToDrawData(KGVector<KGDrawList*>* out_list, KGDrawList* draw_list);
+static void             AddWindowToSortBuffer(KGVector<ImGuiWindow*>* out_sorted_windows, ImGuiWindow* window);
 
 // Settings
 static void             WindowSettingsHandler_ClearAll(KarmaGuiContext*, ImGuiSettingsHandler*);
@@ -228,7 +228,7 @@ KarmaGuiContext*   GImGui = NULL;
 #endif
 
 // Memory Allocator functions. Use SetAllocatorFunctions() to change them.
-// - You probably don't want to modify that mid-program, and if you use global/static e.g. ImVector<> instances you may need to keep them accessible during program destruction.
+// - You probably don't want to modify that mid-program, and if you use global/static e.g. KGVector<> instances you may need to keep them accessible during program destruction.
 // - DLL users: read comments above.
 #ifndef IMGUI_DISABLE_DEFAULT_ALLOCATORS
 static void*   MallocWrapper(size_t size, void* user_data)    { IM_UNUSED(user_data); return malloc(size); }
@@ -328,7 +328,7 @@ KarmaGuiIO::KarmaGuiIO()
     IM_STATIC_ASSERT(IM_ARRAYSIZE(KarmaGuiIO::MouseDown) == KGGuiMouseButton_COUNT && IM_ARRAYSIZE(KarmaGuiIO::MouseClicked) == KGGuiMouseButton_COUNT);
 
     // Settings
-    ConfigFlags = ImGuiConfigFlags_None;
+    ConfigFlags = KGGuiConfigFlags_None;
     BackendFlags = KGGuiBackendFlags_None;
     DisplaySize = ImVec2(-1.0f, -1.0f);
     DeltaTime = 1.0f / 60.0f;
@@ -353,13 +353,13 @@ KarmaGuiIO::KarmaGuiIO()
     FontAllowUserScaling = false;
     DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 
-    // Docking options (when ImGuiConfigFlags_DockingEnable is set)
+    // Docking options (when KGGuiConfigFlags_DockingEnable is set)
     ConfigDockingNoSplit = false;
     ConfigDockingWithShift = false;
     ConfigDockingAlwaysTabBar = false;
     ConfigDockingTransparentPayload = false;
 
-    // Viewport options (when ImGuiConfigFlags_ViewportsEnable is set)
+    // Viewport options (when KGGuiConfigFlags_ViewportsEnable is set)
     ConfigViewportsNoAutoMerge = false;
     ConfigViewportsNoTaskBarIcon = false;
     ConfigViewportsNoDecoration = true;
@@ -485,7 +485,7 @@ void KarmaGuiIO::ClearInputKeys()
         KeysData[n].DownDurationPrev = -1.0f;
     }
     KeyCtrl = KeyShift = KeyAlt = KeySuper = false;
-    KeyMods = ImGuiMod_None;
+    KeyMods = KGGuiMod_None;
     MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
     for (int n = 0; n < IM_ARRAYSIZE(MouseDown); n++)
     {
@@ -525,7 +525,7 @@ void KarmaGuiIO::AddKeyAnalogEvent(KarmaGuiKey key, bool down, float analog_valu
     IM_ASSERT(&g.IO == this && "Can only add events to current context.");
     IM_ASSERT(KarmaGui::IsNamedKeyOrModKey(key)); // Backend needs to pass a valid KGGuiKey_ constant. 0..511 values are legacy native key codes which are not accepted by this API.
     IM_ASSERT(!KarmaGui::IsAliasKey(key)); // Backend cannot submit KGGuiKey_MouseXXX values they are automatically inferred from AddMouseXXX() events.
-    IM_ASSERT(key != ImGuiMod_Shortcut); // We could easily support the translation here but it seems saner to not accept it (TestEngine perform a translation itself)
+    IM_ASSERT(key != KGGuiMod_Shortcut); // We could easily support the translation here but it seems saner to not accept it (TestEngine perform a translation itself)
 
     // Verify that backend isn't mixing up using new io.AddKeyEvent() api and old io.KeysDown[] + io.KeyMap[] data.
 #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
@@ -1098,7 +1098,7 @@ ImFileHandle ImFileOpen(const char* filename, const char* mode)
     // Previously we used ImTextCountCharsFromUtf8/ImTextStrFromUtf8 here but we now need to support KGWchar16 and KGWchar32!
     const int filename_wsize = ::MultiByteToWideChar(CP_UTF8, 0, filename, -1, NULL, 0);
     const int mode_wsize = ::MultiByteToWideChar(CP_UTF8, 0, mode, -1, NULL, 0);
-    ImVector<KGWchar> buf;
+    KGVector<KGWchar> buf;
     buf.resize(filename_wsize + mode_wsize);
     ::MultiByteToWideChar(CP_UTF8, 0, filename, -1, (wchar_t*)&buf[0], filename_wsize);
     ::MultiByteToWideChar(CP_UTF8, 0, mode, -1, (wchar_t*)&buf[filename_wsize], mode_wsize);
@@ -1428,7 +1428,7 @@ void KarmaGui::ColorConvertHSVtoRGB(float h, float s, float v, float& out_r, flo
 //-----------------------------------------------------------------------------
 
 // std::lower_bound but without the bullshit
-static KarmaGuiStorage::ImGuiStoragePair* LowerBound(ImVector<KarmaGuiStorage::ImGuiStoragePair>& data, KGGuiID key)
+static KarmaGuiStorage::ImGuiStoragePair* LowerBound(KGVector<KarmaGuiStorage::ImGuiStoragePair>& data, KGGuiID key)
 {
     KarmaGuiStorage::ImGuiStoragePair* first = data.Data;
     KarmaGuiStorage::ImGuiStoragePair* last = data.Data + data.Size;
@@ -1468,7 +1468,7 @@ void KarmaGuiStorage::BuildSortByKey()
 
 int KarmaGuiStorage::GetInt(KGGuiID key, int default_val) const
 {
-    ImGuiStoragePair* it = LowerBound(const_cast<ImVector<ImGuiStoragePair>&>(Data), key);
+    ImGuiStoragePair* it = LowerBound(const_cast<KGVector<ImGuiStoragePair>&>(Data), key);
     if (it == Data.end() || it->key != key)
         return default_val;
     return it->val_i;
@@ -1481,7 +1481,7 @@ bool KarmaGuiStorage::GetBool(KGGuiID key, bool default_val) const
 
 float KarmaGuiStorage::GetFloat(KGGuiID key, float default_val) const
 {
-    ImGuiStoragePair* it = LowerBound(const_cast<ImVector<ImGuiStoragePair>&>(Data), key);
+    ImGuiStoragePair* it = LowerBound(const_cast<KGVector<ImGuiStoragePair>&>(Data), key);
     if (it == Data.end() || it->key != key)
         return default_val;
     return it->val_f;
@@ -1489,7 +1489,7 @@ float KarmaGuiStorage::GetFloat(KGGuiID key, float default_val) const
 
 void* KarmaGuiStorage::GetVoidPtr(KGGuiID key) const
 {
-    ImGuiStoragePair* it = LowerBound(const_cast<ImVector<ImGuiStoragePair>&>(Data), key);
+    ImGuiStoragePair* it = LowerBound(const_cast<KGVector<ImGuiStoragePair>&>(Data), key);
     if (it == Data.end() || it->key != key)
         return NULL;
     return it->val_p;
@@ -1596,7 +1596,7 @@ bool KarmaGuiTextFilter::Draw(const char* label, float width)
     return value_changed;
 }
 
-void KarmaGuiTextFilter::ImGuiTextRange::split(char separator, ImVector<ImGuiTextRange>* out) const
+void KarmaGuiTextFilter::ImGuiTextRange::split(char separator, KGVector<ImGuiTextRange>* out) const
 {
     out->resize(0);
     const char* wb = b;
@@ -1814,7 +1814,7 @@ void KarmaGui::CalcListClipping(int items_count, float items_height, int* out_it
 }
 #endif
 
-static void ImGuiListClipper_SortAndFuseRanges(ImVector<ImGuiListClipperRange>& ranges, int offset = 0)
+static void ImGuiListClipper_SortAndFuseRanges(KGVector<ImGuiListClipperRange>& ranges, int offset = 0)
 {
     if (ranges.Size - offset <= 1)
         return;
@@ -2700,7 +2700,7 @@ void KarmaGui::Initialize()
     viewport->ID = IMGUI_VIEWPORT_DEFAULT_ID;
     viewport->Idx = 0;
     viewport->PlatformWindowCreated = true;
-    viewport->Flags = ImGuiViewportFlags_OwnedByApp;
+    viewport->Flags = KGGuiViewportFlags_OwnedByApp;
     g.Viewports.push_back(viewport);
     g.TempBuffer.resize(1024 * 3 + 1, 0);
     g.PlatformIO.Viewports.push_back(g.Viewports[0]);
@@ -3456,7 +3456,7 @@ void KarmaGui::UpdateMouseMovingWindowNewFrame()
             {
                 // Try to merge the window back into the main viewport.
                 // This works because MouseViewport should be != MovingWindow->Viewport on release (as per code in UpdateViewports)
-                if (g.ConfigFlagsCurrFrame & ImGuiConfigFlags_ViewportsEnable)
+                if (g.ConfigFlagsCurrFrame & KGGuiConfigFlags_ViewportsEnable)
                     UpdateTryMergeWindowIntoHostViewport(moving_window, g.MouseViewport);
 
                 // Restore the mouse viewport so that we don't hover the viewport _under_ the moved window during the frame we released the mouse button.
@@ -3464,7 +3464,7 @@ void KarmaGui::UpdateMouseMovingWindowNewFrame()
                     g.MouseViewport = moving_window->Viewport;
 
                 // Clear the NoInput window flag set by the Viewport system
-                moving_window->Viewport->Flags &= ~ImGuiViewportFlags_NoInputs; // FIXME-VIEWPORT: Test engine managed to crash here because Viewport was NULL.
+                moving_window->Viewport->Flags &= ~KGGuiViewportFlags_NoInputs; // FIXME-VIEWPORT: Test engine managed to crash here because Viewport was NULL.
             }
 
             g.MovingWindow = NULL;
@@ -3587,7 +3587,7 @@ void KarmaGui::UpdateHoveredWindowAndCaptureFlags()
         clear_hovered_windows = true;
 
     // Disabled mouse?
-    if (io.ConfigFlags & ImGuiConfigFlags_NoMouse)
+    if (io.ConfigFlags & KGGuiConfigFlags_NoMouse)
         clear_hovered_windows = true;
 
     // We track click ownership. When clicked outside of a window the click is owned by the application and
@@ -3637,7 +3637,7 @@ void KarmaGui::UpdateHoveredWindowAndCaptureFlags()
         io.WantCaptureKeyboard = (g.WantCaptureKeyboardNextFrame != 0);
     else
         io.WantCaptureKeyboard = (g.ActiveId != 0) || (modal_window != NULL);
-    if (io.NavActive && (io.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard) && !(io.ConfigFlags & ImGuiConfigFlags_NavNoCaptureKeyboard))
+    if (io.NavActive && (io.ConfigFlags & KGGuiConfigFlags_NavEnableKeyboard) && !(io.ConfigFlags & KGGuiConfigFlags_NavNoCaptureKeyboard))
         io.WantCaptureKeyboard = true;
 
     // Update io.WantTextInput flag, this is to allow systems without a keyboard (e.g. mobile, hand-held) to show a software keyboard if possible
@@ -3697,15 +3697,15 @@ void KarmaGui::NewFrame()
     g.DrawListSharedData.ClipRectFullscreen = virtual_space.ToVec4();
     g.DrawListSharedData.CurveTessellationTol = g.Style.CurveTessellationTol;
     g.DrawListSharedData.SetCircleTessellationMaxError(g.Style.CircleTessellationMaxError);
-    g.DrawListSharedData.InitialFlags = ImDrawListFlags_None;
+    g.DrawListSharedData.InitialFlags = KGDrawListFlags_None;
     if (g.Style.AntiAliasedLines)
-        g.DrawListSharedData.InitialFlags |= ImDrawListFlags_AntiAliasedLines;
-    if (g.Style.AntiAliasedLinesUseTex && !(g.Font->ContainerAtlas->Flags & ImFontAtlasFlags_NoBakedLines))
-        g.DrawListSharedData.InitialFlags |= ImDrawListFlags_AntiAliasedLinesUseTex;
+        g.DrawListSharedData.InitialFlags |= KGDrawListFlags_AntiAliasedLines;
+    if (g.Style.AntiAliasedLinesUseTex && !(g.Font->ContainerAtlas->Flags & KGFontAtlasFlags_NoBakedLines))
+        g.DrawListSharedData.InitialFlags |= KGDrawListFlags_AntiAliasedLinesUseTex;
     if (g.Style.AntiAliasedFill)
-        g.DrawListSharedData.InitialFlags |= ImDrawListFlags_AntiAliasedFill;
+        g.DrawListSharedData.InitialFlags |= KGDrawListFlags_AntiAliasedFill;
     if (g.IO.BackendFlags & KGGuiBackendFlags_RendererHasVtxOffset)
-        g.DrawListSharedData.InitialFlags |= ImDrawListFlags_AllowVtxOffset;
+        g.DrawListSharedData.InitialFlags |= KGDrawListFlags_AllowVtxOffset;
 
     // Mark rendering data as invalid to prevent user who may have a handle on it to use it.
     for (int n = 0; n < g.Viewports.Size; n++)
@@ -3920,7 +3920,7 @@ static int IMGUI_CDECL ChildWindowComparer(const void* lhs, const void* rhs)
     return (a->BeginOrderWithinParent - b->BeginOrderWithinParent);
 }
 
-static void AddWindowToSortBuffer(ImVector<ImGuiWindow*>* out_sorted_windows, ImGuiWindow* window)
+static void AddWindowToSortBuffer(KGVector<ImGuiWindow*>* out_sorted_windows, ImGuiWindow* window)
 {
     out_sorted_windows->push_back(window);
     if (window->Active)
@@ -3936,7 +3936,7 @@ static void AddWindowToSortBuffer(ImVector<ImGuiWindow*>* out_sorted_windows, Im
     }
 }
 
-static void AddDrawListToDrawData(ImVector<KGDrawList*>* out_list, KGDrawList* draw_list)
+static void AddDrawListToDrawData(KGVector<KGDrawList*>* out_list, KGDrawList* draw_list)
 {
     if (draw_list->CmdBuffer.Size == 0)
         return;
@@ -3947,7 +3947,7 @@ static void AddDrawListToDrawData(ImVector<KGDrawList*>* out_list, KGDrawList* d
     // May trigger for you if you are using PrimXXX functions incorrectly.
     IM_ASSERT(draw_list->VtxBuffer.Size == 0 || draw_list->_VtxWritePtr == draw_list->VtxBuffer.Data + draw_list->VtxBuffer.Size);
     IM_ASSERT(draw_list->IdxBuffer.Size == 0 || draw_list->_IdxWritePtr == draw_list->IdxBuffer.Data + draw_list->IdxBuffer.Size);
-    if (!(draw_list->Flags & ImDrawListFlags_AllowVtxOffset))
+    if (!(draw_list->Flags & KGDrawListFlags_AllowVtxOffset))
         IM_ASSERT((int)draw_list->_VtxCurrentIdx == draw_list->VtxBuffer.Size);
 
     // Check that draw_list doesn't use more vertices than indexable (default KGDrawIdx = unsigned short = 2 bytes = 64K vertices per KGDrawList = per window)
@@ -4007,7 +4007,7 @@ void ImDrawDataBuilder::FlattenIntoSingleLayer()
     Layers[0].resize(size);
     for (int layer_n = 1; layer_n < IM_ARRAYSIZE(Layers); layer_n++)
     {
-        ImVector<KGDrawList*>& layer = Layers[layer_n];
+        KGVector<KGDrawList*>& layer = Layers[layer_n];
         if (layer.empty())
             continue;
         memcpy(&Layers[0][n], &layer[0], layer.Size * sizeof(KGDrawList*));
@@ -4016,14 +4016,14 @@ void ImDrawDataBuilder::FlattenIntoSingleLayer()
     }
 }
 
-static void SetupViewportDrawData(ImGuiViewportP* viewport, ImVector<KGDrawList*>* draw_lists)
+static void SetupViewportDrawData(ImGuiViewportP* viewport, KGVector<KGDrawList*>* draw_lists)
 {
     // When minimized, we report draw_data->DisplaySize as zero to be consistent with non-viewport mode,
     // and to allow applications/backends to easily skip rendering.
     // FIXME: Note that we however do NOT attempt to report "zero drawlist / vertices" into the KGDrawData structure.
     // This is because the work has been done already, and its wasted! We should fix that and add optimizations for
     // it earlier in the pipeline, rather than pretend to hide the data at the end of the pipeline.
-    const bool is_minimized = (viewport->Flags & ImGuiViewportFlags_Minimized) != 0;
+    const bool is_minimized = (viewport->Flags & KGGuiViewportFlags_Minimized) != 0;
 
     KarmaGuiIO& io = KarmaGui::GetIO();
     KGDrawData* draw_data = &viewport->DrawDataP;
@@ -5050,7 +5050,7 @@ static bool KarmaGui::UpdateWindowManualResize(ImGuiWindow* window, const ImVec2
     // - When decoration are enabled we typically benefit from that distance, but then our resize elements would be conflicting with OS resize elements, so we also narrow.
     // - Note that we are unable to tell if the platform setup allows hovering with a distance threshold (on Win32, decorated window have such threshold).
     // We only clip interaction so we overwrite window->ClipRect, cannot call PushClipRect() yet as DrawList is not yet setup.
-    const bool clip_with_viewport_rect = !(g.IO.BackendFlags & KGGuiBackendFlags_HasMouseHoveredViewport) || (g.IO.MouseHoveredViewport != window->ViewportId) || !(window->Viewport->Flags & ImGuiViewportFlags_NoDecoration);
+    const bool clip_with_viewport_rect = !(g.IO.BackendFlags & KGGuiBackendFlags_HasMouseHoveredViewport) || (g.IO.MouseHoveredViewport != window->ViewportId) || !(window->Viewport->Flags & KGGuiViewportFlags_NoDecoration);
     if (clip_with_viewport_rect)
         window->ClipRect = window->Viewport->GetMainRect();
 
@@ -5283,7 +5283,7 @@ void KarmaGui::RenderWindowDecorations(ImGuiWindow* window, const ImRect& title_
             KGDrawList* bg_draw_list = window->DockIsActive ? window->DockNode->HostWindow->DrawList : window->DrawList;
             if (window->DockIsActive || (flags & KGGuiWindowFlags_DockNodeHost))
                 bg_draw_list->ChannelsSetCurrent(DOCKING_HOST_DRAW_CHANNEL_BG);
-            bg_draw_list->AddRectFilled(window->Pos + ImVec2(0, window->TitleBarHeight()), window->Pos + window->Size, bg_col, window_rounding, (flags & KGGuiWindowFlags_NoTitleBar) ? 0 : ImDrawFlags_RoundCornersBottom);
+            bg_draw_list->AddRectFilled(window->Pos + ImVec2(0, window->TitleBarHeight()), window->Pos + window->Size, bg_col, window_rounding, (flags & KGGuiWindowFlags_NoTitleBar) ? 0 : KGDrawFlags_RoundCornersBottom);
             if (window->DockIsActive || (flags & KGGuiWindowFlags_DockNodeHost))
                 bg_draw_list->ChannelsSetCurrent(DOCKING_HOST_DRAW_CHANNEL_FG);
         }
@@ -5296,7 +5296,7 @@ void KarmaGui::RenderWindowDecorations(ImGuiWindow* window, const ImRect& title_
         if (!(flags & KGGuiWindowFlags_NoTitleBar) && !window->DockIsActive)
         {
             KGU32 title_bar_col = GetColorU32(title_bar_is_highlight ? KGGuiCol_TitleBgActive : KGGuiCol_TitleBg);
-            window->DrawList->AddRectFilled(title_bar_rect.Min, title_bar_rect.Max, title_bar_col, window_rounding, ImDrawFlags_RoundCornersTop);
+            window->DrawList->AddRectFilled(title_bar_rect.Min, title_bar_rect.Max, title_bar_col, window_rounding, KGDrawFlags_RoundCornersTop);
         }
 
         // Menu bar
@@ -5304,7 +5304,7 @@ void KarmaGui::RenderWindowDecorations(ImGuiWindow* window, const ImRect& title_
         {
             ImRect menu_bar_rect = window->MenuBarRect();
             menu_bar_rect.ClipWith(window->Rect());  // Soft clipping, in particular child window don't have minimum size covering the menu bar so this is useful for them.
-            window->DrawList->AddRectFilled(menu_bar_rect.Min + ImVec2(window_border_size, 0), menu_bar_rect.Max - ImVec2(window_border_size, 0), GetColorU32(KGGuiCol_MenuBarBg), (flags & KGGuiWindowFlags_NoTitleBar) ? window_rounding : 0.0f, ImDrawFlags_RoundCornersTop);
+            window->DrawList->AddRectFilled(menu_bar_rect.Min + ImVec2(window_border_size, 0), menu_bar_rect.Max - ImVec2(window_border_size, 0), GetColorU32(KGGuiCol_MenuBarBg), (flags & KGGuiWindowFlags_NoTitleBar) ? window_rounding : 0.0f, KGDrawFlags_RoundCornersTop);
             if (style.FrameBorderSize > 0.0f && menu_bar_rect.Max.y < window->Pos.y + window->Size.y)
                 window->DrawList->AddLine(menu_bar_rect.GetBL(), menu_bar_rect.GetBR(), GetColorU32(KGGuiCol_Border), style.FrameBorderSize);
         }
@@ -5763,7 +5763,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
 
         WindowSelectViewport(window);
         SetCurrentViewport(window, window->Viewport);
-        window->FontDpiScale = (g.IO.ConfigFlags & ImGuiConfigFlags_DpiEnableScaleFonts) ? window->Viewport->DpiScale : 1.0f;
+        window->FontDpiScale = (g.IO.ConfigFlags & KGGuiConfigFlags_DpiEnableScaleFonts) ? window->Viewport->DpiScale : 1.0f;
         SetCurrentWindow(window);
         flags = window->Flags;
 
@@ -5888,17 +5888,17 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
             window->Pos = FindBestWindowPosForPopup(window);
 
         // Late create viewport if we don't fit within our current host viewport.
-        if (window->ViewportAllowPlatformMonitorExtend >= 0 && !window->ViewportOwned && !(window->Viewport->Flags & ImGuiViewportFlags_Minimized))
+        if (window->ViewportAllowPlatformMonitorExtend >= 0 && !window->ViewportOwned && !(window->Viewport->Flags & KGGuiViewportFlags_Minimized))
             if (!window->Viewport->GetMainRect().Contains(window->Rect()))
             {
                 // This is based on the assumption that the DPI will be known ahead (same as the DPI of the selection done in UpdateSelectWindowViewport)
                 //KarmaGuiViewport* old_viewport = window->Viewport;
-                window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, ImGuiViewportFlags_NoFocusOnAppearing);
+                window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, KGGuiViewportFlags_NoFocusOnAppearing);
 
                 // FIXME-DPI
                 //IM_ASSERT(old_viewport->DpiScale == window->Viewport->DpiScale); // FIXME-DPI: Something went wrong
                 SetCurrentViewport(window, window->Viewport);
-                window->FontDpiScale = (g.IO.ConfigFlags & ImGuiConfigFlags_DpiEnableScaleFonts) ? window->Viewport->DpiScale : 1.0f;
+                window->FontDpiScale = (g.IO.ConfigFlags & KGGuiConfigFlags_DpiEnableScaleFonts) ? window->Viewport->DpiScale : 1.0f;
                 SetCurrentWindow(window);
             }
 
@@ -6238,7 +6238,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
                 LogToClipboard();
         */
 
-        if (g.IO.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        if (g.IO.ConfigFlags & KGGuiConfigFlags_DockingEnable)
         {
             // Docking: Dragging a dockable window (or any of its child) turns it into a drag and drop source.
             // We need to do this _before_ we overwrite window->DC.LastItemId below because BeginDockableDragDropSource() also overwrites it.
@@ -7370,7 +7370,7 @@ KarmaGuiKeyData* KarmaGui::GetKeyData(KarmaGuiKey key)
     KarmaGuiContext& g = *GImGui;
 
     // Special storage location for mods
-    if (key & ImGuiMod_Mask_)
+    if (key & KGGuiMod_Mask_)
         key = ConvertSingleModFlagToKey(key);
 
     int index;
@@ -7438,7 +7438,7 @@ const char* KarmaGui::GetKeyName(KarmaGuiKey key)
 #endif
     if (key == KGGuiKey_None)
         return "None";
-    if (key & ImGuiMod_Mask_)
+    if (key & KGGuiMod_Mask_)
         key = ConvertSingleModFlagToKey(key);
     if (!IsNamedKey(key))
         return "Unknown";
@@ -7446,18 +7446,18 @@ const char* KarmaGui::GetKeyName(KarmaGuiKey key)
     return GKeyNames[key - KGGuiKey_NamedKey_BEGIN];
 }
 
-// ImGuiMod_Shortcut is translated to either Ctrl or Super.
+// KGGuiMod_Shortcut is translated to either Ctrl or Super.
 void KarmaGui::GetKeyChordName(KarmaGuiKeyChord key_chord, char* out_buf, int out_buf_size)
 {
     KarmaGuiContext& g = *GImGui;
-    if (key_chord & ImGuiMod_Shortcut)
+    if (key_chord & KGGuiMod_Shortcut)
         key_chord = ConvertShortcutMod(key_chord);
     ImFormatString(out_buf, (size_t)out_buf_size, "%s%s%s%s%s",
-        (key_chord & ImGuiMod_Ctrl) ? "Ctrl+" : "",
-        (key_chord & ImGuiMod_Shift) ? "Shift+" : "",
-        (key_chord & ImGuiMod_Alt) ? "Alt+" : "",
-        (key_chord & ImGuiMod_Super) ? (g.IO.ConfigMacOSXBehaviors ? "Cmd+" : "Super+") : "",
-        GetKeyName((KarmaGuiKey)(key_chord & ~ImGuiMod_Mask_)));
+        (key_chord & KGGuiMod_Ctrl) ? "Ctrl+" : "",
+        (key_chord & KGGuiMod_Shift) ? "Shift+" : "",
+        (key_chord & KGGuiMod_Alt) ? "Alt+" : "",
+        (key_chord & KGGuiMod_Super) ? (g.IO.ConfigMacOSXBehaviors ? "Cmd+" : "Super+") : "",
+        GetKeyName((KarmaGuiKey)(key_chord & ~KGGuiMod_Mask_)));
 }
 
 // t0 = previous time (e.g.: g.Time - g.IO.DeltaTime)
@@ -7559,17 +7559,17 @@ ImGuiKeyRoutingData* KarmaGui::GetShortcutRoutingData(KarmaGuiKeyChord key_chord
 {
     // Majority of shortcuts will be Key + any number of Mods
     // We accept _Single_ mod with KGGuiKey_None.
-    //  - Shortcut(KGGuiKey_S | ImGuiMod_Ctrl);                    // Legal
-    //  - Shortcut(KGGuiKey_S | ImGuiMod_Ctrl | ImGuiMod_Shift);   // Legal
-    //  - Shortcut(ImGuiMod_Ctrl);                                 // Legal
-    //  - Shortcut(ImGuiMod_Ctrl | ImGuiMod_Shift);                // Not legal
+    //  - Shortcut(KGGuiKey_S | KGGuiMod_Ctrl);                    // Legal
+    //  - Shortcut(KGGuiKey_S | KGGuiMod_Ctrl | KGGuiMod_Shift);   // Legal
+    //  - Shortcut(KGGuiMod_Ctrl);                                 // Legal
+    //  - Shortcut(KGGuiMod_Ctrl | KGGuiMod_Shift);                // Not legal
     KarmaGuiContext& g = *GImGui;
     ImGuiKeyRoutingTable* rt = &g.KeysRoutingTable;
     ImGuiKeyRoutingData* routing_data;
-    if (key_chord & ImGuiMod_Shortcut)
+    if (key_chord & KGGuiMod_Shortcut)
         key_chord = ConvertShortcutMod(key_chord);
-    KarmaGuiKey key = (KarmaGuiKey)(key_chord & ~ImGuiMod_Mask_);
-    KarmaGuiKey mods = (KarmaGuiKey)(key_chord & ImGuiMod_Mask_);
+    KarmaGuiKey key = (KarmaGuiKey)(key_chord & ~KGGuiMod_Mask_);
+    KarmaGuiKey mods = (KarmaGuiKey)(key_chord & KGGuiMod_Mask_);
     if (key == KGGuiKey_None)
         key = ConvertSingleModFlagToKey(mods);
     IM_ASSERT(IsNamedKey(key));
@@ -7949,10 +7949,10 @@ static void UpdateAliasKey(KarmaGuiKey key, bool v, float analog_value)
 static KarmaGuiKeyChord GetMergedModsFromKeys()
 {
     KarmaGuiKeyChord mods = 0;
-    if (KarmaGui::IsKeyDown(ImGuiMod_Ctrl))     { mods |= ImGuiMod_Ctrl; }
-    if (KarmaGui::IsKeyDown(ImGuiMod_Shift))    { mods |= ImGuiMod_Shift; }
-    if (KarmaGui::IsKeyDown(ImGuiMod_Alt))      { mods |= ImGuiMod_Alt; }
-    if (KarmaGui::IsKeyDown(ImGuiMod_Super))    { mods |= ImGuiMod_Super; }
+    if (KarmaGui::IsKeyDown(KGGuiMod_Ctrl))     { mods |= KGGuiMod_Ctrl; }
+    if (KarmaGui::IsKeyDown(KGGuiMod_Shift))    { mods |= KGGuiMod_Shift; }
+    if (KarmaGui::IsKeyDown(KGGuiMod_Alt))      { mods |= KGGuiMod_Alt; }
+    if (KarmaGui::IsKeyDown(KGGuiMod_Super))    { mods |= KGGuiMod_Super; }
     return mods;
 }
 
@@ -7996,15 +7996,15 @@ static void KarmaGui::UpdateKeyboardInputs()
             }
         if (io.BackendUsingLegacyKeyArrays == 1)
         {
-            GetKeyData(ImGuiMod_Ctrl)->Down = io.KeyCtrl;
-            GetKeyData(ImGuiMod_Shift)->Down = io.KeyShift;
-            GetKeyData(ImGuiMod_Alt)->Down = io.KeyAlt;
-            GetKeyData(ImGuiMod_Super)->Down = io.KeySuper;
+            GetKeyData(KGGuiMod_Ctrl)->Down = io.KeyCtrl;
+            GetKeyData(KGGuiMod_Shift)->Down = io.KeyShift;
+            GetKeyData(KGGuiMod_Alt)->Down = io.KeyAlt;
+            GetKeyData(KGGuiMod_Super)->Down = io.KeySuper;
         }
     }
 
 #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
-    const bool nav_gamepad_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
+    const bool nav_gamepad_active = (io.ConfigFlags & KGGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
     if (io.BackendUsingLegacyNavInputArray && nav_gamepad_active)
     {
         #define MAP_LEGACY_NAV_INPUT_TO_KEY1(_KEY, _NAV1)           do { io.KeysData[_KEY].Down = (io.NavInputs[_NAV1] > 0.0f); io.KeysData[_KEY].AnalogValue = io.NavInputs[_NAV1]; } while (0)
@@ -8035,14 +8035,14 @@ static void KarmaGui::UpdateKeyboardInputs()
     UpdateAliasKey(KGGuiKey_MouseWheelY, io.MouseWheel != 0.0f, io.MouseWheel);
 
     // Synchronize io.KeyMods and io.KeyXXX values.
-    // - New backends (1.87+): send io.AddKeyEvent(ImGuiMod_XXX) ->                                      -> (here) deriving io.KeyMods + io.KeyXXX from key array.
+    // - New backends (1.87+): send io.AddKeyEvent(KGGuiMod_XXX) ->                                      -> (here) deriving io.KeyMods + io.KeyXXX from key array.
     // - Legacy backends:      set io.KeyXXX bools               -> (above) set key array from io.KeyXXX -> (here) deriving io.KeyMods + io.KeyXXX from key array.
     // So with legacy backends the 4 values will do a unnecessary back-and-forth but it makes the code simpler and future facing.
     io.KeyMods = GetMergedModsFromKeys();
-    io.KeyCtrl = (io.KeyMods & ImGuiMod_Ctrl) != 0;
-    io.KeyShift = (io.KeyMods & ImGuiMod_Shift) != 0;
-    io.KeyAlt = (io.KeyMods & ImGuiMod_Alt) != 0;
-    io.KeySuper = (io.KeyMods & ImGuiMod_Super) != 0;
+    io.KeyCtrl = (io.KeyMods & KGGuiMod_Ctrl) != 0;
+    io.KeyShift = (io.KeyMods & KGGuiMod_Shift) != 0;
+    io.KeyAlt = (io.KeyMods & KGGuiMod_Alt) != 0;
+    io.KeySuper = (io.KeyMods & KGGuiMod_Super) != 0;
 
     // Clear gamepad data if disabled
     if ((io.BackendFlags & KGGuiBackendFlags_HasGamepad) == 0)
@@ -8542,14 +8542,14 @@ bool KarmaGui::Shortcut(KarmaGuiKeyChord key_chord, KGGuiID owner_id, KarmaGuiIn
     if (!SetShortcutRouting(key_chord, owner_id, flags))
         return false;
 
-    if (key_chord & ImGuiMod_Shortcut)
+    if (key_chord & KGGuiMod_Shortcut)
         key_chord = ConvertShortcutMod(key_chord);
-    KarmaGuiKey mods = (KarmaGuiKey)(key_chord & ImGuiMod_Mask_);
+    KarmaGuiKey mods = (KarmaGuiKey)(key_chord & KGGuiMod_Mask_);
     if (g.IO.KeyMods != mods)
         return false;
 
     // Special storage location for mods
-    KarmaGuiKey key = (KarmaGuiKey)(key_chord & ~ImGuiMod_Mask_);
+    KarmaGuiKey key = (KarmaGuiKey)(key_chord & ~KGGuiMod_Mask_);
     if (key == KGGuiKey_None)
         key = ConvertSingleModFlagToKey(mods);
 
@@ -8648,7 +8648,7 @@ static void KarmaGui::ErrorCheckNewFrameSanityChecks()
         IM_ASSERT(g.IO.KeyMap[n] >= -1 && g.IO.KeyMap[n] < KGGuiKey_LegacyNativeKey_END && "io.KeyMap[] contains an out of bound value (need to be 0..511, or -1 for unmapped key)");
 
     // Check: required key mapping (we intentionally do NOT check all keys to not pressure user into setting up everything, but Space is required and was only added in 1.60 WIP)
-    if ((g.IO.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard) && g.IO.BackendUsingLegacyKeyArrays == 1)
+    if ((g.IO.ConfigFlags & KGGuiConfigFlags_NavEnableKeyboard) && g.IO.BackendUsingLegacyKeyArrays == 1)
         IM_ASSERT(g.IO.KeyMap[KGGuiKey_Space] != -1 && "KGGuiKey_Space is not mapped, required for keyboard navigation.");
 #endif
 
@@ -8657,13 +8657,13 @@ static void KarmaGui::ErrorCheckNewFrameSanityChecks()
         g.IO.ConfigWindowsResizeFromEdges = false;
 
     // Perform simple check: error if Docking or Viewport are enabled _exactly_ on frame 1 (instead of frame 0 or later), which is a common error leading to loss of .ini data.
-    if (g.FrameCount == 1 && (g.IO.ConfigFlags & ImGuiConfigFlags_DockingEnable) && (g.ConfigFlagsLastFrame & ImGuiConfigFlags_DockingEnable) == 0)
+    if (g.FrameCount == 1 && (g.IO.ConfigFlags & KGGuiConfigFlags_DockingEnable) && (g.ConfigFlagsLastFrame & KGGuiConfigFlags_DockingEnable) == 0)
         IM_ASSERT(0 && "Please set DockingEnable before the first call to NewFrame()! Otherwise you will lose your .ini settings!");
-    if (g.FrameCount == 1 && (g.IO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) && (g.ConfigFlagsLastFrame & ImGuiConfigFlags_ViewportsEnable) == 0)
+    if (g.FrameCount == 1 && (g.IO.ConfigFlags & KGGuiConfigFlags_ViewportsEnable) && (g.ConfigFlagsLastFrame & KGGuiConfigFlags_ViewportsEnable) == 0)
         IM_ASSERT(0 && "Please set ViewportsEnable before the first call to NewFrame()! Otherwise you will lose your .ini settings!");
 
     // Perform simple checks: multi-viewport and platform windows support
-    if (g.IO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    if (g.IO.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
     {
         if ((g.IO.BackendFlags & KGGuiBackendFlags_PlatformHasViewports) && (g.IO.BackendFlags & KGGuiBackendFlags_RendererHasViewports))
         {
@@ -8676,13 +8676,13 @@ static void KarmaGui::ErrorCheckNewFrameSanityChecks()
             IM_ASSERT(g.PlatformIO.Platform_SetWindowSize != NULL && "Platform init didn't install handlers?");
             IM_ASSERT(g.PlatformIO.Monitors.Size > 0 && "Platform init didn't setup Monitors list?");
             IM_ASSERT((g.Viewports[0]->PlatformUserData != NULL || g.Viewports[0]->PlatformHandle != NULL) && "Platform init didn't setup main viewport.");
-            if (g.IO.ConfigDockingTransparentPayload && (g.IO.ConfigFlags & ImGuiConfigFlags_DockingEnable))
+            if (g.IO.ConfigDockingTransparentPayload && (g.IO.ConfigFlags & KGGuiConfigFlags_DockingEnable))
                 IM_ASSERT(g.PlatformIO.Platform_SetWindowAlpha != NULL && "Platform_SetWindowAlpha handler is required to use io.ConfigDockingTransparent!");
         }
         else
         {
             // Disable feature, our backends do not support it
-            g.IO.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
+            g.IO.ConfigFlags &= ~KGGuiConfigFlags_ViewportsEnable;
         }
 
         // Perform simple checks on platform monitor data + compute a total bounding box for quick early outs
@@ -10218,7 +10218,7 @@ ImVec2 KarmaGui::FindBestWindowPosForPopup(ImGuiWindow* window)
         float sc = g.Style.MouseCursorScale;
         ImVec2 ref_pos = NavCalcPreferredRefPos();
         ImRect r_avoid;
-        if (!g.NavDisableHighlight && g.NavDisableMouseHover && !(g.IO.ConfigFlags & ImGuiConfigFlags_NavEnableSetMousePos))
+        if (!g.NavDisableHighlight && g.NavDisableMouseHover && !(g.IO.ConfigFlags & KGGuiConfigFlags_NavEnableSetMousePos))
             r_avoid = ImRect(ref_pos.x - 16, ref_pos.y - 8, ref_pos.x + 16, ref_pos.y + 8);
         else
             r_avoid = ImRect(ref_pos.x - 16, ref_pos.y - 8, ref_pos.x + 24 * sc, ref_pos.y + 24 * sc); // FIXME: Hard-coded based on mouse cursor shape expectation. Exact dimension not very important.
@@ -10799,13 +10799,13 @@ static void KarmaGui::NavUpdate()
 
     // Set input source based on which keys are last pressed (as some features differs when used with Gamepad vs Keyboard)
     // FIXME-NAV: Now that keys are separated maybe we can get rid of NavInputSource?
-    const bool nav_gamepad_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
+    const bool nav_gamepad_active = (io.ConfigFlags & KGGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
     const KarmaGuiKey nav_gamepad_keys_to_change_source[] = { KGGuiKey_GamepadFaceRight, KGGuiKey_GamepadFaceLeft, KGGuiKey_GamepadFaceUp, KGGuiKey_GamepadFaceDown, KGGuiKey_GamepadDpadRight, KGGuiKey_GamepadDpadLeft, KGGuiKey_GamepadDpadUp, KGGuiKey_GamepadDpadDown };
     if (nav_gamepad_active)
         for (KarmaGuiKey key : nav_gamepad_keys_to_change_source)
             if (IsKeyDown(key))
                 g.NavInputSource = ImGuiInputSource_Gamepad;
-    const bool nav_keyboard_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard) != 0;
+    const bool nav_keyboard_active = (io.ConfigFlags & KGGuiConfigFlags_NavEnableKeyboard) != 0;
     const KarmaGuiKey nav_keyboard_keys_to_change_source[] = { KGGuiKey_Space, KGGuiKey_Enter, KGGuiKey_Escape, KGGuiKey_RightArrow, KGGuiKey_LeftArrow, KGGuiKey_UpArrow, KGGuiKey_DownArrow };
     if (nav_keyboard_active)
         for (KarmaGuiKey key : nav_keyboard_keys_to_change_source)
@@ -10935,7 +10935,7 @@ static void KarmaGui::NavUpdate()
 
     // Update mouse position if requested
     // (This will take into account the possibility that a Scroll was queued in the window to offset our absolute mouse position before scroll has been applied)
-    if (set_mouse_pos && (io.ConfigFlags & ImGuiConfigFlags_NavEnableSetMousePos) && (io.BackendFlags & KGGuiBackendFlags_HasSetMousePos))
+    if (set_mouse_pos && (io.ConfigFlags & KGGuiConfigFlags_NavEnableSetMousePos) && (io.BackendFlags & KGGuiBackendFlags_HasSetMousePos))
     {
         io.MousePos = io.MousePosPrev = NavCalcPreferredRefPos();
         io.WantSetMousePos = true;
@@ -10975,8 +10975,8 @@ void KarmaGui::NavUpdateCreateMoveRequest()
     KarmaGuiContext& g = *GImGui;
     KarmaGuiIO& io = g.IO;
     ImGuiWindow* window = g.NavWindow;
-    const bool nav_gamepad_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
-    const bool nav_keyboard_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard) != 0;
+    const bool nav_gamepad_active = (io.ConfigFlags & KGGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
+    const bool nav_keyboard_active = (io.ConfigFlags & KGGuiConfigFlags_NavEnableKeyboard) != 0;
 
     if (g.NavMoveForwardToNextFrame && window != NULL)
     {
@@ -11005,7 +11005,7 @@ void KarmaGui::NavUpdateCreateMoveRequest()
     }
 
     // Update PageUp/PageDown/Home/End scroll
-    // FIXME-NAV: Consider enabling those keys even without the master ImGuiConfigFlags_NavEnableKeyboard flag?
+    // FIXME-NAV: Consider enabling those keys even without the master KGGuiConfigFlags_NavEnableKeyboard flag?
     float scoring_rect_offset_y = 0.0f;
     if (window && g.NavMoveDir == KGGuiDir_None && nav_keyboard_active)
         scoring_rect_offset_y = NavUpdatePageUpPageDown();
@@ -11092,7 +11092,7 @@ void KarmaGui::NavUpdateCreateTabbingRequest()
         return;
 
     // Initiate tabbing request
-    // (this is ALWAYS ENABLED, regardless of ImGuiConfigFlags_NavEnableKeyboard flag!)
+    // (this is ALWAYS ENABLED, regardless of KGGuiConfigFlags_NavEnableKeyboard flag!)
     // Initially this was designed to use counters and modulo arithmetic, but that could not work with unsubmitted items (list clipper). Instead we use a strategy close to other move requests.
     // See NavProcessItemForTabbingRequest() for a description of the various forward/backward tabbing cases with and without wrapping.
     //// FIXME: We use (g.ActiveId == 0) but (g.NavDisableHighlight == false) might be righter once we can tab through anything
@@ -11203,8 +11203,8 @@ void KarmaGui::NavMoveRequestApplyResult()
 static void KarmaGui::NavUpdateCancelRequest()
 {
     KarmaGuiContext& g = *GImGui;
-    const bool nav_gamepad_active = (g.IO.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) != 0 && (g.IO.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
-    const bool nav_keyboard_active = (g.IO.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard) != 0;
+    const bool nav_gamepad_active = (g.IO.ConfigFlags & KGGuiConfigFlags_NavEnableGamepad) != 0 && (g.IO.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
+    const bool nav_keyboard_active = (g.IO.ConfigFlags & KGGuiConfigFlags_NavEnableKeyboard) != 0;
     if (!(nav_keyboard_active && IsKeyPressed(KGGuiKey_Escape, ImGuiKeyOwner_None)) && !(nav_gamepad_active && IsKeyPressed(KGGuiKey_NavGamepadCancel, ImGuiKeyOwner_None)))
         return;
 
@@ -11456,8 +11456,8 @@ static void KarmaGui::NavUpdateWindowing()
     }
 
     // Start CTRL+Tab or Square+L/R window selection
-    const bool nav_gamepad_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
-    const bool nav_keyboard_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard) != 0;
+    const bool nav_gamepad_active = (io.ConfigFlags & KGGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
+    const bool nav_keyboard_active = (io.ConfigFlags & KGGuiConfigFlags_NavEnableKeyboard) != 0;
     const bool keyboard_next_window = allow_windowing && g.ConfigNavWindowingKeyNext && Shortcut(g.ConfigNavWindowingKeyNext, ImGuiKeyOwner_None, KGGuiInputFlags_Repeat | KGGuiInputFlags_RouteAlways);
     const bool keyboard_prev_window = allow_windowing && g.ConfigNavWindowingKeyPrev && Shortcut(g.ConfigNavWindowingKeyPrev, ImGuiKeyOwner_None, KGGuiInputFlags_Repeat | KGGuiInputFlags_RouteAlways);
     const bool start_windowing_with_gamepad = allow_windowing && nav_gamepad_active && !g.NavWindowingTarget && IsKeyPressed(KGGuiKey_NavGamepadMenu, 0, KGGuiInputFlags_None);
@@ -11503,7 +11503,7 @@ static void KarmaGui::NavUpdateWindowing()
     if (g.NavWindowingTarget && g.NavInputSource == ImGuiInputSource_Keyboard)
     {
         // Visuals only appears after a brief time after pressing TAB the first time, so that a fast CTRL+TAB doesn't add visual noise
-        KarmaGuiKeyChord shared_mods = ((g.ConfigNavWindowingKeyNext ? g.ConfigNavWindowingKeyNext : ImGuiMod_Mask_) & (g.ConfigNavWindowingKeyPrev ? g.ConfigNavWindowingKeyPrev : ImGuiMod_Mask_)) & ImGuiMod_Mask_;
+        KarmaGuiKeyChord shared_mods = ((g.ConfigNavWindowingKeyNext ? g.ConfigNavWindowingKeyNext : KGGuiMod_Mask_) & (g.ConfigNavWindowingKeyPrev ? g.ConfigNavWindowingKeyPrev : KGGuiMod_Mask_)) & KGGuiMod_Mask_;
         IM_ASSERT(shared_mods != 0); // Next/Prev shortcut currently needs a shared modifier to "hold", otherwise Prev actions would keep cycling between two windows.
         g.NavWindowingHighlightAlpha = ImMax(g.NavWindowingHighlightAlpha, ImSaturate((g.NavWindowingTimer - NAV_WINDOWING_HIGHLIGHT_DELAY) / 0.05f)); // 1.0f
         if (keyboard_next_window || keyboard_prev_window)
@@ -11515,7 +11515,7 @@ static void KarmaGui::NavUpdateWindowing()
     // Keyboard: Press and Release ALT to toggle menu layer
     // - Testing that only Alt is tested prevents Alt+Shift or AltGR from toggling menu layer.
     // - AltGR is normally Alt+Ctrl but we can't reliably detect it (not all backends/systems/layout emit it as Alt+Ctrl). But even on keyboards without AltGR we don't want Alt+Ctrl to open menu anyway.
-    if (nav_keyboard_active && IsKeyPressed(ImGuiMod_Alt, ImGuiKeyOwner_None))
+    if (nav_keyboard_active && IsKeyPressed(KGGuiMod_Alt, ImGuiKeyOwner_None))
     {
         g.NavWindowingToggleLayer = true;
         g.NavInputSource = ImGuiInputSource_Keyboard;
@@ -11525,16 +11525,16 @@ static void KarmaGui::NavUpdateWindowing()
         // We cancel toggling nav layer when any text has been typed (generally while holding Alt). (See #370)
         // We cancel toggling nav layer when other modifiers are pressed. (See #4439)
         // We cancel toggling nav layer if an owner has claimed the key.
-        if (io.InputQueueCharacters.Size > 0 || io.KeyCtrl || io.KeyShift || io.KeySuper || TestKeyOwner(ImGuiMod_Alt, ImGuiKeyOwner_None) == false)
+        if (io.InputQueueCharacters.Size > 0 || io.KeyCtrl || io.KeyShift || io.KeySuper || TestKeyOwner(KGGuiMod_Alt, ImGuiKeyOwner_None) == false)
             g.NavWindowingToggleLayer = false;
 
         // Apply layer toggle on release
         // Important: as before version <18314 we lacked an explicit IO event for focus gain/loss, we also compare mouse validity to detect old backends clearing mouse pos on focus loss.
-        if (IsKeyReleased(ImGuiMod_Alt) && g.NavWindowingToggleLayer)
+        if (IsKeyReleased(KGGuiMod_Alt) && g.NavWindowingToggleLayer)
             if (g.ActiveId == 0 || g.ActiveIdAllowOverlap)
                 if (IsMousePosValid(&io.MousePos) == IsMousePosValid(&io.MousePosPrev))
                     apply_toggle_layer = true;
-        if (!IsKeyDown(ImGuiMod_Alt))
+        if (!IsKeyDown(KGGuiMod_Alt))
             g.NavWindowingToggleLayer = false;
     }
 
@@ -12690,8 +12690,8 @@ static bool KarmaGui::GetWindowAlwaysWantOwnViewport(ImGuiWindow* window)
 {
     // Tooltips and menus are not automatically forced into their own viewport when the NoMerge flag is set, however the multiplication of viewports makes them more likely to protrude and create their own.
     KarmaGuiContext& g = *GImGui;
-    if (g.IO.ConfigViewportsNoAutoMerge || (window->WindowClass.ViewportFlagsOverrideSet & ImGuiViewportFlags_NoAutoMerge))
-        if (g.ConfigFlagsCurrFrame & ImGuiConfigFlags_ViewportsEnable)
+    if (g.IO.ConfigViewportsNoAutoMerge || (window->WindowClass.ViewportFlagsOverrideSet & KGGuiViewportFlags_NoAutoMerge))
+        if (g.ConfigFlagsCurrFrame & KGGuiConfigFlags_ViewportsEnable)
             if (!window->DockIsActive)
                 if ((window->Flags & (KGGuiWindowFlags_ChildWindow | KGGuiWindowFlags_ChildMenu | KGGuiWindowFlags_Tooltip)) == 0)
                     if ((window->Flags & KGGuiWindowFlags_Popup) == 0 || (window->Flags & KGGuiWindowFlags_Modal) != 0)
@@ -12704,9 +12704,9 @@ static bool KarmaGui::UpdateTryMergeWindowIntoHostViewport(ImGuiWindow* window, 
     KarmaGuiContext& g = *GImGui;
     if (window->Viewport == viewport)
         return false;
-    if ((viewport->Flags & ImGuiViewportFlags_CanHostOtherWindows) == 0)
+    if ((viewport->Flags & KGGuiViewportFlags_CanHostOtherWindows) == 0)
         return false;
-    if ((viewport->Flags & ImGuiViewportFlags_Minimized) != 0)
+    if ((viewport->Flags & KGGuiViewportFlags_Minimized) != 0)
         return false;
     if (!viewport->GetMainRect().Contains(window->Rect()))
         return false;
@@ -12744,18 +12744,18 @@ static bool KarmaGui::UpdateTryMergeWindowIntoHostViewports(ImGuiWindow* window)
 }
 
 // Translate Dear ImGui windows when a Host Viewport has been moved
-// (This additionally keeps windows at the same place when ImGuiConfigFlags_ViewportsEnable is toggled!)
+// (This additionally keeps windows at the same place when KGGuiConfigFlags_ViewportsEnable is toggled!)
 void KarmaGui::TranslateWindowsInViewport(ImGuiViewportP* viewport, const ImVec2& old_pos, const ImVec2& new_pos)
 {
     KarmaGuiContext& g = *GImGui;
-    IM_ASSERT(viewport->Window == NULL && (viewport->Flags & ImGuiViewportFlags_CanHostOtherWindows));
+    IM_ASSERT(viewport->Window == NULL && (viewport->Flags & KGGuiViewportFlags_CanHostOtherWindows));
 
-    // 1) We test if ImGuiConfigFlags_ViewportsEnable was just toggled, which allows us to conveniently
+    // 1) We test if KGGuiConfigFlags_ViewportsEnable was just toggled, which allows us to conveniently
     // translate imgui windows from OS-window-local to absolute coordinates or vice-versa.
     // 2) If it's not going to fit into the new size, keep it at same absolute position.
     // One problem with this is that most Win32 applications doesn't update their render while dragging,
     // and so the window will appear to teleport when releasing the mouse.
-    const bool translate_all_windows = (g.ConfigFlagsCurrFrame & ImGuiConfigFlags_ViewportsEnable) != (g.ConfigFlagsLastFrame & ImGuiConfigFlags_ViewportsEnable);
+    const bool translate_all_windows = (g.ConfigFlagsCurrFrame & KGGuiConfigFlags_ViewportsEnable) != (g.ConfigFlagsLastFrame & KGGuiConfigFlags_ViewportsEnable);
     ImRect test_still_fit_rect(old_pos, old_pos + viewport->Size);
     ImVec2 delta_pos = new_pos - old_pos;
     for (int window_n = 0; window_n < g.Windows.Size; window_n++) // FIXME-OPT
@@ -12779,7 +12779,7 @@ void KarmaGui::ScaleWindowsInViewport(ImGuiViewportP* viewport, float scale)
     }
 }
 
-// If the backend doesn't set MouseLastHoveredViewport or doesn't honor ImGuiViewportFlags_NoInputs, we do a search ourselves.
+// If the backend doesn't set MouseLastHoveredViewport or doesn't honor KGGuiViewportFlags_NoInputs, we do a search ourselves.
 // A) It won't take account of the possibility that non-imgui windows may be in-between our dragged window and our target window.
 // B) It requires Platform_GetWindowFocus to be implemented by backend.
 ImGuiViewportP* KarmaGui::FindHoveredViewportFromPlatformWindowStack(const ImVec2& mouse_platform_pos)
@@ -12789,7 +12789,7 @@ ImGuiViewportP* KarmaGui::FindHoveredViewportFromPlatformWindowStack(const ImVec
     for (int n = 0; n < g.Viewports.Size; n++)
     {
         ImGuiViewportP* viewport = g.Viewports[n];
-        if (!(viewport->Flags & (ImGuiViewportFlags_NoInputs | ImGuiViewportFlags_Minimized)) && viewport->GetMainRect().Contains(mouse_platform_pos))
+        if (!(viewport->Flags & (KGGuiViewportFlags_NoInputs | KGGuiViewportFlags_Minimized)) && viewport->GetMainRect().Contains(mouse_platform_pos))
             if (best_candidate == NULL || best_candidate->LastFrontMostStampCount < viewport->LastFrontMostStampCount)
                 best_candidate = viewport;
     }
@@ -12797,14 +12797,14 @@ ImGuiViewportP* KarmaGui::FindHoveredViewportFromPlatformWindowStack(const ImVec
 }
 
 // Update viewports and monitor infos
-// Note that this is running even if 'ImGuiConfigFlags_ViewportsEnable' is not set, in order to clear unused viewports (if any) and update monitor info.
+// Note that this is running even if 'KGGuiConfigFlags_ViewportsEnable' is not set, in order to clear unused viewports (if any) and update monitor info.
 static void KarmaGui::UpdateViewportsNewFrame()
 {
     KarmaGuiContext& g = *GImGui;
     IM_ASSERT(g.PlatformIO.Viewports.Size <= g.Viewports.Size);
 
     // Update Minimized status (we need it first in order to decide if we'll apply Pos/Size of the main viewport)
-    const bool viewports_enabled = (g.ConfigFlagsCurrFrame & ImGuiConfigFlags_ViewportsEnable) != 0;
+    const bool viewports_enabled = (g.ConfigFlagsCurrFrame & KGGuiConfigFlags_ViewportsEnable) != 0;
     if (viewports_enabled)
     {
         for (int n = 0; n < g.Viewports.Size; n++)
@@ -12815,9 +12815,9 @@ static void KarmaGui::UpdateViewportsNewFrame()
             {
                 bool minimized = g.PlatformIO.Platform_GetWindowMinimized(viewport);
                 if (minimized)
-                    viewport->Flags |= ImGuiViewportFlags_Minimized;
+                    viewport->Flags |= KGGuiViewportFlags_Minimized;
                 else
-                    viewport->Flags &= ~ImGuiViewportFlags_Minimized;
+                    viewport->Flags &= ~KGGuiViewportFlags_Minimized;
             }
         }
     }
@@ -12829,12 +12829,12 @@ static void KarmaGui::UpdateViewportsNewFrame()
     IM_ASSERT(main_viewport->Window == NULL);
     ImVec2 main_viewport_pos = viewports_enabled ? g.PlatformIO.Platform_GetWindowPos(main_viewport) : ImVec2(0.0f, 0.0f);
     ImVec2 main_viewport_size = g.IO.DisplaySize;
-    if (viewports_enabled && (main_viewport->Flags & ImGuiViewportFlags_Minimized))
+    if (viewports_enabled && (main_viewport->Flags & KGGuiViewportFlags_Minimized))
     {
         main_viewport_pos = main_viewport->Pos;    // Preserve last pos/size when minimized (FIXME: We don't do the same for Size outside of the viewport path)
         main_viewport_size = main_viewport->Size;
     }
-    AddUpdateViewport(NULL, IMGUI_VIEWPORT_DEFAULT_ID, main_viewport_pos, main_viewport_size, ImGuiViewportFlags_OwnedByApp | ImGuiViewportFlags_CanHostOtherWindows);
+    AddUpdateViewport(NULL, IMGUI_VIEWPORT_DEFAULT_ID, main_viewport_pos, main_viewport_size, KGGuiViewportFlags_OwnedByApp | KGGuiViewportFlags_CanHostOtherWindows);
 
     g.CurrentDpiScale = 0.0f;
     g.CurrentViewport = NULL;
@@ -12857,7 +12857,7 @@ static void KarmaGui::UpdateViewportsNewFrame()
         {
             // Update Position and Size (from Platform Window to ImGui) if requested.
             // We do it early in the frame instead of waiting for UpdatePlatformWindows() to avoid a frame of lag when moving/resizing using OS facilities.
-            if (!(viewport->Flags & ImGuiViewportFlags_Minimized) && platform_funcs_available)
+            if (!(viewport->Flags & KGGuiViewportFlags_Minimized) && platform_funcs_available)
             {
                 // Viewport->WorkPos and WorkSize will be updated below
                 if (viewport->PlatformRequestMove)
@@ -12880,9 +12880,9 @@ static void KarmaGui::UpdateViewportsNewFrame()
         viewport->Alpha = 1.0f;
 
         // Translate Dear ImGui windows when a Host Viewport has been moved
-        // (This additionally keeps windows at the same place when ImGuiConfigFlags_ViewportsEnable is toggled!)
+        // (This additionally keeps windows at the same place when KGGuiConfigFlags_ViewportsEnable is toggled!)
         const ImVec2 viewport_delta_pos = viewport->Pos - viewport->LastPos;
-        if ((viewport->Flags & ImGuiViewportFlags_CanHostOtherWindows) && (viewport_delta_pos.x != 0.0f || viewport_delta_pos.y != 0.0f))
+        if ((viewport->Flags & KGGuiViewportFlags_CanHostOtherWindows) && (viewport_delta_pos.x != 0.0f || viewport_delta_pos.y != 0.0f))
             TranslateWindowsInViewport(viewport, viewport->LastPos, viewport->Pos);
 
         // Update DPI scale
@@ -12896,7 +12896,7 @@ static void KarmaGui::UpdateViewportsNewFrame()
         if (viewport->DpiScale != 0.0f && new_dpi_scale != viewport->DpiScale)
         {
             float scale_factor = new_dpi_scale / viewport->DpiScale;
-            if (g.IO.ConfigFlags & ImGuiConfigFlags_DpiEnableScaleViewports)
+            if (g.IO.ConfigFlags & KGGuiConfigFlags_DpiEnableScaleViewports)
                 ScaleWindowsInViewport(viewport, scale_factor);
             //if (viewport == GetMainViewport())
             //    g.PlatformInterface.SetWindowSize(viewport, viewport->Size * scale_factor);
@@ -12928,17 +12928,17 @@ static void KarmaGui::UpdateViewportsNewFrame()
     }
 
     // Mouse handling: decide on the actual mouse viewport for this frame between the active/focused viewport and the hovered viewport.
-    // Note that 'viewport_hovered' should skip over any viewport that has the ImGuiViewportFlags_NoInputs flags set.
+    // Note that 'viewport_hovered' should skip over any viewport that has the KGGuiViewportFlags_NoInputs flags set.
     ImGuiViewportP* viewport_hovered = NULL;
     if (g.IO.BackendFlags & KGGuiBackendFlags_HasMouseHoveredViewport)
     {
         viewport_hovered = g.IO.MouseHoveredViewport ? (ImGuiViewportP*)FindViewportByID(g.IO.MouseHoveredViewport) : NULL;
-        if (viewport_hovered && (viewport_hovered->Flags & ImGuiViewportFlags_NoInputs))
+        if (viewport_hovered && (viewport_hovered->Flags & KGGuiViewportFlags_NoInputs))
             viewport_hovered = FindHoveredViewportFromPlatformWindowStack(g.IO.MousePos); // Backend failed to handle _NoInputs viewport: revert to our fallback.
     }
     else
     {
-        // If the backend doesn't know how to honor ImGuiViewportFlags_NoInputs, we do a search ourselves. Note that this search:
+        // If the backend doesn't know how to honor KGGuiViewportFlags_NoInputs, we do a search ourselves. Note that this search:
         // A) won't take account of the possibility that non-imgui windows may be in-between our dragged window and our target window.
         // B) won't take account of how the backend apply parent<>child relationship to secondary viewports, which affects their Z order.
         // C) uses LastFrameAsRefViewport as a flawed replacement for the last time a window was focused (we could/should fix that by introducing Focus functions in PlatformIO)
@@ -12966,7 +12966,7 @@ static void KarmaGui::UpdateViewportsNewFrame()
     if (is_mouse_dragging_with_an_expected_destination && viewport_hovered == NULL)
         viewport_hovered = g.MouseLastHoveredViewport;
     if (is_mouse_dragging_with_an_expected_destination || g.ActiveId == 0 || !IsAnyMouseDown())
-        if (viewport_hovered != NULL && viewport_hovered != g.MouseViewport && !(viewport_hovered->Flags & ImGuiViewportFlags_NoInputs))
+        if (viewport_hovered != NULL && viewport_hovered != g.MouseViewport && !(viewport_hovered->Flags & KGGuiViewportFlags_NoInputs))
             g.MouseViewport = viewport_hovered;
 
     IM_ASSERT(g.MouseViewport != NULL);
@@ -12999,15 +12999,15 @@ ImGuiViewportP* KarmaGui::AddUpdateViewport(ImGuiWindow* window, KGGuiID id, con
     KarmaGuiContext& g = *GImGui;
     IM_ASSERT(id != 0);
 
-    flags |= ImGuiViewportFlags_IsPlatformWindow;
+    flags |= KGGuiViewportFlags_IsPlatformWindow;
     if (window != NULL)
     {
         if (g.MovingWindow && g.MovingWindow->RootWindowDockTree == window)
-            flags |= ImGuiViewportFlags_NoInputs | ImGuiViewportFlags_NoFocusOnAppearing;
+            flags |= KGGuiViewportFlags_NoInputs | KGGuiViewportFlags_NoFocusOnAppearing;
         if ((window->Flags & KGGuiWindowFlags_NoMouseInputs) && (window->Flags & KGGuiWindowFlags_NoNavInputs))
-            flags |= ImGuiViewportFlags_NoInputs;
+            flags |= KGGuiViewportFlags_NoInputs;
         if (window->Flags & KGGuiWindowFlags_NoFocusOnAppearing)
-            flags |= ImGuiViewportFlags_NoFocusOnAppearing;
+            flags |= KGGuiViewportFlags_NoFocusOnAppearing;
     }
 
     ImGuiViewportP* viewport = (ImGuiViewportP*)FindViewportByID(id);
@@ -13018,7 +13018,7 @@ ImGuiViewportP* KarmaGui::AddUpdateViewport(ImGuiWindow* window, KGGuiID id, con
             viewport->Pos = pos;
         if (!viewport->PlatformRequestResize || viewport->ID == IMGUI_VIEWPORT_DEFAULT_ID)
             viewport->Size = size;
-        viewport->Flags = flags | (viewport->Flags & ImGuiViewportFlags_Minimized); // Preserve existing flags
+        viewport->Flags = flags | (viewport->Flags & KGGuiViewportFlags_Minimized); // Preserve existing flags
     }
     else
     {
@@ -13090,7 +13090,7 @@ static void KarmaGui::WindowSelectViewport(ImGuiWindow* window)
 
     // Restore main viewport if multi-viewport is not supported by the backend
     ImGuiViewportP* main_viewport = (ImGuiViewportP*)(void*)GetMainViewport();
-    if (!(g.ConfigFlagsCurrFrame & ImGuiConfigFlags_ViewportsEnable))
+    if (!(g.ConfigFlagsCurrFrame & KGGuiConfigFlags_ViewportsEnable))
     {
         SetWindowViewport(window, main_viewport);
         return;
@@ -13115,7 +13115,7 @@ static void KarmaGui::WindowSelectViewport(ImGuiWindow* window)
         {
             window->Viewport = (ImGuiViewportP*)FindViewportByID(window->ViewportId);
             if (window->Viewport == NULL && window->ViewportPos.x != FLT_MAX && window->ViewportPos.y != FLT_MAX)
-                window->Viewport = AddUpdateViewport(window, window->ID, window->ViewportPos, window->Size, ImGuiViewportFlags_None);
+                window->Viewport = AddUpdateViewport(window, window->ID, window->ViewportPos, window->Size, KGGuiViewportFlags_None);
         }
     }
 
@@ -13145,12 +13145,12 @@ static void KarmaGui::WindowSelectViewport(ImGuiWindow* window)
     }
     else if (GetWindowAlwaysWantOwnViewport(window))
     {
-        window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, ImGuiViewportFlags_None);
+        window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, KGGuiViewportFlags_None);
     }
     else if (g.MovingWindow && g.MovingWindow->RootWindowDockTree == window && IsMousePosValid())
     {
         if (window->Viewport != NULL && window->Viewport->Window == window)
-            window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, ImGuiViewportFlags_None);
+            window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, KGGuiViewportFlags_None);
     }
     else
     {
@@ -13165,7 +13165,7 @@ static void KarmaGui::WindowSelectViewport(ImGuiWindow* window)
     // Fallback: merge in default viewport if z-order matches, otherwise create a new viewport
     if (window->Viewport == NULL)
         if (!UpdateTryMergeWindowIntoHostViewport(window, main_viewport))
-            window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, ImGuiViewportFlags_None);
+            window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, KGGuiViewportFlags_None);
 
     // Mark window as allowed to protrude outside of its viewport and into the current monitor
     if (!lock_viewport)
@@ -13197,7 +13197,7 @@ static void KarmaGui::WindowSelectViewport(ImGuiWindow* window)
             else if (!UpdateTryMergeWindowIntoHostViewports(window)) // Merge?
             {
                 // New viewport
-                window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, ImGuiViewportFlags_NoFocusOnAppearing);
+                window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, KGGuiViewportFlags_NoFocusOnAppearing);
             }
         }
         else if (window->ViewportAllowPlatformMonitorExtend < 0 && (flags & KGGuiWindowFlags_ChildWindow) == 0)
@@ -13213,7 +13213,7 @@ static void KarmaGui::WindowSelectViewport(ImGuiWindow* window)
     window->ViewportId = window->Viewport->ID;
 
     // If the OS window has a title bar, hide our imgui title bar
-    //if (window->ViewportOwned && !(window->Viewport->Flags & ImGuiViewportFlags_NoDecoration))
+    //if (window->ViewportOwned && !(window->Viewport->Flags & KGGuiViewportFlags_NoDecoration))
     //    window->Flags |= KGGuiWindowFlags_NoTitleBar;
 }
 
@@ -13254,30 +13254,30 @@ void KarmaGui::WindowSyncOwnedViewport(ImGuiWindow* window, ImGuiWindow* parent_
         UpdateViewportPlatformMonitor(window->Viewport);
 
     // Update common viewport flags
-    const KarmaGuiViewportFlags viewport_flags_to_clear = ImGuiViewportFlags_TopMost | ImGuiViewportFlags_NoTaskBarIcon | ImGuiViewportFlags_NoDecoration | ImGuiViewportFlags_NoRendererClear;
+    const KarmaGuiViewportFlags viewport_flags_to_clear = KGGuiViewportFlags_TopMost | KGGuiViewportFlags_NoTaskBarIcon | KGGuiViewportFlags_NoDecoration | KGGuiViewportFlags_NoRendererClear;
     KarmaGuiViewportFlags viewport_flags = window->Viewport->Flags & ~viewport_flags_to_clear;
     KarmaGuiWindowFlags window_flags = window->Flags;
     const bool is_modal = (window_flags & KGGuiWindowFlags_Modal) != 0;
     const bool is_short_lived_floating_window = (window_flags & (KGGuiWindowFlags_ChildMenu | KGGuiWindowFlags_Tooltip | KGGuiWindowFlags_Popup)) != 0;
     if (window_flags & KGGuiWindowFlags_Tooltip)
-        viewport_flags |= ImGuiViewportFlags_TopMost;
+        viewport_flags |= KGGuiViewportFlags_TopMost;
     if ((g.IO.ConfigViewportsNoTaskBarIcon || is_short_lived_floating_window) && !is_modal)
-        viewport_flags |= ImGuiViewportFlags_NoTaskBarIcon;
+        viewport_flags |= KGGuiViewportFlags_NoTaskBarIcon;
     if (g.IO.ConfigViewportsNoDecoration || is_short_lived_floating_window)
-        viewport_flags |= ImGuiViewportFlags_NoDecoration;
+        viewport_flags |= KGGuiViewportFlags_NoDecoration;
 
     // Not correct to set modal as topmost because:
     // - Because other popups can be stacked above a modal (e.g. combo box in a modal)
-    // - ImGuiViewportFlags_TopMost is currently handled different in backends: in Win32 it is "appear top most" whereas in GLFW and SDL it is "stay topmost"
+    // - KGGuiViewportFlags_TopMost is currently handled different in backends: in Win32 it is "appear top most" whereas in GLFW and SDL it is "stay topmost"
     //if (flags & KGGuiWindowFlags_Modal)
-    //    viewport_flags |= ImGuiViewportFlags_TopMost;
+    //    viewport_flags |= KGGuiViewportFlags_TopMost;
 
     // For popups and menus that may be protruding out of their parent viewport, we enable _NoFocusOnClick so that clicking on them
     // won't steal the OS focus away from their parent window (which may be reflected in OS the title bar decoration).
     // Setting _NoFocusOnClick would technically prevent us from bringing back to front in case they are being covered by an OS window from a different app,
     // but it shouldn't be much of a problem considering those are already popups that are closed when clicking elsewhere.
     if (is_short_lived_floating_window && !is_modal)
-        viewport_flags |= ImGuiViewportFlags_NoFocusOnAppearing | ImGuiViewportFlags_NoFocusOnClick;
+        viewport_flags |= KGGuiViewportFlags_NoFocusOnAppearing | KGGuiViewportFlags_NoFocusOnClick;
 
     // We can overwrite viewport flags using KarmaGuiWindowClass (advanced users)
     if (window->WindowClass.ViewportFlagsOverrideSet)
@@ -13289,7 +13289,7 @@ void KarmaGui::WindowSyncOwnedViewport(ImGuiWindow* window, ImGuiWindow* parent_
     // as our window background is filling the viewport and we have disabled BgAlpha.
     // FIXME: Work on support for per-viewport transparency (#2766)
     if (!(window_flags & KGGuiWindowFlags_NoBackground))
-        viewport_flags |= ImGuiViewportFlags_NoRendererClear;
+        viewport_flags |= KGGuiViewportFlags_NoRendererClear;
 
     window->Viewport->Flags = viewport_flags;
 
@@ -13311,7 +13311,7 @@ void KarmaGui::UpdatePlatformWindows()
     IM_ASSERT(g.FrameCountEnded == g.FrameCount && "Forgot to call Render() or EndFrame() before UpdatePlatformWindows()?");
     IM_ASSERT(g.FrameCountPlatformEnded < g.FrameCount);
     g.FrameCountPlatformEnded = g.FrameCount;
-    if (!(g.ConfigFlagsCurrFrame & ImGuiConfigFlags_ViewportsEnable))
+    if (!(g.ConfigFlagsCurrFrame & KGGuiConfigFlags_ViewportsEnable))
         return;
 
     // Create/resize/destroy platform windows to match each active viewport.
@@ -13388,7 +13388,7 @@ void KarmaGui::UpdatePlatformWindows()
         {
             // On startup ensure new platform window don't steal focus (give it a few frames, as nested contents may lead to viewport being created a few frames late)
             if (g.FrameCount < 3)
-                viewport->Flags |= ImGuiViewportFlags_NoFocusOnAppearing;
+                viewport->Flags |= KGGuiViewportFlags_NoFocusOnAppearing;
 
             // Show window
             g.PlatformIO.Platform_ShowWindow(viewport);
@@ -13435,10 +13435,10 @@ void KarmaGui::UpdatePlatformWindows()
 //
 //    KarmaGuiPlatformIO& platform_io = KarmaGui::GetPlatformIO();
 //    for (int i = 1; i < platform_io.Viewports.Size; i++)
-//        if ((platform_io.Viewports[i]->Flags & ImGuiViewportFlags_Minimized) == 0)
+//        if ((platform_io.Viewports[i]->Flags & KGGuiViewportFlags_Minimized) == 0)
 //            MyRenderFunction(platform_io.Viewports[i], my_args);
 //    for (int i = 1; i < platform_io.Viewports.Size; i++)
-//        if ((platform_io.Viewports[i]->Flags & ImGuiViewportFlags_Minimized) == 0)
+//        if ((platform_io.Viewports[i]->Flags & KGGuiViewportFlags_Minimized) == 0)
 //            MySwapBufferFunction(platform_io.Viewports[i], my_args);
 //
 void KarmaGui::RenderPlatformWindowsDefault(void* platform_render_arg, void* renderer_render_arg)
@@ -13448,7 +13448,7 @@ void KarmaGui::RenderPlatformWindowsDefault(void* platform_render_arg, void* ren
     for (int i = 1; i < platform_io.Viewports.Size; i++)
     {
         KarmaGuiViewport* viewport = platform_io.Viewports[i];
-        if (viewport->Flags & ImGuiViewportFlags_Minimized)
+        if (viewport->Flags & KGGuiViewportFlags_Minimized)
             continue;
         if (platform_io.Platform_RenderWindow) platform_io.Platform_RenderWindow(viewport, platform_render_arg);
         if (platform_io.Renderer_RenderWindow) platform_io.Renderer_RenderWindow(viewport, renderer_render_arg);
@@ -13456,7 +13456,7 @@ void KarmaGui::RenderPlatformWindowsDefault(void* platform_render_arg, void* ren
     for (int i = 1; i < platform_io.Viewports.Size; i++)
     {
         KarmaGuiViewport* viewport = platform_io.Viewports[i];
-        if (viewport->Flags & ImGuiViewportFlags_Minimized)
+        if (viewport->Flags & KGGuiViewportFlags_Minimized)
             continue;
         if (platform_io.Platform_SwapBuffers) platform_io.Platform_SwapBuffers(viewport, platform_render_arg);
         if (platform_io.Renderer_SwapBuffers) platform_io.Renderer_SwapBuffers(viewport, renderer_render_arg);
@@ -13842,7 +13842,7 @@ void KarmaGui::DockContextNewFrameUpdateUndocking(KarmaGuiContext* ctx)
 {
     KarmaGuiContext& g = *ctx;
     ImGuiDockContext* dc = &ctx->DockContext;
-    if (!(g.IO.ConfigFlags & ImGuiConfigFlags_DockingEnable))
+    if (!(g.IO.ConfigFlags & KGGuiConfigFlags_DockingEnable))
     {
         if (dc->Nodes.Data.Size > 0 || dc->Requests.Size > 0)
             DockContextClearNodes(ctx, 0, true);
@@ -13886,7 +13886,7 @@ void KarmaGui::DockContextNewFrameUpdateDocking(KarmaGuiContext* ctx)
 {
     KarmaGuiContext& g = *ctx;
     ImGuiDockContext* dc  = &ctx->DockContext;
-    if (!(g.IO.ConfigFlags & ImGuiConfigFlags_DockingEnable))
+    if (!(g.IO.ConfigFlags & KGGuiConfigFlags_DockingEnable))
         return;
 
     // [DEBUG] Store hovered dock node.
@@ -14327,7 +14327,7 @@ static ImVec2 FixLargeWindowsWhenUndocking(const ImVec2& size, KarmaGuiViewport*
 
     KarmaGuiContext& g = *GImGui;
     ImVec2 max_size = ImFloor(ref_viewport->WorkSize * 0.90f);
-    if (g.ConfigFlagsCurrFrame & ImGuiConfigFlags_ViewportsEnable)
+    if (g.ConfigFlagsCurrFrame & KGGuiConfigFlags_ViewportsEnable)
     {
         const KarmaGuiPlatformMonitor* monitor = KarmaGui::GetViewportPlatformMonitor(ref_viewport);
         max_size = ImFloor(monitor->WorkSize * 0.90f);
@@ -16147,7 +16147,7 @@ void KarmaGui::DockNodeTreeUpdatePosSize(ImGuiDockNode* node, ImVec2 pos, ImVec2
         DockNodeTreeUpdatePosSize(child_1, child_1_pos, child_1_size);
 }
 
-static void DockNodeTreeUpdateSplitterFindTouchingNode(ImGuiDockNode* node, ImGuiAxis axis, int side, ImVector<ImGuiDockNode*>* touching_nodes)
+static void DockNodeTreeUpdateSplitterFindTouchingNode(ImGuiDockNode* node, ImGuiAxis axis, int side, KGVector<ImGuiDockNode*>* touching_nodes)
 {
     if (node->IsLeafNode())
     {
@@ -16198,7 +16198,7 @@ void KarmaGui::DockNodeTreeUpdateSplitter(ImGuiDockNode* node)
             PushID(node->ID);
 
             // Find resizing limits by gathering list of nodes that are touching the splitter line.
-            ImVector<ImGuiDockNode*> touching_nodes[2];
+            KGVector<ImGuiDockNode*> touching_nodes[2];
             float min_size = g.Style.WindowMinSize[axis];
             float resize_limits[2];
             resize_limits[0] = node->ChildNodes[0]->Pos[axis] + min_size;
@@ -16367,7 +16367,7 @@ KGGuiID KarmaGui::DockSpace(KGGuiID id, const ImVec2& size_arg, KarmaGuiDockNode
     KarmaGuiContext* ctx = GImGui;
     KarmaGuiContext& g = *ctx;
     ImGuiWindow* window = GetCurrentWindow();
-    if (!(g.IO.ConfigFlags & ImGuiConfigFlags_DockingEnable))
+    if (!(g.IO.ConfigFlags & KGGuiConfigFlags_DockingEnable))
         return 0;
 
     // Early out if parent window is hidden/collapsed
@@ -16626,7 +16626,7 @@ void KarmaGui::DockBuilderRemoveNodeChildNodes(KGGuiID root_id)
     ImGuiDataAuthority backup_root_node_authority_for_size = root_node ? root_node->AuthorityForSize : ImGuiDataAuthority_Auto;
 
     // Process active windows
-    ImVector<ImGuiDockNode*> nodes_to_remove;
+    KGVector<ImGuiDockNode*> nodes_to_remove;
     for (int n = 0; n < dc->Nodes.Data.Size; n++)
         if (ImGuiDockNode* node = (ImGuiDockNode*)dc->Nodes.Data[n].val_p)
         {
@@ -16754,7 +16754,7 @@ KGGuiID KarmaGui::DockBuilderSplitNode(KGGuiID id, KarmaGuiDir split_dir, float 
     return id_at_dir;
 }
 
-static ImGuiDockNode* DockBuilderCopyNodeRec(ImGuiDockNode* src_node, KGGuiID dst_node_id_if_known, ImVector<KGGuiID>* out_node_remap_pairs)
+static ImGuiDockNode* DockBuilderCopyNodeRec(ImGuiDockNode* src_node, KGGuiID dst_node_id_if_known, KGVector<KGGuiID>* out_node_remap_pairs)
 {
     KarmaGuiContext& g = *GImGui;
     ImGuiDockNode* dst_node = KarmaGui::DockContextAddNode(&g, dst_node_id_if_known);
@@ -16781,7 +16781,7 @@ static ImGuiDockNode* DockBuilderCopyNodeRec(ImGuiDockNode* src_node, KGGuiID ds
     return dst_node;
 }
 
-void KarmaGui::DockBuilderCopyNode(KGGuiID src_node_id, KGGuiID dst_node_id, ImVector<KGGuiID>* out_node_remap_pairs)
+void KarmaGui::DockBuilderCopyNode(KGGuiID src_node_id, KGGuiID dst_node_id, KGVector<KGGuiID>* out_node_remap_pairs)
 {
     KarmaGuiContext* ctx = GImGui;
     IM_ASSERT(src_node_id != 0);
@@ -16830,7 +16830,7 @@ void KarmaGui::DockBuilderCopyWindowSettings(const char* src_name, const char* d
 }
 
 // FIXME: Will probably want to change this signature, in particular how the window remapping pairs are passed.
-void KarmaGui::DockBuilderCopyDockSpace(KGGuiID src_dockspace_id, KGGuiID dst_dockspace_id, ImVector<const char*>* in_window_remap_pairs)
+void KarmaGui::DockBuilderCopyDockSpace(KGGuiID src_dockspace_id, KGGuiID dst_dockspace_id, KGVector<const char*>* in_window_remap_pairs)
 {
     KarmaGuiContext& g = *GImGui;
     IM_ASSERT(src_dockspace_id != 0);
@@ -16841,12 +16841,12 @@ void KarmaGui::DockBuilderCopyDockSpace(KGGuiID src_dockspace_id, KGGuiID dst_do
     // Duplicate entire dock
     // FIXME: When overwriting dst_dockspace_id, windows that aren't part of our dockspace window class but that are docked in a same node will be split apart,
     // whereas we could attempt to at least keep them together in a new, same floating node.
-    ImVector<KGGuiID> node_remap_pairs;
+    KGVector<KGGuiID> node_remap_pairs;
     DockBuilderCopyNode(src_dockspace_id, dst_dockspace_id, &node_remap_pairs);
 
     // Attempt to transition all the upcoming windows associated to dst_dockspace_id into the newly created hierarchy of dock nodes
     // (The windows associated to src_dockspace_id are staying in place)
-    ImVector<KGGuiID> src_windows;
+    KGVector<KGGuiID> src_windows;
     for (int remap_window_n = 0; remap_window_n < in_window_remap_pairs->Size; remap_window_n += 2)
     {
         const char* src_window_name = (*in_window_remap_pairs)[remap_window_n];
@@ -16888,7 +16888,7 @@ void KarmaGui::DockBuilderCopyDockSpace(KGGuiID src_dockspace_id, KGGuiID dst_do
     // Find those windows and move to them to the cloned dock node. This may be optional?
     // Dock those are a second step as undocking would invalidate source dock nodes.
     struct DockRemainingWindowTask { ImGuiWindow* Window; KGGuiID DockId; DockRemainingWindowTask(ImGuiWindow* window, KGGuiID dock_id) { Window = window; DockId = dock_id; } };
-    ImVector<DockRemainingWindowTask> dock_remaining_windows;
+    KGVector<DockRemainingWindowTask> dock_remaining_windows;
     for (int dock_remap_n = 0; dock_remap_n < node_remap_pairs.Size; dock_remap_n += 2)
         if (KGGuiID src_dock_id = node_remap_pairs[dock_remap_n])
         {
@@ -17362,7 +17362,7 @@ static void KarmaGui::DockSettingsHandler_WriteAll(KarmaGuiContext* ctx, ImGuiSe
 {
     KarmaGuiContext& g = *ctx;
     ImGuiDockContext* dc = &ctx->DockContext;
-    if (!(g.IO.ConfigFlags & ImGuiConfigFlags_DockingEnable))
+    if (!(g.IO.ConfigFlags & KGGuiConfigFlags_DockingEnable))
         return;
 
     // Gather settings data
@@ -17642,7 +17642,7 @@ void KarmaGui::DebugRenderViewportThumbnail(KGDrawList* draw_list, ImGuiViewport
 
     ImVec2 scale = bb.GetSize() / viewport->Size;
     ImVec2 off = bb.Min - viewport->Pos * scale;
-    float alpha_mul = (viewport->Flags & ImGuiViewportFlags_Minimized) ? 0.30f : 1.00f;
+    float alpha_mul = (viewport->Flags & KGGuiViewportFlags_Minimized) ? 0.30f : 1.00f;
     window->DrawList->AddRectFilled(bb.Min, bb.Max, KarmaGui::GetColorU32(KGGuiCol_Border, alpha_mul * 0.40f));
     for (int i = 0; i != g.Windows.Size; i++)
     {
@@ -17734,7 +17734,7 @@ void KarmaGui::DebugRenderKeyboardPreview(KGDrawList* draw_list)
         draw_list->AddRect(key_min, key_max, IM_COL32(24, 24, 24, 255), key_rounding);
         ImVec2 face_min = ImVec2(key_min.x + key_face_pos.x, key_min.y + key_face_pos.y);
         ImVec2 face_max = ImVec2(face_min.x + key_face_size.x, face_min.y + key_face_size.y);
-        draw_list->AddRect(face_min, face_max, IM_COL32(193, 193, 193, 255), key_face_rounding, ImDrawFlags_None, 2.0f);
+        draw_list->AddRect(face_min, face_max, IM_COL32(193, 193, 193, 255), key_face_rounding, KGDrawFlags_None, 2.0f);
         draw_list->AddRectFilled(face_min, face_max, IM_COL32(252, 252, 252, 255), key_face_rounding);
         ImVec2 label_min = ImVec2(key_min.x + key_label_pos.x, key_min.y + key_label_pos.y);
         draw_list->AddText(label_min, IM_COL32(64, 64, 64, 255), key_data->Label);
@@ -17991,7 +17991,7 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
         if (TreeNode("By submission order (begin stack)"))
         {
             // Here we display windows in their submitted order/hierarchy, however note that the Begin stack doesn't constitute a Parent<>Child relationship!
-            ImVector<ImGuiWindow*>& temp_buffer = g.WindowsTempSortBuffer;
+            KGVector<ImGuiWindow*>& temp_buffer = g.WindowsTempSortBuffer;
             temp_buffer.resize(0);
             for (int i = 0; i < g.Windows.Size; i++)
                 if (g.Windows[i]->LastFrameActive + 1 >= g.FrameCount)
@@ -18055,7 +18055,7 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
         BulletText("MouseViewport: 0x%08X (UserHovered 0x%08X, LastHovered 0x%08X)", g.MouseViewport ? g.MouseViewport->ID : 0, g.IO.MouseHoveredViewport, g.MouseLastHoveredViewport ? g.MouseLastHoveredViewport->ID : 0);
         if (TreeNode("Inferred Z order (front-to-back)"))
         {
-            static ImVector<ImGuiViewportP*> viewports;
+            static KGVector<ImGuiViewportP*> viewports;
             viewports.resize(g.Viewports.Size);
             memcpy(viewports.Data, g.Viewports.Data, g.Viewports.size_in_bytes());
             if (viewports.Size > 1)
@@ -18602,8 +18602,8 @@ void KarmaGui::DebugNodeDrawList(ImGuiWindow* window, ImGuiViewportP* viewport, 
                 if (fg_draw_list && IsItemHovered())
                 {
                     KGDrawListFlags backup_flags = fg_draw_list->Flags;
-                    fg_draw_list->Flags &= ~ImDrawListFlags_AntiAliasedLines; // Disable AA on triangle outlines is more readable for very large and thin triangles.
-                    fg_draw_list->AddPolyline(triangle, 3, IM_COL32(255, 255, 0, 255), ImDrawFlags_Closed, 1.0f);
+                    fg_draw_list->Flags &= ~KGDrawListFlags_AntiAliasedLines; // Disable AA on triangle outlines is more readable for very large and thin triangles.
+                    fg_draw_list->AddPolyline(triangle, 3, IM_COL32(255, 255, 0, 255), KGDrawFlags_Closed, 1.0f);
                     fg_draw_list->Flags = backup_flags;
                 }
             }
@@ -18621,7 +18621,7 @@ void KarmaGui::DebugNodeDrawCmdShowMeshAndBoundingBox(KGDrawList* out_draw_list,
     ImRect clip_rect = draw_cmd->ClipRect;
     ImRect vtxs_rect(FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX);
     KGDrawListFlags backup_flags = out_draw_list->Flags;
-    out_draw_list->Flags &= ~ImDrawListFlags_AntiAliasedLines; // Disable AA on triangle outlines is more readable for very large and thin triangles.
+    out_draw_list->Flags &= ~KGDrawListFlags_AntiAliasedLines; // Disable AA on triangle outlines is more readable for very large and thin triangles.
     for (unsigned int idx_n = draw_cmd->IdxOffset, idx_end = draw_cmd->IdxOffset + draw_cmd->ElemCount; idx_n < idx_end; )
     {
         KGDrawIdx* idx_buffer = (draw_list->IdxBuffer.Size > 0) ? draw_list->IdxBuffer.Data : NULL; // We don't hold on those pointers past iterations as ->AddPolyline() may invalidate them if out_draw_list==draw_list
@@ -18631,7 +18631,7 @@ void KarmaGui::DebugNodeDrawCmdShowMeshAndBoundingBox(KGDrawList* out_draw_list,
         for (int n = 0; n < 3; n++, idx_n++)
             vtxs_rect.Add((triangle[n] = vtx_buffer[idx_buffer ? idx_buffer[idx_n] : idx_n].pos));
         if (show_mesh)
-            out_draw_list->AddPolyline(triangle, 3, IM_COL32(255, 255, 0, 255), ImDrawFlags_Closed, 1.0f); // In yellow: mesh triangles
+            out_draw_list->AddPolyline(triangle, 3, IM_COL32(255, 255, 0, 255), KGDrawFlags_Closed, 1.0f); // In yellow: mesh triangles
     }
     // Draw bounding boxes
     if (show_aabb)
@@ -18812,19 +18812,19 @@ void KarmaGui::DebugNodeViewport(ImGuiViewportP* viewport)
             viewport->PlatformMonitor, viewport->DpiScale * 100.0f);
         if (viewport->Idx > 0) { SameLine(); if (SmallButton("Reset Pos")) { viewport->Pos = ImVec2(200, 200); viewport->UpdateWorkRect(); if (viewport->Window) viewport->Window->Pos = viewport->Pos; } }
         BulletText("Flags: 0x%04X =%s%s%s%s%s%s%s%s%s%s%s%s", viewport->Flags,
-            //(flags & ImGuiViewportFlags_IsPlatformWindow) ? " IsPlatformWindow" : "", // Omitting because it is the standard
-            (flags & ImGuiViewportFlags_IsPlatformMonitor) ? " IsPlatformMonitor" : "",
-            (flags & ImGuiViewportFlags_OwnedByApp) ? " OwnedByApp" : "",
-            (flags & ImGuiViewportFlags_NoDecoration) ? " NoDecoration" : "",
-            (flags & ImGuiViewportFlags_NoTaskBarIcon) ? " NoTaskBarIcon" : "",
-            (flags & ImGuiViewportFlags_NoFocusOnAppearing) ? " NoFocusOnAppearing" : "",
-            (flags & ImGuiViewportFlags_NoFocusOnClick) ? " NoFocusOnClick" : "",
-            (flags & ImGuiViewportFlags_NoInputs) ? " NoInputs" : "",
-            (flags & ImGuiViewportFlags_NoRendererClear) ? " NoRendererClear" : "",
-            (flags & ImGuiViewportFlags_TopMost) ? " TopMost" : "",
-            (flags & ImGuiViewportFlags_Minimized) ? " Minimized" : "",
-            (flags & ImGuiViewportFlags_NoAutoMerge) ? " NoAutoMerge" : "",
-            (flags & ImGuiViewportFlags_CanHostOtherWindows) ? " CanHostOtherWindows" : "");
+            //(flags & KGGuiViewportFlags_IsPlatformWindow) ? " IsPlatformWindow" : "", // Omitting because it is the standard
+            (flags & KGGuiViewportFlags_IsPlatformMonitor) ? " IsPlatformMonitor" : "",
+            (flags & KGGuiViewportFlags_OwnedByApp) ? " OwnedByApp" : "",
+            (flags & KGGuiViewportFlags_NoDecoration) ? " NoDecoration" : "",
+            (flags & KGGuiViewportFlags_NoTaskBarIcon) ? " NoTaskBarIcon" : "",
+            (flags & KGGuiViewportFlags_NoFocusOnAppearing) ? " NoFocusOnAppearing" : "",
+            (flags & KGGuiViewportFlags_NoFocusOnClick) ? " NoFocusOnClick" : "",
+            (flags & KGGuiViewportFlags_NoInputs) ? " NoInputs" : "",
+            (flags & KGGuiViewportFlags_NoRendererClear) ? " NoRendererClear" : "",
+            (flags & KGGuiViewportFlags_TopMost) ? " TopMost" : "",
+            (flags & KGGuiViewportFlags_Minimized) ? " Minimized" : "",
+            (flags & KGGuiViewportFlags_NoAutoMerge) ? " NoAutoMerge" : "",
+            (flags & KGGuiViewportFlags_CanHostOtherWindows) ? " CanHostOtherWindows" : "");
         for (int layer_i = 0; layer_i < IM_ARRAYSIZE(viewport->DrawDataBuilder.Layers); layer_i++)
             for (int draw_list_i = 0; draw_list_i < viewport->DrawDataBuilder.Layers[layer_i].Size; draw_list_i++)
                 DebugNodeDrawList(NULL, viewport, viewport->DrawDataBuilder.Layers[layer_i][draw_list_i], "DrawList");
@@ -18902,7 +18902,7 @@ void KarmaGui::DebugNodeWindowSettings(ImGuiWindowSettings* settings)
         settings->ID, settings->GetName(), settings->Pos.x, settings->Pos.y, settings->Size.x, settings->Size.y, settings->Collapsed);
 }
 
-void KarmaGui::DebugNodeWindowsList(ImVector<ImGuiWindow*>* windows, const char* label)
+void KarmaGui::DebugNodeWindowsList(KGVector<ImGuiWindow*>* windows, const char* label)
 {
     if (!TreeNode(label, "%s (%d)", label, windows->Size))
         return;
@@ -19067,7 +19067,7 @@ void KarmaGui::UpdateDebugToolItemPicker()
     SetMouseCursor(KGGuiMouseCursor_Hand);
     if (IsKeyPressed(KGGuiKey_Escape))
         g.DebugItemPickerActive = false;
-    const bool change_mapping = g.IO.KeyMods == (ImGuiMod_Ctrl | ImGuiMod_Shift);
+    const bool change_mapping = g.IO.KeyMods == (KGGuiMod_Ctrl | KGGuiMod_Shift);
     if (!change_mapping && IsMouseClicked(g.DebugItemPickerMouseButton) && hovered_id)
     {
         g.DebugItemPickerBreakId = hovered_id;
@@ -19222,7 +19222,7 @@ void KarmaGui::ShowStackToolWindow(bool* p_open)
     Checkbox("Ctrl+C: copy path to clipboard", &tool->CopyToClipboardOnCtrlC);
     SameLine();
     TextColored((time_since_copy >= 0.0f && time_since_copy < 0.75f && ImFmod(time_since_copy, 0.25f) < 0.25f * 0.5f) ? ImVec4(1.f, 1.f, 0.3f, 1.f) : ImVec4(), "*COPIED*");
-    if (tool->CopyToClipboardOnCtrlC && IsKeyDown(ImGuiMod_Ctrl) && IsKeyPressed(KGGuiKey_C))
+    if (tool->CopyToClipboardOnCtrlC && IsKeyDown(KGGuiMod_Ctrl) && IsKeyPressed(KGGuiKey_C))
     {
         tool->CopyToClipboardLastTime = (float)g.Time;
         char* p = g.TempBuffer.Data;
@@ -19282,7 +19282,7 @@ void KarmaGui::DebugNodeStorage(KarmaGuiStorage*, const char*) {}
 void KarmaGui::DebugNodeTabBar(ImGuiTabBar*, const char*) {}
 void KarmaGui::DebugNodeWindow(ImGuiWindow*, const char*) {}
 void KarmaGui::DebugNodeWindowSettings(ImGuiWindowSettings*) {}
-void KarmaGui::DebugNodeWindowsList(ImVector<ImGuiWindow*>*, const char*) {}
+void KarmaGui::DebugNodeWindowsList(KGVector<ImGuiWindow*>*, const char*) {}
 void KarmaGui::DebugNodeViewport(ImGuiViewportP*) {}
 
 void KarmaGui::DebugLog(const char*, ...) {}

@@ -899,19 +899,19 @@ void ImGui::Scrollbar(ImGuiAxis axis)
 
     // Calculate scrollbar bounding box
     ImRect bb = GetWindowScrollbarRect(window, axis);
-    KGDrawFlags rounding_corners = ImDrawFlags_RoundCornersNone;
+    KGDrawFlags rounding_corners = KGDrawFlags_RoundCornersNone;
     if (axis == ImGuiAxis_X)
     {
-        rounding_corners |= ImDrawFlags_RoundCornersBottomLeft;
+        rounding_corners |= KGDrawFlags_RoundCornersBottomLeft;
         if (!window->ScrollbarY)
-            rounding_corners |= ImDrawFlags_RoundCornersBottomRight;
+            rounding_corners |= KGDrawFlags_RoundCornersBottomRight;
     }
     else
     {
         if ((window->Flags & KGGuiWindowFlags_NoTitleBar) && !(window->Flags & KGGuiWindowFlags_MenuBar))
-            rounding_corners |= ImDrawFlags_RoundCornersTopRight;
+            rounding_corners |= KGDrawFlags_RoundCornersTopRight;
         if (!window->ScrollbarX)
-            rounding_corners |= ImDrawFlags_RoundCornersBottomRight;
+            rounding_corners |= KGDrawFlags_RoundCornersBottomRight;
     }
     float size_avail = window->InnerRect.Max[axis] - window->InnerRect.Min[axis];
     float size_contents = window->ContentSize[axis] + window->WindowPadding[axis] * 2.0f;
@@ -1647,12 +1647,12 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, KarmaGuiCom
     const float value_x2 = ImMax(bb.Min.x, bb.Max.x - arrow_size);
     RenderNavHighlight(bb, id);
     if (!(flags & KGGuiComboFlags_NoPreview))
-        window->DrawList->AddRectFilled(bb.Min, ImVec2(value_x2, bb.Max.y), frame_col, style.FrameRounding, (flags & KGGuiComboFlags_NoArrowButton) ? ImDrawFlags_RoundCornersAll : ImDrawFlags_RoundCornersLeft);
+        window->DrawList->AddRectFilled(bb.Min, ImVec2(value_x2, bb.Max.y), frame_col, style.FrameRounding, (flags & KGGuiComboFlags_NoArrowButton) ? KGDrawFlags_RoundCornersAll : KGDrawFlags_RoundCornersLeft);
     if (!(flags & KGGuiComboFlags_NoArrowButton))
     {
         KGU32 bg_col = GetColorU32((popup_open || hovered) ? KGGuiCol_ButtonHovered : KGGuiCol_Button);
         KGU32 text_col = GetColorU32(KGGuiCol_Text);
-        window->DrawList->AddRectFilled(ImVec2(value_x2, bb.Min.y), bb.Max, bg_col, style.FrameRounding, (w <= arrow_size) ? ImDrawFlags_RoundCornersAll : ImDrawFlags_RoundCornersRight);
+        window->DrawList->AddRectFilled(ImVec2(value_x2, bb.Min.y), bb.Max, bg_col, style.FrameRounding, (w <= arrow_size) ? KGDrawFlags_RoundCornersAll : KGDrawFlags_RoundCornersRight);
         if (value_x2 + arrow_size - style.FramePadding.x <= bb.Max.x)
             RenderArrow(window->DrawList, ImVec2(value_x2 + style.FramePadding.y, bb.Min.y + style.FramePadding.y), text_col, KGGuiDir_Down, 1.0f);
     }
@@ -4297,15 +4297,15 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         // Using Shortcut() with KGGuiInputFlags_RouteFocused (default policy) to allow routing operations for other code (e.g. calling window trying to use CTRL+A and CTRL+B: formet would be handled by InputText)
         // Otherwise we could simply assume that we own the keys as we are active.
         const KarmaGuiInputFlags f_repeat = KGGuiInputFlags_Repeat;
-        const bool is_cut   = (Shortcut(ImGuiMod_Shortcut | KGGuiKey_X, id, f_repeat) || Shortcut(ImGuiMod_Shift | KGGuiKey_Delete, id, f_repeat)) && !is_readonly && !is_password && (!is_multiline || state->HasSelection());
-        const bool is_copy  = (Shortcut(ImGuiMod_Shortcut | KGGuiKey_C, id) || Shortcut(ImGuiMod_Ctrl | KGGuiKey_Insert, id))  && !is_password && (!is_multiline || state->HasSelection());
-        const bool is_paste = (Shortcut(ImGuiMod_Shortcut | KGGuiKey_V, id, f_repeat) || Shortcut(ImGuiMod_Shift | KGGuiKey_Insert, id, f_repeat)) && !is_readonly;
-        const bool is_undo  = (Shortcut(ImGuiMod_Shortcut | KGGuiKey_Z, id, f_repeat)) && !is_readonly && is_undoable;
-        const bool is_redo =  (Shortcut(ImGuiMod_Shortcut | KGGuiKey_Y, id, f_repeat) || (is_osx && Shortcut(ImGuiMod_Shortcut | ImGuiMod_Shift | KGGuiKey_Z, id, f_repeat))) && !is_readonly && is_undoable;
-        const bool is_select_all = Shortcut(ImGuiMod_Shortcut | KGGuiKey_A, id);
+        const bool is_cut   = (Shortcut(KGGuiMod_Shortcut | KGGuiKey_X, id, f_repeat) || Shortcut(KGGuiMod_Shift | KGGuiKey_Delete, id, f_repeat)) && !is_readonly && !is_password && (!is_multiline || state->HasSelection());
+        const bool is_copy  = (Shortcut(KGGuiMod_Shortcut | KGGuiKey_C, id) || Shortcut(KGGuiMod_Ctrl | KGGuiKey_Insert, id))  && !is_password && (!is_multiline || state->HasSelection());
+        const bool is_paste = (Shortcut(KGGuiMod_Shortcut | KGGuiKey_V, id, f_repeat) || Shortcut(KGGuiMod_Shift | KGGuiKey_Insert, id, f_repeat)) && !is_readonly;
+        const bool is_undo  = (Shortcut(KGGuiMod_Shortcut | KGGuiKey_Z, id, f_repeat)) && !is_readonly && is_undoable;
+        const bool is_redo =  (Shortcut(KGGuiMod_Shortcut | KGGuiKey_Y, id, f_repeat) || (is_osx && Shortcut(KGGuiMod_Shortcut | KGGuiMod_Shift | KGGuiKey_Z, id, f_repeat))) && !is_readonly && is_undoable;
+        const bool is_select_all = Shortcut(KGGuiMod_Shortcut | KGGuiKey_A, id);
 
         // We allow validate/cancel with Nav source (gamepad) to makes it easier to undo an accidental NavInput press with no keyboard wired, but otherwise it isn't very useful.
-        const bool nav_gamepad_active = (io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
+        const bool nav_gamepad_active = (io.ConfigFlags & KGGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
         const bool is_enter_pressed = IsKeyPressed(KGGuiKey_Enter, true) || IsKeyPressed(KGGuiKey_KeypadEnter, true);
         const bool is_gamepad_validate = nav_gamepad_active && (IsKeyPressed(KGGuiKey_NavGamepadActivate, false) || IsKeyPressed(KGGuiKey_NavGamepadInput, false));
         const bool is_cancel = Shortcut(KGGuiKey_Escape, id, f_repeat) || (nav_gamepad_active && Shortcut(KGGuiKey_NavGamepadCancel, id, f_repeat));
@@ -4455,7 +4455,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
                 // Push records into the undo stack so we can CTRL+Z the revert operation itself
                 apply_new_text = state->InitialTextA.Data;
                 apply_new_text_length = state->InitialTextA.Size - 1;
-                ImVector<KGWchar> w_text;
+                KGVector<KGWchar> w_text;
                 if (apply_new_text_length > 0)
                 {
                     w_text.resize(ImTextCountCharsFromUtf8(apply_new_text, apply_new_text + apply_new_text_length) + 1);
@@ -5609,8 +5609,8 @@ bool ImGui::ColorButton(const char* desc_id, const ImVec4& col, KarmaGuiColorEdi
     if ((flags & KGGuiColorEditFlags_AlphaPreviewHalf) && col_rgb.w < 1.0f)
     {
         float mid_x = IM_ROUND((bb_inner.Min.x + bb_inner.Max.x) * 0.5f);
-        RenderColorRectWithAlphaCheckerboard(window->DrawList, ImVec2(bb_inner.Min.x + grid_step, bb_inner.Min.y), bb_inner.Max, GetColorU32(col_rgb), grid_step, ImVec2(-grid_step + off, off), rounding, ImDrawFlags_RoundCornersRight);
-        window->DrawList->AddRectFilled(bb_inner.Min, ImVec2(mid_x, bb_inner.Max.y), GetColorU32(col_rgb_without_alpha), rounding, ImDrawFlags_RoundCornersLeft);
+        RenderColorRectWithAlphaCheckerboard(window->DrawList, ImVec2(bb_inner.Min.x + grid_step, bb_inner.Min.y), bb_inner.Max, GetColorU32(col_rgb), grid_step, ImVec2(-grid_step + off, off), rounding, KGDrawFlags_RoundCornersRight);
+        window->DrawList->AddRectFilled(bb_inner.Min, ImVec2(mid_x, bb_inner.Max.y), GetColorU32(col_rgb_without_alpha), rounding, KGDrawFlags_RoundCornersLeft);
     }
     else
     {
@@ -6905,7 +6905,7 @@ bool ImGui::BeginViewportSideBar(const char* name, KarmaGuiViewport* viewport_p,
     }
 
     window_flags |= KGGuiWindowFlags_NoTitleBar | KGGuiWindowFlags_NoResize | KGGuiWindowFlags_NoMove | KGGuiWindowFlags_NoDocking;
-    SetNextWindowViewport(viewport->ID); // Enforce viewport so we don't create our own viewport when ImGuiConfigFlags_ViewportsNoMerge is set.
+    SetNextWindowViewport(viewport->ID); // Enforce viewport so we don't create our own viewport when KGGuiConfigFlags_ViewportsNoMerge is set.
     PushStyleVar(KGGuiStyleVar_WindowRounding, 0.0f);
     PushStyleVar(KGGuiStyleVar_WindowMinSize, ImVec2(0, 0)); // Lift normal size constraint
     bool is_open = Begin(name, NULL, window_flags);

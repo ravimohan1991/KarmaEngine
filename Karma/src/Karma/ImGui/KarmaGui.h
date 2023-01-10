@@ -52,7 +52,7 @@ struct KarmaGuiWindowClass;             // Window class (rare/advanced uses: pro
 //   In Visual Studio IDE: CTRL+comma ("Edit.GoToAll") can follow symbols in comments, whereas CTRL+F12 ("Edit.GoToImplementation") cannot.
 //   With Visual Assist installed: ALT+G ("VAssistX.GoToImplementation") can also follow symbols in comments.
 //   What about XCode und QTCreator Omar?
-enum KarmaGuiKey : int;                 // -> enum KarmaGuiKey              // Enum: A key identifier (KGGuiKey_XXX or ImGuiMod_XXX value)
+enum KarmaGuiKey : int;                 // -> enum KarmaGuiKey              // Enum: A key identifier (KGGuiKey_XXX or KGGuiMod_XXX value)
 
 typedef int KarmaGuiCol;                // -> enum KGGuiCol_             // Enum: A color identifier for styling
 typedef int KarmaGuiCond;               // -> enum KGGuiCond_            // Enum: A condition for many Set*() functions
@@ -65,13 +65,13 @@ typedef int KarmaGuiStyleVar;           // -> enum KGGuiStyleVar_        // Enum
 typedef int KarmaGuiTableBgTarget;      // -> enum KGGuiTableBgTarget_   // Enum: A color target for TableSetBgColor()
 
 // Flags (declared as int for compatibility with old C++, to allow using as flags without overhead, and to not pollute the top of this file)
-typedef int KGDrawFlags;                // -> enum ImDrawFlags_          // Flags: for KGDrawList functions
-typedef int KGDrawListFlags;            // -> enum ImDrawListFlags_      // Flags: for KGDrawList instance
-typedef int KGFontAtlasFlags;           // -> enum ImFontAtlasFlags_     // Flags: for KGFontAtlas build
+typedef int KGDrawFlags;                // -> enum KGDrawFlags_          // Flags: for KGDrawList functions
+typedef int KGDrawListFlags;            // -> enum KGDrawListFlags_      // Flags: for KGDrawList instance
+typedef int KGFontAtlasFlags;           // -> enum KGFontAtlasFlags_     // Flags: for KGFontAtlas build
 typedef int KarmaGuiBackendFlags;       // -> enum KGGuiBackendFlags_    // Flags: for io.BackendFlags
 typedef int KarmaGuiButtonFlags;        // -> enum KGGuiButtonFlags_     // Flags: for InvisibleButton()
 typedef int KarmaGuiColorEditFlags;     // -> enum KGGuiColorEditFlags_  // Flags: for ColorEdit4(), ColorPicker4() etc.
-typedef int KarmaGuiConfigFlags;        // -> enum ImGuiConfigFlags_     // Flags: for io.ConfigFlags
+typedef int KarmaGuiConfigFlags;        // -> enum KGGuiConfigFlags_     // Flags: for io.ConfigFlags
 typedef int KarmaGuiComboFlags;         // -> enum KGGuiComboFlags_      // Flags: for BeginCombo()
 typedef int KarmaGuiDockNodeFlags;      // -> enum KGGuiDockNodeFlags_   // Flags: for DockSpace()
 typedef int KarmaGuiDragDropFlags;      // -> enum KGGuiDragDropFlags_   // Flags: for BeginDragDropSource(), AcceptDragDropPayload()
@@ -79,7 +79,7 @@ typedef int KarmaGuiFocusedFlags;       // -> enum KGGuiFocusedFlags_    // Flag
 typedef int KarmaGuiHoveredFlags;       // -> enum KGGuiHoveredFlags_    // Flags: for IsItemHovered(), IsWindowHovered() etc.
 typedef int KarmaGuiInputFlags;         // -> enum KGGuiInputFlags_      // Flags: for Shortcut() (+ upcoming advanced versions of IsKeyPressed()/IsMouseClicked()/SetKeyOwner()/SetItemKeyOwner() currently in imgui_internal.h)
 typedef int KarmaGuiInputTextFlags;     // -> enum KGGuiInputTextFlags_  // Flags: for InputText(), InputTextMultiline()
-typedef int KarmaGuiKeyChord;           // -> KarmaGuiKey | ImGuiMod_XXX    // Flags: for storage only for now: an KarmaGuiKey optionally OR-ed with one or more ImGuiMod_XXX values.
+typedef int KarmaGuiKeyChord;           // -> KarmaGuiKey | KGGuiMod_XXX    // Flags: for storage only for now: an KarmaGuiKey optionally OR-ed with one or more KGGuiMod_XXX values.
 typedef int KarmaGuiPopupFlags;         // -> enum KGGuiPopupFlags_      // Flags: for OpenPopup*(), BeginPopupContext*(), IsPopupOpen()
 typedef int KarmaGuiSelectableFlags;    // -> enum KGGuiSelectableFlags_ // Flags: for Selectable()
 typedef int KarmaGuiSliderFlags;        // -> enum KGGuiSliderFlags_     // Flags: for DragFloat(), DragInt(), SliderFloat(), SliderInt() etc.
@@ -89,7 +89,7 @@ typedef int KarmaGuiTableFlags;         // -> enum KGGuiTableFlags_      // Flag
 typedef int KarmaGuiTableColumnFlags;   // -> enum KGGuiTableColumnFlags_// Flags: For TableSetupColumn()
 typedef int KarmaGuiTableRowFlags;      // -> enum KGGuiTableRowFlags_   // Flags: For TableNextRow()
 typedef int KarmaGuiTreeNodeFlags;      // -> enum KGGuiTreeNodeFlags_   // Flags: for TreeNode(), TreeNodeEx(), CollapsingHeader()
-typedef int KarmaGuiViewportFlags;      // -> enum ImGuiViewportFlags_   // Flags: for KarmaGuiViewport
+typedef int KarmaGuiViewportFlags;      // -> enum KGGuiViewportFlags_   // Flags: for KarmaGuiViewport
 typedef int KarmaGuiWindowFlags;        // -> enum KGGuiWindowFlags_     // Flags: for Begin(), BeginChild()
 typedef void* KGTextureID;              // Default: store a pointer or an integer fitting in a pointer (most renderer backends are ok with that)
 
@@ -664,7 +664,7 @@ namespace Karma
 		static void          SetTabItemClosed(const char* tab_or_docked_window_label);           // notify TabBar or Docking system of a closed tab/window ahead (useful to reduce visual flicker on reorderable tab bars). For tab-bar: call after BeginTabBar() and before Tab submissions. Otherwise call with a window name.
 
 		// Docking
-		// [BETA API] Enable with io.ConfigFlags |= ImGuiConfigFlags_DockingEnable.
+		// [BETA API] Enable with io.ConfigFlags |= KGGuiConfigFlags_DockingEnable.
 		// Note: You can use most Docking facilities without calling any API. You DO NOT need to call DockSpace() to use Docking!
 		// - Drag from window title bar or their tab to dock/undock. Hold SHIFT to disable docking/undocking.
 		// - Drag from window menu button (upper-left button) to undock an entire node (all windows).
@@ -791,10 +791,10 @@ namespace Karma
 		static void          SetNextFrameWantCaptureKeyboard(bool want_capture_keyboard);        // Override io.WantCaptureKeyboard flag next frame (said flag is left for your application to handle, typically when true it instructs your app to ignore inputs). e.g. force capture keyboard when your widget is being hovered. This is equivalent to setting "io.WantCaptureKeyboard = want_capture_keyboard"; after the next NewFrame() call.
 
 		// Inputs Utilities: Shortcut testing (with Routing Resolution)
-		// - KarmaGuiKeyChord = a KarmaGuiKey optionally OR-red with ImGuiMod_Alt/ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Super/ImGuiMod_Shortcut.
+		// - KarmaGuiKeyChord = a KarmaGuiKey optionally OR-red with KGGuiMod_Alt/KGGuiMod_Ctrl/KGGuiMod_Shift/KGGuiMod_Super/KGGuiMod_Shortcut.
 		//     KGGuiKey_C                 (accepted by functions taking KarmaGuiKey or KarmaGuiKeyChord)
-		//     KGGuiKey_C | ImGuiMod_Ctrl (accepted by functions taking KarmaGuiKeyChord)
-		//   ONLY ImGuiMod_XXX values are legal to 'OR' with an KarmaGuiKey. You CANNOT 'OR' two KarmaGuiKey values.
+		//     KGGuiKey_C | KGGuiMod_Ctrl (accepted by functions taking KarmaGuiKeyChord)
+		//   ONLY KGGuiMod_XXX values are legal to 'OR' with an KarmaGuiKey. You CANNOT 'OR' two KarmaGuiKey values.
 		// - The general idea of routing is that multiple locations may register interest in a shortcut,
 		//   and only one location will be granted access to the shortcut.
 		// - The default routing policy (KGGuiInputFlags_RouteFocused) checks for current window being in
@@ -858,10 +858,11 @@ namespace Karma
 		// Note: You may use GetWindowViewport() to get the current viewport of the current window.
 		static KarmaGuiPlatformIO&  GetPlatformIO();                                                // platform/renderer functions, for backend to setup + viewports list.
 		static void              UpdatePlatformWindows();                                        // call in main loop. will call CreateWindow/ResizeWindow/etc. platform functions for each secondary viewport, and DestroyWindow for each inactive viewport.
-		static void              RenderPlatformWindowsDefault(void* platform_render_arg = NULL, void* renderer_render_arg = NULL); // call in main loop. will call RenderWindow/SwapBuffers platform functions for each secondary viewport which doesn't have the ImGuiViewportFlags_Minimized flag set. May be reimplemented by user for custom rendering needs.
+		static void              RenderPlatformWindowsDefault(void* platform_render_arg = NULL, void* renderer_render_arg = NULL); // call in main loop. will call RenderWindow/SwapBuffers platform functions for each secondary viewport which doesn't have the KGGuiViewportFlags_Minimized flag set. May be reimplemented by user for custom rendering needs.
 		static void              DestroyPlatformWindows();                                       // call DestroyWindow platform functions for all viewports. call from backend Shutdown() if you need to close platform windows before imgui shutdown. otherwise will be called by DestroyContext().
 		static KarmaGuiViewport*    FindViewportByID(KGGuiID id);                                   // this is a helper for backends.
 		static KarmaGuiViewport*    FindViewportByPlatformHandle(void* platform_handle);            // this is a helper for backends. the type platform_handle is decided by the backend (e.g. HWND, MyWindow*, GLFWwindow* etc.)
+		static KarmaGuiKey     GetKeyIndex(KarmaGuiKey key);  // map KGGuiKey_* values into legacy native key index. == io.KeyMap[key]
 	};
 
 }// Namespace Karma
@@ -1287,7 +1288,7 @@ enum KGGuiSortDirection_
     KGGuiSortDirection_Descending   = 2     // Descending = 9->0, Z->A etc.
 };
 
-// A key identifier (KGGuiKey_XXX or ImGuiMod_XXX value): can represent Keyboard, Mouse and Gamepad values.
+// A key identifier (KGGuiKey_XXX or KGGuiMod_XXX value): can represent Keyboard, Mouse and Gamepad values.
 // All our named keys are >= 512. Keys value 0 to 511 are left unused as legacy native/opaque key values (< 1.87).
 // Since >= 1.89 we increased typing (went from int to enum), some legacy code may need a cast to KarmaGuiKey.
 // Read details about the 1.87 and 1.89 transition : https://github.com/ocornut/imgui/issues/4921
@@ -1384,17 +1385,17 @@ enum KarmaGuiKey : int
     // - This is mirroring the data also written to io.KeyCtrl, io.KeyShift, io.KeyAlt, io.KeySuper, in a format allowing
     //   them to be accessed via standard key API, allowing calls such as IsKeyPressed(), IsKeyReleased(), querying duration etc.
     // - Code polling every key (e.g. an interface to detect a key press for input mapping) might want to ignore those
-    //   and prefer using the real keys (e.g. KGGuiKey_LeftCtrl, KGGuiKey_RightCtrl instead of ImGuiMod_Ctrl).
+    //   and prefer using the real keys (e.g. KGGuiKey_LeftCtrl, KGGuiKey_RightCtrl instead of KGGuiMod_Ctrl).
     // - In theory the value of keyboard modifiers should be roughly equivalent to a logical or of the equivalent left/right keys.
     //   In practice: it's complicated; mods are often provided from different sources. Keyboard layout, IME, sticky keys and
     //   backends tend to interfere and break that equivalence. The safer decision is to relay that ambiguity down to the end-user...
-    ImGuiMod_None                   = 0,
-    ImGuiMod_Ctrl                   = 1 << 12, // Ctrl
-    ImGuiMod_Shift                  = 1 << 13, // Shift
-    ImGuiMod_Alt                    = 1 << 14, // Option/Menu
-    ImGuiMod_Super                  = 1 << 15, // Cmd/Super/Windows
-    ImGuiMod_Shortcut               = 1 << 11, // Alias for Ctrl (non-macOS) _or_ Super (macOS).
-    ImGuiMod_Mask_                  = 0xF800,  // 5-bits
+    KGGuiMod_None                   = 0,
+    KGGuiMod_Ctrl                   = 1 << 12, // Ctrl
+    KGGuiMod_Shift                  = 1 << 13, // Shift
+    KGGuiMod_Alt                    = 1 << 14, // Option/Menu
+    KGGuiMod_Super                  = 1 << 15, // Cmd/Super/Windows
+    KGGuiMod_Shortcut               = 1 << 11, // Alias for Ctrl (non-macOS) _or_ Super (macOS).
+    KGGuiMod_Mask_                  = 0xF800,  // 5-bits
 
     // [Internal] Prior to 1.87 we required user to fill io.KeysDown[512] using their own native index + the io.KeyMap[] array.
     // We are ditching this method but keeping a legacy path for user code doing e.g. IsKeyPressed(MY_NATIVE_KEY_CODE)
@@ -1410,7 +1411,7 @@ enum KarmaGuiKey : int
 #endif
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-    KGGuiKey_ModCtrl = ImGuiMod_Ctrl, KGGuiKey_ModShift = ImGuiMod_Shift, KGGuiKey_ModAlt = ImGuiMod_Alt, KGGuiKey_ModSuper = ImGuiMod_Super, // Renamed in 1.89
+    KGGuiKey_ModCtrl = KGGuiMod_Ctrl, KGGuiKey_ModShift = KGGuiMod_Shift, KGGuiKey_ModAlt = KGGuiMod_Alt, KGGuiKey_ModSuper = KGGuiMod_Super, // Renamed in 1.89
     KGGuiKey_KeyPadEnter = KGGuiKey_KeypadEnter,    // Renamed in 1.87
 #endif
 };
@@ -1456,28 +1457,28 @@ enum KGGuiNavInput
 #endif
 
 // Configuration flags stored in io.ConfigFlags. Set by user/application.
-enum ImGuiConfigFlags_
+enum KGGuiConfigFlags_
 {
-    ImGuiConfigFlags_None                   = 0,
-    ImGuiConfigFlags_NavEnableKeyboard      = 1 << 0,   // Master keyboard navigation enable flag.
-    ImGuiConfigFlags_NavEnableGamepad       = 1 << 1,   // Master gamepad navigation enable flag. Backend also needs to set KGGuiBackendFlags_HasGamepad.
-    ImGuiConfigFlags_NavEnableSetMousePos   = 1 << 2,   // Instruct navigation to move the mouse cursor. May be useful on TV/console systems where moving a virtual mouse is awkward. Will update io.MousePos and set io.WantSetMousePos=true. If enabled you MUST honor io.WantSetMousePos requests in your backend, otherwise ImGui will react as if the mouse is jumping around back and forth.
-    ImGuiConfigFlags_NavNoCaptureKeyboard   = 1 << 3,   // Instruct navigation to not set the io.WantCaptureKeyboard flag when io.NavActive is set.
-    ImGuiConfigFlags_NoMouse                = 1 << 4,   // Instruct imgui to clear mouse position/buttons in NewFrame(). This allows ignoring the mouse information set by the backend.
-    ImGuiConfigFlags_NoMouseCursorChange    = 1 << 5,   // Instruct backend to not alter mouse cursor shape and visibility. Use if the backend cursor changes are interfering with yours and you don't want to use SetMouseCursor() to change mouse cursor. You may want to honor requests from imgui by reading GetMouseCursor() yourself instead.
+    KGGuiConfigFlags_None                   = 0,
+    KGGuiConfigFlags_NavEnableKeyboard      = 1 << 0,   // Master keyboard navigation enable flag.
+    KGGuiConfigFlags_NavEnableGamepad       = 1 << 1,   // Master gamepad navigation enable flag. Backend also needs to set KGGuiBackendFlags_HasGamepad.
+    KGGuiConfigFlags_NavEnableSetMousePos   = 1 << 2,   // Instruct navigation to move the mouse cursor. May be useful on TV/console systems where moving a virtual mouse is awkward. Will update io.MousePos and set io.WantSetMousePos=true. If enabled you MUST honor io.WantSetMousePos requests in your backend, otherwise ImGui will react as if the mouse is jumping around back and forth.
+    KGGuiConfigFlags_NavNoCaptureKeyboard   = 1 << 3,   // Instruct navigation to not set the io.WantCaptureKeyboard flag when io.NavActive is set.
+    KGGuiConfigFlags_NoMouse                = 1 << 4,   // Instruct imgui to clear mouse position/buttons in NewFrame(). This allows ignoring the mouse information set by the backend.
+    KGGuiConfigFlags_NoMouseCursorChange    = 1 << 5,   // Instruct backend to not alter mouse cursor shape and visibility. Use if the backend cursor changes are interfering with yours and you don't want to use SetMouseCursor() to change mouse cursor. You may want to honor requests from imgui by reading GetMouseCursor() yourself instead.
 
     // [BETA] Docking
-    ImGuiConfigFlags_DockingEnable          = 1 << 6,   // Docking enable flags.
+    KGGuiConfigFlags_DockingEnable          = 1 << 6,   // Docking enable flags.
 
     // [BETA] Viewports
     // When using viewports it is recommended that your default value for KGGuiCol_WindowBg is opaque (Alpha=1.0) so transition to a viewport won't be noticeable.
-    ImGuiConfigFlags_ViewportsEnable        = 1 << 10,  // Viewport enable flags (require both KGGuiBackendFlags_PlatformHasViewports + KGGuiBackendFlags_RendererHasViewports set by the respective backends)
-    ImGuiConfigFlags_DpiEnableScaleViewports= 1 << 14,  // [BETA: Don't use] FIXME-DPI: Reposition and resize imgui windows when the DpiScale of a viewport changed (mostly useful for the main viewport hosting other window). Note that resizing the main window itself is up to your application.
-    ImGuiConfigFlags_DpiEnableScaleFonts    = 1 << 15,  // [BETA: Don't use] FIXME-DPI: Request bitmap-scaled fonts to match DpiScale. This is a very low-quality workaround. The correct way to handle DPI is _currently_ to replace the atlas and/or fonts in the Platform_OnChangedViewport callback, but this is all early work in progress.
+    KGGuiConfigFlags_ViewportsEnable        = 1 << 10,  // Viewport enable flags (require both KGGuiBackendFlags_PlatformHasViewports + KGGuiBackendFlags_RendererHasViewports set by the respective backends)
+    KGGuiConfigFlags_DpiEnableScaleViewports= 1 << 14,  // [BETA: Don't use] FIXME-DPI: Reposition and resize imgui windows when the DpiScale of a viewport changed (mostly useful for the main viewport hosting other window). Note that resizing the main window itself is up to your application.
+    KGGuiConfigFlags_DpiEnableScaleFonts    = 1 << 15,  // [BETA: Don't use] FIXME-DPI: Request bitmap-scaled fonts to match DpiScale. This is a very low-quality workaround. The correct way to handle DPI is _currently_ to replace the atlas and/or fonts in the Platform_OnChangedViewport callback, but this is all early work in progress.
 
     // User storage (to allow your backend/engine to communicate to code that may be shared between multiple projects. Those flags are NOT used by core Dear ImGui)
-    ImGuiConfigFlags_IsSRGB                 = 1 << 20,  // Application is SRGB-aware.
-    ImGuiConfigFlags_IsTouchScreen          = 1 << 21,  // Application is using a touch screen instead of a mouse.
+    KGGuiConfigFlags_IsSRGB                 = 1 << 20,  // Application is SRGB-aware.
+    KGGuiConfigFlags_IsTouchScreen          = 1 << 21,  // Application is using a touch screen instead of a mouse.
 };
 
 // Backend capabilities flags stored in io.BackendFlags. Set by imgui_impl_xxx or custom backend.
@@ -1486,12 +1487,12 @@ enum KGGuiBackendFlags_
     KGGuiBackendFlags_None                  = 0,
     KGGuiBackendFlags_HasGamepad            = 1 << 0,   // Backend Platform supports gamepad and currently has one connected.
     KGGuiBackendFlags_HasMouseCursors       = 1 << 1,   // Backend Platform supports honoring GetMouseCursor() value to change the OS cursor shape.
-    KGGuiBackendFlags_HasSetMousePos        = 1 << 2,   // Backend Platform supports io.WantSetMousePos requests to reposition the OS mouse position (only used if ImGuiConfigFlags_NavEnableSetMousePos is set).
+    KGGuiBackendFlags_HasSetMousePos        = 1 << 2,   // Backend Platform supports io.WantSetMousePos requests to reposition the OS mouse position (only used if KGGuiConfigFlags_NavEnableSetMousePos is set).
     KGGuiBackendFlags_RendererHasVtxOffset  = 1 << 3,   // Backend Renderer supports KGDrawCmd::VtxOffset. This enables output of large meshes (64K+ vertices) while still using 16-bit indices.
 
     // [BETA] Viewports
     KGGuiBackendFlags_PlatformHasViewports  = 1 << 10,  // Backend Platform supports multiple viewports.
-    KGGuiBackendFlags_HasMouseHoveredViewport=1 << 11,  // Backend Platform supports calling io.AddMouseViewportEvent() with the viewport under the mouse. IF POSSIBLE, ignore viewports with the ImGuiViewportFlags_NoInputs flag (Win32 backend, GLFW 3.30+ backend can do this, SDL backend cannot). If this cannot be done, Dear ImGui needs to use a flawed heuristic to find the viewport under.
+    KGGuiBackendFlags_HasMouseHoveredViewport=1 << 11,  // Backend Platform supports calling io.AddMouseViewportEvent() with the viewport under the mouse. IF POSSIBLE, ignore viewports with the KGGuiViewportFlags_NoInputs flag (Win32 backend, GLFW 3.30+ backend can do this, SDL backend cannot). If this cannot be done, Dear ImGui needs to use a flawed heuristic to find the viewport under.
     KGGuiBackendFlags_RendererHasViewports  = 1 << 12,  // Backend Renderer supports multiple viewports.
 };
 
@@ -1709,7 +1710,7 @@ enum KGGuiCond_
 };
 
 //-----------------------------------------------------------------------------
-// [SECTION] Helpers: Memory allocations macros, ImVector<>
+// [SECTION] Helpers: Memory allocations macros, KGVector<>
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -1728,7 +1729,7 @@ inline void  operator delete(void*, ImNewWrapper, void*)   {} // This is only re
 template<typename T> void IM_DELETE(T* p)   { if (p) { p->~T(); ImGui::MemFree(p); } }
 
 //-----------------------------------------------------------------------------
-// ImVector<>
+// KGVector<>
 // Lightweight std::vector<>-like class to avoid dragging dependencies (also, some implementations of STL with debug enabled are absurdly slow, we bypass it so our code runs fast in debug).
 //-----------------------------------------------------------------------------
 // - You generally do NOT need to care or use this ever. But we need to make it available in imgui.h because some of our public structures are relying on it.
@@ -1740,7 +1741,7 @@ template<typename T> void IM_DELETE(T* p)   { if (p) { p->~T(); ImGui::MemFree(p
 
 IM_MSVC_RUNTIME_CHECKS_OFF
 template<typename T>
-struct ImVector
+struct KGVector
 {
     int                 Size;
     int                 Capacity;
@@ -1752,10 +1753,10 @@ struct ImVector
     typedef const value_type*   const_iterator;
 
     // Constructors, destructor
-    inline ImVector()                                       { Size = Capacity = 0; Data = NULL; }
-    inline ImVector(const ImVector<T>& src)                 { Size = Capacity = 0; Data = NULL; operator=(src); }
-    inline ImVector<T>& operator=(const ImVector<T>& src)   { clear(); resize(src.Size); if (src.Data) memcpy(Data, src.Data, (size_t)Size * sizeof(T)); return *this; }
-    inline ~ImVector()                                      { if (Data) IM_FREE(Data); } // Important: does not destruct anything
+    inline KGVector()                                       { Size = Capacity = 0; Data = NULL; }
+    inline KGVector(const KGVector<T>& src)                 { Size = Capacity = 0; Data = NULL; operator=(src); }
+    inline KGVector<T>& operator=(const KGVector<T>& src)   { clear(); resize(src.Size); if (src.Data) memcpy(Data, src.Data, (size_t)Size * sizeof(T)); return *this; }
+    inline ~KGVector()                                      { if (Data) IM_FREE(Data); } // Important: does not destruct anything
 
     inline void         clear()                             { if (Data) { Size = Capacity = 0; IM_FREE(Data); Data = NULL; } }  // Important: does not destruct anything
     inline void         clear_delete()                      { for (int n = 0; n < Size; n++) IM_DELETE(Data[n]); clear(); }     // Important: never called automatically! always explicit.
@@ -1777,7 +1778,7 @@ struct ImVector
     inline const T&     front() const                       { IM_ASSERT(Size > 0); return Data[0]; }
     inline T&           back()                              { IM_ASSERT(Size > 0); return Data[Size - 1]; }
     inline const T&     back() const                        { IM_ASSERT(Size > 0); return Data[Size - 1]; }
-    inline void         swap(ImVector<T>& rhs)              { int rhs_size = rhs.Size; rhs.Size = Size; Size = rhs_size; int rhs_cap = rhs.Capacity; rhs.Capacity = Capacity; Capacity = rhs_cap; T* rhs_data = rhs.Data; rhs.Data = Data; Data = rhs_data; }
+    inline void         swap(KGVector<T>& rhs)              { int rhs_size = rhs.Size; rhs.Size = Size; Size = rhs_size; int rhs_cap = rhs.Capacity; rhs.Capacity = Capacity; Capacity = rhs_cap; T* rhs_data = rhs.Data; rhs.Data = Data; Data = rhs_data; }
 
     inline int          _grow_capacity(int sz) const        { int new_capacity = Capacity ? (Capacity + Capacity / 2) : 8; return new_capacity > sz ? new_capacity : sz; }
     inline void         resize(int new_size)                { if (new_size > Capacity) reserve(_grow_capacity(new_size)); Size = new_size; }
@@ -1786,7 +1787,7 @@ struct ImVector
     inline void         reserve(int new_capacity)           { if (new_capacity <= Capacity) return; T* new_data = (T*)IM_ALLOC((size_t)new_capacity * sizeof(T)); if (Data) { memcpy(new_data, Data, (size_t)Size * sizeof(T)); IM_FREE(Data); } Data = new_data; Capacity = new_capacity; }
     inline void         reserve_discard(int new_capacity)   { if (new_capacity <= Capacity) return; if (Data) IM_FREE(Data); Data = (T*)IM_ALLOC((size_t)new_capacity * sizeof(T)); Capacity = new_capacity; }
 
-    // NB: It is illegal to call push_back/push_front/insert with a reference pointing inside the ImVector data itself! e.g. v.push_back(v[10]) is forbidden.
+    // NB: It is illegal to call push_back/push_front/insert with a reference pointing inside the KGVector data itself! e.g. v.push_back(v[10]) is forbidden.
     inline void         push_back(const T& v)               { if (Size == Capacity) reserve(_grow_capacity(Size + 1)); memcpy(&Data[Size], &v, sizeof(v)); Size++; }
     inline void         pop_back()                          { IM_ASSERT(Size > 0); Size--; }
     inline void         push_front(const T& v)              { if (Size == 0) push_back(v); else insert(Data, v); }
@@ -1882,7 +1883,7 @@ struct KarmaGuiIO
     // Configuration                            // Default value
     //------------------------------------------------------------------
 
-    KarmaGuiConfigFlags   ConfigFlags;             // = 0              // See ImGuiConfigFlags_ enum. Set by user/application. Gamepad/keyboard navigation options, etc.
+    KarmaGuiConfigFlags   ConfigFlags;             // = 0              // See KGGuiConfigFlags_ enum. Set by user/application. Gamepad/keyboard navigation options, etc.
     KarmaGuiBackendFlags  BackendFlags;            // = 0              // See KGGuiBackendFlags_ enum. Set by backend (imgui_impl_xxx files or custom backend) to communicate features supported by the backend.
     ImVec2      DisplaySize;                    // <unset>          // Main display size, in pixels (generally == GetMainViewport()->Size). May change every frame.
     float       DeltaTime;                      // = 1.0f/60.0f     // Time elapsed since last frame, in seconds. May change every frame.
@@ -1904,16 +1905,16 @@ struct KarmaGuiIO
     KGFont*     FontDefault;                    // = NULL           // Font to use on NewFrame(). Use NULL to uses Fonts->Fonts[0].
     ImVec2      DisplayFramebufferScale;        // = (1, 1)         // For retina display or other situations where window coordinates are different from framebuffer coordinates. This generally ends up in KGDrawData::FramebufferScale.
 
-    // Docking options (when ImGuiConfigFlags_DockingEnable is set)
+    // Docking options (when KGGuiConfigFlags_DockingEnable is set)
     bool        ConfigDockingNoSplit;           // = false          // Simplified docking mode: disable window splitting, so docking is limited to merging multiple windows together into tab-bars.
     bool        ConfigDockingWithShift;         // = false          // Enable docking with holding Shift key (reduce visual noise, allows dropping in wider space)
     bool        ConfigDockingAlwaysTabBar;      // = false          // [BETA] [FIXME: This currently creates regression with auto-sizing and general overhead] Make every single floating window display within a docking node.
     bool        ConfigDockingTransparentPayload;// = false          // [BETA] Make window or viewport transparent when docking and only display docking boxes on the target viewport. Useful if rendering of multiple viewport cannot be synced. Best used with ConfigViewportsNoAutoMerge.
 
-    // Viewport options (when ImGuiConfigFlags_ViewportsEnable is set)
-    bool        ConfigViewportsNoAutoMerge;     // = false;         // Set to make all floating imgui windows always create their own viewport. Otherwise, they are merged into the main host viewports when overlapping it. May also set ImGuiViewportFlags_NoAutoMerge on individual viewport.
-    bool        ConfigViewportsNoTaskBarIcon;   // = false          // Disable default OS task bar icon flag for secondary viewports. When a viewport doesn't want a task bar icon, ImGuiViewportFlags_NoTaskBarIcon will be set on it.
-    bool        ConfigViewportsNoDecoration;    // = true           // Disable default OS window decoration flag for secondary viewports. When a viewport doesn't want window decorations, ImGuiViewportFlags_NoDecoration will be set on it. Enabling decoration can create subsequent issues at OS levels (e.g. minimum window size).
+    // Viewport options (when KGGuiConfigFlags_ViewportsEnable is set)
+    bool        ConfigViewportsNoAutoMerge;     // = false;         // Set to make all floating imgui windows always create their own viewport. Otherwise, they are merged into the main host viewports when overlapping it. May also set KGGuiViewportFlags_NoAutoMerge on individual viewport.
+    bool        ConfigViewportsNoTaskBarIcon;   // = false          // Disable default OS task bar icon flag for secondary viewports. When a viewport doesn't want a task bar icon, KGGuiViewportFlags_NoTaskBarIcon will be set on it.
+    bool        ConfigViewportsNoDecoration;    // = true           // Disable default OS window decoration flag for secondary viewports. When a viewport doesn't want window decorations, KGGuiViewportFlags_NoDecoration will be set on it. Enabling decoration can create subsequent issues at OS levels (e.g. minimum window size).
     bool        ConfigViewportsNoDefaultParent; // = false          // Disable default OS parenting to main viewport for secondary viewports. By default, viewports are marked with ParentViewportId = <main_viewport>, expecting the platform backend to setup a parent/child relationship between the OS windows (some backend may ignore this). Set to true if you want the default to be 0, then all viewports will be top-level OS windows.
 
     // Miscellaneous options
@@ -1984,7 +1985,7 @@ struct KarmaGuiIO
     bool        WantCaptureMouse;                   // Set when Dear ImGui will use mouse inputs, in this case do not dispatch them to your main game/application (either way, always pass on mouse inputs to imgui). (e.g. unclicked mouse is hovering over an imgui window, widget is active, mouse was clicked over an imgui window, etc.).
     bool        WantCaptureKeyboard;                // Set when Dear ImGui will use keyboard inputs, in this case do not dispatch them to your main game/application (either way, always pass keyboard inputs to imgui). (e.g. InputText active, or an imgui window is focused and navigation is enabled, etc.).
     bool        WantTextInput;                      // Mobile/console: when set, you may display an on-screen keyboard. This is set by Dear ImGui when it wants textual keyboard input to happen (e.g. when a InputText widget is active).
-    bool        WantSetMousePos;                    // MousePos has been altered, backend should reposition mouse on next frame. Rarely used! Set only when ImGuiConfigFlags_NavEnableSetMousePos flag is enabled.
+    bool        WantSetMousePos;                    // MousePos has been altered, backend should reposition mouse on next frame. Rarely used! Set only when KGGuiConfigFlags_NavEnableSetMousePos flag is enabled.
     bool        WantSaveIniSettings;                // When manual .ini load/save is active (io.IniFilename == NULL), this will be set to notify your application that you can call SaveIniSettingsToMemory() and save yourself. Important: clear io.WantSaveIniSettings yourself after saving!
     bool        NavActive;                          // Keyboard/Gamepad navigation is currently allowed (will handle KGGuiKey_NavXXX events) = a window is focused and it doesn't use the KGGuiWindowFlags_NoNavInputs flag.
     bool        NavVisible;                         // Keyboard/Gamepad navigation is visible and allowed (will handle KGGuiKey_NavXXX events).
@@ -2016,14 +2017,14 @@ struct KarmaGuiIO
     bool        MouseDown[5];                       // Mouse buttons: 0=left, 1=right, 2=middle + extras (KGGuiMouseButton_COUNT == 5). Dear ImGui mostly uses left and right buttons. Other buttons allow us to track if the mouse is being used by your application + available to user as a convenience via IsMouse** API.
     float       MouseWheel;                         // Mouse wheel Vertical: 1 unit scrolls about 5 lines text.
     float       MouseWheelH;                        // Mouse wheel Horizontal. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends.
-    KGGuiID     MouseHoveredViewport;               // (Optional) Modify using io.AddMouseViewportEvent(). With multi-viewports: viewport the OS mouse is hovering. If possible _IGNORING_ viewports with the ImGuiViewportFlags_NoInputs flag is much better (few backends can handle that). Set io.BackendFlags |= KGGuiBackendFlags_HasMouseHoveredViewport if you can provide this info. If you don't imgui will infer the value using the rectangles and last focused time of the viewports it knows about (ignoring other OS windows).
+    KGGuiID     MouseHoveredViewport;               // (Optional) Modify using io.AddMouseViewportEvent(). With multi-viewports: viewport the OS mouse is hovering. If possible _IGNORING_ viewports with the KGGuiViewportFlags_NoInputs flag is much better (few backends can handle that). Set io.BackendFlags |= KGGuiBackendFlags_HasMouseHoveredViewport if you can provide this info. If you don't imgui will infer the value using the rectangles and last focused time of the viewports it knows about (ignoring other OS windows).
     bool        KeyCtrl;                            // Keyboard modifier down: Control
     bool        KeyShift;                           // Keyboard modifier down: Shift
     bool        KeyAlt;                             // Keyboard modifier down: Alt
     bool        KeySuper;                           // Keyboard modifier down: Cmd/Super/Windows
 
     // Other state maintained from data above + IO function calls
-    KarmaGuiKeyChord KeyMods;                          // Key mods flags (any of ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Alt/ImGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags. DOES NOT CONTAINS ImGuiMod_Shortcut which is pretranslated). Read-only, updated by NewFrame()
+    KarmaGuiKeyChord KeyMods;                          // Key mods flags (any of KGGuiMod_Ctrl/KGGuiMod_Shift/KGGuiMod_Alt/KGGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags. DOES NOT CONTAINS KGGuiMod_Shortcut which is pretranslated). Read-only, updated by NewFrame()
     KarmaGuiKeyData  KeysData[KGGuiKey_KeysData_SIZE]; // Key state for all known keys. Use IsKeyXXX() functions to access this.
     bool        WantCaptureMouseUnlessPopupClose;   // Alternative to WantCaptureMouse: (WantCaptureMouse == true && WantCaptureMouseUnlessPopupClose == false) when a click over void is expected to close a popup.
     ImVec2      MousePosPrev;                       // Previous mouse position (note that MouseDelta is not necessary == MousePos-MousePosPrev, in case either position is invalid)
@@ -2046,7 +2047,7 @@ struct KarmaGuiIO
     KGS8        BackendUsingLegacyKeyArrays;        // -1: unknown, 0: using AddKeyEvent(), 1: using legacy io.KeysDown[]
     bool        BackendUsingLegacyNavInputArray;    // 0: using AddKeyAnalogEvent(), 1: writing to legacy io.NavInputs[] directly
     KGWchar16   InputQueueSurrogate;                // For AddInputCharacterUTF16()
-    ImVector<KGWchar> InputQueueCharacters;         // Queue of _characters_ input (obtained by platform backend). Fill using AddInputCharacter() helper.
+    KGVector<KGWchar> InputQueueCharacters;         // Queue of _characters_ input (obtained by platform backend). Fill using AddInputCharacter() helper.
 
     static   KarmaGuiIO();
 };
@@ -2210,10 +2211,10 @@ struct KarmaGuiTextFilter
         ImGuiTextRange()                                { b = e = NULL; }
         ImGuiTextRange(const char* _b, const char* _e)  { b = _b; e = _e; }
         bool            empty() const                   { return b == e; }
-        static void  split(char separator, ImVector<ImGuiTextRange>* out) const;
+        static void  split(char separator, KGVector<ImGuiTextRange>* out) const;
     };
     char                    InputBuf[256];
-    ImVector<ImGuiTextRange>Filters;
+    KGVector<ImGuiTextRange>Filters;
     int                     CountGrep;
 };
 
@@ -2221,7 +2222,7 @@ struct KarmaGuiTextFilter
 // (this could be called 'ImGuiTextBuilder' / 'ImGuiStringBuilder')
 struct KarmaGuiTextBuffer
 {
-    ImVector<char>      Buf;
+    KGVector<char>      Buf;
     static static char EmptyString[1];
 
     KarmaGuiTextBuffer()   { }
@@ -2258,7 +2259,7 @@ struct KarmaGuiStorage
         ImGuiStoragePair(KGGuiID _key, void* _val_p)    { key = _key; val_p = _val_p; }
     };
 
-    ImVector<ImGuiStoragePair>      Data;
+    KGVector<ImGuiStoragePair>      Data;
 
     // - Get***() functions find pair, never add/allocate. Pairs are sorted so a query is O(log N)
     // - Set***() functions find pair, insertion on demand if missing.
@@ -2382,7 +2383,7 @@ struct KGColor
 // Hold a series of drawing commands. The user provides a renderer for KGDrawData which essentially contains an array of KGDrawList.
 //-----------------------------------------------------------------------------
 
-// The maximum line width to bake anti-aliased textures for. Build atlas with ImFontAtlasFlags_NoBakedLines to disable baking.
+// The maximum line width to bake anti-aliased textures for. Build atlas with KGFontAtlasFlags_NoBakedLines to disable baking.
 #ifndef IM_DRAWLIST_TEX_LINES_WIDTH_MAX
 #define IM_DRAWLIST_TEX_LINES_WIDTH_MAX     (63)
 #endif
@@ -2452,8 +2453,8 @@ struct ImDrawCmdHeader
 // [Internal] For use by KGDrawListSplitter
 struct KGDrawChannel
 {
-    ImVector<KGDrawCmd>         _CmdBuffer;
-    ImVector<KGDrawIdx>         _IdxBuffer;
+    KGVector<KGDrawCmd>         _CmdBuffer;
+    KGVector<KGDrawIdx>         _IdxBuffer;
 };
 
 
@@ -2463,7 +2464,7 @@ struct KGDrawListSplitter
 {
     int                         _Current;    // Current channel number (0)
     int                         _Count;      // Number of active channels (1+)
-    ImVector<KGDrawChannel>     _Channels;   // Draw channels (not resized down so _Count might be < Channels.Size)
+    KGVector<KGDrawChannel>     _Channels;   // Draw channels (not resized down so _Count might be < Channels.Size)
 
     inline KGDrawListSplitter()  { memset(this, 0, sizeof(*this)); }
     inline ~KGDrawListSplitter() { ClearFreeMemory(); }
@@ -2475,34 +2476,34 @@ struct KGDrawListSplitter
 };
 
 // Flags for KGDrawList functions
-// (Legacy: bit 0 must always correspond to ImDrawFlags_Closed to be backward compatible with old API using a bool. Bits 1..3 must be unused)
-enum ImDrawFlags_
+// (Legacy: bit 0 must always correspond to KGDrawFlags_Closed to be backward compatible with old API using a bool. Bits 1..3 must be unused)
+enum KGDrawFlags_
 {
-    ImDrawFlags_None                        = 0,
-    ImDrawFlags_Closed                      = 1 << 0, // PathStroke(), AddPolyline(): specify that shape should be closed (Important: this is always == 1 for legacy reason)
-    ImDrawFlags_RoundCornersTopLeft         = 1 << 4, // AddRect(), AddRectFilled(), PathRect(): enable rounding top-left corner only (when rounding > 0.0f, we default to all corners). Was 0x01.
-    ImDrawFlags_RoundCornersTopRight        = 1 << 5, // AddRect(), AddRectFilled(), PathRect(): enable rounding top-right corner only (when rounding > 0.0f, we default to all corners). Was 0x02.
-    ImDrawFlags_RoundCornersBottomLeft      = 1 << 6, // AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-left corner only (when rounding > 0.0f, we default to all corners). Was 0x04.
-    ImDrawFlags_RoundCornersBottomRight     = 1 << 7, // AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-right corner only (when rounding > 0.0f, we default to all corners). Wax 0x08.
-    ImDrawFlags_RoundCornersNone            = 1 << 8, // AddRect(), AddRectFilled(), PathRect(): disable rounding on all corners (when rounding > 0.0f). This is NOT zero, NOT an implicit flag!
-    ImDrawFlags_RoundCornersTop             = ImDrawFlags_RoundCornersTopLeft | ImDrawFlags_RoundCornersTopRight,
-    ImDrawFlags_RoundCornersBottom          = ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersBottomRight,
-    ImDrawFlags_RoundCornersLeft            = ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersTopLeft,
-    ImDrawFlags_RoundCornersRight           = ImDrawFlags_RoundCornersBottomRight | ImDrawFlags_RoundCornersTopRight,
-    ImDrawFlags_RoundCornersAll             = ImDrawFlags_RoundCornersTopLeft | ImDrawFlags_RoundCornersTopRight | ImDrawFlags_RoundCornersBottomLeft | ImDrawFlags_RoundCornersBottomRight,
-    ImDrawFlags_RoundCornersDefault_        = ImDrawFlags_RoundCornersAll, // Default to ALL corners if none of the _RoundCornersXX flags are specified.
-    ImDrawFlags_RoundCornersMask_           = ImDrawFlags_RoundCornersAll | ImDrawFlags_RoundCornersNone,
+    KGDrawFlags_None                        = 0,
+    KGDrawFlags_Closed                      = 1 << 0, // PathStroke(), AddPolyline(): specify that shape should be closed (Important: this is always == 1 for legacy reason)
+    KGDrawFlags_RoundCornersTopLeft         = 1 << 4, // AddRect(), AddRectFilled(), PathRect(): enable rounding top-left corner only (when rounding > 0.0f, we default to all corners). Was 0x01.
+    KGDrawFlags_RoundCornersTopRight        = 1 << 5, // AddRect(), AddRectFilled(), PathRect(): enable rounding top-right corner only (when rounding > 0.0f, we default to all corners). Was 0x02.
+    KGDrawFlags_RoundCornersBottomLeft      = 1 << 6, // AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-left corner only (when rounding > 0.0f, we default to all corners). Was 0x04.
+    KGDrawFlags_RoundCornersBottomRight     = 1 << 7, // AddRect(), AddRectFilled(), PathRect(): enable rounding bottom-right corner only (when rounding > 0.0f, we default to all corners). Wax 0x08.
+    KGDrawFlags_RoundCornersNone            = 1 << 8, // AddRect(), AddRectFilled(), PathRect(): disable rounding on all corners (when rounding > 0.0f). This is NOT zero, NOT an implicit flag!
+    KGDrawFlags_RoundCornersTop             = KGDrawFlags_RoundCornersTopLeft | KGDrawFlags_RoundCornersTopRight,
+    KGDrawFlags_RoundCornersBottom          = KGDrawFlags_RoundCornersBottomLeft | KGDrawFlags_RoundCornersBottomRight,
+    KGDrawFlags_RoundCornersLeft            = KGDrawFlags_RoundCornersBottomLeft | KGDrawFlags_RoundCornersTopLeft,
+    KGDrawFlags_RoundCornersRight           = KGDrawFlags_RoundCornersBottomRight | KGDrawFlags_RoundCornersTopRight,
+    KGDrawFlags_RoundCornersAll             = KGDrawFlags_RoundCornersTopLeft | KGDrawFlags_RoundCornersTopRight | KGDrawFlags_RoundCornersBottomLeft | KGDrawFlags_RoundCornersBottomRight,
+    KGDrawFlags_RoundCornersDefault_        = KGDrawFlags_RoundCornersAll, // Default to ALL corners if none of the _RoundCornersXX flags are specified.
+    KGDrawFlags_RoundCornersMask_           = KGDrawFlags_RoundCornersAll | KGDrawFlags_RoundCornersNone,
 };
 
 // Flags for KGDrawList instance. Those are set automatically by KarmaGui:: functions from KarmaGuiIO settings, and generally not manipulated directly.
 // It is however possible to temporarily alter flags between calls to KGDrawList:: functions.
-enum ImDrawListFlags_
+enum KGDrawListFlags_
 {
-    ImDrawListFlags_None                    = 0,
-    ImDrawListFlags_AntiAliasedLines        = 1 << 0,  // Enable anti-aliased lines/borders (*2 the number of triangles for 1.0f wide line or lines thin enough to be drawn using textures, otherwise *3 the number of triangles)
-    ImDrawListFlags_AntiAliasedLinesUseTex  = 1 << 1,  // Enable anti-aliased lines/borders using textures when possible. Require backend to render with bilinear filtering (NOT point/nearest filtering).
-    ImDrawListFlags_AntiAliasedFill         = 1 << 2,  // Enable anti-aliased edge around filled shapes (rounded rectangles, circles).
-    ImDrawListFlags_AllowVtxOffset          = 1 << 3,  // Can emit 'VtxOffset > 0' to allow large meshes. Set when 'KGGuiBackendFlags_RendererHasVtxOffset' is enabled.
+    KGDrawListFlags_None                    = 0,
+    KGDrawListFlags_AntiAliasedLines        = 1 << 0,  // Enable anti-aliased lines/borders (*2 the number of triangles for 1.0f wide line or lines thin enough to be drawn using textures, otherwise *3 the number of triangles)
+    KGDrawListFlags_AntiAliasedLinesUseTex  = 1 << 1,  // Enable anti-aliased lines/borders using textures when possible. Require backend to render with bilinear filtering (NOT point/nearest filtering).
+    KGDrawListFlags_AntiAliasedFill         = 1 << 2,  // Enable anti-aliased edge around filled shapes (rounded rectangles, circles).
+    KGDrawListFlags_AllowVtxOffset          = 1 << 3,  // Can emit 'VtxOffset > 0' to allow large meshes. Set when 'KGGuiBackendFlags_RendererHasVtxOffset' is enabled.
 };
 
 // Draw command list
@@ -2517,20 +2518,20 @@ enum ImDrawListFlags_
 struct KGDrawList
 {
     // This is what you have to render
-    ImVector<KGDrawCmd>     CmdBuffer;          // Draw commands. Typically 1 command = 1 GPU draw call, unless the command is a callback.
-    ImVector<KGDrawIdx>     IdxBuffer;          // Index buffer. Each command consume KGDrawCmd::ElemCount of those
-    ImVector<KGDrawVert>    VtxBuffer;          // Vertex buffer.
+    KGVector<KGDrawCmd>     CmdBuffer;          // Draw commands. Typically 1 command = 1 GPU draw call, unless the command is a callback.
+    KGVector<KGDrawIdx>     IdxBuffer;          // Index buffer. Each command consume KGDrawCmd::ElemCount of those
+    KGVector<KGDrawVert>    VtxBuffer;          // Vertex buffer.
     KGDrawListFlags         Flags;              // Flags, you may poke into these to adjust anti-aliasing settings per-primitive.
 
     // [Internal, used while building lists]
     unsigned int            _VtxCurrentIdx;     // [Internal] generally == VtxBuffer.Size unless we are past 64K vertices, in which case this gets reset to 0.
     KGDrawListSharedData*   _Data;              // Pointer to shared draw data (you can use ImGui::GetDrawListSharedData() to get the one from current ImGui context)
     const char*             _OwnerName;         // Pointer to owner window's name for debugging
-    KGDrawVert*             _VtxWritePtr;       // [Internal] point within VtxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
-    KGDrawIdx*              _IdxWritePtr;       // [Internal] point within IdxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)
-    ImVector<ImVec4>        _ClipRectStack;     // [Internal]
-    ImVector<KGTextureID>   _TextureIdStack;    // [Internal]
-    ImVector<ImVec2>        _Path;              // [Internal] current path building
+    KGDrawVert*             _VtxWritePtr;       // [Internal] point within VtxBuffer.Data after each add command (to avoid using the KGVector<> operators too much)
+    KGDrawIdx*              _IdxWritePtr;       // [Internal] point within IdxBuffer.Data after each add command (to avoid using the KGVector<> operators too much)
+    KGVector<ImVec4>        _ClipRectStack;     // [Internal]
+    KGVector<KGTextureID>   _TextureIdStack;    // [Internal]
+    KGVector<ImVec2>        _Path;              // [Internal] current path building
     ImDrawCmdHeader         _CmdHeader;         // [Internal] template of active commands. Fields should match those of CmdBuffer.back().
     KGDrawListSplitter      _Splitter;          // [Internal] for channels api (note: prefer using your own persistent instance of KGDrawListSplitter!)
     float                   _FringeScale;       // [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content
@@ -2711,7 +2712,7 @@ struct KGFontGlyph
 // This is essentially a tightly packed of vector of 64k booleans = 8KB storage.
 struct KGFontGlyphRangesBuilder
 {
-    ImVector<KGU32> UsedChars;            // Store 1-bit per Unicode code point (0=unused, 1=used)
+    KGVector<KGU32> UsedChars;            // Store 1-bit per Unicode code point (0=unused, 1=used)
 
     KGFontGlyphRangesBuilder()              { Clear(); }
     inline void     Clear()                 { int size_in_bytes = (IM_UNICODE_CODEPOINT_MAX + 1) / 8; UsedChars.resize(size_in_bytes / (int)sizeof(KGU32)); memset(UsedChars.Data, 0, (size_t)size_in_bytes); }
@@ -2720,11 +2721,11 @@ struct KGFontGlyphRangesBuilder
     inline void     AddChar(KGWchar c)      { SetBit(c); }                      // Add character
     static void  AddText(const char* text, const char* text_end = NULL);     // Add string (each character of the UTF-8 string are added)
     static void  AddRanges(const KGWchar* ranges);                           // Add ranges, e.g. builder.AddRanges(KGFontAtlas::GetGlyphRangesDefault()) to force add all of ASCII/Latin+Ext
-    static void  BuildRanges(ImVector<KGWchar>* out_ranges);                 // Output new ranges
+    static void  BuildRanges(KGVector<KGWchar>* out_ranges);                 // Output new ranges
 };
 
 // See KGFontAtlas::AddCustomRectXXX functions.
-struct ImFontAtlasCustomRect
+struct KGFontAtlasCustomRect
 {
     unsigned short  Width, Height;  // Input    // Desired rectangle dimension
     unsigned short  X, Y;           // Output   // Packed position in Atlas
@@ -2732,23 +2733,23 @@ struct ImFontAtlasCustomRect
     float           GlyphAdvanceX;  // Input    // For custom font glyphs only: glyph xadvance
     ImVec2          GlyphOffset;    // Input    // For custom font glyphs only: glyph display offset
     KGFont*         Font;           // Input    // For custom font glyphs only: target font
-    ImFontAtlasCustomRect()         { Width = Height = 0; X = Y = 0xFFFF; GlyphID = 0; GlyphAdvanceX = 0.0f; GlyphOffset = ImVec2(0, 0); Font = NULL; }
+    KGFontAtlasCustomRect()         { Width = Height = 0; X = Y = 0xFFFF; GlyphID = 0; GlyphAdvanceX = 0.0f; GlyphOffset = ImVec2(0, 0); Font = NULL; }
     bool IsPacked() const           { return X != 0xFFFF; }
 };
 
 // Flags for KGFontAtlas build
-enum ImFontAtlasFlags_
+enum KGFontAtlasFlags_
 {
-    ImFontAtlasFlags_None               = 0,
-    ImFontAtlasFlags_NoPowerOfTwoHeight = 1 << 0,   // Don't round the height to next power of two
-    ImFontAtlasFlags_NoMouseCursors     = 1 << 1,   // Don't build software mouse cursors into the atlas (save a little texture memory)
-    ImFontAtlasFlags_NoBakedLines       = 1 << 2,   // Don't build thick line textures into the atlas (save a little texture memory, allow support for point/nearest filtering). The AntiAliasedLinesUseTex features uses them, otherwise they will be rendered using polygons (more expensive for CPU/GPU).
+    KGFontAtlasFlags_None               = 0,
+    KGFontAtlasFlags_NoPowerOfTwoHeight = 1 << 0,   // Don't round the height to next power of two
+    KGFontAtlasFlags_NoMouseCursors     = 1 << 1,   // Don't build software mouse cursors into the atlas (save a little texture memory)
+    KGFontAtlasFlags_NoBakedLines       = 1 << 2,   // Don't build thick line textures into the atlas (save a little texture memory, allow support for point/nearest filtering). The AntiAliasedLinesUseTex features uses them, otherwise they will be rendered using polygons (more expensive for CPU/GPU).
 };
 
 // Load and rasterize multiple TTF/OTF fonts into a same texture. The font atlas will build a single texture holding:
 //  - One or more fonts.
 //  - Custom graphics data needed to render the shapes needed by Dear ImGui.
-//  - Mouse cursor shapes for software cursor rendering (unless setting 'Flags |= ImFontAtlasFlags_NoMouseCursors' in the font atlas).
+//  - Mouse cursor shapes for software cursor rendering (unless setting 'Flags |= KGFontAtlasFlags_NoMouseCursors' in the font atlas).
 // It is the user-code responsibility to setup/build the atlas, then upload the pixel data into a texture accessible by your graphics api.
 //  - Optionally, call any of the AddFont*** functions. If you don't call any, the default font embedded in the code will be loaded for you.
 //  - Call GetTexDataAsAlpha8() or GetTexDataAsRGBA32() to build and retrieve pixels data.
@@ -2818,17 +2819,17 @@ struct KGFontAtlas
     // - Note: this API may be redesigned later in order to support multi-monitor varying DPI settings.
     static int               AddCustomRectRegular(int width, int height);
     static int               AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int height, float advance_x, const ImVec2& offset = ImVec2(0, 0));
-    ImFontAtlasCustomRect*      GetCustomRectByIndex(int index) { IM_ASSERT(index >= 0); return &CustomRects[index]; }
+    KGFontAtlasCustomRect*      GetCustomRectByIndex(int index) { IM_ASSERT(index >= 0); return &CustomRects[index]; }
 
     // [Internal]
-    static void              CalcCustomRectUV(const ImFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max) const;
+    static void              CalcCustomRectUV(const KGFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max) const;
     static bool              GetMouseCursorTexData(KarmaGuiMouseCursor cursor, ImVec2* out_offset, ImVec2* out_size, ImVec2 out_uv_border[2], ImVec2 out_uv_fill[2]);
 
     //-------------------------------------------
     // Members
     //-------------------------------------------
 
-    KGFontAtlasFlags            Flags;              // Build flags (see ImFontAtlasFlags_)
+    KGFontAtlasFlags            Flags;              // Build flags (see KGFontAtlasFlags_)
     KGTextureID                 TexID;              // User data to refer to the texture once it has been uploaded to user's graphic systems. It is passed back to you during rendering via the KGDrawCmd structure.
     int                         TexDesiredWidth;    // Texture width desired by user before Build(). Must be a power-of-two. If have many glyphs your graphics API have texture size restrictions you may want to increase texture width to decrease height.
     int                         TexGlyphPadding;    // Padding between glyphs within texture in pixels. Defaults to 1. If your rendering method doesn't rely on bilinear filtering you may set this to 0 (will also need to set AntiAliasedLinesUseTex = false).
@@ -2845,9 +2846,9 @@ struct KGFontAtlas
     int                         TexHeight;          // Texture height calculated during Build().
     ImVec2                      TexUvScale;         // = (1.0f/TexWidth, 1.0f/TexHeight)
     ImVec2                      TexUvWhitePixel;    // Texture coordinates to a white pixel
-    ImVector<KGFont*>           Fonts;              // Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
-    ImVector<ImFontAtlasCustomRect> CustomRects;    // Rectangles for packing custom texture data into the atlas.
-    ImVector<KGFontConfig>      ConfigData;         // Configuration data
+    KGVector<KGFont*>           Fonts;              // Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
+    KGVector<KGFontAtlasCustomRect> CustomRects;    // Rectangles for packing custom texture data into the atlas.
+    KGVector<KGFontConfig>      ConfigData;         // Configuration data
     ImVec4                      TexUvLines[IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 1];  // UVs for baked anti-aliased lines
 
     // [Internal] Font builder
@@ -2859,7 +2860,7 @@ struct KGFontAtlas
     int                         PackIdLines;        // Custom texture rectangle ID for baked anti-aliased lines
 
     // [Obsolete]
-    //typedef ImFontAtlasCustomRect    CustomRect;         // OBSOLETED in 1.72+
+    //typedef KGFontAtlasCustomRect    CustomRect;         // OBSOLETED in 1.72+
     //typedef KGFontGlyphRangesBuilder GlyphRangesBuilder; // OBSOLETED in 1.67+
 };
 
@@ -2868,13 +2869,13 @@ struct KGFontAtlas
 struct KGFont
 {
     // Members: Hot ~20/24 bytes (for CalcTextSize)
-    ImVector<float>             IndexAdvanceX;      // 12-16 // out //            // Sparse. Glyphs->AdvanceX in a directly indexable way (cache-friendly for CalcTextSize functions which only this this info, and are often bottleneck in large UI).
+    KGVector<float>             IndexAdvanceX;      // 12-16 // out //            // Sparse. Glyphs->AdvanceX in a directly indexable way (cache-friendly for CalcTextSize functions which only this this info, and are often bottleneck in large UI).
     float                       FallbackAdvanceX;   // 4     // out // = FallbackGlyph->AdvanceX
     float                       FontSize;           // 4     // in  //            // Height of characters/line, set during loading (don't change after loading)
 
     // Members: Hot ~28/40 bytes (for CalcTextSize + render loop)
-    ImVector<KGWchar>           IndexLookup;        // 12-16 // out //            // Sparse. Index glyphs by Unicode code-point.
-    ImVector<KGFontGlyph>       Glyphs;             // 12-16 // out //            // All glyphs.
+    KGVector<KGWchar>           IndexLookup;        // 12-16 // out //            // Sparse. Index glyphs by Unicode code-point.
+    KGVector<KGFontGlyph>       Glyphs;             // 12-16 // out //            // All glyphs.
     const KGFontGlyph*          FallbackGlyph;      // 4-8   // out // = FindGlyph(FontFallbackChar)
 
     // Members: Cold ~32/40 bytes
@@ -2921,22 +2922,22 @@ struct KGFont
 //-----------------------------------------------------------------------------
 
 // Flags stored in KarmaGuiViewport::Flags, giving indications to the platform backends.
-enum ImGuiViewportFlags_
+enum KGGuiViewportFlags_
 {
-    ImGuiViewportFlags_None                     = 0,
-    ImGuiViewportFlags_IsPlatformWindow         = 1 << 0,   // Represent a Platform Window
-    ImGuiViewportFlags_IsPlatformMonitor        = 1 << 1,   // Represent a Platform Monitor (unused yet)
-    ImGuiViewportFlags_OwnedByApp               = 1 << 2,   // Platform Window: is created/managed by the application (rather than a dear imgui backend)
-    ImGuiViewportFlags_NoDecoration             = 1 << 3,   // Platform Window: Disable platform decorations: title bar, borders, etc. (generally set all windows, but if ImGuiConfigFlags_ViewportsDecoration is set we only set this on popups/tooltips)
-    ImGuiViewportFlags_NoTaskBarIcon            = 1 << 4,   // Platform Window: Disable platform task bar icon (generally set on popups/tooltips, or all windows if ImGuiConfigFlags_ViewportsNoTaskBarIcon is set)
-    ImGuiViewportFlags_NoFocusOnAppearing       = 1 << 5,   // Platform Window: Don't take focus when created.
-    ImGuiViewportFlags_NoFocusOnClick           = 1 << 6,   // Platform Window: Don't take focus when clicked on.
-    ImGuiViewportFlags_NoInputs                 = 1 << 7,   // Platform Window: Make mouse pass through so we can drag this window while peaking behind it.
-    ImGuiViewportFlags_NoRendererClear          = 1 << 8,   // Platform Window: Renderer doesn't need to clear the framebuffer ahead (because we will fill it entirely).
-    ImGuiViewportFlags_TopMost                  = 1 << 9,   // Platform Window: Display on top (for tooltips only).
-    ImGuiViewportFlags_Minimized                = 1 << 10,  // Platform Window: Window is minimized, can skip render. When minimized we tend to avoid using the viewport pos/size for clipping window or testing if they are contained in the viewport.
-    ImGuiViewportFlags_NoAutoMerge              = 1 << 11,  // Platform Window: Avoid merging this window into another host window. This can only be set via KarmaGuiWindowClass viewport flags override (because we need to now ahead if we are going to create a viewport in the first place!).
-    ImGuiViewportFlags_CanHostOtherWindows      = 1 << 12,  // Main viewport: can host multiple imgui windows (secondary viewports are associated to a single window).
+    KGGuiViewportFlags_None                     = 0,
+    KGGuiViewportFlags_IsPlatformWindow         = 1 << 0,   // Represent a Platform Window
+    KGGuiViewportFlags_IsPlatformMonitor        = 1 << 1,   // Represent a Platform Monitor (unused yet)
+    KGGuiViewportFlags_OwnedByApp               = 1 << 2,   // Platform Window: is created/managed by the application (rather than a dear imgui backend)
+    KGGuiViewportFlags_NoDecoration             = 1 << 3,   // Platform Window: Disable platform decorations: title bar, borders, etc. (generally set all windows, but if KGGuiConfigFlags_ViewportsDecoration is set we only set this on popups/tooltips)
+    KGGuiViewportFlags_NoTaskBarIcon            = 1 << 4,   // Platform Window: Disable platform task bar icon (generally set on popups/tooltips, or all windows if KGGuiConfigFlags_ViewportsNoTaskBarIcon is set)
+    KGGuiViewportFlags_NoFocusOnAppearing       = 1 << 5,   // Platform Window: Don't take focus when created.
+    KGGuiViewportFlags_NoFocusOnClick           = 1 << 6,   // Platform Window: Don't take focus when clicked on.
+    KGGuiViewportFlags_NoInputs                 = 1 << 7,   // Platform Window: Make mouse pass through so we can drag this window while peaking behind it.
+    KGGuiViewportFlags_NoRendererClear          = 1 << 8,   // Platform Window: Renderer doesn't need to clear the framebuffer ahead (because we will fill it entirely).
+    KGGuiViewportFlags_TopMost                  = 1 << 9,   // Platform Window: Display on top (for tooltips only).
+    KGGuiViewportFlags_Minimized                = 1 << 10,  // Platform Window: Window is minimized, can skip render. When minimized we tend to avoid using the viewport pos/size for clipping window or testing if they are contained in the viewport.
+    KGGuiViewportFlags_NoAutoMerge              = 1 << 11,  // Platform Window: Avoid merging this window into another host window. This can only be set via KarmaGuiWindowClass viewport flags override (because we need to now ahead if we are going to create a viewport in the first place!).
+    KGGuiViewportFlags_CanHostOtherWindows      = 1 << 12,  // Main viewport: can host multiple imgui windows (secondary viewports are associated to a single window).
 };
 
 // - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
@@ -2949,7 +2950,7 @@ enum ImGuiViewportFlags_
 struct KarmaGuiViewport
 {
     KGGuiID             ID;                     // Unique identifier for the viewport
-    KarmaGuiViewportFlags  Flags;                  // See ImGuiViewportFlags_
+    KarmaGuiViewportFlags  Flags;                  // See KGGuiViewportFlags_
     ImVec2              Pos;                    // Main Area: Position of the viewport (Dear ImGui coordinates are the same as OS desktop/native coordinates)
     ImVec2              Size;                   // Main Area: Size of the viewport.
     ImVec2              WorkPos;                // Work Area: Position of the viewport minus task bars, menus bars, status bars (>= Pos)
@@ -2999,7 +3000,7 @@ struct KarmaGuiViewport
 // - If you want to position windows relative to your main application viewport, use ImGui::GetMainViewport()->Pos as a base position.
 //
 // Steps to use multi-viewports in your application, when using a default backend from the examples/ folder:
-// - Application:  Enable feature with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
+// - Application:  Enable feature with 'io.ConfigFlags |= KGGuiConfigFlags_ViewportsEnable'.
 // - Backend:      The backend initialization will setup all necessary KarmaGuiPlatformIO's functions and update monitors info every frame.
 // - Application:  In your main loop, call ImGui::UpdatePlatformWindows(), ImGui::RenderPlatformWindowsDefault() after EndFrame() or Render().
 // - Application:  Fix absolute coordinates used in ImGui::SetWindowPos() or ImGui::SetNextWindowPos() calls.
@@ -3008,7 +3009,7 @@ struct KarmaGuiViewport
 // - Important:    THIS IS NOT EASY TO DO and comes with many subtleties not described here!
 //                 It's also an experimental feature, so some of the requirements may evolve.
 //                 Consider using default backends if you can. Either way, carefully follow and refer to examples/ backends for details.
-// - Application:  Enable feature with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
+// - Application:  Enable feature with 'io.ConfigFlags |= KGGuiConfigFlags_ViewportsEnable'.
 // - Backend:      Hook KarmaGuiPlatformIO's Platform_* and Renderer_* callbacks (see below).
 //                 Set 'io.BackendFlags |= KGGuiBackendFlags_PlatformHasViewports' and 'io.BackendFlags |= KGGuiBackendFlags_PlatformHasViewports'.
 //                 Update KarmaGuiPlatformIO's Monitors list every frame.
@@ -3079,7 +3080,7 @@ struct KarmaGuiPlatformIO
     // (Optional) Monitor list
     // - Updated by: app/backend. Update every frame to dynamically support changing monitor or DPI configuration.
     // - Used by: dear imgui to query DPI info, clamp popups/tooltips within same monitor and not have them straddle monitors.
-    ImVector<KarmaGuiPlatformMonitor>  Monitors;
+    KGVector<KarmaGuiPlatformMonitor>  Monitors;
 
     //------------------------------------------------------------------
     // Output - List of viewports to render into platform windows
@@ -3087,7 +3088,7 @@ struct KarmaGuiPlatformIO
 
     // Viewports list (the list is updated by calling ImGui::EndFrame or ImGui::Render)
     // (in the future we will attempt to organize this feature to remove the need for a "main viewport")
-    ImVector<KarmaGuiViewport*>        Viewports;                              // Main viewports, followed by all secondary viewports.
+    KGVector<KarmaGuiViewport*>        Viewports;                              // Main viewports, followed by all secondary viewports.
     KarmaGuiPlatformIO()               { memset(this, 0, sizeof(*this)); }     // Zero clear
 };
 
@@ -3110,132 +3111,3 @@ struct KarmaGuiPlatformImeData
 
     KarmaGuiPlatformImeData() { memset(this, 0, sizeof(*this)); }
 };
-
-//-----------------------------------------------------------------------------
-// [SECTION] Obsolete functions and types
-// (Will be removed! Read 'API BREAKING CHANGES' section in imgui.cpp for details)
-// Please keep your copy of dear imgui up to date! Occasionally set '#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS' in imconfig.h to stay ahead.
-//-----------------------------------------------------------------------------
-
-namespace ImGui
-{
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
-    static KarmaGuiKey     GetKeyIndex(KarmaGuiKey key);  // map KGGuiKey_* values into legacy native key index. == io.KeyMap[key]
-#else
-    static inline KarmaGuiKey GetKeyIndex(KarmaGuiKey key)   { IM_ASSERT(key >= KGGuiKey_NamedKey_BEGIN && key < KGGuiKey_NamedKey_END && "KarmaGuiKey and native_index was merged together and native_index is disabled by IMGUI_DISABLE_OBSOLETE_KEYIO. Please switch to KarmaGuiKey."); return key; }
-#endif
-}
-
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-namespace ImGui
-{
-    // OBSOLETED in 1.89 (from August 2022)
-    static bool      ImageButton(KGTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1, 1), int frame_padding = -1, const ImVec4& bg_col = ImVec4(0, 0, 0, 0), const ImVec4& tint_col = ImVec4(1, 1, 1, 1)); // Use new ImageButton() signature (explicit item id, regular FramePadding)
-    // OBSOLETED in 1.88 (from May 2022)
-    static inline void  CaptureKeyboardFromApp(bool want_capture_keyboard = true)           { SetNextFrameWantCaptureKeyboard(want_capture_keyboard); } // Renamed as name was misleading + removed default value.
-    static inline void  CaptureMouseFromApp(bool want_capture_mouse = true)                 { SetNextFrameWantCaptureMouse(want_capture_mouse); }       // Renamed as name was misleading + removed default value.
-    // OBSOLETED in 1.86 (from November 2021)
-    static void      CalcListClipping(int items_count, float items_height, int* out_items_display_start, int* out_items_display_end); // Calculate coarse clipping for large list of evenly sized items. Prefer using KarmaGuiListClipper.
-    // OBSOLETED in 1.85 (from August 2021)
-    static inline float GetWindowContentRegionWidth()                                       { return GetWindowContentRegionMax().x - GetWindowContentRegionMin().x; }
-    // OBSOLETED in 1.81 (from February 2021)
-    static bool      ListBoxHeader(const char* label, int items_count, int height_in_items = -1); // Helper to calculate size from items_count and height_in_items
-    static inline bool  ListBoxHeader(const char* label, const ImVec2& size = ImVec2(0, 0)) { return BeginListBox(label, size); }
-    static inline void  ListBoxFooter()                                                     { EndListBox(); }
-
-    // Some of the older obsolete names along with their replacement (commented out so they are not reported in IDE)
-    //-- OBSOLETED in 1.79 (from August 2020)
-    //static inline void  OpenPopupContextItem(const char* str_id = NULL, KarmaGuiMouseButton mb = 1)    { OpenPopupOnItemClick(str_id, mb); } // Bool return value removed. Use IsWindowAppearing() in BeginPopup() instead. Renamed in 1.77, renamed back in 1.79. Sorry!
-    //-- OBSOLETED in 1.78 (from June 2020): Old drag/sliders functions that took a 'float power > 1.0f' argument instead of KGGuiSliderFlags_Logarithmic. See github.com/ocornut/imgui/issues/3361 for details.
-    //static bool      DragScalar(const char* label, KarmaGuiDataType data_type, void* p_data, float v_speed, const void* p_min, const void* p_max, const char* format, float power = 1.0f)                                                            // OBSOLETED in 1.78 (from June 2020)
-    //static bool      DragScalarN(const char* label, KarmaGuiDataType data_type, void* p_data, int components, float v_speed, const void* p_min, const void* p_max, const char* format, float power = 1.0f);                                          // OBSOLETED in 1.78 (from June 2020)
-    //static bool      SliderScalar(const char* label, KarmaGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, float power = 1.0f);                                                                        // OBSOLETED in 1.78 (from June 2020)
-    //static bool      SliderScalarN(const char* label, KarmaGuiDataType data_type, void* p_data, int components, const void* p_min, const void* p_max, const char* format, float power = 1.0f);                                                       // OBSOLETED in 1.78 (from June 2020)
-    //static inline bool  DragFloat(const char* label, float* v, float v_speed, float v_min, float v_max, const char* format, float power = 1.0f)    { return DragScalar(label, KGGuiDataType_Float, v, v_speed, &v_min, &v_max, format, power); }     // OBSOLETED in 1.78 (from June 2020)
-    //static inline bool  DragFloat2(const char* label, float v[2], float v_speed, float v_min, float v_max, const char* format, float power = 1.0f) { return DragScalarN(label, KGGuiDataType_Float, v, 2, v_speed, &v_min, &v_max, format, power); } // OBSOLETED in 1.78 (from June 2020)
-    //static inline bool  DragFloat3(const char* label, float v[3], float v_speed, float v_min, float v_max, const char* format, float power = 1.0f) { return DragScalarN(label, KGGuiDataType_Float, v, 3, v_speed, &v_min, &v_max, format, power); } // OBSOLETED in 1.78 (from June 2020)
-    //static inline bool  DragFloat4(const char* label, float v[4], float v_speed, float v_min, float v_max, const char* format, float power = 1.0f) { return DragScalarN(label, KGGuiDataType_Float, v, 4, v_speed, &v_min, &v_max, format, power); } // OBSOLETED in 1.78 (from June 2020)
-    //static inline bool  SliderFloat(const char* label, float* v, float v_min, float v_max, const char* format, float power = 1.0f)                 { return SliderScalar(label, KGGuiDataType_Float, v, &v_min, &v_max, format, power); }            // OBSOLETED in 1.78 (from June 2020)
-    //static inline bool  SliderFloat2(const char* label, float v[2], float v_min, float v_max, const char* format, float power = 1.0f)              { return SliderScalarN(label, KGGuiDataType_Float, v, 2, &v_min, &v_max, format, power); }        // OBSOLETED in 1.78 (from June 2020)
-    //static inline bool  SliderFloat3(const char* label, float v[3], float v_min, float v_max, const char* format, float power = 1.0f)              { return SliderScalarN(label, KGGuiDataType_Float, v, 3, &v_min, &v_max, format, power); }        // OBSOLETED in 1.78 (from June 2020)
-    //static inline bool  SliderFloat4(const char* label, float v[4], float v_min, float v_max, const char* format, float power = 1.0f)              { return SliderScalarN(label, KGGuiDataType_Float, v, 4, &v_min, &v_max, format, power); }        // OBSOLETED in 1.78 (from June 2020)
-    //-- OBSOLETED in 1.77 and before
-    //static inline bool  BeginPopupContextWindow(const char* str_id, KarmaGuiMouseButton mb, bool over_items) { return BeginPopupContextWindow(str_id, mb | (over_items ? 0 : KGGuiPopupFlags_NoOpenOverItems)); } // OBSOLETED in 1.77 (from June 2020)
-    //static inline void  TreeAdvanceToLabelPos()               { SetCursorPosX(GetCursorPosX() + GetTreeNodeToLabelSpacing()); }   // OBSOLETED in 1.72 (from July 2019)
-    //static inline void  SetNextTreeNodeOpen(bool open, KarmaGuiCond cond = 0) { SetNextItemOpen(open, cond); }                       // OBSOLETED in 1.71 (from June 2019)
-    //static inline float GetContentRegionAvailWidth()          { return GetContentRegionAvail().x; }                               // OBSOLETED in 1.70 (from May 2019)
-    //static inline KGDrawList* GetOverlayDrawList()            { return GetForegroundDrawList(); }                                 // OBSOLETED in 1.69 (from Mar 2019)
-    //static inline void  SetScrollHere(float ratio = 0.5f)     { SetScrollHereY(ratio); }                                          // OBSOLETED in 1.66 (from Nov 2018)
-    //static inline bool  IsItemDeactivatedAfterChange()        { return IsItemDeactivatedAfterEdit(); }                            // OBSOLETED in 1.63 (from Aug 2018)
-    //-- OBSOLETED in 1.60 and before
-    //static inline bool  IsAnyWindowFocused()                  { return IsWindowFocused(KGGuiFocusedFlags_AnyWindow); }            // OBSOLETED in 1.60 (from Apr 2018)
-    //static inline bool  IsAnyWindowHovered()                  { return IsWindowHovered(KGGuiHoveredFlags_AnyWindow); }            // OBSOLETED in 1.60 (between Dec 2017 and Apr 2018)
-    //static inline void  ShowTestWindow()                      { return ShowDemoWindow(); }                                        // OBSOLETED in 1.53 (between Oct 2017 and Dec 2017)
-    //static inline bool  IsRootWindowFocused()                 { return IsWindowFocused(KGGuiFocusedFlags_RootWindow); }           // OBSOLETED in 1.53 (between Oct 2017 and Dec 2017)
-    //static inline bool  IsRootWindowOrAnyChildFocused()       { return IsWindowFocused(KGGuiFocusedFlags_RootAndChildWindows); }  // OBSOLETED in 1.53 (between Oct 2017 and Dec 2017)
-    //static inline void  SetNextWindowContentWidth(float w)    { SetNextWindowContentSize(ImVec2(w, 0.0f)); }                      // OBSOLETED in 1.53 (between Oct 2017 and Dec 2017)
-    //static inline float GetItemsLineHeightWithSpacing()       { return GetFrameHeightWithSpacing(); }                             // OBSOLETED in 1.53 (between Oct 2017 and Dec 2017)
-    //static bool      Begin(char* name, bool* p_open, ImVec2 size_first_use, float bg_alpha = -1.0f, KarmaGuiWindowFlags flags=0); // OBSOLETED in 1.52 (between Aug 2017 and Oct 2017): Equivalent of using SetNextWindowSize(size, KGGuiCond_FirstUseEver) and SetNextWindowBgAlpha().
-    //static inline bool  IsRootWindowOrAnyChildHovered()       { return IsWindowHovered(KGGuiHoveredFlags_RootAndChildWindows); }  // OBSOLETED in 1.52 (between Aug 2017 and Oct 2017)
-    //static inline void  AlignFirstTextHeightToWidgets()       { AlignTextToFramePadding(); }                                      // OBSOLETED in 1.52 (between Aug 2017 and Oct 2017)
-    //static inline void  SetNextWindowPosCenter(KarmaGuiCond c=0) { SetNextWindowPos(GetMainViewport()->GetCenter(), c, ImVec2(0.5f,0.5f)); } // OBSOLETED in 1.52 (between Aug 2017 and Oct 2017)
-    //static inline bool  IsItemHoveredRect()                   { return IsItemHovered(KGGuiHoveredFlags_RectOnly); }               // OBSOLETED in 1.51 (between Jun 2017 and Aug 2017)
-    //static inline bool  IsPosHoveringAnyWindow(const ImVec2&) { IM_ASSERT(0); return false; }                                     // OBSOLETED in 1.51 (between Jun 2017 and Aug 2017): This was misleading and partly broken. You probably want to use the io.WantCaptureMouse flag instead.
-    //static inline bool  IsMouseHoveringAnyWindow()            { return IsWindowHovered(KGGuiHoveredFlags_AnyWindow); }            // OBSOLETED in 1.51 (between Jun 2017 and Aug 2017)
-    //static inline bool  IsMouseHoveringWindow()               { return IsWindowHovered(KGGuiHoveredFlags_AllowWhenBlockedByPopup | KGGuiHoveredFlags_AllowWhenBlockedByActiveItem); }       // OBSOLETED in 1.51 (between Jun 2017 and Aug 2017)
-    //-- OBSOLETED in 1.50 and before
-    //static inline bool  CollapsingHeader(char* label, const char* str_id, bool framed = true, bool default_open = false) { return CollapsingHeader(label, (default_open ? (1 << 5) : 0)); } // OBSOLETED in 1.49
-    //static inline KGFont*GetWindowFont()                      { return GetFont(); }                                               // OBSOLETED in 1.48
-    //static inline float GetWindowFontSize()                   { return GetFontSize(); }                                           // OBSOLETED in 1.48
-    //static inline void  SetScrollPosHere()                    { SetScrollHere(); }                                                // OBSOLETED in 1.42
-}
-
-// OBSOLETED in 1.82 (from Mars 2021): flags for AddRect(), AddRectFilled(), AddImageRounded(), PathRect()
-typedef KGDrawFlags ImDrawCornerFlags;
-enum ImDrawCornerFlags_
-{
-    ImDrawCornerFlags_None      = ImDrawFlags_RoundCornersNone,         // Was == 0 prior to 1.82, this is now == ImDrawFlags_RoundCornersNone which is != 0 and not implicit
-    ImDrawCornerFlags_TopLeft   = ImDrawFlags_RoundCornersTopLeft,      // Was == 0x01 (1 << 0) prior to 1.82. Order matches ImDrawFlags_NoRoundCorner* flag (we exploit this internally).
-    ImDrawCornerFlags_TopRight  = ImDrawFlags_RoundCornersTopRight,     // Was == 0x02 (1 << 1) prior to 1.82.
-    ImDrawCornerFlags_BotLeft   = ImDrawFlags_RoundCornersBottomLeft,   // Was == 0x04 (1 << 2) prior to 1.82.
-    ImDrawCornerFlags_BotRight  = ImDrawFlags_RoundCornersBottomRight,  // Was == 0x08 (1 << 3) prior to 1.82.
-    ImDrawCornerFlags_All       = ImDrawFlags_RoundCornersAll,          // Was == 0x0F prior to 1.82
-    ImDrawCornerFlags_Top       = ImDrawCornerFlags_TopLeft | ImDrawCornerFlags_TopRight,
-    ImDrawCornerFlags_Bot       = ImDrawCornerFlags_BotLeft | ImDrawCornerFlags_BotRight,
-    ImDrawCornerFlags_Left      = ImDrawCornerFlags_TopLeft | ImDrawCornerFlags_BotLeft,
-    ImDrawCornerFlags_Right     = ImDrawCornerFlags_TopRight | ImDrawCornerFlags_BotRight,
-};
-
-// RENAMED and MERGED both KGGuiKey_ModXXX and ImGuiModFlags_XXX into ImGuiMod_XXX (from September 2022)
-// RENAMED ImGuiKeyModFlags -> ImGuiModFlags in 1.88 (from April 2022). Exceptionally commented out ahead of obscolescence schedule to reduce confusion and because they were not meant to be used in the first place.
-typedef KarmaGuiKeyChord ImGuiModFlags;      // == int. We generally use KarmaGuiKeyChord to mean "a KarmaGuiKey or-ed with any number of ImGuiMod_XXX value", but you may store only mods in there.
-enum ImGuiModFlags_ { ImGuiModFlags_None = 0, ImGuiModFlags_Ctrl = ImGuiMod_Ctrl, ImGuiModFlags_Shift = ImGuiMod_Shift, ImGuiModFlags_Alt = ImGuiMod_Alt, ImGuiModFlags_Super = ImGuiMod_Super };
-//typedef KarmaGuiKeyChord ImGuiKeyModFlags; // == int
-//enum ImGuiKeyModFlags_ { ImGuiKeyModFlags_None = 0, ImGuiKeyModFlags_Ctrl = ImGuiMod_Ctrl, ImGuiKeyModFlags_Shift = ImGuiMod_Shift, ImGuiKeyModFlags_Alt = ImGuiMod_Alt, ImGuiKeyModFlags_Super = ImGuiMod_Super };
-
-#endif // #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-
-// RENAMED IMGUI_DISABLE_METRICS_WINDOW > IMGUI_DISABLE_DEBUG_TOOLS in 1.88 (from June 2022)
-#if defined(IMGUI_DISABLE_METRICS_WINDOW) && !defined(IMGUI_DISABLE_OBSOLETE_FUNCTIONS) && !defined(IMGUI_DISABLE_DEBUG_TOOLS)
-#define IMGUI_DISABLE_DEBUG_TOOLS
-#endif
-#if defined(IMGUI_DISABLE_METRICS_WINDOW) && defined(IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
-#error IMGUI_DISABLE_METRICS_WINDOW was renamed to IMGUI_DISABLE_DEBUG_TOOLS, please use new name.
-#endif
-
-//-----------------------------------------------------------------------------
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
-
-#ifdef _MSC_VER
-#pragma warning (pop)
-#endif
-
-// Include imgui_user.h at the end of imgui.h (convenient for user to only explicitly include vanilla imgui.h)
-#ifdef IMGUI_INCLUDE_IMGUI_USER_H
-#include "imgui_user.h"
-#endif
