@@ -3,8 +3,21 @@
 
 #pragma once
 #include "imgui.h"      // IMGUI_IMPL_API
-#undef __gl_h_
-#include "glad/glad.h"
+
+#define IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+
+//#include "glad/glad.h"
+
+#ifdef _WIN64
+typedef signed   long long int khronos_ssize_t;
+#else
+typedef signed   long  int     khronos_ssize_t;
+#endif
+
+typedef unsigned int GLuint;
+typedef int GLint;
+
+typedef khronos_ssize_t GLsizeiptr;
 
 namespace Karma
 {

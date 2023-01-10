@@ -12,6 +12,8 @@
 #include <TargetConditionals.h>
 #endif
 
+#include "glad/glad.h"
+
 namespace Karma
 {
 	// Static Functions
