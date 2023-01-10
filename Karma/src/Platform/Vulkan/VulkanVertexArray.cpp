@@ -213,6 +213,11 @@ namespace Karma
 		//mesh->GetVertexBuffer()->Bind();
 		AddVertexBuffer(mesh->GetVertexBuffer());
 
+		if(m_VertexBuffers.size() != 0)
+		{
+			m_VertexBuffers.pop_back();
+		}
+
 		// We are seperating VertexBuffers from Mesh.  Hopefully useful for batch rendering!
 		m_VertexBuffers.push_back(mesh->GetVertexBuffer());
 

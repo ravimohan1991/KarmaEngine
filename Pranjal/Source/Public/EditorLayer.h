@@ -17,7 +17,7 @@ namespace Karma
 		virtual void OnUpdate(float deltaTime) override;
 		virtual void ImGuiRender(float deltaTime) override;
 
-		void OpenScene();
+		void OpenScene(const std::string& objFileName);
 		virtual void OnEvent(Event& event) override;
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 		bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);

@@ -14,7 +14,7 @@
 #include "Karma/Application.h"
 #include "Karma/Renderer/RendererAPI.h"
 
-  // Experimental
+// Experimental
 #include "ImGuiVulkanHandler.h"
 #include "ImGuiOpenGLHandler.h"
 
@@ -27,7 +27,7 @@ namespace Karma
 
 	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
 
-	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene)
+	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const std::function< void(std::string) >& openSceneCallback)
 	{
 		// The MM (Main Menu) menu bar
 		DrawKarmaMainMenuBarMesa();
@@ -86,7 +86,7 @@ namespace Karma
 
 		// 6. The content browser
 		{
-			DrawContentBrowser();
+			DrawContentBrowser(openSceneCallback);
 		}
 	}
 
@@ -111,7 +111,7 @@ namespace Karma
 	uint32_t ImGuiMesa::m_DirectoryIcon = 3;
 	uint32_t ImGuiMesa::m_FileIcon = 2;
 
-	void ImGuiMesa::DrawContentBrowser()
+	void ImGuiMesa::DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback)
 	{
 		ImGui::Begin("Content Browser");
 
@@ -172,7 +172,8 @@ namespace Karma
 				}
 				else if(directoryEntry.is_regular_file() && (path.filename().extension() == ".obj"))
 				{
-
+					openSceneCallback(path);
+					KR_CORE_INFO("{0}", path);
 				}
 			}
 

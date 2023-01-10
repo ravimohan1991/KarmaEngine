@@ -53,6 +53,16 @@ namespace Karma
 		m_EditorScene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 	}
 
+	void EditorLayer::OpenScene(const std::string& objFileName)
+	{
+		std::shared_ptr<Mesh> meshToLoad;
+
+		// Check if the already assigned is freed and there is no leak
+		meshToLoad.reset(new Mesh(objFileName));
+
+		m_ModelVertexArray->SetMesh(meshToLoad);
+	}
+
 	void EditorLayer::OnAttach()
 	{
 
@@ -113,7 +123,7 @@ namespace Karma
 
 		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset
 		{
-			ImGuiMesa::RevealMainFrame(dockspaceID, m_EditorScene);
+			ImGuiMesa::RevealMainFrame(dockspaceID, m_EditorScene, std::bind(&EditorLayer::OpenScene, this, std::placeholders::_1));
 		}
 	}
 

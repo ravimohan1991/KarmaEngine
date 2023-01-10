@@ -289,13 +289,13 @@ namespace Karma
 	{
 	public:
 		// Showtime!
-		static void RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene);
+		static void RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const std::function< void(std::string) >& openSceneCallback);
 		static void DrawKarmaMainMenuBarMesa();
 		static void DrawMainMenuFileListMesa();
 		static void DrawKarmaLogMesa(ImGuiID mainMesaDockID);
 		static void DrawKarmaSceneHierarchyPanelMesa();
 		static void Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene);
-		static void DrawContentBrowser();
+		static void DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback);
 
 		// Mesas!
 		static void ShowAboutKarmaMesa(bool* pbOpen);
