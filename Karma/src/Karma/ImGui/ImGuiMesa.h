@@ -13,6 +13,11 @@ extern "C" {
 
 namespace Karma
 {
+	struct CallbacksFromEditor
+	{
+		std::function< void(std::string) > openSceneCallback;
+	};
+
 	struct KarmaLogMesa
 	{
 		ImGuiTextBuffer     TextBuffer;
@@ -289,7 +294,7 @@ namespace Karma
 	{
 	public:
 		// Showtime!
-		static void RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const std::function< void(std::string) >& openSceneCallback);
+		static void RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks);
 		static void DrawKarmaMainMenuBarMesa();
 		static void DrawMainMenuFileListMesa();
 		static void DrawKarmaLogMesa(ImGuiID mainMesaDockID);
@@ -331,7 +336,7 @@ namespace Karma
 			// Need agnostic naming scheme
 			static uint32_t m_DirectoryIcon;
 			static uint32_t m_FileIcon;
-		
+
 	public:
 		static bool m_ViewportFocused;
 		static bool m_ViewportHovered;

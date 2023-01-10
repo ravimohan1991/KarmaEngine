@@ -33,7 +33,7 @@ namespace Karma
 			// Uniforms for regular transform uploads
 			std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
 			shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
-			
+
 			m_ModelShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true, "CylinderShader"));
 
 			m_ModelMaterial->AddShader(m_ModelShader);
@@ -123,7 +123,10 @@ namespace Karma
 
 		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset
 		{
-			ImGuiMesa::RevealMainFrame(dockspaceID, m_EditorScene, std::bind(&EditorLayer::OpenScene, this, std::placeholders::_1));
+			static CallbacksFromEditor editorCallbacks;
+			editorCallbacks.openSceneCallback = std::bind(&EditorLayer::OpenScene, this, std::placeholders::_1);
+
+			ImGuiMesa::RevealMainFrame(dockspaceID, m_EditorScene, editorCallbacks);
 		}
 	}
 

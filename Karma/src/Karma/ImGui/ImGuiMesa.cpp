@@ -27,7 +27,7 @@ namespace Karma
 
 	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
 
-	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const std::function< void(std::string) >& openSceneCallback)
+	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
 	{
 		// The MM (Main Menu) menu bar
 		DrawKarmaMainMenuBarMesa();
@@ -86,7 +86,7 @@ namespace Karma
 
 		// 6. The content browser
 		{
-			DrawContentBrowser(openSceneCallback);
+			DrawContentBrowser(editorCallbacks.openSceneCallback);
 		}
 	}
 
@@ -117,13 +117,13 @@ namespace Karma
 
 		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
 		{
-			static uint32_t buttonPositionY = ImGui::GetCurrentWindow()->DC.CursorPos.y;
+			//static uint32_t buttonPositionY = ImGui::GetCurrentWindow()->DC.CursorPos.y;
 			if (ImGui::Button("<-"))
 			{
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
 			}
-			ImGui::GetCurrentWindow()->DC.CursorPos.x += 45;
-			ImGui::GetCurrentWindow()->DC.CursorPos.y = buttonPositionY;
+
+			ImGui::SameLine(0.0f, 5.0f);
 			ImGui::Text("%s", m_CurrentDirectory.c_str());
 		}
 
@@ -163,7 +163,7 @@ namespace Karma
 			ImGui::ImageButton((ImTextureID)mesaDecalElement->TextureDescriptorSet, { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 
 			ImGui::PopStyleColor();
-			
+
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				if (directoryEntry.is_directory())
@@ -173,19 +173,16 @@ namespace Karma
 				else if(directoryEntry.is_regular_file() && (path.filename().extension() == ".obj"))
 				{
 					openSceneCallback(path);
-					KR_CORE_INFO("{0}", path);
 				}
 			}
 
 			ImGui::TextWrapped("%s", filenameString.c_str());
 			ImGui::NextColumn();
+
 			ImGui::PopID();
 		}
 
 		ImGui::Columns(1);
-		//ImGui::SliderFloat("Thumbnail Size", &thumbnailSize, 16, 512);
-
-		//ImGui::SliderFloat("Padding", &padding, 0, 32);
 
 		ImGui::End();
 	}
@@ -228,7 +225,7 @@ namespace Karma
 		}
 
 		//ImGui::GetCurrentWindow()->DrawList->SetWindowBackgroundColor(bgColor);
-		
+
 		ImDrawCallback sceneCallBack = [](const ImDrawList* parentList, const ImDrawCmd* drawCommand)
 		{
 			//KR_CORE_INFO("Scene Callback");
