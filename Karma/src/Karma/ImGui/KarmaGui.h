@@ -154,6 +154,7 @@ namespace Karma
 {
 	class KARMA_API KarmaGui
 	{
+	public:
 		// Context creation and access
 		static KarmaGuiContext* CreateContext(KGFontAtlas* shared_font_atlas = NULL);
 		static void          DestroyContext(KarmaGuiContext* ctx = NULL);   // NULL = destroy current context
@@ -1714,7 +1715,7 @@ enum KGGuiCond_
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// IM_MALLOC(), IM_FREE(), IM_NEW(), IM_PLACEMENT_NEW(), IM_DELETE()
+// IM_MALLOC(), KG_FREE(), KG_NEW(), KG_PLACEMENT_NEW(), KG_DELETE()
 // We call C++ constructor on own allocated memory via the placement "new(ptr) Type()" syntax.
 // Defining a custom placement new() with a custom parameter allows us to bypass including <new> which on some platforms complains when user has disabled exceptions.
 //-----------------------------------------------------------------------------
@@ -1722,11 +1723,11 @@ enum KGGuiCond_
 struct ImNewWrapper {};
 inline void* operator new(size_t, ImNewWrapper, void* ptr) { return ptr; }
 inline void  operator delete(void*, ImNewWrapper, void*)   {} // This is only required so we can use the symmetrical new()
-#define IM_ALLOC(_SIZE)                     ImGui::MemAlloc(_SIZE)
-#define IM_FREE(_PTR)                       ImGui::MemFree(_PTR)
-#define IM_PLACEMENT_NEW(_PTR)              new(ImNewWrapper(), _PTR)
-#define IM_NEW(_TYPE)                       new(ImNewWrapper(), ImGui::MemAlloc(sizeof(_TYPE))) _TYPE
-template<typename T> void IM_DELETE(T* p)   { if (p) { p->~T(); ImGui::MemFree(p); } }
+#define KG_ALLOC(_SIZE)                     Karma::KarmaGui::MemAlloc(_SIZE)
+#define KG_FREE(_PTR)                       Karma::KarmaGui::MemFree(_PTR)
+#define KG_PLACEMENT_NEW(_PTR)              new(ImNewWrapper(), _PTR)
+#define KG_NEW(_TYPE)                       new(ImNewWrapper(), Karma::KarmaGui::MemAlloc(sizeof(_TYPE))) _TYPE
+template<typename T> void KG_DELETE(T* p)   { if (p) { p->~T(); Karma::KarmaGui::MemFree(p); } }
 
 //-----------------------------------------------------------------------------
 // KGVector<>
@@ -1739,7 +1740,6 @@ template<typename T> void IM_DELETE(T* p)   { if (p) { p->~T(); ImGui::MemFree(p
 //   Do NOT use this class as a std::vector replacement in your own code! Many of the structures used by dear imgui can be safely initialized by a zero-memset.
 //-----------------------------------------------------------------------------
 
-IM_MSVC_RUNTIME_CHECKS_OFF
 template<typename T>
 struct KGVector
 {
@@ -1756,10 +1756,10 @@ struct KGVector
     inline KGVector()                                       { Size = Capacity = 0; Data = NULL; }
     inline KGVector(const KGVector<T>& src)                 { Size = Capacity = 0; Data = NULL; operator=(src); }
     inline KGVector<T>& operator=(const KGVector<T>& src)   { clear(); resize(src.Size); if (src.Data) memcpy(Data, src.Data, (size_t)Size * sizeof(T)); return *this; }
-    inline ~KGVector()                                      { if (Data) IM_FREE(Data); } // Important: does not destruct anything
+    inline ~KGVector()                                      { if (Data) KG_FREE(Data); } // Important: does not destruct anything
 
-    inline void         clear()                             { if (Data) { Size = Capacity = 0; IM_FREE(Data); Data = NULL; } }  // Important: does not destruct anything
-    inline void         clear_delete()                      { for (int n = 0; n < Size; n++) IM_DELETE(Data[n]); clear(); }     // Important: never called automatically! always explicit.
+    inline void         clear()                             { if (Data) { Size = Capacity = 0; KG_FREE(Data); Data = NULL; } }  // Important: does not destruct anything
+    inline void         clear_delete()                      { for (int n = 0; n < Size; n++) KG_DELETE(Data[n]); clear(); }     // Important: never called automatically! always explicit.
     inline void         clear_destruct()                    { for (int n = 0; n < Size; n++) Data[n].~T(); clear(); }           // Important: never called automatically! always explicit.
 
     inline bool         empty() const                       { return Size == 0; }
@@ -1767,42 +1767,41 @@ struct KGVector
     inline int          size_in_bytes() const               { return Size * (int)sizeof(T); }
     inline int          max_size() const                    { return 0x7FFFFFFF / (int)sizeof(T); }
     inline int          capacity() const                    { return Capacity; }
-    inline T&           operator[](int i)                   { IM_ASSERT(i >= 0 && i < Size); return Data[i]; }
-    inline const T&     operator[](int i) const             { IM_ASSERT(i >= 0 && i < Size); return Data[i]; }
+    inline T&           operator[](int i)                   { KR_CORE_ASSERT(i >= 0 && i < Size, ""); return Data[i]; }
+    inline const T&     operator[](int i) const             { KR_CORE_ASSERT(i >= 0 && i < Size, ""); return Data[i]; }
 
     inline T*           begin()                             { return Data; }
     inline const T*     begin() const                       { return Data; }
     inline T*           end()                               { return Data + Size; }
     inline const T*     end() const                         { return Data + Size; }
-    inline T&           front()                             { IM_ASSERT(Size > 0); return Data[0]; }
-    inline const T&     front() const                       { IM_ASSERT(Size > 0); return Data[0]; }
-    inline T&           back()                              { IM_ASSERT(Size > 0); return Data[Size - 1]; }
-    inline const T&     back() const                        { IM_ASSERT(Size > 0); return Data[Size - 1]; }
+    inline T&           front()                             { KR_CORE_ASSERT(Size > 0, ""); return Data[0]; }
+    inline const T&     front() const                       { KR_CORE_ASSERT(Size > 0, ""); return Data[0]; }
+    inline T&           back()                              { KR_CORE_ASSERT(Size > 0, ""); return Data[Size - 1]; }
+    inline const T&     back() const                        { KR_CORE_ASSERT(Size > 0, ""); return Data[Size - 1]; }
     inline void         swap(KGVector<T>& rhs)              { int rhs_size = rhs.Size; rhs.Size = Size; Size = rhs_size; int rhs_cap = rhs.Capacity; rhs.Capacity = Capacity; Capacity = rhs_cap; T* rhs_data = rhs.Data; rhs.Data = Data; Data = rhs_data; }
 
     inline int          _grow_capacity(int sz) const        { int new_capacity = Capacity ? (Capacity + Capacity / 2) : 8; return new_capacity > sz ? new_capacity : sz; }
     inline void         resize(int new_size)                { if (new_size > Capacity) reserve(_grow_capacity(new_size)); Size = new_size; }
     inline void         resize(int new_size, const T& v)    { if (new_size > Capacity) reserve(_grow_capacity(new_size)); if (new_size > Size) for (int n = Size; n < new_size; n++) memcpy(&Data[n], &v, sizeof(v)); Size = new_size; }
-    inline void         shrink(int new_size)                { IM_ASSERT(new_size <= Size); Size = new_size; } // Resize a vector to a smaller size, guaranteed not to cause a reallocation
-    inline void         reserve(int new_capacity)           { if (new_capacity <= Capacity) return; T* new_data = (T*)IM_ALLOC((size_t)new_capacity * sizeof(T)); if (Data) { memcpy(new_data, Data, (size_t)Size * sizeof(T)); IM_FREE(Data); } Data = new_data; Capacity = new_capacity; }
-    inline void         reserve_discard(int new_capacity)   { if (new_capacity <= Capacity) return; if (Data) IM_FREE(Data); Data = (T*)IM_ALLOC((size_t)new_capacity * sizeof(T)); Capacity = new_capacity; }
+    inline void         shrink(int new_size)                { KR_CORE_ASSERT(new_size <= Size, ""); Size = new_size; } // Resize a vector to a smaller size, guaranteed not to cause a reallocation
+    inline void         reserve(int new_capacity)           { if (new_capacity <= Capacity) return; T* new_data = (T*)KG_ALLOC((size_t)new_capacity * sizeof(T)); if (Data) { memcpy(new_data, Data, (size_t)Size * sizeof(T)); KG_FREE(Data); } Data = new_data; Capacity = new_capacity; }
+    inline void         reserve_discard(int new_capacity)   { if (new_capacity <= Capacity) return; if (Data) KG_FREE(Data); Data = (T*)KG_ALLOC((size_t)new_capacity * sizeof(T)); Capacity = new_capacity; }
 
     // NB: It is illegal to call push_back/push_front/insert with a reference pointing inside the KGVector data itself! e.g. v.push_back(v[10]) is forbidden.
     inline void         push_back(const T& v)               { if (Size == Capacity) reserve(_grow_capacity(Size + 1)); memcpy(&Data[Size], &v, sizeof(v)); Size++; }
-    inline void         pop_back()                          { IM_ASSERT(Size > 0); Size--; }
+    inline void         pop_back()                          { KR_CORE_ASSERT(Size > 0, ""); Size--; }
     inline void         push_front(const T& v)              { if (Size == 0) push_back(v); else insert(Data, v); }
-    inline T*           erase(const T* it)                  { IM_ASSERT(it >= Data && it < Data + Size); const ptrdiff_t off = it - Data; memmove(Data + off, Data + off + 1, ((size_t)Size - (size_t)off - 1) * sizeof(T)); Size--; return Data + off; }
-    inline T*           erase(const T* it, const T* it_last){ IM_ASSERT(it >= Data && it < Data + Size && it_last >= it && it_last <= Data + Size); const ptrdiff_t count = it_last - it; const ptrdiff_t off = it - Data; memmove(Data + off, Data + off + count, ((size_t)Size - (size_t)off - (size_t)count) * sizeof(T)); Size -= (int)count; return Data + off; }
-    inline T*           erase_unsorted(const T* it)         { IM_ASSERT(it >= Data && it < Data + Size);  const ptrdiff_t off = it - Data; if (it < Data + Size - 1) memcpy(Data + off, Data + Size - 1, sizeof(T)); Size--; return Data + off; }
-    inline T*           insert(const T* it, const T& v)     { IM_ASSERT(it >= Data && it <= Data + Size); const ptrdiff_t off = it - Data; if (Size == Capacity) reserve(_grow_capacity(Size + 1)); if (off < (int)Size) memmove(Data + off + 1, Data + off, ((size_t)Size - (size_t)off) * sizeof(T)); memcpy(&Data[off], &v, sizeof(v)); Size++; return Data + off; }
+    inline T*           erase(const T* it)                  { KR_CORE_ASSERT(it >= Data && it < Data + Size, ""); const ptrdiff_t off = it - Data; memmove(Data + off, Data + off + 1, ((size_t)Size - (size_t)off - 1) * sizeof(T)); Size--; return Data + off; }
+    inline T*           erase(const T* it, const T* it_last){ KR_CORE_ASSERT(it >= Data && it < Data + Size && it_last >= it && it_last <= Data + Size, ""); const ptrdiff_t count = it_last - it; const ptrdiff_t off = it - Data; memmove(Data + off, Data + off + count, ((size_t)Size - (size_t)off - (size_t)count) * sizeof(T)); Size -= (int)count; return Data + off; }
+    inline T*           erase_unsorted(const T* it)         { KR_CORE_ASSERT(it >= Data && it < Data + Size, "");  const ptrdiff_t off = it - Data; if (it < Data + Size - 1) memcpy(Data + off, Data + Size - 1, sizeof(T)); Size--; return Data + off; }
+    inline T*           insert(const T* it, const T& v)     { KR_CORE_ASSERT(it >= Data && it <= Data + Size, ""); const ptrdiff_t off = it - Data; if (Size == Capacity) reserve(_grow_capacity(Size + 1)); if (off < (int)Size) memmove(Data + off + 1, Data + off, ((size_t)Size - (size_t)off) * sizeof(T)); memcpy(&Data[off], &v, sizeof(v)); Size++; return Data + off; }
     inline bool         contains(const T& v) const          { const T* data = Data;  const T* data_end = Data + Size; while (data < data_end) if (*data++ == v) return true; return false; }
     inline T*           find(const T& v)                    { T* data = Data;  const T* data_end = Data + Size; while (data < data_end) if (*data == v) break; else ++data; return data; }
     inline const T*     find(const T& v) const              { const T* data = Data;  const T* data_end = Data + Size; while (data < data_end) if (*data == v) break; else ++data; return data; }
     inline bool         find_erase(const T& v)              { const T* it = find(v); if (it < Data + Size) { erase(it); return true; } return false; }
     inline bool         find_erase_unsorted(const T& v)     { const T* it = find(v); if (it < Data + Size) { erase_unsorted(it); return true; } return false; }
-    inline int          index_from_ptr(const T* it) const   { IM_ASSERT(it >= Data && it < Data + Size); const ptrdiff_t off = it - Data; return (int)off; }
+    inline int          index_from_ptr(const T* it) const   { KR_CORE_ASSERT(it >= Data && it < Data + Size, ""); const ptrdiff_t off = it - Data; return (int)off; }
 };
-IM_MSVC_RUNTIME_CHECKS_RESTORE
 
 //-----------------------------------------------------------------------------
 // [SECTION] KarmaGuiStyle
@@ -1812,7 +1811,7 @@ IM_MSVC_RUNTIME_CHECKS_RESTORE
 // and ImGui::PushStyleColor(KGGuiCol_XXX)/PopStyleColor() for colors.
 //-----------------------------------------------------------------------------
 
-struct KarmaGuiStyle
+struct KARMA_API KarmaGuiStyle
 {
     float       Alpha;                      // Global alpha applies to everything in Dear ImGui.
     float       DisabledAlpha;              // Additional alpha multiplier applied by BeginDisabled(). Multiply over current value of Alpha.
@@ -1856,7 +1855,7 @@ struct KarmaGuiStyle
     float       CircleTessellationMaxError; // Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
     ImVec4      Colors[KGGuiCol_COUNT];
 
-    static KarmaGuiStyle();
+    KarmaGuiStyle();
     static void ScaleAllSizes(float scale_factor);
 };
 
@@ -1869,7 +1868,7 @@ struct KarmaGuiStyle
 
 // [Internal] Storage used by IsKeyDown(), IsKeyPressed() etc functions.
 // If prior to 1.87 you used io.KeysDownDuration[] (which was marked as internal), you should use GetKeyData(key)->DownDuration and *NOT* io.KeysData[key]->DownDuration.
-struct KarmaGuiKeyData
+struct KARMA_API KarmaGuiKeyData
 {
     bool        Down;               // True for if key is down
     float       DownDuration;       // Duration the key has been down (<0.0f: not pressed, 0.0f: just pressed, >0.0f: time held)
@@ -1877,7 +1876,7 @@ struct KarmaGuiKeyData
     float       AnalogValue;        // 0.0f..1.0f for gamepad values
 };
 
-struct KarmaGuiIO
+struct KARMA_API KarmaGuiIO
 {
     //------------------------------------------------------------------
     // Configuration                            // Default value
@@ -2049,7 +2048,7 @@ struct KarmaGuiIO
     KGWchar16   InputQueueSurrogate;                // For AddInputCharacterUTF16()
     KGVector<KGWchar> InputQueueCharacters;         // Queue of _characters_ input (obtained by platform backend). Fill using AddInputCharacter() helper.
 
-    static   KarmaGuiIO();
+    KarmaGuiIO();
 };
 
 //-----------------------------------------------------------------------------
@@ -2065,7 +2064,7 @@ struct KarmaGuiIO
 // - KGGuiInputTextFlags_CallbackHistory:     Callback on pressing Up/Down arrows
 // - KGGuiInputTextFlags_CallbackCharFilter:  Callback on character inputs to replace or discard them. Modify 'EventChar' to replace or discard, or return 1 in callback to discard.
 // - KGGuiInputTextFlags_CallbackResize:      Callback on buffer capacity changes request (beyond 'buf_size' parameter value), allowing the string to grow.
-struct KarmaGuiInputTextCallbackData
+struct KARMA_API KarmaGuiInputTextCallbackData
 {
     KarmaGuiInputTextFlags EventFlag;      // One KGGuiInputTextFlags_Callback*    // Read-only
     KarmaGuiInputTextFlags Flags;          // What user passed to InputText()      // Read-only
@@ -2086,7 +2085,7 @@ struct KarmaGuiInputTextCallbackData
 
     // Helper functions for text manipulation.
     // Use those function to benefit from the CallbackResize behaviors. Calling those function reset the selection.
-    static KarmaGuiInputTextCallbackData();
+    KarmaGuiInputTextCallbackData();
     static void      DeleteChars(int pos, int bytes_count);
     static void      InsertChars(int pos, const char* text, const char* text_end = NULL);
     void                SelectAll()             { SelectionStart = 0; SelectionEnd = BufTextLen; }
@@ -2096,7 +2095,7 @@ struct KarmaGuiInputTextCallbackData
 
 // Resizing callback data to apply custom constraint. As enabled by SetNextWindowSizeConstraints(). Callback is called during the next Begin().
 // NB: For basic min/max size constraint on each axis you don't need to use the callback! The SetNextWindowSizeConstraints() parameters are enough.
-struct KarmaGuiSizeCallbackData
+struct KARMA_API KarmaGuiSizeCallbackData
 {
     void*   UserData;       // Read-only.   What user passed to SetNextWindowSizeConstraints(). Generally store an integer or float in here (need reinterpret_cast<>).
     ImVec2  Pos;            // Read-only.   Window position, for reference.
@@ -2111,7 +2110,7 @@ struct KarmaGuiSizeCallbackData
 // - To the platform backend via altered viewport flags (enable/disable OS decoration, OS task bar icons, etc.)
 // - To the platform backend for OS level parent/child relationships of viewport.
 // - To the docking system for various options and filtering.
-struct KarmaGuiWindowClass
+struct KARMA_API KarmaGuiWindowClass
 {
     KGGuiID             ClassId;                    // User data. 0 = Default class (unclassed). Windows of different classes cannot be docked with each others.
     KGGuiID             ParentViewportId;           // Hint for the platform backend. -1: use default. 0: request platform backend to not parent the platform. != 0: request platform backend to create a parent<>child relationship between the platform windows. Not conforming backends are free to e.g. parent every viewport to the main viewport or not.
@@ -2126,7 +2125,7 @@ struct KarmaGuiWindowClass
 };
 
 // Data payload for Drag and Drop operations: AcceptDragDropPayload(), GetDragDropPayload()
-struct KarmaGuiPayload
+struct KARMA_API KarmaGuiPayload
 {
     // Members
     void*           Data;               // Data (copied and owned by dear imgui)
@@ -2148,7 +2147,7 @@ struct KarmaGuiPayload
 };
 
 // Sorting specification for one column of a table (sizeof == 12 bytes)
-struct KarmaGuiTableColumnSortSpecs
+struct KARMA_API KarmaGuiTableColumnSortSpecs
 {
     KGGuiID                     ColumnUserID;       // User id of the column (if specified by a TableSetupColumn() call)
     KGS16                       ColumnIndex;        // Index of the column
@@ -2162,7 +2161,7 @@ struct KarmaGuiTableColumnSortSpecs
 // Obtained by calling TableGetSortSpecs().
 // When 'SpecsDirty == true' you can sort your data. It will be true with sorting specs have changed since last call, or the first time.
 // Make sure to set 'SpecsDirty = false' after sorting, else you may wastefully sort your data every frame!
-struct KarmaGuiTableSortSpecs
+struct KARMA_API KarmaGuiTableSortSpecs
 {
     const KarmaGuiTableColumnSortSpecs* Specs;     // Pointer to sort spec array.
     int                         SpecsCount;     // Sort spec count. Most often 1. May be > 1 when KGGuiTableFlags_SortMulti is enabled. May be == 0 when KGGuiTableFlags_SortTristate is enabled.
@@ -2176,34 +2175,31 @@ struct KarmaGuiTableSortSpecs
 //-----------------------------------------------------------------------------
 
 // Helper: Unicode defines
-#define IM_UNICODE_CODEPOINT_INVALID 0xFFFD     // Invalid Unicode code point (standard value).
-#ifdef IMGUI_USE_WCHAR32
-#define IM_UNICODE_CODEPOINT_MAX     0x10FFFF   // Maximum Unicode code point supported by this build.
-#else
-#define IM_UNICODE_CODEPOINT_MAX     0xFFFF     // Maximum Unicode code point supported by this build.
-#endif
+#define KG_UNICODE_CODEPOINT_INVALID 0xFFFD     // Invalid Unicode code point (standard value).
+#define KG_UNICODE_CODEPOINT_MAX     0xFFFF     // Maximum Unicode code point supported by this build.
+
 
 // Helper: Execute a block of code at maximum once a frame. Convenient if you want to quickly create a UI within deep-nested code that runs multiple times every frame.
 // Usage: static KarmaGuiOnceUponAFrame oaf; if (oaf) ImGui::Text("This will be called only once per frame");
-struct KarmaGuiOnceUponAFrame
+struct KARMA_API KarmaGuiOnceUponAFrame
 {
     KarmaGuiOnceUponAFrame() { RefFrame = -1; }
     mutable int RefFrame;
-    operator bool() const { int current_frame = ImGui::GetFrameCount(); if (RefFrame == current_frame) return false; RefFrame = current_frame; return true; }
+    operator bool() const { int current_frame = Karma::KarmaGui::GetFrameCount(); if (RefFrame == current_frame) return false; RefFrame = current_frame; return true; }
 };
 
 // Helper: Parse and apply text filters. In format "aaaaa[,bbbb][,ccccc]"
-struct KarmaGuiTextFilter
+struct KARMA_API KarmaGuiTextFilter
 {
-    static           KarmaGuiTextFilter(const char* default_filter = "");
+    KarmaGuiTextFilter(const char* default_filter = "");
     static bool      Draw(const char* label = "Filter (inc,-exc)", float width = 0.0f);  // Helper calling InputText+Build
-    static bool      PassFilter(const char* text, const char* text_end = NULL) const;
+    static bool      PassFilter(const char* text, const char* text_end = NULL);
     static void      Build();
     void                Clear()          { InputBuf[0] = 0; Build(); }
     bool                IsActive() const { return !Filters.empty(); }
 
     // [Internal]
-    struct ImGuiTextRange
+    struct KARMA_API ImGuiTextRange
     {
         const char*     b;
         const char*     e;
@@ -2211,7 +2207,7 @@ struct KarmaGuiTextFilter
         ImGuiTextRange()                                { b = e = NULL; }
         ImGuiTextRange(const char* _b, const char* _e)  { b = _b; e = _e; }
         bool            empty() const                   { return b == e; }
-        static void  split(char separator, KGVector<ImGuiTextRange>* out) const;
+        static void  split(char separator, KGVector<ImGuiTextRange>* out);
     };
     char                    InputBuf[256];
     KGVector<ImGuiTextRange>Filters;
@@ -2220,13 +2216,13 @@ struct KarmaGuiTextFilter
 
 // Helper: Growable text buffer for logging/accumulating text
 // (this could be called 'ImGuiTextBuilder' / 'ImGuiStringBuilder')
-struct KarmaGuiTextBuffer
+struct KARMA_API KarmaGuiTextBuffer
 {
     KGVector<char>      Buf;
-    static static char EmptyString[1];
+    static char EmptyString[1];
 
     KarmaGuiTextBuffer()   { }
-    inline char         operator[](int i) const { IM_ASSERT(Buf.Data != NULL); return Buf.Data[i]; }
+    inline char         operator[](int i) const { KR_CORE_ASSERT(Buf.Data != NULL, ""); return Buf.Data[i]; }
     const char*         begin() const           { return Buf.Data ? &Buf.front() : EmptyString; }
     const char*         end() const             { return Buf.Data ? &Buf.back() : EmptyString; }   // Buf is zero-terminated, so end() will point on the zero-terminator
     int                 size() const            { return Buf.Size ? Buf.Size - 1 : 0; }
@@ -2235,8 +2231,8 @@ struct KarmaGuiTextBuffer
     void                reserve(int capacity)   { Buf.reserve(capacity); }
     const char*         c_str() const           { return Buf.Data ? Buf.Data : EmptyString; }
     static void      append(const char* str, const char* str_end = NULL);
-    static void      appendf(const char* fmt, ...) KG_FMTARGS(2);
-    static void      appendfv(const char* fmt, va_list args) KG_FMTLIST(2);
+    void      appendf(const char* fmt, ...) KG_FMTARGS(2);
+    void      appendfv(const char* fmt, va_list args) KG_FMTLIST(2);
 };
 
 // Helper: Key->Value storage
@@ -2247,7 +2243,7 @@ struct KarmaGuiTextBuffer
 // - You want to manipulate the open/close state of a particular sub-tree in your interface (tree node uses Int 0/1 to store their state).
 // - You want to store custom debug data easily without adding or editing structures in your code (probably not efficient, but convenient)
 // Types are NOT stored, so it is up to you to make sure your Key don't collide with different types.
-struct KarmaGuiStorage
+struct KARMA_API KarmaGuiStorage
 {
     // [Internal]
     struct ImGuiStoragePair
@@ -2265,13 +2261,13 @@ struct KarmaGuiStorage
     // - Set***() functions find pair, insertion on demand if missing.
     // - Sorted insertion is costly, paid once. A typical frame shouldn't need to insert any new pair.
     void                Clear() { Data.clear(); }
-    static int       GetInt(KGGuiID key, int default_val = 0) const;
+    static int       GetInt(KGGuiID key, int default_val = 0);
     static void      SetInt(KGGuiID key, int val);
-    static bool      GetBool(KGGuiID key, bool default_val = false) const;
+    static bool      GetBool(KGGuiID key, bool default_val = false);
     static void      SetBool(KGGuiID key, bool val);
-    static float     GetFloat(KGGuiID key, float default_val = 0.0f) const;
+    static float     GetFloat(KGGuiID key, float default_val = 0.0f);
     static void      SetFloat(KGGuiID key, float val);
-    static void*     GetVoidPtr(KGGuiID key) const; // default_val is NULL
+    static void*     GetVoidPtr(KGGuiID key); // default_val is NULL
     static void      SetVoidPtr(KGGuiID key, void* val);
 
     // - Get***Ref() functions finds pair, insert on demand if missing, return pointer. Useful if you intend to do Get+Set.
@@ -2310,7 +2306,7 @@ struct KarmaGuiStorage
 // - Clipper calculate the actual range of elements to display based on the current clipping rectangle, position the cursor before the first visible element.
 // - User code submit visible elements.
 // - The clipper also handles various subtleties related to keyboard/gamepad navigation, wrapping etc.
-struct KarmaGuiListClipper
+struct KARMA_API KarmaGuiListClipper
 {
     int             DisplayStart;       // First item to display, updated by each call to Step()
     int             DisplayEnd;         // End of items to display (exclusive)
@@ -2321,47 +2317,36 @@ struct KarmaGuiListClipper
 
     // items_count: Use INT_MAX if you don't know how many items you have (in which case the cursor won't be advanced in the final step)
     // items_height: Use -1.0f to be calculated automatically on first step. Otherwise pass in the distance between your items, typically GetTextLineHeightWithSpacing() or GetFrameHeightWithSpacing().
-    static KarmaGuiListClipper();
-    static ~KarmaGuiListClipper();
+    KarmaGuiListClipper();
+    ~KarmaGuiListClipper();
     static void  Begin(int items_count, float items_height = -1.0f);
     static void  End();             // Automatically called on the last call of Step() that returns false.
     static bool  Step();            // Call until it returns false. The DisplayStart/DisplayEnd fields will be set and you can process/draw those items.
 
     // Call ForceDisplayRangeByIndices() before first call to Step() if you need a range of items to be displayed regardless of visibility.
     static void  ForceDisplayRangeByIndices(int item_min, int item_max); // item_max is exclusive e.g. use (42, 42+1) to make item 42 always visible BUT due to alignment/padding of certain items it is likely that an extra item may be included on either end of the display range.
-
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
     inline KarmaGuiListClipper(int items_count, float items_height = -1.0f) { memset(this, 0, sizeof(*this)); ItemsCount = -1; Begin(items_count, items_height); } // [removed in 1.79]
-#endif
 };
 
 // Helpers macros to generate 32-bit encoded colors
 // User can declare their own format by #defining the 5 _SHIFT/_MASK macros in their imconfig file.
-#ifndef IM_COL32_R_SHIFT
-#ifdef IMGUI_USE_BGRA_PACKED_COLOR
-#define IM_COL32_R_SHIFT    16
-#define IM_COL32_G_SHIFT    8
-#define IM_COL32_B_SHIFT    0
-#define IM_COL32_A_SHIFT    24
-#define IM_COL32_A_MASK     0xFF000000
-#else
-#define IM_COL32_R_SHIFT    0
-#define IM_COL32_G_SHIFT    8
-#define IM_COL32_B_SHIFT    16
-#define IM_COL32_A_SHIFT    24
-#define IM_COL32_A_MASK     0xFF000000
+#ifndef KG_COL32_R_SHIFT
+#define KG_COL32_R_SHIFT    0
+#define KG_COL32_G_SHIFT    8
+#define KG_COL32_B_SHIFT    16
+#define KG_COL32_A_SHIFT    24
+#define KG_COL32_A_MASK     0xFF000000
 #endif
-#endif
-#define IM_COL32(R,G,B,A)    (((KGU32)(A)<<IM_COL32_A_SHIFT) | ((KGU32)(B)<<IM_COL32_B_SHIFT) | ((KGU32)(G)<<IM_COL32_G_SHIFT) | ((KGU32)(R)<<IM_COL32_R_SHIFT))
-#define IM_COL32_WHITE       IM_COL32(255,255,255,255)  // Opaque white = 0xFFFFFFFF
-#define IM_COL32_BLACK       IM_COL32(0,0,0,255)        // Opaque black
-#define IM_COL32_BLACK_TRANS IM_COL32(0,0,0,0)          // Transparent black = 0x00000000
+#define KG_COL32(R,G,B,A)    (((KGU32)(A)<<KG_COL32_A_SHIFT) | ((KGU32)(B)<<KG_COL32_B_SHIFT) | ((KGU32)(G)<<KG_COL32_G_SHIFT) | ((KGU32)(R)<<KG_COL32_R_SHIFT))
+#define KG_COL32_WHITE       KG_COL32(255,255,255,255)  // Opaque white = 0xFFFFFFFF
+#define KG_COL32_BLACK       KG_COL32(0,0,0,255)        // Opaque black
+#define KG_COL32_BLACK_TRANS KG_COL32(0,0,0,0)          // Transparent black = 0x00000000
 
 // Helper: KGColor() implicitly converts colors to either KGU32 (packed 4x1 byte) or ImVec4 (4x1 float)
-// Prefer using IM_COL32() macros if you want a guaranteed compile-time KGU32 for usage with KGDrawList API.
+// Prefer using KG_COL32() macros if you want a guaranteed compile-time KGU32 for usage with KGDrawList API.
 // **Avoid storing KGColor! Store either u32 of ImVec4. This is not a full-featured color class. MAY OBSOLETE.
 // **None of the ImGui API are using KGColor directly but you can use it as a convenience to pass colors in either KGU32 or ImVec4 formats. Explicitly cast to KGU32 or ImVec4 if needed.
-struct KGColor
+struct KARMA_API KGColor
 {
     ImVec4          Value;
 
@@ -2369,13 +2354,13 @@ struct KGColor
     constexpr KGColor(float r, float g, float b, float a = 1.0f)    : Value(r, g, b, a) { }
     constexpr KGColor(const ImVec4& col)                            : Value(col) {}
     KGColor(int r, int g, int b, int a = 255)                       { float sc = 1.0f / 255.0f; Value.x = (float)r * sc; Value.y = (float)g * sc; Value.z = (float)b * sc; Value.w = (float)a * sc; }
-    KGColor(KGU32 rgba)                                             { float sc = 1.0f / 255.0f; Value.x = (float)((rgba >> IM_COL32_R_SHIFT) & 0xFF) * sc; Value.y = (float)((rgba >> IM_COL32_G_SHIFT) & 0xFF) * sc; Value.z = (float)((rgba >> IM_COL32_B_SHIFT) & 0xFF) * sc; Value.w = (float)((rgba >> IM_COL32_A_SHIFT) & 0xFF) * sc; }
-    inline operator KGU32() const                                   { return ImGui::ColorConvertFloat4ToU32(Value); }
+    KGColor(KGU32 rgba)                                             { float sc = 1.0f / 255.0f; Value.x = (float)((rgba >> KG_COL32_R_SHIFT) & 0xFF) * sc; Value.y = (float)((rgba >> KG_COL32_G_SHIFT) & 0xFF) * sc; Value.z = (float)((rgba >> KG_COL32_B_SHIFT) & 0xFF) * sc; Value.w = (float)((rgba >> KG_COL32_A_SHIFT) & 0xFF) * sc; }
+    inline operator KGU32() const                                   { return Karma::KarmaGui::ColorConvertFloat4ToU32(Value); }
     inline operator ImVec4() const                                  { return Value; }
 
     // FIXME-OBSOLETE: May need to obsolete/cleanup those helpers.
-    inline void    SetHSV(float h, float s, float v, float a = 1.0f){ ImGui::ColorConvertHSVtoRGB(h, s, v, Value.x, Value.y, Value.z); Value.w = a; }
-    static KGColor HSV(float h, float s, float v, float a = 1.0f)   { float r, g, b; ImGui::ColorConvertHSVtoRGB(h, s, v, r, g, b); return KGColor(r, g, b, a); }
+    inline void    SetHSV(float h, float s, float v, float a = 1.0f){ Karma::KarmaGui::ColorConvertHSVtoRGB(h, s, v, Value.x, Value.y, Value.z); Value.w = a; }
+    KGColor HSV(float h, float s, float v, float a = 1.0f)   { float r, g, b; Karma::KarmaGui::ColorConvertHSVtoRGB(h, s, v, r, g, b); return KGColor(r, g, b, a); }
 };
 
 //-----------------------------------------------------------------------------
@@ -2384,40 +2369,40 @@ struct KGColor
 //-----------------------------------------------------------------------------
 
 // The maximum line width to bake anti-aliased textures for. Build atlas with KGFontAtlasFlags_NoBakedLines to disable baking.
-#ifndef IM_DRAWLIST_TEX_LINES_WIDTH_MAX
-#define IM_DRAWLIST_TEX_LINES_WIDTH_MAX     (63)
+#ifndef KG_DRAWLIST_TEX_LINES_WIDTH_MAX
+#define KG_DRAWLIST_TEX_LINES_WIDTH_MAX     (63)
 #endif
 
-// ImDrawCallback: Draw callbacks for advanced uses [configurable type: override in imconfig.h]
+// KGDrawCallback: Draw callbacks for advanced uses [configurable type: override in imconfig.h]
 // NB: You most likely do NOT need to use draw callbacks just to create your own widget or customized UI rendering,
 // you can poke into the draw list for that! Draw callback may be useful for example to:
 //  A) Change your GPU render state,
-//  B) render a complex 3D scene inside a UI element without an intermediate texture/render target, etc.
+//  B) render a complex 3D scene inside a UI element without an intermediate texture/render target, etc. Yes
 // The expected behavior from your rendering function is 'if (cmd.UserCallback != NULL) { cmd.UserCallback(parent_list, cmd); } else { RenderTriangles() }'
-// If you want to override the signature of ImDrawCallback, you can simply use e.g. '#define ImDrawCallback MyDrawCallback' (in imconfig.h) + update rendering backend accordingly.
-#ifndef ImDrawCallback
-typedef void (*ImDrawCallback)(const KGDrawList* parent_list, const KGDrawCmd* cmd);
+// If you want to override the signature of KGDrawCallback, you can simply use e.g. '#define KGDrawCallback MyDrawCallback' (in imconfig.h) + update rendering backend accordingly.
+#ifndef KGDrawCallback
+typedef void (*KGDrawCallback)(const KGDrawList* parent_list, const KGDrawCmd* cmd);
 #endif
 
 // Special Draw callback value to request renderer backend to reset the graphics/render state.
 // The renderer backend needs to handle this special value, otherwise it will crash trying to call a function at this address.
 // This is useful for example if you submitted callbacks which you know have altered the render state and you want it to be restored.
 // It is not done by default because they are many perfectly useful way of altering render state for imgui contents (e.g. changing shader/blending settings before an Image call).
-#define ImDrawCallback_ResetRenderState     (ImDrawCallback)(-1)
+#define KGDrawCallback_ResetRenderState     (KGDrawCallback)(-1)
 
 // Typically, 1 command = 1 GPU draw call (unless command is a callback)
 // - VtxOffset: When 'io.BackendFlags & KGGuiBackendFlags_RendererHasVtxOffset' is enabled,
 //   this fields allow us to render meshes larger than 64K vertices while keeping 16-bit indices.
 //   Backends made for <1.71. will typically ignore the VtxOffset fields.
 // - The ClipRect/TextureId/VtxOffset fields must be contiguous as we memcmp() them together (this is asserted for).
-struct KGDrawCmd
+struct KARMA_API KGDrawCmd
 {
     ImVec4          ClipRect;           // 4*4  // Clipping rectangle (x1, y1, x2, y2). Subtract KGDrawData->DisplayPos to get clipping rectangle in "viewport" coordinates
     KGTextureID     TextureId;          // 4-8  // User-provided texture ID. Set by user in ImfontAtlas::SetTexID() for fonts or passed to Image*() functions. Ignore if never using images or multiple fonts atlas.
     unsigned int    VtxOffset;          // 4    // Start offset in vertex buffer. KGGuiBackendFlags_RendererHasVtxOffset: always 0, otherwise may be >0 to support meshes larger than 64K vertices with 16-bit indices.
     unsigned int    IdxOffset;          // 4    // Start offset in index buffer.
     unsigned int    ElemCount;          // 4    // Number of indices (multiple of 3) to be rendered as triangles. Vertices are stored in the callee KGDrawList's vtx_buffer[] array, indices in idx_buffer[].
-    ImDrawCallback  UserCallback;       // 4-8  // If != NULL, call the function instead of rendering the vertices. clip_rect and texture_id will be set normally.
+    KGDrawCallback  UserCallback;       // 4-8  // If != NULL, call the function instead of rendering the vertices. clip_rect and texture_id will be set normally.
     void*           UserCallbackData;   // 4-8  // The draw callback code can access this.
 
     KGDrawCmd() { memset(this, 0, sizeof(*this)); } // Also ensure our padding fields are zeroed
@@ -2427,8 +2412,9 @@ struct KGDrawCmd
 };
 
 // Vertex layout
+// try think about shaders rather for better integration with Karma
 #ifndef IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT
-struct KGDrawVert
+struct KARMA_API KGDrawVert
 {
     ImVec2  pos;
     ImVec2  uv;
@@ -2460,7 +2446,7 @@ struct KGDrawChannel
 
 // Split/Merge functions are used to split the draw list into different layers which can be drawn into out of order.
 // This is used by the Columns/Tables API, so items of each column can be batched together in a same draw call.
-struct KGDrawListSplitter
+struct KARMA_API KGDrawListSplitter
 {
     int                         _Current;    // Current channel number (0)
     int                         _Count;      // Number of active channels (1+)
@@ -2515,7 +2501,7 @@ enum KGDrawListFlags_
 // In single viewport mode, top-left is == GetMainViewport()->Pos (generally 0,0), bottom-right is == GetMainViewport()->Pos+Size (generally io.DisplaySize).
 // You are totally free to apply whatever transformation matrix to want to the data (depending on the use of the transformation you may want to apply it to ClipRect as well!)
 // Important: Primitives are always added to the list and not culled (culling is done at higher-level by KarmaGui:: functions), if you use this API a lot consider coarse culling your drawn objects.
-struct KGDrawList
+struct KARMA_API KGDrawList
 {
     // This is what you have to render
     KGVector<KGDrawCmd>     CmdBuffer;          // Draw commands. Typically 1 command = 1 GPU draw call, unless the command is a callback.
@@ -2578,8 +2564,8 @@ struct KGDrawList
     // - Read FAQ to understand what KGTextureID is.
     // - "p_min" and "p_max" represent the upper-left and lower-right corners of the rectangle.
     // - "uv_min" and "uv_max" represent the normalized texture coordinates to use for those corners. Using (0,0)->(1,1) texture coordinates will generally display the entire texture.
-    static void  AddImage(KGTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min = ImVec2(0, 0), const ImVec2& uv_max = ImVec2(1, 1), KGU32 col = IM_COL32_WHITE);
-    static void  AddImageQuad(KGTextureID user_texture_id, const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& uv1 = ImVec2(0, 0), const ImVec2& uv2 = ImVec2(1, 0), const ImVec2& uv3 = ImVec2(1, 1), const ImVec2& uv4 = ImVec2(0, 1), KGU32 col = IM_COL32_WHITE);
+    static void  AddImage(KGTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min = ImVec2(0, 0), const ImVec2& uv_max = ImVec2(1, 1), KGU32 col = KG_COL32_WHITE);
+    static void  AddImageQuad(KGTextureID user_texture_id, const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& uv1 = ImVec2(0, 0), const ImVec2& uv2 = ImVec2(1, 0), const ImVec2& uv3 = ImVec2(1, 1), const ImVec2& uv4 = ImVec2(0, 1), KGU32 col = KG_COL32_WHITE);
     static void  AddImageRounded(KGTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, KGU32 col, float rounding, KGDrawFlags flags = 0);
 
     // Add custom background color to a window
@@ -2599,9 +2585,9 @@ struct KGDrawList
     static void  PathRect(const ImVec2& rect_min, const ImVec2& rect_max, float rounding = 0.0f, KGDrawFlags flags = 0);
 
     // Advanced
-    static void  AddCallback(ImDrawCallback callback, void* callback_data);  // Your rendering function must check for 'UserCallback' in KGDrawCmd and call the function instead of rendering triangles.
+    static void  AddCallback(KGDrawCallback callback, void* callback_data);  // Your rendering function must check for 'UserCallback' in KGDrawCmd and call the function instead of rendering triangles.
     static void  AddDrawCmd();                                               // This is useful if you need to forcefully create a new draw call (to allow for dependent rendering / blending). Otherwise primitives are merged into the same draw-call as much as possible
-    static KGDrawList* CloneOutput() const;                                  // Create a clone of the CmdBuffer/IdxBuffer/VtxBuffer.
+    static KGDrawList* CloneOutput();                                  // Create a clone of the CmdBuffer/IdxBuffer/VtxBuffer.
 
     // Advanced: Channels
     // - Use to split render into layers. By switching channels to can render out-of-order (e.g. submit FG primitives before BG primitives)
@@ -2625,11 +2611,6 @@ struct KGDrawList
     inline    void  PrimWriteIdx(KGDrawIdx idx)                                     { *_IdxWritePtr = idx; _IdxWritePtr++; }
     inline    void  PrimVtx(const ImVec2& pos, const ImVec2& uv, KGU32 col)         { PrimWriteIdx((KGDrawIdx)_VtxCurrentIdx); PrimWriteVtx(pos, uv, col); } // Write vertex with unique index
 
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-    inline    void  AddBezierCurve(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col, float thickness, int num_segments = 0) { AddBezierCubic(p1, p2, p3, p4, col, thickness, num_segments); } // OBSOLETED in 1.80 (Jan 2021)
-    inline    void  PathBezierCurveTo(const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, int num_segments = 0) { PathBezierCubicCurveTo(p2, p3, p4, num_segments); } // OBSOLETED in 1.80 (Jan 2021)
-#endif
-
     // [Internal helpers]
     static void  _ResetForNewFrame();
     static void  _ClearFreeMemory();
@@ -2638,15 +2619,15 @@ struct KGDrawList
     static void  _OnChangedClipRect();
     static void  _OnChangedTextureID();
     static void  _OnChangedVtxOffset();
-    static int   _CalcCircleAutoSegmentCount(float radius) const;
+    static int   _CalcCircleAutoSegmentCount(float radius);
     static void  _PathArcToFastEx(const ImVec2& center, float radius, int a_min_sample, int a_max_sample, int a_step);
     static void  _PathArcToN(const ImVec2& center, float radius, float a_min, float a_max, int num_segments);
 };
 
-// All draw data to render a Dear ImGui frame
+// All draw data to render a KarmaGui frame
 // (NB: the style and the naming convention here is a little inconsistent, we currently preserve them for backward compatibility purpose,
 // as this is one of the oldest structure exposed by the library! Basically, KGDrawList == CmdList)
-struct KGDrawData
+struct KARMA_API KGDrawData
 {
     bool            Valid;                  // Only valid after Render() is called and before the next NewFrame() is called.
     int             CmdListsCount;          // Number of KGDrawList* to render
@@ -2665,11 +2646,11 @@ struct KGDrawData
     static void  ScaleClipRects(const ImVec2& fb_scale); // Helper to scale the ClipRect field of each KGDrawCmd. Use if your final output buffer is at a different scale than Dear ImGui expects, or if there is a difference between your window resolution and framebuffer resolution.
 };
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
 // [SECTION] Font API (KGFontConfig, KGFontGlyph, KGFontAtlasFlags, KGFontAtlas, KGFontGlyphRangesBuilder, KGFont)
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------
 
-struct KGFontConfig
+struct KARMA_API KGFontConfig
 {
     void*           FontData;               //          // TTF/OTF data
     int             FontDataSize;           //          // TTF/OTF data size
@@ -2693,12 +2674,12 @@ struct KGFontConfig
     char            Name[40];               // Name (strictly to ease debugging)
     KGFont*         DstFont;
 
-    static KGFontConfig();
+    KGFontConfig();
 };
 
 // Hold rendering data for one glyph.
 // (Note: some language parsers may fail to convert the 31+1 bitfield members, in this case maybe drop store a single u32 or we can rework this)
-struct KGFontGlyph
+struct KARMA_API KGFontGlyph
 {
     unsigned int    Colored : 1;        // Flag to indicate glyph is colored and should generally ignore tinting (make it usable with no shift on little-endian as this is used in loops)
     unsigned int    Visible : 1;        // Flag to indicate glyph has no visible pixels (e.g. space). Allow early out when rendering.
@@ -2710,12 +2691,12 @@ struct KGFontGlyph
 
 // Helper to build glyph ranges from text/string data. Feed your application strings/characters to it then call BuildRanges().
 // This is essentially a tightly packed of vector of 64k booleans = 8KB storage.
-struct KGFontGlyphRangesBuilder
+struct KARMA_API KGFontGlyphRangesBuilder
 {
     KGVector<KGU32> UsedChars;            // Store 1-bit per Unicode code point (0=unused, 1=used)
 
     KGFontGlyphRangesBuilder()              { Clear(); }
-    inline void     Clear()                 { int size_in_bytes = (IM_UNICODE_CODEPOINT_MAX + 1) / 8; UsedChars.resize(size_in_bytes / (int)sizeof(KGU32)); memset(UsedChars.Data, 0, (size_t)size_in_bytes); }
+    inline void     Clear()                 { int size_in_bytes = (KG_UNICODE_CODEPOINT_MAX + 1) / 8; UsedChars.resize(size_in_bytes / (int)sizeof(KGU32)); memset(UsedChars.Data, 0, (size_t)size_in_bytes); }
     inline bool     GetBit(size_t n) const  { int off = (int)(n >> 5); KGU32 mask = 1u << (n & 31); return (UsedChars[off] & mask) != 0; }  // Get bit n in the array
     inline void     SetBit(size_t n)        { int off = (int)(n >> 5); KGU32 mask = 1u << (n & 31); UsedChars[off] |= mask; }               // Set bit n in the array
     inline void     AddChar(KGWchar c)      { SetBit(c); }                      // Add character
@@ -2725,7 +2706,7 @@ struct KGFontGlyphRangesBuilder
 };
 
 // See KGFontAtlas::AddCustomRectXXX functions.
-struct KGFontAtlasCustomRect
+struct KARMA_API KGFontAtlasCustomRect
 {
     unsigned short  Width, Height;  // Input    // Desired rectangle dimension
     unsigned short  X, Y;           // Output   // Packed position in Atlas
@@ -2763,10 +2744,10 @@ enum KGFontAtlasFlags_
 //   You can set font_cfg->FontDataOwnedByAtlas=false to keep ownership of your data and it won't be freed,
 // - Even though many functions are suffixed with "TTF", OTF data is supported just as well.
 // - This is an old API and it is currently awkward for those and various other reasons! We will address them in the future!
-struct KGFontAtlas
+struct KARMA_API KGFontAtlas
 {
-    static KGFontAtlas();
-    static ~KGFontAtlas();
+    KGFontAtlas();
+    ~KGFontAtlas();
     static KGFont*           AddFont(const KGFontConfig* font_cfg);
     static KGFont*           AddFontDefault(const KGFontConfig* font_cfg = NULL);
     static KGFont*           AddFontFromFileTTF(const char* filename, float size_pixels, const KGFontConfig* font_cfg = NULL, const KGWchar* glyph_ranges = NULL);
@@ -2819,10 +2800,10 @@ struct KGFontAtlas
     // - Note: this API may be redesigned later in order to support multi-monitor varying DPI settings.
     static int               AddCustomRectRegular(int width, int height);
     static int               AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int height, float advance_x, const ImVec2& offset = ImVec2(0, 0));
-    KGFontAtlasCustomRect*      GetCustomRectByIndex(int index) { IM_ASSERT(index >= 0); return &CustomRects[index]; }
+    KGFontAtlasCustomRect*      GetCustomRectByIndex(int index) { KR_CORE_ASSERT(index >= 0, ""); return &CustomRects[index]; }
 
     // [Internal]
-    static void              CalcCustomRectUV(const KGFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max) const;
+    static void              CalcCustomRectUV(const KGFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max);
     static bool              GetMouseCursorTexData(KarmaGuiMouseCursor cursor, ImVec2* out_offset, ImVec2* out_size, ImVec2 out_uv_border[2], ImVec2 out_uv_fill[2]);
 
     //-------------------------------------------
@@ -2849,7 +2830,7 @@ struct KGFontAtlas
     KGVector<KGFont*>           Fonts;              // Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
     KGVector<KGFontAtlasCustomRect> CustomRects;    // Rectangles for packing custom texture data into the atlas.
     KGVector<KGFontConfig>      ConfigData;         // Configuration data
-    ImVec4                      TexUvLines[IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 1];  // UVs for baked anti-aliased lines
+    ImVec4                      TexUvLines[KG_DRAWLIST_TEX_LINES_WIDTH_MAX + 1];  // UVs for baked anti-aliased lines
 
     // [Internal] Font builder
     const KGFontBuilderIO*      FontBuilderIO;      // Opaque interface to a font builder (default to stb_truetype, can be changed to use FreeType by defining IMGUI_ENABLE_FREETYPE).
@@ -2866,7 +2847,7 @@ struct KGFontAtlas
 
 // Font runtime data and rendering
 // KGFontAtlas automatically loads a default embedded font for you when you call GetTexDataAsAlpha8() or GetTexDataAsRGBA32().
-struct KGFont
+struct KARMA_API KGFont
 {
     // Members: Hot ~20/24 bytes (for CalcTextSize)
     KGVector<float>             IndexAdvanceX;      // 12-16 // out //            // Sparse. Glyphs->AdvanceX in a directly indexable way (cache-friendly for CalcTextSize functions which only this this info, and are often bottleneck in large UI).
@@ -2889,23 +2870,23 @@ struct KGFont
     float                       Scale;              // 4     // in  // = 1.f      // Base font scale, multiplied by the per-window font scale which you can adjust with SetWindowFontScale()
     float                       Ascent, Descent;    // 4+4   // out //            // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize]
     int                         MetricsTotalSurface;// 4     // out //            // Total surface in pixels to get an idea of the font rasterization/texture cost (not exact, we approximate the cost of padding between glyphs)
-    KGU8                        Used4kPagesMap[(IM_UNICODE_CODEPOINT_MAX+1)/4096/8]; // 2 bytes if KGWchar=KGWchar16, 34 bytes if KGWchar==KGWchar32. Store 1-bit for each block of 4K codepoints that has one active glyph. This is mainly used to facilitate iterations across all used codepoints.
+    KGU8                        Used4kPagesMap[(KG_UNICODE_CODEPOINT_MAX+1)/4096/8]; // 2 bytes if KGWchar=KGWchar16, 34 bytes if KGWchar==KGWchar32. Store 1-bit for each block of 4K codepoints that has one active glyph. This is mainly used to facilitate iterations across all used codepoints.
 
     // Methods
-    static KGFont();
-    static ~KGFont();
-    static const KGFontGlyph*FindGlyph(KGWchar c) const;
-    static const KGFontGlyph*FindGlyphNoFallback(KGWchar c) const;
+    KGFont();
+    ~KGFont();
+    static const KGFontGlyph*FindGlyph(KGWchar c);
+    static const KGFontGlyph*FindGlyphNoFallback(KGWchar c);
     float                       GetCharAdvance(KGWchar c) const     { return ((int)c < IndexAdvanceX.Size) ? IndexAdvanceX[(int)c] : FallbackAdvanceX; }
     bool                        IsLoaded() const                    { return ContainerAtlas != NULL; }
     const char*                 GetDebugName() const                { return ConfigData ? ConfigData->Name : "<unknown>"; }
 
     // 'max_width' stops rendering after a certain width (could be turned into a 2d size). FLT_MAX to disable.
     // 'wrap_width' enable automatic word-wrapping across multiple lines to fit into given width. 0.0f to disable.
-    static ImVec2            CalcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end = NULL, const char** remaining = NULL) const; // utf8
-    static const char*       CalcWordWrapPositionA(float scale, const char* text, const char* text_end, float wrap_width) const;
-    static void              RenderChar(KGDrawList* draw_list, float size, const ImVec2& pos, KGU32 col, KGWchar c) const;
-    static void              RenderText(KGDrawList* draw_list, float size, const ImVec2& pos, KGU32 col, const ImVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width = 0.0f, bool cpu_fine_clip = false) const;
+    static ImVec2            CalcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end = NULL, const char** remaining = NULL); // utf8
+    static const char*       CalcWordWrapPositionA(float scale, const char* text, const char* text_end, float wrap_width);
+    static void              RenderChar(KGDrawList* draw_list, float size, const ImVec2& pos, KGU32 col, KGWchar c);
+    static void              RenderText(KGDrawList* draw_list, float size, const ImVec2& pos, KGU32 col, const ImVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width = 0.0f, bool cpu_fine_clip = false);
 
     // [Internal] Don't use!
     static void              BuildLookupTable();
@@ -2947,7 +2928,7 @@ enum KGGuiViewportFlags_
 //   - Main Area = entire viewport.
 //   - Work Area = entire viewport minus sections used by main menu bars (for platform windows), or by task bar (for platform monitor).
 //   - Windows are generally trying to stay within the Work Area of their host viewport.
-struct KarmaGuiViewport
+struct KARMA_API KarmaGuiViewport
 {
     KGGuiID             ID;                     // Unique identifier for the viewport
     KarmaGuiViewportFlags  Flags;                  // See KGGuiViewportFlags_
@@ -2974,7 +2955,7 @@ struct KarmaGuiViewport
     bool                PlatformRequestClose;   // Platform window requested closure (e.g. window was moved by the OS / host window manager, e.g. pressing ALT-F4)
 
     KarmaGuiViewport()     { memset(this, 0, sizeof(*this)); }
-    ~KarmaGuiViewport()    { IM_ASSERT(PlatformUserData == NULL && RendererUserData == NULL); }
+    ~KarmaGuiViewport()    { KR_CORE_ASSERT(PlatformUserData == NULL && RendererUserData == NULL, ""); }
 
     // Helpers
     ImVec2              GetCenter() const       { return ImVec2(Pos.x + Size.x * 0.5f, Pos.y + Size.y * 0.5f); }
@@ -3031,7 +3012,7 @@ struct KarmaGuiViewport
 //-----------------------------------------------------------------------------
 
 // (Optional) Access via ImGui::GetPlatformIO()
-struct KarmaGuiPlatformIO
+struct KARMA_API KarmaGuiPlatformIO
 {
     //------------------------------------------------------------------
     // Input - Backend interface/functions + Monitor List
@@ -3094,7 +3075,7 @@ struct KarmaGuiPlatformIO
 
 // (Optional) This is required when enabling multi-viewport. Represent the bounds of each connected monitor/display and their DPI.
 // We use this information for multiple DPI support + clamping the position of popups and tooltips so they don't straddle multiple monitors.
-struct KarmaGuiPlatformMonitor
+struct KARMA_API KarmaGuiPlatformMonitor
 {
     ImVec2  MainPos, MainSize;      // Coordinates of the area displayed on this monitor (Min = upper left, Max = bottom right)
     ImVec2  WorkPos, WorkSize;      // Coordinates without task bars / side bars / menu bars. Used to avoid positioning popups/tooltips inside this region. If you don't have this info, please copy the value for MainPos/MainSize.
@@ -3103,7 +3084,7 @@ struct KarmaGuiPlatformMonitor
 };
 
 // (Optional) Support for IME (Input Method Editor) via the io.SetPlatformImeDataFn() function.
-struct KarmaGuiPlatformImeData
+struct KARMA_API KarmaGuiPlatformImeData
 {
     bool    WantVisible;        // A widget wants the IME to be visible
     ImVec2  InputPos;           // Position of the input cursor

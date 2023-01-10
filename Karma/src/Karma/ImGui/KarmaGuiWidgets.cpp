@@ -750,7 +750,7 @@ bool ImGui::InvisibleButton(const char* str_id, const ImVec2& size_arg, KarmaGui
         return false;
 
     // Cannot use zero-size for InvisibleButton(). Unlike Button() there is not way to fallback using the label size.
-    IM_ASSERT(size_arg.x != 0.0f && size_arg.y != 0.0f);
+    KR_CORE_ASSERT(size_arg.x != 0.0f && size_arg.y != 0.0f);
 
     const KGGuiID id = window->GetID(str_id);
     ImVec2 size = CalcItemSize(size_arg, 0.0f, 0.0f);
@@ -884,7 +884,7 @@ ImRect ImGui::GetWindowScrollbarRect(ImGuiWindow* window, ImGuiAxis axis)
     const ImRect inner_rect = window->InnerRect;
     const float border_size = window->WindowBorderSize;
     const float scrollbar_size = window->ScrollbarSizes[axis ^ 1]; // (ScrollbarSizes.x = width of Y scrollbar; ScrollbarSizes.y = height of X scrollbar)
-    IM_ASSERT(scrollbar_size > 0.0f);
+    KR_CORE_ASSERT(scrollbar_size > 0.0f);
     if (axis == ImGuiAxis_X)
         return ImRect(inner_rect.Min.x, ImMax(outer_rect.Min.y, outer_rect.Max.y - border_size - scrollbar_size), inner_rect.Max.x, outer_rect.Max.y);
     else
@@ -956,7 +956,7 @@ bool ImGui::ScrollbarEx(const ImRect& bb_frame, KGGuiID id, ImGuiAxis axis, KGS6
 
     // Calculate the height of our grabbable box. It generally represent the amount visible (vs the total scrollable amount)
     // But we maintain a minimum size in pixel to allow for the user to still aim inside.
-    IM_ASSERT(ImMax(size_contents_v, size_avail_v) > 0.0f); // Adding this assert to check if the ImMax(XXX,1.0f) is still needed. PLEASE CONTACT ME if this triggers.
+    KR_CORE_ASSERT(ImMax(size_contents_v, size_avail_v) > 0.0f); // Adding this assert to check if the ImMax(XXX,1.0f) is still needed. PLEASE CONTACT ME if this triggers.
     const KGS64 win_size_v = ImMax(ImMax(size_contents_v, size_avail_v), (KGS64)1);
     const float grab_h_pixels = ImClamp(scrollbar_size_v * ((float)size_avail_v / (float)win_size_v), style.GrabMinSize, scrollbar_size_v);
     const float grab_h_norm = grab_h_pixels / scrollbar_size_v;
@@ -1403,7 +1403,7 @@ void ImGui::SeparatorEx(ImGuiSeparatorFlags flags)
         return;
 
     KarmaGuiContext& g = *GImGui;
-    IM_ASSERT(ImIsPowerOfTwo(flags & (ImGuiSeparatorFlags_Horizontal | ImGuiSeparatorFlags_Vertical)));   // Check that only 1 option is selected
+    KR_CORE_ASSERT(ImIsPowerOfTwo(flags & (ImGuiSeparatorFlags_Horizontal | ImGuiSeparatorFlags_Vertical)));   // Check that only 1 option is selected
 
     float thickness_draw = 1.0f;
     float thickness_layout = 0.0f;
@@ -1517,9 +1517,9 @@ bool ImGui::SplitterBehavior(const ImRect& bb, KGGuiID id, ImGuiAxis axis, float
         if (mouse_delta != 0.0f)
         {
             if (mouse_delta < 0.0f)
-                IM_ASSERT(*size1 + mouse_delta >= min_size1);
+                KR_CORE_ASSERT(*size1 + mouse_delta >= min_size1);
             if (mouse_delta > 0.0f)
-                IM_ASSERT(*size2 - mouse_delta >= min_size2);
+                KR_CORE_ASSERT(*size2 - mouse_delta >= min_size2);
             *size1 += mouse_delta;
             *size2 -= mouse_delta;
             bb_render.Translate((axis == ImGuiAxis_X) ? ImVec2(mouse_delta, 0.0f) : ImVec2(0.0f, mouse_delta));
@@ -1528,7 +1528,7 @@ bool ImGui::SplitterBehavior(const ImRect& bb, KGGuiID id, ImGuiAxis axis, float
     }
 
     // Render at new position
-    if (bg_col & IM_COL32_A_MASK)
+    if (bg_col & KG_COL32_A_MASK)
         window->DrawList->AddRectFilled(bb_render.Min, bb_render.Max, bg_col, 0.0f);
     const KGU32 col = GetColorU32(held ? KGGuiCol_SeparatorActive : (hovered && g.HoveredIdTimer >= hover_visibility_delay) ? KGGuiCol_SeparatorHovered : KGGuiCol_Separator);
     window->DrawList->AddRectFilled(bb_render.Min, bb_render.Max, col, 0.0f);
@@ -1620,7 +1620,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, KarmaGuiCom
 
     const KarmaGuiStyle& style = g.Style;
     const KGGuiID id = window->GetID(label);
-    IM_ASSERT((flags & (KGGuiComboFlags_NoArrowButton | KGGuiComboFlags_NoPreview)) != (KGGuiComboFlags_NoArrowButton | KGGuiComboFlags_NoPreview)); // Can't use both flags together
+    KR_CORE_ASSERT((flags & (KGGuiComboFlags_NoArrowButton | KGGuiComboFlags_NoPreview)) != (KGGuiComboFlags_NoArrowButton | KGGuiComboFlags_NoPreview)); // Can't use both flags together
 
     const float arrow_size = (flags & KGGuiComboFlags_NoArrowButton) ? 0.0f : GetFrameHeight();
     const ImVec2 label_size = CalcTextSize(label, NULL, true);
@@ -1662,7 +1662,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, KarmaGuiCom
     if (flags & KGGuiComboFlags_CustomPreview)
     {
         g.ComboPreviewData.PreviewRect = ImRect(bb.Min.x, bb.Min.y, value_x2, bb.Max.y);
-        IM_ASSERT(preview_value == NULL || preview_value[0] == 0);
+        KR_CORE_ASSERT(preview_value == NULL || preview_value[0] == 0);
         preview_value = NULL;
     }
 
@@ -1702,7 +1702,7 @@ bool ImGui::BeginComboPopup(KGGuiID popup_id, const ImRect& bb, KarmaGuiComboFla
     {
         if ((flags & KGGuiComboFlags_HeightMask_) == 0)
             flags |= KGGuiComboFlags_HeightRegular;
-        IM_ASSERT(ImIsPowerOfTwo(flags & KGGuiComboFlags_HeightMask_)); // Only one
+        KR_CORE_ASSERT(ImIsPowerOfTwo(flags & KGGuiComboFlags_HeightMask_)); // Only one
         int popup_max_height_in_items = -1;
         if (flags & KGGuiComboFlags_HeightRegular)     popup_max_height_in_items = 8;
         else if (flags & KGGuiComboFlags_HeightSmall)  popup_max_height_in_items = 4;
@@ -1736,7 +1736,7 @@ bool ImGui::BeginComboPopup(KGGuiID popup_id, const ImRect& bb, KarmaGuiComboFla
     if (!ret)
     {
         EndPopup();
-        IM_ASSERT(0);   // This should never happen as we tested for IsPopupOpen() above
+        KR_CORE_ASSERT(0);   // This should never happen as we tested for IsPopupOpen() above
         return false;
     }
     return true;
@@ -1757,7 +1757,7 @@ bool ImGui::BeginComboPreview()
 
     if (window->SkipItems || !(g.LastItemData.StatusFlags & ImGuiItemStatusFlags_Visible))
         return false;
-    IM_ASSERT(g.LastItemData.Rect.Min.x == preview_data->PreviewRect.Min.x && g.LastItemData.Rect.Min.y == preview_data->PreviewRect.Min.y); // Didn't call after BeginCombo/EndCombo block or forgot to pass KGGuiComboFlags_CustomPreview flag?
+    KR_CORE_ASSERT(g.LastItemData.Rect.Min.x == preview_data->PreviewRect.Min.x && g.LastItemData.Rect.Min.y == preview_data->PreviewRect.Min.y); // Didn't call after BeginCombo/EndCombo block or forgot to pass KGGuiComboFlags_CustomPreview flag?
     if (!window->ClipRect.Contains(preview_data->PreviewRect)) // Narrower test (optional)
         return false;
 
@@ -1931,7 +1931,7 @@ IM_STATIC_ASSERT(IM_ARRAYSIZE(GDataTypeInfo) == KGGuiDataType_COUNT);
 
 const ImGuiDataTypeInfo* ImGui::DataTypeGetInfo(KarmaGuiDataType data_type)
 {
-    IM_ASSERT(data_type >= 0 && data_type < KGGuiDataType_COUNT);
+    KR_CORE_ASSERT(data_type >= 0 && data_type < KGGuiDataType_COUNT);
     return &GDataTypeInfo[data_type];
 }
 
@@ -1954,13 +1954,13 @@ int ImGui::DataTypeFormatString(char* buf, int buf_size, KarmaGuiDataType data_t
         return ImFormatString(buf, buf_size, format, *(const KGS16*)p_data);
     if (data_type == KGGuiDataType_U16)
         return ImFormatString(buf, buf_size, format, *(const KGU16*)p_data);
-    IM_ASSERT(0);
+    KR_CORE_ASSERT(0);
     return 0;
 }
 
 void ImGui::DataTypeApplyOp(KarmaGuiDataType data_type, int op, void* output, const void* arg1, const void* arg2)
 {
-    IM_ASSERT(op == '+' || op == '-');
+    KR_CORE_ASSERT(op == '+' || op == '-');
     switch (data_type)
     {
         case KGGuiDataType_S8:
@@ -2005,7 +2005,7 @@ void ImGui::DataTypeApplyOp(KarmaGuiDataType data_type, int op, void* output, co
             return;
         case KGGuiDataType_COUNT: break;
     }
-    IM_ASSERT(0);
+    KR_CORE_ASSERT(0);
 }
 
 // User can input math operators (e.g. +100) to edit a numerical values.
@@ -2045,7 +2045,7 @@ bool ImGui::DataTypeApplyFromText(const char* buf, KarmaGuiDataType data_type, v
         else if (data_type == KGGuiDataType_U16)
             *(KGU16*)p_data = (KGU16)ImClamp(v32, (int)IM_U16_MIN, (int)IM_U16_MAX);
         else
-            IM_ASSERT(0);
+            KR_CORE_ASSERT(0);
     }
 
     return memcmp(&data_backup, p_data, type_info->Size) != 0;
@@ -2075,7 +2075,7 @@ int ImGui::DataTypeCompare(KarmaGuiDataType data_type, const void* arg_1, const 
     case KGGuiDataType_Double: return DataTypeCompareT<double>((const double*)arg_1, (const double*)arg_2);
     case KGGuiDataType_COUNT:  break;
     }
-    IM_ASSERT(0);
+    KR_CORE_ASSERT(0);
     return 0;
 }
 
@@ -2104,7 +2104,7 @@ bool ImGui::DataTypeClamp(KarmaGuiDataType data_type, void* p_data, const void* 
     case KGGuiDataType_Double: return DataTypeClampT<double>((double*)p_data, (const double*)p_min, (const double*)p_max);
     case KGGuiDataType_COUNT:  break;
     }
-    IM_ASSERT(0);
+    KR_CORE_ASSERT(0);
     return false;
 }
 
@@ -2120,7 +2120,7 @@ template<typename TYPE>
 TYPE ImGui::RoundScalarWithFormatT(const char* format, KarmaGuiDataType data_type, TYPE v)
 {
     IM_UNUSED(data_type);
-    IM_ASSERT(data_type == KGGuiDataType_Float || data_type == KGGuiDataType_Double);
+    KR_CORE_ASSERT(data_type == KGGuiDataType_Float || data_type == KGGuiDataType_Double);
     const char* fmt_start = ImParseFormatFindStart(format);
     if (fmt_start[0] != '%' || fmt_start[1] == '%') // Don't apply if the value is not visible in the format string
         return v;
@@ -2283,7 +2283,7 @@ bool ImGui::DragBehaviorT(KarmaGuiDataType data_type, TYPE* v, float v_speed, co
 bool ImGui::DragBehavior(KGGuiID id, KarmaGuiDataType data_type, void* p_v, float v_speed, const void* p_min, const void* p_max, const char* format, KarmaGuiSliderFlags flags)
 {
     // Read imgui.cpp "API BREAKING CHANGES" section for 1.78 if you hit this assert.
-    IM_ASSERT((flags == 1 || (flags & KGGuiSliderFlags_InvalidMask_) == 0) && "Invalid KarmaGuiSliderFlags flags! Has the 'float power' argument been mistakenly cast to flags? Call function with KGGuiSliderFlags_Logarithmic flags instead.");
+    KR_CORE_ASSERT((flags == 1 || (flags & KGGuiSliderFlags_InvalidMask_) == 0) && "Invalid KarmaGuiSliderFlags flags! Has the 'float power' argument been mistakenly cast to flags? Call function with KGGuiSliderFlags_Logarithmic flags instead.");
 
     KarmaGuiContext& g = *GImGui;
     if (g.ActiveId == id)
@@ -2313,7 +2313,7 @@ bool ImGui::DragBehavior(KGGuiID id, KarmaGuiDataType data_type, void* p_v, floa
     case KGGuiDataType_Double: return DragBehaviorT<double,double,double>(data_type, (double*)p_v, v_speed, p_min ? *(const double*)p_min : -DBL_MAX,   p_max ? *(const double*)p_max : DBL_MAX,    format, flags);
     case KGGuiDataType_COUNT:  break;
     }
-    IM_ASSERT(0);
+    KR_CORE_ASSERT(0);
     return false;
 }
 
@@ -2873,7 +2873,7 @@ bool ImGui::SliderBehaviorT(const ImRect& bb, KGGuiID id, KarmaGuiDataType data_
 bool ImGui::SliderBehavior(const ImRect& bb, KGGuiID id, KarmaGuiDataType data_type, void* p_v, const void* p_min, const void* p_max, const char* format, KarmaGuiSliderFlags flags, ImRect* out_grab_bb)
 {
     // Read imgui.cpp "API BREAKING CHANGES" section for 1.78 if you hit this assert.
-    IM_ASSERT((flags == 1 || (flags & KGGuiSliderFlags_InvalidMask_) == 0) && "Invalid KarmaGuiSliderFlags flag!  Has the 'float power' argument been mistakenly cast to flags? Call function with KGGuiSliderFlags_Logarithmic flags instead.");
+    KR_CORE_ASSERT((flags == 1 || (flags & KGGuiSliderFlags_InvalidMask_) == 0) && "Invalid KarmaGuiSliderFlags flag!  Has the 'float power' argument been mistakenly cast to flags? Call function with KGGuiSliderFlags_Logarithmic flags instead.");
 
     // Those are the things we can do easily outside the SliderBehaviorT<> template, saves code generation.
     KarmaGuiContext& g = *GImGui;
@@ -2887,26 +2887,26 @@ bool ImGui::SliderBehavior(const ImRect& bb, KGGuiID id, KarmaGuiDataType data_t
     case KGGuiDataType_S16: { KGS32 v32 = (KGS32)*(KGS16*)p_v; bool r = SliderBehaviorT<KGS32, KGS32, float>(bb, id, KGGuiDataType_S32, &v32, *(const KGS16*)p_min, *(const KGS16*)p_max, format, flags, out_grab_bb); if (r) *(KGS16*)p_v = (KGS16)v32; return r; }
     case KGGuiDataType_U16: { KGU32 v32 = (KGU32)*(KGU16*)p_v; bool r = SliderBehaviorT<KGU32, KGS32, float>(bb, id, KGGuiDataType_U32, &v32, *(const KGU16*)p_min, *(const KGU16*)p_max, format, flags, out_grab_bb); if (r) *(KGU16*)p_v = (KGU16)v32; return r; }
     case KGGuiDataType_S32:
-        IM_ASSERT(*(const KGS32*)p_min >= IM_S32_MIN / 2 && *(const KGS32*)p_max <= IM_S32_MAX / 2);
+        KR_CORE_ASSERT(*(const KGS32*)p_min >= IM_S32_MIN / 2 && *(const KGS32*)p_max <= IM_S32_MAX / 2);
         return SliderBehaviorT<KGS32, KGS32, float >(bb, id, data_type, (KGS32*)p_v,  *(const KGS32*)p_min,  *(const KGS32*)p_max,  format, flags, out_grab_bb);
     case KGGuiDataType_U32:
-        IM_ASSERT(*(const KGU32*)p_max <= IM_U32_MAX / 2);
+        KR_CORE_ASSERT(*(const KGU32*)p_max <= IM_U32_MAX / 2);
         return SliderBehaviorT<KGU32, KGS32, float >(bb, id, data_type, (KGU32*)p_v,  *(const KGU32*)p_min,  *(const KGU32*)p_max,  format, flags, out_grab_bb);
     case KGGuiDataType_S64:
-        IM_ASSERT(*(const KGS64*)p_min >= IM_S64_MIN / 2 && *(const KGS64*)p_max <= IM_S64_MAX / 2);
+        KR_CORE_ASSERT(*(const KGS64*)p_min >= IM_S64_MIN / 2 && *(const KGS64*)p_max <= IM_S64_MAX / 2);
         return SliderBehaviorT<KGS64, KGS64, double>(bb, id, data_type, (KGS64*)p_v,  *(const KGS64*)p_min,  *(const KGS64*)p_max,  format, flags, out_grab_bb);
     case KGGuiDataType_U64:
-        IM_ASSERT(*(const KGU64*)p_max <= IM_U64_MAX / 2);
+        KR_CORE_ASSERT(*(const KGU64*)p_max <= IM_U64_MAX / 2);
         return SliderBehaviorT<KGU64, KGS64, double>(bb, id, data_type, (KGU64*)p_v,  *(const KGU64*)p_min,  *(const KGU64*)p_max,  format, flags, out_grab_bb);
     case KGGuiDataType_Float:
-        IM_ASSERT(*(const float*)p_min >= -FLT_MAX / 2.0f && *(const float*)p_max <= FLT_MAX / 2.0f);
+        KR_CORE_ASSERT(*(const float*)p_min >= -FLT_MAX / 2.0f && *(const float*)p_max <= FLT_MAX / 2.0f);
         return SliderBehaviorT<float, float, float >(bb, id, data_type, (float*)p_v,  *(const float*)p_min,  *(const float*)p_max,  format, flags, out_grab_bb);
     case KGGuiDataType_Double:
-        IM_ASSERT(*(const double*)p_min >= -DBL_MAX / 2.0f && *(const double*)p_max <= DBL_MAX / 2.0f);
+        KR_CORE_ASSERT(*(const double*)p_min >= -DBL_MAX / 2.0f && *(const double*)p_max <= DBL_MAX / 2.0f);
         return SliderBehaviorT<double, double, double>(bb, id, data_type, (double*)p_v, *(const double*)p_min, *(const double*)p_max, format, flags, out_grab_bb);
     case KGGuiDataType_COUNT: break;
     }
-    IM_ASSERT(0);
+    KR_CORE_ASSERT(0);
     return false;
 }
 
@@ -3229,7 +3229,7 @@ void ImParseFormatSanitizeForPrinting(const char* fmt_in, char* fmt_out, size_t 
 {
     const char* fmt_end = ImParseFormatFindEnd(fmt_in);
     IM_UNUSED(fmt_out_size);
-    IM_ASSERT((size_t)(fmt_end - fmt_in + 1) < fmt_out_size); // Format is too long, let us know if this happens to you!
+    KR_CORE_ASSERT((size_t)(fmt_end - fmt_in + 1) < fmt_out_size); // Format is too long, let us know if this happens to you!
     while (fmt_in < fmt_end)
     {
         char c = *fmt_in++;
@@ -3245,7 +3245,7 @@ const char* ImParseFormatSanitizeForScanning(const char* fmt_in, char* fmt_out, 
     const char* fmt_end = ImParseFormatFindEnd(fmt_in);
     const char* fmt_out_begin = fmt_out;
     IM_UNUSED(fmt_out_size);
-    IM_ASSERT((size_t)(fmt_end - fmt_in + 1) < fmt_out_size); // Format is too long, let us know if this happens to you!
+    KR_CORE_ASSERT((size_t)(fmt_end - fmt_in + 1) < fmt_out_size); // Format is too long, let us know if this happens to you!
     bool has_type = false;
     while (fmt_in < fmt_end)
     {
@@ -3313,7 +3313,7 @@ bool ImGui::TempInputText(const ImRect& bb, KGGuiID id, const char* label, char*
     if (init)
     {
         // First frame we started displaying the InputText widget, we expect it to take the active id.
-        IM_ASSERT(g.ActiveId == id);
+        KR_CORE_ASSERT(g.ActiveId == id);
         g.TempInputId = g.ActiveId;
     }
     return value_changed;
@@ -3542,7 +3542,7 @@ bool ImGui::InputDouble(const char* label, double* v, double step, double step_f
 
 bool ImGui::InputText(const char* label, char* buf, size_t buf_size, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data)
 {
-    IM_ASSERT(!(flags & KGGuiInputTextFlags_Multiline)); // call InputTextMultiline()
+    KR_CORE_ASSERT(!(flags & KGGuiInputTextFlags_Multiline)); // call InputTextMultiline()
     return InputTextEx(label, NULL, buf, (int)buf_size, ImVec2(0, 0), flags, callback, user_data);
 }
 
@@ -3553,7 +3553,7 @@ bool ImGui::InputTextMultiline(const char* label, char* buf, size_t buf_size, co
 
 bool ImGui::InputTextWithHint(const char* label, const char* hint, char* buf, size_t buf_size, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data)
 {
-    IM_ASSERT(!(flags & KGGuiInputTextFlags_Multiline)); // call InputTextMultiline() or  InputTextEx() manually if you need multi-line + hint.
+    KR_CORE_ASSERT(!(flags & KGGuiInputTextFlags_Multiline)); // call InputTextMultiline() or  InputTextEx() manually if you need multi-line + hint.
     return InputTextEx(label, hint, buf, (int)buf_size, ImVec2(0, 0), flags, callback, user_data);
 }
 
@@ -3669,7 +3669,7 @@ static bool STB_TEXTEDIT_INSERTCHARS(ImGuiInputTextState* obj, int pos, const KG
 {
     const bool is_resizable = (obj->Flags & KGGuiInputTextFlags_CallbackResize) != 0;
     const int text_len = obj->CurLenW;
-    IM_ASSERT(pos <= text_len);
+    KR_CORE_ASSERT(pos <= text_len);
 
     const int new_text_len_utf8 = ImTextCountUtf8BytesFromStr(new_text, new_text + new_text_len);
     if (!is_resizable && (new_text_len_utf8 + obj->CurLenA + 1 > obj->BufCapacityA))
@@ -3680,7 +3680,7 @@ static bool STB_TEXTEDIT_INSERTCHARS(ImGuiInputTextState* obj, int pos, const KG
     {
         if (!is_resizable)
             return false;
-        IM_ASSERT(text_len < obj->TextW.Size);
+        KR_CORE_ASSERT(text_len < obj->TextW.Size);
         obj->TextW.resize(text_len + ImClamp(new_text_len * 4, 32, ImMax(256, new_text_len)) + 1);
     }
 
@@ -3734,7 +3734,7 @@ static void stb_textedit_replace(ImGuiInputTextState* str, STB_TexteditState* st
         state->has_preferred_x = 0;
         return;
     }
-    IM_ASSERT(0); // Failed to insert character, normally shouldn't happen because of how we currently use stb_textedit_replace()
+    KR_CORE_ASSERT(0); // Failed to insert character, normally shouldn't happen because of how we currently use stb_textedit_replace()
 }
 
 } // namespace ImStb
@@ -3756,7 +3756,7 @@ KarmaGuiInputTextCallbackData::KarmaGuiInputTextCallbackData()
 // FIXME: The existence of this rarely exercised code path is a bit of a nuisance.
 void KarmaGuiInputTextCallbackData::DeleteChars(int pos, int bytes_count)
 {
-    IM_ASSERT(pos + bytes_count <= BufTextLen);
+    KR_CORE_ASSERT(pos + bytes_count <= BufTextLen);
     char* dst = Buf + pos;
     const char* src = Buf + pos + bytes_count;
     while (char c = *src++)
@@ -3784,8 +3784,8 @@ void KarmaGuiInputTextCallbackData::InsertChars(int pos, const char* new_text, c
         // Contrary to STB_TEXTEDIT_INSERTCHARS() this is working in the UTF8 buffer, hence the mildly similar code (until we remove the U16 buffer altogether!)
         KarmaGuiContext& g = *GImGui;
         ImGuiInputTextState* edit_state = &g.InputTextState;
-        IM_ASSERT(edit_state->ID != 0 && g.ActiveId == edit_state->ID);
-        IM_ASSERT(Buf == edit_state->TextA.Data);
+        KR_CORE_ASSERT(edit_state->ID != 0 && g.ActiveId == edit_state->ID);
+        KR_CORE_ASSERT(Buf == edit_state->TextA.Data);
         int new_buf_size = BufTextLen + ImClamp(new_text_len * 4, 32, ImMax(256, new_text_len)) + 1;
         edit_state->TextA.reserve(new_buf_size + 1);
         Buf = edit_state->TextA.Data;
@@ -3807,7 +3807,7 @@ void KarmaGuiInputTextCallbackData::InsertChars(int pos, const char* new_text, c
 // Return false to discard a character.
 static bool InputTextFilterCharacter(unsigned int* p_char, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data, ImGuiInputSource input_source)
 {
-    IM_ASSERT(input_source == ImGuiInputSource_Keyboard || input_source == ImGuiInputSource_Clipboard);
+    KR_CORE_ASSERT(input_source == ImGuiInputSource_Keyboard || input_source == ImGuiInputSource_Clipboard);
     unsigned int c = *p_char;
 
     // Filter non-printable (NB: isprint is unreliable! see #2467)
@@ -3834,7 +3834,7 @@ static bool InputTextFilterCharacter(unsigned int* p_char, KarmaGuiInputTextFlag
     }
 
     // Filter Unicode ranges we are not handling in this build
-    if (c > IM_UNICODE_CODEPOINT_MAX)
+    if (c > KG_UNICODE_CODEPOINT_MAX)
         return false;
 
     // Generic named filters
@@ -3951,9 +3951,9 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     if (window->SkipItems)
         return false;
 
-    IM_ASSERT(buf != NULL && buf_size >= 0);
-    IM_ASSERT(!((flags & KGGuiInputTextFlags_CallbackHistory) && (flags & KGGuiInputTextFlags_Multiline)));        // Can't use both together (they both use up/down keys)
-    IM_ASSERT(!((flags & KGGuiInputTextFlags_CallbackCompletion) && (flags & KGGuiInputTextFlags_AllowTabInput))); // Can't use both together (they both use tab key)
+    KR_CORE_ASSERT(buf != NULL && buf_size >= 0);
+    KR_CORE_ASSERT(!((flags & KGGuiInputTextFlags_CallbackHistory) && (flags & KGGuiInputTextFlags_Multiline)));        // Can't use both together (they both use up/down keys)
+    KR_CORE_ASSERT(!((flags & KGGuiInputTextFlags_CallbackCompletion) && (flags & KGGuiInputTextFlags_AllowTabInput))); // Can't use both together (they both use tab key)
 
     KarmaGuiContext& g = *GImGui;
     KarmaGuiIO& io = g.IO;
@@ -3966,7 +3966,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     const bool is_undoable = (flags & KGGuiInputTextFlags_NoUndoRedo) == 0;
     const bool is_resizable = (flags & KGGuiInputTextFlags_CallbackResize) != 0;
     if (is_resizable)
-        IM_ASSERT(callback != NULL); // Must provide a callback if you set the KGGuiInputTextFlags_CallbackResize flag!
+        KR_CORE_ASSERT(callback != NULL); // Must provide a callback if you set the KGGuiInputTextFlags_CallbackResize flag!
 
     if (is_multiline) // Open group before calling GetID() because groups tracks id created within their scope (including the scrollbar)
         BeginGroup();
@@ -4100,7 +4100,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
 
     if (g.ActiveId != id && init_make_active)
     {
-        IM_ASSERT(state && state->ID == id);
+        KR_CORE_ASSERT(state && state->ID == id);
         SetActiveID(id, window);
         SetFocusID(id, window);
         FocusWindow(window);
@@ -4166,7 +4166,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         password_font->ContainerAtlas = g.Font->ContainerAtlas;
         password_font->FallbackGlyph = glyph;
         password_font->FallbackAdvanceX = glyph->AdvanceX;
-        IM_ASSERT(password_font->Glyphs.empty() && password_font->IndexAdvanceX.empty() && password_font->IndexLookup.empty());
+        KR_CORE_ASSERT(password_font->Glyphs.empty() && password_font->IndexAdvanceX.empty() && password_font->IndexLookup.empty());
         PushFont(password_font);
     }
 
@@ -4174,7 +4174,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     int backup_current_text_length = 0;
     if (g.ActiveId == id)
     {
-        IM_ASSERT(state != NULL);
+        KR_CORE_ASSERT(state != NULL);
         backup_current_text_length = state->CurLenA;
         state->Edited = false;
         state->BufCapacityA = buf_size;
@@ -4284,7 +4284,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     bool revert_edit = false;
     if (g.ActiveId == id && !g.ActiveIdIsJustActivated && !clear_active_id)
     {
-        IM_ASSERT(state != NULL);
+        KR_CORE_ASSERT(state != NULL);
 
         const int row_count_per_page = ImMax((int)((inner_size.y - style.FramePadding.y) / g.FontSize), 1);
         state->Stb.row_count_per_page = row_count_per_page;
@@ -4388,7 +4388,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
                 const int ib = state->HasSelection() ? ImMin(state->Stb.select_start, state->Stb.select_end) : 0;
                 const int ie = state->HasSelection() ? ImMax(state->Stb.select_start, state->Stb.select_end) : state->CurLenW;
                 const int clipboard_data_len = ImTextCountUtf8BytesFromStr(state->TextW.Data + ib, state->TextW.Data + ie) + 1;
-                char* clipboard_data = (char*)IM_ALLOC(clipboard_data_len * sizeof(char));
+                char* clipboard_data = (char*)KG_ALLOC(clipboard_data_len * sizeof(char));
                 ImTextStrToUtf8(clipboard_data, clipboard_data_len, state->TextW.Data + ib, state->TextW.Data + ie);
                 SetClipboardText(clipboard_data);
                 MemFree(clipboard_data);
@@ -4407,7 +4407,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
             {
                 // Filter pasted buffer
                 const int clipboard_len = (int)strlen(clipboard);
-                KGWchar* clipboard_filtered = (KGWchar*)IM_ALLOC((clipboard_len + 1) * sizeof(KGWchar));
+                KGWchar* clipboard_filtered = (KGWchar*)KG_ALLOC((clipboard_len + 1) * sizeof(KGWchar));
                 int clipboard_filtered_len = 0;
                 for (const char* s = clipboard; *s; )
                 {
@@ -4438,7 +4438,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     int apply_new_text_length = 0;
     if (g.ActiveId == id)
     {
-        IM_ASSERT(state != NULL);
+        KR_CORE_ASSERT(state != NULL);
         if (revert_edit && !is_readonly)
         {
             if (flags & KGGuiInputTextFlags_EscapeClearsAll)
@@ -4487,7 +4487,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
             // User callback
             if ((flags & (KGGuiInputTextFlags_CallbackCompletion | KGGuiInputTextFlags_CallbackHistory | KGGuiInputTextFlags_CallbackEdit | KGGuiInputTextFlags_CallbackAlways)) != 0)
             {
-                IM_ASSERT(callback != NULL);
+                KR_CORE_ASSERT(callback != NULL);
 
                 // The reason we specify the usage semantic (Completion/History) is that Completion needs to disable keyboard TABBING at the moment.
                 KarmaGuiInputTextFlags event_flag = 0;
@@ -4542,17 +4542,17 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
 
                     // Read back what user may have modified
                     callback_buf = is_readonly ? buf : state->TextA.Data; // Pointer may have been invalidated by a resize callback
-                    IM_ASSERT(callback_data.Buf == callback_buf);         // Invalid to modify those fields
-                    IM_ASSERT(callback_data.BufSize == state->BufCapacityA);
-                    IM_ASSERT(callback_data.Flags == flags);
+                    KR_CORE_ASSERT(callback_data.Buf == callback_buf);         // Invalid to modify those fields
+                    KR_CORE_ASSERT(callback_data.BufSize == state->BufCapacityA);
+                    KR_CORE_ASSERT(callback_data.Flags == flags);
                     const bool buf_dirty = callback_data.BufDirty;
                     if (callback_data.CursorPos != utf8_cursor_pos || buf_dirty)            { state->Stb.cursor = ImTextCountCharsFromUtf8(callback_data.Buf, callback_data.Buf + callback_data.CursorPos); state->CursorFollow = true; }
                     if (callback_data.SelectionStart != utf8_selection_start || buf_dirty)  { state->Stb.select_start = (callback_data.SelectionStart == callback_data.CursorPos) ? state->Stb.cursor : ImTextCountCharsFromUtf8(callback_data.Buf, callback_data.Buf + callback_data.SelectionStart); }
                     if (callback_data.SelectionEnd != utf8_selection_end || buf_dirty)      { state->Stb.select_end = (callback_data.SelectionEnd == callback_data.SelectionStart) ? state->Stb.select_start : ImTextCountCharsFromUtf8(callback_data.Buf, callback_data.Buf + callback_data.SelectionEnd); }
                     if (buf_dirty)
                     {
-                        IM_ASSERT((flags & KGGuiInputTextFlags_ReadOnly) == 0);
-                        IM_ASSERT(callback_data.BufTextLen == (int)strlen(callback_data.Buf)); // You need to maintain BufTextLen if you change the text!
+                        KR_CORE_ASSERT((flags & KGGuiInputTextFlags_ReadOnly) == 0);
+                        KR_CORE_ASSERT(callback_data.BufTextLen == (int)strlen(callback_data.Buf)); // You need to maintain BufTextLen if you change the text!
                         InputTextReconcileUndoStateAfterUserCallback(state, callback_data.Buf, callback_data.BufTextLen); // FIXME: Move the rest of this block inside function and rename to InputTextReconcileStateAfterUserCallback() ?
                         if (callback_data.BufTextLen > backup_current_text_length && is_resizable)
                             state->TextW.resize(state->TextW.Size + (callback_data.BufTextLen - backup_current_text_length)); // Worse case scenario resize
@@ -4578,7 +4578,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         // We cannot test for 'backup_current_text_length != apply_new_text_length' here because we have no guarantee that the size
         // of our owned buffer matches the size of the string object held by the user, and by design we allow InputText() to be used
         // without any storage on user's side.
-        IM_ASSERT(apply_new_text_length >= 0);
+        KR_CORE_ASSERT(apply_new_text_length >= 0);
         if (is_resizable)
         {
             KarmaGuiInputTextCallbackData callback_data;
@@ -4592,7 +4592,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
             buf = callback_data.Buf;
             buf_size = callback_data.BufSize;
             apply_new_text_length = ImMin(callback_data.BufTextLen, buf_size - 1);
-            IM_ASSERT(apply_new_text_length <= buf_size);
+            KR_CORE_ASSERT(apply_new_text_length <= buf_size);
         }
         //IMGUI_DEBUG_PRINT("InputText(\"%s\"): apply_new_text length %d\n", label, apply_new_text_length);
 
@@ -4632,7 +4632,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     // FIXME: We could remove the '&& render_cursor' to keep rendering selection when inactive.
     if (render_cursor || render_selection)
     {
-        IM_ASSERT(state != NULL);
+        KR_CORE_ASSERT(state != NULL);
         if (!is_displaying_hint)
             buf_display_end = buf_display + state->CurLenA;
 
@@ -4975,8 +4975,8 @@ bool ImGui::ColorEdit4(const char* label, float col[4], KarmaGuiColorEditFlags f
     if (!(flags & KGGuiColorEditFlags_InputMask_))
         flags |= (g.ColorEditOptions & KGGuiColorEditFlags_InputMask_);
     flags |= (g.ColorEditOptions & ~(KGGuiColorEditFlags_DisplayMask_ | KGGuiColorEditFlags_DataTypeMask_ | KGGuiColorEditFlags_PickerMask_ | KGGuiColorEditFlags_InputMask_));
-    IM_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_DisplayMask_)); // Check that only 1 is selected
-    IM_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_InputMask_));   // Check that only 1 is selected
+    KR_CORE_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_DisplayMask_)); // Check that only 1 is selected
+    KR_CORE_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_InputMask_));   // Check that only 1 is selected
 
     const bool alpha = (flags & KGGuiColorEditFlags_NoAlpha) == 0;
     const bool hdr = (flags & KGGuiColorEditFlags_HDR) != 0;
@@ -5190,10 +5190,10 @@ bool ImGui::ColorPicker3(const char* label, float col[3], KarmaGuiColorEditFlags
 static void RenderArrowsForVerticalBar(KGDrawList* draw_list, ImVec2 pos, ImVec2 half_sz, float bar_w, float alpha)
 {
     KGU32 alpha8 = IM_F32_TO_INT8_SAT(alpha);
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + half_sz.x + 1,         pos.y), ImVec2(half_sz.x + 2, half_sz.y + 1), KGGuiDir_Right, IM_COL32(0,0,0,alpha8));
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + half_sz.x,             pos.y), half_sz,                              KGGuiDir_Right, IM_COL32(255,255,255,alpha8));
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + bar_w - half_sz.x - 1, pos.y), ImVec2(half_sz.x + 2, half_sz.y + 1), KGGuiDir_Left,  IM_COL32(0,0,0,alpha8));
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + bar_w - half_sz.x,     pos.y), half_sz,                              KGGuiDir_Left,  IM_COL32(255,255,255,alpha8));
+    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + half_sz.x + 1,         pos.y), ImVec2(half_sz.x + 2, half_sz.y + 1), KGGuiDir_Right, KG_COL32(0,0,0,alpha8));
+    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + half_sz.x,             pos.y), half_sz,                              KGGuiDir_Right, KG_COL32(255,255,255,alpha8));
+    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + bar_w - half_sz.x - 1, pos.y), ImVec2(half_sz.x + 2, half_sz.y + 1), KGGuiDir_Left,  KG_COL32(0,0,0,alpha8));
+    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + bar_w - half_sz.x,     pos.y), half_sz,                              KGGuiDir_Left,  KG_COL32(255,255,255,alpha8));
 }
 
 // Note: ColorPicker4() only accesses 3 floats if KGGuiColorEditFlags_NoAlpha flag is set.
@@ -5229,8 +5229,8 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
         flags |= ((g.ColorEditOptions & KGGuiColorEditFlags_PickerMask_) ? g.ColorEditOptions : KGGuiColorEditFlags_DefaultOptions_) & KGGuiColorEditFlags_PickerMask_;
     if (!(flags & KGGuiColorEditFlags_InputMask_))
         flags |= ((g.ColorEditOptions & KGGuiColorEditFlags_InputMask_) ? g.ColorEditOptions : KGGuiColorEditFlags_DefaultOptions_) & KGGuiColorEditFlags_InputMask_;
-    IM_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_PickerMask_)); // Check that only 1 is selected
-    IM_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_InputMask_));  // Check that only 1 is selected
+    KR_CORE_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_PickerMask_)); // Check that only 1 is selected
+    KR_CORE_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_InputMask_));  // Check that only 1 is selected
     if (!(flags & KGGuiColorEditFlags_NoOptions))
         flags |= (g.ColorEditOptions & KGGuiColorEditFlags_AlphaBar);
 
@@ -5464,10 +5464,10 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     }
 
     const int style_alpha8 = IM_F32_TO_INT8_SAT(style.Alpha);
-    const KGU32 col_black = IM_COL32(0,0,0,style_alpha8);
-    const KGU32 col_white = IM_COL32(255,255,255,style_alpha8);
-    const KGU32 col_midgrey = IM_COL32(128,128,128,style_alpha8);
-    const KGU32 col_hues[6 + 1] = { IM_COL32(255,0,0,style_alpha8), IM_COL32(255,255,0,style_alpha8), IM_COL32(0,255,0,style_alpha8), IM_COL32(0,255,255,style_alpha8), IM_COL32(0,0,255,style_alpha8), IM_COL32(255,0,255,style_alpha8), IM_COL32(255,0,0,style_alpha8) };
+    const KGU32 col_black = KG_COL32(0,0,0,style_alpha8);
+    const KGU32 col_white = KG_COL32(255,255,255,style_alpha8);
+    const KGU32 col_midgrey = KG_COL32(128,128,128,style_alpha8);
+    const KGU32 col_hues[6 + 1] = { KG_COL32(255,0,0,style_alpha8), KG_COL32(255,255,0,style_alpha8), KG_COL32(0,255,0,style_alpha8), KG_COL32(0,255,255,style_alpha8), KG_COL32(0,0,255,style_alpha8), KG_COL32(255,0,255,style_alpha8), KG_COL32(255,0,0,style_alpha8) };
 
     ImVec4 hue_color_f(1, 1, 1, style.Alpha); ColorConvertHSVtoRGB(H, 1, 1, hue_color_f.x, hue_color_f.y, hue_color_f.z);
     KGU32 hue_color32 = ColorConvertFloat4ToU32(hue_color_f);
@@ -5549,7 +5549,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
         float alpha = ImSaturate(col[3]);
         ImRect bar1_bb(bar1_pos_x, picker_pos.y, bar1_pos_x + bars_width, picker_pos.y + sv_picker_size);
         RenderColorRectWithAlphaCheckerboard(draw_list, bar1_bb.Min, bar1_bb.Max, 0, bar1_bb.GetWidth() / 2.0f, ImVec2(0.0f, 0.0f));
-        draw_list->AddRectFilledMultiColor(bar1_bb.Min, bar1_bb.Max, user_col32_striped_of_alpha, user_col32_striped_of_alpha, user_col32_striped_of_alpha & ~IM_COL32_A_MASK, user_col32_striped_of_alpha & ~IM_COL32_A_MASK);
+        draw_list->AddRectFilledMultiColor(bar1_bb.Min, bar1_bb.Max, user_col32_striped_of_alpha, user_col32_striped_of_alpha, user_col32_striped_of_alpha & ~KG_COL32_A_MASK, user_col32_striped_of_alpha & ~KG_COL32_A_MASK);
         float bar1_line_y = IM_ROUND(picker_pos.y + (1.0f - alpha) * sv_picker_size);
         RenderFrameBorder(bar1_bb.Min, bar1_bb.Max, 0.0f);
         RenderArrowsForVerticalBar(draw_list, ImVec2(bar1_pos_x - 1, bar1_line_y), ImVec2(bars_triangles_half_sz + 1, bars_triangles_half_sz), bars_width + 2.0f, style.Alpha);
@@ -5663,10 +5663,10 @@ void ImGui::SetColorEditOptions(KarmaGuiColorEditFlags flags)
         flags |= KGGuiColorEditFlags_DefaultOptions_ & KGGuiColorEditFlags_PickerMask_;
     if ((flags & KGGuiColorEditFlags_InputMask_) == 0)
         flags |= KGGuiColorEditFlags_DefaultOptions_ & KGGuiColorEditFlags_InputMask_;
-    IM_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_DisplayMask_));    // Check only 1 option is selected
-    IM_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_DataTypeMask_));   // Check only 1 option is selected
-    IM_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_PickerMask_));     // Check only 1 option is selected
-    IM_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_InputMask_));      // Check only 1 option is selected
+    KR_CORE_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_DisplayMask_));    // Check only 1 option is selected
+    KR_CORE_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_DataTypeMask_));   // Check only 1 option is selected
+    KR_CORE_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_PickerMask_));     // Check only 1 option is selected
+    KR_CORE_ASSERT(ImIsPowerOfTwo(flags & KGGuiColorEditFlags_InputMask_));      // Check only 1 option is selected
     g.ColorEditOptions = flags;
 }
 
@@ -6058,7 +6058,7 @@ bool ImGui::TreeNodeBehavior(KGGuiID id, KarmaGuiTreeNodeFlags flags, const char
         }
         else if (pressed && g.DragDropHoldJustPressedId == id)
         {
-            IM_ASSERT(button_flags & KGGuiButtonFlags_PressedOnDragDropHold);
+            KR_CORE_ASSERT(button_flags & KGGuiButtonFlags_PressedOnDragDropHold);
             if (!is_open) // When using Drag and Drop "hold to open" we keep the node highlighted after opening, but never close it again.
                 toggled = true;
         }
@@ -6177,7 +6177,7 @@ void ImGui::TreePop()
         }
     window->DC.TreeJumpToParentOnPopMask &= tree_depth_mask - 1;
 
-    IM_ASSERT(window->IDStack.Size > 1); // There should always be 1 element in the IDStack (pushed during window creation). If this triggers you called TreePop/PopID too much.
+    KR_CORE_ASSERT(window->IDStack.Size > 1); // There should always be 1 element in the IDStack (pushed during window creation). If this triggers you called TreePop/PopID too much.
     PopID();
 }
 
@@ -6299,7 +6299,7 @@ bool ImGui::Selectable(const char* label, bool selected, KarmaGuiSelectableFlags
         bb.Max.x += (spacing_x - spacing_L);
         bb.Max.y += (spacing_y - spacing_U);
     }
-    //if (g.IO.KeyCtrl) { GetForegroundDrawList()->AddRect(bb.Min, bb.Max, IM_COL32(0, 255, 0, 255)); }
+    //if (g.IO.KeyCtrl) { GetForegroundDrawList()->AddRect(bb.Min, bb.Max, KG_COL32(0, 255, 0, 255)); }
 
     // Modify ClipRect for the ItemAdd(), faster than doing a PushColumnsBackground/PushTableBackground for every Selectable..
     const float backup_clip_rect_min_x = window->ClipRect.Min.x;
@@ -6480,7 +6480,7 @@ void ImGui::EndListBox()
 {
     KarmaGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
-    IM_ASSERT((window->Flags & KGGuiWindowFlags_ChildWindow) && "Mismatched BeginListBox/EndListBox calls. Did you test the return value of BeginListBox?");
+    KR_CORE_ASSERT((window->Flags & KGGuiWindowFlags_ChildWindow) && "Mismatched BeginListBox/EndListBox calls. Did you test the return value of BeginListBox?");
     IM_UNUSED(window);
 
     EndChildFrame();
@@ -6609,7 +6609,7 @@ int ImGui::PlotEx(ImGuiPlotType plot_type, const char* label, float (*values_get
         {
             const float t = ImClamp((g.IO.MousePos.x - inner_bb.Min.x) / (inner_bb.Max.x - inner_bb.Min.x), 0.0f, 0.9999f);
             const int v_idx = (int)(t * item_count);
-            IM_ASSERT(v_idx >= 0 && v_idx < values_count);
+            KR_CORE_ASSERT(v_idx >= 0 && v_idx < values_count);
 
             const float v0 = values_getter(data, (v_idx + values_offset) % values_count);
             const float v1 = values_getter(data, (v_idx + 1 + values_offset) % values_count);
@@ -6635,7 +6635,7 @@ int ImGui::PlotEx(ImGuiPlotType plot_type, const char* label, float (*values_get
         {
             const float t1 = t0 + t_step;
             const int v1_idx = (int)(t0 * item_count + 0.5f);
-            IM_ASSERT(v1_idx >= 0 && v1_idx < values_count);
+            KR_CORE_ASSERT(v1_idx >= 0 && v1_idx < values_count);
             const float v1 = values_getter(data, (v1_idx + values_offset + 1) % values_count);
             const ImVec2 tp1 = ImVec2( t1, 1.0f - ImSaturate((v1 - scale_min) * inv_scale) );
 
@@ -6812,7 +6812,7 @@ bool ImGui::BeginMenuBar()
     if (!(window->Flags & KGGuiWindowFlags_MenuBar))
         return false;
 
-    IM_ASSERT(!window->DC.MenuBarAppending);
+    KR_CORE_ASSERT(!window->DC.MenuBarAppending);
     BeginGroup(); // Backup position on layer 0 // FIXME: Misleading to use a group for that backup/restore
     PushID("##menubar");
 
@@ -6852,7 +6852,7 @@ void ImGui::EndMenuBar()
             // To do so we claim focus back, restore NavId and then process the movement request for yet another frame.
             // This involve a one-frame delay which isn't very problematic in this situation. We could remove it by scoring in advance for multiple window (probably not worth bothering)
             const ImGuiNavLayer layer = ImGuiNavLayer_Menu;
-            IM_ASSERT(window->DC.NavLayersActiveMaskNext & (1 << layer)); // Sanity check (FIXME: Seems unnecessary)
+            KR_CORE_ASSERT(window->DC.NavLayersActiveMaskNext & (1 << layer)); // Sanity check (FIXME: Seems unnecessary)
             FocusWindow(window);
             SetNavID(window->NavLastIds[layer], layer, 0, window->NavRectRel[layer]);
             g.NavDisableHighlight = true; // Hide highlight for the current frame so we don't see the intermediary selection.
@@ -6862,8 +6862,8 @@ void ImGui::EndMenuBar()
     }
 
     IM_MSVC_WARNING_SUPPRESS(6011); // Static Analysis false positive "warning C6011: Dereferencing NULL pointer 'window'"
-    IM_ASSERT(window->Flags & KGGuiWindowFlags_MenuBar);
-    IM_ASSERT(window->DC.MenuBarAppending);
+    KR_CORE_ASSERT(window->Flags & KGGuiWindowFlags_MenuBar);
+    KR_CORE_ASSERT(window->DC.MenuBarAppending);
     PopClipRect();
     PopID();
     window->DC.MenuBarOffset.x = window->DC.CursorPos.x - window->Pos.x; // Save horizontal position so next append can reuse it. This is kinda equivalent to a per-layer CursorPos.
@@ -6880,7 +6880,7 @@ void ImGui::EndMenuBar()
 // FIXME: The "rect-cut" aspect of this could be formalized into a lower-level helper (rect-cut: https://halt.software/dead-simple-layouts)
 bool ImGui::BeginViewportSideBar(const char* name, KarmaGuiViewport* viewport_p, KarmaGuiDir dir, float axis_size, KarmaGuiWindowFlags window_flags)
 {
-    IM_ASSERT(dir != KGGuiDir_None);
+    KR_CORE_ASSERT(dir != KGGuiDir_None);
 
     ImGuiWindow* bar_window = FindWindowByName(name);
     ImGuiViewportP* viewport = (ImGuiViewportP*)(void*)(viewport_p ? viewport_p : GetMainViewport());
@@ -7088,7 +7088,7 @@ bool ImGui::BeginMenuEx(const char* label, const char* icon, bool enabled)
             tb.y = ta.y + ImMax((tb.y - extra) - ta.y, -ref_unit * 8.0f);                           // triangle has maximum height to limit the slope and the bias toward large sub-menus
             tc.y = ta.y + ImMin((tc.y + extra) - ta.y, +ref_unit * 8.0f);
             moving_toward_child_menu = ImTriangleContainsPoint(ta, tb, tc, g.IO.MousePos);
-            //GetForegroundDrawList()->AddTriangleFilled(ta, tb, tc, moving_toward_child_menu ? IM_COL32(0,128,0,128) : IM_COL32(128,0,0,128)); // [DEBUG]
+            //GetForegroundDrawList()->AddTriangleFilled(ta, tb, tc, moving_toward_child_menu ? KG_COL32(0,128,0,128) : KG_COL32(128,0,0,128)); // [DEBUG]
         }
 
         // The 'HovereWindow == window' check creates an inconsistency (e.g. moving away from menu slowly tends to hit same window, whereas moving away fast does not)
@@ -7180,7 +7180,7 @@ void ImGui::EndMenu()
     // Nav: When a left move request our menu failed, close ourselves.
     KarmaGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
-    IM_ASSERT(window->Flags & KGGuiWindowFlags_Popup);  // Mismatched BeginMenu()/EndMenu() calls
+    KR_CORE_ASSERT(window->Flags & KGGuiWindowFlags_Popup);  // Mismatched BeginMenu()/EndMenu() calls
     ImGuiWindow* parent_window = window->ParentWindow;  // Should always be != NULL is we passed assert.
     if (window->BeginCount == window->BeginCountPreviousFrame)
         if (g.NavMoveDir == KGGuiDir_Left && NavMoveRequestButNoResultYet())
@@ -7578,7 +7578,7 @@ static void ImGui::TabBarLayout(ImGuiTabBar* tab_bar)
     for (int tab_n = 0; tab_n < tab_bar->Tabs.Size; tab_n++)
     {
         ImGuiTabItem* tab = &tab_bar->Tabs[tab_n];
-        IM_ASSERT(tab->LastFrameVisible >= tab_bar->PrevFrameVisible);
+        KR_CORE_ASSERT(tab->LastFrameVisible >= tab_bar->PrevFrameVisible);
 
         if ((most_recently_selected_tab == NULL || most_recently_selected_tab->LastFrameSelected < tab->LastFrameSelected) && !(tab->Flags & KGGuiTabItemFlags_Button))
             most_recently_selected_tab = tab;
@@ -7728,7 +7728,7 @@ static KGU32   ImGui::TabBarCalcTabID(ImGuiTabBar* tab_bar, const char* label, I
     if (docked_window != NULL)
     {
         IM_UNUSED(tab_bar);
-        IM_ASSERT(tab_bar->Flags & KGGuiTabBarFlags_DockNode);
+        KR_CORE_ASSERT(tab_bar->Flags & KGGuiTabBarFlags_DockNode);
         KGGuiID id = docked_window->TabId;
         KeepAliveID(id);
         return id;
@@ -7774,8 +7774,8 @@ ImGuiTabItem* ImGui::TabBarFindMostRecentlySelectedTabForActiveWindow(ImGuiTabBa
 void ImGui::TabBarAddTab(ImGuiTabBar* tab_bar, KarmaGuiTabItemFlags tab_flags, ImGuiWindow* window)
 {
     KarmaGuiContext& g = *GImGui;
-    IM_ASSERT(TabBarFindTabByID(tab_bar, window->TabId) == NULL);
-    IM_ASSERT(g.CurrentTabBar != tab_bar);  // Can't work while the tab bar is active as our tab doesn't have an X offset yet, in theory we could/should test something like (tab_bar->CurrFrameVisible < g.FrameCount) but we'd need to solve why triggers the commented early-out assert in BeginTabBarEx() (probably dock node going from implicit to explicit in same frame)
+    KR_CORE_ASSERT(TabBarFindTabByID(tab_bar, window->TabId) == NULL);
+    KR_CORE_ASSERT(g.CurrentTabBar != tab_bar);  // Can't work while the tab bar is active as our tab doesn't have an X offset yet, in theory we could/should test something like (tab_bar->CurrFrameVisible < g.FrameCount) but we'd need to solve why triggers the commented early-out assert in BeginTabBarEx() (probably dock node going from implicit to explicit in same frame)
 
     if (!window->HasCloseButton)
         tab_flags |= KGGuiTabItemFlags_NoCloseButton;       // Set _NoCloseButton immediately because it will be used for first-frame width calculation.
@@ -7868,8 +7868,8 @@ static void ImGui::TabBarScrollToTab(ImGuiTabBar* tab_bar, KGGuiID tab_id, ImGui
 
 void ImGui::TabBarQueueReorder(ImGuiTabBar* tab_bar, const ImGuiTabItem* tab, int offset)
 {
-    IM_ASSERT(offset != 0);
-    IM_ASSERT(tab_bar->ReorderRequestTabId == 0);
+    KR_CORE_ASSERT(offset != 0);
+    KR_CORE_ASSERT(tab_bar->ReorderRequestTabId == 0);
     tab_bar->ReorderRequestTabId = tab->ID;
     tab_bar->ReorderRequestOffset = (KGS16)offset;
 }
@@ -7877,7 +7877,7 @@ void ImGui::TabBarQueueReorder(ImGuiTabBar* tab_bar, const ImGuiTabItem* tab, in
 void ImGui::TabBarQueueReorderFromMousePos(ImGuiTabBar* tab_bar, const ImGuiTabItem* src_tab, ImVec2 mouse_pos)
 {
     KarmaGuiContext& g = *GImGui;
-    IM_ASSERT(tab_bar->ReorderRequestTabId == 0);
+    KR_CORE_ASSERT(tab_bar->ReorderRequestTabId == 0);
     if ((tab_bar->Flags & KGGuiTabBarFlags_Reorderable) == 0)
         return;
 
@@ -7901,7 +7901,7 @@ void ImGui::TabBarQueueReorderFromMousePos(ImGuiTabBar* tab_bar, const ImGuiTabI
         // Include spacing after tab, so when mouse cursor is between tabs we would not continue checking further tabs that are not hovered.
         const float x1 = bar_offset + dst_tab->Offset - g.Style.ItemInnerSpacing.x;
         const float x2 = bar_offset + dst_tab->Offset + dst_tab->Width + g.Style.ItemInnerSpacing.x;
-        //GetForegroundDrawList()->AddRect(ImVec2(x1, tab_bar->BarRect.Min.y), ImVec2(x2, tab_bar->BarRect.Max.y), IM_COL32(255, 0, 0, 255));
+        //GetForegroundDrawList()->AddRect(ImVec2(x1, tab_bar->BarRect.Min.y), ImVec2(x2, tab_bar->BarRect.Max.y), KG_COL32(255, 0, 0, 255));
         if ((dir < 0 && mouse_pos.x > x1) || (dir > 0 && mouse_pos.x < x2))
             break;
     }
@@ -7916,7 +7916,7 @@ bool ImGui::TabBarProcessReorder(ImGuiTabBar* tab_bar)
     if (tab1 == NULL || (tab1->Flags & KGGuiTabItemFlags_NoReorder))
         return false;
 
-    //IM_ASSERT(tab_bar->Flags & KGGuiTabBarFlags_Reorderable); // <- this may happen when using debug tools
+    //KR_CORE_ASSERT(tab_bar->Flags & KGGuiTabBarFlags_Reorderable); // <- this may happen when using debug tools
     int tab2_order = tab_bar->GetTabOrder(tab1) + tab_bar->ReorderRequestOffset;
     if (tab2_order < 0 || tab2_order >= tab_bar->Tabs.Size)
         return false;
@@ -7950,7 +7950,7 @@ static ImGuiTabItem* ImGui::TabBarScrollingButtons(ImGuiTabBar* tab_bar)
     const float scrolling_buttons_width = arrow_button_size.x * 2.0f;
 
     const ImVec2 backup_cursor_pos = window->DC.CursorPos;
-    //window->DrawList->AddRect(ImVec2(tab_bar->BarRect.Max.x - scrolling_buttons_width, tab_bar->BarRect.Min.y), ImVec2(tab_bar->BarRect.Max.x, tab_bar->BarRect.Max.y), IM_COL32(255,0,0,255));
+    //window->DrawList->AddRect(ImVec2(tab_bar->BarRect.Max.x - scrolling_buttons_width, tab_bar->BarRect.Min.y), ImVec2(tab_bar->BarRect.Max.x, tab_bar->BarRect.Max.y), KG_COL32(255,0,0,255));
 
     int select_dir = 0;
     ImVec4 arrow_col = g.Style.Colors[KGGuiCol_Text];
@@ -8066,7 +8066,7 @@ bool    ImGui::BeginTabItem(const char* label, bool* p_open, KarmaGuiTabItemFlag
         IM_ASSERT_USER_ERROR(tab_bar, "Needs to be called between BeginTabBar() and EndTabBar()!");
         return false;
     }
-    IM_ASSERT((flags & KGGuiTabItemFlags_Button) == 0);             // BeginTabItem() Can't be used with button flags, use TabItemButton() instead!
+    KR_CORE_ASSERT((flags & KGGuiTabItemFlags_Button) == 0);             // BeginTabItem() Can't be used with button flags, use TabItemButton() instead!
 
     bool ret = TabItemEx(tab_bar, label, p_open, flags, NULL);
     if (ret && !(flags & KGGuiTabItemFlags_NoPushId))
@@ -8090,7 +8090,7 @@ void    ImGui::EndTabItem()
         IM_ASSERT_USER_ERROR(tab_bar != NULL, "Needs to be called between BeginTabBar() and EndTabBar()!");
         return;
     }
-    IM_ASSERT(tab_bar->LastTabItemIdx >= 0);
+    KR_CORE_ASSERT(tab_bar->LastTabItemIdx >= 0);
     ImGuiTabItem* tab = &tab_bar->Tabs[tab_bar->LastTabItemIdx];
     if (!(tab->Flags & KGGuiTabItemFlags_NoPushId))
         PopID();
@@ -8138,8 +8138,8 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
         return false;
     }
 
-    IM_ASSERT(!p_open || !(flags & KGGuiTabItemFlags_Button));
-    IM_ASSERT((flags & (KGGuiTabItemFlags_Leading | KGGuiTabItemFlags_Trailing)) != (KGGuiTabItemFlags_Leading | KGGuiTabItemFlags_Trailing)); // Can't use both Leading and Trailing
+    KR_CORE_ASSERT(!p_open || !(flags & KGGuiTabItemFlags_Button));
+    KR_CORE_ASSERT((flags & (KGGuiTabItemFlags_Leading | KGGuiTabItemFlags_Trailing)) != (KGGuiTabItemFlags_Leading | KGGuiTabItemFlags_Trailing)); // Can't use both Leading and Trailing
 
     // Store into KGGuiTabItemFlags_NoCloseButton, also honor KGGuiTabItemFlags_NoCloseButton passed by user (although not documented)
     if (flags & KGGuiTabItemFlags_NoCloseButton)
@@ -8182,7 +8182,7 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
     // (regular tabs are permitted in a DockNode tab bar, but window tabs not permitted in a non-DockNode tab bar)
     if (docked_window != NULL)
     {
-        IM_ASSERT(tab_bar->Flags & KGGuiTabBarFlags_DockNode);
+        KR_CORE_ASSERT(tab_bar->Flags & KGGuiTabBarFlags_DockNode);
         tab->NameOffset = -1;
     }
     else
@@ -8313,7 +8313,7 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
                 float threshold_base = g.FontSize;
                 float threshold_x = (threshold_base * 2.2f);
                 float threshold_y = (threshold_base * 1.5f) + ImClamp((ImFabs(g.IO.MouseDragMaxDistanceAbs[0].x) - threshold_base * 2.0f) * 0.20f, 0.0f, threshold_base * 4.0f);
-                //GetForegroundDrawList()->AddRect(ImVec2(bb.Min.x - threshold_x, bb.Min.y - threshold_y), ImVec2(bb.Max.x + threshold_x, bb.Max.y + threshold_y), IM_COL32_WHITE); // [DEBUG]
+                //GetForegroundDrawList()->AddRect(ImVec2(bb.Min.x - threshold_x, bb.Min.y - threshold_y), ImVec2(bb.Max.x + threshold_x, bb.Max.y + threshold_y), KG_COL32_WHITE); // [DEBUG]
 
                 float distance_from_edge_y = ImMax(bb.Min.y - g.IO.MousePos.y, g.IO.MousePos.y - bb.Max.y);
                 if (distance_from_edge_y >= threshold_y)
@@ -8393,7 +8393,7 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
             if (IsItemHovered(KGGuiHoveredFlags_DelayNormal))
                 SetTooltip("%.*s", (int)(FindRenderedTextEnd(label) - label), label);
 
-    IM_ASSERT(!is_tab_button || !(tab_bar->SelectedTabId == tab->ID && is_tab_button)); // TabItemButton should not be selected
+    KR_CORE_ASSERT(!is_tab_button || !(tab_bar->SelectedTabId == tab->ID && is_tab_button)); // TabItemButton should not be selected
     if (is_tab_button)
         return pressed;
     return tab_contents_visible;
@@ -8448,7 +8448,7 @@ void ImGui::TabItemBackground(KGDrawList* draw_list, const ImRect& bb, KarmaGuiT
     KarmaGuiContext& g = *GImGui;
     const float width = bb.GetWidth();
     IM_UNUSED(flags);
-    IM_ASSERT(width > 0.0f);
+    KR_CORE_ASSERT(width > 0.0f);
     const float rounding = ImMax(0.0f, ImMin((flags & KGGuiTabItemFlags_Button) ? g.Style.FrameRounding : g.Style.TabRounding, width * 0.5f - 1.0f));
     const float y1 = bb.Min.y + 1.0f;
     const float y2 = bb.Max.y + ((flags & KGGuiTabItemFlags_Preview) ? 0.0f : -1.0f);
@@ -8498,7 +8498,7 @@ void ImGui::TabItemLabelAndCloseButton(KGDrawList* draw_list, const ImRect& bb, 
     if (out_text_clipped)
     {
         *out_text_clipped = (text_ellipsis_clip_bb.Min.x + label_size.x) > text_pixel_clip_bb.Max.x;
-        //draw_list->AddCircle(text_ellipsis_clip_bb.Min, 3.0f, *out_text_clipped ? IM_COL32(255, 0, 0, 255) : IM_COL32(0, 255, 0, 255));
+        //draw_list->AddCircle(text_ellipsis_clip_bb.Min, 3.0f, *out_text_clipped ? KG_COL32(255, 0, 0, 255) : KG_COL32(0, 255, 0, 255));
     }
 
     const float button_sz = g.FontSize;

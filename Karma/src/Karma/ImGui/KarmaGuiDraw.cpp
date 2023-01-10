@@ -114,7 +114,7 @@ namespace IMGUI_STB_NAMESPACE
 #ifndef STB_RECT_PACK_IMPLEMENTATION                        // in case the user already have an implementation in the _same_ compilation unit (e.g. unity builds)
 #ifndef IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION          // in case the user already have an implementation in another compilation unit
 #define STBRP_STATIC
-#define STBRP_ASSERT(x)     do { IM_ASSERT(x); } while (0)
+#define STBRP_ASSERT(x)     do { KR_CORE_ASSERT(x); } while (0)
 #define STBRP_SORT          ImQsort
 #define STB_RECT_PACK_IMPLEMENTATION
 #endif
@@ -128,9 +128,9 @@ namespace IMGUI_STB_NAMESPACE
 #ifdef  IMGUI_ENABLE_STB_TRUETYPE
 #ifndef STB_TRUETYPE_IMPLEMENTATION                         // in case the user already have an implementation in the _same_ compilation unit (e.g. unity builds)
 #ifndef IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION           // in case the user already have an implementation in another compilation unit
-#define STBTT_malloc(x,u)   ((void)(u), IM_ALLOC(x))
-#define STBTT_free(x,u)     ((void)(u), IM_FREE(x))
-#define STBTT_assert(x)     do { IM_ASSERT(x); } while(0)
+#define STBTT_malloc(x,u)   ((void)(u), KG_ALLOC(x))
+#define STBTT_free(x,u)     ((void)(u), KG_FREE(x))
+#define STBTT_assert(x)     do { KR_CORE_ASSERT(x); } while(0)
 #define STBTT_fmod(x,y)     ImFmod(x,y)
 #define STBTT_sqrt(x)       ImSqrt(x)
 #define STBTT_pow(x,y)      ImPow(x,y)
@@ -378,7 +378,7 @@ void KGDrawListSharedData::SetCircleTessellationMaxError(float max_error)
     if (CircleSegmentMaxError == max_error)
         return;
 
-    IM_ASSERT(max_error > 0.0f);
+    KR_CORE_ASSERT(max_error > 0.0f);
     CircleSegmentMaxError = max_error;
     for (int i = 0; i < IM_ARRAYSIZE(CircleSegmentCounts); i++)
     {
@@ -431,7 +431,7 @@ void KGDrawList::_ClearFreeMemory()
 
 KGDrawList* KGDrawList::CloneOutput() const
 {
-    KGDrawList* dst = IM_NEW(KGDrawList(_Data));
+    KGDrawList* dst = KG_NEW(KGDrawList(_Data));
     dst->CmdBuffer = CmdBuffer;
     dst->IdxBuffer = IdxBuffer;
     dst->VtxBuffer = VtxBuffer;
@@ -447,7 +447,7 @@ void KGDrawList::AddDrawCmd()
     draw_cmd.VtxOffset = _CmdHeader.VtxOffset;
     draw_cmd.IdxOffset = IdxBuffer.Size;
 
-    IM_ASSERT(draw_cmd.ClipRect.x <= draw_cmd.ClipRect.z && draw_cmd.ClipRect.y <= draw_cmd.ClipRect.w);
+    KR_CORE_ASSERT(draw_cmd.ClipRect.x <= draw_cmd.ClipRect.z && draw_cmd.ClipRect.y <= draw_cmd.ClipRect.w);
     CmdBuffer.push_back(draw_cmd);
 }
 
@@ -464,11 +464,11 @@ void KGDrawList::_PopUnusedDrawCmd()
     }
 }
 
-void KGDrawList::AddCallback(ImDrawCallback callback, void* callback_data)
+void KGDrawList::AddCallback(KGDrawCallback callback, void* callback_data)
 {
     IM_ASSERT_PARANOID(CmdBuffer.Size > 0);
     KGDrawCmd* curr_cmd = &CmdBuffer.Data[CmdBuffer.Size - 1];
-    IM_ASSERT(curr_cmd->UserCallback == NULL);
+    KR_CORE_ASSERT(curr_cmd->UserCallback == NULL);
     if (curr_cmd->ElemCount != 0)
     {
         AddDrawCmd();
@@ -511,7 +511,7 @@ void KGDrawList::_OnChangedClipRect()
         AddDrawCmd();
         return;
     }
-    IM_ASSERT(curr_cmd->UserCallback == NULL);
+    KR_CORE_ASSERT(curr_cmd->UserCallback == NULL);
 
     // Try to merge with previous command if it matches, else use current command
     KGDrawCmd* prev_cmd = curr_cmd - 1;
@@ -534,7 +534,7 @@ void KGDrawList::_OnChangedTextureID()
         AddDrawCmd();
         return;
     }
-    IM_ASSERT(curr_cmd->UserCallback == NULL);
+    KR_CORE_ASSERT(curr_cmd->UserCallback == NULL);
 
     // Try to merge with previous command if it matches, else use current command
     KGDrawCmd* prev_cmd = curr_cmd - 1;
@@ -553,13 +553,13 @@ void KGDrawList::_OnChangedVtxOffset()
     _VtxCurrentIdx = 0;
     IM_ASSERT_PARANOID(CmdBuffer.Size > 0);
     KGDrawCmd* curr_cmd = &CmdBuffer.Data[CmdBuffer.Size - 1];
-    //IM_ASSERT(curr_cmd->VtxOffset != _CmdHeader.VtxOffset); // See #3349
+    //KR_CORE_ASSERT(curr_cmd->VtxOffset != _CmdHeader.VtxOffset); // See #3349
     if (curr_cmd->ElemCount != 0)
     {
         AddDrawCmd();
         return;
     }
-    IM_ASSERT(curr_cmd->UserCallback == NULL);
+    KR_CORE_ASSERT(curr_cmd->UserCallback == NULL);
     curr_cmd->VtxOffset = _CmdHeader.VtxOffset;
 }
 
@@ -726,7 +726,7 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
     {
         // Anti-aliased stroke
         const float AA_SIZE = _FringeScale;
-        const KGU32 col_trans = col & ~IM_COL32_A_MASK;
+        const KGU32 col_trans = col & ~KG_COL32_A_MASK;
 
         // Thicknesses <1.0 should behave like thickness 1.0
         thickness = ImMax(thickness, 1.0f);
@@ -736,7 +736,7 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
         // Do we want to draw this line using a texture?
         // - For now, only draw integer-width lines using textures to avoid issues with the way scaling occurs, could be improved.
         // - If AA_SIZE is not 1.0f we cannot use the texture path.
-        const bool use_texture = (Flags & KGDrawListFlags_AntiAliasedLinesUseTex) && (integer_thickness < IM_DRAWLIST_TEX_LINES_WIDTH_MAX) && (fractional_thickness <= 0.00001f) && (AA_SIZE == 1.0f);
+        const bool use_texture = (Flags & KGDrawListFlags_AntiAliasedLinesUseTex) && (integer_thickness < KG_DRAWLIST_TEX_LINES_WIDTH_MAX) && (fractional_thickness <= 0.00001f) && (AA_SIZE == 1.0f);
 
         // We should never hit this, because NewFrame() doesn't set KGDrawListFlags_AntiAliasedLinesUseTex unless KGFontAtlasFlags_NoBakedLines is off
         IM_ASSERT_PARANOID(!use_texture || !(_Data->Font->ContainerAtlas->Flags & KGFontAtlasFlags_NoBakedLines));
@@ -981,7 +981,7 @@ void KGDrawList::AddConvexPolyFilled(const ImVec2* points, const int points_coun
     {
         // Anti-aliased Fill
         const float AA_SIZE = _FringeScale;
-        const KGU32 col_trans = col & ~IM_COL32_A_MASK;
+        const KGU32 col_trans = col & ~KG_COL32_A_MASK;
         const int idx_count = (points_count - 2)*3 + points_count * 6;
         const int vtx_count = (points_count * 2);
         PrimReserve(idx_count, vtx_count);
@@ -1291,7 +1291,7 @@ void KGDrawList::PathBezierCubicCurveTo(const ImVec2& p2, const ImVec2& p3, cons
     ImVec2 p1 = _Path.back();
     if (num_segments == 0)
     {
-        IM_ASSERT(_Data->CurveTessellationTol > 0.0f);
+        KR_CORE_ASSERT(_Data->CurveTessellationTol > 0.0f);
         PathBezierCubicCurveToCasteljau(&_Path, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y, _Data->CurveTessellationTol, 0); // Auto-tessellated
     }
     else
@@ -1307,7 +1307,7 @@ void KGDrawList::PathBezierQuadraticCurveTo(const ImVec2& p2, const ImVec2& p3, 
     ImVec2 p1 = _Path.back();
     if (num_segments == 0)
     {
-        IM_ASSERT(_Data->CurveTessellationTol > 0.0f);
+        KR_CORE_ASSERT(_Data->CurveTessellationTol > 0.0f);
         PathBezierQuadraticCurveToCasteljau(&_Path, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, _Data->CurveTessellationTol, 0);// Auto-tessellated
     }
     else
@@ -1345,7 +1345,7 @@ static inline KGDrawFlags FixRectCornerFlags(KGDrawFlags flags)
 
     // If this triggers, please update your code replacing hardcoded values with new KGDrawFlags_RoundCorners* values.
     // Note that KGDrawFlags_Closed (== 0x01) is an invalid flag for AddRect(), AddRectFilled(), PathRect() etc...
-    IM_ASSERT((flags & 0x0F) == 0 && "Misuse of legacy hardcoded ImDrawCornerFlags values!");
+    KR_CORE_ASSERT((flags & 0x0F) == 0 && "Misuse of legacy hardcoded ImDrawCornerFlags values!");
 
     if ((flags & KGDrawFlags_RoundCornersMask_) == 0)
         flags |= KGDrawFlags_RoundCornersAll;
@@ -1381,7 +1381,7 @@ void KGDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, KGDr
 
 void KGDrawList::AddLine(const ImVec2& p1, const ImVec2& p2, KGU32 col, float thickness)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
     PathLineTo(p1 + ImVec2(0.5f, 0.5f));
     PathLineTo(p2 + ImVec2(0.5f, 0.5f));
@@ -1392,7 +1392,7 @@ void KGDrawList::AddLine(const ImVec2& p1, const ImVec2& p2, KGU32 col, float th
 // Note we don't render 1 pixels sized rectangles properly.
 void KGDrawList::AddRect(const ImVec2& p_min, const ImVec2& p_max, KGU32 col, float rounding, KGDrawFlags flags, float thickness)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
     if (Flags & KGDrawListFlags_AntiAliasedLines)
         PathRect(p_min + ImVec2(0.50f, 0.50f), p_max - ImVec2(0.50f, 0.50f), rounding, flags);
@@ -1403,7 +1403,7 @@ void KGDrawList::AddRect(const ImVec2& p_min, const ImVec2& p_max, KGU32 col, fl
 
 void KGDrawList::AddRectFilled(const ImVec2& p_min, const ImVec2& p_max, KGU32 col, float rounding, KGDrawFlags flags)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
     if (rounding < 0.5f || (flags & KGDrawFlags_RoundCornersMask_) == KGDrawFlags_RoundCornersNone)
     {
@@ -1420,7 +1420,7 @@ void KGDrawList::AddRectFilled(const ImVec2& p_min, const ImVec2& p_max, KGU32 c
 // p_min = upper-left, p_max = lower-right
 void KGDrawList::AddRectFilledMultiColor(const ImVec2& p_min, const ImVec2& p_max, KGU32 col_upr_left, KGU32 col_upr_right, KGU32 col_bot_right, KGU32 col_bot_left)
 {
-    if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) & IM_COL32_A_MASK) == 0)
+    if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) & KG_COL32_A_MASK) == 0)
         return;
 
     const ImVec2 uv = _Data->TexUvWhitePixel;
@@ -1435,7 +1435,7 @@ void KGDrawList::AddRectFilledMultiColor(const ImVec2& p_min, const ImVec2& p_ma
 
 void KGDrawList::AddQuad(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col, float thickness)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     PathLineTo(p1);
@@ -1447,7 +1447,7 @@ void KGDrawList::AddQuad(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, c
 
 void KGDrawList::AddQuadFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     PathLineTo(p1);
@@ -1459,7 +1459,7 @@ void KGDrawList::AddQuadFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2&
 
 void KGDrawList::AddTriangle(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col, float thickness)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     PathLineTo(p1);
@@ -1470,7 +1470,7 @@ void KGDrawList::AddTriangle(const ImVec2& p1, const ImVec2& p2, const ImVec2& p
 
 void KGDrawList::AddTriangleFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     PathLineTo(p1);
@@ -1481,7 +1481,7 @@ void KGDrawList::AddTriangleFilled(const ImVec2& p1, const ImVec2& p2, const ImV
 
 void KGDrawList::AddCircle(const ImVec2& center, float radius, KGU32 col, int num_segments, float thickness)
 {
-    if ((col & IM_COL32_A_MASK) == 0 || radius < 0.5f)
+    if ((col & KG_COL32_A_MASK) == 0 || radius < 0.5f)
         return;
 
     if (num_segments <= 0)
@@ -1505,7 +1505,7 @@ void KGDrawList::AddCircle(const ImVec2& center, float radius, KGU32 col, int nu
 
 void KGDrawList::AddCircleFilled(const ImVec2& center, float radius, KGU32 col, int num_segments)
 {
-    if ((col & IM_COL32_A_MASK) == 0 || radius < 0.5f)
+    if ((col & KG_COL32_A_MASK) == 0 || radius < 0.5f)
         return;
 
     if (num_segments <= 0)
@@ -1530,7 +1530,7 @@ void KGDrawList::AddCircleFilled(const ImVec2& center, float radius, KGU32 col, 
 // Guaranteed to honor 'num_segments'
 void KGDrawList::AddNgon(const ImVec2& center, float radius, KGU32 col, int num_segments, float thickness)
 {
-    if ((col & IM_COL32_A_MASK) == 0 || num_segments <= 2)
+    if ((col & KG_COL32_A_MASK) == 0 || num_segments <= 2)
         return;
 
     // Because we are filling a closed shape we remove 1 from the count of segments/points
@@ -1542,7 +1542,7 @@ void KGDrawList::AddNgon(const ImVec2& center, float radius, KGU32 col, int num_
 // Guaranteed to honor 'num_segments'
 void KGDrawList::AddNgonFilled(const ImVec2& center, float radius, KGU32 col, int num_segments)
 {
-    if ((col & IM_COL32_A_MASK) == 0 || num_segments <= 2)
+    if ((col & KG_COL32_A_MASK) == 0 || num_segments <= 2)
         return;
 
     // Because we are filling a closed shape we remove 1 from the count of segments/points
@@ -1554,7 +1554,7 @@ void KGDrawList::AddNgonFilled(const ImVec2& center, float radius, KGU32 col, in
 // Cubic Bezier takes 4 controls points
 void KGDrawList::AddBezierCubic(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col, float thickness, int num_segments)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     PathLineTo(p1);
@@ -1565,7 +1565,7 @@ void KGDrawList::AddBezierCubic(const ImVec2& p1, const ImVec2& p2, const ImVec2
 // Quadratic Bezier takes 3 controls points
 void KGDrawList::AddBezierQuadratic(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col, float thickness, int num_segments)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     PathLineTo(p1);
@@ -1575,7 +1575,7 @@ void KGDrawList::AddBezierQuadratic(const ImVec2& p1, const ImVec2& p2, const Im
 
 void KGDrawList::AddText(const KGFont* font, float font_size, const ImVec2& pos, KGU32 col, const char* text_begin, const char* text_end, float wrap_width, const ImVec4* cpu_fine_clip_rect)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     if (text_end == NULL)
@@ -1589,7 +1589,7 @@ void KGDrawList::AddText(const KGFont* font, float font_size, const ImVec2& pos,
     if (font_size == 0.0f)
         font_size = _Data->FontSize;
 
-    IM_ASSERT(font->ContainerAtlas->TexID == _CmdHeader.TextureId);  // Use high-level ImGui::PushFont() or low-level KGDrawList::PushTextureId() to change font.
+    KR_CORE_ASSERT(font->ContainerAtlas->TexID == _CmdHeader.TextureId);  // Use high-level ImGui::PushFont() or low-level KGDrawList::PushTextureId() to change font.
 
     ImVec4 clip_rect = _CmdHeader.ClipRect;
     if (cpu_fine_clip_rect)
@@ -1609,7 +1609,7 @@ void KGDrawList::AddText(const ImVec2& pos, KGU32 col, const char* text_begin, c
 
 void KGDrawList::AddImage(KGTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, KGU32 col)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     const bool push_texture_id = user_texture_id != _CmdHeader.TextureId;
@@ -1625,7 +1625,7 @@ void KGDrawList::AddImage(KGTextureID user_texture_id, const ImVec2& p_min, cons
 
 void KGDrawList::AddImageQuad(KGTextureID user_texture_id, const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& uv1, const ImVec2& uv2, const ImVec2& uv3, const ImVec2& uv4, KGU32 col)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     const bool push_texture_id = user_texture_id != _CmdHeader.TextureId;
@@ -1641,7 +1641,7 @@ void KGDrawList::AddImageQuad(KGTextureID user_texture_id, const ImVec2& p1, con
 
 void KGDrawList::AddImageRounded(KGTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, KGU32 col, float rounding, KGDrawFlags flags)
 {
-    if ((col & IM_COL32_A_MASK) == 0)
+    if ((col & KG_COL32_A_MASK) == 0)
         return;
 
     flags = FixRectCornerFlags(flags);
@@ -1701,7 +1701,7 @@ void KGDrawListSplitter::ClearFreeMemory()
 void KGDrawListSplitter::Split(KGDrawList* draw_list, int channels_count)
 {
     IM_UNUSED(draw_list);
-    IM_ASSERT(_Current == 0 && _Count <= 1 && "Nested channel splitting is not supported. Please use separate instances of KGDrawListSplitter.");
+    KR_CORE_ASSERT(_Current == 0 && _Count <= 1 && "Nested channel splitting is not supported. Please use separate instances of KGDrawListSplitter.");
     int old_channels_count = _Channels.Size;
     if (old_channels_count < channels_count)
     {
@@ -1718,7 +1718,7 @@ void KGDrawListSplitter::Split(KGDrawList* draw_list, int channels_count)
     {
         if (i >= old_channels_count)
         {
-            IM_PLACEMENT_NEW(&_Channels[i]) KGDrawChannel();
+            KG_PLACEMENT_NEW(&_Channels[i]) KGDrawChannel();
         }
         else
         {
@@ -1801,7 +1801,7 @@ void KGDrawListSplitter::Merge(KGDrawList* draw_list)
 
 void KGDrawListSplitter::SetCurrentChannel(KGDrawList* draw_list, int idx)
 {
-    IM_ASSERT(idx >= 0 && idx < _Count);
+    KR_CORE_ASSERT(idx >= 0 && idx < _Count);
     if (_Current == idx)
         return;
 
@@ -1873,12 +1873,12 @@ void ImGui::ShadeVertsLinearColorGradientKeepAlpha(KGDrawList* draw_list, int ve
     float gradient_inv_length2 = 1.0f / ImLengthSqr(gradient_extent);
     KGDrawVert* vert_start = draw_list->VtxBuffer.Data + vert_start_idx;
     KGDrawVert* vert_end = draw_list->VtxBuffer.Data + vert_end_idx;
-    const int col0_r = (int)(col0 >> IM_COL32_R_SHIFT) & 0xFF;
-    const int col0_g = (int)(col0 >> IM_COL32_G_SHIFT) & 0xFF;
-    const int col0_b = (int)(col0 >> IM_COL32_B_SHIFT) & 0xFF;
-    const int col_delta_r = ((int)(col1 >> IM_COL32_R_SHIFT) & 0xFF) - col0_r;
-    const int col_delta_g = ((int)(col1 >> IM_COL32_G_SHIFT) & 0xFF) - col0_g;
-    const int col_delta_b = ((int)(col1 >> IM_COL32_B_SHIFT) & 0xFF) - col0_b;
+    const int col0_r = (int)(col0 >> KG_COL32_R_SHIFT) & 0xFF;
+    const int col0_g = (int)(col0 >> KG_COL32_G_SHIFT) & 0xFF;
+    const int col0_b = (int)(col0 >> KG_COL32_B_SHIFT) & 0xFF;
+    const int col_delta_r = ((int)(col1 >> KG_COL32_R_SHIFT) & 0xFF) - col0_r;
+    const int col_delta_g = ((int)(col1 >> KG_COL32_G_SHIFT) & 0xFF) - col0_g;
+    const int col_delta_b = ((int)(col1 >> KG_COL32_B_SHIFT) & 0xFF) - col0_b;
     for (KGDrawVert* vert = vert_start; vert < vert_end; vert++)
     {
         float d = ImDot(vert->pos - gradient_p0, gradient_extent);
@@ -1886,7 +1886,7 @@ void ImGui::ShadeVertsLinearColorGradientKeepAlpha(KGDrawList* draw_list, int ve
         int r = (int)(col0_r + col_delta_r * t);
         int g = (int)(col0_g + col_delta_g * t);
         int b = (int)(col0_b + col_delta_b * t);
-        vert->col = (r << IM_COL32_R_SHIFT) | (g << IM_COL32_G_SHIFT) | (b << IM_COL32_B_SHIFT) | (vert->col & IM_COL32_A_MASK);
+        vert->col = (r << KG_COL32_R_SHIFT) | (g << KG_COL32_G_SHIFT) | (b << KG_COL32_B_SHIFT) | (vert->col & KG_COL32_A_MASK);
     }
 }
 
@@ -1993,17 +1993,17 @@ KGFontAtlas::KGFontAtlas()
 
 KGFontAtlas::~KGFontAtlas()
 {
-    IM_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
+    KR_CORE_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
     Clear();
 }
 
 void    KGFontAtlas::ClearInputData()
 {
-    IM_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
+    KR_CORE_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
     for (int i = 0; i < ConfigData.Size; i++)
         if (ConfigData[i].FontData && ConfigData[i].FontDataOwnedByAtlas)
         {
-            IM_FREE(ConfigData[i].FontData);
+            KG_FREE(ConfigData[i].FontData);
             ConfigData[i].FontData = NULL;
         }
 
@@ -2022,11 +2022,11 @@ void    KGFontAtlas::ClearInputData()
 
 void    KGFontAtlas::ClearTexData()
 {
-    IM_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
+    KR_CORE_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
     if (TexPixelsAlpha8)
-        IM_FREE(TexPixelsAlpha8);
+        KG_FREE(TexPixelsAlpha8);
     if (TexPixelsRGBA32)
-        IM_FREE(TexPixelsRGBA32);
+        KG_FREE(TexPixelsRGBA32);
     TexPixelsAlpha8 = NULL;
     TexPixelsRGBA32 = NULL;
     TexPixelsUseColors = false;
@@ -2035,7 +2035,7 @@ void    KGFontAtlas::ClearTexData()
 
 void    KGFontAtlas::ClearFonts()
 {
-    IM_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
+    KR_CORE_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
     Fonts.clear_delete();
     TexReady = false;
 }
@@ -2069,11 +2069,11 @@ void    KGFontAtlas::GetTexDataAsRGBA32(unsigned char** out_pixels, int* out_wid
         GetTexDataAsAlpha8(&pixels, NULL, NULL);
         if (pixels)
         {
-            TexPixelsRGBA32 = (unsigned int*)IM_ALLOC((size_t)TexWidth * (size_t)TexHeight * 4);
+            TexPixelsRGBA32 = (unsigned int*)KG_ALLOC((size_t)TexWidth * (size_t)TexHeight * 4);
             const unsigned char* src = pixels;
             unsigned int* dst = TexPixelsRGBA32;
             for (int n = TexWidth * TexHeight; n > 0; n--)
-                *dst++ = IM_COL32(255, 255, 255, (unsigned int)(*src++));
+                *dst++ = KG_COL32(255, 255, 255, (unsigned int)(*src++));
         }
     }
 
@@ -2085,15 +2085,15 @@ void    KGFontAtlas::GetTexDataAsRGBA32(unsigned char** out_pixels, int* out_wid
 
 KGFont* KGFontAtlas::AddFont(const KGFontConfig* font_cfg)
 {
-    IM_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
-    IM_ASSERT(font_cfg->FontData != NULL && font_cfg->FontDataSize > 0);
-    IM_ASSERT(font_cfg->SizePixels > 0.0f);
+    KR_CORE_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
+    KR_CORE_ASSERT(font_cfg->FontData != NULL && font_cfg->FontDataSize > 0);
+    KR_CORE_ASSERT(font_cfg->SizePixels > 0.0f);
 
     // Create new font
     if (!font_cfg->MergeMode)
-        Fonts.push_back(IM_NEW(KGFont));
+        Fonts.push_back(KG_NEW(KGFont));
     else
-        IM_ASSERT(!Fonts.empty() && "Cannot use MergeMode for the first font"); // When using MergeMode make sure that a font has already been added before. You can use ImGui::GetIO().Fonts->AddFontDefault() to add the default imgui font.
+        KR_CORE_ASSERT(!Fonts.empty() && "Cannot use MergeMode for the first font"); // When using MergeMode make sure that a font has already been added before. You can use ImGui::GetIO().Fonts->AddFontDefault() to add the default imgui font.
 
     ConfigData.push_back(*font_cfg);
     KGFontConfig& new_font_cfg = ConfigData.back();
@@ -2101,7 +2101,7 @@ KGFont* KGFontAtlas::AddFont(const KGFontConfig* font_cfg)
         new_font_cfg.DstFont = Fonts.back();
     if (!new_font_cfg.FontDataOwnedByAtlas)
     {
-        new_font_cfg.FontData = IM_ALLOC(new_font_cfg.FontDataSize);
+        new_font_cfg.FontData = KG_ALLOC(new_font_cfg.FontDataSize);
         new_font_cfg.FontDataOwnedByAtlas = true;
         memcpy(new_font_cfg.FontData, font_cfg->FontData, (size_t)new_font_cfg.FontDataSize);
     }
@@ -2155,7 +2155,7 @@ KGFont* KGFontAtlas::AddFontDefault(const KGFontConfig* font_cfg_template)
 
 KGFont* KGFontAtlas::AddFontFromFileTTF(const char* filename, float size_pixels, const KGFontConfig* font_cfg_template, const KGWchar* glyph_ranges)
 {
-    IM_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
+    KR_CORE_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
     size_t data_size = 0;
     void* data = ImFileLoadToMemory(filename, "rb", &data_size, 0);
     if (!data)
@@ -2177,9 +2177,9 @@ KGFont* KGFontAtlas::AddFontFromFileTTF(const char* filename, float size_pixels,
 // NB: Transfer ownership of 'ttf_data' to KGFontAtlas, unless font_cfg_template->FontDataOwnedByAtlas == false. Owned TTF buffer will be deleted after Build().
 KGFont* KGFontAtlas::AddFontFromMemoryTTF(void* ttf_data, int ttf_size, float size_pixels, const KGFontConfig* font_cfg_template, const KGWchar* glyph_ranges)
 {
-    IM_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
+    KR_CORE_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
     KGFontConfig font_cfg = font_cfg_template ? *font_cfg_template : KGFontConfig();
-    IM_ASSERT(font_cfg.FontData == NULL);
+    KR_CORE_ASSERT(font_cfg.FontData == NULL);
     font_cfg.FontData = ttf_data;
     font_cfg.FontDataSize = ttf_size;
     font_cfg.SizePixels = size_pixels > 0.0f ? size_pixels : font_cfg.SizePixels;
@@ -2191,11 +2191,11 @@ KGFont* KGFontAtlas::AddFontFromMemoryTTF(void* ttf_data, int ttf_size, float si
 KGFont* KGFontAtlas::AddFontFromMemoryCompressedTTF(const void* compressed_ttf_data, int compressed_ttf_size, float size_pixels, const KGFontConfig* font_cfg_template, const KGWchar* glyph_ranges)
 {
     const unsigned int buf_decompressed_size = stb_decompress_length((const unsigned char*)compressed_ttf_data);
-    unsigned char* buf_decompressed_data = (unsigned char*)IM_ALLOC(buf_decompressed_size);
+    unsigned char* buf_decompressed_data = (unsigned char*)KG_ALLOC(buf_decompressed_size);
     stb_decompress(buf_decompressed_data, (const unsigned char*)compressed_ttf_data, (unsigned int)compressed_ttf_size);
 
     KGFontConfig font_cfg = font_cfg_template ? *font_cfg_template : KGFontConfig();
-    IM_ASSERT(font_cfg.FontData == NULL);
+    KR_CORE_ASSERT(font_cfg.FontData == NULL);
     font_cfg.FontDataOwnedByAtlas = true;
     return AddFontFromMemoryTTF(buf_decompressed_data, (int)buf_decompressed_size, size_pixels, &font_cfg, glyph_ranges);
 }
@@ -2203,17 +2203,17 @@ KGFont* KGFontAtlas::AddFontFromMemoryCompressedTTF(const void* compressed_ttf_d
 KGFont* KGFontAtlas::AddFontFromMemoryCompressedBase85TTF(const char* compressed_ttf_data_base85, float size_pixels, const KGFontConfig* font_cfg, const KGWchar* glyph_ranges)
 {
     int compressed_ttf_size = (((int)strlen(compressed_ttf_data_base85) + 4) / 5) * 4;
-    void* compressed_ttf = IM_ALLOC((size_t)compressed_ttf_size);
+    void* compressed_ttf = KG_ALLOC((size_t)compressed_ttf_size);
     Decode85((const unsigned char*)compressed_ttf_data_base85, (unsigned char*)compressed_ttf);
     KGFont* font = AddFontFromMemoryCompressedTTF(compressed_ttf, compressed_ttf_size, size_pixels, font_cfg, glyph_ranges);
-    IM_FREE(compressed_ttf);
+    KG_FREE(compressed_ttf);
     return font;
 }
 
 int KGFontAtlas::AddCustomRectRegular(int width, int height)
 {
-    IM_ASSERT(width > 0 && width <= 0xFFFF);
-    IM_ASSERT(height > 0 && height <= 0xFFFF);
+    KR_CORE_ASSERT(width > 0 && width <= 0xFFFF);
+    KR_CORE_ASSERT(height > 0 && height <= 0xFFFF);
     KGFontAtlasCustomRect r;
     r.Width = (unsigned short)width;
     r.Height = (unsigned short)height;
@@ -2224,11 +2224,11 @@ int KGFontAtlas::AddCustomRectRegular(int width, int height)
 int KGFontAtlas::AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int height, float advance_x, const ImVec2& offset)
 {
 #ifdef IMGUI_USE_WCHAR32
-    IM_ASSERT(id <= IM_UNICODE_CODEPOINT_MAX);
+    KR_CORE_ASSERT(id <= KG_UNICODE_CODEPOINT_MAX);
 #endif
-    IM_ASSERT(font != NULL);
-    IM_ASSERT(width > 0 && width <= 0xFFFF);
-    IM_ASSERT(height > 0 && height <= 0xFFFF);
+    KR_CORE_ASSERT(font != NULL);
+    KR_CORE_ASSERT(width > 0 && width <= 0xFFFF);
+    KR_CORE_ASSERT(height > 0 && height <= 0xFFFF);
     KGFontAtlasCustomRect r;
     r.Width = (unsigned short)width;
     r.Height = (unsigned short)height;
@@ -2242,8 +2242,8 @@ int KGFontAtlas::AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int
 
 void KGFontAtlas::CalcCustomRectUV(const KGFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max) const
 {
-    IM_ASSERT(TexWidth > 0 && TexHeight > 0);   // Font atlas needs to be built before we can calculate UV coordinates
-    IM_ASSERT(rect->IsPacked());                // Make sure the rectangle has been packed
+    KR_CORE_ASSERT(TexWidth > 0 && TexHeight > 0);   // Font atlas needs to be built before we can calculate UV coordinates
+    KR_CORE_ASSERT(rect->IsPacked());                // Make sure the rectangle has been packed
     *out_uv_min = ImVec2((float)rect->X * TexUvScale.x, (float)rect->Y * TexUvScale.y);
     *out_uv_max = ImVec2((float)(rect->X + rect->Width) * TexUvScale.x, (float)(rect->Y + rect->Height) * TexUvScale.y);
 }
@@ -2255,7 +2255,7 @@ bool KGFontAtlas::GetMouseCursorTexData(KarmaGuiMouseCursor cursor_type, ImVec2*
     if (Flags & KGFontAtlasFlags_NoMouseCursors)
         return false;
 
-    IM_ASSERT(PackIdMouseCursors != -1);
+    KR_CORE_ASSERT(PackIdMouseCursors != -1);
     KGFontAtlasCustomRect* r = GetCustomRectByIndex(PackIdMouseCursors);
     ImVec2 pos = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][0] + ImVec2((float)r->X, (float)r->Y);
     ImVec2 size = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][1];
@@ -2271,7 +2271,7 @@ bool KGFontAtlas::GetMouseCursorTexData(KarmaGuiMouseCursor cursor_type, ImVec2*
 
 bool    KGFontAtlas::Build()
 {
-    IM_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
+    KR_CORE_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
 
     // Default font is none are specified
     if (ConfigData.Size == 0)
@@ -2290,7 +2290,7 @@ bool    KGFontAtlas::Build()
 #elif defined(IMGUI_ENABLE_STB_TRUETYPE)
         builder_io = ImFontAtlasGetBuilderForStbTruetype();
 #else
-        IM_ASSERT(0); // Invalid Build function
+        KR_CORE_ASSERT(0); // Invalid Build function
 #endif
     }
 
@@ -2344,7 +2344,7 @@ struct ImFontBuildDstData
 
 static void UnpackBitVectorToFlatIndexList(const ImBitVector* in, KGVector<int>* out)
 {
-    IM_ASSERT(sizeof(in->Storage.Data[0]) == sizeof(int));
+    KR_CORE_ASSERT(sizeof(in->Storage.Data[0]) == sizeof(int));
     const KGU32* it_begin = in->Storage.begin();
     const KGU32* it_end = in->Storage.end();
     for (const KGU32* it = it_begin; it < it_end; it++)
@@ -2356,7 +2356,7 @@ static void UnpackBitVectorToFlatIndexList(const ImBitVector* in, KGVector<int>*
 
 static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 {
-    IM_ASSERT(atlas->ConfigData.Size > 0);
+    KR_CORE_ASSERT(atlas->ConfigData.Size > 0);
 
     ImFontAtlasBuildInit(atlas);
 
@@ -2380,7 +2380,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
     {
         ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
         KGFontConfig& cfg = atlas->ConfigData[src_i];
-        IM_ASSERT(cfg.DstFont && (!cfg.DstFont->IsLoaded() || cfg.DstFont->ContainerAtlas == atlas));
+        KR_CORE_ASSERT(cfg.DstFont && (!cfg.DstFont->IsLoaded() || cfg.DstFont->ContainerAtlas == atlas));
 
         // Find index from cfg.DstFont (we allow the user to set cfg.DstFont. Also it makes casual debugging nicer than when storing indices)
         src_tmp.DstIndex = -1;
@@ -2389,12 +2389,12 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
                 src_tmp.DstIndex = output_i;
         if (src_tmp.DstIndex == -1)
         {
-            IM_ASSERT(src_tmp.DstIndex != -1); // cfg.DstFont not pointing within atlas->Fonts[] array?
+            KR_CORE_ASSERT(src_tmp.DstIndex != -1); // cfg.DstFont not pointing within atlas->Fonts[] array?
             return false;
         }
         // Initialize helper structure for font loading and verify that the TTF/OTF data is correct
         const int font_offset = stbtt_GetFontOffsetForIndex((unsigned char*)cfg.FontData, cfg.FontNo);
-        IM_ASSERT(font_offset >= 0 && "FontData is incorrect, or FontNo cannot be found.");
+        KR_CORE_ASSERT(font_offset >= 0 && "FontData is incorrect, or FontNo cannot be found.");
         if (!stbtt_InitFont(&src_tmp.FontInfo, (unsigned char*)cfg.FontData, font_offset))
             return false;
 
@@ -2441,7 +2441,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
         src_tmp.GlyphsList.reserve(src_tmp.GlyphsCount);
         UnpackBitVectorToFlatIndexList(&src_tmp.GlyphsSet, &src_tmp.GlyphsList);
         src_tmp.GlyphsSet.Clear();
-        IM_ASSERT(src_tmp.GlyphsList.Size == src_tmp.GlyphsCount);
+        KR_CORE_ASSERT(src_tmp.GlyphsList.Size == src_tmp.GlyphsCount);
     }
     for (int dst_i = 0; dst_i < dst_tmp_array.Size; dst_i++)
         dst_tmp_array[dst_i].GlyphsSet.Clear();
@@ -2488,7 +2488,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
         {
             int x0, y0, x1, y1;
             const int glyph_index_in_font = stbtt_FindGlyphIndex(&src_tmp.FontInfo, src_tmp.GlyphsList[glyph_i]);
-            IM_ASSERT(glyph_index_in_font != 0);
+            KR_CORE_ASSERT(glyph_index_in_font != 0);
             stbtt_GetGlyphBitmapBoxSubpixel(&src_tmp.FontInfo, glyph_index_in_font, scale * cfg.OversampleH, scale * cfg.OversampleV, 0, 0, &x0, &y0, &x1, &y1);
             src_tmp.Rects[glyph_i].w = (stbrp_coord)(x1 - x0 + padding + cfg.OversampleH - 1);
             src_tmp.Rects[glyph_i].h = (stbrp_coord)(y1 - y0 + padding + cfg.OversampleV - 1);
@@ -2532,7 +2532,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
     // 7. Allocate texture
     atlas->TexHeight = (atlas->Flags & KGFontAtlasFlags_NoPowerOfTwoHeight) ? (atlas->TexHeight + 1) : ImUpperPowerOfTwo(atlas->TexHeight);
     atlas->TexUvScale = ImVec2(1.0f / atlas->TexWidth, 1.0f / atlas->TexHeight);
-    atlas->TexPixelsAlpha8 = (unsigned char*)IM_ALLOC(atlas->TexWidth * atlas->TexHeight);
+    atlas->TexPixelsAlpha8 = (unsigned char*)KG_ALLOC(atlas->TexWidth * atlas->TexHeight);
     memset(atlas->TexPixelsAlpha8, 0, atlas->TexWidth * atlas->TexHeight);
     spc.pixels = atlas->TexPixelsAlpha8;
     spc.height = atlas->TexHeight;
@@ -2633,10 +2633,10 @@ void ImFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* f
 void ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opaque)
 {
     stbrp_context* pack_context = (stbrp_context*)stbrp_context_opaque;
-    IM_ASSERT(pack_context != NULL);
+    KR_CORE_ASSERT(pack_context != NULL);
 
     KGVector<KGFontAtlasCustomRect>& user_rects = atlas->CustomRects;
-    IM_ASSERT(user_rects.Size >= 1); // We expect at least the default custom rects to be registered, else something went wrong.
+    KR_CORE_ASSERT(user_rects.Size >= 1); // We expect at least the default custom rects to be registered, else something went wrong.
 
     KGVector<stbrp_rect> pack_rects;
     pack_rects.resize(user_rects.Size);
@@ -2652,15 +2652,15 @@ void ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opa
         {
             user_rects[i].X = (unsigned short)pack_rects[i].x;
             user_rects[i].Y = (unsigned short)pack_rects[i].y;
-            IM_ASSERT(pack_rects[i].w == user_rects[i].Width && pack_rects[i].h == user_rects[i].Height);
+            KR_CORE_ASSERT(pack_rects[i].w == user_rects[i].Width && pack_rects[i].h == user_rects[i].Height);
             atlas->TexHeight = ImMax(atlas->TexHeight, pack_rects[i].y + pack_rects[i].h);
         }
 }
 
 void ImFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned char in_marker_pixel_value)
 {
-    IM_ASSERT(x >= 0 && x + w <= atlas->TexWidth);
-    IM_ASSERT(y >= 0 && y + h <= atlas->TexHeight);
+    KR_CORE_ASSERT(x >= 0 && x + w <= atlas->TexWidth);
+    KR_CORE_ASSERT(y >= 0 && y + h <= atlas->TexHeight);
     unsigned char* out_pixel = atlas->TexPixelsAlpha8 + x + (y * atlas->TexWidth);
     for (int off_y = 0; off_y < h; off_y++, out_pixel += atlas->TexWidth, in_str += w)
         for (int off_x = 0; off_x < w; off_x++)
@@ -2669,24 +2669,24 @@ void ImFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, 
 
 void ImFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned int in_marker_pixel_value)
 {
-    IM_ASSERT(x >= 0 && x + w <= atlas->TexWidth);
-    IM_ASSERT(y >= 0 && y + h <= atlas->TexHeight);
+    KR_CORE_ASSERT(x >= 0 && x + w <= atlas->TexWidth);
+    KR_CORE_ASSERT(y >= 0 && y + h <= atlas->TexHeight);
     unsigned int* out_pixel = atlas->TexPixelsRGBA32 + x + (y * atlas->TexWidth);
     for (int off_y = 0; off_y < h; off_y++, out_pixel += atlas->TexWidth, in_str += w)
         for (int off_x = 0; off_x < w; off_x++)
-            out_pixel[off_x] = (in_str[off_x] == in_marker_char) ? in_marker_pixel_value : IM_COL32_BLACK_TRANS;
+            out_pixel[off_x] = (in_str[off_x] == in_marker_char) ? in_marker_pixel_value : KG_COL32_BLACK_TRANS;
 }
 
 static void ImFontAtlasBuildRenderDefaultTexData(KGFontAtlas* atlas)
 {
     KGFontAtlasCustomRect* r = atlas->GetCustomRectByIndex(atlas->PackIdMouseCursors);
-    IM_ASSERT(r->IsPacked());
+    KR_CORE_ASSERT(r->IsPacked());
 
     const int w = atlas->TexWidth;
     if (!(atlas->Flags & KGFontAtlasFlags_NoMouseCursors))
     {
         // Render/copy pixels
-        IM_ASSERT(r->Width == FONT_ATLAS_DEFAULT_TEX_DATA_W * 2 + 1 && r->Height == FONT_ATLAS_DEFAULT_TEX_DATA_H);
+        KR_CORE_ASSERT(r->Width == FONT_ATLAS_DEFAULT_TEX_DATA_W * 2 + 1 && r->Height == FONT_ATLAS_DEFAULT_TEX_DATA_H);
         const int x_for_white = r->X;
         const int x_for_black = r->X + FONT_ATLAS_DEFAULT_TEX_DATA_W + 1;
         if (atlas->TexPixelsAlpha8 != NULL)
@@ -2696,14 +2696,14 @@ static void ImFontAtlasBuildRenderDefaultTexData(KGFontAtlas* atlas)
         }
         else
         {
-            ImFontAtlasBuildRender32bppRectFromString(atlas, x_for_white, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, '.', IM_COL32_WHITE);
-            ImFontAtlasBuildRender32bppRectFromString(atlas, x_for_black, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, 'X', IM_COL32_WHITE);
+            ImFontAtlasBuildRender32bppRectFromString(atlas, x_for_white, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, '.', KG_COL32_WHITE);
+            ImFontAtlasBuildRender32bppRectFromString(atlas, x_for_black, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, 'X', KG_COL32_WHITE);
         }
     }
     else
     {
         // Render 4 white pixels
-        IM_ASSERT(r->Width == 2 && r->Height == 2);
+        KR_CORE_ASSERT(r->Width == 2 && r->Height == 2);
         const int offset = (int)r->X + (int)r->Y * w;
         if (atlas->TexPixelsAlpha8 != NULL)
         {
@@ -2711,7 +2711,7 @@ static void ImFontAtlasBuildRenderDefaultTexData(KGFontAtlas* atlas)
         }
         else
         {
-            atlas->TexPixelsRGBA32[offset] = atlas->TexPixelsRGBA32[offset + 1] = atlas->TexPixelsRGBA32[offset + w] = atlas->TexPixelsRGBA32[offset + w + 1] = IM_COL32_WHITE;
+            atlas->TexPixelsRGBA32[offset] = atlas->TexPixelsRGBA32[offset + 1] = atlas->TexPixelsRGBA32[offset + w] = atlas->TexPixelsRGBA32[offset + w + 1] = KG_COL32_WHITE;
         }
     }
     atlas->TexUvWhitePixel = ImVec2((r->X + 0.5f) * atlas->TexUvScale.x, (r->Y + 0.5f) * atlas->TexUvScale.y);
@@ -2724,8 +2724,8 @@ static void ImFontAtlasBuildRenderLinesTexData(KGFontAtlas* atlas)
 
     // This generates a triangular shape in the texture, with the various line widths stacked on top of each other to allow interpolation between them
     KGFontAtlasCustomRect* r = atlas->GetCustomRectByIndex(atlas->PackIdLines);
-    IM_ASSERT(r->IsPacked());
-    for (unsigned int n = 0; n < IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 1; n++) // +1 because of the zero-width row
+    KR_CORE_ASSERT(r->IsPacked());
+    for (unsigned int n = 0; n < KG_DRAWLIST_TEX_LINES_WIDTH_MAX + 1; n++) // +1 because of the zero-width row
     {
         // Each line consists of at least two empty pixels at the ends, with a line of solid pixels in the middle
         unsigned int y = n;
@@ -2734,7 +2734,7 @@ static void ImFontAtlasBuildRenderLinesTexData(KGFontAtlas* atlas)
         unsigned int pad_right = r->Width - (pad_left + line_width);
 
         // Write each slice
-        IM_ASSERT(pad_left + line_width + pad_right == r->Width && y < r->Height); // Make sure we're inside the texture bounds before we start writing pixels
+        KR_CORE_ASSERT(pad_left + line_width + pad_right == r->Width && y < r->Height); // Make sure we're inside the texture bounds before we start writing pixels
         if (atlas->TexPixelsAlpha8 != NULL)
         {
             unsigned char* write_ptr = &atlas->TexPixelsAlpha8[r->X + ((r->Y + y) * atlas->TexWidth)];
@@ -2751,13 +2751,13 @@ static void ImFontAtlasBuildRenderLinesTexData(KGFontAtlas* atlas)
         {
             unsigned int* write_ptr = &atlas->TexPixelsRGBA32[r->X + ((r->Y + y) * atlas->TexWidth)];
             for (unsigned int i = 0; i < pad_left; i++)
-                *(write_ptr + i) = IM_COL32(255, 255, 255, 0);
+                *(write_ptr + i) = KG_COL32(255, 255, 255, 0);
 
             for (unsigned int i = 0; i < line_width; i++)
-                *(write_ptr + pad_left + i) = IM_COL32_WHITE;
+                *(write_ptr + pad_left + i) = KG_COL32_WHITE;
 
             for (unsigned int i = 0; i < pad_right; i++)
-                *(write_ptr + pad_left + line_width + i) = IM_COL32(255, 255, 255, 0);
+                *(write_ptr + pad_left + line_width + i) = KG_COL32(255, 255, 255, 0);
         }
 
         // Calculate UVs for this line
@@ -2785,7 +2785,7 @@ void ImFontAtlasBuildInit(KGFontAtlas* atlas)
     if (atlas->PackIdLines < 0)
     {
         if (!(atlas->Flags & KGFontAtlasFlags_NoBakedLines))
-            atlas->PackIdLines = atlas->AddCustomRectRegular(IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 2, IM_DRAWLIST_TEX_LINES_WIDTH_MAX + 1);
+            atlas->PackIdLines = atlas->AddCustomRectRegular(KG_DRAWLIST_TEX_LINES_WIDTH_MAX + 2, KG_DRAWLIST_TEX_LINES_WIDTH_MAX + 1);
     }
 }
 
@@ -2793,7 +2793,7 @@ void ImFontAtlasBuildInit(KGFontAtlas* atlas)
 void ImFontAtlasBuildFinish(KGFontAtlas* atlas)
 {
     // Render into our custom data blocks
-    IM_ASSERT(atlas->TexPixelsAlpha8 != NULL || atlas->TexPixelsRGBA32 != NULL);
+    KR_CORE_ASSERT(atlas->TexPixelsAlpha8 != NULL || atlas->TexPixelsRGBA32 != NULL);
     ImFontAtlasBuildRenderDefaultTexData(atlas);
     ImFontAtlasBuildRenderLinesTexData(atlas);
 
@@ -2805,7 +2805,7 @@ void ImFontAtlasBuildFinish(KGFontAtlas* atlas)
             continue;
 
         // Will ignore KGFontConfig settings: GlyphMinAdvanceX, GlyphMinAdvanceY, GlyphExtraSpacing, PixelSnapH
-        IM_ASSERT(r->Font->ContainerAtlas == atlas);
+        KR_CORE_ASSERT(r->Font->ContainerAtlas == atlas);
         ImVec2 uv0, uv1;
         atlas->CalcCustomRectUV(r, &uv0, &uv1);
         r->Font->AddGlyph(NULL, (KGWchar)r->GlyphID, r->GlyphOffset.x, r->GlyphOffset.y, r->GlyphOffset.x + r->Width, r->GlyphOffset.y + r->Height, uv0.x, uv0.y, uv1.x, uv1.y, r->GlyphAdvanceX);
@@ -3104,13 +3104,13 @@ void KGFontGlyphRangesBuilder::AddText(const char* text, const char* text_end)
 void KGFontGlyphRangesBuilder::AddRanges(const KGWchar* ranges)
 {
     for (; ranges[0]; ranges += 2)
-        for (unsigned int c = ranges[0]; c <= ranges[1] && c <= IM_UNICODE_CODEPOINT_MAX; c++) //-V560
+        for (unsigned int c = ranges[0]; c <= ranges[1] && c <= KG_UNICODE_CODEPOINT_MAX; c++) //-V560
             AddChar((KGWchar)c);
 }
 
 void KGFontGlyphRangesBuilder::BuildRanges(KGVector<KGWchar>* out_ranges)
 {
-    const int max_codepoint = IM_UNICODE_CODEPOINT_MAX;
+    const int max_codepoint = KG_UNICODE_CODEPOINT_MAX;
     for (int n = 0; n <= max_codepoint; n++)
         if (GetBit(n))
         {
@@ -3178,7 +3178,7 @@ void KGFont::BuildLookupTable()
         max_codepoint = ImMax(max_codepoint, (int)Glyphs[i].Codepoint);
 
     // Build lookup table
-    IM_ASSERT(Glyphs.Size < 0xFFFF); // -1 is reserved
+    KR_CORE_ASSERT(Glyphs.Size < 0xFFFF); // -1 is reserved
     IndexAdvanceX.clear();
     IndexLookup.clear();
     DirtyLookupTables = false;
@@ -3224,7 +3224,7 @@ void KGFont::BuildLookupTable()
         DotChar = FindFirstExistingGlyph(this, dots_chars, IM_ARRAYSIZE(dots_chars));
 
     // Setup fallback character
-    const KGWchar fallback_chars[] = { (KGWchar)IM_UNICODE_CODEPOINT_INVALID, (KGWchar)'?', (KGWchar)' ' };
+    const KGWchar fallback_chars[] = { (KGWchar)KG_UNICODE_CODEPOINT_INVALID, (KGWchar)'?', (KGWchar)' ' };
     FallbackGlyph = FindGlyphNoFallback(FallbackChar);
     if (FallbackGlyph == NULL)
     {
@@ -3264,7 +3264,7 @@ void KGFont::SetGlyphVisible(KGWchar c, bool visible)
 
 void KGFont::GrowIndex(int new_size)
 {
-    IM_ASSERT(IndexAdvanceX.Size == IndexLookup.Size);
+    KR_CORE_ASSERT(IndexAdvanceX.Size == IndexLookup.Size);
     if (new_size <= IndexLookup.Size)
         return;
     IndexAdvanceX.resize(new_size, -1.0f);
@@ -3320,7 +3320,7 @@ void KGFont::AddGlyph(const KGFontConfig* cfg, KGWchar codepoint, float x0, floa
 
 void KGFont::AddRemapChar(KGWchar dst, KGWchar src, bool overwrite_dst)
 {
-    IM_ASSERT(IndexLookup.Size > 0);    // Currently this can only be called AFTER the font has been built, aka after calling KGFontAtlas::GetTexDataAs*() function.
+    KR_CORE_ASSERT(IndexLookup.Size > 0);    // Currently this can only be called AFTER the font has been built, aka after calling KGFontAtlas::GetTexDataAs*() function.
     unsigned int index_size = (unsigned int)IndexLookup.Size;
 
     if (dst < index_size && IndexLookup.Data[dst] == (KGWchar)-1 && !overwrite_dst) // 'dst' already exists
@@ -3556,7 +3556,7 @@ void KGFont::RenderChar(KGDrawList* draw_list, float size, const ImVec2& pos, KG
     if (!glyph || !glyph->Visible)
         return;
     if (glyph->Colored)
-        col |= ~IM_COL32_A_MASK;
+        col |= ~KG_COL32_A_MASK;
     float scale = (size >= 0.0f) ? (size / FontSize) : 1.0f;
     float x = IM_FLOOR(pos.x);
     float y = IM_FLOOR(pos.y);
@@ -3630,7 +3630,7 @@ void KGFont::RenderText(KGDrawList* draw_list, float size, const ImVec2& pos, KG
     KGDrawIdx* idx_write = draw_list->_IdxWritePtr;
     unsigned int vtx_current_idx = draw_list->_VtxCurrentIdx;
 
-    const KGU32 col_untinted = col | ~IM_COL32_A_MASK;
+    const KGU32 col_untinted = col | ~KG_COL32_A_MASK;
     const char* word_wrap_eol = NULL;
 
     while (s < text_end)
@@ -3799,7 +3799,7 @@ void ImGui::RenderArrow(KGDrawList* draw_list, ImVec2 pos, KGU32 col, KarmaGuiDi
         break;
     case KGGuiDir_None:
     case KGGuiDir_COUNT:
-        IM_ASSERT(0);
+        KR_CORE_ASSERT(0);
         break;
     }
     draw_list->AddTriangleFilled(center + a, center + b, center + c, col);
@@ -3950,10 +3950,10 @@ void ImGui::RenderColorRectWithAlphaCheckerboard(KGDrawList* draw_list, ImVec2 p
 {
     if ((flags & KGDrawFlags_RoundCornersMask_) == 0)
         flags = KGDrawFlags_RoundCornersDefault_;
-    if (((col & IM_COL32_A_MASK) >> IM_COL32_A_SHIFT) < 0xFF)
+    if (((col & KG_COL32_A_MASK) >> KG_COL32_A_SHIFT) < 0xFF)
     {
-        KGU32 col_bg1 = GetColorU32(ImAlphaBlendColors(IM_COL32(204, 204, 204, 255), col));
-        KGU32 col_bg2 = GetColorU32(ImAlphaBlendColors(IM_COL32(128, 128, 128, 255), col));
+        KGU32 col_bg1 = GetColorU32(ImAlphaBlendColors(KG_COL32(204, 204, 204, 255), col));
+        KGU32 col_bg2 = GetColorU32(ImAlphaBlendColors(KG_COL32(128, 128, 128, 255), col));
         draw_list->AddRectFilled(p_min, p_max, col_bg1, rounding, flags);
 
         int yi = 0;
@@ -4003,7 +4003,7 @@ static unsigned char *stb__dout;
 static void stb__match(const unsigned char *data, unsigned int length)
 {
     // INVERSE of memmove... write each byte before copying the next...
-    IM_ASSERT(stb__dout + length <= stb__barrier_out_e);
+    KR_CORE_ASSERT(stb__dout + length <= stb__barrier_out_e);
     if (stb__dout + length > stb__barrier_out_e) { stb__dout += length; return; }
     if (data < stb__barrier_out_b) { stb__dout = stb__barrier_out_e+1; return; }
     while (length--) *stb__dout++ = *data++;
@@ -4011,7 +4011,7 @@ static void stb__match(const unsigned char *data, unsigned int length)
 
 static void stb__lit(const unsigned char *data, unsigned int length)
 {
-    IM_ASSERT(stb__dout + length <= stb__barrier_out_e);
+    KR_CORE_ASSERT(stb__dout + length <= stb__barrier_out_e);
     if (stb__dout + length > stb__barrier_out_e) { stb__dout += length; return; }
     if (data < stb__barrier_in_b) { stb__dout = stb__barrier_out_e+1; return; }
     memcpy(stb__dout, data, length);
@@ -4086,17 +4086,17 @@ static unsigned int stb_decompress(unsigned char *output, const unsigned char *i
         i = stb_decompress_token(i);
         if (i == old_i) {
             if (*i == 0x05 && i[1] == 0xfa) {
-                IM_ASSERT(stb__dout == output + olen);
+                KR_CORE_ASSERT(stb__dout == output + olen);
                 if (stb__dout != output + olen) return 0;
                 if (stb_adler32(1, output, olen) != (unsigned int) stb__in4(2))
                     return 0;
                 return olen;
             } else {
-                IM_ASSERT(0); /* NOTREACHED */
+                KR_CORE_ASSERT(0); /* NOTREACHED */
                 return 0;
             }
         }
-        IM_ASSERT(stb__dout <= output + olen);
+        KR_CORE_ASSERT(stb__dout <= output + olen);
         if (stb__dout > output + olen)
             return 0;
     }
