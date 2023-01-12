@@ -29,11 +29,17 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <string.h>
+#include <stdlib.h>
+#include <math.h>
+#include <limits.h>
 
 // No clue about this ImGui include. May or maynot be excluded in future.
 #if defined(_MSC_VER) && _MSC_VER <= 1500 // MSVC 2008 or earlier
 #include <stddef.h>
 #endif
+
+// Intel intrinsics?
+#include <immintrin.h>
 
 // Karma's general includes
 #include "Karma/Core.h"

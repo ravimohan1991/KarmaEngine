@@ -34,7 +34,7 @@ Index of this file:
 #endif
 
 #include "imgui_internal.h"
-#ifdef IMGUI_ENABLE_FREETYPE
+#ifdef KGGUI_ENABLE_FREETYPE
 #include "misc/freetype/imgui_freetype.h"
 #endif
 
@@ -78,7 +78,7 @@ Index of this file:
 //-------------------------------------------------------------------------
 
 // Compile time options:
-//#define IMGUI_STB_NAMESPACE           ImStb
+//#define IMGUI_STB_NAMESPACE           KGStb
 //#define IMGUI_STB_TRUETYPE_FILENAME   "my_folder/stb_truetype.h"
 //#define IMGUI_STB_RECT_PACK_FILENAME  "my_folder/stb_rect_pack.h"
 //#define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
@@ -115,7 +115,7 @@ namespace IMGUI_STB_NAMESPACE
 #ifndef IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION          // in case the user already have an implementation in another compilation unit
 #define STBRP_STATIC
 #define STBRP_ASSERT(x)     do { KR_CORE_ASSERT(x); } while (0)
-#define STBRP_SORT          ImQsort
+#define STBRP_SORT          KGQsort
 #define STB_RECT_PACK_IMPLEMENTATION
 #endif
 #ifdef IMGUI_STB_RECT_PACK_FILENAME
@@ -125,18 +125,18 @@ namespace IMGUI_STB_NAMESPACE
 #endif
 #endif
 
-#ifdef  IMGUI_ENABLE_STB_TRUETYPE
+#ifdef  KGGUI_ENABLE_STB_TRUETYPE
 #ifndef STB_TRUETYPE_IMPLEMENTATION                         // in case the user already have an implementation in the _same_ compilation unit (e.g. unity builds)
 #ifndef IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION           // in case the user already have an implementation in another compilation unit
 #define STBTT_malloc(x,u)   ((void)(u), KG_ALLOC(x))
 #define STBTT_free(x,u)     ((void)(u), KG_FREE(x))
 #define STBTT_assert(x)     do { KR_CORE_ASSERT(x); } while(0)
-#define STBTT_fmod(x,y)     ImFmod(x,y)
-#define STBTT_sqrt(x)       ImSqrt(x)
-#define STBTT_pow(x,y)      ImPow(x,y)
-#define STBTT_fabs(x)       ImFabs(x)
-#define STBTT_ifloor(x)     ((int)ImFloorSigned(x))
-#define STBTT_iceil(x)      ((int)ImCeil(x))
+#define STBTT_fmod(x,y)     KGFmod(x,y)
+#define STBTT_sqrt(x)       KGSqrt(x)
+#define STBTT_pow(x,y)      KGPow(x,y)
+#define STBTT_fabs(x)       KGFabs(x)
+#define STBTT_ifloor(x)     ((int)KGFloorSigned(x))
+#define STBTT_iceil(x)      ((int)KGCeil(x))
 #define STBTT_STATIC
 #define STB_TRUETYPE_IMPLEMENTATION
 #else
@@ -148,7 +148,7 @@ namespace IMGUI_STB_NAMESPACE
 #include "imstb_truetype.h"
 #endif
 #endif
-#endif // IMGUI_ENABLE_STB_TRUETYPE
+#endif // KGGUI_ENABLE_STB_TRUETYPE
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
@@ -163,7 +163,7 @@ namespace IMGUI_STB_NAMESPACE
 #endif
 
 #ifdef IMGUI_STB_NAMESPACE
-} // namespace ImStb
+} // namespace KGStb
 using namespace IMGUI_STB_NAMESPACE;
 #endif
 
@@ -209,11 +209,11 @@ void ImGui::StyleColorsDark(KarmaGuiStyle* dst)
     colors[KGGuiCol_ResizeGrip]             = ImVec4(0.26f, 0.59f, 0.98f, 0.20f);
     colors[KGGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
     colors[KGGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
-    colors[KGGuiCol_Tab]                    = ImLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.80f);
+    colors[KGGuiCol_Tab]                    = KGLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.80f);
     colors[KGGuiCol_TabHovered]             = colors[KGGuiCol_HeaderHovered];
-    colors[KGGuiCol_TabActive]              = ImLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
-    colors[KGGuiCol_TabUnfocused]           = ImLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
-    colors[KGGuiCol_TabUnfocusedActive]     = ImLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
+    colors[KGGuiCol_TabActive]              = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
+    colors[KGGuiCol_TabUnfocused]           = KGLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
+    colors[KGGuiCol_TabUnfocusedActive]     = KGLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
     colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_HeaderActive] * ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
     colors[KGGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
     colors[KGGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
@@ -271,11 +271,11 @@ void ImGui::StyleColorsClassic(KarmaGuiStyle* dst)
     colors[KGGuiCol_ResizeGrip]             = ImVec4(1.00f, 1.00f, 1.00f, 0.10f);
     colors[KGGuiCol_ResizeGripHovered]      = ImVec4(0.78f, 0.82f, 1.00f, 0.60f);
     colors[KGGuiCol_ResizeGripActive]       = ImVec4(0.78f, 0.82f, 1.00f, 0.90f);
-    colors[KGGuiCol_Tab]                    = ImLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.80f);
+    colors[KGGuiCol_Tab]                    = KGLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.80f);
     colors[KGGuiCol_TabHovered]             = colors[KGGuiCol_HeaderHovered];
-    colors[KGGuiCol_TabActive]              = ImLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
-    colors[KGGuiCol_TabUnfocused]           = ImLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
-    colors[KGGuiCol_TabUnfocusedActive]     = ImLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
+    colors[KGGuiCol_TabActive]              = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
+    colors[KGGuiCol_TabUnfocused]           = KGLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
+    colors[KGGuiCol_TabUnfocusedActive]     = KGLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
     colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_Header] * ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
     colors[KGGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
     colors[KGGuiCol_PlotLines]              = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
@@ -334,11 +334,11 @@ void ImGui::StyleColorsLight(KarmaGuiStyle* dst)
     colors[KGGuiCol_ResizeGrip]             = ImVec4(0.35f, 0.35f, 0.35f, 0.17f);
     colors[KGGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
     colors[KGGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
-    colors[KGGuiCol_Tab]                    = ImLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.90f);
+    colors[KGGuiCol_Tab]                    = KGLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.90f);
     colors[KGGuiCol_TabHovered]             = colors[KGGuiCol_HeaderHovered];
-    colors[KGGuiCol_TabActive]              = ImLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
-    colors[KGGuiCol_TabUnfocused]           = ImLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
-    colors[KGGuiCol_TabUnfocusedActive]     = ImLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
+    colors[KGGuiCol_TabActive]              = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
+    colors[KGGuiCol_TabUnfocused]           = KGLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
+    colors[KGGuiCol_TabUnfocusedActive]     = KGLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
     colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_Header] * ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
     colors[KGGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
     colors[KGGuiCol_PlotLines]              = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
@@ -365,12 +365,12 @@ void ImGui::StyleColorsLight(KarmaGuiStyle* dst)
 KGDrawListSharedData::KGDrawListSharedData()
 {
     memset(this, 0, sizeof(*this));
-    for (int i = 0; i < IM_ARRAYSIZE(ArcFastVtx); i++)
+    for (int i = 0; i < KG_ARRAYSIZE(ArcFastVtx); i++)
     {
-        const float a = ((float)i * 2 * IM_PI) / (float)IM_ARRAYSIZE(ArcFastVtx);
-        ArcFastVtx[i] = ImVec2(ImCos(a), ImSin(a));
+        const float a = ((float)i * 2 * KG_PI) / (float)KG_ARRAYSIZE(ArcFastVtx);
+        ArcFastVtx[i] = ImVec2(KGCos(a), KGSin(a));
     }
-    ArcFastRadiusCutoff = IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC_R(IM_DRAWLIST_ARCFAST_SAMPLE_MAX, CircleSegmentMaxError);
+    ArcFastRadiusCutoff = KG_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC_R(IM_DRAWLIST_ARCFAST_SAMPLE_MAX, CircleSegmentMaxError);
 }
 
 void KGDrawListSharedData::SetCircleTessellationMaxError(float max_error)
@@ -380,21 +380,21 @@ void KGDrawListSharedData::SetCircleTessellationMaxError(float max_error)
 
     KR_CORE_ASSERT(max_error > 0.0f);
     CircleSegmentMaxError = max_error;
-    for (int i = 0; i < IM_ARRAYSIZE(CircleSegmentCounts); i++)
+    for (int i = 0; i < KG_ARRAYSIZE(CircleSegmentCounts); i++)
     {
         const float radius = (float)i;
-        CircleSegmentCounts[i] = (KGU8)((i > 0) ? IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC(radius, CircleSegmentMaxError) : IM_DRAWLIST_ARCFAST_SAMPLE_MAX);
+        CircleSegmentCounts[i] = (KGU8)((i > 0) ? KG_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC(radius, CircleSegmentMaxError) : IM_DRAWLIST_ARCFAST_SAMPLE_MAX);
     }
-    ArcFastRadiusCutoff = IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC_R(IM_DRAWLIST_ARCFAST_SAMPLE_MAX, CircleSegmentMaxError);
+    ArcFastRadiusCutoff = KG_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC_R(IM_DRAWLIST_ARCFAST_SAMPLE_MAX, CircleSegmentMaxError);
 }
 
 // Initialize before use in a new frame. We always have a command ready in the buffer.
 void KGDrawList::_ResetForNewFrame()
 {
     // Verify that the KGDrawCmd fields we want to memcmp() are contiguous in memory.
-    IM_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, ClipRect) == 0);
-    IM_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, TextureId) == sizeof(ImVec4));
-    IM_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, VtxOffset) == sizeof(ImVec4) + sizeof(KGTextureID));
+    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, ClipRect) == 0);
+    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, TextureId) == sizeof(ImVec4));
+    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, VtxOffset) == sizeof(ImVec4) + sizeof(KGTextureID));
     if (_Splitter._Count > 1)
         _Splitter.Merge(this);
 
@@ -466,7 +466,7 @@ void KGDrawList::_PopUnusedDrawCmd()
 
 void KGDrawList::AddCallback(KGDrawCallback callback, void* callback_data)
 {
-    IM_ASSERT_PARANOID(CmdBuffer.Size > 0);
+    KR_CORE_ASSERT(CmdBuffer.Size > 0);
     KGDrawCmd* curr_cmd = &CmdBuffer.Data[CmdBuffer.Size - 1];
     KR_CORE_ASSERT(curr_cmd->UserCallback == NULL);
     if (curr_cmd->ElemCount != 0)
@@ -489,7 +489,7 @@ void KGDrawList::AddCallback(KGDrawCallback callback, void* callback_data)
 // Try to merge two last draw commands
 void KGDrawList::_TryMergeDrawCmds()
 {
-    IM_ASSERT_PARANOID(CmdBuffer.Size > 0);
+    KR_CORE_ASSERT(CmdBuffer.Size > 0);
     KGDrawCmd* curr_cmd = &CmdBuffer.Data[CmdBuffer.Size - 1];
     KGDrawCmd* prev_cmd = curr_cmd - 1;
     if (ImDrawCmd_HeaderCompare(curr_cmd, prev_cmd) == 0 && ImDrawCmd_AreSequentialIdxOffset(prev_cmd, curr_cmd) && curr_cmd->UserCallback == NULL && prev_cmd->UserCallback == NULL)
@@ -504,7 +504,7 @@ void KGDrawList::_TryMergeDrawCmds()
 void KGDrawList::_OnChangedClipRect()
 {
     // If current command is used with different settings we need to add a new command
-    IM_ASSERT_PARANOID(CmdBuffer.Size > 0);
+    KR_CORE_ASSERT(CmdBuffer.Size > 0);
     KGDrawCmd* curr_cmd = &CmdBuffer.Data[CmdBuffer.Size - 1];
     if (curr_cmd->ElemCount != 0 && memcmp(&curr_cmd->ClipRect, &_CmdHeader.ClipRect, sizeof(ImVec4)) != 0)
     {
@@ -527,7 +527,7 @@ void KGDrawList::_OnChangedClipRect()
 void KGDrawList::_OnChangedTextureID()
 {
     // If current command is used with different settings we need to add a new command
-    IM_ASSERT_PARANOID(CmdBuffer.Size > 0);
+    KR_CORE_ASSERT(CmdBuffer.Size > 0);
     KGDrawCmd* curr_cmd = &CmdBuffer.Data[CmdBuffer.Size - 1];
     if (curr_cmd->ElemCount != 0 && curr_cmd->TextureId != _CmdHeader.TextureId)
     {
@@ -551,7 +551,7 @@ void KGDrawList::_OnChangedVtxOffset()
 {
     // We don't need to compare curr_cmd->VtxOffset != _CmdHeader.VtxOffset because we know it'll be different at the time we call this.
     _VtxCurrentIdx = 0;
-    IM_ASSERT_PARANOID(CmdBuffer.Size > 0);
+    KR_CORE_ASSERT(CmdBuffer.Size > 0);
     KGDrawCmd* curr_cmd = &CmdBuffer.Data[CmdBuffer.Size - 1];
     //KR_CORE_ASSERT(curr_cmd->VtxOffset != _CmdHeader.VtxOffset); // See #3349
     if (curr_cmd->ElemCount != 0)
@@ -567,10 +567,10 @@ int KGDrawList::_CalcCircleAutoSegmentCount(float radius) const
 {
     // Automatic segment count
     const int radius_idx = (int)(radius + 0.999999f); // ceil to never reduce accuracy
-    if (radius_idx < IM_ARRAYSIZE(_Data->CircleSegmentCounts))
+    if (radius_idx < KG_ARRAYSIZE(_Data->CircleSegmentCounts))
         return _Data->CircleSegmentCounts[radius_idx]; // Use cached value
     else
-        return IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC(radius, _Data->CircleSegmentMaxError);
+        return KG_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC(radius, _Data->CircleSegmentMaxError);
 }
 
 // Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
@@ -585,8 +585,8 @@ void KGDrawList::PushClipRect(const ImVec2& cr_min, const ImVec2& cr_max, bool i
         if (cr.z > current.z) cr.z = current.z;
         if (cr.w > current.w) cr.w = current.w;
     }
-    cr.z = ImMax(cr.x, cr.z);
-    cr.w = ImMax(cr.y, cr.w);
+    cr.z = KGMax(cr.x, cr.z);
+    cr.w = KGMax(cr.y, cr.w);
 
     _ClipRectStack.push_back(cr);
     _CmdHeader.ClipRect = cr;
@@ -625,7 +625,7 @@ void KGDrawList::PopTextureID()
 void KGDrawList::PrimReserve(int idx_count, int vtx_count)
 {
     // Large mesh support (when enabled)
-    IM_ASSERT_PARANOID(idx_count >= 0 && vtx_count >= 0);
+    KR_CORE_ASSERT(idx_count >= 0 && vtx_count >= 0);
     if (sizeof(KGDrawIdx) == 2 && (_VtxCurrentIdx + vtx_count >= (1 << 16)) && (Flags & KGDrawListFlags_AllowVtxOffset))
     {
         // FIXME: In theory we should be testing that vtx_count <64k here.
@@ -650,7 +650,7 @@ void KGDrawList::PrimReserve(int idx_count, int vtx_count)
 // Release the a number of reserved vertices/indices from the end of the last reservation made with PrimReserve().
 void KGDrawList::PrimUnreserve(int idx_count, int vtx_count)
 {
-    IM_ASSERT_PARANOID(idx_count >= 0 && vtx_count >= 0);
+    KR_CORE_ASSERT(idx_count >= 0 && vtx_count >= 0);
 
     KGDrawCmd* draw_cmd = &CmdBuffer.Data[CmdBuffer.Size - 1];
     draw_cmd->ElemCount -= idx_count;
@@ -706,7 +706,7 @@ void KGDrawList::PrimQuadUV(const ImVec2& a, const ImVec2& b, const ImVec2& c, c
 // On AddPolyline() and AddConvexPolyFilled() we intentionally avoid using ImVec2 and superfluous function calls to optimize debug/non-inlined builds.
 // - Those macros expects l-values and need to be used as their own statement.
 // - Those macros are intentionally not surrounded by the 'do {} while (0)' idiom because even that translates to runtime with debug compilers.
-#define IM_NORMALIZE2F_OVER_ZERO(VX,VY)     { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = ImRsqrt(d2); VX *= inv_len; VY *= inv_len; } } (void)0
+#define IM_NORMALIZE2F_OVER_ZERO(VX,VY)     { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = KGRsqrt(d2); VX *= inv_len; VY *= inv_len; } } (void)0
 #define IM_FIXNORMAL2F_MAX_INVLEN2          100.0f // 500.0f (see #4053, #3366)
 #define IM_FIXNORMAL2F(VX,VY)               { float d2 = VX*VX + VY*VY; if (d2 > 0.000001f) { float inv_len2 = 1.0f / d2; if (inv_len2 > IM_FIXNORMAL2F_MAX_INVLEN2) inv_len2 = IM_FIXNORMAL2F_MAX_INVLEN2; VX *= inv_len2; VY *= inv_len2; } } (void)0
 
@@ -729,7 +729,7 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
         const KGU32 col_trans = col & ~KG_COL32_A_MASK;
 
         // Thicknesses <1.0 should behave like thickness 1.0
-        thickness = ImMax(thickness, 1.0f);
+        thickness = KGMax(thickness, 1.0f);
         const int integer_thickness = (int)thickness;
         const float fractional_thickness = thickness - integer_thickness;
 
@@ -739,7 +739,7 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
         const bool use_texture = (Flags & KGDrawListFlags_AntiAliasedLinesUseTex) && (integer_thickness < KG_DRAWLIST_TEX_LINES_WIDTH_MAX) && (fractional_thickness <= 0.00001f) && (AA_SIZE == 1.0f);
 
         // We should never hit this, because NewFrame() doesn't set KGDrawListFlags_AntiAliasedLinesUseTex unless KGFontAtlasFlags_NoBakedLines is off
-        IM_ASSERT_PARANOID(!use_texture || !(_Data->Font->ContainerAtlas->Flags & KGFontAtlasFlags_NoBakedLines));
+        KR_CORE_ASSERT(!use_texture || !(_Data->Font->ContainerAtlas->Flags & KGFontAtlasFlags_NoBakedLines));
 
         const int idx_count = use_texture ? (count * 6) : (thick_line ? count * 18 : count * 12);
         const int vtx_count = use_texture ? (points_count * 2) : (thick_line ? points_count * 4 : points_count * 3);
@@ -837,7 +837,7 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
                 /*if (fractional_thickness != 0.0f) // Currently always zero when use_texture==false!
                 {
                     const ImVec4 tex_uvs_1 = _Data->TexUvLines[integer_thickness + 1];
-                    tex_uvs.x = tex_uvs.x + (tex_uvs_1.x - tex_uvs.x) * fractional_thickness; // inlined ImLerp()
+                    tex_uvs.x = tex_uvs.x + (tex_uvs_1.x - tex_uvs.x) * fractional_thickness; // inlined KGLerp()
                     tex_uvs.y = tex_uvs.y + (tex_uvs_1.y - tex_uvs.y) * fractional_thickness;
                     tex_uvs.z = tex_uvs.z + (tex_uvs_1.z - tex_uvs.z) * fractional_thickness;
                     tex_uvs.w = tex_uvs.w + (tex_uvs_1.w - tex_uvs.w) * fractional_thickness;
@@ -1065,9 +1065,9 @@ void KGDrawList::_PathArcToFastEx(const ImVec2& center, float radius, int a_min_
         a_step = IM_DRAWLIST_ARCFAST_SAMPLE_MAX / _CalcCircleAutoSegmentCount(radius);
 
     // Make sure we never do steps larger than one quarter of the circle
-    a_step = ImClamp(a_step, 1, IM_DRAWLIST_ARCFAST_TABLE_SIZE / 4);
+    a_step = KGClamp(a_step, 1, KG_DRAWLIST_ARCFAST_TABLE_SIZE / 4);
 
-    const int sample_range = ImAbs(a_max_sample - a_min_sample);
+    const int sample_range = KGAbs(a_max_sample - a_min_sample);
     const int a_next_step = a_step;
 
     int samples = sample_range + 1;
@@ -1141,7 +1141,7 @@ void KGDrawList::_PathArcToFastEx(const ImVec2& center, float radius, int a_min_
         out_ptr++;
     }
 
-    IM_ASSERT_PARANOID(_Path.Data + _Path.Size == out_ptr);
+    KR_CORE_ASSERT(_Path.Data + _Path.Size == out_ptr);
 }
 
 void KGDrawList::_PathArcToN(const ImVec2& center, float radius, float a_min, float a_max, int num_segments)
@@ -1158,7 +1158,7 @@ void KGDrawList::_PathArcToN(const ImVec2& center, float radius, float a_min, fl
     for (int i = 0; i <= num_segments; i++)
     {
         const float a = a_min + ((float)i / (float)num_segments) * (a_max - a_min);
-        _Path.push_back(ImVec2(center.x + ImCos(a) * radius, center.y + ImSin(a) * radius));
+        _Path.push_back(ImVec2(center.x + KGCos(a) * radius, center.y + KGSin(a) * radius));
     }
 }
 
@@ -1194,36 +1194,36 @@ void KGDrawList::PathArcTo(const ImVec2& center, float radius, float a_min, floa
 
         // We are going to use precomputed values for mid samples.
         // Determine first and last sample in lookup table that belong to the arc.
-        const float a_min_sample_f = IM_DRAWLIST_ARCFAST_SAMPLE_MAX * a_min / (IM_PI * 2.0f);
-        const float a_max_sample_f = IM_DRAWLIST_ARCFAST_SAMPLE_MAX * a_max / (IM_PI * 2.0f);
+        const float a_min_sample_f = IM_DRAWLIST_ARCFAST_SAMPLE_MAX * a_min / (KG_PI * 2.0f);
+        const float a_max_sample_f = IM_DRAWLIST_ARCFAST_SAMPLE_MAX * a_max / (KG_PI * 2.0f);
 
-        const int a_min_sample = a_is_reverse ? (int)ImFloorSigned(a_min_sample_f) : (int)ImCeil(a_min_sample_f);
-        const int a_max_sample = a_is_reverse ? (int)ImCeil(a_max_sample_f) : (int)ImFloorSigned(a_max_sample_f);
-        const int a_mid_samples = a_is_reverse ? ImMax(a_min_sample - a_max_sample, 0) : ImMax(a_max_sample - a_min_sample, 0);
+        const int a_min_sample = a_is_reverse ? (int)KGFloorSigned(a_min_sample_f) : (int)KGCeil(a_min_sample_f);
+        const int a_max_sample = a_is_reverse ? (int)KGCeil(a_max_sample_f) : (int)KGFloorSigned(a_max_sample_f);
+        const int a_mid_samples = a_is_reverse ? KGMax(a_min_sample - a_max_sample, 0) : KGMax(a_max_sample - a_min_sample, 0);
 
-        const float a_min_segment_angle = a_min_sample * IM_PI * 2.0f / IM_DRAWLIST_ARCFAST_SAMPLE_MAX;
-        const float a_max_segment_angle = a_max_sample * IM_PI * 2.0f / IM_DRAWLIST_ARCFAST_SAMPLE_MAX;
-        const bool a_emit_start = ImAbs(a_min_segment_angle - a_min) >= 1e-5f;
-        const bool a_emit_end = ImAbs(a_max - a_max_segment_angle) >= 1e-5f;
+        const float a_min_segment_angle = a_min_sample * KG_PI * 2.0f / IM_DRAWLIST_ARCFAST_SAMPLE_MAX;
+        const float a_max_segment_angle = a_max_sample * KG_PI * 2.0f / IM_DRAWLIST_ARCFAST_SAMPLE_MAX;
+        const bool a_emit_start = KGAbs(a_min_segment_angle - a_min) >= 1e-5f;
+        const bool a_emit_end = KGAbs(a_max - a_max_segment_angle) >= 1e-5f;
 
         _Path.reserve(_Path.Size + (a_mid_samples + 1 + (a_emit_start ? 1 : 0) + (a_emit_end ? 1 : 0)));
         if (a_emit_start)
-            _Path.push_back(ImVec2(center.x + ImCos(a_min) * radius, center.y + ImSin(a_min) * radius));
+            _Path.push_back(ImVec2(center.x + KGCos(a_min) * radius, center.y + KGSin(a_min) * radius));
         if (a_mid_samples > 0)
             _PathArcToFastEx(center, radius, a_min_sample, a_max_sample, 0);
         if (a_emit_end)
-            _Path.push_back(ImVec2(center.x + ImCos(a_max) * radius, center.y + ImSin(a_max) * radius));
+            _Path.push_back(ImVec2(center.x + KGCos(a_max) * radius, center.y + KGSin(a_max) * radius));
     }
     else
     {
-        const float arc_length = ImAbs(a_max - a_min);
+        const float arc_length = KGAbs(a_max - a_min);
         const int circle_segment_count = _CalcCircleAutoSegmentCount(radius);
-        const int arc_segment_count = ImMax((int)ImCeil(circle_segment_count * arc_length / (IM_PI * 2.0f)), (int)(2.0f * IM_PI / arc_length));
+        const int arc_segment_count = KGMax((int)KGCeil(circle_segment_count * arc_length / (KG_PI * 2.0f)), (int)(2.0f * KG_PI / arc_length));
         _PathArcToN(center, radius, a_min, a_max, arc_segment_count);
     }
 }
 
-ImVec2 ImBezierCubicCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, float t)
+ImVec2 KGBezierCubicCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, float t)
 {
     float u = 1.0f - t;
     float w1 = u * u * u;
@@ -1233,7 +1233,7 @@ ImVec2 ImBezierCubicCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, c
     return ImVec2(w1 * p1.x + w2 * p2.x + w3 * p3.x + w4 * p4.x, w1 * p1.y + w2 * p2.y + w3 * p3.y + w4 * p4.y);
 }
 
-ImVec2 ImBezierQuadraticCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, float t)
+ImVec2 KGBezierQuadraticCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, float t)
 {
     float u = 1.0f - t;
     float w1 = u * u;
@@ -1242,7 +1242,7 @@ ImVec2 ImBezierQuadraticCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p
     return ImVec2(w1 * p1.x + w2 * p2.x + w3 * p3.x, w1 * p1.y + w2 * p2.y + w3 * p3.y);
 }
 
-// Closely mimics ImBezierCubicClosestPointCasteljau() in imgui.cpp
+// Closely mimics KGBezierCubicClosestPointCasteljau() in imgui.cpp
 static void PathBezierCubicCurveToCasteljau(KGVector<ImVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)
 {
     float dx = x4 - x1;
@@ -1298,7 +1298,7 @@ void KGDrawList::PathBezierCubicCurveTo(const ImVec2& p2, const ImVec2& p3, cons
     {
         float t_step = 1.0f / (float)num_segments;
         for (int i_step = 1; i_step <= num_segments; i_step++)
-            _Path.push_back(ImBezierCubicCalc(p1, p2, p3, p4, t_step * i_step));
+            _Path.push_back(KGBezierCubicCalc(p1, p2, p3, p4, t_step * i_step));
     }
 }
 
@@ -1314,11 +1314,11 @@ void KGDrawList::PathBezierQuadraticCurveTo(const ImVec2& p2, const ImVec2& p3, 
     {
         float t_step = 1.0f / (float)num_segments;
         for (int i_step = 1; i_step <= num_segments; i_step++)
-            _Path.push_back(ImBezierQuadraticCalc(p1, p2, p3, t_step * i_step));
+            _Path.push_back(KGBezierQuadraticCalc(p1, p2, p3, t_step * i_step));
     }
 }
 
-IM_STATIC_ASSERT(KGDrawFlags_RoundCornersTopLeft == (1 << 4));
+KG_STATIC_ASSERT(KGDrawFlags_RoundCornersTopLeft == (1 << 4));
 static inline KGDrawFlags FixRectCornerFlags(KGDrawFlags flags)
 {
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
@@ -1356,8 +1356,8 @@ static inline KGDrawFlags FixRectCornerFlags(KGDrawFlags flags)
 void KGDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, KGDrawFlags flags)
 {
     flags = FixRectCornerFlags(flags);
-    rounding = ImMin(rounding, ImFabs(b.x - a.x) * ( ((flags & KGDrawFlags_RoundCornersTop)  == KGDrawFlags_RoundCornersTop)  || ((flags & KGDrawFlags_RoundCornersBottom) == KGDrawFlags_RoundCornersBottom) ? 0.5f : 1.0f ) - 1.0f);
-    rounding = ImMin(rounding, ImFabs(b.y - a.y) * ( ((flags & KGDrawFlags_RoundCornersLeft) == KGDrawFlags_RoundCornersLeft) || ((flags & KGDrawFlags_RoundCornersRight)  == KGDrawFlags_RoundCornersRight)  ? 0.5f : 1.0f ) - 1.0f);
+    rounding = KGMin(rounding, KGFabs(b.x - a.x) * ( ((flags & KGDrawFlags_RoundCornersTop)  == KGDrawFlags_RoundCornersTop)  || ((flags & KGDrawFlags_RoundCornersBottom) == KGDrawFlags_RoundCornersBottom) ? 0.5f : 1.0f ) - 1.0f);
+    rounding = KGMin(rounding, KGFabs(b.y - a.y) * ( ((flags & KGDrawFlags_RoundCornersLeft) == KGDrawFlags_RoundCornersLeft) || ((flags & KGDrawFlags_RoundCornersRight)  == KGDrawFlags_RoundCornersRight)  ? 0.5f : 1.0f ) - 1.0f);
 
     if (rounding < 0.5f || (flags & KGDrawFlags_RoundCornersMask_) == KGDrawFlags_RoundCornersNone)
     {
@@ -1493,10 +1493,10 @@ void KGDrawList::AddCircle(const ImVec2& center, float radius, KGU32 col, int nu
     else
     {
         // Explicit segment count (still clamp to avoid drawing insanely tessellated shapes)
-        num_segments = ImClamp(num_segments, 3, IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_MAX);
+        num_segments = KGClamp(num_segments, 3, KG_DRAWLIST_CIRCLE_AUTO_SEGMENT_MAX);
 
         // Because we are filling a closed shape we remove 1 from the count of segments/points
-        const float a_max = (IM_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
+        const float a_max = (KG_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
         PathArcTo(center, radius - 0.5f, 0.0f, a_max, num_segments - 1);
     }
 
@@ -1517,10 +1517,10 @@ void KGDrawList::AddCircleFilled(const ImVec2& center, float radius, KGU32 col, 
     else
     {
         // Explicit segment count (still clamp to avoid drawing insanely tessellated shapes)
-        num_segments = ImClamp(num_segments, 3, IM_DRAWLIST_CIRCLE_AUTO_SEGMENT_MAX);
+        num_segments = KGClamp(num_segments, 3, KG_DRAWLIST_CIRCLE_AUTO_SEGMENT_MAX);
 
         // Because we are filling a closed shape we remove 1 from the count of segments/points
-        const float a_max = (IM_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
+        const float a_max = (KG_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
         PathArcTo(center, radius, 0.0f, a_max, num_segments - 1);
     }
 
@@ -1534,7 +1534,7 @@ void KGDrawList::AddNgon(const ImVec2& center, float radius, KGU32 col, int num_
         return;
 
     // Because we are filling a closed shape we remove 1 from the count of segments/points
-    const float a_max = (IM_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
+    const float a_max = (KG_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
     PathArcTo(center, radius - 0.5f, 0.0f, a_max, num_segments - 1);
     PathStroke(col, KGDrawFlags_Closed, thickness);
 }
@@ -1546,7 +1546,7 @@ void KGDrawList::AddNgonFilled(const ImVec2& center, float radius, KGU32 col, in
         return;
 
     // Because we are filling a closed shape we remove 1 from the count of segments/points
-    const float a_max = (IM_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
+    const float a_max = (KG_PI * 2.0f) * ((float)num_segments - 1.0f) / (float)num_segments;
     PathArcTo(center, radius, 0.0f, a_max, num_segments - 1);
     PathFillConvex(col);
 }
@@ -1594,10 +1594,10 @@ void KGDrawList::AddText(const KGFont* font, float font_size, const ImVec2& pos,
     ImVec4 clip_rect = _CmdHeader.ClipRect;
     if (cpu_fine_clip_rect)
     {
-        clip_rect.x = ImMax(clip_rect.x, cpu_fine_clip_rect->x);
-        clip_rect.y = ImMax(clip_rect.y, cpu_fine_clip_rect->y);
-        clip_rect.z = ImMin(clip_rect.z, cpu_fine_clip_rect->z);
-        clip_rect.w = ImMin(clip_rect.w, cpu_fine_clip_rect->w);
+        clip_rect.x = KGMax(clip_rect.x, cpu_fine_clip_rect->x);
+        clip_rect.y = KGMax(clip_rect.y, cpu_fine_clip_rect->y);
+        clip_rect.z = KGMin(clip_rect.z, cpu_fine_clip_rect->z);
+        clip_rect.w = KGMin(clip_rect.w, cpu_fine_clip_rect->w);
     }
     font->RenderText(this, font_size, pos, col, clip_rect, text_begin, text_end, wrap_width, cpu_fine_clip_rect != NULL);
 }
@@ -1667,7 +1667,7 @@ void KGDrawList::AddImageRounded(KGTextureID user_texture_id, const ImVec2& p_mi
 
 void KGDrawList::SetWindowBackgroundColor(ImVec4 bgColor)
 {
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    KGGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems || (window->Size.x <= window->TitleBarRect().GetSize().x && window->Size.y <= window->TitleBarRect().GetSize().y))
     {
         return;
@@ -1870,7 +1870,7 @@ void KGDrawData::ScaleClipRects(const ImVec2& fb_scale)
 void ImGui::ShadeVertsLinearColorGradientKeepAlpha(KGDrawList* draw_list, int vert_start_idx, int vert_end_idx, ImVec2 gradient_p0, ImVec2 gradient_p1, KGU32 col0, KGU32 col1)
 {
     ImVec2 gradient_extent = gradient_p1 - gradient_p0;
-    float gradient_inv_length2 = 1.0f / ImLengthSqr(gradient_extent);
+    float gradient_inv_length2 = 1.0f / KGLengthSqr(gradient_extent);
     KGDrawVert* vert_start = draw_list->VtxBuffer.Data + vert_start_idx;
     KGDrawVert* vert_end = draw_list->VtxBuffer.Data + vert_end_idx;
     const int col0_r = (int)(col0 >> KG_COL32_R_SHIFT) & 0xFF;
@@ -1881,8 +1881,8 @@ void ImGui::ShadeVertsLinearColorGradientKeepAlpha(KGDrawList* draw_list, int ve
     const int col_delta_b = ((int)(col1 >> KG_COL32_B_SHIFT) & 0xFF) - col0_b;
     for (KGDrawVert* vert = vert_start; vert < vert_end; vert++)
     {
-        float d = ImDot(vert->pos - gradient_p0, gradient_extent);
-        float t = ImClamp(d * gradient_inv_length2, 0.0f, 1.0f);
+        float d = KGDot(vert->pos - gradient_p0, gradient_extent);
+        float t = KGClamp(d * gradient_inv_length2, 0.0f, 1.0f);
         int r = (int)(col0_r + col_delta_r * t);
         int g = (int)(col0_g + col_delta_g * t);
         int b = (int)(col0_b + col_delta_b * t);
@@ -1903,15 +1903,15 @@ void ImGui::ShadeVertsLinearUV(KGDrawList* draw_list, int vert_start_idx, int ve
     KGDrawVert* vert_end = draw_list->VtxBuffer.Data + vert_end_idx;
     if (clamp)
     {
-        const ImVec2 min = ImMin(uv_a, uv_b);
-        const ImVec2 max = ImMax(uv_a, uv_b);
+        const ImVec2 min = KGMin(uv_a, uv_b);
+        const ImVec2 max = KGMax(uv_a, uv_b);
         for (KGDrawVert* vertex = vert_start; vertex < vert_end; ++vertex)
-            vertex->uv = ImClamp(uv_a + ImMul(ImVec2(vertex->pos.x, vertex->pos.y) - a, scale), min, max);
+            vertex->uv = KGClamp(uv_a + KGMul(ImVec2(vertex->pos.x, vertex->pos.y) - a, scale), min, max);
     }
     else
     {
         for (KGDrawVert* vertex = vert_start; vertex < vert_end; ++vertex)
-            vertex->uv = uv_a + ImMul(ImVec2(vertex->pos.x, vertex->pos.y) - a, scale);
+            vertex->uv = uv_a + KGMul(ImVec2(vertex->pos.x, vertex->pos.y) - a, scale);
     }
 }
 
@@ -2143,9 +2143,9 @@ KGFont* KGFontAtlas::AddFontDefault(const KGFontConfig* font_cfg_template)
     if (font_cfg.SizePixels <= 0.0f)
         font_cfg.SizePixels = 13.0f * 1.0f;
     if (font_cfg.Name[0] == '\0')
-        ImFormatString(font_cfg.Name, IM_ARRAYSIZE(font_cfg.Name), "ProggyClean.ttf, %dpx", (int)font_cfg.SizePixels);
+        KGFormatString(font_cfg.Name, KG_ARRAYSIZE(font_cfg.Name), "ProggyClean.ttf, %dpx", (int)font_cfg.SizePixels);
     font_cfg.EllipsisChar = (KGWchar)0x0085;
-    font_cfg.GlyphOffset.y = 1.0f * IM_FLOOR(font_cfg.SizePixels / 13.0f);  // Add +1 offset per 13 units
+    font_cfg.GlyphOffset.y = 1.0f * KG_FLOOR(font_cfg.SizePixels / 13.0f);  // Add +1 offset per 13 units
 
     const char* ttf_compressed_base85 = GetDefaultCompressedFontDataTTFBase85();
     const KGWchar* glyph_ranges = font_cfg.GlyphRanges != NULL ? font_cfg.GlyphRanges : GetGlyphRangesDefault();
@@ -2157,10 +2157,10 @@ KGFont* KGFontAtlas::AddFontFromFileTTF(const char* filename, float size_pixels,
 {
     KR_CORE_ASSERT(!Locked && "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
     size_t data_size = 0;
-    void* data = ImFileLoadToMemory(filename, "rb", &data_size, 0);
+    void* data = KGFileLoadToMemory(filename, "rb", &data_size, 0);
     if (!data)
     {
-        IM_ASSERT_USER_ERROR(0, "Could not load font file!");
+        KG_ASSERT_USER_ERROR(0, "Could not load font file!");
         return NULL;
     }
     KGFontConfig font_cfg = font_cfg_template ? *font_cfg_template : KGFontConfig();
@@ -2169,7 +2169,7 @@ KGFont* KGFontAtlas::AddFontFromFileTTF(const char* filename, float size_pixels,
         // Store a short copy of filename into into the font name for convenience
         const char* p;
         for (p = filename + strlen(filename); p > filename && p[-1] != '/' && p[-1] != '\\'; p--) {}
-        ImFormatString(font_cfg.Name, IM_ARRAYSIZE(font_cfg.Name), "%s, %.0fpx", p, size_pixels);
+        KGFormatString(font_cfg.Name, KG_ARRAYSIZE(font_cfg.Name), "%s, %.0fpx", p, size_pixels);
     }
     return AddFontFromMemoryTTF(data, (int)data_size, size_pixels, &font_cfg, glyph_ranges);
 }
@@ -2285,9 +2285,9 @@ bool    KGFontAtlas::Build()
     const KGFontBuilderIO* builder_io = FontBuilderIO;
     if (builder_io == NULL)
     {
-#ifdef IMGUI_ENABLE_FREETYPE
+#ifdef KGGUI_ENABLE_FREETYPE
         builder_io = ImGuiFreeType::GetBuilderForFreeType();
-#elif defined(IMGUI_ENABLE_STB_TRUETYPE)
+#elif defined(KGGUI_ENABLE_STB_TRUETYPE)
         builder_io = ImFontAtlasGetBuilderForStbTruetype();
 #else
         KR_CORE_ASSERT(0); // Invalid Build function
@@ -2309,14 +2309,14 @@ void    ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], fl
 
 void    ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride)
 {
-    IM_ASSERT_PARANOID(w <= stride);
+    KR_CORE_ASSERT(w <= stride);
     unsigned char* data = pixels + x + y * stride;
     for (int j = h; j > 0; j--, data += stride - w)
         for (int i = w; i > 0; i--, data++)
             *data = table[*data];
 }
 
-#ifdef IMGUI_ENABLE_STB_TRUETYPE
+#ifdef KGGUI_ENABLE_STB_TRUETYPE
 // Temporary data for one source font (multiple source fonts can be merged into one destination KGFont)
 // (C++03 doesn't allow instancing KGVector<> with function-local types so we declare the type here.)
 struct ImFontBuildSrcData
@@ -2329,7 +2329,7 @@ struct ImFontBuildSrcData
     int                 DstIndex;           // Index into atlas->Fonts[] and dst_tmp_array[]
     int                 GlyphsHighest;      // Highest requested codepoint
     int                 GlyphsCount;        // Glyph count (excluding missing glyphs and glyphs already set by an earlier source font)
-    ImBitVector         GlyphsSet;          // Glyph bit map (random access, 1-bit per codepoint. This will be a maximum of 8KB)
+    KGBitVector         GlyphsSet;          // Glyph bit map (random access, 1-bit per codepoint. This will be a maximum of 8KB)
     KGVector<int>       GlyphsList;         // Glyph codepoints list (flattened version of GlyphsSet)
 };
 
@@ -2339,10 +2339,10 @@ struct ImFontBuildDstData
     int                 SrcCount;           // Number of source fonts targeting this destination font.
     int                 GlyphsHighest;
     int                 GlyphsCount;
-    ImBitVector         GlyphsSet;          // This is used to resolve collision when multiple sources are merged into a same destination font.
+    KGBitVector         GlyphsSet;          // This is used to resolve collision when multiple sources are merged into a same destination font.
 };
 
-static void UnpackBitVectorToFlatIndexList(const ImBitVector* in, KGVector<int>* out)
+static void UnpackBitVectorToFlatIndexList(const KGBitVector* in, KGVector<int>* out)
 {
     KR_CORE_ASSERT(sizeof(in->Storage.Data[0]) == sizeof(int));
     const KGU32* it_begin = in->Storage.begin();
@@ -2402,9 +2402,9 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
         ImFontBuildDstData& dst_tmp = dst_tmp_array[src_tmp.DstIndex];
         src_tmp.SrcRanges = cfg.GlyphRanges ? cfg.GlyphRanges : atlas->GetGlyphRangesDefault();
         for (const KGWchar* src_range = src_tmp.SrcRanges; src_range[0] && src_range[1]; src_range += 2)
-            src_tmp.GlyphsHighest = ImMax(src_tmp.GlyphsHighest, (int)src_range[1]);
+            src_tmp.GlyphsHighest = KGMax(src_tmp.GlyphsHighest, (int)src_range[1]);
         dst_tmp.SrcCount++;
-        dst_tmp.GlyphsHighest = ImMax(dst_tmp.GlyphsHighest, src_tmp.GlyphsHighest);
+        dst_tmp.GlyphsHighest = KGMax(dst_tmp.GlyphsHighest, src_tmp.GlyphsHighest);
     }
 
     // 2. For every requested codepoint, check for their presence in the font data, and handle redundancy or overlaps between source fonts to avoid unused glyphs.
@@ -2499,7 +2499,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
     // We need a width for the skyline algorithm, any width!
     // The exact width doesn't really matter much, but some API/GPU have texture size limitations and increasing width can decrease height.
     // User can override TexDesiredWidth and TexGlyphPadding if they wish, otherwise we use a simple heuristic to select the width based on expected surface.
-    const int surface_sqrt = (int)ImSqrt((float)total_surface) + 1;
+    const int surface_sqrt = (int)KGSqrt((float)total_surface) + 1;
     atlas->TexHeight = 0;
     if (atlas->TexDesiredWidth > 0)
         atlas->TexWidth = atlas->TexDesiredWidth;
@@ -2526,11 +2526,11 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
         // FIXME: We are not handling packing failure here (would happen if we got off TEX_HEIGHT_MAX or if a single if larger than TexWidth?)
         for (int glyph_i = 0; glyph_i < src_tmp.GlyphsCount; glyph_i++)
             if (src_tmp.Rects[glyph_i].was_packed)
-                atlas->TexHeight = ImMax(atlas->TexHeight, src_tmp.Rects[glyph_i].y + src_tmp.Rects[glyph_i].h);
+                atlas->TexHeight = KGMax(atlas->TexHeight, src_tmp.Rects[glyph_i].y + src_tmp.Rects[glyph_i].h);
     }
 
     // 7. Allocate texture
-    atlas->TexHeight = (atlas->Flags & KGFontAtlasFlags_NoPowerOfTwoHeight) ? (atlas->TexHeight + 1) : ImUpperPowerOfTwo(atlas->TexHeight);
+    atlas->TexHeight = (atlas->Flags & KGFontAtlasFlags_NoPowerOfTwoHeight) ? (atlas->TexHeight + 1) : KGUpperPowerOfTwo(atlas->TexHeight);
     atlas->TexUvScale = ImVec2(1.0f / atlas->TexWidth, 1.0f / atlas->TexHeight);
     atlas->TexPixelsAlpha8 = (unsigned char*)KG_ALLOC(atlas->TexWidth * atlas->TexHeight);
     memset(atlas->TexPixelsAlpha8, 0, atlas->TexWidth * atlas->TexHeight);
@@ -2581,11 +2581,11 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
         int unscaled_ascent, unscaled_descent, unscaled_line_gap;
         stbtt_GetFontVMetrics(&src_tmp.FontInfo, &unscaled_ascent, &unscaled_descent, &unscaled_line_gap);
 
-        const float ascent = ImFloor(unscaled_ascent * font_scale + ((unscaled_ascent > 0.0f) ? +1 : -1));
-        const float descent = ImFloor(unscaled_descent * font_scale + ((unscaled_descent > 0.0f) ? +1 : -1));
+        const float ascent = KGFloor(unscaled_ascent * font_scale + ((unscaled_ascent > 0.0f) ? +1 : -1));
+        const float descent = KGFloor(unscaled_descent * font_scale + ((unscaled_descent > 0.0f) ? +1 : -1));
         ImFontAtlasBuildSetupFont(atlas, dst_font, &cfg, ascent, descent);
         const float font_off_x = cfg.GlyphOffset.x;
-        const float font_off_y = cfg.GlyphOffset.y + IM_ROUND(dst_font->Ascent);
+        const float font_off_y = cfg.GlyphOffset.y + KG_ROUND(dst_font->Ascent);
 
         for (int glyph_i = 0; glyph_i < src_tmp.GlyphsCount; glyph_i++)
         {
@@ -2613,7 +2613,7 @@ const KGFontBuilderIO* ImFontAtlasGetBuilderForStbTruetype()
     return &io;
 }
 
-#endif // IMGUI_ENABLE_STB_TRUETYPE
+#endif // KGGUI_ENABLE_STB_TRUETYPE
 
 void ImFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* font_config, float ascent, float descent)
 {
@@ -2653,7 +2653,7 @@ void ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opa
             user_rects[i].X = (unsigned short)pack_rects[i].x;
             user_rects[i].Y = (unsigned short)pack_rects[i].y;
             KR_CORE_ASSERT(pack_rects[i].w == user_rects[i].Width && pack_rects[i].h == user_rects[i].Height);
-            atlas->TexHeight = ImMax(atlas->TexHeight, pack_rects[i].y + pack_rects[i].h);
+            atlas->TexHeight = KGMax(atlas->TexHeight, pack_rects[i].y + pack_rects[i].h);
         }
 }
 
@@ -2943,11 +2943,11 @@ const KGWchar*  KGFontAtlas::GetGlyphRangesChineseSimplifiedCommon()
         0xFF00, 0xFFEF, // Half-width characters
         0xFFFD, 0xFFFD  // Invalid
     };
-    static KGWchar full_ranges[IM_ARRAYSIZE(base_ranges) + IM_ARRAYSIZE(accumulative_offsets_from_0x4E00) * 2 + 1] = { 0 };
+    static KGWchar full_ranges[KG_ARRAYSIZE(base_ranges) + KG_ARRAYSIZE(accumulative_offsets_from_0x4E00) * 2 + 1] = { 0 };
     if (!full_ranges[0])
     {
         memcpy(full_ranges, base_ranges, sizeof(base_ranges));
-        UnpackAccumulativeOffsetsIntoRanges(0x4E00, accumulative_offsets_from_0x4E00, IM_ARRAYSIZE(accumulative_offsets_from_0x4E00), full_ranges + IM_ARRAYSIZE(base_ranges));
+        UnpackAccumulativeOffsetsIntoRanges(0x4E00, accumulative_offsets_from_0x4E00, KG_ARRAYSIZE(accumulative_offsets_from_0x4E00), full_ranges + KG_ARRAYSIZE(base_ranges));
     }
     return &full_ranges[0];
 }
@@ -3033,11 +3033,11 @@ const KGWchar*  KGFontAtlas::GetGlyphRangesJapanese()
         0xFF00, 0xFFEF, // Half-width characters
         0xFFFD, 0xFFFD  // Invalid
     };
-    static KGWchar full_ranges[IM_ARRAYSIZE(base_ranges) + IM_ARRAYSIZE(accumulative_offsets_from_0x4E00)*2 + 1] = { 0 };
+    static KGWchar full_ranges[KG_ARRAYSIZE(base_ranges) + KG_ARRAYSIZE(accumulative_offsets_from_0x4E00)*2 + 1] = { 0 };
     if (!full_ranges[0])
     {
         memcpy(full_ranges, base_ranges, sizeof(base_ranges));
-        UnpackAccumulativeOffsetsIntoRanges(0x4E00, accumulative_offsets_from_0x4E00, IM_ARRAYSIZE(accumulative_offsets_from_0x4E00), full_ranges + IM_ARRAYSIZE(base_ranges));
+        UnpackAccumulativeOffsetsIntoRanges(0x4E00, accumulative_offsets_from_0x4E00, KG_ARRAYSIZE(accumulative_offsets_from_0x4E00), full_ranges + KG_ARRAYSIZE(base_ranges));
     }
     return &full_ranges[0];
 }
@@ -3093,7 +3093,7 @@ void KGFontGlyphRangesBuilder::AddText(const char* text, const char* text_end)
     while (text_end ? (text < text_end) : *text)
     {
         unsigned int c = 0;
-        int c_len = ImTextCharFromUtf8(&c, text, text_end);
+        int c_len = KGTextCharFromUtf8(&c, text, text_end);
         text += c_len;
         if (c_len == 0)
             break;
@@ -3175,7 +3175,7 @@ void KGFont::BuildLookupTable()
 {
     int max_codepoint = 0;
     for (int i = 0; i != Glyphs.Size; i++)
-        max_codepoint = ImMax(max_codepoint, (int)Glyphs[i].Codepoint);
+        max_codepoint = KGMax(max_codepoint, (int)Glyphs[i].Codepoint);
 
     // Build lookup table
     KR_CORE_ASSERT(Glyphs.Size < 0xFFFF); // -1 is reserved
@@ -3204,7 +3204,7 @@ void KGFont::BuildLookupTable()
         KGFontGlyph& tab_glyph = Glyphs.back();
         tab_glyph = *FindGlyph((KGWchar)' ');
         tab_glyph.Codepoint = '\t';
-        tab_glyph.AdvanceX *= IM_TABSIZE;
+        tab_glyph.AdvanceX *= KG_TABSIZE;
         IndexAdvanceX[(int)tab_glyph.Codepoint] = (float)tab_glyph.AdvanceX;
         IndexLookup[(int)tab_glyph.Codepoint] = (KGWchar)(Glyphs.Size - 1);
     }
@@ -3219,16 +3219,16 @@ void KGFont::BuildLookupTable()
     const KGWchar ellipsis_chars[] = { (KGWchar)0x2026, (KGWchar)0x0085 };
     const KGWchar dots_chars[] = { (KGWchar)'.', (KGWchar)0xFF0E };
     if (EllipsisChar == (KGWchar)-1)
-        EllipsisChar = FindFirstExistingGlyph(this, ellipsis_chars, IM_ARRAYSIZE(ellipsis_chars));
+        EllipsisChar = FindFirstExistingGlyph(this, ellipsis_chars, KG_ARRAYSIZE(ellipsis_chars));
     if (DotChar == (KGWchar)-1)
-        DotChar = FindFirstExistingGlyph(this, dots_chars, IM_ARRAYSIZE(dots_chars));
+        DotChar = FindFirstExistingGlyph(this, dots_chars, KG_ARRAYSIZE(dots_chars));
 
     // Setup fallback character
     const KGWchar fallback_chars[] = { (KGWchar)KG_UNICODE_CODEPOINT_INVALID, (KGWchar)'?', (KGWchar)' ' };
     FallbackGlyph = FindGlyphNoFallback(FallbackChar);
     if (FallbackGlyph == NULL)
     {
-        FallbackChar = FindFirstExistingGlyph(this, fallback_chars, IM_ARRAYSIZE(fallback_chars));
+        FallbackChar = FindFirstExistingGlyph(this, fallback_chars, KG_ARRAYSIZE(fallback_chars));
         FallbackGlyph = FindGlyphNoFallback(FallbackChar);
         if (FallbackGlyph == NULL)
         {
@@ -3280,17 +3280,17 @@ void KGFont::AddGlyph(const KGFontConfig* cfg, KGWchar codepoint, float x0, floa
     {
         // Clamp & recenter if needed
         const float advance_x_original = advance_x;
-        advance_x = ImClamp(advance_x, cfg->GlyphMinAdvanceX, cfg->GlyphMaxAdvanceX);
+        advance_x = KGClamp(advance_x, cfg->GlyphMinAdvanceX, cfg->GlyphMaxAdvanceX);
         if (advance_x != advance_x_original)
         {
-            float char_off_x = cfg->PixelSnapH ? ImFloor((advance_x - advance_x_original) * 0.5f) : (advance_x - advance_x_original) * 0.5f;
+            float char_off_x = cfg->PixelSnapH ? KGFloor((advance_x - advance_x_original) * 0.5f) : (advance_x - advance_x_original) * 0.5f;
             x0 += char_off_x;
             x1 += char_off_x;
         }
 
         // Snap to pixel
         if (cfg->PixelSnapH)
-            advance_x = IM_ROUND(advance_x);
+            advance_x = KG_ROUND(advance_x);
 
         // Bake spacing
         advance_x += cfg->GlyphExtraSpacing.x;
@@ -3356,7 +3356,7 @@ const KGFontGlyph* KGFont::FindGlyphNoFallback(KGWchar c) const
 // Wrapping skips upcoming blanks
 static inline const char* CalcWordWrapNextLineStartA(const char* text, const char* text_end)
 {
-    while (text < text_end && ImCharIsBlankA(*text))
+    while (text < text_end && KGCharIsBlankA(*text))
         text++;
     if (*text == '\n')
         text++;
@@ -3396,7 +3396,7 @@ const char* KGFont::CalcWordWrapPositionA(float scale, const char* text, const c
         if (c < 0x80)
             next_s = s + 1;
         else
-            next_s = s + ImTextCharFromUtf8(&c, s, text_end);
+            next_s = s + KGTextCharFromUtf8(&c, s, text_end);
         if (c == 0)
             break;
 
@@ -3417,7 +3417,7 @@ const char* KGFont::CalcWordWrapPositionA(float scale, const char* text, const c
         }
 
         const float char_width = ((int)c < IndexAdvanceX.Size ? IndexAdvanceX.Data[c] : FallbackAdvanceX);
-        if (ImCharIsBlankW(c))
+        if (KGCharIsBlankW(c))
         {
             if (inside_word)
             {
@@ -3509,7 +3509,7 @@ ImVec2 KGFont::CalcTextSizeA(float size, float max_width, float wrap_width, cons
         }
         else
         {
-            s += ImTextCharFromUtf8(&c, s, text_end);
+            s += KGTextCharFromUtf8(&c, s, text_end);
             if (c == 0) // Malformed UTF-8?
                 break;
         }
@@ -3518,7 +3518,7 @@ ImVec2 KGFont::CalcTextSizeA(float size, float max_width, float wrap_width, cons
         {
             if (c == '\n')
             {
-                text_size.x = ImMax(text_size.x, line_width);
+                text_size.x = KGMax(text_size.x, line_width);
                 text_size.y += line_height;
                 line_width = 0.0f;
                 continue;
@@ -3558,8 +3558,8 @@ void KGFont::RenderChar(KGDrawList* draw_list, float size, const ImVec2& pos, KG
     if (glyph->Colored)
         col |= ~KG_COL32_A_MASK;
     float scale = (size >= 0.0f) ? (size / FontSize) : 1.0f;
-    float x = IM_FLOOR(pos.x);
-    float y = IM_FLOOR(pos.y);
+    float x = KG_FLOOR(pos.x);
+    float y = KG_FLOOR(pos.y);
     draw_list->PrimReserve(6, 4);
     draw_list->PrimRectUV(ImVec2(x + glyph->X0 * scale, y + glyph->Y0 * scale), ImVec2(x + glyph->X1 * scale, y + glyph->Y1 * scale), ImVec2(glyph->U0, glyph->V0), ImVec2(glyph->U1, glyph->V1), col);
 }
@@ -3571,8 +3571,8 @@ void KGFont::RenderText(KGDrawList* draw_list, float size, const ImVec2& pos, KG
         text_end = text_begin + strlen(text_begin); // KarmaGui:: functions generally already provides a valid text_end, so this is merely to handle direct calls.
 
     // Align to be pixel perfect
-    float x = IM_FLOOR(pos.x);
-    float y = IM_FLOOR(pos.y);
+    float x = KG_FLOOR(pos.x);
+    float y = KG_FLOOR(pos.y);
     if (y > clip_rect.w)
         return;
 
@@ -3659,7 +3659,7 @@ void KGFont::RenderText(KGDrawList* draw_list, float size, const ImVec2& pos, KG
         }
         else
         {
-            s += ImTextCharFromUtf8(&c, s, text_end);
+            s += KGTextCharFromUtf8(&c, s, text_end);
             if (c == 0) // Malformed UTF-8?
                 break;
         }
@@ -3812,7 +3812,7 @@ void ImGui::RenderBullet(KGDrawList* draw_list, ImVec2 pos, KGU32 col)
 
 void ImGui::RenderCheckMark(KGDrawList* draw_list, ImVec2 pos, KGU32 col, float sz)
 {
-    float thickness = ImMax(sz / 5.0f, 1.0f);
+    float thickness = KGMax(sz / 5.0f, 1.0f);
     sz -= thickness * 0.5f;
     pos += ImVec2(thickness * 0.25f, thickness * 0.25f);
 
@@ -3848,34 +3848,34 @@ void ImGui::RenderArrowDockMenu(KGDrawList* draw_list, ImVec2 p_min, float sz, K
 
 static inline float ImAcos01(float x)
 {
-    if (x <= 0.0f) return IM_PI * 0.5f;
+    if (x <= 0.0f) return KG_PI * 0.5f;
     if (x >= 1.0f) return 0.0f;
-    return ImAcos(x);
+    return KGAcos(x);
     //return (-0.69813170079773212f * x * x - 0.87266462599716477f) * x + 1.5707963267948966f; // Cheap approximation, may be enough for what we do.
 }
 
 // FIXME: Cleanup and move code to KGDrawList.
-void ImGui::RenderRectFilledRangeH(KGDrawList* draw_list, const ImRect& rect, KGU32 col, float x_start_norm, float x_end_norm, float rounding)
+void ImGui::RenderRectFilledRangeH(KGDrawList* draw_list, const KGRect& rect, KGU32 col, float x_start_norm, float x_end_norm, float rounding)
 {
     if (x_end_norm == x_start_norm)
         return;
     if (x_start_norm > x_end_norm)
-        ImSwap(x_start_norm, x_end_norm);
+        KGSwap(x_start_norm, x_end_norm);
 
-    ImVec2 p0 = ImVec2(ImLerp(rect.Min.x, rect.Max.x, x_start_norm), rect.Min.y);
-    ImVec2 p1 = ImVec2(ImLerp(rect.Min.x, rect.Max.x, x_end_norm), rect.Max.y);
+    ImVec2 p0 = ImVec2(KGLerp(rect.Min.x, rect.Max.x, x_start_norm), rect.Min.y);
+    ImVec2 p1 = ImVec2(KGLerp(rect.Min.x, rect.Max.x, x_end_norm), rect.Max.y);
     if (rounding == 0.0f)
     {
         draw_list->AddRectFilled(p0, p1, col, 0.0f);
         return;
     }
 
-    rounding = ImClamp(ImMin((rect.Max.x - rect.Min.x) * 0.5f, (rect.Max.y - rect.Min.y) * 0.5f) - 1.0f, 0.0f, rounding);
+    rounding = KGClamp(KGMin((rect.Max.x - rect.Min.x) * 0.5f, (rect.Max.y - rect.Min.y) * 0.5f) - 1.0f, 0.0f, rounding);
     const float inv_rounding = 1.0f / rounding;
     const float arc0_b = ImAcos01(1.0f - (p0.x - rect.Min.x) * inv_rounding);
     const float arc0_e = ImAcos01(1.0f - (p1.x - rect.Min.x) * inv_rounding);
-    const float half_pi = IM_PI * 0.5f; // We will == compare to this because we know this is the exact value ImAcos01 can return.
-    const float x0 = ImMax(p0.x, rect.Min.x + rounding);
+    const float half_pi = KG_PI * 0.5f; // We will == compare to this because we know this is the exact value ImAcos01 can return.
+    const float x0 = KGMax(p0.x, rect.Min.x + rounding);
     if (arc0_b == arc0_e)
     {
         draw_list->PathLineTo(ImVec2(x0, p1.y));
@@ -3888,14 +3888,14 @@ void ImGui::RenderRectFilledRangeH(KGDrawList* draw_list, const ImRect& rect, KG
     }
     else
     {
-        draw_list->PathArcTo(ImVec2(x0, p1.y - rounding), rounding, IM_PI - arc0_e, IM_PI - arc0_b, 3); // BL
-        draw_list->PathArcTo(ImVec2(x0, p0.y + rounding), rounding, IM_PI + arc0_b, IM_PI + arc0_e, 3); // TR
+        draw_list->PathArcTo(ImVec2(x0, p1.y - rounding), rounding, KG_PI - arc0_e, KG_PI - arc0_b, 3); // BL
+        draw_list->PathArcTo(ImVec2(x0, p0.y + rounding), rounding, KG_PI + arc0_b, KG_PI + arc0_e, 3); // TR
     }
     if (p1.x > rect.Min.x + rounding)
     {
         const float arc1_b = ImAcos01(1.0f - (rect.Max.x - p1.x) * inv_rounding);
         const float arc1_e = ImAcos01(1.0f - (rect.Max.x - p0.x) * inv_rounding);
-        const float x1 = ImMin(p1.x, rect.Max.x - rounding);
+        const float x1 = KGMin(p1.x, rect.Max.x - rounding);
         if (arc1_b == arc1_e)
         {
             draw_list->PathLineTo(ImVec2(x1, p0.y));
@@ -3915,7 +3915,7 @@ void ImGui::RenderRectFilledRangeH(KGDrawList* draw_list, const ImRect& rect, KG
     draw_list->PathFillConvex(col);
 }
 
-void ImGui::RenderRectFilledWithHole(KGDrawList* draw_list, const ImRect& outer, const ImRect& inner, KGU32 col, float rounding)
+void ImGui::RenderRectFilledWithHole(KGDrawList* draw_list, const KGRect& outer, const KGRect& inner, KGU32 col, float rounding)
 {
     const bool fill_L = (inner.Min.x > outer.Min.x);
     const bool fill_R = (inner.Max.x < outer.Max.x);
@@ -3931,7 +3931,7 @@ void ImGui::RenderRectFilledWithHole(KGDrawList* draw_list, const ImRect& outer,
     if (fill_R && fill_D) draw_list->AddRectFilled(ImVec2(inner.Max.x, inner.Max.y), ImVec2(outer.Max.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersBottomRight);
 }
 
-KGDrawFlags ImGui::CalcRoundingFlagsForRectInRect(const ImRect& r_in, const ImRect& r_outer, float threshold)
+KGDrawFlags ImGui::CalcRoundingFlagsForRectInRect(const KGRect& r_in, const KGRect& r_outer, float threshold)
 {
     bool round_l = r_in.Min.x <= r_outer.Min.x + threshold;
     bool round_r = r_in.Max.x >= r_outer.Max.x - threshold;
@@ -3952,19 +3952,19 @@ void ImGui::RenderColorRectWithAlphaCheckerboard(KGDrawList* draw_list, ImVec2 p
         flags = KGDrawFlags_RoundCornersDefault_;
     if (((col & KG_COL32_A_MASK) >> KG_COL32_A_SHIFT) < 0xFF)
     {
-        KGU32 col_bg1 = GetColorU32(ImAlphaBlendColors(KG_COL32(204, 204, 204, 255), col));
-        KGU32 col_bg2 = GetColorU32(ImAlphaBlendColors(KG_COL32(128, 128, 128, 255), col));
+        KGU32 col_bg1 = GetColorU32(KGAlphaBlendColors(KG_COL32(204, 204, 204, 255), col));
+        KGU32 col_bg2 = GetColorU32(KGAlphaBlendColors(KG_COL32(128, 128, 128, 255), col));
         draw_list->AddRectFilled(p_min, p_max, col_bg1, rounding, flags);
 
         int yi = 0;
         for (float y = p_min.y + grid_off.y; y < p_max.y; y += grid_step, yi++)
         {
-            float y1 = ImClamp(y, p_min.y, p_max.y), y2 = ImMin(y + grid_step, p_max.y);
+            float y1 = KGClamp(y, p_min.y, p_max.y), y2 = KGMin(y + grid_step, p_max.y);
             if (y2 <= y1)
                 continue;
             for (float x = p_min.x + grid_off.x + (yi & 1) * grid_step; x < p_max.x; x += grid_step * 2.0f)
             {
-                float x1 = ImClamp(x, p_min.x, p_max.x), x2 = ImMin(x + grid_step, p_max.x);
+                float x1 = KGClamp(x, p_min.x, p_max.x), x2 = KGMin(x + grid_step, p_max.x);
                 if (x2 <= x1)
                     continue;
                 KGDrawFlags cell_flags = KGDrawFlags_RoundCornersNone;

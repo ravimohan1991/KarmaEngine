@@ -3,6 +3,8 @@
 #define KG_FMTARGS(FMT)             __attribute__((format(printf, FMT, FMT+1)))
 #define KG_FMTLIST(FMT)             __attribute__((format(printf, FMT, 0)))
 
+#define KG_ARRAYSIZE(_ARR)          ((int)(sizeof(_ARR) / sizeof(*(_ARR))))     // Size of a static C-style array. Don't use on pointers!
+
 // Includes
 #include "krpch.h"
 
@@ -2833,7 +2835,7 @@ struct KARMA_API KGFontAtlas
     ImVec4                      TexUvLines[KG_DRAWLIST_TEX_LINES_WIDTH_MAX + 1];  // UVs for baked anti-aliased lines
 
     // [Internal] Font builder
-    const KGFontBuilderIO*      FontBuilderIO;      // Opaque interface to a font builder (default to stb_truetype, can be changed to use FreeType by defining IMGUI_ENABLE_FREETYPE).
+    const KGFontBuilderIO*      FontBuilderIO;      // Opaque interface to a font builder (default to stb_truetype, can be changed to use FreeType by defining KGGUI_ENABLE_FREETYPE).
     unsigned int                FontBuilderFlags;   // Shared flags (for all fonts) for custom font builder. THIS IS BUILD IMPLEMENTATION DEPENDENT. Per-font override is also available in KGFontConfig.
 
     // [Internal] Packing data
