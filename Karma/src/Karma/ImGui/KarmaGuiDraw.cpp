@@ -1700,7 +1700,7 @@ void KGDrawListSplitter::ClearFreeMemory()
 
 void KGDrawListSplitter::Split(KGDrawList* draw_list, int channels_count)
 {
-    IM_UNUSED(draw_list);
+    KG_UNUSED(draw_list);
     KR_CORE_ASSERT(_Current == 0 && _Count <= 1 && "Nested channel splitting is not supported. Please use separate instances of KGDrawListSplitter.");
     int old_channels_count = _Channels.Size;
     if (old_channels_count < channels_count)

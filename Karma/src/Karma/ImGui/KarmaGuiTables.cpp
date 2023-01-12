@@ -315,7 +315,7 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
         return false;
 
     // Sanity checks
-    KR_CORE_ASSERT(columns_count > 0 && columns_count <= IMGUI_TABLE_MAX_COLUMNS && "Only 1..64 columns allowed!");
+    KR_CORE_ASSERT(columns_count > 0 && columns_count <= KARMAGUI_TABLE_MAX_COLUMNS && "Only 1..64 columns allowed!");
     if (flags & KGGuiTableFlags_ScrollX)
         KR_CORE_ASSERT(inner_width >= 0.0f);
 
@@ -528,7 +528,7 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
                 column->IsPreserveWidthAuto = true; // Preserve WidthAuto when reinitializing a live table: not technically necessary but remove a visible flicker
                 column->IsEnabled = column->IsUserEnabled = column->IsUserEnabledNextFrame = true;
             }
-            column->DisplayOrder = table->DisplayOrderToIndex[n] = (ImGuiTableColumnIdx)n;
+            column->DisplayOrder = table->DisplayOrderToIndex[n] = (KGGuiTableColumnIdx)n;
         }
     }
     if (old_columns_raw_data)
@@ -583,8 +583,8 @@ void ImGui::TableBeginInitMemory(KGGuiTable* table, int columns_count)
     // Allocate single buffer for our arrays
     KGSpanAllocator<3> span_allocator;
     span_allocator.Reserve(0, columns_count * sizeof(KGGuiTableColumn));
-    span_allocator.Reserve(1, columns_count * sizeof(ImGuiTableColumnIdx));
-    span_allocator.Reserve(2, columns_count * sizeof(ImGuiTableCellData), 4);
+    span_allocator.Reserve(1, columns_count * sizeof(KGGuiTableColumnIdx));
+    span_allocator.Reserve(2, columns_count * sizeof(KGGuiTableCellData), 4);
     table->RawData = KG_ALLOC(span_allocator.GetArenaSizeInBytes());
     memset(table->RawData, 0, span_allocator.GetArenaSizeInBytes());
     span_allocator.SetArenaBasePtr(table->RawData);
@@ -634,18 +634,18 @@ void ImGui::TableBeginApplyRequests(KGGuiTable* table)
             KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Reorderable);
             KGGuiTableColumn* src_column = &table->Columns[table->ReorderColumn];
             KGGuiTableColumn* dst_column = &table->Columns[(reorder_dir == -1) ? src_column->PrevEnabledColumn : src_column->NextEnabledColumn];
-            IM_UNUSED(dst_column);
+            KG_UNUSED(dst_column);
             const int src_order = src_column->DisplayOrder;
             const int dst_order = dst_column->DisplayOrder;
-            src_column->DisplayOrder = (ImGuiTableColumnIdx)dst_order;
+            src_column->DisplayOrder = (KGGuiTableColumnIdx)dst_order;
             for (int order_n = src_order + reorder_dir; order_n != dst_order + reorder_dir; order_n += reorder_dir)
-                table->Columns[table->DisplayOrderToIndex[order_n]].DisplayOrder -= (ImGuiTableColumnIdx)reorder_dir;
+                table->Columns[table->DisplayOrderToIndex[order_n]].DisplayOrder -= (KGGuiTableColumnIdx)reorder_dir;
             KR_CORE_ASSERT(dst_column->DisplayOrder == dst_order - reorder_dir);
 
             // Display order is stored in both columns->IndexDisplayOrder and table->DisplayOrder[],
             // rebuild the later from the former.
             for (int column_n = 0; column_n < table->ColumnsCount; column_n++)
-                table->DisplayOrderToIndex[table->Columns[column_n].DisplayOrder] = (ImGuiTableColumnIdx)column_n;
+                table->DisplayOrderToIndex[table->Columns[column_n].DisplayOrder] = (KGGuiTableColumnIdx)column_n;
             table->ReorderColumnDir = 0;
             table->IsSettingsDirty = true;
         }
@@ -655,7 +655,7 @@ void ImGui::TableBeginApplyRequests(KGGuiTable* table)
     if (table->IsResetDisplayOrderRequest)
     {
         for (int n = 0; n < table->ColumnsCount; n++)
-            table->DisplayOrderToIndex[n] = table->Columns[n].DisplayOrder = (ImGuiTableColumnIdx)n;
+            table->DisplayOrderToIndex[n] = table->Columns[n].DisplayOrder = (KGGuiTableColumnIdx)n;
         table->IsResetDisplayOrderRequest = false;
         table->IsSettingsDirty = true;
     }
@@ -788,12 +788,12 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
         }
 
         // Mark as enabled and link to previous/next enabled column
-        column->PrevEnabledColumn = (ImGuiTableColumnIdx)prev_visible_column_idx;
+        column->PrevEnabledColumn = (KGGuiTableColumnIdx)prev_visible_column_idx;
         column->NextEnabledColumn = -1;
         if (prev_visible_column_idx != -1)
-            table->Columns[prev_visible_column_idx].NextEnabledColumn = (ImGuiTableColumnIdx)column_n;
+            table->Columns[prev_visible_column_idx].NextEnabledColumn = (KGGuiTableColumnIdx)column_n;
         else
-            table->LeftMostEnabledColumn = (ImGuiTableColumnIdx)column_n;
+            table->LeftMostEnabledColumn = (KGGuiTableColumnIdx)column_n;
         column->IndexWithinEnabledSet = table->ColumnsEnabledCount++;
         table->EnabledMaskByIndex |= (KGU64)1 << column_n;
         table->EnabledMaskByDisplayOrder |= (KGU64)1 << column->DisplayOrder;
@@ -827,7 +827,7 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
     }
     if ((table->Flags & KGGuiTableFlags_Sortable) && table->SortSpecsCount == 0 && !(table->Flags & KGGuiTableFlags_SortTristate))
         table->IsSortSpecsDirty = true;
-    table->RightMostEnabledColumn = (ImGuiTableColumnIdx)prev_visible_column_idx;
+    table->RightMostEnabledColumn = (KGGuiTableColumnIdx)prev_visible_column_idx;
     KR_CORE_ASSERT(table->LeftMostEnabledColumn >= 0 && table->RightMostEnabledColumn >= 0);
 
     // [Part 2] Disable child window clipping while fitting columns. This is not strictly necessary but makes it possible
@@ -888,14 +888,14 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
 
             stretch_sum_weights += column->StretchWeight;
             if (table->LeftMostStretchedColumn == -1 || table->Columns[table->LeftMostStretchedColumn].DisplayOrder > column->DisplayOrder)
-                table->LeftMostStretchedColumn = (ImGuiTableColumnIdx)column_n;
+                table->LeftMostStretchedColumn = (KGGuiTableColumnIdx)column_n;
             if (table->RightMostStretchedColumn == -1 || table->Columns[table->RightMostStretchedColumn].DisplayOrder < column->DisplayOrder)
-                table->RightMostStretchedColumn = (ImGuiTableColumnIdx)column_n;
+                table->RightMostStretchedColumn = (KGGuiTableColumnIdx)column_n;
         }
         column->IsPreserveWidthAuto = false;
         sum_width_requests += table->CellPaddingX * 2.0f;
     }
-    table->ColumnsEnabledFixedCount = (ImGuiTableColumnIdx)count_fixed;
+    table->ColumnsEnabledFixedCount = (KGGuiTableColumnIdx)count_fixed;
     table->ColumnsStretchSumWeights = stretch_sum_weights;
 
     // [Part 4] Apply final widths based on requested widths
@@ -973,7 +973,7 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
         const int column_n = table->DisplayOrderToIndex[order_n];
         KGGuiTableColumn* column = &table->Columns[column_n];
 
-        column->NavLayerCurrent = (KGS8)(table->FreezeRowsCount > 0 ? ImGuiNavLayer_Menu : ImGuiNavLayer_Main); // Use Count NOT request so Header line changes layer when frozen
+        column->NavLayerCurrent = (KGS8)(table->FreezeRowsCount > 0 ? KGGuiNavLayer_Menu : KGGuiNavLayer_Main); // Use Count NOT request so Header line changes layer when frozen
 
         if (offset_x_frozen && table->FreezeColumnsCount == visible_n)
         {
@@ -1001,7 +1001,7 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
 
         // Detect hovered column
         if (is_hovering_table && g.IO.MousePos.x >= column->ClipRect.Min.x && g.IO.MousePos.x < column->ClipRect.Max.x)
-            table->HoveredColumnBody = (ImGuiTableColumnIdx)column_n;
+            table->HoveredColumnBody = (KGGuiTableColumnIdx)column_n;
 
         // Lock start position
         column->MinX = offset_x;
@@ -1092,7 +1092,7 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
     if (is_hovering_table && table->HoveredColumnBody == -1)
     {
         if (g.IO.MousePos.x >= unused_x1)
-            table->HoveredColumnBody = (ImGuiTableColumnIdx)table->ColumnsCount;
+            table->HoveredColumnBody = (KGGuiTableColumnIdx)table->ColumnsCount;
     }
     if (has_resizable == false && (table->Flags & KGGuiTableFlags_Resizable))
         table->Flags &= ~KGGuiTableFlags_Resizable;
@@ -1202,12 +1202,12 @@ void ImGui::TableUpdateBorders(KGGuiTable* table)
         {
             if (table->LastResizedColumn == -1)
                 table->ResizeLockMinContentsX2 = table->RightMostEnabledColumn != -1 ? table->Columns[table->RightMostEnabledColumn].MaxX : -FLT_MAX;
-            table->ResizedColumn = (ImGuiTableColumnIdx)column_n;
+            table->ResizedColumn = (KGGuiTableColumnIdx)column_n;
             table->InstanceInteracted = table->InstanceCurrent;
         }
         if ((hovered && g.HoveredIdTimer > TABLE_RESIZE_SEPARATOR_FEEDBACK_TIMER) || held)
         {
-            table->HoveredColumnBorder = (ImGuiTableColumnIdx)column_n;
+            table->HoveredColumnBorder = (KGGuiTableColumnIdx)column_n;
             SetMouseCursor(KGGuiMouseCursor_ResizeEW);
         }
     }
@@ -1285,7 +1285,7 @@ void    ImGui::EndTable()
     // We have no way to prevent user submitting direct KGDrawList calls into a hidden column (but KarmaGui:: calls will be clipped out)
     // Pros: remove draw calls which will have no effect. since they'll have zero-size cliprect they may be early out anyway.
     // Cons: making it harder for users watching metrics/debugger to spot the wasted vertices.
-    if (table->DummyDrawChannel != (ImGuiTableColumnIdx)-1)
+    if (table->DummyDrawChannel != (KGGuiTableColumnIdx)-1)
     {
         KGDrawChannel* dummy_channel = &table->DrawSplitter._Channels[table->DummyDrawChannel];
         dummy_channel->_CmdBuffer.resize(0);
@@ -1496,12 +1496,12 @@ void ImGui::TableSetupScrollFreeze(int columns, int rows)
     KGGuiTable* table = g.CurrentTable;
     KR_CORE_ASSERT(table != NULL && "Need to call TableSetupColumn() after BeginTable()!");
     KR_CORE_ASSERT(table->IsLayoutLocked == false && "Need to call TableSetupColumn() before first row!");
-    KR_CORE_ASSERT(columns >= 0 && columns < IMGUI_TABLE_MAX_COLUMNS);
+    KR_CORE_ASSERT(columns >= 0 && columns < KARMAGUI_TABLE_MAX_COLUMNS);
     KR_CORE_ASSERT(rows >= 0 && rows < 128); // Arbitrary limit
 
-    table->FreezeColumnsRequest = (table->Flags & KGGuiTableFlags_ScrollX) ? (ImGuiTableColumnIdx)KGMin(columns, table->ColumnsCount) : 0;
+    table->FreezeColumnsRequest = (table->Flags & KGGuiTableFlags_ScrollX) ? (KGGuiTableColumnIdx)KGMin(columns, table->ColumnsCount) : 0;
     table->FreezeColumnsCount = (table->InnerWindow->Scroll.x != 0.0f) ? table->FreezeColumnsRequest : 0;
-    table->FreezeRowsRequest = (table->Flags & KGGuiTableFlags_ScrollY) ? (ImGuiTableColumnIdx)rows : 0;
+    table->FreezeRowsRequest = (table->Flags & KGGuiTableFlags_ScrollY) ? (KGGuiTableColumnIdx)rows : 0;
     table->FreezeRowsCount = (table->InnerWindow->Scroll.y != 0.0f) ? table->FreezeRowsRequest : 0;
     table->IsUnfrozenRows = (table->FreezeRowsCount == 0); // Make sure this is set before TableUpdateLayout() so KarmaGuiListClipper can benefit from it.b
 
@@ -1639,7 +1639,7 @@ void ImGui::TableSetBgColor(KarmaGuiTableBgTarget target, KGU32 color, int colum
     KGGuiTable* table = g.CurrentTable;
     KR_CORE_ASSERT(target != KGGuiTableBgTarget_None);
 
-    if (color == IM_COL32_DISABLE)
+    if (color == KG_COL32_DISABLE)
         color = 0;
 
     // We cannot draw neither the cell or row background immediately as we don't know the row height at this point in time.
@@ -1655,9 +1655,9 @@ void ImGui::TableSetBgColor(KarmaGuiTableBgTarget target, KGU32 color, int colum
             return;
         if (table->RowCellDataCurrent < 0 || table->RowCellData[table->RowCellDataCurrent].Column != column_n)
             table->RowCellDataCurrent++;
-        ImGuiTableCellData* cell_data = &table->RowCellData[table->RowCellDataCurrent];
+        KGGuiTableCellData* cell_data = &table->RowCellData[table->RowCellDataCurrent];
         cell_data->BgColor = color;
-        cell_data->Column = (ImGuiTableColumnIdx)column_n;
+        cell_data->Column = (KGGuiTableColumnIdx)column_n;
         break;
     }
     case KGGuiTableBgTarget_RowBg0:
@@ -1728,7 +1728,7 @@ void ImGui::TableBeginRow(KGGuiTable* table)
     // New row
     table->CurrentRow++;
     table->CurrentColumn = -1;
-    table->RowBgColor[0] = table->RowBgColor[1] = IM_COL32_DISABLE;
+    table->RowBgColor[0] = table->RowBgColor[1] = KG_COL32_DISABLE;
     table->RowCellDataCurrent = -1;
     table->IsInsideRow = true;
 
@@ -1787,11 +1787,11 @@ void ImGui::TableEndRow(KGGuiTable* table)
         // Decide of background color for the row
         KGU32 bg_col0 = 0;
         KGU32 bg_col1 = 0;
-        if (table->RowBgColor[0] != IM_COL32_DISABLE)
+        if (table->RowBgColor[0] != KG_COL32_DISABLE)
             bg_col0 = table->RowBgColor[0];
         else if (table->Flags & KGGuiTableFlags_RowBg)
             bg_col0 = GetColorU32((table->RowBgColorCounter & 1) ? KGGuiCol_TableRowBgAlt : KGGuiCol_TableRowBg);
-        if (table->RowBgColor[1] != IM_COL32_DISABLE)
+        if (table->RowBgColor[1] != KG_COL32_DISABLE)
             bg_col1 = table->RowBgColor[1];
 
         // Decide of top border color
@@ -1827,8 +1827,8 @@ void ImGui::TableEndRow(KGGuiTable* table)
         // Draw cell background color
         if (draw_cell_bg_color)
         {
-            ImGuiTableCellData* cell_data_end = &table->RowCellData[table->RowCellDataCurrent];
-            for (ImGuiTableCellData* cell_data = &table->RowCellData[0]; cell_data <= cell_data_end; cell_data++)
+            KGGuiTableCellData* cell_data_end = &table->RowCellData[table->RowCellDataCurrent];
+            for (KGGuiTableCellData* cell_data = &table->RowCellData[0]; cell_data <= cell_data_end; cell_data++)
             {
                 // As we render the BG here we need to clip things (for layout we would not)
                 // FIXME: This cancels the OuterPadding addition done by TableGetCellBgRect(), need to keep it while rendering correctly while scrolling.
@@ -1855,7 +1855,7 @@ void ImGui::TableEndRow(KGGuiTable* table)
     // get the new cursor position.
     if (unfreeze_rows_request)
         for (int column_n = 0; column_n < table->ColumnsCount; column_n++)
-            table->Columns[column_n].NavLayerCurrent = ImGuiNavLayer_Main;
+            table->Columns[column_n].NavLayerCurrent = KGGuiNavLayer_Main;
     if (unfreeze_rows_actual)
     {
         KR_CORE_ASSERT(table->IsUnfrozenRows == false);
@@ -1975,7 +1975,7 @@ void ImGui::TableBeginCell(KGGuiTable* table, int column_n)
     window->DC.CursorMaxPos.x = window->DC.CursorPos.x;
     window->DC.ColumnsOffset.x = start_x - window->Pos.x - window->DC.Indent.x; // FIXME-WORKRECT
     window->DC.CurrLineTextBaseOffset = table->RowTextBaseline;
-    window->DC.NavLayerCurrent = (ImGuiNavLayer)column->NavLayerCurrent;
+    window->DC.NavLayerCurrent = (KGGuiNavLayer)column->NavLayerCurrent;
 
     window->WorkRect.Min.y = window->DC.CursorPos.y;
     window->WorkRect.Min.x = column->WorkMinX;
@@ -2191,7 +2191,7 @@ void ImGui::TableSetColumnWidthAutoSingle(KGGuiTable* table, int column_n)
     if (!column->IsEnabled)
         return;
     column->CannotSkipItemsQueue = (1 << 0);
-    table->AutoFitSingleColumn = (ImGuiTableColumnIdx)column_n;
+    table->AutoFitSingleColumn = (KGGuiTableColumnIdx)column_n;
 }
 
 void ImGui::TableSetColumnWidthAutoAll(KGGuiTable* table)
@@ -2295,9 +2295,9 @@ void ImGui::TableSetupDrawChannels(KGGuiTable* table)
     const int channels_for_dummy = (table->ColumnsEnabledCount < table->ColumnsCount || table->VisibleMaskByIndex != table->EnabledMaskByIndex) ? +1 : 0;
     const int channels_total = channels_for_bg + (channels_for_row * freeze_row_multiplier) + channels_for_dummy;
     table->DrawSplitter->Split(table->InnerWindow->DrawList, channels_total);
-    table->DummyDrawChannel = (ImGuiTableDrawChannelIdx)((channels_for_dummy > 0) ? channels_total - 1 : -1);
+    table->DummyDrawChannel = (KGGuiTableDrawChannelIdx)((channels_for_dummy > 0) ? channels_total - 1 : -1);
     table->Bg2DrawChannelCurrent = TABLE_DRAW_CHANNEL_BG2_FROZEN;
-    table->Bg2DrawChannelUnfrozen = (ImGuiTableDrawChannelIdx)((table->FreezeRowsCount > 0) ? 2 + channels_for_row : TABLE_DRAW_CHANNEL_BG2_FROZEN);
+    table->Bg2DrawChannelUnfrozen = (KGGuiTableDrawChannelIdx)((table->FreezeRowsCount > 0) ? 2 + channels_for_row : TABLE_DRAW_CHANNEL_BG2_FROZEN);
 
     int draw_channel_current = 2;
     for (int column_n = 0; column_n < table->ColumnsCount; column_n++)
@@ -2305,8 +2305,8 @@ void ImGui::TableSetupDrawChannels(KGGuiTable* table)
         KGGuiTableColumn* column = &table->Columns[column_n];
         if (column->IsVisibleX && column->IsVisibleY)
         {
-            column->DrawChannelFrozen = (ImGuiTableDrawChannelIdx)(draw_channel_current);
-            column->DrawChannelUnfrozen = (ImGuiTableDrawChannelIdx)(draw_channel_current + (table->FreezeRowsCount > 0 ? channels_for_row + 1 : 0));
+            column->DrawChannelFrozen = (KGGuiTableDrawChannelIdx)(draw_channel_current);
+            column->DrawChannelUnfrozen = (KGGuiTableDrawChannelIdx)(draw_channel_current + (table->FreezeRowsCount > 0 ? channels_for_row + 1 : 0));
             if (!(table->Flags & KGGuiTableFlags_NoClip))
                 draw_channel_current++;
         }
@@ -2368,7 +2368,7 @@ void ImGui::TableMergeDrawChannels(KGGuiTable* table)
     {
         KGRect  ClipRect;
         int     ChannelsCount;
-        KGBitArray<IMGUI_TABLE_MAX_DRAW_CHANNELS> ChannelsMask;
+        KGBitArray<KARMAGUI_TABLE_MAX_DRAW_CHANNELS> ChannelsMask;
 
         MergeGroup() { ChannelsCount = 0; }
     };
@@ -2410,7 +2410,7 @@ void ImGui::TableMergeDrawChannels(KGGuiTable* table)
             }
 
             const int merge_group_n = (has_freeze_h && column_n < table->FreezeColumnsCount ? 0 : 1) + (has_freeze_v && merge_group_sub_n == 0 ? 0 : 2);
-            KR_CORE_ASSERT(channel_no < IMGUI_TABLE_MAX_DRAW_CHANNELS);
+            KR_CORE_ASSERT(channel_no < KARMAGUI_TABLE_MAX_DRAW_CHANNELS);
             MergeGroup* merge_group = &merge_groups[merge_group_n];
             if (merge_group->ChannelsCount == 0)
                 merge_group->ClipRect = KGRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -2422,7 +2422,7 @@ void ImGui::TableMergeDrawChannels(KGGuiTable* table)
 
         // Invalidate current draw channel
         // (we don't clear DrawChannelFrozen/DrawChannelUnfrozen solely to facilitate debugging/later inspection of data)
-        column->DrawChannelCurrent = (ImGuiTableDrawChannelIdx)-1;
+        column->DrawChannelCurrent = (KGGuiTableDrawChannelIdx)-1;
     }
 
     // [DEBUG] Display merge groups
@@ -2450,7 +2450,7 @@ void ImGui::TableMergeDrawChannels(KGGuiTable* table)
         const int LEADING_DRAW_CHANNELS = 2;
         g.DrawChannelsTempMergeBuffer.resize(splitter->_Count - LEADING_DRAW_CHANNELS); // Use shared temporary storage so the allocation gets amortized
         KGDrawChannel* dst_tmp = g.DrawChannelsTempMergeBuffer.Data;
-        KGBitArray<IMGUI_TABLE_MAX_DRAW_CHANNELS> remaining_mask;                       // We need 132-bit of storage
+        KGBitArray<KARMAGUI_TABLE_MAX_DRAW_CHANNELS> remaining_mask;                       // We need 132-bit of storage
         remaining_mask.SetBitRange(LEADING_DRAW_CHANNELS, splitter->_Count);
         remaining_mask.ClearBit(table->Bg2DrawChannelUnfrozen);
         KR_CORE_ASSERT(has_freeze_v == false || table->Bg2DrawChannelUnfrozen != TABLE_DRAW_CHANNEL_BG2_FROZEN);
@@ -2694,7 +2694,7 @@ void ImGui::TableSetColumnSortDirection(int column_n, KarmaGuiSortDirection sort
     if (!(table->Flags & KGGuiTableFlags_SortTristate))
         KR_CORE_ASSERT(sort_direction != KGGuiSortDirection_None);
 
-    ImGuiTableColumnIdx sort_order_max = 0;
+    KGGuiTableColumnIdx sort_order_max = 0;
     if (append_to_sort_specs)
         for (int other_column_n = 0; other_column_n < table->ColumnsCount; other_column_n++)
             sort_order_max = KGMax(sort_order_max, table->Columns[other_column_n].SortOrder);
@@ -2752,7 +2752,7 @@ void ImGui::TableSortSpecsSanitize(KGGuiTable* table)
                         column_with_smallest_sort_order = column_n;
             KR_CORE_ASSERT(column_with_smallest_sort_order != -1);
             fixed_mask |= ((KGU64)1 << column_with_smallest_sort_order);
-            table->Columns[column_with_smallest_sort_order].SortOrder = (ImGuiTableColumnIdx)sort_n;
+            table->Columns[column_with_smallest_sort_order].SortOrder = (KGGuiTableColumnIdx)sort_n;
 
             // Fix: Make sure only one column has a SortOrder if KGGuiTableFlags_MultiSortable is not set.
             if (need_fix_single_sort_order)
@@ -2780,7 +2780,7 @@ void ImGui::TableSortSpecsSanitize(KGGuiTable* table)
             }
         }
 
-    table->SortSpecsCount = (ImGuiTableColumnIdx)sort_order_count;
+    table->SortSpecsCount = (KGGuiTableColumnIdx)sort_order_count;
 }
 
 void ImGui::TableSortSpecsBuild(KGGuiTable* table)
@@ -2805,8 +2805,8 @@ void ImGui::TableSortSpecsBuild(KGGuiTable* table)
             KR_CORE_ASSERT(column->SortOrder < table->SortSpecsCount);
             KarmaGuiTableColumnSortSpecs* sort_spec = &sort_specs[column->SortOrder];
             sort_spec->ColumnUserID = column->UserID;
-            sort_spec->ColumnIndex = (ImGuiTableColumnIdx)column_n;
-            sort_spec->SortOrder = (ImGuiTableColumnIdx)column->SortOrder;
+            sort_spec->ColumnIndex = (KGGuiTableColumnIdx)column_n;
+            sort_spec->SortOrder = (KGGuiTableColumnIdx)column->SortOrder;
             sort_spec->SortDirection = column->SortDirection;
         }
 
@@ -2961,9 +2961,9 @@ void ImGui::TableHeader(const char* label)
         if ((table->RowFlags & KGGuiTableRowFlags_Headers) == 0)
             TableSetBgColor(KGGuiTableBgTarget_CellBg, GetColorU32(KGGuiCol_TableHeaderBg), table->CurrentColumn);
     }
-    RenderNavHighlight(bb, id, ImGuiNavHighlightFlags_TypeThin | ImGuiNavHighlightFlags_NoRounding);
+    RenderNavHighlight(bb, id, KGGuiNavHighlightFlags_TypeThin | KGGuiNavHighlightFlags_NoRounding);
     if (held)
-        table->HeldHeaderColumn = (ImGuiTableColumnIdx)column_n;
+        table->HeldHeaderColumn = (KGGuiTableColumnIdx)column_n;
     window->DC.CursorPos.y -= g.Style.ItemSpacing.y * 0.5f;
 
     // Drag and drop to re-order columns.
@@ -2971,7 +2971,7 @@ void ImGui::TableHeader(const char* label)
     if (held && (table->Flags & KGGuiTableFlags_Reorderable) && IsMouseDragging(0) && !g.DragDropActive)
     {
         // While moving a column it will jump on the other side of the mouse, so we also test for MouseDelta.x
-        table->ReorderColumn = (ImGuiTableColumnIdx)column_n;
+        table->ReorderColumn = (KGGuiTableColumnIdx)column_n;
         table->InstanceInteracted = table->InstanceCurrent;
 
         // We don't reorder: through the frozen<>unfrozen line, or through a column that is marked with KGGuiTableColumnFlags_NoReorder.
@@ -3047,7 +3047,7 @@ void ImGui::TableOpenContextMenu(int column_n)
     if (table->Flags & (KGGuiTableFlags_Resizable | KGGuiTableFlags_Reorderable | KGGuiTableFlags_Hideable))
     {
         table->IsContextPopupOpen = true;
-        table->ContextPopupColumn = (ImGuiTableColumnIdx)column_n;
+        table->ContextPopupColumn = (KGGuiTableColumnIdx)column_n;
         table->InstanceInteracted = table->InstanceCurrent;
         const KGGuiID context_menu_id = KGHashStr("##ContextMenu", 0, table->ID);
         OpenPopupEx(context_menu_id, KGGuiPopupFlags_None);
@@ -3186,18 +3186,18 @@ void ImGui::TableDrawContextMenu(KGGuiTable* table)
 static void TableSettingsInit(KGGuiTableSettings* settings, KGGuiID id, int columns_count, int columns_count_max)
 {
     KG_PLACEMENT_NEW(settings) KGGuiTableSettings();
-    ImGuiTableColumnSettings* settings_column = settings->GetColumnSettings();
+    KGGuiTableColumnSettings* settings_column = settings->GetColumnSettings();
     for (int n = 0; n < columns_count_max; n++, settings_column++)
-        KG_PLACEMENT_NEW(settings_column) ImGuiTableColumnSettings();
+        KG_PLACEMENT_NEW(settings_column) KGGuiTableColumnSettings();
     settings->ID = id;
-    settings->ColumnsCount = (ImGuiTableColumnIdx)columns_count;
-    settings->ColumnsCountMax = (ImGuiTableColumnIdx)columns_count_max;
+    settings->ColumnsCount = (KGGuiTableColumnIdx)columns_count;
+    settings->ColumnsCountMax = (KGGuiTableColumnIdx)columns_count_max;
     settings->WantApply = true;
 }
 
 static size_t TableSettingsCalcChunkSize(int columns_count)
 {
-    return sizeof(KGGuiTableSettings) + (size_t)columns_count * sizeof(ImGuiTableColumnSettings);
+    return sizeof(KGGuiTableSettings) + (size_t)columns_count * sizeof(KGGuiTableColumnSettings);
 }
 
 KGGuiTableSettings* ImGui::TableSettingsCreate(KGGuiID id, int columns_count)
@@ -3257,13 +3257,13 @@ void ImGui::TableSaveSettings(KGGuiTable* table)
         settings = TableSettingsCreate(table->ID, table->ColumnsCount);
         table->SettingsOffset = g.SettingsTables.offset_from_ptr(settings);
     }
-    settings->ColumnsCount = (ImGuiTableColumnIdx)table->ColumnsCount;
+    settings->ColumnsCount = (KGGuiTableColumnIdx)table->ColumnsCount;
 
-    // Serialize KGGuiTable/KGGuiTableColumn into KGGuiTableSettings/ImGuiTableColumnSettings
+    // Serialize KGGuiTable/KGGuiTableColumn into KGGuiTableSettings/KGGuiTableColumnSettings
     KR_CORE_ASSERT(settings->ID == table->ID);
     KR_CORE_ASSERT(settings->ColumnsCount == table->ColumnsCount && settings->ColumnsCountMax >= settings->ColumnsCount);
     KGGuiTableColumn* column = table->Columns.Data;
-    ImGuiTableColumnSettings* column_settings = settings->GetColumnSettings();
+    KGGuiTableColumnSettings* column_settings = settings->GetColumnSettings();
 
     bool save_ref_scale = false;
     settings->SaveFlags = KGGuiTableFlags_None;
@@ -3271,7 +3271,7 @@ void ImGui::TableSaveSettings(KGGuiTable* table)
     {
         const float width_or_weight = (column->Flags & KGGuiTableColumnFlags_WidthStretch) ? column->StretchWeight : column->WidthRequest;
         column_settings->WidthOrWeight = width_or_weight;
-        column_settings->Index = (ImGuiTableColumnIdx)n;
+        column_settings->Index = (KGGuiTableColumnIdx)n;
         column_settings->DisplayOrder = column->DisplayOrder;
         column_settings->SortOrder = column->SortOrder;
         column_settings->SortDirection = column->SortDirection;
@@ -3324,8 +3324,8 @@ void ImGui::TableLoadSettings(KGGuiTable* table)
     table->SettingsLoadedFlags = settings->SaveFlags;
     table->RefScale = settings->RefScale;
 
-    // Serialize KGGuiTableSettings/ImGuiTableColumnSettings into KGGuiTable/KGGuiTableColumn
-    ImGuiTableColumnSettings* column_settings = settings->GetColumnSettings();
+    // Serialize KGGuiTableSettings/KGGuiTableColumnSettings into KGGuiTable/KGGuiTableColumn
+    KGGuiTableColumnSettings* column_settings = settings->GetColumnSettings();
     KGU64 display_order_mask = 0;
     for (int data_n = 0; data_n < settings->ColumnsCount; data_n++, column_settings++)
     {
@@ -3345,7 +3345,7 @@ void ImGui::TableLoadSettings(KGGuiTable* table)
         if (settings->SaveFlags & KGGuiTableFlags_Reorderable)
             column->DisplayOrder = column_settings->DisplayOrder;
         else
-            column->DisplayOrder = (ImGuiTableColumnIdx)column_n;
+            column->DisplayOrder = (KGGuiTableColumnIdx)column_n;
         display_order_mask |= (KGU64)1 << column->DisplayOrder;
         column->IsUserEnabled = column->IsUserEnabledNextFrame = column_settings->IsEnabled;
         column->SortOrder = column_settings->SortOrder;
@@ -3356,11 +3356,11 @@ void ImGui::TableLoadSettings(KGGuiTable* table)
     const KGU64 expected_display_order_mask = (settings->ColumnsCount == 64) ? ~0 : ((KGU64)1 << settings->ColumnsCount) - 1;
     if (display_order_mask != expected_display_order_mask)
         for (int column_n = 0; column_n < table->ColumnsCount; column_n++)
-            table->Columns[column_n].DisplayOrder = (ImGuiTableColumnIdx)column_n;
+            table->Columns[column_n].DisplayOrder = (KGGuiTableColumnIdx)column_n;
 
     // Rebuild index
     for (int column_n = 0; column_n < table->ColumnsCount; column_n++)
-        table->DisplayOrderToIndex[table->Columns[column_n].DisplayOrder] = (ImGuiTableColumnIdx)column_n;
+        table->DisplayOrderToIndex[table->Columns[column_n].DisplayOrder] = (KGGuiTableColumnIdx)column_n;
 }
 
 static void TableSettingsHandler_ClearAll(KarmaGuiContext* ctx, KGGuiSettingsHandler*)
@@ -3418,14 +3418,14 @@ static void TableSettingsHandler_ReadLine(KarmaGuiContext*, KGGuiSettingsHandler
             return;
         line = KGStrSkipBlank(line + r);
         char c = 0;
-        ImGuiTableColumnSettings* column = settings->GetColumnSettings() + column_n;
-        column->Index = (ImGuiTableColumnIdx)column_n;
+        KGGuiTableColumnSettings* column = settings->GetColumnSettings() + column_n;
+        column->Index = (KGGuiTableColumnIdx)column_n;
         if (sscanf(line, "UserID=0x%08X%n", (KGU32*)&n, &r)==1) { line = KGStrSkipBlank(line + r); column->UserID = (KGGuiID)n; }
         if (sscanf(line, "Width=%d%n", &n, &r) == 1)            { line = KGStrSkipBlank(line + r); column->WidthOrWeight = (float)n; column->IsStretch = 0; settings->SaveFlags |= KGGuiTableFlags_Resizable; }
         if (sscanf(line, "Weight=%f%n", &f, &r) == 1)           { line = KGStrSkipBlank(line + r); column->WidthOrWeight = f; column->IsStretch = 1; settings->SaveFlags |= KGGuiTableFlags_Resizable; }
         if (sscanf(line, "Visible=%d%n", &n, &r) == 1)          { line = KGStrSkipBlank(line + r); column->IsEnabled = (KGU8)n; settings->SaveFlags |= KGGuiTableFlags_Hideable; }
-        if (sscanf(line, "Order=%d%n", &n, &r) == 1)            { line = KGStrSkipBlank(line + r); column->DisplayOrder = (ImGuiTableColumnIdx)n; settings->SaveFlags |= KGGuiTableFlags_Reorderable; }
-        if (sscanf(line, "Sort=%d%c%n", &n, &c, &r) == 2)       { line = KGStrSkipBlank(line + r); column->SortOrder = (ImGuiTableColumnIdx)n; column->SortDirection = (c == '^') ? KGGuiSortDirection_Descending : KGGuiSortDirection_Ascending; settings->SaveFlags |= KGGuiTableFlags_Sortable; }
+        if (sscanf(line, "Order=%d%n", &n, &r) == 1)            { line = KGStrSkipBlank(line + r); column->DisplayOrder = (KGGuiTableColumnIdx)n; settings->SaveFlags |= KGGuiTableFlags_Reorderable; }
+        if (sscanf(line, "Sort=%d%c%n", &n, &c, &r) == 2)       { line = KGStrSkipBlank(line + r); column->SortOrder = (KGGuiTableColumnIdx)n; column->SortDirection = (c == '^') ? KGGuiSortDirection_Descending : KGGuiSortDirection_Ascending; settings->SaveFlags |= KGGuiTableFlags_Sortable; }
     }
 }
 
@@ -3450,7 +3450,7 @@ static void TableSettingsHandler_WriteAll(KarmaGuiContext* ctx, KGGuiSettingsHan
         buf->appendf("[%s][0x%08X,%d]\n", handler->TypeName, settings->ID, settings->ColumnsCount);
         if (settings->RefScale != 0.0f)
             buf->appendf("RefScale=%g\n", settings->RefScale);
-        ImGuiTableColumnSettings* column = settings->GetColumnSettings();
+        KGGuiTableColumnSettings* column = settings->GetColumnSettings();
         for (int column_n = 0; column_n < settings->ColumnsCount; column_n++, column++)
         {
             // "Column 0  UserID=0x42AD2D21 Width=100 Visible=1 Order=0 Sort=0v"
@@ -3634,7 +3634,7 @@ void ImGui::DebugNodeTableSettings(KGGuiTableSettings* settings)
     BulletText("ColumnsCount: %d (max %d)", settings->ColumnsCount, settings->ColumnsCountMax);
     for (int n = 0; n < settings->ColumnsCount; n++)
     {
-        ImGuiTableColumnSettings* column_settings = &settings->GetColumnSettings()[n];
+        KGGuiTableColumnSettings* column_settings = &settings->GetColumnSettings()[n];
         KarmaGuiSortDirection sort_dir = (column_settings->SortOrder != -1) ? (KarmaGuiSortDirection)column_settings->SortDirection : KGGuiSortDirection_None;
         BulletText("Column %d Order %d SortOrder %d %s Vis %d %s %7.3f UserID 0x%08X",
             n, column_settings->DisplayOrder, column_settings->SortOrder,
@@ -3723,7 +3723,7 @@ static float GetDraggedColumnOffset(KGGuiOldColumns* columns, int column_index)
 
     float x = g.IO.MousePos.x - g.ActiveIdClickOffset.x + COLUMNS_HIT_RECT_HALF_WIDTH - window->Pos.x;
     x = KGMax(x, ImGui::GetColumnOffset(column_index - 1) + g.Style.ColumnsMinSpacing);
-    if ((columns->Flags & ImGuiOldColumnFlags_NoPreserveWidths))
+    if ((columns->Flags & KGGuiOldColumnFlags_NoPreserveWidths))
         x = KGMin(x, ImGui::GetColumnOffset(column_index + 1) - g.Style.ColumnsMinSpacing);
 
     return x;
@@ -3782,10 +3782,10 @@ void ImGui::SetColumnOffset(int column_index, float offset)
         column_index = columns->Current;
     KR_CORE_ASSERT(column_index < columns->Columns.Size);
 
-    const bool preserve_width = !(columns->Flags & ImGuiOldColumnFlags_NoPreserveWidths) && (column_index < columns->Count - 1);
+    const bool preserve_width = !(columns->Flags & KGGuiOldColumnFlags_NoPreserveWidths) && (column_index < columns->Count - 1);
     const float width = preserve_width ? GetColumnWidthEx(columns, column_index, columns->IsBeingResized) : 0.0f;
 
-    if (!(columns->Flags & ImGuiOldColumnFlags_NoForceWithinWindow))
+    if (!(columns->Flags & KGGuiOldColumnFlags_NoForceWithinWindow))
         offset = KGMin(offset, columns->OffMaxX - g.Style.ColumnsMinSpacing * (columns->Count - column_index));
     columns->Columns[column_index].OffsetNorm = GetColumnNormFromOffset(columns, offset - columns->OffMinX);
 
@@ -4017,13 +4017,13 @@ void ImGui::EndColumns()
     const KGGuiOldColumnFlags flags = columns->Flags;
     columns->LineMaxY = KGMax(columns->LineMaxY, window->DC.CursorPos.y);
     window->DC.CursorPos.y = columns->LineMaxY;
-    if (!(flags & ImGuiOldColumnFlags_GrowParentContentsSize))
+    if (!(flags & KGGuiOldColumnFlags_GrowParentContentsSize))
         window->DC.CursorMaxPos.x = columns->HostCursorMaxPosX;  // Restore cursor max pos, as columns don't grow parent
 
     // Draw columns borders and handle resize
     // The IsBeingResized flag ensure we preserve pre-resize columns width so back-and-forth are not lossy
     bool is_being_resized = false;
-    if (!(flags & ImGuiOldColumnFlags_NoBorder) && !window->SkipItems)
+    if (!(flags & KGGuiOldColumnFlags_NoBorder) && !window->SkipItems)
     {
         // We clip Y boundaries CPU side because very long triangles are mishandled by some GPU drivers.
         const float y1 = KGMax(columns->HostCursorPosY, window->ClipRect.Min.y);
@@ -4040,12 +4040,12 @@ void ImGui::EndColumns()
                 continue;
 
             bool hovered = false, held = false;
-            if (!(flags & ImGuiOldColumnFlags_NoResize))
+            if (!(flags & KGGuiOldColumnFlags_NoResize))
             {
                 ButtonBehavior(column_hit_rect, column_id, &hovered, &held);
                 if (hovered || held)
                     g.MouseCursor = KGGuiMouseCursor_ResizeEW;
-                if (held && !(column->Flags & ImGuiOldColumnFlags_NoResize))
+                if (held && !(column->Flags & KGGuiOldColumnFlags_NoResize))
                     dragging_column = n;
             }
 
@@ -4080,8 +4080,8 @@ void ImGui::Columns(int columns_count, const char* id, bool border)
     KGGuiWindow* window = GetCurrentWindow();
     KR_CORE_ASSERT(columns_count >= 1);
 
-    KGGuiOldColumnFlags flags = (border ? 0 : ImGuiOldColumnFlags_NoBorder);
-    //flags |= ImGuiOldColumnFlags_NoPreserveWidths; // NB: Legacy behavior
+    KGGuiOldColumnFlags flags = (border ? 0 : KGGuiOldColumnFlags_NoBorder);
+    //flags |= KGGuiOldColumnFlags_NoPreserveWidths; // NB: Legacy behavior
     KGGuiOldColumns* columns = window->DC.CurrentColumns;
     if (columns != NULL && columns->Count == columns_count && columns->Flags == flags)
         return;

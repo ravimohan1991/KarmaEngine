@@ -4,6 +4,7 @@
 #define KG_FMTLIST(FMT)             __attribute__((format(printf, FMT, 0)))
 
 #define KG_ARRAYSIZE(_ARR)          ((int)(sizeof(_ARR) / sizeof(*(_ARR))))     // Size of a static C-style array. Don't use on pointers!
+#define KG_UNUSED(_VAR)             ((void)(_VAR))
 
 // Includes
 #include "krpch.h"
@@ -835,9 +836,9 @@ namespace Karma
 		static void          SetClipboardText(const char* text);
 
 		// Settings/.Ini Utilities
-		// - The disk functions are automatically called if io.IniFilename != NULL (default is "imgui.ini").
+		// - The disk functions are automatically called if io.IniFilename != NULL (default is "kggui.ini").
 		// - Set io.IniFilename to NULL to load/save manually. Read io.WantSaveIniSettings description about handling .ini saving manually.
-		// - Important: default value "imgui.ini" is relative to current working dir! Most apps will want to lock this to an absolute path (e.g. same path as executables).
+		// - Important: default value "kggui.ini" is relative to current working dir! Most apps will want to lock this to an absolute path (e.g. same path as executables).
 		static void          LoadIniSettingsFromDisk(const char* ini_filename);                  // call after CreateContext() and before the first call to NewFrame(). NewFrame() automatically calls LoadIniSettingsFromDisk(io.IniFilename).
 		static void          LoadIniSettingsFromMemory(const char* ini_data, size_t ini_size=0); // call after CreateContext() and before the first call to NewFrame() to provide .ini data from your own data source.
 		static void          SaveIniSettingsToDisk(const char* ini_filename);                    // this is automatically called (if io.IniFilename is not empty) a few seconds after any modification that should be reflected in the .ini file (and also by DestroyContext).
@@ -1221,7 +1222,7 @@ enum KGGuiHoveredFlags_
 
 // Flags for KarmaGui::DockSpace(), shared/inherited by child nodes.
 // (Some flags can be applied to individual nodes directly)
-// FIXME-DOCK: Also see ImGuiDockNodeFlagsPrivate_ which may involve using the WIP and internal DockBuilder api.
+// FIXME-DOCK: Also see KGGuiDockNodeFlagsPrivate_ which may involve using the WIP and internal DockBuilder api.
 enum KGGuiDockNodeFlags_
 {
     KGGuiDockNodeFlags_None                         = 0,
@@ -1889,7 +1890,7 @@ struct KARMA_API KarmaGuiIO
     ImVec2      DisplaySize;                    // <unset>          // Main display size, in pixels (generally == GetMainViewport()->Size). May change every frame.
     float       DeltaTime;                      // = 1.0f/60.0f     // Time elapsed since last frame, in seconds. May change every frame.
     float       IniSavingRate;                  // = 5.0f           // Minimum time between saving positions/sizes to .ini file, in seconds.
-    const char* IniFilename;                    // = "imgui.ini"    // Path to .ini file (important: default "imgui.ini" is relative to current working dir!). Set NULL to disable automatic .ini loading/saving or if you want to manually call LoadIniSettingsXXX() / SaveIniSettingsXXX() functions.
+    const char* IniFilename;                    // = "kggui.ini"    // Path to .ini file (important: default "kggui.ini" is relative to current working dir!). Set NULL to disable automatic .ini loading/saving or if you want to manually call LoadIniSettingsXXX() / SaveIniSettingsXXX() functions.
     const char* LogFilename;                    // = "imgui_log.txt"// Path to .log file (default parameter to ImGui::LogToFile when no file is specified).
     float       MouseDoubleClickTime;           // = 0.30f          // Time for a double-click, in seconds.
     float       MouseDoubleClickMaxDist;        // = 6.0f           // Distance threshold to stay in to validate a double-click, in pixels.

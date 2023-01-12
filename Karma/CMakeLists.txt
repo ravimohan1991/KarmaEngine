@@ -221,6 +221,9 @@ if(MSVC AND BUILD_SHARED_LIBS)
     endif()
 endif()
 
+# General compile
+add_compile_definitions(KARMAGUI_HAS_DOCK)
+
 # Karma's personal code
 file(GLOB_RECURSE CPPFILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 # Shows the headerfile directory in project
