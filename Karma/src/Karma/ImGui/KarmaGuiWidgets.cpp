@@ -126,7 +126,7 @@ static const KGU64          IM_U64_MAX = (2ULL * 9223372036854775807LL + 1);
 // For InputTextEx()
 static bool             InputTextFilterCharacter(unsigned int* p_char, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data, KGGuiInputSource input_source);
 static int              InputTextCalcTextLenAndLineCount(const char* text_begin, const char** out_text_end);
-static ImVec2           InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWchar* text_begin, const KGWchar* text_end, const KGWchar** remaining = NULL, ImVec2* out_offset = NULL, bool stop_on_new_line = false);
+static KGVec2           InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWchar* text_begin, const KGWchar* text_end, const KGWchar** remaining = NULL, KGVec2* out_offset = NULL, bool stop_on_new_line = false);
 
 //-------------------------------------------------------------------------
 // [SECTION] Widgets: Text, etc.
@@ -163,14 +163,14 @@ void ImGui::TextEx(const char* text, const char* text_end, KGGuiTextFlags flags)
     if (text_end == NULL)
         text_end = text + strlen(text); // FIXME-OPT
 
-    const ImVec2 text_pos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+    const KGVec2 text_pos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
     const float wrap_pos_x = window->DC.TextWrapPos;
     const bool wrap_enabled = (wrap_pos_x >= 0.0f);
     if (text_end - text <= 2000 || wrap_enabled)
     {
         // Common case
         const float wrap_width = wrap_enabled ? CalcWrapWidthForPos(window->DC.CursorPos, wrap_pos_x) : 0.0f;
-        const ImVec2 text_size = CalcTextSize(text_begin, text_end, false, wrap_width);
+        const KGVec2 text_size = CalcTextSize(text_begin, text_end, false, wrap_width);
 
         KGRect bb(text_pos, text_pos + text_size);
         ItemSize(text_size, 0.0f);
@@ -189,10 +189,10 @@ void ImGui::TextEx(const char* text, const char* text_end, KGGuiTextFlags flags)
         // - We use memchr(), pay attention that well optimized versions of those str/mem functions are much faster than a casually written loop.
         const char* line = text;
         const float line_height = GetTextLineHeight();
-        ImVec2 text_size(0, 0);
+        KGVec2 text_size(0, 0);
 
         // Lines to skip (can't skip when logging text)
-        ImVec2 pos = text_pos;
+        KGVec2 pos = text_pos;
         if (!g.LogEnabled)
         {
             int lines_skippable = (int)((window->ClipRect.Min.y - text_pos.y) / line_height);
@@ -216,7 +216,7 @@ void ImGui::TextEx(const char* text, const char* text_end, KGGuiTextFlags flags)
         // Lines to render
         if (line < text_end)
         {
-            KGRect line_rect(pos, pos + ImVec2(FLT_MAX, line_height));
+            KGRect line_rect(pos, pos + KGVec2(FLT_MAX, line_height));
             while (line < text_end)
             {
                 if (IsClippedEx(line_rect, 0))
@@ -280,7 +280,7 @@ void ImGui::TextV(const char* fmt, va_list args)
     TextEx(text, text_end, KGGuiTextFlags_NoWidthForLargeClippedText);
 }
 
-void ImGui::TextColored(const ImVec4& col, const char* fmt, ...)
+void ImGui::TextColored(const KGVec4& col, const char* fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -288,7 +288,7 @@ void ImGui::TextColored(const ImVec4& col, const char* fmt, ...)
     va_end(args);
 }
 
-void ImGui::TextColoredV(const ImVec4& col, const char* fmt, va_list args)
+void ImGui::TextColoredV(const KGVec4& col, const char* fmt, va_list args)
 {
     PushStyleColor(KGGuiCol_Text, col);
     if (fmt[0] == '%' && fmt[1] == 's' && fmt[2] == 0)
@@ -360,20 +360,20 @@ void ImGui::LabelTextV(const char* label, const char* fmt, va_list args)
 
     const char* value_text_begin, *value_text_end;
     KGFormatStringToTempBufferV(&value_text_begin, &value_text_end, fmt, args);
-    const ImVec2 value_size = CalcTextSize(value_text_begin, value_text_end, false);
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGVec2 value_size = CalcTextSize(value_text_begin, value_text_end, false);
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
 
-    const ImVec2 pos = window->DC.CursorPos;
-    const KGRect value_bb(pos, pos + ImVec2(w, value_size.y + style.FramePadding.y * 2));
-    const KGRect total_bb(pos, pos + ImVec2(w + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), KGMax(value_size.y, label_size.y) + style.FramePadding.y * 2));
+    const KGVec2 pos = window->DC.CursorPos;
+    const KGRect value_bb(pos, pos + KGVec2(w, value_size.y + style.FramePadding.y * 2));
+    const KGRect total_bb(pos, pos + KGVec2(w + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), KGMax(value_size.y, label_size.y) + style.FramePadding.y * 2));
     ItemSize(total_bb, style.FramePadding.y);
     if (!ItemAdd(total_bb, 0))
         return;
 
     // Render
-    RenderTextClipped(value_bb.Min + style.FramePadding, value_bb.Max, value_text_begin, value_text_end, &value_size, ImVec2(0.0f, 0.0f));
+    RenderTextClipped(value_bb.Min + style.FramePadding, value_bb.Max, value_text_begin, value_text_end, &value_size, KGVec2(0.0f, 0.0f));
     if (label_size.x > 0.0f)
-        RenderText(ImVec2(value_bb.Max.x + style.ItemInnerSpacing.x, value_bb.Min.y + style.FramePadding.y), label);
+        RenderText(KGVec2(value_bb.Max.x + style.ItemInnerSpacing.x, value_bb.Min.y + style.FramePadding.y), label);
 }
 
 void ImGui::BulletText(const char* fmt, ...)
@@ -396,9 +396,9 @@ void ImGui::BulletTextV(const char* fmt, va_list args)
 
     const char* text_begin, *text_end;
     KGFormatStringToTempBufferV(&text_begin, &text_end, fmt, args);
-    const ImVec2 label_size = CalcTextSize(text_begin, text_end, false);
-    const ImVec2 total_size = ImVec2(g.FontSize + (label_size.x > 0.0f ? (label_size.x + style.FramePadding.x * 2) : 0.0f), label_size.y);  // Empty text doesn't add padding
-    ImVec2 pos = window->DC.CursorPos;
+    const KGVec2 label_size = CalcTextSize(text_begin, text_end, false);
+    const KGVec2 total_size = KGVec2(g.FontSize + (label_size.x > 0.0f ? (label_size.x + style.FramePadding.x * 2) : 0.0f), label_size.y);  // Empty text doesn't add padding
+    KGVec2 pos = window->DC.CursorPos;
     pos.y += window->DC.CurrLineTextBaseOffset;
     ItemSize(total_size, 0.0f);
     const KGRect bb(pos, pos + total_size);
@@ -407,8 +407,8 @@ void ImGui::BulletTextV(const char* fmt, va_list args)
 
     // Render
     KGU32 text_col = GetColorU32(KGGuiCol_Text);
-    RenderBullet(window->DrawList, bb.Min + ImVec2(style.FramePadding.x + g.FontSize * 0.5f, g.FontSize * 0.5f), text_col);
-    RenderText(bb.Min + ImVec2(g.FontSize + style.FramePadding.x * 2, 0.0f), text_begin, text_end, false);
+    RenderBullet(window->DrawList, bb.Min + KGVec2(style.FramePadding.x + g.FontSize * 0.5f, g.FontSize * 0.5f), text_col);
+    RenderText(bb.Min + KGVec2(g.FontSize + style.FramePadding.x * 2, 0.0f), text_begin, text_end, false);
 }
 
 //-------------------------------------------------------------------------
@@ -680,7 +680,7 @@ bool ImGui::ButtonBehavior(const KGRect& bb, KGGuiID id, bool* out_hovered, bool
     return pressed;
 }
 
-bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, KarmaGuiButtonFlags flags)
+bool ImGui::ButtonEx(const char* label, const KGVec2& size_arg, KarmaGuiButtonFlags flags)
 {
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -689,12 +689,12 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, KarmaGuiButtonFl
     KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
     const KGGuiID id = window->GetID(label);
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
 
-    ImVec2 pos = window->DC.CursorPos;
+    KGVec2 pos = window->DC.CursorPos;
     if ((flags & KGGuiButtonFlags_AlignTextBaseLine) && style.FramePadding.y < window->DC.CurrLineTextBaseOffset) // Try to vertically align buttons that are smaller/have no padding so that text baseline matches (bit hacky, since it shouldn't be a flag)
         pos.y += window->DC.CurrLineTextBaseOffset - style.FramePadding.y;
-    ImVec2 size = CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+    KGVec2 size = CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
 
     const KGRect bb(pos, pos + size);
     ItemSize(size, style.FramePadding.y);
@@ -724,7 +724,7 @@ bool ImGui::ButtonEx(const char* label, const ImVec2& size_arg, KarmaGuiButtonFl
     return pressed;
 }
 
-bool ImGui::Button(const char* label, const ImVec2& size_arg)
+bool ImGui::Button(const char* label, const KGVec2& size_arg)
 {
     return ButtonEx(label, size_arg, KGGuiButtonFlags_None);
 }
@@ -735,14 +735,14 @@ bool ImGui::SmallButton(const char* label)
     KarmaGuiContext& g = *GKarmaGui;
     float backup_padding_y = g.Style.FramePadding.y;
     g.Style.FramePadding.y = 0.0f;
-    bool pressed = ButtonEx(label, ImVec2(0, 0), KGGuiButtonFlags_AlignTextBaseLine);
+    bool pressed = ButtonEx(label, KGVec2(0, 0), KGGuiButtonFlags_AlignTextBaseLine);
     g.Style.FramePadding.y = backup_padding_y;
     return pressed;
 }
 
 // Tip: use ImGui::PushID()/PopID() to push indices or pointers in the ID stack.
 // Then you can keep 'str_id' empty or the same for all your buttons (instead of creating a string based on a non-string id)
-bool ImGui::InvisibleButton(const char* str_id, const ImVec2& size_arg, KarmaGuiButtonFlags flags)
+bool ImGui::InvisibleButton(const char* str_id, const KGVec2& size_arg, KarmaGuiButtonFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = GetCurrentWindow();
@@ -753,7 +753,7 @@ bool ImGui::InvisibleButton(const char* str_id, const ImVec2& size_arg, KarmaGui
     KR_CORE_ASSERT(size_arg.x != 0.0f && size_arg.y != 0.0f);
 
     const KGGuiID id = window->GetID(str_id);
-    ImVec2 size = CalcItemSize(size_arg, 0.0f, 0.0f);
+    KGVec2 size = CalcItemSize(size_arg, 0.0f, 0.0f);
     const KGRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
     ItemSize(size);
     if (!ItemAdd(bb, id))
@@ -766,7 +766,7 @@ bool ImGui::InvisibleButton(const char* str_id, const ImVec2& size_arg, KarmaGui
     return pressed;
 }
 
-bool ImGui::ArrowButtonEx(const char* str_id, KarmaGuiDir dir, ImVec2 size, KarmaGuiButtonFlags flags)
+bool ImGui::ArrowButtonEx(const char* str_id, KarmaGuiDir dir, KGVec2 size, KarmaGuiButtonFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = GetCurrentWindow();
@@ -791,7 +791,7 @@ bool ImGui::ArrowButtonEx(const char* str_id, KarmaGuiDir dir, ImVec2 size, Karm
     const KGU32 text_col = GetColorU32(KGGuiCol_Text);
     RenderNavHighlight(bb, id);
     RenderFrame(bb.Min, bb.Max, bg_col, true, g.Style.FrameRounding);
-    RenderArrow(window->DrawList, bb.Min + ImVec2(KGMax(0.0f, (size.x - g.FontSize) * 0.5f), KGMax(0.0f, (size.y - g.FontSize) * 0.5f)), text_col, dir);
+    RenderArrow(window->DrawList, bb.Min + KGVec2(KGMax(0.0f, (size.x - g.FontSize) * 0.5f), KGMax(0.0f, (size.y - g.FontSize) * 0.5f)), text_col, dir);
 
     KARMAGUI_TEST_ENGINE_ITEM_INFO(id, str_id, g.LastItemData.StatusFlags);
     return pressed;
@@ -800,18 +800,18 @@ bool ImGui::ArrowButtonEx(const char* str_id, KarmaGuiDir dir, ImVec2 size, Karm
 bool ImGui::ArrowButton(const char* str_id, KarmaGuiDir dir)
 {
     float sz = GetFrameHeight();
-    return ArrowButtonEx(str_id, dir, ImVec2(sz, sz), KGGuiButtonFlags_None);
+    return ArrowButtonEx(str_id, dir, KGVec2(sz, sz), KGGuiButtonFlags_None);
 }
 
 // Button to close a window
-bool ImGui::CloseButton(KGGuiID id, const ImVec2& pos)
+bool ImGui::CloseButton(KGGuiID id, const KGVec2& pos)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
 
     // Tweak 1: Shrink hit-testing area if button covers an abnormally large proportion of the visible region. That's in order to facilitate moving the window away. (#3825)
     // This may better be applied as a general hit-rect reduction mechanism for all widgets to ensure the area to move window is always accessible?
-    const KGRect bb(pos, pos + ImVec2(g.FontSize, g.FontSize) + g.Style.FramePadding * 2.0f);
+    const KGRect bb(pos, pos + KGVec2(g.FontSize, g.FontSize) + g.Style.FramePadding * 2.0f);
     KGRect bb_interact = bb;
     const float area_to_visible_ratio = window->OuterRectClipped.GetArea() / bb.GetArea();
     if (area_to_visible_ratio < 1.5f)
@@ -829,26 +829,26 @@ bool ImGui::CloseButton(KGGuiID id, const ImVec2& pos)
     // Render
     // FIXME: Clarify this mess
     KGU32 col = GetColorU32(held ? KGGuiCol_ButtonActive : KGGuiCol_ButtonHovered);
-    ImVec2 center = bb.GetCenter();
+    KGVec2 center = bb.GetCenter();
     if (hovered)
         window->DrawList->AddCircleFilled(center, KGMax(2.0f, g.FontSize * 0.5f + 1.0f), col, 12);
 
     float cross_extent = g.FontSize * 0.5f * 0.7071f - 1.0f;
     KGU32 cross_col = GetColorU32(KGGuiCol_Text);
-    center -= ImVec2(0.5f, 0.5f);
-    window->DrawList->AddLine(center + ImVec2(+cross_extent, +cross_extent), center + ImVec2(-cross_extent, -cross_extent), cross_col, 1.0f);
-    window->DrawList->AddLine(center + ImVec2(+cross_extent, -cross_extent), center + ImVec2(-cross_extent, +cross_extent), cross_col, 1.0f);
+    center -= KGVec2(0.5f, 0.5f);
+    window->DrawList->AddLine(center + KGVec2(+cross_extent, +cross_extent), center + KGVec2(-cross_extent, -cross_extent), cross_col, 1.0f);
+    window->DrawList->AddLine(center + KGVec2(+cross_extent, -cross_extent), center + KGVec2(-cross_extent, +cross_extent), cross_col, 1.0f);
 
     return pressed;
 }
 
 // The Collapse button also functions as a Dock Menu button.
-bool ImGui::CollapseButton(KGGuiID id, const ImVec2& pos, KGGuiDockNode* dock_node)
+bool ImGui::CollapseButton(KGGuiID id, const KGVec2& pos, KGGuiDockNode* dock_node)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
 
-    KGRect bb(pos, pos + ImVec2(g.FontSize, g.FontSize) + g.Style.FramePadding * 2.0f);
+    KGRect bb(pos, pos + KGVec2(g.FontSize, g.FontSize) + g.Style.FramePadding * 2.0f);
     ItemAdd(bb, id);
     bool hovered, held;
     bool pressed = ButtonBehavior(bb, id, &hovered, &held, KGGuiButtonFlags_None);
@@ -858,7 +858,7 @@ bool ImGui::CollapseButton(KGGuiID id, const ImVec2& pos, KGGuiDockNode* dock_no
     KGU32 bg_col = GetColorU32((held && hovered) ? KGGuiCol_ButtonActive : hovered ? KGGuiCol_ButtonHovered : KGGuiCol_Button);
     KGU32 text_col = GetColorU32(KGGuiCol_Text);
     if (hovered || held)
-        window->DrawList->AddCircleFilled(bb.GetCenter() + ImVec2(0,-0.5f), g.FontSize * 0.5f + 1.0f, bg_col, 12);
+        window->DrawList->AddCircleFilled(bb.GetCenter() + KGVec2(0,-0.5f), g.FontSize * 0.5f + 1.0f, bg_col, 12);
 
     if (dock_node)
         RenderArrowDockMenu(window->DrawList, bb.Min + g.Style.FramePadding, g.FontSize, text_col);
@@ -949,7 +949,7 @@ bool ImGui::ScrollbarEx(const KGRect& bb_frame, KGGuiID id, KGGuiAxis axis, KGS6
     const bool allow_interaction = (alpha >= 1.0f);
 
     KGRect bb = bb_frame;
-    bb.Expand(ImVec2(-KGClamp(KG_FLOOR((bb_frame_width - 2.0f) * 0.5f), 0.0f, 3.0f), -KGClamp(KG_FLOOR((bb_frame_height - 2.0f) * 0.5f), 0.0f, 3.0f)));
+    bb.Expand(KGVec2(-KGClamp(KG_FLOOR((bb_frame_width - 2.0f) * 0.5f), 0.0f, 3.0f), -KGClamp(KG_FLOOR((bb_frame_height - 2.0f) * 0.5f), 0.0f, 3.0f)));
 
     // V denote the main, longer axis of the scrollbar (= height for a vertical scrollbar)
     const float scrollbar_size_v = (axis == KGGuiAxis_X) ? bb.GetWidth() : bb.GetHeight();
@@ -1018,7 +1018,7 @@ bool ImGui::ScrollbarEx(const KGRect& bb_frame, KGGuiID id, KGGuiAxis axis, KGS6
     return held;
 }
 
-void ImGui::Image(KGTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
+void ImGui::Image(KGTextureID user_texture_id, const KGVec2& size, const KGVec2& uv0, const KGVec2& uv1, const KGVec4& tint_col, const KGVec4& border_col)
 {
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -1026,7 +1026,7 @@ void ImGui::Image(KGTextureID user_texture_id, const ImVec2& size, const ImVec2&
 
     KGRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
     if (border_col.w > 0.0f)
-        bb.Max += ImVec2(2, 2);
+        bb.Max += KGVec2(2, 2);
     ItemSize(bb);
     if (!ItemAdd(bb, 0))
         return;
@@ -1034,7 +1034,7 @@ void ImGui::Image(KGTextureID user_texture_id, const ImVec2& size, const ImVec2&
     if (border_col.w > 0.0f)
     {
         window->DrawList->AddRect(bb.Min, bb.Max, GetColorU32(border_col), 0.0f);
-        window->DrawList->AddImage(user_texture_id, bb.Min + ImVec2(1, 1), bb.Max - ImVec2(1, 1), uv0, uv1, GetColorU32(tint_col));
+        window->DrawList->AddImage(user_texture_id, bb.Min + KGVec2(1, 1), bb.Max - KGVec2(1, 1), uv0, uv1, GetColorU32(tint_col));
     }
     else
     {
@@ -1044,14 +1044,14 @@ void ImGui::Image(KGTextureID user_texture_id, const ImVec2& size, const ImVec2&
 
 // ImageButton() is flawed as 'id' is always derived from 'texture_id' (see #2464 #1390)
 // We provide this internal helper to write your own variant while we figure out how to redesign the public ImageButton() API.
-bool ImGui::ImageButtonEx(KGGuiID id, KGTextureID texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& bg_col, const ImVec4& tint_col)
+bool ImGui::ImageButtonEx(KGGuiID id, KGTextureID texture_id, const KGVec2& size, const KGVec2& uv0, const KGVec2& uv1, const KGVec4& bg_col, const KGVec4& tint_col)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
         return false;
 
-    const ImVec2 padding = g.Style.FramePadding;
+    const KGVec2 padding = g.Style.FramePadding;
     const KGRect bb(window->DC.CursorPos, window->DC.CursorPos + size + padding * 2.0f);
     ItemSize(bb);
     if (!ItemAdd(bb, id))
@@ -1071,7 +1071,7 @@ bool ImGui::ImageButtonEx(KGGuiID id, KGTextureID texture_id, const ImVec2& size
     return pressed;
 }
 
-bool ImGui::ImageButton(const char* str_id, KGTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& bg_col, const ImVec4& tint_col)
+bool ImGui::ImageButton(const char* str_id, KGTextureID user_texture_id, const KGVec2& size, const KGVec2& uv0, const KGVec2& uv1, const KGVec4& bg_col, const KGVec4& tint_col)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -1086,7 +1086,7 @@ bool ImGui::ImageButton(const char* str_id, KGTextureID user_texture_id, const I
 // - new ImageButton() requires an explicit 'const char* str_id'    Old ImageButton() used opaque imTextureId (created issue with: multiple buttons with same image, transient texture id values, opaque computation of ID)
 // - new ImageButton() always use style.FramePadding                Old ImageButton() had an override argument.
 // If you need to change padding with new ImageButton() you can use PushStyleVar(KGGuiStyleVar_FramePadding, value), consistent with other Button functions.
-bool ImGui::ImageButton(KGTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)
+bool ImGui::ImageButton(KGTextureID user_texture_id, const KGVec2& size, const KGVec2& uv0, const KGVec2& uv1, int frame_padding, const KGVec4& bg_col, const KGVec4& tint_col)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -1099,7 +1099,7 @@ bool ImGui::ImageButton(KGTextureID user_texture_id, const ImVec2& size, const I
     PopID();
 
     if (frame_padding >= 0)
-        PushStyleVar(KGGuiStyleVar_FramePadding, ImVec2((float)frame_padding, (float)frame_padding));
+        PushStyleVar(KGGuiStyleVar_FramePadding, KGVec2((float)frame_padding, (float)frame_padding));
     bool ret = ImageButtonEx(id, user_texture_id, size, uv0, uv1, bg_col, tint_col);
     if (frame_padding >= 0)
         PopStyleVar();
@@ -1116,11 +1116,11 @@ bool ImGui::Checkbox(const char* label, bool* v)
     KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
     const KGGuiID id = window->GetID(label);
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
 
     const float square_sz = GetFrameHeight();
-    const ImVec2 pos = window->DC.CursorPos;
-    const KGRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
+    const KGVec2 pos = window->DC.CursorPos;
+    const KGRect total_bb(pos, pos + KGVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
     ItemSize(total_bb, style.FramePadding.y);
     if (!ItemAdd(total_bb, id))
     {
@@ -1136,7 +1136,7 @@ bool ImGui::Checkbox(const char* label, bool* v)
         MarkItemEdited(id);
     }
 
-    const KGRect check_bb(pos, pos + ImVec2(square_sz, square_sz));
+    const KGRect check_bb(pos, pos + KGVec2(square_sz, square_sz));
     RenderNavHighlight(total_bb, id);
     RenderFrame(check_bb.Min, check_bb.Max, GetColorU32((held && hovered) ? KGGuiCol_FrameBgActive : hovered ? KGGuiCol_FrameBgHovered : KGGuiCol_FrameBg), true, style.FrameRounding);
     KGU32 check_col = GetColorU32(KGGuiCol_CheckMark);
@@ -1145,16 +1145,16 @@ bool ImGui::Checkbox(const char* label, bool* v)
     {
         // Undocumented tristate/mixed/indeterminate checkbox (#2644)
         // This may seem awkwardly designed because the aim is to make KGGuiItemFlags_MixedValue supported by all widgets (not just checkbox)
-        ImVec2 pad(KGMax(1.0f, KG_FLOOR(square_sz / 3.6f)), KGMax(1.0f, KG_FLOOR(square_sz / 3.6f)));
+        KGVec2 pad(KGMax(1.0f, KG_FLOOR(square_sz / 3.6f)), KGMax(1.0f, KG_FLOOR(square_sz / 3.6f)));
         window->DrawList->AddRectFilled(check_bb.Min + pad, check_bb.Max - pad, check_col, style.FrameRounding);
     }
     else if (*v)
     {
         const float pad = KGMax(1.0f, KG_FLOOR(square_sz / 6.0f));
-        RenderCheckMark(window->DrawList, check_bb.Min + ImVec2(pad, pad), check_col, square_sz - pad * 2.0f);
+        RenderCheckMark(window->DrawList, check_bb.Min + KGVec2(pad, pad), check_col, square_sz - pad * 2.0f);
     }
 
-    ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
+    KGVec2 label_pos = KGVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
     if (g.LogEnabled)
         LogRenderedText(&label_pos, mixed_value ? "[~]" : *v ? "[x]" : "[ ]");
     if (label_size.x > 0.0f)
@@ -1222,17 +1222,17 @@ bool ImGui::RadioButton(const char* label, bool active)
     KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
     const KGGuiID id = window->GetID(label);
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
 
     const float square_sz = GetFrameHeight();
-    const ImVec2 pos = window->DC.CursorPos;
-    const KGRect check_bb(pos, pos + ImVec2(square_sz, square_sz));
-    const KGRect total_bb(pos, pos + ImVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
+    const KGVec2 pos = window->DC.CursorPos;
+    const KGRect check_bb(pos, pos + KGVec2(square_sz, square_sz));
+    const KGRect total_bb(pos, pos + KGVec2(square_sz + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), label_size.y + style.FramePadding.y * 2.0f));
     ItemSize(total_bb, style.FramePadding.y);
     if (!ItemAdd(total_bb, id))
         return false;
 
-    ImVec2 center = check_bb.GetCenter();
+    KGVec2 center = check_bb.GetCenter();
     center.x = KG_ROUND(center.x);
     center.y = KG_ROUND(center.y);
     const float radius = (square_sz - 1.0f) * 0.5f;
@@ -1252,11 +1252,11 @@ bool ImGui::RadioButton(const char* label, bool active)
 
     if (style.FrameBorderSize > 0.0f)
     {
-        window->DrawList->AddCircle(center + ImVec2(1, 1), radius, GetColorU32(KGGuiCol_BorderShadow), 16, style.FrameBorderSize);
+        window->DrawList->AddCircle(center + KGVec2(1, 1), radius, GetColorU32(KGGuiCol_BorderShadow), 16, style.FrameBorderSize);
         window->DrawList->AddCircle(center, radius, GetColorU32(KGGuiCol_Border), 16, style.FrameBorderSize);
     }
 
-    ImVec2 label_pos = ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
+    KGVec2 label_pos = KGVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y);
     if (g.LogEnabled)
         LogRenderedText(&label_pos, active ? "(x)" : "( )");
     if (label_size.x > 0.0f)
@@ -1276,7 +1276,7 @@ bool ImGui::RadioButton(const char* label, int* v, int v_button)
 }
 
 // size_arg (for each axis) < 0.0f: align to end, 0.0f: auto, > 0.0f: specified size
-void ImGui::ProgressBar(float fraction, const ImVec2& size_arg, const char* overlay)
+void ImGui::ProgressBar(float fraction, const KGVec2& size_arg, const char* overlay)
 {
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -1285,8 +1285,8 @@ void ImGui::ProgressBar(float fraction, const ImVec2& size_arg, const char* over
     KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
 
-    ImVec2 pos = window->DC.CursorPos;
-    ImVec2 size = CalcItemSize(size_arg, CalcItemWidth(), g.FontSize + style.FramePadding.y * 2.0f);
+    KGVec2 pos = window->DC.CursorPos;
+    KGVec2 size = CalcItemSize(size_arg, CalcItemWidth(), g.FontSize + style.FramePadding.y * 2.0f);
     KGRect bb(pos, pos + size);
     ItemSize(size, style.FramePadding.y);
     if (!ItemAdd(bb, 0))
@@ -1295,8 +1295,8 @@ void ImGui::ProgressBar(float fraction, const ImVec2& size_arg, const char* over
     // Render
     fraction = KGSaturate(fraction);
     RenderFrame(bb.Min, bb.Max, GetColorU32(KGGuiCol_FrameBg), true, style.FrameRounding);
-    bb.Expand(ImVec2(-style.FrameBorderSize, -style.FrameBorderSize));
-    const ImVec2 fill_br = ImVec2(KGLerp(bb.Min.x, bb.Max.x, fraction), bb.Max.y);
+    bb.Expand(KGVec2(-style.FrameBorderSize, -style.FrameBorderSize));
+    const KGVec2 fill_br = KGVec2(KGLerp(bb.Min.x, bb.Max.x, fraction), bb.Max.y);
     RenderRectFilledRangeH(window->DrawList, bb, GetColorU32(KGGuiCol_PlotHistogram), 0.0f, fraction, style.FrameRounding);
 
     // Default displaying the fraction as percentage string, but user can override it
@@ -1307,9 +1307,9 @@ void ImGui::ProgressBar(float fraction, const ImVec2& size_arg, const char* over
         overlay = overlay_buf;
     }
 
-    ImVec2 overlay_size = CalcTextSize(overlay, NULL);
+    KGVec2 overlay_size = CalcTextSize(overlay, NULL);
     if (overlay_size.x > 0.0f)
-        RenderTextClipped(ImVec2(KGClamp(fill_br.x + style.ItemSpacing.x, bb.Min.x, bb.Max.x - overlay_size.x - style.ItemInnerSpacing.x), bb.Min.y), bb.Max, overlay, NULL, &overlay_size, ImVec2(0.0f, 0.5f), &bb);
+        RenderTextClipped(KGVec2(KGClamp(fill_br.x + style.ItemSpacing.x, bb.Min.x, bb.Max.x - overlay_size.x - style.ItemInnerSpacing.x), bb.Min.y), bb.Max, overlay, NULL, &overlay_size, KGVec2(0.0f, 0.5f), &bb);
 }
 
 void ImGui::Bullet()
@@ -1321,7 +1321,7 @@ void ImGui::Bullet()
     KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
     const float line_height = KGMax(KGMin(window->DC.CurrLineSize.y, g.FontSize + style.FramePadding.y * 2), g.FontSize);
-    const KGRect bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(g.FontSize, line_height));
+    const KGRect bb(window->DC.CursorPos, window->DC.CursorPos + KGVec2(g.FontSize, line_height));
     ItemSize(bb);
     if (!ItemAdd(bb, 0))
     {
@@ -1331,7 +1331,7 @@ void ImGui::Bullet()
 
     // Render and stay on same line
     KGU32 text_col = GetColorU32(KGGuiCol_Text);
-    RenderBullet(window->DrawList, bb.Min + ImVec2(style.FramePadding.x + g.FontSize * 0.5f, line_height * 0.5f), text_col);
+    RenderBullet(window->DrawList, bb.Min + KGVec2(style.FramePadding.x + g.FontSize * 0.5f, line_height * 0.5f), text_col);
     SameLine(0, style.FramePadding.x * 2.0f);
 }
 
@@ -1353,10 +1353,10 @@ void ImGui::Spacing()
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
         return;
-    ItemSize(ImVec2(0, 0));
+    ItemSize(KGVec2(0, 0));
 }
 
-void ImGui::Dummy(const ImVec2& size)
+void ImGui::Dummy(const KGVec2& size)
 {
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -1378,9 +1378,9 @@ void ImGui::NewLine()
     window->DC.LayoutType = KGGuiLayoutType_Vertical;
     window->DC.IsSameLine = false;
     if (window->DC.CurrLineSize.y > 0.0f)     // In the event that we are on a line with items that is smaller that FontSize high, we will preserve its height.
-        ItemSize(ImVec2(0, 0));
+        ItemSize(KGVec2(0, 0));
     else
-        ItemSize(ImVec2(0.0f, g.FontSize));
+        ItemSize(KGVec2(0.0f, g.FontSize));
     window->DC.LayoutType = backup_layout_type;
 }
 
@@ -1412,13 +1412,13 @@ void ImGui::SeparatorEx(KGGuiSeparatorFlags flags)
         // Vertical separator, for menu bars (use current line height). Not exposed because it is misleading and it doesn't have an effect on regular layout.
         float y1 = window->DC.CursorPos.y;
         float y2 = window->DC.CursorPos.y + window->DC.CurrLineSize.y;
-        const KGRect bb(ImVec2(window->DC.CursorPos.x, y1), ImVec2(window->DC.CursorPos.x + thickness_draw, y2));
-        ItemSize(ImVec2(thickness_layout, 0.0f));
+        const KGRect bb(KGVec2(window->DC.CursorPos.x, y1), KGVec2(window->DC.CursorPos.x + thickness_draw, y2));
+        ItemSize(KGVec2(thickness_layout, 0.0f));
         if (!ItemAdd(bb, 0))
             return;
 
         // Draw
-        window->DrawList->AddLine(ImVec2(bb.Min.x, bb.Min.y), ImVec2(bb.Min.x, bb.Max.y), GetColorU32(KGGuiCol_Separator));
+        window->DrawList->AddLine(KGVec2(bb.Min.x, bb.Min.y), KGVec2(bb.Min.x, bb.Max.y), GetColorU32(KGGuiCol_Separator));
         if (g.LogEnabled)
             LogText(" |");
     }
@@ -1446,13 +1446,13 @@ void ImGui::SeparatorEx(KGGuiSeparatorFlags flags)
 
         // We don't provide our width to the layout so that it doesn't get feed back into AutoFit
         // FIXME: This prevents ->CursorMaxPos based bounding box evaluation from working (e.g. TableEndCell)
-        const KGRect bb(ImVec2(x1, window->DC.CursorPos.y), ImVec2(x2, window->DC.CursorPos.y + thickness_draw));
-        ItemSize(ImVec2(0.0f, thickness_layout));
+        const KGRect bb(KGVec2(x1, window->DC.CursorPos.y), KGVec2(x2, window->DC.CursorPos.y + thickness_draw));
+        ItemSize(KGVec2(0.0f, thickness_layout));
         const bool item_visible = ItemAdd(bb, 0);
         if (item_visible)
         {
             // Draw
-            window->DrawList->AddLine(bb.Min, ImVec2(bb.Max.x, bb.Min.y), GetColorU32(KGGuiCol_Separator));
+            window->DrawList->AddLine(bb.Min, KGVec2(bb.Max.x, bb.Min.y), GetColorU32(KGGuiCol_Separator));
             if (g.LogEnabled)
                 LogRenderedText(&bb.Min, "--------------------------------\n");
 
@@ -1489,7 +1489,7 @@ bool ImGui::SplitterBehavior(const KGRect& bb, KGGuiID id, KGGuiAxis axis, float
 
     bool hovered, held;
     KGRect bb_interact = bb;
-    bb_interact.Expand(axis == KGGuiAxis_Y ? ImVec2(0.0f, hover_extend) : ImVec2(hover_extend, 0.0f));
+    bb_interact.Expand(axis == KGGuiAxis_Y ? KGVec2(0.0f, hover_extend) : KGVec2(hover_extend, 0.0f));
     ButtonBehavior(bb_interact, id, &hovered, &held, KGGuiButtonFlags_FlattenChildren | KGGuiButtonFlags_AllowItemOverlap);
     if (hovered)
         g.LastItemData.StatusFlags |= KGGuiItemStatusFlags_HoveredRect; // for IsItemHovered(), because bb_interact is larger than bb
@@ -1502,7 +1502,7 @@ bool ImGui::SplitterBehavior(const KGRect& bb, KGGuiID id, KGGuiAxis axis, float
     KGRect bb_render = bb;
     if (held)
     {
-        ImVec2 mouse_delta_2d = g.IO.MousePos - g.ActiveIdClickOffset - bb_interact.Min;
+        KGVec2 mouse_delta_2d = g.IO.MousePos - g.ActiveIdClickOffset - bb_interact.Min;
         float mouse_delta = (axis == KGGuiAxis_Y) ? mouse_delta_2d.y : mouse_delta_2d.x;
 
         // Minimum pane size
@@ -1522,7 +1522,7 @@ bool ImGui::SplitterBehavior(const KGRect& bb, KGGuiID id, KGGuiAxis axis, float
                 KR_CORE_ASSERT(*size2 - mouse_delta >= min_size2);
             *size1 += mouse_delta;
             *size2 -= mouse_delta;
-            bb_render.Translate((axis == KGGuiAxis_X) ? ImVec2(mouse_delta, 0.0f) : ImVec2(0.0f, mouse_delta));
+            bb_render.Translate((axis == KGGuiAxis_X) ? KGVec2(mouse_delta, 0.0f) : KGVec2(0.0f, mouse_delta));
             MarkItemEdited(id);
         }
     }
@@ -1623,10 +1623,10 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, KarmaGuiCom
     KR_CORE_ASSERT((flags & (KGGuiComboFlags_NoArrowButton | KGGuiComboFlags_NoPreview)) != (KGGuiComboFlags_NoArrowButton | KGGuiComboFlags_NoPreview)); // Can't use both flags together
 
     const float arrow_size = (flags & KGGuiComboFlags_NoArrowButton) ? 0.0f : GetFrameHeight();
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
     const float w = (flags & KGGuiComboFlags_NoPreview) ? arrow_size : CalcItemWidth();
-    const KGRect bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y * 2.0f));
-    const KGRect total_bb(bb.Min, bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
+    const KGRect bb(window->DC.CursorPos, window->DC.CursorPos + KGVec2(w, label_size.y + style.FramePadding.y * 2.0f));
+    const KGRect total_bb(bb.Min, bb.Max + KGVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
     ItemSize(total_bb, style.FramePadding.y);
     if (!ItemAdd(total_bb, id, &bb))
         return false;
@@ -1647,14 +1647,14 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, KarmaGuiCom
     const float value_x2 = KGMax(bb.Min.x, bb.Max.x - arrow_size);
     RenderNavHighlight(bb, id);
     if (!(flags & KGGuiComboFlags_NoPreview))
-        window->DrawList->AddRectFilled(bb.Min, ImVec2(value_x2, bb.Max.y), frame_col, style.FrameRounding, (flags & KGGuiComboFlags_NoArrowButton) ? KGDrawFlags_RoundCornersAll : KGDrawFlags_RoundCornersLeft);
+        window->DrawList->AddRectFilled(bb.Min, KGVec2(value_x2, bb.Max.y), frame_col, style.FrameRounding, (flags & KGGuiComboFlags_NoArrowButton) ? KGDrawFlags_RoundCornersAll : KGDrawFlags_RoundCornersLeft);
     if (!(flags & KGGuiComboFlags_NoArrowButton))
     {
         KGU32 bg_col = GetColorU32((popup_open || hovered) ? KGGuiCol_ButtonHovered : KGGuiCol_Button);
         KGU32 text_col = GetColorU32(KGGuiCol_Text);
-        window->DrawList->AddRectFilled(ImVec2(value_x2, bb.Min.y), bb.Max, bg_col, style.FrameRounding, (w <= arrow_size) ? KGDrawFlags_RoundCornersAll : KGDrawFlags_RoundCornersRight);
+        window->DrawList->AddRectFilled(KGVec2(value_x2, bb.Min.y), bb.Max, bg_col, style.FrameRounding, (w <= arrow_size) ? KGDrawFlags_RoundCornersAll : KGDrawFlags_RoundCornersRight);
         if (value_x2 + arrow_size - style.FramePadding.x <= bb.Max.x)
-            RenderArrow(window->DrawList, ImVec2(value_x2 + style.FramePadding.y, bb.Min.y + style.FramePadding.y), text_col, KGGuiDir_Down, 1.0f);
+            RenderArrow(window->DrawList, KGVec2(value_x2 + style.FramePadding.y, bb.Min.y + style.FramePadding.y), text_col, KGGuiDir_Down, 1.0f);
     }
     RenderFrameBorder(bb.Min, bb.Max, style.FrameRounding);
 
@@ -1671,10 +1671,10 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, KarmaGuiCom
     {
         if (g.LogEnabled)
             LogSetNextTextDecoration("{", "}");
-        RenderTextClipped(bb.Min + style.FramePadding, ImVec2(value_x2, bb.Max.y), preview_value, NULL, NULL);
+        RenderTextClipped(bb.Min + style.FramePadding, KGVec2(value_x2, bb.Max.y), preview_value, NULL, NULL);
     }
     if (label_size.x > 0)
-        RenderText(ImVec2(bb.Max.x + style.ItemInnerSpacing.x, bb.Min.y + style.FramePadding.y), label);
+        RenderText(KGVec2(bb.Max.x + style.ItemInnerSpacing.x, bb.Min.y + style.FramePadding.y), label);
 
     if (!popup_open)
         return false;
@@ -1707,7 +1707,7 @@ bool ImGui::BeginComboPopup(KGGuiID popup_id, const KGRect& bb, KarmaGuiComboFla
         if (flags & KGGuiComboFlags_HeightRegular)     popup_max_height_in_items = 8;
         else if (flags & KGGuiComboFlags_HeightSmall)  popup_max_height_in_items = 4;
         else if (flags & KGGuiComboFlags_HeightLarge)  popup_max_height_in_items = 20;
-        SetNextWindowSizeConstraints(ImVec2(w, 0.0f), ImVec2(FLT_MAX, CalcMaxPopupHeightFromItemCount(popup_max_height_in_items)));
+        SetNextWindowSizeConstraints(KGVec2(w, 0.0f), KGVec2(FLT_MAX, CalcMaxPopupHeightFromItemCount(popup_max_height_in_items)));
     }
 
     // This is essentially a specialized version of BeginPopupEx()
@@ -1721,16 +1721,16 @@ bool ImGui::BeginComboPopup(KGGuiID popup_id, const KGRect& bb, KarmaGuiComboFla
         if (popup_window->WasActive)
         {
             // Always override 'AutoPosLastDirection' to not leave a chance for a past value to affect us.
-            ImVec2 size_expected = CalcWindowNextAutoFitSize(popup_window);
+            KGVec2 size_expected = CalcWindowNextAutoFitSize(popup_window);
             popup_window->AutoPosLastDirection = (flags & KGGuiComboFlags_PopupAlignLeft) ? KGGuiDir_Left : KGGuiDir_Down; // Left = "Below, Toward Left", Down = "Below, Toward Right (default)"
             KGRect r_outer = GetPopupAllowedExtentRect(popup_window);
-            ImVec2 pos = FindBestWindowPosForPopupEx(bb.GetBL(), size_expected, &popup_window->AutoPosLastDirection, r_outer, bb, KGGuiPopupPositionPolicy_ComboBox);
+            KGVec2 pos = FindBestWindowPosForPopupEx(bb.GetBL(), size_expected, &popup_window->AutoPosLastDirection, r_outer, bb, KGGuiPopupPositionPolicy_ComboBox);
             SetNextWindowPos(pos);
         }
 
     // We don't use BeginPopupEx() solely because we have a custom name string, which we could make an argument to BeginPopupEx()
     KarmaGuiWindowFlags window_flags = KGGuiWindowFlags_AlwaysAutoResize | KGGuiWindowFlags_Popup | KGGuiWindowFlags_NoTitleBar | KGGuiWindowFlags_NoResize | KGGuiWindowFlags_NoSavedSettings | KGGuiWindowFlags_NoMove;
-    PushStyleVar(KGGuiStyleVar_WindowPadding, ImVec2(g.Style.FramePadding.x, g.Style.WindowPadding.y)); // Horizontally align ourselves with the framed text
+    PushStyleVar(KGGuiStyleVar_WindowPadding, KGVec2(g.Style.FramePadding.x, g.Style.WindowPadding.y)); // Horizontally align ourselves with the framed text
     bool ret = Begin(name, NULL, window_flags);
     PopStyleVar();
     if (!ret)
@@ -1842,7 +1842,7 @@ bool ImGui::Combo(const char* label, int* current_item, bool (*items_getter)(voi
 
     // The old Combo() API exposed "popup_max_height_in_items". The new more general BeginCombo() API doesn't have/need it, but we emulate it here.
     if (popup_max_height_in_items != -1 && !(g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasSizeConstraint))
-        SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(FLT_MAX, CalcMaxPopupHeightFromItemCount(popup_max_height_in_items)));
+        SetNextWindowSizeConstraints(KGVec2(0, 0), KGVec2(FLT_MAX, CalcMaxPopupHeightFromItemCount(popup_max_height_in_items)));
 
     if (!BeginCombo(label, preview_value, KGGuiComboFlags_None))
         return false;
@@ -2330,9 +2330,9 @@ bool ImGui::DragScalar(const char* label, KarmaGuiDataType data_type, void* p_da
     const KGGuiID id = window->GetID(label);
     const float w = CalcItemWidth();
 
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
-    const KGRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y * 2.0f));
-    const KGRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + KGVec2(w, label_size.y + style.FramePadding.y * 2.0f));
+    const KGRect total_bb(frame_bb.Min, frame_bb.Max + KGVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
 
     const bool temp_input_allowed = (flags & KGGuiSliderFlags_NoInput) == 0;
     ItemSize(total_bb, style.FramePadding.y);
@@ -2398,10 +2398,10 @@ bool ImGui::DragScalar(const char* label, KarmaGuiDataType data_type, void* p_da
     const char* value_buf_end = value_buf + DataTypeFormatString(value_buf, KG_ARRAYSIZE(value_buf), data_type, p_data, format);
     if (g.LogEnabled)
         LogSetNextTextDecoration("{", "}");
-    RenderTextClipped(frame_bb.Min, frame_bb.Max, value_buf, value_buf_end, NULL, ImVec2(0.5f, 0.5f));
+    RenderTextClipped(frame_bb.Min, frame_bb.Max, value_buf, value_buf_end, NULL, KGVec2(0.5f, 0.5f));
 
     if (label_size.x > 0.0f)
-        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
+        RenderText(KGVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
 
     KARMAGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags);
     return value_changed;
@@ -2923,9 +2923,9 @@ bool ImGui::SliderScalar(const char* label, KarmaGuiDataType data_type, void* p_
     const KGGuiID id = window->GetID(label);
     const float w = CalcItemWidth();
 
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
-    const KGRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + ImVec2(w, label_size.y + style.FramePadding.y * 2.0f));
-    const KGRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + KGVec2(w, label_size.y + style.FramePadding.y * 2.0f));
+    const KGRect total_bb(frame_bb.Min, frame_bb.Max + KGVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
 
     const bool temp_input_allowed = (flags & KGGuiSliderFlags_NoInput) == 0;
     ItemSize(total_bb, style.FramePadding.y);
@@ -2986,10 +2986,10 @@ bool ImGui::SliderScalar(const char* label, KarmaGuiDataType data_type, void* p_
     const char* value_buf_end = value_buf + DataTypeFormatString(value_buf, KG_ARRAYSIZE(value_buf), data_type, p_data, format);
     if (g.LogEnabled)
         LogSetNextTextDecoration("{", "}");
-    RenderTextClipped(frame_bb.Min, frame_bb.Max, value_buf, value_buf_end, NULL, ImVec2(0.5f, 0.5f));
+    RenderTextClipped(frame_bb.Min, frame_bb.Max, value_buf, value_buf_end, NULL, KGVec2(0.5f, 0.5f));
 
     if (label_size.x > 0.0f)
-        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
+        RenderText(KGVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
 
     KARMAGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags);
     return value_changed;
@@ -3081,7 +3081,7 @@ bool ImGui::SliderInt4(const char* label, int v[4], int v_min, int v_max, const 
     return SliderScalarN(label, KGGuiDataType_S32, v, 4, &v_min, &v_max, format, flags);
 }
 
-bool ImGui::VSliderScalar(const char* label, const ImVec2& size, KarmaGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, KarmaGuiSliderFlags flags)
+bool ImGui::VSliderScalar(const char* label, const KGVec2& size, KarmaGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, KarmaGuiSliderFlags flags)
 {
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -3091,9 +3091,9 @@ bool ImGui::VSliderScalar(const char* label, const ImVec2& size, KarmaGuiDataTyp
     const KarmaGuiStyle& style = g.Style;
     const KGGuiID id = window->GetID(label);
 
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
     const KGRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + size);
-    const KGRect bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
+    const KGRect bb(frame_bb.Min, frame_bb.Max + KGVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
 
     ItemSize(bb, style.FramePadding.y);
     if (!ItemAdd(frame_bb, id))
@@ -3134,19 +3134,19 @@ bool ImGui::VSliderScalar(const char* label, const ImVec2& size, KarmaGuiDataTyp
     // For the vertical slider we allow centered text to overlap the frame padding
     char value_buf[64];
     const char* value_buf_end = value_buf + DataTypeFormatString(value_buf, KG_ARRAYSIZE(value_buf), data_type, p_data, format);
-    RenderTextClipped(ImVec2(frame_bb.Min.x, frame_bb.Min.y + style.FramePadding.y), frame_bb.Max, value_buf, value_buf_end, NULL, ImVec2(0.5f, 0.0f));
+    RenderTextClipped(KGVec2(frame_bb.Min.x, frame_bb.Min.y + style.FramePadding.y), frame_bb.Max, value_buf, value_buf_end, NULL, KGVec2(0.5f, 0.0f));
     if (label_size.x > 0.0f)
-        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
+        RenderText(KGVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
 
     return value_changed;
 }
 
-bool ImGui::VSliderFloat(const char* label, const ImVec2& size, float* v, float v_min, float v_max, const char* format, KarmaGuiSliderFlags flags)
+bool ImGui::VSliderFloat(const char* label, const KGVec2& size, float* v, float v_min, float v_max, const char* format, KarmaGuiSliderFlags flags)
 {
     return VSliderScalar(label, size, KGGuiDataType_Float, v, &v_min, &v_max, format, flags);
 }
 
-bool ImGui::VSliderInt(const char* label, const ImVec2& size, int* v, int v_min, int v_max, const char* format, KarmaGuiSliderFlags flags)
+bool ImGui::VSliderInt(const char* label, const KGVec2& size, int* v, int v_min, int v_max, const char* format, KarmaGuiSliderFlags flags)
 {
     return VSliderScalar(label, size, KGGuiDataType_S32, v, &v_min, &v_max, format, flags);
 }
@@ -3401,19 +3401,19 @@ bool ImGui::InputScalar(const char* label, KarmaGuiDataType data_type, void* p_d
         KARMAGUI_TEST_ENGINE_ITEM_INFO(g.LastItemData.ID, label, g.LastItemData.StatusFlags);
 
         // Step buttons
-        const ImVec2 backup_frame_padding = style.FramePadding;
+        const KGVec2 backup_frame_padding = style.FramePadding;
         style.FramePadding.x = style.FramePadding.y;
         KarmaGuiButtonFlags button_flags = KGGuiButtonFlags_Repeat | KGGuiButtonFlags_DontClosePopups;
         if (flags & KGGuiInputTextFlags_ReadOnly)
             BeginDisabled();
         SameLine(0, style.ItemInnerSpacing.x);
-        if (ButtonEx("-", ImVec2(button_size, button_size), button_flags))
+        if (ButtonEx("-", KGVec2(button_size, button_size), button_flags))
         {
             DataTypeApplyOp(data_type, '-', p_data, p_data, g.IO.KeyCtrl && p_step_fast ? p_step_fast : p_step);
             value_changed = true;
         }
         SameLine(0, style.ItemInnerSpacing.x);
-        if (ButtonEx("+", ImVec2(button_size, button_size), button_flags))
+        if (ButtonEx("+", KGVec2(button_size, button_size), button_flags))
         {
             DataTypeApplyOp(data_type, '+', p_data, p_data, g.IO.KeyCtrl && p_step_fast ? p_step_fast : p_step);
             value_changed = true;
@@ -3543,10 +3543,10 @@ bool ImGui::InputDouble(const char* label, double* v, double step, double step_f
 bool ImGui::InputText(const char* label, char* buf, size_t buf_size, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data)
 {
     KR_CORE_ASSERT(!(flags & KGGuiInputTextFlags_Multiline)); // call InputTextMultiline()
-    return InputTextEx(label, NULL, buf, (int)buf_size, ImVec2(0, 0), flags, callback, user_data);
+    return InputTextEx(label, NULL, buf, (int)buf_size, KGVec2(0, 0), flags, callback, user_data);
 }
 
-bool ImGui::InputTextMultiline(const char* label, char* buf, size_t buf_size, const ImVec2& size, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data)
+bool ImGui::InputTextMultiline(const char* label, char* buf, size_t buf_size, const KGVec2& size, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data)
 {
     return InputTextEx(label, NULL, buf, (int)buf_size, size, flags | KGGuiInputTextFlags_Multiline, callback, user_data);
 }
@@ -3554,7 +3554,7 @@ bool ImGui::InputTextMultiline(const char* label, char* buf, size_t buf_size, co
 bool ImGui::InputTextWithHint(const char* label, const char* hint, char* buf, size_t buf_size, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data)
 {
     KR_CORE_ASSERT(!(flags & KGGuiInputTextFlags_Multiline)); // call InputTextMultiline() or  InputTextEx() manually if you need multi-line + hint.
-    return InputTextEx(label, hint, buf, (int)buf_size, ImVec2(0, 0), flags, callback, user_data);
+    return InputTextEx(label, hint, buf, (int)buf_size, KGVec2(0, 0), flags, callback, user_data);
 }
 
 static int InputTextCalcTextLenAndLineCount(const char* text_begin, const char** out_text_end)
@@ -3571,14 +3571,14 @@ static int InputTextCalcTextLenAndLineCount(const char* text_begin, const char**
     return line_count;
 }
 
-static ImVec2 InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWchar* text_begin, const KGWchar* text_end, const KGWchar** remaining, ImVec2* out_offset, bool stop_on_new_line)
+static KGVec2 InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWchar* text_begin, const KGWchar* text_end, const KGWchar** remaining, KGVec2* out_offset, bool stop_on_new_line)
 {
     KarmaGuiContext& g = *ctx;
     KGFont* font = g.Font;
     const float line_height = g.FontSize;
     const float scale = line_height / font->FontSize;
 
-    ImVec2 text_size = ImVec2(0, 0);
+    KGVec2 text_size = KGVec2(0, 0);
     float line_width = 0.0f;
 
     const KGWchar* s = text_begin;
@@ -3605,7 +3605,7 @@ static ImVec2 InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWchar* text_b
         text_size.x = line_width;
 
     if (out_offset)
-        *out_offset = ImVec2(line_width, text_size.y + line_height);  // offset allow for the possibility of sitting after a trailing \n
+        *out_offset = KGVec2(line_width, text_size.y + line_height);  // offset allow for the possibility of sitting after a trailing \n
 
     if (line_width > 0 || text_size.y == 0.0f)                        // whereas size.y will ignore the trailing \n
         text_size.y += line_height;
@@ -3629,7 +3629,7 @@ static void    STB_TEXTEDIT_LAYOUTROW(StbTexteditRow* r, KGGuiInputTextState* ob
 {
     const KGWchar* text = obj->TextW.Data;
     const KGWchar* text_remaining = NULL;
-    const ImVec2 size = InputTextCalcTextSizeW(obj->Ctx, text + line_start_idx, text + obj->CurLenW, &text_remaining, NULL, true);
+    const KGVec2 size = InputTextCalcTextSizeW(obj->Ctx, text + line_start_idx, text + obj->CurLenW, &text_remaining, NULL, true);
     r->x0 = 0.0f;
     r->x1 = size.x;
     r->baseline_y_delta = size.y;
@@ -3945,7 +3945,7 @@ static void InputTextReconcileUndoStateAfterUserCallback(KGGuiInputTextState* st
 // - If you want to use ImGui::InputText() with std::string, see misc/cpp/imgui_stdlib.h
 // (FIXME: Rather confusing and messy function, among the worse part of our codebase, expecting to rewrite a V2 at some point.. Partly because we are
 //  doing UTF8 > U16 > UTF8 conversions on the go to easily interface with stb_textedit. Ideally should stay in UTF-8 all the time. See https://github.com/nothings/stb/issues/188)
-bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_size, const ImVec2& size_arg, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* callback_user_data)
+bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_size, const KGVec2& size_arg, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* callback_user_data)
 {
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -3971,20 +3971,20 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     if (is_multiline) // Open group before calling GetID() because groups tracks id created within their scope (including the scrollbar)
         BeginGroup();
     const KGGuiID id = window->GetID(label);
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
-    const ImVec2 frame_size = CalcItemSize(size_arg, CalcItemWidth(), (is_multiline ? g.FontSize * 8.0f : label_size.y) + style.FramePadding.y * 2.0f); // Arbitrary default of 8 lines high for multi-line
-    const ImVec2 total_size = ImVec2(frame_size.x + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), frame_size.y);
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGVec2 frame_size = CalcItemSize(size_arg, CalcItemWidth(), (is_multiline ? g.FontSize * 8.0f : label_size.y) + style.FramePadding.y * 2.0f); // Arbitrary default of 8 lines high for multi-line
+    const KGVec2 total_size = KGVec2(frame_size.x + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), frame_size.y);
 
     const KGRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + frame_size);
     const KGRect total_bb(frame_bb.Min, frame_bb.Min + total_size);
 
     KGGuiWindow* draw_window = window;
-    ImVec2 inner_size = frame_size;
+    KGVec2 inner_size = frame_size;
     KGGuiItemStatusFlags item_status_flags = 0;
     KGGuiLastItemData item_data_backup;
     if (is_multiline)
     {
-        ImVec2 backup_pos = window->DC.CursorPos;
+        KGVec2 backup_pos = window->DC.CursorPos;
         ItemSize(total_bb, style.FramePadding.y);
         if (!ItemAdd(total_bb, id, &frame_bb, KGGuiItemFlags_Inputable))
         {
@@ -4000,7 +4000,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         PushStyleColor(KGGuiCol_ChildBg, style.Colors[KGGuiCol_FrameBg]);
         PushStyleVar(KGGuiStyleVar_ChildRounding, style.FrameRounding);
         PushStyleVar(KGGuiStyleVar_ChildBorderSize, style.FrameBorderSize);
-        PushStyleVar(KGGuiStyleVar_WindowPadding, ImVec2(0, 0)); // Ensure no clip rect so mouse hover can reach FramePadding edges
+        PushStyleVar(KGGuiStyleVar_WindowPadding, KGVec2(0, 0)); // Ensure no clip rect so mouse hover can reach FramePadding edges
         bool child_visible = BeginChildEx(label, id, frame_bb.GetSize(), true, KGGuiWindowFlags_NoMove);
         PopStyleVar(3);
         PopStyleColor();
@@ -4612,9 +4612,9 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         RenderFrame(frame_bb.Min, frame_bb.Max, GetColorU32(KGGuiCol_FrameBg), true, style.FrameRounding);
     }
 
-    const ImVec4 clip_rect(frame_bb.Min.x, frame_bb.Min.y, frame_bb.Min.x + inner_size.x, frame_bb.Min.y + inner_size.y); // Not using frame_bb.Max because we have adjusted size
-    ImVec2 draw_pos = is_multiline ? draw_window->DC.CursorPos : frame_bb.Min + style.FramePadding;
-    ImVec2 text_size(0.0f, 0.0f);
+    const KGVec4 clip_rect(frame_bb.Min.x, frame_bb.Min.y, frame_bb.Min.x + inner_size.x, frame_bb.Min.y + inner_size.y); // Not using frame_bb.Max because we have adjusted size
+    KGVec2 draw_pos = is_multiline ? draw_window->DC.CursorPos : frame_bb.Min + style.FramePadding;
+    KGVec2 text_size(0.0f, 0.0f);
 
     // Set upper limit of single-line InputTextEx() at 2 million characters strings. The current pathological worst case is a long line
     // without any carriage return, which would makes KGFont::RenderText() reserve too many vertices and probably crash. Avoid it altogether.
@@ -4644,7 +4644,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         // We are attempting to do most of that in **one main pass** to minimize the computation cost (non-negligible for large amount of text) + 2nd pass for selection rendering (we could merge them by an extra refactoring effort)
         // FIXME: This should occur on buf_display but we'd need to maintain cursor/select_start/select_end for UTF-8.
         const KGWchar* text_begin = state->TextW.Data;
-        ImVec2 cursor_offset, select_start_offset;
+        KGVec2 cursor_offset, select_start_offset;
 
         {
             // Find lines numbers straddling 'cursor' (slot 0) and 'select_start' (slot 1) positions.
@@ -4693,7 +4693,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
 
             // Store text height (note that we haven't calculated text width at all, see GitHub issues #383, #1224)
             if (is_multiline)
-                text_size = ImVec2(inner_size.x, line_count * g.FontSize);
+                text_size = KGVec2(inner_size.x, line_count * g.FontSize);
         }
 
         // Scroll
@@ -4732,7 +4732,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         }
 
         // Draw selection
-        const ImVec2 draw_scroll = ImVec2(state->ScrollX, 0.0f);
+        const KGVec2 draw_scroll = KGVec2(state->ScrollX, 0.0f);
         if (render_selection)
         {
             const KGWchar* text_selected_begin = text_begin + KGMin(state->Stb.select_start, state->Stb.select_end);
@@ -4741,7 +4741,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
             KGU32 bg_color = GetColorU32(KGGuiCol_TextSelectedBg, render_cursor ? 1.0f : 0.6f); // FIXME: current code flow mandate that render_cursor is always true here, we are leaving the transparent one for tests.
             float bg_offy_up = is_multiline ? 0.0f : -1.0f;    // FIXME: those offsets should be part of the style? they don't play so well with multi-line selection.
             float bg_offy_dn = is_multiline ? 0.0f : 2.0f;
-            ImVec2 rect_pos = draw_pos + select_start_offset - draw_scroll;
+            KGVec2 rect_pos = draw_pos + select_start_offset - draw_scroll;
             for (const KGWchar* p = text_selected_begin; p < text_selected_end; )
             {
                 if (rect_pos.y > clip_rect.w + g.FontSize)
@@ -4756,9 +4756,9 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
                 }
                 else
                 {
-                    ImVec2 rect_size = InputTextCalcTextSizeW(&g, p, text_selected_end, &p, NULL, true);
+                    KGVec2 rect_size = InputTextCalcTextSizeW(&g, p, text_selected_end, &p, NULL, true);
                     if (rect_size.x <= 0.0f) rect_size.x = KG_FLOOR(g.Font->GetCharAdvance((KGWchar)' ') * 0.50f); // So we can see selected empty lines
-                    KGRect rect(rect_pos + ImVec2(0.0f, bg_offy_up - g.FontSize), rect_pos + ImVec2(rect_size.x, bg_offy_dn));
+                    KGRect rect(rect_pos + KGVec2(0.0f, bg_offy_up - g.FontSize), rect_pos + KGVec2(rect_size.x, bg_offy_dn));
                     rect.ClipWith(clip_rect);
                     if (rect.Overlaps(clip_rect))
                         draw_window->DrawList->AddRectFilled(rect.Min, rect.Max, bg_color);
@@ -4780,7 +4780,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
         {
             state->CursorAnim += io.DeltaTime;
             bool cursor_is_visible = (!g.IO.ConfigInputTextCursorBlink) || (state->CursorAnim <= 0.0f) || KGFmod(state->CursorAnim, 1.20f) <= 0.80f;
-            ImVec2 cursor_screen_pos = KGFloor(draw_pos + cursor_offset - draw_scroll);
+            KGVec2 cursor_screen_pos = KGFloor(draw_pos + cursor_offset - draw_scroll);
             KGRect cursor_screen_rect(cursor_screen_pos.x, cursor_screen_pos.y - g.FontSize + 0.5f, cursor_screen_pos.x + 1.0f, cursor_screen_pos.y - 1.5f);
             if (cursor_is_visible && cursor_screen_rect.Overlaps(clip_rect))
                 draw_window->DrawList->AddLine(cursor_screen_rect.Min, cursor_screen_rect.GetBL(), GetColorU32(KGGuiCol_Text));
@@ -4789,7 +4789,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
             if (!is_readonly)
             {
                 g.PlatformImeData.WantVisible = true;
-                g.PlatformImeData.InputPos = ImVec2(cursor_screen_pos.x - 1.0f, cursor_screen_pos.y - g.FontSize);
+                g.PlatformImeData.InputPos = KGVec2(cursor_screen_pos.x - 1.0f, cursor_screen_pos.y - g.FontSize);
                 g.PlatformImeData.InputLineHeight = g.FontSize;
                 g.PlatformImeViewport = window->Viewport->ID;
             }
@@ -4799,7 +4799,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     {
         // Render text only (no selection, no cursor)
         if (is_multiline)
-            text_size = ImVec2(inner_size.x, InputTextCalcTextLenAndLineCount(buf_display, &buf_display_end) * g.FontSize); // We don't need width
+            text_size = KGVec2(inner_size.x, InputTextCalcTextLenAndLineCount(buf_display, &buf_display_end) * g.FontSize); // We don't need width
         else if (!is_displaying_hint && g.ActiveId == id)
             buf_display_end = buf_display + state->CurLenA;
         else if (!is_displaying_hint)
@@ -4818,7 +4818,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     if (is_multiline)
     {
         // For focus requests to work on our multiline we need to ensure our child ItemAdd() call specifies the KGGuiItemFlags_Inputable (ref issue #4761)...
-        Dummy(ImVec2(text_size.x, text_size.y + style.FramePadding.y));
+        Dummy(KGVec2(text_size.x, text_size.y + style.FramePadding.y));
         KGGuiItemFlags backup_item_flags = g.CurrentItemFlags;
         g.CurrentItemFlags |= KGGuiItemFlags_Inputable | KGGuiItemFlags_NoTabStop;
         EndChild();
@@ -4844,7 +4844,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
     }
 
     if (label_size.x > 0)
-        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
+        RenderText(KGVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y), label);
 
     if (value_changed && !(flags & KGGuiInputTextFlags_NoMarkEdited))
         MarkItemEdited(id);
@@ -4866,9 +4866,9 @@ void ImGui::DebugNodeInputTextState(KGGuiInputTextState* state)
     DebugLocateItemOnHover(state->ID);
     Text("CurLenW: %d, CurLenA: %d, Cursor: %d, Selection: %d..%d", state->CurLenA, state->CurLenW, stb_state->cursor, stb_state->select_start, stb_state->select_end);
     Text("undo_point: %d, redo_point: %d, undo_char_point: %d, redo_char_point: %d", undo_state->undo_point, undo_state->redo_point, undo_state->undo_char_point, undo_state->redo_char_point);
-    if (BeginChild("undopoints", ImVec2(0.0f, GetTextLineHeight() * 15), true)) // Visualize undo state
+    if (BeginChild("undopoints", KGVec2(0.0f, GetTextLineHeight() * 15), true)) // Visualize undo state
     {
-        PushStyleVar(KGGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+        PushStyleVar(KGGuiStyleVar_ItemSpacing, KGVec2(0, 0));
         for (int n = 0; n < STB_TEXTEDIT_UNDOSTATECOUNT; n++)
         {
             KGStb::StbUndoRecord* undo_rec = &undo_state->undo_rec[n];
@@ -4922,7 +4922,7 @@ static void ColorEditRestoreHS(const float* col, float* H, float* S, float* V)
     // Tiny external color changes would not be detected and this check would still pass. This is OK, since we only restore hue/saturation _only_ if they are undefined,
     // therefore this change flipping hue/saturation from undefined to a very tiny value would still be represented in color picker.
     KarmaGuiContext& g = *GKarmaGui;
-    if (g.ColorEditLastColor != ImGui::ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], 0)))
+    if (g.ColorEditLastColor != ImGui::ColorConvertFloat4ToU32(KGVec4(col[0], col[1], col[2], 0)))
         return;
 
     // When S == 0, H is undefined.
@@ -4997,7 +4997,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], KarmaGuiColorEditFlags f
     bool value_changed = false;
     bool value_changed_as_float = false;
 
-    const ImVec2 pos = window->DC.CursorPos;
+    const KGVec2 pos = window->DC.CursorPos;
     const float inputs_offset_x = (style.ColorButtonPosition == KGGuiDir_Left) ? w_button : 0.0f;
     window->DC.CursorPos.x = pos.x + inputs_offset_x;
 
@@ -5075,9 +5075,9 @@ bool ImGui::ColorEdit4(const char* label, float col[4], KarmaGuiColorEditFlags f
     if (!(flags & KGGuiColorEditFlags_NoSmallPreview))
     {
         const float button_offset_x = ((flags & KGGuiColorEditFlags_NoInputs) || (style.ColorButtonPosition == KGGuiDir_Left)) ? 0.0f : w_inputs + style.ItemInnerSpacing.x;
-        window->DC.CursorPos = ImVec2(pos.x + button_offset_x, pos.y);
+        window->DC.CursorPos = KGVec2(pos.x + button_offset_x, pos.y);
 
-        const ImVec4 col_v4(col[0], col[1], col[2], alpha ? col[3] : 1.0f);
+        const KGVec4 col_v4(col[0], col[1], col[2], alpha ? col[3] : 1.0f);
         if (ColorButton("##ColorButton", col_v4, flags))
         {
             if (!(flags & KGGuiColorEditFlags_NoPicker))
@@ -5085,7 +5085,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], KarmaGuiColorEditFlags f
                 // Store current color and open a picker
                 g.ColorPickerRef = col_v4;
                 OpenPopup("picker");
-                SetNextWindowPos(g.LastItemData.Rect.GetBL() + ImVec2(0.0f, style.ItemSpacing.y));
+                SetNextWindowPos(g.LastItemData.Rect.GetBL() + KGVec2(0.0f, style.ItemSpacing.y));
             }
         }
         if (!(flags & KGGuiColorEditFlags_NoOptions))
@@ -5130,7 +5130,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], KarmaGuiColorEditFlags f
             g.ColorEditLastHue = f[0];
             g.ColorEditLastSat = f[1];
             ColorConvertHSVtoRGB(f[0], f[1], f[2], f[0], f[1], f[2]);
-            g.ColorEditLastColor = ColorConvertFloat4ToU32(ImVec4(f[0], f[1], f[2], 0));
+            g.ColorEditLastColor = ColorConvertFloat4ToU32(KGVec4(f[0], f[1], f[2], 0));
         }
         if ((flags & KGGuiColorEditFlags_DisplayRGB) && (flags & KGGuiColorEditFlags_InputHSV))
             ColorConvertRGBtoHSV(f[0], f[1], f[2], f[0], f[1], f[2]);
@@ -5187,13 +5187,13 @@ bool ImGui::ColorPicker3(const char* label, float col[3], KarmaGuiColorEditFlags
 }
 
 // Helper for ColorPicker4()
-static void RenderArrowsForVerticalBar(KGDrawList* draw_list, ImVec2 pos, ImVec2 half_sz, float bar_w, float alpha)
+static void RenderArrowsForVerticalBar(KGDrawList* draw_list, KGVec2 pos, KGVec2 half_sz, float bar_w, float alpha)
 {
     KGU32 alpha8 = KG_F32_TO_INT8_SAT(alpha);
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + half_sz.x + 1,         pos.y), ImVec2(half_sz.x + 2, half_sz.y + 1), KGGuiDir_Right, KG_COL32(0,0,0,alpha8));
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + half_sz.x,             pos.y), half_sz,                              KGGuiDir_Right, KG_COL32(255,255,255,alpha8));
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + bar_w - half_sz.x - 1, pos.y), ImVec2(half_sz.x + 2, half_sz.y + 1), KGGuiDir_Left,  KG_COL32(0,0,0,alpha8));
-    ImGui::RenderArrowPointingAt(draw_list, ImVec2(pos.x + bar_w - half_sz.x,     pos.y), half_sz,                              KGGuiDir_Left,  KG_COL32(255,255,255,alpha8));
+    ImGui::RenderArrowPointingAt(draw_list, KGVec2(pos.x + half_sz.x + 1,         pos.y), KGVec2(half_sz.x + 2, half_sz.y + 1), KGGuiDir_Right, KG_COL32(0,0,0,alpha8));
+    ImGui::RenderArrowPointingAt(draw_list, KGVec2(pos.x + half_sz.x,             pos.y), half_sz,                              KGGuiDir_Right, KG_COL32(255,255,255,alpha8));
+    ImGui::RenderArrowPointingAt(draw_list, KGVec2(pos.x + bar_w - half_sz.x - 1, pos.y), KGVec2(half_sz.x + 2, half_sz.y + 1), KGGuiDir_Left,  KG_COL32(0,0,0,alpha8));
+    ImGui::RenderArrowPointingAt(draw_list, KGVec2(pos.x + bar_w - half_sz.x,     pos.y), half_sz,                              KGGuiDir_Left,  KG_COL32(255,255,255,alpha8));
 }
 
 // Note: ColorPicker4() only accesses 3 floats if KGGuiColorEditFlags_NoAlpha flag is set.
@@ -5237,7 +5237,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     // Setup
     int components = (flags & KGGuiColorEditFlags_NoAlpha) ? 3 : 4;
     bool alpha_bar = (flags & KGGuiColorEditFlags_AlphaBar) && !(flags & KGGuiColorEditFlags_NoAlpha);
-    ImVec2 picker_pos = window->DC.CursorPos;
+    KGVec2 picker_pos = window->DC.CursorPos;
     float square_sz = GetFrameHeight();
     float bars_width = square_sz; // Arbitrary smallish width of Hue/Alpha picking bars
     float sv_picker_size = KGMax(bars_width * 1, width - (alpha_bar ? 2 : 1) * (bars_width + style.ItemInnerSpacing.x)); // Saturation/Value picking box
@@ -5251,13 +5251,13 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     float wheel_thickness = sv_picker_size * 0.08f;
     float wheel_r_outer = sv_picker_size * 0.50f;
     float wheel_r_inner = wheel_r_outer - wheel_thickness;
-    ImVec2 wheel_center(picker_pos.x + (sv_picker_size + bars_width)*0.5f, picker_pos.y + sv_picker_size * 0.5f);
+    KGVec2 wheel_center(picker_pos.x + (sv_picker_size + bars_width)*0.5f, picker_pos.y + sv_picker_size * 0.5f);
 
     // Note: the triangle is displayed rotated with triangle_pa pointing to Hue, but most coordinates stays unrotated for logic.
     float triangle_r = wheel_r_inner - (int)(sv_picker_size * 0.027f);
-    ImVec2 triangle_pa = ImVec2(triangle_r, 0.0f); // Hue point.
-    ImVec2 triangle_pb = ImVec2(triangle_r * -0.5f, triangle_r * -0.866025f); // Black point.
-    ImVec2 triangle_pc = ImVec2(triangle_r * -0.5f, triangle_r * +0.866025f); // White point.
+    KGVec2 triangle_pa = KGVec2(triangle_r, 0.0f); // Hue point.
+    KGVec2 triangle_pb = KGVec2(triangle_r * -0.5f, triangle_r * -0.866025f); // Black point.
+    KGVec2 triangle_pc = KGVec2(triangle_r * -0.5f, triangle_r * +0.866025f); // White point.
 
     float H = col[0], S = col[1], V = col[2];
     float R = col[0], G = col[1], B = col[2];
@@ -5278,11 +5278,11 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     if (flags & KGGuiColorEditFlags_PickerHueWheel)
     {
         // Hue wheel + SV triangle logic
-        InvisibleButton("hsv", ImVec2(sv_picker_size + style.ItemInnerSpacing.x + bars_width, sv_picker_size));
+        InvisibleButton("hsv", KGVec2(sv_picker_size + style.ItemInnerSpacing.x + bars_width, sv_picker_size));
         if (IsItemActive())
         {
-            ImVec2 initial_off = g.IO.MouseClickedPos[0] - wheel_center;
-            ImVec2 current_off = g.IO.MousePos - wheel_center;
+            KGVec2 initial_off = g.IO.MouseClickedPos[0] - wheel_center;
+            KGVec2 current_off = g.IO.MousePos - wheel_center;
             float initial_dist2 = KGLengthSqr(initial_off);
             if (initial_dist2 >= (wheel_r_inner - 1) * (wheel_r_inner - 1) && initial_dist2 <= (wheel_r_outer + 1) * (wheel_r_outer + 1))
             {
@@ -5297,7 +5297,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
             if (KGTriangleContainsPoint(triangle_pa, triangle_pb, triangle_pc, KGRotate(initial_off, cos_hue_angle, sin_hue_angle)))
             {
                 // Interacting with SV triangle
-                ImVec2 current_off_unrotated = KGRotate(current_off, cos_hue_angle, sin_hue_angle);
+                KGVec2 current_off_unrotated = KGRotate(current_off, cos_hue_angle, sin_hue_angle);
                 if (!KGTriangleContainsPoint(triangle_pa, triangle_pb, triangle_pc, current_off_unrotated))
                     current_off_unrotated = KGTriangleClosestPoint(triangle_pa, triangle_pb, triangle_pc, current_off_unrotated);
                 float uu, vv, ww;
@@ -5313,14 +5313,14 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     else if (flags & KGGuiColorEditFlags_PickerHueBar)
     {
         // SV rectangle logic
-        InvisibleButton("sv", ImVec2(sv_picker_size, sv_picker_size));
+        InvisibleButton("sv", KGVec2(sv_picker_size, sv_picker_size));
         if (IsItemActive())
         {
             S = KGSaturate((io.MousePos.x - picker_pos.x) / (sv_picker_size - 1));
             V = 1.0f - KGSaturate((io.MousePos.y - picker_pos.y) / (sv_picker_size - 1));
 
             // Greatly reduces hue jitter and reset to 0 when hue == 255 and color is rapidly modified using SV square.
-            if (g.ColorEditLastColor == ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], 0)))
+            if (g.ColorEditLastColor == ColorConvertFloat4ToU32(KGVec4(col[0], col[1], col[2], 0)))
                 H = g.ColorEditLastHue;
             value_changed = value_changed_sv = true;
         }
@@ -5328,8 +5328,8 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
             OpenPopupOnItemClick("context", KGGuiPopupFlags_MouseButtonRight);
 
         // Hue bar logic
-        SetCursorScreenPos(ImVec2(bar0_pos_x, picker_pos.y));
-        InvisibleButton("hue", ImVec2(bars_width, sv_picker_size));
+        SetCursorScreenPos(KGVec2(bar0_pos_x, picker_pos.y));
+        InvisibleButton("hue", KGVec2(bars_width, sv_picker_size));
         if (IsItemActive())
         {
             H = KGSaturate((io.MousePos.y - picker_pos.y) / (sv_picker_size - 1));
@@ -5340,8 +5340,8 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     // Alpha bar logic
     if (alpha_bar)
     {
-        SetCursorScreenPos(ImVec2(bar1_pos_x, picker_pos.y));
-        InvisibleButton("alpha", ImVec2(bars_width, sv_picker_size));
+        SetCursorScreenPos(KGVec2(bar1_pos_x, picker_pos.y));
+        InvisibleButton("alpha", KGVec2(bars_width, sv_picker_size));
         if (IsItemActive())
         {
             col[3] = 1.0f - KGSaturate((io.MousePos.y - picker_pos.y) / (sv_picker_size - 1));
@@ -5370,17 +5370,17 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     if (!(flags & KGGuiColorEditFlags_NoSidePreview))
     {
         PushItemFlag(KGGuiItemFlags_NoNavDefaultFocus, true);
-        ImVec4 col_v4(col[0], col[1], col[2], (flags & KGGuiColorEditFlags_NoAlpha) ? 1.0f : col[3]);
+        KGVec4 col_v4(col[0], col[1], col[2], (flags & KGGuiColorEditFlags_NoAlpha) ? 1.0f : col[3]);
         if ((flags & KGGuiColorEditFlags_NoLabel))
             Text("Current");
 
         KarmaGuiColorEditFlags sub_flags_to_forward = KGGuiColorEditFlags_InputMask_ | KGGuiColorEditFlags_HDR | KGGuiColorEditFlags_AlphaPreview | KGGuiColorEditFlags_AlphaPreviewHalf | KGGuiColorEditFlags_NoTooltip;
-        ColorButton("##current", col_v4, (flags & sub_flags_to_forward), ImVec2(square_sz * 3, square_sz * 2));
+        ColorButton("##current", col_v4, (flags & sub_flags_to_forward), KGVec2(square_sz * 3, square_sz * 2));
         if (ref_col != NULL)
         {
             Text("Original");
-            ImVec4 ref_col_v4(ref_col[0], ref_col[1], ref_col[2], (flags & KGGuiColorEditFlags_NoAlpha) ? 1.0f : ref_col[3]);
-            if (ColorButton("##original", ref_col_v4, (flags & sub_flags_to_forward), ImVec2(square_sz * 3, square_sz * 2)))
+            KGVec4 ref_col_v4(ref_col[0], ref_col[1], ref_col[2], (flags & KGGuiColorEditFlags_NoAlpha) ? 1.0f : ref_col[3]);
+            if (ColorButton("##original", ref_col_v4, (flags & sub_flags_to_forward), KGVec2(square_sz * 3, square_sz * 2)))
             {
                 memcpy(col, ref_col, components * sizeof(float));
                 value_changed = true;
@@ -5398,7 +5398,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
             ColorConvertHSVtoRGB(H, S, V, col[0], col[1], col[2]);
             g.ColorEditLastHue = H;
             g.ColorEditLastSat = S;
-            g.ColorEditLastColor = ColorConvertFloat4ToU32(ImVec4(col[0], col[1], col[2], 0));
+            g.ColorEditLastColor = ColorConvertFloat4ToU32(KGVec4(col[0], col[1], col[2], 0));
         }
         else if (flags & KGGuiColorEditFlags_InputHSV)
         {
@@ -5469,11 +5469,11 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     const KGU32 col_midgrey = KG_COL32(128,128,128,style_alpha8);
     const KGU32 col_hues[6 + 1] = { KG_COL32(255,0,0,style_alpha8), KG_COL32(255,255,0,style_alpha8), KG_COL32(0,255,0,style_alpha8), KG_COL32(0,255,255,style_alpha8), KG_COL32(0,0,255,style_alpha8), KG_COL32(255,0,255,style_alpha8), KG_COL32(255,0,0,style_alpha8) };
 
-    ImVec4 hue_color_f(1, 1, 1, style.Alpha); ColorConvertHSVtoRGB(H, 1, 1, hue_color_f.x, hue_color_f.y, hue_color_f.z);
+    KGVec4 hue_color_f(1, 1, 1, style.Alpha); ColorConvertHSVtoRGB(H, 1, 1, hue_color_f.x, hue_color_f.y, hue_color_f.z);
     KGU32 hue_color32 = ColorConvertFloat4ToU32(hue_color_f);
-    KGU32 user_col32_striped_of_alpha = ColorConvertFloat4ToU32(ImVec4(R, G, B, style.Alpha)); // Important: this is still including the main rendering/style alpha!!
+    KGU32 user_col32_striped_of_alpha = ColorConvertFloat4ToU32(KGVec4(R, G, B, style.Alpha)); // Important: this is still including the main rendering/style alpha!!
 
-    ImVec2 sv_cursor_pos;
+    KGVec2 sv_cursor_pos;
 
     if (flags & KGGuiColorEditFlags_PickerHueWheel)
     {
@@ -5490,15 +5490,15 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
             const int vert_end_idx = draw_list->VtxBuffer.Size;
 
             // Paint colors over existing vertices
-            ImVec2 gradient_p0(wheel_center.x + KGCos(a0) * wheel_r_inner, wheel_center.y + KGSin(a0) * wheel_r_inner);
-            ImVec2 gradient_p1(wheel_center.x + KGCos(a1) * wheel_r_inner, wheel_center.y + KGSin(a1) * wheel_r_inner);
+            KGVec2 gradient_p0(wheel_center.x + KGCos(a0) * wheel_r_inner, wheel_center.y + KGSin(a0) * wheel_r_inner);
+            KGVec2 gradient_p1(wheel_center.x + KGCos(a1) * wheel_r_inner, wheel_center.y + KGSin(a1) * wheel_r_inner);
             ShadeVertsLinearColorGradientKeepAlpha(draw_list, vert_start_idx, vert_end_idx, gradient_p0, gradient_p1, col_hues[n], col_hues[n + 1]);
         }
 
         // Render Cursor + preview on Hue Wheel
         float cos_hue_angle = KGCos(H * 2.0f * KG_PI);
         float sin_hue_angle = KGSin(H * 2.0f * KG_PI);
-        ImVec2 hue_cursor_pos(wheel_center.x + cos_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f, wheel_center.y + sin_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f);
+        KGVec2 hue_cursor_pos(wheel_center.x + cos_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f, wheel_center.y + sin_hue_angle * (wheel_r_inner + wheel_r_outer) * 0.5f);
         float hue_cursor_rad = value_changed_h ? wheel_thickness * 0.65f : wheel_thickness * 0.55f;
         int hue_cursor_segments = KGClamp((int)(hue_cursor_rad / 1.4f), 9, 32);
         draw_list->AddCircleFilled(hue_cursor_pos, hue_cursor_rad, hue_color32, hue_cursor_segments);
@@ -5506,10 +5506,10 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
         draw_list->AddCircle(hue_cursor_pos, hue_cursor_rad, col_white, hue_cursor_segments);
 
         // Render SV triangle (rotated according to hue)
-        ImVec2 tra = wheel_center + KGRotate(triangle_pa, cos_hue_angle, sin_hue_angle);
-        ImVec2 trb = wheel_center + KGRotate(triangle_pb, cos_hue_angle, sin_hue_angle);
-        ImVec2 trc = wheel_center + KGRotate(triangle_pc, cos_hue_angle, sin_hue_angle);
-        ImVec2 uv_white = GetFontTexUvWhitePixel();
+        KGVec2 tra = wheel_center + KGRotate(triangle_pa, cos_hue_angle, sin_hue_angle);
+        KGVec2 trb = wheel_center + KGRotate(triangle_pb, cos_hue_angle, sin_hue_angle);
+        KGVec2 trc = wheel_center + KGRotate(triangle_pc, cos_hue_angle, sin_hue_angle);
+        KGVec2 uv_white = GetFontTexUvWhitePixel();
         draw_list->PrimReserve(6, 6);
         draw_list->PrimVtx(tra, uv_white, hue_color32);
         draw_list->PrimVtx(trb, uv_white, hue_color32);
@@ -5523,18 +5523,18 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     else if (flags & KGGuiColorEditFlags_PickerHueBar)
     {
         // Render SV Square
-        draw_list->AddRectFilledMultiColor(picker_pos, picker_pos + ImVec2(sv_picker_size, sv_picker_size), col_white, hue_color32, hue_color32, col_white);
-        draw_list->AddRectFilledMultiColor(picker_pos, picker_pos + ImVec2(sv_picker_size, sv_picker_size), 0, 0, col_black, col_black);
-        RenderFrameBorder(picker_pos, picker_pos + ImVec2(sv_picker_size, sv_picker_size), 0.0f);
+        draw_list->AddRectFilledMultiColor(picker_pos, picker_pos + KGVec2(sv_picker_size, sv_picker_size), col_white, hue_color32, hue_color32, col_white);
+        draw_list->AddRectFilledMultiColor(picker_pos, picker_pos + KGVec2(sv_picker_size, sv_picker_size), 0, 0, col_black, col_black);
+        RenderFrameBorder(picker_pos, picker_pos + KGVec2(sv_picker_size, sv_picker_size), 0.0f);
         sv_cursor_pos.x = KGClamp(KG_ROUND(picker_pos.x + KGSaturate(S)     * sv_picker_size), picker_pos.x + 2, picker_pos.x + sv_picker_size - 2); // Sneakily prevent the circle to stick out too much
         sv_cursor_pos.y = KGClamp(KG_ROUND(picker_pos.y + KGSaturate(1 - V) * sv_picker_size), picker_pos.y + 2, picker_pos.y + sv_picker_size - 2);
 
         // Render Hue Bar
         for (int i = 0; i < 6; ++i)
-            draw_list->AddRectFilledMultiColor(ImVec2(bar0_pos_x, picker_pos.y + i * (sv_picker_size / 6)), ImVec2(bar0_pos_x + bars_width, picker_pos.y + (i + 1) * (sv_picker_size / 6)), col_hues[i], col_hues[i], col_hues[i + 1], col_hues[i + 1]);
+            draw_list->AddRectFilledMultiColor(KGVec2(bar0_pos_x, picker_pos.y + i * (sv_picker_size / 6)), KGVec2(bar0_pos_x + bars_width, picker_pos.y + (i + 1) * (sv_picker_size / 6)), col_hues[i], col_hues[i], col_hues[i + 1], col_hues[i + 1]);
         float bar0_line_y = KG_ROUND(picker_pos.y + H * sv_picker_size);
-        RenderFrameBorder(ImVec2(bar0_pos_x, picker_pos.y), ImVec2(bar0_pos_x + bars_width, picker_pos.y + sv_picker_size), 0.0f);
-        RenderArrowsForVerticalBar(draw_list, ImVec2(bar0_pos_x - 1, bar0_line_y), ImVec2(bars_triangles_half_sz + 1, bars_triangles_half_sz), bars_width + 2.0f, style.Alpha);
+        RenderFrameBorder(KGVec2(bar0_pos_x, picker_pos.y), KGVec2(bar0_pos_x + bars_width, picker_pos.y + sv_picker_size), 0.0f);
+        RenderArrowsForVerticalBar(draw_list, KGVec2(bar0_pos_x - 1, bar0_line_y), KGVec2(bars_triangles_half_sz + 1, bars_triangles_half_sz), bars_width + 2.0f, style.Alpha);
     }
 
     // Render cursor/preview circle (clamp S/V within 0..1 range because floating points colors may lead HSV values to be out of range)
@@ -5548,11 +5548,11 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
     {
         float alpha = KGSaturate(col[3]);
         KGRect bar1_bb(bar1_pos_x, picker_pos.y, bar1_pos_x + bars_width, picker_pos.y + sv_picker_size);
-        RenderColorRectWithAlphaCheckerboard(draw_list, bar1_bb.Min, bar1_bb.Max, 0, bar1_bb.GetWidth() / 2.0f, ImVec2(0.0f, 0.0f));
+        RenderColorRectWithAlphaCheckerboard(draw_list, bar1_bb.Min, bar1_bb.Max, 0, bar1_bb.GetWidth() / 2.0f, KGVec2(0.0f, 0.0f));
         draw_list->AddRectFilledMultiColor(bar1_bb.Min, bar1_bb.Max, user_col32_striped_of_alpha, user_col32_striped_of_alpha, user_col32_striped_of_alpha & ~KG_COL32_A_MASK, user_col32_striped_of_alpha & ~KG_COL32_A_MASK);
         float bar1_line_y = KG_ROUND(picker_pos.y + (1.0f - alpha) * sv_picker_size);
         RenderFrameBorder(bar1_bb.Min, bar1_bb.Max, 0.0f);
-        RenderArrowsForVerticalBar(draw_list, ImVec2(bar1_pos_x - 1, bar1_line_y), ImVec2(bars_triangles_half_sz + 1, bars_triangles_half_sz), bars_width + 2.0f, style.Alpha);
+        RenderArrowsForVerticalBar(draw_list, KGVec2(bar1_pos_x - 1, bar1_line_y), KGVec2(bars_triangles_half_sz + 1, bars_triangles_half_sz), bars_width + 2.0f, style.Alpha);
     }
 
     EndGroup();
@@ -5571,7 +5571,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags
 // FIXME: May want to display/ignore the alpha component in the color display? Yet show it in the tooltip.
 // 'desc_id' is not called 'label' because we don't display it next to the button, but only in the tooltip.
 // Note that 'col' may be encoded in HSV if KGGuiColorEditFlags_InputHSV is set.
-bool ImGui::ColorButton(const char* desc_id, const ImVec4& col, KarmaGuiColorEditFlags flags, const ImVec2& size_arg)
+bool ImGui::ColorButton(const char* desc_id, const KGVec4& col, KarmaGuiColorEditFlags flags, const KGVec2& size_arg)
 {
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -5580,7 +5580,7 @@ bool ImGui::ColorButton(const char* desc_id, const ImVec4& col, KarmaGuiColorEdi
     KarmaGuiContext& g = *GKarmaGui;
     const KGGuiID id = window->GetID(desc_id);
     const float default_size = GetFrameHeight();
-    const ImVec2 size(size_arg.x == 0.0f ? default_size : size_arg.x, size_arg.y == 0.0f ? default_size : size_arg.y);
+    const KGVec2 size(size_arg.x == 0.0f ? default_size : size_arg.x, size_arg.y == 0.0f ? default_size : size_arg.y);
     const KGRect bb(window->DC.CursorPos, window->DC.CursorPos + size);
     ItemSize(bb, (size.y >= default_size) ? g.Style.FramePadding.y : 0.0f);
     if (!ItemAdd(bb, id))
@@ -5592,11 +5592,11 @@ bool ImGui::ColorButton(const char* desc_id, const ImVec4& col, KarmaGuiColorEdi
     if (flags & KGGuiColorEditFlags_NoAlpha)
         flags &= ~(KGGuiColorEditFlags_AlphaPreview | KGGuiColorEditFlags_AlphaPreviewHalf);
 
-    ImVec4 col_rgb = col;
+    KGVec4 col_rgb = col;
     if (flags & KGGuiColorEditFlags_InputHSV)
         ColorConvertHSVtoRGB(col_rgb.x, col_rgb.y, col_rgb.z, col_rgb.x, col_rgb.y, col_rgb.z);
 
-    ImVec4 col_rgb_without_alpha(col_rgb.x, col_rgb.y, col_rgb.z, 1.0f);
+    KGVec4 col_rgb_without_alpha(col_rgb.x, col_rgb.y, col_rgb.z, 1.0f);
     float grid_step = KGMin(size.x, size.y) / 2.99f;
     float rounding = KGMin(g.Style.FrameRounding, grid_step * 0.5f);
     KGRect bb_inner = bb;
@@ -5609,15 +5609,15 @@ bool ImGui::ColorButton(const char* desc_id, const ImVec4& col, KarmaGuiColorEdi
     if ((flags & KGGuiColorEditFlags_AlphaPreviewHalf) && col_rgb.w < 1.0f)
     {
         float mid_x = KG_ROUND((bb_inner.Min.x + bb_inner.Max.x) * 0.5f);
-        RenderColorRectWithAlphaCheckerboard(window->DrawList, ImVec2(bb_inner.Min.x + grid_step, bb_inner.Min.y), bb_inner.Max, GetColorU32(col_rgb), grid_step, ImVec2(-grid_step + off, off), rounding, KGDrawFlags_RoundCornersRight);
-        window->DrawList->AddRectFilled(bb_inner.Min, ImVec2(mid_x, bb_inner.Max.y), GetColorU32(col_rgb_without_alpha), rounding, KGDrawFlags_RoundCornersLeft);
+        RenderColorRectWithAlphaCheckerboard(window->DrawList, KGVec2(bb_inner.Min.x + grid_step, bb_inner.Min.y), bb_inner.Max, GetColorU32(col_rgb), grid_step, KGVec2(-grid_step + off, off), rounding, KGDrawFlags_RoundCornersRight);
+        window->DrawList->AddRectFilled(bb_inner.Min, KGVec2(mid_x, bb_inner.Max.y), GetColorU32(col_rgb_without_alpha), rounding, KGDrawFlags_RoundCornersLeft);
     }
     else
     {
         // Because GetColorU32() multiplies by the global style Alpha and we don't want to display a checkerboard if the source code had no alpha
-        ImVec4 col_source = (flags & KGGuiColorEditFlags_AlphaPreview) ? col_rgb : col_rgb_without_alpha;
+        KGVec4 col_source = (flags & KGGuiColorEditFlags_AlphaPreview) ? col_rgb : col_rgb_without_alpha;
         if (col_source.w < 1.0f)
-            RenderColorRectWithAlphaCheckerboard(window->DrawList, bb_inner.Min, bb_inner.Max, GetColorU32(col_source), grid_step, ImVec2(off, off), rounding);
+            RenderColorRectWithAlphaCheckerboard(window->DrawList, bb_inner.Min, bb_inner.Max, GetColorU32(col_source), grid_step, KGVec2(off, off), rounding);
         else
             window->DrawList->AddRectFilled(bb_inner.Min, bb_inner.Max, GetColorU32(col_source), rounding);
     }
@@ -5683,8 +5683,8 @@ void ImGui::ColorTooltip(const char* text, const float* col, KarmaGuiColorEditFl
         Separator();
     }
 
-    ImVec2 sz(g.FontSize * 3 + g.Style.FramePadding.y * 2, g.FontSize * 3 + g.Style.FramePadding.y * 2);
-    ImVec4 cf(col[0], col[1], col[2], (flags & KGGuiColorEditFlags_NoAlpha) ? 1.0f : col[3]);
+    KGVec2 sz(g.FontSize * 3 + g.Style.FramePadding.y * 2, g.FontSize * 3 + g.Style.FramePadding.y * 2);
+    KGVec4 cf(col[0], col[1], col[2], (flags & KGGuiColorEditFlags_NoAlpha) ? 1.0f : col[3]);
     int cr = KG_F32_TO_INT8_SAT(col[0]), cg = KG_F32_TO_INT8_SAT(col[1]), cb = KG_F32_TO_INT8_SAT(col[2]), ca = (flags & KGGuiColorEditFlags_NoAlpha) ? 255 : KG_F32_TO_INT8_SAT(col[3]);
     ColorButton("##preview", cf, (flags & (KGGuiColorEditFlags_InputMask_ | KGGuiColorEditFlags_NoAlpha | KGGuiColorEditFlags_AlphaPreview | KGGuiColorEditFlags_AlphaPreviewHalf)) | KGGuiColorEditFlags_NoTooltip, sz);
     SameLine();
@@ -5728,7 +5728,7 @@ void ImGui::ColorEditOptionsPopup(const float* col, KarmaGuiColorEditFlags flags
 
     if (allow_opt_inputs || allow_opt_datatype)
         Separator();
-    if (Button("Copy as..", ImVec2(-1, 0)))
+    if (Button("Copy as..", KGVec2(-1, 0)))
         OpenPopup("Copy");
     if (BeginPopup("Copy"))
     {
@@ -5765,7 +5765,7 @@ void ImGui::ColorPickerOptionsPopup(const float* ref_col, KarmaGuiColorEditFlags
     KarmaGuiContext& g = *GKarmaGui;
     if (allow_opt_picker)
     {
-        ImVec2 picker_size(g.FontSize * 8, KGMax(g.FontSize * 8 - (GetFrameHeight() + g.Style.ItemInnerSpacing.x), 1.0f)); // FIXME: Picker size copied from main picker function
+        KGVec2 picker_size(g.FontSize * 8, KGMax(g.FontSize * 8 - (GetFrameHeight() + g.Style.ItemInnerSpacing.x), 1.0f)); // FIXME: Picker size copied from main picker function
         PushItemWidth(picker_size.x);
         for (int picker_type = 0; picker_type < 2; picker_type++)
         {
@@ -5775,11 +5775,11 @@ void ImGui::ColorPickerOptionsPopup(const float* ref_col, KarmaGuiColorEditFlags
             KarmaGuiColorEditFlags picker_flags = KGGuiColorEditFlags_NoInputs | KGGuiColorEditFlags_NoOptions | KGGuiColorEditFlags_NoLabel | KGGuiColorEditFlags_NoSidePreview | (flags & KGGuiColorEditFlags_NoAlpha);
             if (picker_type == 0) picker_flags |= KGGuiColorEditFlags_PickerHueBar;
             if (picker_type == 1) picker_flags |= KGGuiColorEditFlags_PickerHueWheel;
-            ImVec2 backup_pos = GetCursorScreenPos();
+            KGVec2 backup_pos = GetCursorScreenPos();
             if (Selectable("##selectable", false, 0, picker_size)) // By default, Selectable() is closing popup
                 g.ColorEditOptions = (g.ColorEditOptions & ~KGGuiColorEditFlags_PickerMask_) | (picker_flags & KGGuiColorEditFlags_PickerMask_);
             SetCursorScreenPos(backup_pos);
-            ImVec4 previewing_ref_col;
+            KGVec4 previewing_ref_col;
             memcpy(&previewing_ref_col, ref_col, sizeof(float) * ((picker_flags & KGGuiColorEditFlags_NoAlpha) ? 3 : 4));
             ColorPicker4("##previewing_picker", &previewing_ref_col.x, picker_flags);
             PopID();
@@ -5956,11 +5956,11 @@ bool ImGui::TreeNodeBehavior(KGGuiID id, KarmaGuiTreeNodeFlags flags, const char
     KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
     const bool display_frame = (flags & KGGuiTreeNodeFlags_Framed) != 0;
-    const ImVec2 padding = (display_frame || (flags & KGGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, KGMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
+    const KGVec2 padding = (display_frame || (flags & KGGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : KGVec2(style.FramePadding.x, KGMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
 
     if (!label_end)
         label_end = FindRenderedTextEnd(label);
-    const ImVec2 label_size = CalcTextSize(label, label_end, false);
+    const KGVec2 label_size = CalcTextSize(label, label_end, false);
 
     // We vertically grow up to current line height up the typical widget height.
     const float frame_height = KGMax(KGMin(window->DC.CurrLineSize.y, g.FontSize + style.FramePadding.y * 2), label_size.y + padding.y * 2);
@@ -5980,8 +5980,8 @@ bool ImGui::TreeNodeBehavior(KGGuiID id, KarmaGuiTreeNodeFlags flags, const char
     const float text_offset_x = g.FontSize + (display_frame ? padding.x * 3 : padding.x * 2);           // Collapser arrow width + Spacing
     const float text_offset_y = KGMax(padding.y, window->DC.CurrLineTextBaseOffset);                    // Latch before ItemSize changes it
     const float text_width = g.FontSize + (label_size.x > 0.0f ? label_size.x + padding.x * 2 : 0.0f);  // Include collapser
-    ImVec2 text_pos(window->DC.CursorPos.x + text_offset_x, window->DC.CursorPos.y + text_offset_y);
-    ItemSize(ImVec2(text_width, frame_height), padding.y);
+    KGVec2 text_pos(window->DC.CursorPos.x + text_offset_x, window->DC.CursorPos.y + text_offset_y);
+    ItemSize(KGVec2(text_width, frame_height), padding.y);
 
     // For regular tree nodes, we arbitrary allow to click past 2 worth of ItemSpacing
     KGRect interact_bb = frame_bb;
@@ -6098,9 +6098,9 @@ bool ImGui::TreeNodeBehavior(KGGuiID id, KarmaGuiTreeNodeFlags flags, const char
         RenderFrame(frame_bb.Min, frame_bb.Max, bg_col, true, style.FrameRounding);
         RenderNavHighlight(frame_bb, id, nav_highlight_flags);
         if (flags & KGGuiTreeNodeFlags_Bullet)
-            RenderBullet(window->DrawList, ImVec2(text_pos.x - text_offset_x * 0.60f, text_pos.y + g.FontSize * 0.5f), text_col);
+            RenderBullet(window->DrawList, KGVec2(text_pos.x - text_offset_x * 0.60f, text_pos.y + g.FontSize * 0.5f), text_col);
         else if (!is_leaf)
-            RenderArrow(window->DrawList, ImVec2(text_pos.x - text_offset_x + padding.x, text_pos.y), text_col, is_open ? KGGuiDir_Down : KGGuiDir_Right, 1.0f);
+            RenderArrow(window->DrawList, KGVec2(text_pos.x - text_offset_x + padding.x, text_pos.y), text_col, is_open ? KGGuiDir_Down : KGGuiDir_Right, 1.0f);
         else // Leaf without bullet, left-adjusted text
             text_pos.x -= text_offset_x;
         if (flags & KGGuiTreeNodeFlags_ClipLabelForTrailingButton)
@@ -6120,9 +6120,9 @@ bool ImGui::TreeNodeBehavior(KGGuiID id, KarmaGuiTreeNodeFlags flags, const char
         }
         RenderNavHighlight(frame_bb, id, nav_highlight_flags);
         if (flags & KGGuiTreeNodeFlags_Bullet)
-            RenderBullet(window->DrawList, ImVec2(text_pos.x - text_offset_x * 0.5f, text_pos.y + g.FontSize * 0.5f), text_col);
+            RenderBullet(window->DrawList, KGVec2(text_pos.x - text_offset_x * 0.5f, text_pos.y + g.FontSize * 0.5f), text_col);
         else if (!is_leaf)
-            RenderArrow(window->DrawList, ImVec2(text_pos.x - text_offset_x + padding.x, text_pos.y + g.FontSize * 0.15f), text_col, is_open ? KGGuiDir_Down : KGGuiDir_Right, 0.70f);
+            RenderArrow(window->DrawList, KGVec2(text_pos.x - text_offset_x + padding.x, text_pos.y + g.FontSize * 0.15f), text_col, is_open ? KGGuiDir_Down : KGGuiDir_Right, 0.70f);
         if (g.LogEnabled)
             LogSetNextTextDecoration(">", NULL);
         RenderText(text_pos, label, label_end, false);
@@ -6239,7 +6239,7 @@ bool ImGui::CollapsingHeader(const char* label, bool* p_visible, KarmaGuiTreeNod
         float button_x = KGMax(g.LastItemData.Rect.Min.x, g.LastItemData.Rect.Max.x - g.Style.FramePadding.x * 2.0f - button_size);
         float button_y = g.LastItemData.Rect.Min.y;
         KGGuiID close_button_id = GetIDWithSeed("#CLOSE", NULL, id);
-        if (CloseButton(close_button_id, ImVec2(button_x, button_y)))
+        if (CloseButton(close_button_id, KGVec2(button_x, button_y)))
             *p_visible = false;
         g.LastItemData = last_item_backup;
     }
@@ -6257,7 +6257,7 @@ bool ImGui::CollapsingHeader(const char* label, bool* p_visible, KarmaGuiTreeNod
 // But you need to make sure the ID is unique, e.g. enclose calls in PushID/PopID or use ##unique_id.
 // With this scheme, KGGuiSelectableFlags_SpanAllColumns and KGGuiSelectableFlags_AllowItemOverlap are also frequently used flags.
 // FIXME: Selectable() with (size.x == 0.0f) and (SelectableTextAlign.x > 0.0f) followed by SameLine() is currently not supported.
-bool ImGui::Selectable(const char* label, bool selected, KarmaGuiSelectableFlags flags, const ImVec2& size_arg)
+bool ImGui::Selectable(const char* label, bool selected, KarmaGuiSelectableFlags flags, const KGVec2& size_arg)
 {
     KGGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -6268,9 +6268,9 @@ bool ImGui::Selectable(const char* label, bool selected, KarmaGuiSelectableFlags
 
     // Submit label or explicit size to ItemSize(), whereas ItemAdd() will submit a larger/spanning rectangle.
     KGGuiID id = window->GetID(label);
-    ImVec2 label_size = CalcTextSize(label, NULL, true);
-    ImVec2 size(size_arg.x != 0.0f ? size_arg.x : label_size.x, size_arg.y != 0.0f ? size_arg.y : label_size.y);
-    ImVec2 pos = window->DC.CursorPos;
+    KGVec2 label_size = CalcTextSize(label, NULL, true);
+    KGVec2 size(size_arg.x != 0.0f ? size_arg.x : label_size.x, size_arg.y != 0.0f ? size_arg.y : label_size.y);
+    KGVec2 pos = window->DC.CursorPos;
     pos.y += window->DC.CurrLineTextBaseOffset;
     ItemSize(size, 0.0f);
 
@@ -6283,8 +6283,8 @@ bool ImGui::Selectable(const char* label, bool selected, KarmaGuiSelectableFlags
         size.x = KGMax(label_size.x, max_x - min_x);
 
     // Text stays at the submission position, but bounding box may be extended on both sides
-    const ImVec2 text_min = pos;
-    const ImVec2 text_max(min_x + size.x, pos.y + size.y);
+    const KGVec2 text_min = pos;
+    const KGVec2 text_max(min_x + size.x, pos.y + size.y);
 
     // Selectables are meant to be tightly packed together with no click-gap, so we extend their box to cover spacing between selectable.
     KGRect bb(min_x, pos.y, text_max.x, text_max.y);
@@ -6403,7 +6403,7 @@ bool ImGui::Selectable(const char* label, bool selected, KarmaGuiSelectableFlags
     return pressed; //-V1020
 }
 
-bool ImGui::Selectable(const char* label, bool* p_selected, KarmaGuiSelectableFlags flags, const ImVec2& size_arg)
+bool ImGui::Selectable(const char* label, bool* p_selected, KarmaGuiSelectableFlags flags, const KGVec2& size_arg)
 {
     if (Selectable(label, *p_selected, flags, size_arg))
     {
@@ -6423,7 +6423,7 @@ bool ImGui::Selectable(const char* label, bool* p_selected, KarmaGuiSelectableFl
 
 // Tip: To have a list filling the entire window width, use size.x = -FLT_MIN and pass an non-visible label e.g. "##empty"
 // Tip: If your vertical size is calculated from an item count (e.g. 10 * item_height) consider adding a fractional part to facilitate seeing scrolling boundaries (e.g. 10.25 * item_height).
-bool ImGui::BeginListBox(const char* label, const ImVec2& size_arg)
+bool ImGui::BeginListBox(const char* label, const KGVec2& size_arg)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = GetCurrentWindow();
@@ -6432,14 +6432,14 @@ bool ImGui::BeginListBox(const char* label, const ImVec2& size_arg)
 
     const KarmaGuiStyle& style = g.Style;
     const KGGuiID id = GetID(label);
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
 
     // Size default to hold ~7.25 items.
     // Fractional number of items helps seeing that we can scroll down/up without looking at scrollbar.
-    ImVec2 size = KGFloor(CalcItemSize(size_arg, CalcItemWidth(), GetTextLineHeightWithSpacing() * 7.25f + style.FramePadding.y * 2.0f));
-    ImVec2 frame_size = ImVec2(size.x, KGMax(size.y, label_size.y));
+    KGVec2 size = KGFloor(CalcItemSize(size_arg, CalcItemWidth(), GetTextLineHeightWithSpacing() * 7.25f + style.FramePadding.y * 2.0f));
+    KGVec2 frame_size = KGVec2(size.x, KGMax(size.y, label_size.y));
     KGRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + frame_size);
-    KGRect bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
+    KGRect bb(frame_bb.Min, frame_bb.Max + KGVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0.0f));
     g.NextItemData.ClearFlags();
 
     if (!IsRectVisible(bb.Min, bb.Max))
@@ -6453,7 +6453,7 @@ bool ImGui::BeginListBox(const char* label, const ImVec2& size_arg)
     BeginGroup();
     if (label_size.x > 0.0f)
     {
-        ImVec2 label_pos = ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y);
+        KGVec2 label_pos = KGVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, frame_bb.Min.y + style.FramePadding.y);
         RenderText(label_pos, label);
         window->DC.CursorMaxPos = KGMax(window->DC.CursorMaxPos, label_pos + label_size);
     }
@@ -6469,7 +6469,7 @@ bool ImGui::ListBoxHeader(const char* label, int items_count, int height_in_item
     // If height_in_items == -1, default height is maximum 7.
     KarmaGuiContext& g = *GKarmaGui;
     float height_in_items_f = (height_in_items < 0 ? KGMin(items_count, 7) : height_in_items) + 0.25f;
-    ImVec2 size;
+    KGVec2 size;
     size.x = 0.0f;
     size.y = GetTextLineHeightWithSpacing() * height_in_items_f + g.Style.FramePadding.y * 2.0f;
     return BeginListBox(label, size);
@@ -6503,7 +6503,7 @@ bool ImGui::ListBox(const char* label, int* current_item, bool (*items_getter)(v
     if (height_in_items < 0)
         height_in_items = KGMin(items_count, 7);
     float height_in_items_f = height_in_items + 0.25f;
-    ImVec2 size(0.0f, KGFloor(GetTextLineHeightWithSpacing() * height_in_items_f + g.Style.FramePadding.y * 2.0f));
+    KGVec2 size(0.0f, KGFloor(GetTextLineHeightWithSpacing() * height_in_items_f + g.Style.FramePadding.y * 2.0f));
 
     if (!BeginListBox(label, size))
         return false;
@@ -6552,7 +6552,7 @@ bool ImGui::ListBox(const char* label, int* current_item, bool (*items_getter)(v
 // - others https://github.com/ocornut/imgui/wiki/Useful-Extensions
 //-------------------------------------------------------------------------
 
-int ImGui::PlotEx(KGGuiPlotType plot_type, const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 frame_size)
+int ImGui::PlotEx(KGGuiPlotType plot_type, const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, KGVec2 frame_size)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = GetCurrentWindow();
@@ -6562,7 +6562,7 @@ int ImGui::PlotEx(KGGuiPlotType plot_type, const char* label, float (*values_get
     const KarmaGuiStyle& style = g.Style;
     const KGGuiID id = window->GetID(label);
 
-    const ImVec2 label_size = CalcTextSize(label, NULL, true);
+    const KGVec2 label_size = CalcTextSize(label, NULL, true);
     if (frame_size.x == 0.0f)
         frame_size.x = CalcItemWidth();
     if (frame_size.y == 0.0f)
@@ -6570,7 +6570,7 @@ int ImGui::PlotEx(KGGuiPlotType plot_type, const char* label, float (*values_get
 
     const KGRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + frame_size);
     const KGRect inner_bb(frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding);
-    const KGRect total_bb(frame_bb.Min, frame_bb.Max + ImVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0));
+    const KGRect total_bb(frame_bb.Min, frame_bb.Max + KGVec2(label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f, 0));
     ItemSize(total_bb, style.FramePadding.y);
     if (!ItemAdd(total_bb, 0, &frame_bb))
         return -1;
@@ -6625,7 +6625,7 @@ int ImGui::PlotEx(KGGuiPlotType plot_type, const char* label, float (*values_get
 
         float v0 = values_getter(data, (0 + values_offset) % values_count);
         float t0 = 0.0f;
-        ImVec2 tp0 = ImVec2( t0, 1.0f - KGSaturate((v0 - scale_min) * inv_scale) );                       // Point in the normalized space of our target rectangle
+        KGVec2 tp0 = KGVec2( t0, 1.0f - KGSaturate((v0 - scale_min) * inv_scale) );                       // Point in the normalized space of our target rectangle
         float histogram_zero_line_t = (scale_min * scale_max < 0.0f) ? (1 + scale_min * inv_scale) : (scale_min < 0.0f ? 0.0f : 1.0f);   // Where does the zero line stands
 
         const KGU32 col_base = GetColorU32((plot_type == KGGuiPlotType_Lines) ? KGGuiCol_PlotLines : KGGuiCol_PlotHistogram);
@@ -6637,11 +6637,11 @@ int ImGui::PlotEx(KGGuiPlotType plot_type, const char* label, float (*values_get
             const int v1_idx = (int)(t0 * item_count + 0.5f);
             KR_CORE_ASSERT(v1_idx >= 0 && v1_idx < values_count);
             const float v1 = values_getter(data, (v1_idx + values_offset + 1) % values_count);
-            const ImVec2 tp1 = ImVec2( t1, 1.0f - KGSaturate((v1 - scale_min) * inv_scale) );
+            const KGVec2 tp1 = KGVec2( t1, 1.0f - KGSaturate((v1 - scale_min) * inv_scale) );
 
             // NB: Draw calls are merged together by the DrawList system. Still, we should render our batch are lower level to save a bit of CPU.
-            ImVec2 pos0 = KGLerp(inner_bb.Min, inner_bb.Max, tp0);
-            ImVec2 pos1 = KGLerp(inner_bb.Min, inner_bb.Max, (plot_type == KGGuiPlotType_Lines) ? tp1 : ImVec2(tp1.x, histogram_zero_line_t));
+            KGVec2 pos0 = KGLerp(inner_bb.Min, inner_bb.Max, tp0);
+            KGVec2 pos1 = KGLerp(inner_bb.Min, inner_bb.Max, (plot_type == KGGuiPlotType_Lines) ? tp1 : KGVec2(tp1.x, histogram_zero_line_t));
             if (plot_type == KGGuiPlotType_Lines)
             {
                 window->DrawList->AddLine(pos0, pos1, idx_hovered == v1_idx ? col_hovered : col_base);
@@ -6660,10 +6660,10 @@ int ImGui::PlotEx(KGGuiPlotType plot_type, const char* label, float (*values_get
 
     // Text overlay
     if (overlay_text)
-        RenderTextClipped(ImVec2(frame_bb.Min.x, frame_bb.Min.y + style.FramePadding.y), frame_bb.Max, overlay_text, NULL, NULL, ImVec2(0.5f, 0.0f));
+        RenderTextClipped(KGVec2(frame_bb.Min.x, frame_bb.Min.y + style.FramePadding.y), frame_bb.Max, overlay_text, NULL, NULL, KGVec2(0.5f, 0.0f));
 
     if (label_size.x > 0.0f)
-        RenderText(ImVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, inner_bb.Min.y), label);
+        RenderText(KGVec2(frame_bb.Max.x + style.ItemInnerSpacing.x, inner_bb.Min.y), label);
 
     // Return hovered index or -1 if none are hovered.
     // This is currently not exposed in the public API because we need a larger redesign of the whole thing, but in the short-term we are making it available in PlotEx().
@@ -6685,24 +6685,24 @@ static float Plot_ArrayGetter(void* data, int idx)
     return v;
 }
 
-void ImGui::PlotLines(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride)
+void ImGui::PlotLines(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, KGVec2 graph_size, int stride)
 {
     ImGuiPlotArrayGetterData data(values, stride);
     PlotEx(KGGuiPlotType_Lines, label, &Plot_ArrayGetter, (void*)&data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size);
 }
 
-void ImGui::PlotLines(const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size)
+void ImGui::PlotLines(const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, KGVec2 graph_size)
 {
     PlotEx(KGGuiPlotType_Lines, label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size);
 }
 
-void ImGui::PlotHistogram(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride)
+void ImGui::PlotHistogram(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, KGVec2 graph_size, int stride)
 {
     ImGuiPlotArrayGetterData data(values, stride);
     PlotEx(KGGuiPlotType_Histogram, label, &Plot_ArrayGetter, (void*)&data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size);
 }
 
-void ImGui::PlotHistogram(const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size)
+void ImGui::PlotHistogram(const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, KGVec2 graph_size)
 {
     PlotEx(KGGuiPlotType_Histogram, label, values_getter, data, values_count, values_offset, overlay_text, scale_min, scale_max, graph_size);
 }
@@ -6824,7 +6824,7 @@ bool ImGui::BeginMenuBar()
     PushClipRect(clip_rect.Min, clip_rect.Max, false);
 
     // We overwrite CursorMaxPos because BeginGroup sets it to CursorPos (essentially the .EmitItem hack in EndMenuBar() would need something analogous here, maybe a BeginGroupEx() with flags).
-    window->DC.CursorPos = window->DC.CursorMaxPos = ImVec2(bar_rect.Min.x + window->DC.MenuBarOffset.x, bar_rect.Min.y + window->DC.MenuBarOffset.y);
+    window->DC.CursorPos = window->DC.CursorMaxPos = KGVec2(bar_rect.Min.x + window->DC.MenuBarOffset.x, bar_rect.Min.y + window->DC.MenuBarOffset.y);
     window->DC.LayoutType = KGGuiLayoutType_Horizontal;
     window->DC.IsSameLine = false;
     window->DC.NavLayerCurrent = KGGuiNavLayer_Menu;
@@ -6889,10 +6889,10 @@ bool ImGui::BeginViewportSideBar(const char* name, KarmaGuiViewport* viewport_p,
         // Calculate and set window size/position
         KGRect avail_rect = viewport->GetBuildWorkRect();
         KGGuiAxis axis = (dir == KGGuiDir_Up || dir == KGGuiDir_Down) ? KGGuiAxis_Y : KGGuiAxis_X;
-        ImVec2 pos = avail_rect.Min;
+        KGVec2 pos = avail_rect.Min;
         if (dir == KGGuiDir_Right || dir == KGGuiDir_Down)
             pos[axis] = avail_rect.Max[axis] - axis_size;
-        ImVec2 size = avail_rect.GetSize();
+        KGVec2 size = avail_rect.GetSize();
         size[axis] = axis_size;
         SetNextWindowPos(pos);
         SetNextWindowSize(size);
@@ -6907,7 +6907,7 @@ bool ImGui::BeginViewportSideBar(const char* name, KarmaGuiViewport* viewport_p,
     window_flags |= KGGuiWindowFlags_NoTitleBar | KGGuiWindowFlags_NoResize | KGGuiWindowFlags_NoMove | KGGuiWindowFlags_NoDocking;
     SetNextWindowViewport(viewport->ID); // Enforce viewport so we don't create our own viewport when KGGuiConfigFlags_ViewportsNoMerge is set.
     PushStyleVar(KGGuiStyleVar_WindowRounding, 0.0f);
-    PushStyleVar(KGGuiStyleVar_WindowMinSize, ImVec2(0, 0)); // Lift normal size constraint
+    PushStyleVar(KGGuiStyleVar_WindowMinSize, KGVec2(0, 0)); // Lift normal size constraint
     bool is_open = Begin(name, NULL, window_flags);
     PopStyleVar(2);
 
@@ -6925,11 +6925,11 @@ bool ImGui::BeginMainMenuBar()
     // For the main menu bar, which cannot be moved, we honor g.Style.DisplaySafeAreaPadding to ensure text can be visible on a TV set.
     // FIXME: This could be generalized as an opt-in way to clamp window->DC.CursorStartPos to avoid SafeArea?
     // FIXME: Consider removing support for safe area down the line... it's messy. Nowadays consoles have support for TV calibration in OS settings.
-    g.NextWindowData.MenuBarOffsetMinVal = ImVec2(g.Style.DisplaySafeAreaPadding.x, KGMax(g.Style.DisplaySafeAreaPadding.y - g.Style.FramePadding.y, 0.0f));
+    g.NextWindowData.MenuBarOffsetMinVal = KGVec2(g.Style.DisplaySafeAreaPadding.x, KGMax(g.Style.DisplaySafeAreaPadding.y - g.Style.FramePadding.y, 0.0f));
     KarmaGuiWindowFlags window_flags = KGGuiWindowFlags_NoScrollbar | KGGuiWindowFlags_NoSavedSettings | KGGuiWindowFlags_MenuBar;
     float height = GetFrameHeight();
     bool is_open = BeginViewportSideBar("##MainMenuBar", viewport, KGGuiDir_Up, height, window_flags);
-    g.NextWindowData.MenuBarOffsetMinVal = ImVec2(0.0f, 0.0f);
+    g.NextWindowData.MenuBarOffsetMinVal = KGVec2(0.0f, 0.0f);
 
     if (is_open)
         BeginMenuBar();
@@ -7005,7 +7005,7 @@ bool ImGui::BeginMenuEx(const char* label, const char* icon, bool enabled)
     // Tag menu as used. Next time BeginMenu() with same ID is called it will append to existing menu
     g.MenusIdSubmittedThisFrame.push_back(id);
 
-    ImVec2 label_size = CalcTextSize(label, NULL, true);
+    KGVec2 label_size = CalcTextSize(label, NULL, true);
 
     // Odd hack to allow hovering across menus of a same menu-set (otherwise we wouldn't be able to hover parent without always being a Child window)
     // This is only done for items for the menu set and not the full parent window.
@@ -7016,7 +7016,7 @@ bool ImGui::BeginMenuEx(const char* label, const char* icon, bool enabled)
     // The reference position stored in popup_pos will be used by Begin() to find a suitable position for the child menu,
     // However the final position is going to be different! It is chosen by FindBestWindowPosForPopup().
     // e.g. Menus tend to overlap each other horizontally to amplify relative Z-ordering.
-    ImVec2 popup_pos, pos = window->DC.CursorPos;
+    KGVec2 popup_pos, pos = window->DC.CursorPos;
     PushID(label);
     if (!enabled)
         BeginDisabled();
@@ -7030,12 +7030,12 @@ bool ImGui::BeginMenuEx(const char* label, const char* icon, bool enabled)
         // Menu inside an horizontal menu bar
         // Selectable extend their highlight by half ItemSpacing in each direction.
         // For ChildMenu, the popup position will be overwritten by the call to FindBestWindowPosForPopup() in Begin()
-        popup_pos = ImVec2(pos.x - 1.0f - KG_FLOOR(style.ItemSpacing.x * 0.5f), pos.y - style.FramePadding.y + window->MenuBarHeight());
+        popup_pos = KGVec2(pos.x - 1.0f - KG_FLOOR(style.ItemSpacing.x * 0.5f), pos.y - style.FramePadding.y + window->MenuBarHeight());
         window->DC.CursorPos.x += KG_FLOOR(style.ItemSpacing.x * 0.5f);
-        PushStyleVar(KGGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x * 2.0f, style.ItemSpacing.y));
+        PushStyleVar(KGGuiStyleVar_ItemSpacing, KGVec2(style.ItemSpacing.x * 2.0f, style.ItemSpacing.y));
         float w = label_size.x;
-        ImVec2 text_pos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
-        pressed = Selectable("", menu_is_open, selectable_flags, ImVec2(w, 0.0f));
+        KGVec2 text_pos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+        pressed = Selectable("", menu_is_open, selectable_flags, KGVec2(w, 0.0f));
         RenderText(text_pos, label);
         PopStyleVar();
         window->DC.CursorPos.x += KG_FLOOR(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when Selectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
@@ -7045,17 +7045,17 @@ bool ImGui::BeginMenuEx(const char* label, const char* icon, bool enabled)
         // Menu inside a regular/vertical menu
         // (In a typical menu window where all items are BeginMenu() or MenuItem() calls, extra_w will always be 0.0f.
         //  Only when they are other items sticking out we're going to add spacing, yet only register minimum width into the layout system.
-        popup_pos = ImVec2(pos.x, pos.y - style.WindowPadding.y);
+        popup_pos = KGVec2(pos.x, pos.y - style.WindowPadding.y);
         float icon_w = (icon && icon[0]) ? CalcTextSize(icon, NULL).x : 0.0f;
         float checkmark_w = KG_FLOOR(g.FontSize * 1.20f);
         float min_w = window->DC.MenuColumns.DeclColumns(icon_w, label_size.x, 0.0f, checkmark_w); // Feedback to next frame
         float extra_w = KGMax(0.0f, GetContentRegionAvail().x - min_w);
-        ImVec2 text_pos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
-        pressed = Selectable("", menu_is_open, selectable_flags | KGGuiSelectableFlags_SpanAvailWidth, ImVec2(min_w, 0.0f));
+        KGVec2 text_pos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+        pressed = Selectable("", menu_is_open, selectable_flags | KGGuiSelectableFlags_SpanAvailWidth, KGVec2(min_w, 0.0f));
         RenderText(text_pos, label);
         if (icon_w > 0.0f)
-            RenderText(pos + ImVec2(offsets->OffsetIcon, 0.0f), icon);
-        RenderArrow(window->DrawList, pos + ImVec2(offsets->OffsetMark + extra_w + g.FontSize * 0.30f, 0.0f), GetColorU32(KGGuiCol_Text), KGGuiDir_Right);
+            RenderText(pos + KGVec2(offsets->OffsetIcon, 0.0f), icon);
+        RenderArrow(window->DrawList, pos + KGVec2(offsets->OffsetMark + extra_w + g.FontSize * 0.30f, 0.0f), GetColorU32(KGGuiCol_Text), KGGuiDir_Right);
     }
     if (!enabled)
         EndDisabled();
@@ -7078,9 +7078,9 @@ bool ImGui::BeginMenuEx(const char* label, const char* icon, bool enabled)
             float ref_unit = g.FontSize; // FIXME-DPI
             float child_dir = (window->Pos.x < child_menu_window->Pos.x) ? 1.0f : -1.0f;
             KGRect next_window_rect = child_menu_window->Rect();
-            ImVec2 ta = (g.IO.MousePos - g.IO.MouseDelta);
-            ImVec2 tb = (child_dir > 0.0f) ? next_window_rect.GetTL() : next_window_rect.GetTR();
-            ImVec2 tc = (child_dir > 0.0f) ? next_window_rect.GetBL() : next_window_rect.GetBR();
+            KGVec2 ta = (g.IO.MousePos - g.IO.MouseDelta);
+            KGVec2 tb = (child_dir > 0.0f) ? next_window_rect.GetTL() : next_window_rect.GetTR();
+            KGVec2 tc = (child_dir > 0.0f) ? next_window_rect.GetBL() : next_window_rect.GetBR();
             float extra = KGClamp(KGFabs(ta.x - tb.x) * 0.30f, ref_unit * 0.5f, ref_unit * 2.5f);   // add a bit of extra slack.
             ta.x += child_dir * -0.5f;
             tb.x += child_dir * ref_unit;
@@ -7201,8 +7201,8 @@ bool ImGui::MenuItemEx(const char* label, const char* icon, const char* shortcut
 
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiStyle& style = g.Style;
-    ImVec2 pos = window->DC.CursorPos;
-    ImVec2 label_size = CalcTextSize(label, NULL, true);
+    KGVec2 pos = window->DC.CursorPos;
+    KGVec2 label_size = CalcTextSize(label, NULL, true);
 
     // See BeginMenuEx() for comments about this.
     const bool menuset_is_open = IsRootOfOpenMenuSet();
@@ -7225,9 +7225,9 @@ bool ImGui::MenuItemEx(const char* label, const char* icon, const char* shortcut
         // Note that in this situation: we don't render the shortcut, we render a highlight instead of the selected tick mark.
         float w = label_size.x;
         window->DC.CursorPos.x += KG_FLOOR(style.ItemSpacing.x * 0.5f);
-        ImVec2 text_pos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
-        PushStyleVar(KGGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x * 2.0f, style.ItemSpacing.y));
-        pressed = Selectable("", selected, selectable_flags, ImVec2(w, 0.0f));
+        KGVec2 text_pos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+        PushStyleVar(KGGuiStyleVar_ItemSpacing, KGVec2(style.ItemSpacing.x * 2.0f, style.ItemSpacing.y));
+        pressed = Selectable("", selected, selectable_flags, KGVec2(w, 0.0f));
         PopStyleVar();
         if (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_Visible)
             RenderText(text_pos, label);
@@ -7243,20 +7243,20 @@ bool ImGui::MenuItemEx(const char* label, const char* icon, const char* shortcut
         float checkmark_w = KG_FLOOR(g.FontSize * 1.20f);
         float min_w = window->DC.MenuColumns.DeclColumns(icon_w, label_size.x, shortcut_w, checkmark_w); // Feedback for next frame
         float stretch_w = KGMax(0.0f, GetContentRegionAvail().x - min_w);
-        pressed = Selectable("", false, selectable_flags | KGGuiSelectableFlags_SpanAvailWidth, ImVec2(min_w, 0.0f));
+        pressed = Selectable("", false, selectable_flags | KGGuiSelectableFlags_SpanAvailWidth, KGVec2(min_w, 0.0f));
         if (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_Visible)
         {
-            RenderText(pos + ImVec2(offsets->OffsetLabel, 0.0f), label);
+            RenderText(pos + KGVec2(offsets->OffsetLabel, 0.0f), label);
             if (icon_w > 0.0f)
-                RenderText(pos + ImVec2(offsets->OffsetIcon, 0.0f), icon);
+                RenderText(pos + KGVec2(offsets->OffsetIcon, 0.0f), icon);
             if (shortcut_w > 0.0f)
             {
                 PushStyleColor(KGGuiCol_Text, style.Colors[KGGuiCol_TextDisabled]);
-                RenderText(pos + ImVec2(offsets->OffsetShortcut + stretch_w, 0.0f), shortcut, NULL, false);
+                RenderText(pos + KGVec2(offsets->OffsetShortcut + stretch_w, 0.0f), shortcut, NULL, false);
                 PopStyleColor();
             }
             if (selected)
-                RenderCheckMark(window->DrawList, pos + ImVec2(offsets->OffsetMark + stretch_w + g.FontSize * 0.40f, g.FontSize * 0.134f * 0.5f), GetColorU32(KGGuiCol_Text), g.FontSize * 0.866f);
+                RenderCheckMark(window->DrawList, pos + KGVec2(offsets->OffsetMark + stretch_w + g.FontSize * 0.40f, g.FontSize * 0.134f * 0.5f), GetColorU32(KGGuiCol_Text), g.FontSize * 0.866f);
         }
     }
     KARMAGUI_TEST_ENGINE_ITEM_INFO(g.LastItemData.ID, label, g.LastItemData.StatusFlags | KGGuiItemStatusFlags_Checkable | (selected ? KGGuiItemStatusFlags_Checked : 0));
@@ -7401,7 +7401,7 @@ bool    ImGui::BeginTabBarEx(KGGuiTabBar* tab_bar, const KGRect& tab_bar_bb, Kar
     tab_bar->BackupCursorPos = window->DC.CursorPos;
     if (tab_bar->CurrFrameVisible == g.FrameCount)
     {
-        window->DC.CursorPos = ImVec2(tab_bar->BarRect.Min.x, tab_bar->BarRect.Max.y + tab_bar->ItemSpacingY);
+        window->DC.CursorPos = KGVec2(tab_bar->BarRect.Min.x, tab_bar->BarRect.Max.y + tab_bar->ItemSpacingY);
         tab_bar->BeginCount++;
         return true;
     }
@@ -7429,7 +7429,7 @@ bool    ImGui::BeginTabBarEx(KGGuiTabBar* tab_bar, const KGRect& tab_bar_bb, Kar
     tab_bar->BeginCount = 1;
 
     // Set cursor pos in a way which only be used in the off-chance the user erroneously submits item before BeginTabItem(): items will overlap
-    window->DC.CursorPos = ImVec2(tab_bar->BarRect.Min.x, tab_bar->BarRect.Max.y + tab_bar->ItemSpacingY);
+    window->DC.CursorPos = KGVec2(tab_bar->BarRect.Min.x, tab_bar->BarRect.Max.y + tab_bar->ItemSpacingY);
 
     // Draw separator
     const KGU32 col = GetColorU32((flags & KGGuiTabBarFlags_IsFocused) ? KGGuiCol_TabActive : KGGuiCol_TabUnfocusedActive);
@@ -7438,13 +7438,13 @@ bool    ImGui::BeginTabBarEx(KGGuiTabBar* tab_bar, const KGRect& tab_bar_bb, Kar
     {
         const float separator_min_x = dock_node->Pos.x + window->WindowBorderSize;
         const float separator_max_x = dock_node->Pos.x + dock_node->Size.x - window->WindowBorderSize;
-        window->DrawList->AddLine(ImVec2(separator_min_x, y), ImVec2(separator_max_x, y), col, 1.0f);
+        window->DrawList->AddLine(KGVec2(separator_min_x, y), KGVec2(separator_max_x, y), col, 1.0f);
     }
     else
     {
         const float separator_min_x = tab_bar->BarRect.Min.x - KG_FLOOR(window->WindowPadding.x * 0.5f);
         const float separator_max_x = tab_bar->BarRect.Max.x + KG_FLOOR(window->WindowPadding.x * 0.5f);
-        window->DrawList->AddLine(ImVec2(separator_min_x, y), ImVec2(separator_max_x, y), col, 1.0f);
+        window->DrawList->AddLine(KGVec2(separator_min_x, y), KGVec2(separator_max_x, y), col, 1.0f);
     }
     return true;
 }
@@ -7718,7 +7718,7 @@ static void ImGui::TabBarLayout(KGGuiTabBar* tab_bar)
     // Actual layout in host window (we don't do it in BeginTabBar() so as not to waste an extra frame)
     KGGuiWindow* window = g.CurrentWindow;
     window->DC.CursorPos = tab_bar->BarRect.Min;
-    ItemSize(ImVec2(tab_bar->WidthAllTabs, tab_bar->BarRect.GetHeight()), tab_bar->FramePadding.y);
+    ItemSize(KGVec2(tab_bar->WidthAllTabs, tab_bar->BarRect.GetHeight()), tab_bar->FramePadding.y);
     window->DC.IdealMaxPos.x = KGMax(window->DC.IdealMaxPos.x, tab_bar->BarRect.Min.x + tab_bar->WidthAllTabsIdeal);
 }
 
@@ -7874,7 +7874,7 @@ void ImGui::TabBarQueueReorder(KGGuiTabBar* tab_bar, const KGGuiTabItem* tab, in
     tab_bar->ReorderRequestOffset = (KGS16)offset;
 }
 
-void ImGui::TabBarQueueReorderFromMousePos(KGGuiTabBar* tab_bar, const KGGuiTabItem* src_tab, ImVec2 mouse_pos)
+void ImGui::TabBarQueueReorderFromMousePos(KGGuiTabBar* tab_bar, const KGGuiTabItem* src_tab, KGVec2 mouse_pos)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(tab_bar->ReorderRequestTabId == 0);
@@ -7901,7 +7901,7 @@ void ImGui::TabBarQueueReorderFromMousePos(KGGuiTabBar* tab_bar, const KGGuiTabI
         // Include spacing after tab, so when mouse cursor is between tabs we would not continue checking further tabs that are not hovered.
         const float x1 = bar_offset + dst_tab->Offset - g.Style.ItemInnerSpacing.x;
         const float x2 = bar_offset + dst_tab->Offset + dst_tab->Width + g.Style.ItemInnerSpacing.x;
-        //GetForegroundDrawList()->AddRect(ImVec2(x1, tab_bar->BarRect.Min.y), ImVec2(x2, tab_bar->BarRect.Max.y), KG_COL32(255, 0, 0, 255));
+        //GetForegroundDrawList()->AddRect(KGVec2(x1, tab_bar->BarRect.Min.y), KGVec2(x2, tab_bar->BarRect.Max.y), KG_COL32(255, 0, 0, 255));
         if ((dir < 0 && mouse_pos.x > x1) || (dir > 0 && mouse_pos.x < x2))
             break;
     }
@@ -7946,27 +7946,27 @@ static KGGuiTabItem* ImGui::TabBarScrollingButtons(KGGuiTabBar* tab_bar)
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
 
-    const ImVec2 arrow_button_size(g.FontSize - 2.0f, g.FontSize + g.Style.FramePadding.y * 2.0f);
+    const KGVec2 arrow_button_size(g.FontSize - 2.0f, g.FontSize + g.Style.FramePadding.y * 2.0f);
     const float scrolling_buttons_width = arrow_button_size.x * 2.0f;
 
-    const ImVec2 backup_cursor_pos = window->DC.CursorPos;
-    //window->DrawList->AddRect(ImVec2(tab_bar->BarRect.Max.x - scrolling_buttons_width, tab_bar->BarRect.Min.y), ImVec2(tab_bar->BarRect.Max.x, tab_bar->BarRect.Max.y), KG_COL32(255,0,0,255));
+    const KGVec2 backup_cursor_pos = window->DC.CursorPos;
+    //window->DrawList->AddRect(KGVec2(tab_bar->BarRect.Max.x - scrolling_buttons_width, tab_bar->BarRect.Min.y), KGVec2(tab_bar->BarRect.Max.x, tab_bar->BarRect.Max.y), KG_COL32(255,0,0,255));
 
     int select_dir = 0;
-    ImVec4 arrow_col = g.Style.Colors[KGGuiCol_Text];
+    KGVec4 arrow_col = g.Style.Colors[KGGuiCol_Text];
     arrow_col.w *= 0.5f;
 
     PushStyleColor(KGGuiCol_Text, arrow_col);
-    PushStyleColor(KGGuiCol_Button, ImVec4(0, 0, 0, 0));
+    PushStyleColor(KGGuiCol_Button, KGVec4(0, 0, 0, 0));
     const float backup_repeat_delay = g.IO.KeyRepeatDelay;
     const float backup_repeat_rate = g.IO.KeyRepeatRate;
     g.IO.KeyRepeatDelay = 0.250f;
     g.IO.KeyRepeatRate = 0.200f;
     float x = KGMax(tab_bar->BarRect.Min.x, tab_bar->BarRect.Max.x - scrolling_buttons_width);
-    window->DC.CursorPos = ImVec2(x, tab_bar->BarRect.Min.y);
+    window->DC.CursorPos = KGVec2(x, tab_bar->BarRect.Min.y);
     if (ArrowButtonEx("##<", KGGuiDir_Left, arrow_button_size, KGGuiButtonFlags_PressedOnClick | KGGuiButtonFlags_Repeat))
         select_dir = -1;
-    window->DC.CursorPos = ImVec2(x + arrow_button_size.x, tab_bar->BarRect.Min.y);
+    window->DC.CursorPos = KGVec2(x + arrow_button_size.x, tab_bar->BarRect.Min.y);
     if (ArrowButtonEx("##>", KGGuiDir_Right, arrow_button_size, KGGuiButtonFlags_PressedOnClick | KGGuiButtonFlags_Repeat))
         select_dir = +1;
     PopStyleColor(2);
@@ -8009,14 +8009,14 @@ static KGGuiTabItem* ImGui::TabBarTabListPopupButton(KGGuiTabBar* tab_bar)
 
     // We use g.Style.FramePadding.y to match the square ArrowButton size
     const float tab_list_popup_button_width = g.FontSize + g.Style.FramePadding.y;
-    const ImVec2 backup_cursor_pos = window->DC.CursorPos;
-    window->DC.CursorPos = ImVec2(tab_bar->BarRect.Min.x - g.Style.FramePadding.y, tab_bar->BarRect.Min.y);
+    const KGVec2 backup_cursor_pos = window->DC.CursorPos;
+    window->DC.CursorPos = KGVec2(tab_bar->BarRect.Min.x - g.Style.FramePadding.y, tab_bar->BarRect.Min.y);
     tab_bar->BarRect.Min.x += tab_list_popup_button_width;
 
-    ImVec4 arrow_col = g.Style.Colors[KGGuiCol_Text];
+    KGVec4 arrow_col = g.Style.Colors[KGGuiCol_Text];
     arrow_col.w *= 0.5f;
     PushStyleColor(KGGuiCol_Text, arrow_col);
-    PushStyleColor(KGGuiCol_Button, ImVec4(0, 0, 0, 0));
+    PushStyleColor(KGGuiCol_Button, KGVec4(0, 0, 0, 0));
     bool open = BeginCombo("##v", NULL, KGGuiComboFlags_NoPreview | KGGuiComboFlags_HeightLargest);
     PopStyleColor(2);
 
@@ -8160,7 +8160,7 @@ bool    ImGui::TabItemEx(KGGuiTabBar* tab_bar, const char* label, bool* p_open, 
     tab_bar->LastTabItemIdx = (KGS16)tab_bar->Tabs.index_from_ptr(tab);
 
     // Calculate tab contents size
-    ImVec2 size = TabItemCalcSize(label, (p_open != NULL) || (flags & KGGuiTabItemFlags_UnsavedDocument));
+    KGVec2 size = TabItemCalcSize(label, (p_open != NULL) || (flags & KGGuiTabItemFlags_UnsavedDocument));
     tab->RequestedWidth = -1.0f;
     if (g.NextItemData.Flags & KGGuiNextItemDataFlags_HasWidth)
         size.x = tab->RequestedWidth = g.NextItemData.Width;
@@ -8226,24 +8226,24 @@ bool    ImGui::TabItemEx(KGGuiTabBar* tab_bar, const char* label, bool* p_open, 
         tab->LastFrameSelected = g.FrameCount;
 
     // Backup current layout position
-    const ImVec2 backup_main_cursor_pos = window->DC.CursorPos;
+    const KGVec2 backup_main_cursor_pos = window->DC.CursorPos;
 
     // Layout
     const bool is_central_section = (tab->Flags & KGGuiTabItemFlags_SectionMask_) == 0;
     size.x = tab->Width;
     if (is_central_section)
-        window->DC.CursorPos = tab_bar->BarRect.Min + ImVec2(KG_FLOOR(tab->Offset - tab_bar->ScrollingAnim), 0.0f);
+        window->DC.CursorPos = tab_bar->BarRect.Min + KGVec2(KG_FLOOR(tab->Offset - tab_bar->ScrollingAnim), 0.0f);
     else
-        window->DC.CursorPos = tab_bar->BarRect.Min + ImVec2(tab->Offset, 0.0f);
-    ImVec2 pos = window->DC.CursorPos;
+        window->DC.CursorPos = tab_bar->BarRect.Min + KGVec2(tab->Offset, 0.0f);
+    KGVec2 pos = window->DC.CursorPos;
     KGRect bb(pos, pos + size);
 
     // We don't have CPU clipping primitives to clip the CloseButton (until it becomes a texture), so need to add an extra draw call (temporary in the case of vertical animation)
     const bool want_clip_rect = is_central_section && (bb.Min.x < tab_bar->ScrollingRectMinX || bb.Max.x > tab_bar->ScrollingRectMaxX);
     if (want_clip_rect)
-        PushClipRect(ImVec2(KGMax(bb.Min.x, tab_bar->ScrollingRectMinX), bb.Min.y - 1), ImVec2(tab_bar->ScrollingRectMaxX, bb.Max.y), true);
+        PushClipRect(KGVec2(KGMax(bb.Min.x, tab_bar->ScrollingRectMinX), bb.Min.y - 1), KGVec2(tab_bar->ScrollingRectMaxX, bb.Max.y), true);
 
-    ImVec2 backup_cursor_max_pos = window->DC.CursorMaxPos;
+    KGVec2 backup_cursor_max_pos = window->DC.CursorMaxPos;
     ItemSize(bb.GetSize(), style.FramePadding.y);
     window->DC.CursorMaxPos = backup_cursor_max_pos;
 
@@ -8313,7 +8313,7 @@ bool    ImGui::TabItemEx(KGGuiTabBar* tab_bar, const char* label, bool* p_open, 
                 float threshold_base = g.FontSize;
                 float threshold_x = (threshold_base * 2.2f);
                 float threshold_y = (threshold_base * 1.5f) + KGClamp((KGFabs(g.IO.MouseDragMaxDistanceAbs[0].x) - threshold_base * 2.0f) * 0.20f, 0.0f, threshold_base * 4.0f);
-                //GetForegroundDrawList()->AddRect(ImVec2(bb.Min.x - threshold_x, bb.Min.y - threshold_y), ImVec2(bb.Max.x + threshold_x, bb.Max.y + threshold_y), KG_COL32_WHITE); // [DEBUG]
+                //GetForegroundDrawList()->AddRect(KGVec2(bb.Min.x - threshold_x, bb.Min.y - threshold_y), KGVec2(bb.Max.x + threshold_x, bb.Max.y + threshold_y), KG_COL32_WHITE); // [DEBUG]
 
                 float distance_from_edge_y = KGMax(bb.Min.y - g.IO.MousePos.y, g.IO.MousePos.y - bb.Max.y);
                 if (distance_from_edge_y >= threshold_y)
@@ -8425,19 +8425,19 @@ void    ImGui::SetTabItemClosed(const char* label)
     }
 }
 
-ImVec2 ImGui::TabItemCalcSize(const char* label, bool has_close_button_or_unsaved_marker)
+KGVec2 ImGui::TabItemCalcSize(const char* label, bool has_close_button_or_unsaved_marker)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    ImVec2 label_size = CalcTextSize(label, NULL, true);
-    ImVec2 size = ImVec2(label_size.x + g.Style.FramePadding.x, label_size.y + g.Style.FramePadding.y * 2.0f);
+    KGVec2 label_size = CalcTextSize(label, NULL, true);
+    KGVec2 size = KGVec2(label_size.x + g.Style.FramePadding.x, label_size.y + g.Style.FramePadding.y * 2.0f);
     if (has_close_button_or_unsaved_marker)
         size.x += g.Style.FramePadding.x + (g.Style.ItemInnerSpacing.x + g.FontSize); // We use Y intentionally to fit the close button circle.
     else
         size.x += g.Style.FramePadding.x + 1.0f;
-    return ImVec2(KGMin(size.x, TabBarCalcMaxTabWidth()), size.y);
+    return KGVec2(KGMin(size.x, TabBarCalcMaxTabWidth()), size.y);
 }
 
-ImVec2 ImGui::TabItemCalcSize(KGGuiWindow* window)
+KGVec2 ImGui::TabItemCalcSize(KGGuiWindow* window)
 {
     return TabItemCalcSize(window->Name, window->HasCloseButton || (window->Flags & KGGuiWindowFlags_UnsavedDocument));
 }
@@ -8452,27 +8452,27 @@ void ImGui::TabItemBackground(KGDrawList* draw_list, const KGRect& bb, KarmaGuiT
     const float rounding = KGMax(0.0f, KGMin((flags & KGGuiTabItemFlags_Button) ? g.Style.FrameRounding : g.Style.TabRounding, width * 0.5f - 1.0f));
     const float y1 = bb.Min.y + 1.0f;
     const float y2 = bb.Max.y + ((flags & KGGuiTabItemFlags_Preview) ? 0.0f : -1.0f);
-    draw_list->PathLineTo(ImVec2(bb.Min.x, y2));
-    draw_list->PathArcToFast(ImVec2(bb.Min.x + rounding, y1 + rounding), rounding, 6, 9);
-    draw_list->PathArcToFast(ImVec2(bb.Max.x - rounding, y1 + rounding), rounding, 9, 12);
-    draw_list->PathLineTo(ImVec2(bb.Max.x, y2));
+    draw_list->PathLineTo(KGVec2(bb.Min.x, y2));
+    draw_list->PathArcToFast(KGVec2(bb.Min.x + rounding, y1 + rounding), rounding, 6, 9);
+    draw_list->PathArcToFast(KGVec2(bb.Max.x - rounding, y1 + rounding), rounding, 9, 12);
+    draw_list->PathLineTo(KGVec2(bb.Max.x, y2));
     draw_list->PathFillConvex(col);
     if (g.Style.TabBorderSize > 0.0f)
     {
-        draw_list->PathLineTo(ImVec2(bb.Min.x + 0.5f, y2));
-        draw_list->PathArcToFast(ImVec2(bb.Min.x + rounding + 0.5f, y1 + rounding + 0.5f), rounding, 6, 9);
-        draw_list->PathArcToFast(ImVec2(bb.Max.x - rounding - 0.5f, y1 + rounding + 0.5f), rounding, 9, 12);
-        draw_list->PathLineTo(ImVec2(bb.Max.x - 0.5f, y2));
+        draw_list->PathLineTo(KGVec2(bb.Min.x + 0.5f, y2));
+        draw_list->PathArcToFast(KGVec2(bb.Min.x + rounding + 0.5f, y1 + rounding + 0.5f), rounding, 6, 9);
+        draw_list->PathArcToFast(KGVec2(bb.Max.x - rounding - 0.5f, y1 + rounding + 0.5f), rounding, 9, 12);
+        draw_list->PathLineTo(KGVec2(bb.Max.x - 0.5f, y2));
         draw_list->PathStroke(GetColorU32(KGGuiCol_Border), 0, g.Style.TabBorderSize);
     }
 }
 
 // Render text label (with custom clipping) + Unsaved Document marker + Close Button logic
 // We tend to lock style.FramePadding for a given tab-bar, hence the 'frame_padding' parameter.
-void ImGui::TabItemLabelAndCloseButton(KGDrawList* draw_list, const KGRect& bb, KarmaGuiTabItemFlags flags, ImVec2 frame_padding, const char* label, KGGuiID tab_id, KGGuiID close_button_id, bool is_contents_visible, bool* out_just_closed, bool* out_text_clipped)
+void ImGui::TabItemLabelAndCloseButton(KGDrawList* draw_list, const KGRect& bb, KarmaGuiTabItemFlags flags, KGVec2 frame_padding, const char* label, KGGuiID tab_id, KGGuiID close_button_id, bool is_contents_visible, bool* out_just_closed, bool* out_text_clipped)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    ImVec2 label_size = CalcTextSize(label, NULL, true);
+    KGVec2 label_size = CalcTextSize(label, NULL, true);
 
     if (out_just_closed)
         *out_just_closed = false;
@@ -8502,7 +8502,7 @@ void ImGui::TabItemLabelAndCloseButton(KGDrawList* draw_list, const KGRect& bb, 
     }
 
     const float button_sz = g.FontSize;
-    const ImVec2 button_pos(KGMax(bb.Min.x, bb.Max.x - frame_padding.x * 2.0f - button_sz), bb.Min.y);
+    const KGVec2 button_pos(KGMax(bb.Min.x, bb.Max.x - frame_padding.x * 2.0f - button_sz), bb.Min.y);
 
     // Close Button & Unsaved Marker
     // We are relying on a subtle and confusing distinction between 'hovered' and 'g.HoveredId' which happens because we are using KGGuiButtonFlags_AllowOverlapMode + SetItemAllowOverlap()
@@ -8532,7 +8532,7 @@ void ImGui::TabItemLabelAndCloseButton(KGDrawList* draw_list, const KGRect& bb, 
     }
     else if (unsaved_marker_visible)
     {
-        const KGRect bullet_bb(button_pos, button_pos + ImVec2(button_sz, button_sz) + g.Style.FramePadding * 2.0f);
+        const KGRect bullet_bb(button_pos, button_pos + KGVec2(button_sz, button_sz) + g.Style.FramePadding * 2.0f);
         RenderBullet(draw_list, bullet_bb.GetCenter(), GetColorU32(KGGuiCol_Text));
     }
 

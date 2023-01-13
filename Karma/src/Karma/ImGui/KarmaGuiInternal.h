@@ -1,10 +1,3 @@
-// dear imgui, v1.89.2 WIP
-// (internal structures/api)
-
-// You may use this file to debug, understand or extend ImGui features but we don't provide any guarantee of forward compatibility!
-// Set:
-//   #define KARMAGUI_DEFINE_MATH_OPERATORS
-// To implement maths operators for ImVec2 (disabled by default to not collide with using IM_VEC2_CLASS_EXTRA along with your own math types+operators)
 
 /*
 
@@ -122,7 +115,7 @@ typedef void (*KGGuiErrorLogCallback)(void* user_data, const char* fmt, ...);
 //-----------------------------------------------------------------------------
 
 #ifndef GKarmaGui
-extern KARMA_API KarmaGuiContext* GKarmaGui;  // Current implicit context pointer
+extern  KarmaGuiContext* GKarmaGui;  // Current implicit context pointer
 #endif
 
 //-------------------------------------------------------------------------
@@ -213,7 +206,7 @@ namespace KGStb
 // - Helpers: String
 // - Helpers: Formatting
 // - Helpers: UTF-8 <> wchar conversions
-// - Helpers: ImVec2/ImVec4 operators
+// - Helpers: KGVec2/KGVec4 operators
 // - Helpers: Maths
 // - Helpers: Geometry
 // - Helper: KGVec1
@@ -228,8 +221,8 @@ namespace KGStb
 //-----------------------------------------------------------------------------
 
 // Helpers: Hashing
-KARMA_API KGGuiID       KGHashData(const void* data, size_t data_size, KGU32 seed = 0);
-KARMA_API KGGuiID       KGHashStr(const char* data, size_t data_size = 0, KGU32 seed = 0);
+ KGGuiID       KGHashData(const void* data, size_t data_size, KGU32 seed = 0);
+ KGGuiID       KGHashStr(const char* data, size_t data_size = 0, KGU32 seed = 0);
 
 // Helpers: Sorting
 #ifndef KGQsort
@@ -237,7 +230,7 @@ static inline void      KGQsort(void* base, size_t count, size_t size_of_element
 #endif
 
 // Helpers: Color Blending
-KARMA_API KGU32         KGAlphaBlendColors(KGU32 col_a, KGU32 col_b);
+ KGU32         KGAlphaBlendColors(KGU32 col_a, KGU32 col_b);
 
 // Helpers: Bit manipulation
 static inline bool      KGIsPowerOfTwo(int v)           { return v != 0 && (v & (v - 1)) == 0; }
@@ -245,18 +238,18 @@ static inline bool      KGIsPowerOfTwo(KGU64 v)         { return v != 0 && (v & 
 static inline int       KGUpperPowerOfTwo(int v)        { v--; v |= v >> 1; v |= v >> 2; v |= v >> 4; v |= v >> 8; v |= v >> 16; v++; return v; }
 
 // Helpers: String
-KARMA_API int           KGStricmp(const char* str1, const char* str2);
-KARMA_API int           KGStrnicmp(const char* str1, const char* str2, size_t count);
-KARMA_API void          KGStrncpy(char* dst, const char* src, size_t count);
-KARMA_API char*         KGStrdup(const char* str);
-KARMA_API char*         KGStrdupcpy(char* dst, size_t* p_dst_size, const char* str);
-KARMA_API const char*   KGStrchrRange(const char* str_begin, const char* str_end, char c);
-KARMA_API int           KGStrlenW(const KGWchar* str);
-KARMA_API const char*   KGStreolRange(const char* str, const char* str_end);                // End end-of-line
-KARMA_API const KGWchar*KGStrbolW(const KGWchar* buf_mid_line, const KGWchar* buf_begin);   // Find beginning-of-line
-KARMA_API const char*   KGStristr(const char* haystack, const char* haystack_end, const char* needle, const char* needle_end);
-KARMA_API void          KGStrTrimBlanks(char* str);
-KARMA_API const char*   KGStrSkipBlank(const char* str);
+ int           KGStricmp(const char* str1, const char* str2);
+ int           KGStrnicmp(const char* str1, const char* str2, size_t count);
+ void          KGStrncpy(char* dst, const char* src, size_t count);
+ char*         KGStrdup(const char* str);
+ char*         KGStrdupcpy(char* dst, size_t* p_dst_size, const char* str);
+ const char*   KGStrchrRange(const char* str_begin, const char* str_end, char c);
+ int           KGStrlenW(const KGWchar* str);
+ const char*   KGStreolRange(const char* str, const char* str_end);                // End end-of-line
+ const KGWchar*KGStrbolW(const KGWchar* buf_mid_line, const KGWchar* buf_begin);   // Find beginning-of-line
+ const char*   KGStristr(const char* haystack, const char* haystack_end, const char* needle, const char* needle_end);
+ void          KGStrTrimBlanks(char* str);
+ const char*   KGStrSkipBlank(const char* str);
 
 static inline char      KGToUpper(char c)               { return (c >= 'a' && c <= 'z') ? c &= ~32 : c; }
 static inline bool      KGCharIsBlankA(char c)          { return c == ' ' || c == '\t'; }
@@ -264,37 +257,37 @@ static inline bool      KGCharIsBlankW(unsigned int c)  { return c == ' ' || c =
 
 
 // Helpers: Formatting
-KARMA_API int           KGFormatString(char* buf, size_t buf_size, const char* fmt, ...) KG_FMTARGS(3);
-KARMA_API int           KGFormatStringV(char* buf, size_t buf_size, const char* fmt, va_list args) KG_FMTLIST(3);
-KARMA_API void          KGFormatStringToTempBuffer(const char** out_buf, const char** out_buf_end, const char* fmt, ...) KG_FMTARGS(3);
-KARMA_API void          KGFormatStringToTempBufferV(const char** out_buf, const char** out_buf_end, const char* fmt, va_list args) KG_FMTLIST(3);
-KARMA_API const char*   KGParseFormatFindStart(const char* format);
-KARMA_API const char*   KGParseFormatFindEnd(const char* format);
-KARMA_API const char*   KGParseFormatTrimDecorations(const char* format, char* buf, size_t buf_size);
-KARMA_API void          KGParseFormatSanitizeForPrinting(const char* fmt_in, char* fmt_out, size_t fmt_out_size);
-KARMA_API const char*   KGParseFormatSanitizeForScanning(const char* fmt_in, char* fmt_out, size_t fmt_out_size);
-KARMA_API int           KGParseFormatPrecision(const char* format, int default_value);
+ int           KGFormatString(char* buf, size_t buf_size, const char* fmt, ...) KG_FMTARGS(3);
+ int           KGFormatStringV(char* buf, size_t buf_size, const char* fmt, va_list args) KG_FMTLIST(3);
+ void          KGFormatStringToTempBuffer(const char** out_buf, const char** out_buf_end, const char* fmt, ...) KG_FMTARGS(3);
+ void          KGFormatStringToTempBufferV(const char** out_buf, const char** out_buf_end, const char* fmt, va_list args) KG_FMTLIST(3);
+ const char*   KGParseFormatFindStart(const char* format);
+ const char*   KGParseFormatFindEnd(const char* format);
+ const char*   KGParseFormatTrimDecorations(const char* format, char* buf, size_t buf_size);
+ void          KGParseFormatSanitizeForPrinting(const char* fmt_in, char* fmt_out, size_t fmt_out_size);
+ const char*   KGParseFormatSanitizeForScanning(const char* fmt_in, char* fmt_out, size_t fmt_out_size);
+ int           KGParseFormatPrecision(const char* format, int default_value);
 
 // Helpers: UTF-8 <> wchar conversions
-KARMA_API const char*   KGTextCharToUtf8(char out_buf[5], unsigned int c);                                                      // return out_buf
-KARMA_API int           KGTextStrToUtf8(char* out_buf, int out_buf_size, const KGWchar* in_text, const KGWchar* in_text_end);   // return output UTF-8 bytes count
-KARMA_API int           KGTextCharFromUtf8(unsigned int* out_char, const char* in_text, const char* in_text_end);               // read one character. return input UTF-8 bytes count
-KARMA_API int           KGTextStrFromUtf8(KGWchar* out_buf, int out_buf_size, const char* in_text, const char* in_text_end, const char** in_remaining = NULL);   // return input UTF-8 bytes count
-KARMA_API int           KGTextCountCharsFromUtf8(const char* in_text, const char* in_text_end);                                 // return number of UTF-8 code-points (NOT bytes count)
-KARMA_API int           KGTextCountUtf8BytesFromChar(const char* in_text, const char* in_text_end);                             // return number of bytes to express one char in UTF-8
-KARMA_API int           KGTextCountUtf8BytesFromStr(const KGWchar* in_text, const KGWchar* in_text_end);                        // return number of bytes to express string in UTF-8
+ const char*   KGTextCharToUtf8(char out_buf[5], unsigned int c);                                                      // return out_buf
+ int           KGTextStrToUtf8(char* out_buf, int out_buf_size, const KGWchar* in_text, const KGWchar* in_text_end);   // return output UTF-8 bytes count
+ int           KGTextCharFromUtf8(unsigned int* out_char, const char* in_text, const char* in_text_end);               // read one character. return input UTF-8 bytes count
+ int           KGTextStrFromUtf8(KGWchar* out_buf, int out_buf_size, const char* in_text, const char* in_text_end, const char** in_remaining = NULL);   // return input UTF-8 bytes count
+ int           KGTextCountCharsFromUtf8(const char* in_text, const char* in_text_end);                                 // return number of UTF-8 code-points (NOT bytes count)
+ int           KGTextCountUtf8BytesFromChar(const char* in_text, const char* in_text_end);                             // return number of bytes to express one char in UTF-8
+ int           KGTextCountUtf8BytesFromStr(const KGWchar* in_text, const KGWchar* in_text_end);                        // return number of bytes to express string in UTF-8
 
 #ifndef KARMAGUI_DISABLE_DEFAULT_FILE_FUNCTIONS
 typedef FILE* ImFileHandle;
-KARMA_API ImFileHandle      KGFileOpen(const char* filename, const char* mode);
-KARMA_API bool              KGFileClose(ImFileHandle file);
-KARMA_API KGU64             KGFileGetSize(ImFileHandle file);
-KARMA_API KGU64             KGFileRead(void* data, KGU64 size, KGU64 count, ImFileHandle file);
-KARMA_API KGU64             KGFileWrite(const void* data, KGU64 size, KGU64 count, ImFileHandle file);
+ ImFileHandle      KGFileOpen(const char* filename, const char* mode);
+ bool              KGFileClose(ImFileHandle file);
+ KGU64             KGFileGetSize(ImFileHandle file);
+ KGU64             KGFileRead(void* data, KGU64 size, KGU64 count, ImFileHandle file);
+ KGU64             KGFileWrite(const void* data, KGU64 size, KGU64 count, ImFileHandle file);
 #else
 #define IMGUI_DISABLE_TTY_FUNCTIONS // Can't use stdout, fflush if we are not using default file functions
 #endif
-KARMA_API void*             KGFileLoadToMemory(const char* filename, const char* mode, size_t* out_file_size = NULL, int padding_bytes = 0);
+ void*             KGFileLoadToMemory(const char* filename, const char* mode, size_t* out_file_size = NULL, int padding_bytes = 0);
 
 // Helpers: Maths
 // - Wrapper for standard libs functions. Hmm how about normal usage?
@@ -309,6 +302,24 @@ KARMA_API void*             KGFileLoadToMemory(const char* filename, const char*
 #define KGAtof(STR)         atof(STR)
 //#define ImFloorStd(X)     floorf(X)           // We use our own, see KGFloor() and KGFloorSigned()
 #define KGCeil(X)           ceilf(X)
+
+
+ static inline KGVec2 operator*(const KGVec2& lhs, const float rhs)              { return KGVec2(lhs.x * rhs, lhs.y * rhs); }
+ static inline KGVec2 operator/(const KGVec2& lhs, const float rhs)              { return KGVec2(lhs.x / rhs, lhs.y / rhs); }
+ static inline KGVec2 operator+(const KGVec2& lhs, const KGVec2& rhs)            { return KGVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
+ static inline KGVec2 operator-(const KGVec2& lhs, const KGVec2& rhs)            { return KGVec2(lhs.x - rhs.x, lhs.y - rhs.y); }
+ static inline KGVec2 operator*(const KGVec2& lhs, const KGVec2& rhs)            { return KGVec2(lhs.x * rhs.x, lhs.y * rhs.y); }
+ static inline KGVec2 operator/(const KGVec2& lhs, const KGVec2& rhs)            { return KGVec2(lhs.x / rhs.x, lhs.y / rhs.y); }
+ static inline KGVec2& operator*=(KGVec2& lhs, const float rhs)                  { lhs.x *= rhs; lhs.y *= rhs; return lhs; }
+ static inline KGVec2& operator/=(KGVec2& lhs, const float rhs)                  { lhs.x /= rhs; lhs.y /= rhs; return lhs; }
+ static inline KGVec2& operator+=(KGVec2& lhs, const KGVec2& rhs)                { lhs.x += rhs.x; lhs.y += rhs.y; return lhs; }
+ static inline KGVec2& operator-=(KGVec2& lhs, const KGVec2& rhs)                { lhs.x -= rhs.x; lhs.y -= rhs.y; return lhs; }
+ static inline KGVec2& operator*=(KGVec2& lhs, const KGVec2& rhs)                { lhs.x *= rhs.x; lhs.y *= rhs.y; return lhs; }
+ static inline KGVec2& operator/=(KGVec2& lhs, const KGVec2& rhs)                { lhs.x /= rhs.x; lhs.y /= rhs.y; return lhs; }
+ static inline KGVec4 operator+(const KGVec4& lhs, const KGVec4& rhs)            { return KGVec4(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w); }
+ static inline KGVec4 operator-(const KGVec4& lhs, const KGVec4& rhs)            { return KGVec4(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w); }
+ static inline KGVec4 operator*(const KGVec4& lhs, const KGVec4& rhs)            { return KGVec4(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w); }
+
 static inline float  KGPow(float x, float y)    { return powf(x, y); }          // DragBehaviorT/SliderBehaviorT uses KGPow with either float/double and need the precision
 static inline double KGPow(double x, double y)  { return pow(x, y); }
 static inline float  KGLog(float x)             { return logf(x); }             // DragBehaviorT/SliderBehaviorT uses KGLog with either float/double and need the precision
@@ -332,39 +343,39 @@ template<typename T> static inline void KGSwap(T& a, T& b)                      
 template<typename T> static inline T KGAddClampOverflow(T a, T b, T mn, T mx)   { if (b < 0 && (a < mn - b)) return mn; if (b > 0 && (a > mx - b)) return mx; return a + b; }
 template<typename T> static inline T KGSubClampOverflow(T a, T b, T mn, T mx)   { if (b > 0 && (a < mn + b)) return mn; if (b < 0 && (a > mx + b)) return mx; return a - b; }
 // - Misc maths helpers
-static inline ImVec2 KGMin(const ImVec2& lhs, const ImVec2& rhs)                { return ImVec2(lhs.x < rhs.x ? lhs.x : rhs.x, lhs.y < rhs.y ? lhs.y : rhs.y); }
-static inline ImVec2 KGMax(const ImVec2& lhs, const ImVec2& rhs)                { return ImVec2(lhs.x >= rhs.x ? lhs.x : rhs.x, lhs.y >= rhs.y ? lhs.y : rhs.y); }
-static inline ImVec2 KGClamp(const ImVec2& v, const ImVec2& mn, ImVec2 mx)      { return ImVec2((v.x < mn.x) ? mn.x : (v.x > mx.x) ? mx.x : v.x, (v.y < mn.y) ? mn.y : (v.y > mx.y) ? mx.y : v.y); }
-static inline ImVec2 KGLerp(const ImVec2& a, const ImVec2& b, float t)          { return ImVec2(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t); }
-static inline ImVec2 KGLerp(const ImVec2& a, const ImVec2& b, const ImVec2& t)  { return ImVec2(a.x + (b.x - a.x) * t.x, a.y + (b.y - a.y) * t.y); }
-static inline ImVec4 KGLerp(const ImVec4& a, const ImVec4& b, float t)          { return ImVec4(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t, a.w + (b.w - a.w) * t); }
+static inline KGVec2 KGMin(const KGVec2& lhs, const KGVec2& rhs)                { return KGVec2(lhs.x < rhs.x ? lhs.x : rhs.x, lhs.y < rhs.y ? lhs.y : rhs.y); }
+static inline KGVec2 KGMax(const KGVec2& lhs, const KGVec2& rhs)                { return KGVec2(lhs.x >= rhs.x ? lhs.x : rhs.x, lhs.y >= rhs.y ? lhs.y : rhs.y); }
+static inline KGVec2 KGClamp(const KGVec2& v, const KGVec2& mn, KGVec2 mx)      { return KGVec2((v.x < mn.x) ? mn.x : (v.x > mx.x) ? mx.x : v.x, (v.y < mn.y) ? mn.y : (v.y > mx.y) ? mx.y : v.y); }
+static inline KGVec2 KGLerp(const KGVec2& a, const KGVec2& b, float t)          { return KGVec2(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t); }
+static inline KGVec2 KGLerp(const KGVec2& a, const KGVec2& b, const KGVec2& t)  { return KGVec2(a.x + (b.x - a.x) * t.x, a.y + (b.y - a.y) * t.y); }
+static inline KGVec4 KGLerp(const KGVec4& a, const KGVec4& b, float t)          { return KGVec4(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t, a.w + (b.w - a.w) * t); }
 static inline float  KGSaturate(float f)                                        { return (f < 0.0f) ? 0.0f : (f > 1.0f) ? 1.0f : f; }
-static inline float  KGLengthSqr(const ImVec2& lhs)                             { return (lhs.x * lhs.x) + (lhs.y * lhs.y); }
-static inline float  KGLengthSqr(const ImVec4& lhs)                             { return (lhs.x * lhs.x) + (lhs.y * lhs.y) + (lhs.z * lhs.z) + (lhs.w * lhs.w); }
-static inline float  KGInvLength(const ImVec2& lhs, float fail_value)           { float d = (lhs.x * lhs.x) + (lhs.y * lhs.y); if (d > 0.0f) return KGRsqrt(d); return fail_value; }
+static inline float  KGLengthSqr(const KGVec2& lhs)                             { return (lhs.x * lhs.x) + (lhs.y * lhs.y); }
+static inline float  KGLengthSqr(const KGVec4& lhs)                             { return (lhs.x * lhs.x) + (lhs.y * lhs.y) + (lhs.z * lhs.z) + (lhs.w * lhs.w); }
+static inline float  KGInvLength(const KGVec2& lhs, float fail_value)           { float d = (lhs.x * lhs.x) + (lhs.y * lhs.y); if (d > 0.0f) return KGRsqrt(d); return fail_value; }
 static inline float  KGFloor(float f)                                           { return (float)(int)(f); }
 static inline float  KGFloorSigned(float f)                                     { return (float)((f >= 0 || (float)(int)f == f) ? (int)f : (int)f - 1); } // Decent replacement for floorf()
-static inline ImVec2 KGFloor(const ImVec2& v)                                   { return ImVec2((float)(int)(v.x), (float)(int)(v.y)); }
-static inline ImVec2 KGFloorSigned(const ImVec2& v)                             { return ImVec2(KGFloorSigned(v.x), KGFloorSigned(v.y)); }
+static inline KGVec2 KGFloor(const KGVec2& v)                                   { return KGVec2((float)(int)(v.x), (float)(int)(v.y)); }
+static inline KGVec2 KGFloorSigned(const KGVec2& v)                             { return KGVec2(KGFloorSigned(v.x), KGFloorSigned(v.y)); }
 static inline int    KGModPositive(int a, int b)                                { return (a + b) % b; }
-static inline float  KGDot(const ImVec2& a, const ImVec2& b)                    { return a.x * b.x + a.y * b.y; }
-static inline ImVec2 KGRotate(const ImVec2& v, float cos_a, float sin_a)        { return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a); }
+static inline float  KGDot(const KGVec2& a, const KGVec2& b)                    { return a.x * b.x + a.y * b.y; }
+static inline KGVec2 KGRotate(const KGVec2& v, float cos_a, float sin_a)        { return KGVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a); }
 static inline float  KGLinearSweep(float current, float target, float speed)    { if (current < target) return KGMin(current + speed, target); if (current > target) return KGMax(current - speed, target); return current; }
-static inline ImVec2 KGMul(const ImVec2& lhs, const ImVec2& rhs)                { return ImVec2(lhs.x * rhs.x, lhs.y * rhs.y); }
+static inline KGVec2 KGMul(const KGVec2& lhs, const KGVec2& rhs)                { return KGVec2(lhs.x * rhs.x, lhs.y * rhs.y); }
 static inline bool   KGIsFloatAboveGuaranteedIntegerPrecision(float f)          { return f <= -16777216 || f >= 16777216; }
 static inline float  KGExponentialMovingAverage(float avg, float sample, int n) { avg -= avg / n; avg += sample / n; return avg; }
 
 // Helpers: Geometry
-KARMA_API ImVec2     KGBezierCubicCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, float t);
-KARMA_API ImVec2     KGBezierCubicClosestPoint(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& p, int num_segments);       // For curves with explicit number of segments
-KARMA_API ImVec2     KGBezierCubicClosestPointCasteljau(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& p, float tess_tol);// For auto-tessellated curves you can use tess_tol = style.CurveTessellationTol
-KARMA_API ImVec2     KGBezierQuadraticCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, float t);
-KARMA_API ImVec2     KGLineClosestPoint(const ImVec2& a, const ImVec2& b, const ImVec2& p);
-KARMA_API bool       KGTriangleContainsPoint(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& p);
-KARMA_API ImVec2     KGTriangleClosestPoint(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& p);
-KARMA_API void       KGTriangleBarycentricCoords(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& p, float& out_u, float& out_v, float& out_w);
-inline float         KGTriangleArea(const ImVec2& a, const ImVec2& b, const ImVec2& c) { return KGFabs((a.x * (b.y - c.y)) + (b.x * (c.y - a.y)) + (c.x * (a.y - b.y))) * 0.5f; }
-KARMA_API KarmaGuiDir   KGGetDirQuadrantFromDelta(float dx, float dy);
+ KGVec2     KGBezierCubicCalc(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, float t);
+ KGVec2     KGBezierCubicClosestPoint(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& p, int num_segments);       // For curves with explicit number of segments
+ KGVec2     KGBezierCubicClosestPointCasteljau(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& p, float tess_tol);// For auto-tessellated curves you can use tess_tol = style.CurveTessellationTol
+ KGVec2     KGBezierQuadraticCalc(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, float t);
+ KGVec2     KGLineClosestPoint(const KGVec2& a, const KGVec2& b, const KGVec2& p);
+ bool       KGTriangleContainsPoint(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& p);
+ KGVec2     KGTriangleClosestPoint(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& p);
+ void       KGTriangleBarycentricCoords(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& p, float& out_u, float& out_v, float& out_w);
+inline float         KGTriangleArea(const KGVec2& a, const KGVec2& b, const KGVec2& c) { return KGFabs((a.x * (b.y - c.y)) + (b.x * (c.y - a.y)) + (c.x * (a.y - b.y))) * 0.5f; }
+ KarmaGuiDir   KGGetDirQuadrantFromDelta(float dx, float dy);
 
 // Helper: KGVec1 (1D vector)
 // (this odd construct is used to facilitate the transition between 1D and 2D, and the maintenance of some branches/patches)
@@ -382,45 +393,45 @@ struct KGVec2ih
     short   x, y;
     constexpr KGVec2ih()                           : x(0), y(0) {}
     constexpr KGVec2ih(short _x, short _y)         : x(_x), y(_y) {}
-    constexpr explicit KGVec2ih(const ImVec2& rhs) : x((short)rhs.x), y((short)rhs.y) {}
+    constexpr explicit KGVec2ih(const KGVec2& rhs) : x((short)rhs.x), y((short)rhs.y) {}
 };
 
 // Helper: KGRect (2D axis aligned bounding-box)
-// NB: we can't rely on ImVec2 math operators being available here!
-struct KARMA_API KGRect
+// NB: we can't rely on KGVec2 math operators being available here!
+struct  KGRect
 {
-    ImVec2      Min;    // Upper-left
-    ImVec2      Max;    // Lower-right
+    KGVec2      Min;    // Upper-left
+    KGVec2      Max;    // Lower-right
 
     constexpr KGRect()                                        : Min(0.0f, 0.0f), Max(0.0f, 0.0f)  {}
-    constexpr KGRect(const ImVec2& min, const ImVec2& max)    : Min(min), Max(max)                {}
-    constexpr KGRect(const ImVec4& v)                         : Min(v.x, v.y), Max(v.z, v.w)      {}
+    constexpr KGRect(const KGVec2& min, const KGVec2& max)    : Min(min), Max(max)                {}
+    constexpr KGRect(const KGVec4& v)                         : Min(v.x, v.y), Max(v.z, v.w)      {}
     constexpr KGRect(float x1, float y1, float x2, float y2)  : Min(x1, y1), Max(x2, y2)          {}
 
-    ImVec2      GetCenter() const                   { return ImVec2((Min.x + Max.x) * 0.5f, (Min.y + Max.y) * 0.5f); }
-    ImVec2      GetSize() const                     { return ImVec2(Max.x - Min.x, Max.y - Min.y); }
+    KGVec2      GetCenter() const                   { return KGVec2((Min.x + Max.x) * 0.5f, (Min.y + Max.y) * 0.5f); }
+    KGVec2      GetSize() const                     { return KGVec2(Max.x - Min.x, Max.y - Min.y); }
     float       GetWidth() const                    { return Max.x - Min.x; }
     float       GetHeight() const                   { return Max.y - Min.y; }
     float       GetArea() const                     { return (Max.x - Min.x) * (Max.y - Min.y); }
-    ImVec2      GetTL() const                       { return Min; }                   // Top-left
-    ImVec2      GetTR() const                       { return ImVec2(Max.x, Min.y); }  // Top-right
-    ImVec2      GetBL() const                       { return ImVec2(Min.x, Max.y); }  // Bottom-left
-    ImVec2      GetBR() const                       { return Max; }                   // Bottom-right
-    bool        Contains(const ImVec2& p) const     { return p.x     >= Min.x && p.y     >= Min.y && p.x     <  Max.x && p.y     <  Max.y; }
+    KGVec2      GetTL() const                       { return Min; }                   // Top-left
+    KGVec2      GetTR() const                       { return KGVec2(Max.x, Min.y); }  // Top-right
+    KGVec2      GetBL() const                       { return KGVec2(Min.x, Max.y); }  // Bottom-left
+    KGVec2      GetBR() const                       { return Max; }                   // Bottom-right
+    bool        Contains(const KGVec2& p) const     { return p.x     >= Min.x && p.y     >= Min.y && p.x     <  Max.x && p.y     <  Max.y; }
     bool        Contains(const KGRect& r) const     { return r.Min.x >= Min.x && r.Min.y >= Min.y && r.Max.x <= Max.x && r.Max.y <= Max.y; }
     bool        Overlaps(const KGRect& r) const     { return r.Min.y <  Max.y && r.Max.y >  Min.y && r.Min.x <  Max.x && r.Max.x >  Min.x; }
-    void        Add(const ImVec2& p)                { if (Min.x > p.x)     Min.x = p.x;     if (Min.y > p.y)     Min.y = p.y;     if (Max.x < p.x)     Max.x = p.x;     if (Max.y < p.y)     Max.y = p.y; }
+    void        Add(const KGVec2& p)                { if (Min.x > p.x)     Min.x = p.x;     if (Min.y > p.y)     Min.y = p.y;     if (Max.x < p.x)     Max.x = p.x;     if (Max.y < p.y)     Max.y = p.y; }
     void        Add(const KGRect& r)                { if (Min.x > r.Min.x) Min.x = r.Min.x; if (Min.y > r.Min.y) Min.y = r.Min.y; if (Max.x < r.Max.x) Max.x = r.Max.x; if (Max.y < r.Max.y) Max.y = r.Max.y; }
     void        Expand(const float amount)          { Min.x -= amount;   Min.y -= amount;   Max.x += amount;   Max.y += amount; }
-    void        Expand(const ImVec2& amount)        { Min.x -= amount.x; Min.y -= amount.y; Max.x += amount.x; Max.y += amount.y; }
-    void        Translate(const ImVec2& d)          { Min.x += d.x; Min.y += d.y; Max.x += d.x; Max.y += d.y; }
+    void        Expand(const KGVec2& amount)        { Min.x -= amount.x; Min.y -= amount.y; Max.x += amount.x; Max.y += amount.y; }
+    void        Translate(const KGVec2& d)          { Min.x += d.x; Min.y += d.y; Max.x += d.x; Max.y += d.y; }
     void        TranslateX(float dx)                { Min.x += dx; Max.x += dx; }
     void        TranslateY(float dy)                { Min.y += dy; Max.y += dy; }
     void        ClipWith(const KGRect& r)           { Min = KGMax(Min, r.Min); Max = KGMin(Max, r.Max); }                   // Simple version, may lead to an inverted rectangle, which is fine for Contains/Overlaps test but not for display.
     void        ClipWithFull(const KGRect& r)       { Min = KGClamp(Min, r.Min, r.Max); Max = KGClamp(Max, r.Min, r.Max); } // Full version, ensure both points are fully clipped.
     void        Floor()                             { Min.x = KG_FLOOR(Min.x); Min.y = KG_FLOOR(Min.y); Max.x = KG_FLOOR(Max.x); Max.y = KG_FLOOR(Max.y); }
     bool        IsInverted() const                  { return Min.x > Max.x || Min.y > Max.y; }
-    ImVec4      ToVec4() const                      { return ImVec4(Min.x, Min.y, Max.x, Max.y); }
+    KGVec4      ToVec4() const                      { return KGVec4(Min.x, Min.y, Max.x, Max.y); }
 };
 
 // Helper: KGBitArray
@@ -458,7 +469,7 @@ struct KGBitArray
 
 // Helper: KGBitVector
 // Store 1-bit per value.
-struct KARMA_API KGBitVector
+struct  KGBitVector
 {
     KGVector<KGU32> Storage;
     void            Create(int sz)              { Storage.resize((sz + 31) >> 5); memset(Storage.Data, 0, (size_t)Storage.Size * sizeof(Storage.Data[0])); }
@@ -624,24 +635,24 @@ struct KGGuiTextIndex
 
 // Data shared between all KGDrawList instances
 // You may want to create your own instance of this if you want to use KGDrawList completely without ImGui. In that case, watch out for future changes to this structure.
-struct KARMA_API KGDrawListSharedData
+struct  KGDrawListSharedData
 {
-    ImVec2          TexUvWhitePixel;            // UV of white pixel in the atlas
+    KGVec2          TexUvWhitePixel;            // UV of white pixel in the atlas
     KGFont*         Font;                       // Current/default font (optional, for simplified AddText overload)
     float           FontSize;                   // Current/default font size (optional, for simplified AddText overload)
     float           CurveTessellationTol;       // Tessellation tolerance when using PathBezierCurveTo()
     float           CircleSegmentMaxError;      // Number of circle segments to use per pixel of radius for AddCircle() etc
-    ImVec4          ClipRectFullscreen;         // Value for PushClipRectFullscreen()
+    KGVec4          ClipRectFullscreen;         // Value for PushClipRectFullscreen()
     KGDrawListFlags InitialFlags;               // Initial flags at the beginning of the frame (it is possible to alter flags on a per-drawlist basis afterwards)
 
     // [Internal] Temp write buffer
-    KGVector<ImVec2> TempBuffer;
+    KGVector<KGVec2> TempBuffer;
 
     // [Internal] Lookup tables
-    ImVec2          ArcFastVtx[KG_DRAWLIST_ARCFAST_TABLE_SIZE]; // Sample points on the quarter of the circle.
+    KGVec2          ArcFastVtx[KG_DRAWLIST_ARCFAST_TABLE_SIZE]; // Sample points on the quarter of the circle.
     float           ArcFastRadiusCutoff;                        // Cutoff radius after which arc drawing will fallback to slower PathArcTo()
     KGU8            CircleSegmentCounts[64];    // Precomputed segment count for given radius before we calculate it dynamically (to avoid calculation overhead)
-    const ImVec4*   TexUvLines;                 // UV of anti-aliased lines in the atlas
+    const KGVec4*   TexUvLines;                 // UV of anti-aliased lines in the atlas
 
     KGDrawListSharedData();
     void SetCircleTessellationMaxError(float max_error);
@@ -654,7 +665,7 @@ struct KGDrawDataBuilder
     void Clear()                    { for (int n = 0; n < KG_ARRAYSIZE(Layers); n++) Layers[n].resize(0); }
     void ClearFreeMemory()          { for (int n = 0; n < KG_ARRAYSIZE(Layers); n++) Layers[n].clear(); }
     int  GetDrawListCount() const   { int count = 0; for (int n = 0; n < KG_ARRAYSIZE(Layers); n++) count += Layers[n].Size; return count; }
-    KARMA_API void FlattenIntoSingleLayer();
+     void FlattenIntoSingleLayer();
 };
 
 //-----------------------------------------------------------------------------
@@ -790,7 +801,7 @@ enum KGGuiTooltipFlags_
 };
 
 // FIXME: this is in development, not exposed/functional as a generic feature yet.
-// Horizontal/Vertical enums are fixed to 0/1 so they may be used to index ImVec2
+// Horizontal/Vertical enums are fixed to 0/1 so they may be used to index KGVec2
 enum KGGuiLayoutType_
 {
     KGGuiLayoutType_Horizontal = 0,
@@ -806,7 +817,7 @@ enum KGGuiLogType
     KGGuiLogType_Clipboard,
 };
 
-// X/Y enums are fixed to 0/1 so they may be used to index ImVec2
+// X/Y enums are fixed to 0/1 so they may be used to index KGVec2
 enum KGGuiAxis
 {
     KGGuiAxis_None = -1,
@@ -853,7 +864,7 @@ enum KGGuiDataTypePrivate_
 struct KGGuiColorMod
 {
     KarmaGuiCol        Col;
-    ImVec4          BackupValue;
+    KGVec4          BackupValue;
 };
 
 // Stacked style modifier, backup of modified data so we can restore it. Data type inferred from the variable.
@@ -863,16 +874,16 @@ struct KGGuiStyleMod
     union           { int BackupInt[2]; float BackupFloat[2]; };
     KGGuiStyleMod(KarmaGuiStyleVar idx, int v)     { VarIdx = idx; BackupInt[0] = v; }
     KGGuiStyleMod(KarmaGuiStyleVar idx, float v)   { VarIdx = idx; BackupFloat[0] = v; }
-    KGGuiStyleMod(KarmaGuiStyleVar idx, ImVec2 v)  { VarIdx = idx; BackupFloat[0] = v.x; BackupFloat[1] = v.y; }
+    KGGuiStyleMod(KarmaGuiStyleVar idx, KGVec2 v)  { VarIdx = idx; BackupFloat[0] = v.x; BackupFloat[1] = v.y; }
 };
 
 // Storage data for BeginComboPreview()/EndComboPreview()
-struct KARMA_API KGGuiComboPreviewData
+struct  KGGuiComboPreviewData
 {
     KGRect          PreviewRect;
-    ImVec2          BackupCursorPos;
-    ImVec2          BackupCursorMaxPos;
-    ImVec2          BackupCursorPosPrevLine;
+    KGVec2          BackupCursorPos;
+    KGVec2          BackupCursorMaxPos;
+    KGVec2          BackupCursorPosPrevLine;
     float           BackupPrevLineTextBaseOffset;
     KGGuiLayoutType BackupLayout;
 
@@ -880,14 +891,14 @@ struct KARMA_API KGGuiComboPreviewData
 };
 
 // Stacked storage data for BeginGroup()/EndGroup()
-struct KARMA_API KGGuiGroupData
+struct  KGGuiGroupData
 {
     KGGuiID     WindowID;
-    ImVec2      BackupCursorPos;
-    ImVec2      BackupCursorMaxPos;
+    KGVec2      BackupCursorPos;
+    KGVec2      BackupCursorMaxPos;
     KGVec1      BackupIndent;
     KGVec1      BackupGroupOffset;
-    ImVec2      BackupCurrLineSize;
+    KGVec2      BackupCurrLineSize;
     float       BackupCurrLineTextBaseOffset;
     KGGuiID     BackupActiveIdIsAlive;
     bool        BackupActiveIdPreviousFrameIsAlive;
@@ -896,7 +907,7 @@ struct KARMA_API KGGuiGroupData
 };
 
 // Simple column measurement, currently used for MenuItem() only.. This is very short-sighted/throw-away code and NOT a generic helper.
-struct KARMA_API KGGuiMenuColumns
+struct  KGGuiMenuColumns
 {
     KGU32       TotalWidth;
     KGU32       NextTotalWidth;
@@ -915,7 +926,7 @@ struct KARMA_API KGGuiMenuColumns
 
 // Internal state of the currently focused/edited text input box
 // For a given item ID, access with ImGui::GetInputTextState()
-struct KARMA_API KGGuiInputTextState
+struct  KGGuiInputTextState
 {
     KarmaGuiContext*           Ctx;                    // parent dear imgui context
     KGGuiID                 ID;                     // widget id owning the text state
@@ -960,8 +971,8 @@ struct KGGuiPopupData
     int                 ParentNavLayer; // Resolved on BeginPopup(). Actually a KGGuiNavLayer type (declared down below), initialized to -1 which is not part of an enum, but serves well-enough as "not any of layers" value
     int                 OpenFrameCount; // Set on OpenPopup()
     KGGuiID             OpenParentId;   // Set on OpenPopup(), we need this to differentiate multiple menu sets from each others (e.g. inside menu bar vs loose menu items)
-    ImVec2              OpenPopupPos;   // Set on OpenPopup(), preferred popup position (typically == OpenMousePos when using mouse)
-    ImVec2              OpenMousePos;   // Set on OpenPopup(), copy of mouse position at the time of opening popup
+    KGVec2              OpenPopupPos;   // Set on OpenPopup(), preferred popup position (typically == OpenMousePos when using mouse)
+    KGVec2              OpenMousePos;   // Set on OpenPopup(), copy of mouse position at the time of opening popup
 
     KGGuiPopupData()    { memset(this, 0, sizeof(*this)); ParentNavLayer = OpenFrameCount = -1; }
 };
@@ -990,11 +1001,11 @@ struct KGGuiNextWindowData
     KarmaGuiCond                   SizeCond;
     KarmaGuiCond                   CollapsedCond;
     KarmaGuiCond                   DockCond;
-    ImVec2                      PosVal;
-    ImVec2                      PosPivotVal;
-    ImVec2                      SizeVal;
-    ImVec2                      ContentSizeVal;
-    ImVec2                      ScrollVal;
+    KGVec2                      PosVal;
+    KGVec2                      PosPivotVal;
+    KGVec2                      SizeVal;
+    KGVec2                      ContentSizeVal;
+    KGVec2                      ScrollVal;
     bool                        PosUndock;
     bool                        CollapsedVal;
     KGRect                      SizeConstraintRect;
@@ -1004,7 +1015,7 @@ struct KGGuiNextWindowData
     KGGuiID                     ViewportId;
     KGGuiID                     DockId;
     KarmaGuiWindowClass            WindowClass;
-    ImVec2                      MenuBarOffsetMinVal;    // (Always on) This is not exposed publicly, so we don't clear it and it doesn't have a corresponding flag (could we? for consistency?)
+    KGVec2                      MenuBarOffsetMinVal;    // (Always on) This is not exposed publicly, so we don't clear it and it doesn't have a corresponding flag (could we? for consistency?)
 
     KGGuiNextWindowData()       { memset(this, 0, sizeof(*this)); }
     inline void ClearFlags()    { Flags = KGGuiNextWindowDataFlags_None; }
@@ -1042,7 +1053,7 @@ struct KGGuiLastItemData
     KGGuiLastItemData()     { memset(this, 0, sizeof(*this)); }
 };
 
-struct KARMA_API KGGuiStackSizes
+struct  KGGuiStackSizes
 {
     short   SizeOfIDStack;
     short   SizeOfColorStack;
@@ -1136,7 +1147,7 @@ enum KGGuiInputSource
 };
 
 // FIXME: Structures in the union below need to be declared as anonymous unions appears to be an extension?
-// Using ImVec2() would fail on Clang 'union member 'MousePos' has a non-trivial default constructor'
+// Using KGVec2() would fail on Clang 'union member 'MousePos' has a non-trivial default constructor'
 struct KGGuiInputEventMousePos      { float PosX, PosY; };
 struct KGGuiInputEventMouseWheel    { float WheelX, WheelY; };
 struct KGGuiInputEventMouseButton   { int Button; bool Down; };
@@ -1439,7 +1450,7 @@ enum KGGuiDockNodeState
 };
 
 // sizeof() 156~192
-struct KARMA_API KGGuiDockNode
+struct  KGGuiDockNode
 {
     KGGuiID                 ID;
     KarmaGuiDockNodeFlags      SharedFlags;                // (Write) Flags shared by all nodes of a same dockspace hierarchy (inherited from the root node)
@@ -1451,9 +1462,9 @@ struct KARMA_API KGGuiDockNode
     KGGuiDockNode*          ChildNodes[2];              // [Split node only] Child nodes (left/right or top/bottom). Consider switching to an array.
     KGVector<KGGuiWindow*>  Windows;                    // Note: unordered list! Iterate TabBar->Tabs for user-order.
     KGGuiTabBar*            TabBar;
-    ImVec2                  Pos;                        // Current position
-    ImVec2                  Size;                       // Current size
-    ImVec2                  SizeRef;                    // [Split node only] Last explicitly written-to size (overridden when using a splitter affecting the node), used to calculate Size.
+    KGVec2                  Pos;                        // Current position
+    KGVec2                  Size;                       // Current size
+    KGVec2                  SizeRef;                    // [Split node only] Last explicitly written-to size (overridden when using a splitter affecting the node), used to calculate Size.
     KGGuiAxis               SplitAxis;                  // [Split node only] Split axis (X or Y)
     KarmaGuiWindowClass        WindowClass;                // [Root node only]
     KGU32                   LastBgColor;
@@ -1544,7 +1555,7 @@ struct KGGuiViewportP : public KarmaGuiViewport
     int                 LastFrameActive;        // Last frame number this viewport was activated by a window
     int                 LastFrontMostStampCount;// Last stamp number from when a window hosted by this viewport was made front-most (by comparing this value between two viewport we have an implicit viewport z-order
     KGGuiID             LastNameHash;
-    ImVec2              LastPos;
+    KGVec2              LastPos;
     float               Alpha;                  // Window opacity (when dragging dockable windows/viewports we make them transparent)
     float               LastAlpha;
     short               PlatformMonitor;
@@ -1553,27 +1564,27 @@ struct KGGuiViewportP : public KarmaGuiViewport
     KGDrawList*         DrawLists[2];           // Convenience background (0) and foreground (1) draw lists. We use them to draw software mouser cursor when io.MouseDrawCursor is set and to draw most debug overlays.
     KGDrawData          DrawDataP;
     KGDrawDataBuilder   DrawDataBuilder;
-    ImVec2              LastPlatformPos;
-    ImVec2              LastPlatformSize;
-    ImVec2              LastRendererSize;
-    ImVec2              WorkOffsetMin;          // Work Area: Offset from Pos to top-left corner of Work Area. Generally (0,0) or (0,+main_menu_bar_height). Work Area is Full Area but without menu-bars/status-bars (so WorkArea always fit inside Pos/Size!)
-    ImVec2              WorkOffsetMax;          // Work Area: Offset from Pos+Size to bottom-right corner of Work Area. Generally (0,0) or (0,-status_bar_height).
-    ImVec2              BuildWorkOffsetMin;     // Work Area: Offset being built during current frame. Generally >= 0.0f.
-    ImVec2              BuildWorkOffsetMax;     // Work Area: Offset being built during current frame. Generally <= 0.0f.
+    KGVec2              LastPlatformPos;
+    KGVec2              LastPlatformSize;
+    KGVec2              LastRendererSize;
+    KGVec2              WorkOffsetMin;          // Work Area: Offset from Pos to top-left corner of Work Area. Generally (0,0) or (0,+main_menu_bar_height). Work Area is Full Area but without menu-bars/status-bars (so WorkArea always fit inside Pos/Size!)
+    KGVec2              WorkOffsetMax;          // Work Area: Offset from Pos+Size to bottom-right corner of Work Area. Generally (0,0) or (0,-status_bar_height).
+    KGVec2              BuildWorkOffsetMin;     // Work Area: Offset being built during current frame. Generally >= 0.0f.
+    KGVec2              BuildWorkOffsetMax;     // Work Area: Offset being built during current frame. Generally <= 0.0f.
 
-    KGGuiViewportP()                    { Idx = -1; LastFrameActive = DrawListsLastFrame[0] = DrawListsLastFrame[1] = LastFrontMostStampCount = -1; LastNameHash = 0; Alpha = LastAlpha = 1.0f; PlatformMonitor = -1; Window = NULL; DrawLists[0] = DrawLists[1] = NULL; LastPlatformPos = LastPlatformSize = LastRendererSize = ImVec2(FLT_MAX, FLT_MAX); }
+    KGGuiViewportP()                    { Idx = -1; LastFrameActive = DrawListsLastFrame[0] = DrawListsLastFrame[1] = LastFrontMostStampCount = -1; LastNameHash = 0; Alpha = LastAlpha = 1.0f; PlatformMonitor = -1; Window = NULL; DrawLists[0] = DrawLists[1] = NULL; LastPlatformPos = LastPlatformSize = LastRendererSize = KGVec2(FLT_MAX, FLT_MAX); }
     ~KGGuiViewportP()                   { if (DrawLists[0]) KG_DELETE(DrawLists[0]); if (DrawLists[1]) KG_DELETE(DrawLists[1]); }
     void    ClearRequestFlags()         { PlatformRequestClose = PlatformRequestMove = PlatformRequestResize = false; }
 
     // Calculate work rect pos/size given a set of offset (we have 1 pair of offset for rect locked from last frame data, and 1 pair for currently building rect)
-    ImVec2  CalcWorkRectPos(const ImVec2& off_min) const                            { return ImVec2(Pos.x + off_min.x, Pos.y + off_min.y); }
-    ImVec2  CalcWorkRectSize(const ImVec2& off_min, const ImVec2& off_max) const    { return ImVec2(KGMax(0.0f, Size.x - off_min.x + off_max.x), KGMax(0.0f, Size.y - off_min.y + off_max.y)); }
+    KGVec2  CalcWorkRectPos(const KGVec2& off_min) const                            { return KGVec2(Pos.x + off_min.x, Pos.y + off_min.y); }
+    KGVec2  CalcWorkRectSize(const KGVec2& off_min, const KGVec2& off_max) const    { return KGVec2(KGMax(0.0f, Size.x - off_min.x + off_max.x), KGMax(0.0f, Size.y - off_min.y + off_max.y)); }
     void    UpdateWorkRect()            { WorkPos = CalcWorkRectPos(WorkOffsetMin); WorkSize = CalcWorkRectSize(WorkOffsetMin, WorkOffsetMax); } // Update public fields
 
     // Helpers to retrieve KGRect (we don't need to store BuildWorkRect as every access tend to change it, hence the code asymmetry)
     KGRect  GetMainRect() const         { return KGRect(Pos.x, Pos.y, Pos.x + Size.x, Pos.y + Size.y); }
     KGRect  GetWorkRect() const         { return KGRect(WorkPos.x, WorkPos.y, WorkPos.x + WorkSize.x, WorkPos.y + WorkSize.y); }
-    KGRect  GetBuildWorkRect() const    { ImVec2 pos = CalcWorkRectPos(BuildWorkOffsetMin); ImVec2 size = CalcWorkRectSize(BuildWorkOffsetMin, BuildWorkOffsetMax); return KGRect(pos.x, pos.y, pos.x + size.x, pos.y + size.y); }
+    KGRect  GetBuildWorkRect() const    { KGVec2 pos = CalcWorkRectPos(BuildWorkOffsetMin); KGVec2 size = CalcWorkRectSize(BuildWorkOffsetMin, BuildWorkOffsetMax); return KGRect(pos.x, pos.y, pos.x + size.x, pos.y + size.y); }
 };
 
 //-----------------------------------------------------------------------------
@@ -1729,7 +1740,7 @@ struct KGGuiContextHook
 // [SECTION] KarmaGuiContext (main Dear ImGui context)
 //-----------------------------------------------------------------------------
 
-struct KARMA_API KarmaGuiContext
+struct  KarmaGuiContext
 {
     bool                    Initialized;
     bool                    FontAtlasOwnedByContext;            // IO.Fonts-> is owned by the KarmaGuiContext and will be destructed along with it.
@@ -1763,17 +1774,17 @@ struct KARMA_API KarmaGuiContext
     KGVector<KGGuiWindowStackData> CurrentWindowStack;
     KarmaGuiStorage            WindowsById;                        // Map window's KGGuiID to KGGuiWindow*
     int                     WindowsActiveCount;                 // Number of unique windows submitted by frame
-    ImVec2                  WindowsHoverPadding;                // Padding around resizable windows for which hovering on counts as hovering the window == KGMax(style.TouchExtraPadding, WINDOWS_HOVER_PADDING)
+    KGVec2                  WindowsHoverPadding;                // Padding around resizable windows for which hovering on counts as hovering the window == KGMax(style.TouchExtraPadding, WINDOWS_HOVER_PADDING)
     KGGuiWindow*            CurrentWindow;                      // Window being drawn into
     KGGuiWindow*            HoveredWindow;                      // Window the mouse is hovering. Will typically catch mouse inputs.
     KGGuiWindow*            HoveredWindowUnderMovingWindow;     // Hovered window ignoring MovingWindow. Only set if MovingWindow is set.
     KGGuiWindow*            MovingWindow;                       // Track the window we clicked on (in order to preserve focus). The actual window that is moved is generally MovingWindow->RootWindowDockTree.
     KGGuiWindow*            WheelingWindow;                     // Track the window we started mouse-wheeling on. Until a timer elapse or mouse has moved, generally keep scrolling the same window even if during the course of scrolling the mouse ends up hovering a child window.
-    ImVec2                  WheelingWindowRefMousePos;
+    KGVec2                  WheelingWindowRefMousePos;
     int                     WheelingWindowStartFrame;           // This may be set one frame before WheelingWindow is != NULL
     float                   WheelingWindowReleaseTimer;
-    ImVec2                  WheelingWindowWheelRemainder;
-    ImVec2                  WheelingAxisAvg;
+    KGVec2                  WheelingWindowWheelRemainder;
+    KGVec2                  WheelingAxisAvg;
 
     // Item/widgets state and tracking information
     KGGuiID                 DebugHookIdInfo;                    // Will call core hooks: DebugHookIdInfo() from GetID functions, used by Stack Tool [next HoveredId/ActiveId to not pull in an extra cache-line]
@@ -1792,7 +1803,7 @@ struct KARMA_API KarmaGuiContext
     bool                    ActiveIdHasBeenPressedBefore;       // Track whether the active id led to a press (this is to allow changing between PressOnClick and PressOnRelease without pressing twice). Used by range_select branch.
     bool                    ActiveIdHasBeenEditedBefore;        // Was the value associated to the widget Edited over the course of the Active state.
     bool                    ActiveIdHasBeenEditedThisFrame;
-    ImVec2                  ActiveIdClickOffset;                // Clicked offset from upper-left corner, if applicable (currently only set by ButtonBehavior)
+    KGVec2                  ActiveIdClickOffset;                // Clicked offset from upper-left corner, if applicable (currently only set by ButtonBehavior)
     KGGuiWindow*            ActiveIdWindow;
     KGGuiInputSource        ActiveIdSource;                     // Activating with mouse or nav (gamepad/keyboard)
     int                     ActiveIdMouseButton;
@@ -1899,8 +1910,8 @@ struct KARMA_API KarmaGuiContext
     float                   NavWindowingTimer;
     float                   NavWindowingHighlightAlpha;
     bool                    NavWindowingToggleLayer;
-    ImVec2                  NavWindowingAccumDeltaPos;
-    ImVec2                  NavWindowingAccumDeltaSize;
+    KGVec2                  NavWindowingAccumDeltaPos;
+    KGVec2                  NavWindowingAccumDeltaSize;
 
     // Render
     float                   DimBgRatio;                         // 0.0..1.0 animation when fading in a dimming background (for modal window and CTRL+TAB list)
@@ -1950,7 +1961,7 @@ struct KARMA_API KarmaGuiContext
     float                   HoverDelayClearTimer;               // Currently used IsItemHovered(): grace time before g.TooltipHoverTimer gets cleared.
 
     // Widget state
-    ImVec2                  MouseLastValidPos;
+    KGVec2                  MouseLastValidPos;
     KGGuiInputTextState     InputTextState;
     KGFont                  InputTextPasswordFont;
     KGGuiID                 TempInputId;                        // Temporary text input when CTRL+clicking on a slider, etc.
@@ -1958,7 +1969,7 @@ struct KARMA_API KarmaGuiContext
     float                   ColorEditLastHue;                   // Backup of last Hue associated to LastColor, so we can restore Hue in lossy RGB<>HSV round trips
     float                   ColorEditLastSat;                   // Backup of last Saturation associated to LastColor, so we can restore Saturation in lossy RGB<>HSV round trips
     KGU32                   ColorEditLastColor;                 // RGB value with alpha set to 0.
-    ImVec4                  ColorPickerRef;                     // Initial/reference color at the time of opening the color picker.
+    KGVec4                  ColorPickerRef;                     // Initial/reference color at the time of opening the color picker.
     KGGuiComboPreviewData   ComboPreviewData;
     float                   SliderGrabClickOffset;
     float                   SliderCurrentAccum;                 // Accumulated slider delta when using navigation controls.
@@ -2071,7 +2082,7 @@ struct KARMA_API KarmaGuiContext
         ActiveIdHasBeenPressedBefore = false;
         ActiveIdHasBeenEditedBefore = false;
         ActiveIdHasBeenEditedThisFrame = false;
-        ActiveIdClickOffset = ImVec2(-1, -1);
+        ActiveIdClickOffset = KGVec2(-1, -1);
         ActiveIdWindow = NULL;
         ActiveIdSource = KGGuiInputSource_None;
         ActiveIdMouseButton = -1;
@@ -2169,8 +2180,8 @@ struct KARMA_API KarmaGuiContext
         DisabledStackSize = 0;
         TooltipOverrideCount = 0;
 
-        PlatformImeData.InputPos = ImVec2(0.0f, 0.0f);
-        PlatformImeDataPrev.InputPos = ImVec2(-1.0f, -1.0f); // Different to ensure initial submission
+        PlatformImeData.InputPos = KGVec2(0.0f, 0.0f);
+        PlatformImeDataPrev.InputPos = KGVec2(-1.0f, -1.0f); // Different to ensure initial submission
         PlatformImeViewport = 0;
         PlatformLocaleDecimalPoint = '.';
 
@@ -2211,16 +2222,16 @@ struct KARMA_API KarmaGuiContext
 // Transient per-window data, reset at the beginning of the frame. This used to be called ImGuiDrawContext, hence the DC variable name in KGGuiWindow.
 // (That's theory, in practice the delimitation between KGGuiWindow and KGGuiWindowTempData is quite tenuous and could be reconsidered..)
 // (This doesn't need a constructor because we zero-clear it as part of KGGuiWindow and all frame-temporary data are setup on Begin)
-struct KARMA_API KGGuiWindowTempData
+struct  KGGuiWindowTempData
 {
     // Layout
-    ImVec2                  CursorPos;              // Current emitting position, in absolute coordinates.
-    ImVec2                  CursorPosPrevLine;
-    ImVec2                  CursorStartPos;         // Initial position after Begin(), generally ~ window position + WindowPadding.
-    ImVec2                  CursorMaxPos;           // Used to implicitly calculate ContentSize at the beginning of next frame, for scrolling range and auto-resize. Always growing during the frame.
-    ImVec2                  IdealMaxPos;            // Used to implicitly calculate ContentSizeIdeal at the beginning of next frame, for auto-resize only. Always growing during the frame.
-    ImVec2                  CurrLineSize;
-    ImVec2                  PrevLineSize;
+    KGVec2                  CursorPos;              // Current emitting position, in absolute coordinates.
+    KGVec2                  CursorPosPrevLine;
+    KGVec2                  CursorStartPos;         // Initial position after Begin(), generally ~ window position + WindowPadding.
+    KGVec2                  CursorMaxPos;           // Used to implicitly calculate ContentSize at the beginning of next frame, for scrolling range and auto-resize. Always growing during the frame.
+    KGVec2                  IdealMaxPos;            // Used to implicitly calculate ContentSizeIdeal at the beginning of next frame, for auto-resize only. Always growing during the frame.
+    KGVec2                  CurrLineSize;
+    KGVec2                  PrevLineSize;
     float                   CurrLineTextBaseOffset; // Baseline offset (0.0f by default on a new line, generally == style.FramePadding.y when a framed item has been added).
     float                   PrevLineTextBaseOffset;
     bool                    IsSameLine;
@@ -2228,7 +2239,7 @@ struct KARMA_API KGGuiWindowTempData
     KGVec1                  Indent;                 // Indentation / start position from left of window (increased by TreePush/TreePop, etc.)
     KGVec1                  ColumnsOffset;          // Offset to the current column (if ColumnsCurrent > 0). FIXME: This and the above should be a stack to allow use cases like Tree->Column->Tree. Need revamp columns API.
     KGVec1                  GroupOffset;
-    ImVec2                  CursorStartPosLossyness;// Record the loss of precision of CursorStartPos due to really large scrolling amount. This is used by clipper to compensentate and fix the most common use case of large scroll area.
+    KGVec2                  CursorStartPosLossyness;// Record the loss of precision of CursorStartPos due to really large scrolling amount. This is used by clipper to compensentate and fix the most common use case of large scroll area.
 
     // Keyboard/Gamepad navigation
     KGGuiNavLayer           NavLayerCurrent;        // Current layer, 0..31 (we currently only use 0..1)
@@ -2239,7 +2250,7 @@ struct KARMA_API KGGuiWindowTempData
 
     // Miscellaneous
     bool                    MenuBarAppending;       // FIXME: Remove this
-    ImVec2                  MenuBarOffset;          // MenuBarOffset.x is sort of equivalent of a per-layer CursorPos.x, saved/restored as we switch to the menu bar. The only situation when MenuBarOffset.y is > 0 if when (SafeAreaPadding.y > FramePadding.y), often used on TVs.
+    KGVec2                  MenuBarOffset;          // MenuBarOffset.x is sort of equivalent of a per-layer CursorPos.x, saved/restored as we switch to the menu bar. The only situation when MenuBarOffset.y is > 0 if when (SafeAreaPadding.y > FramePadding.y), often used on TVs.
     KGGuiMenuColumns        MenuColumns;            // Simplified columns storage for menu items measurement
     int                     TreeDepth;              // Current tree depth.
     KGU32                   TreeJumpToParentOnPopMask; // Store a copy of !g.NavIdIsAlive for TreeDepth 0..31.. Could be turned into a KGU64 if necessary.
@@ -2259,7 +2270,7 @@ struct KARMA_API KGGuiWindowTempData
 };
 
 // Storage for one window
-struct KARMA_API KGGuiWindow
+struct  KGGuiWindow
 {
     char*                   Name;                               // Window name, owned by the window.
     KGGuiID                 ID;                                 // == KGHashStr(Name)
@@ -2267,15 +2278,15 @@ struct KARMA_API KGGuiWindow
     KarmaGuiWindowClass        WindowClass;                        // Advanced users only. Set with SetNextWindowClass()
     KGGuiViewportP*         Viewport;                           // Always set in Begin(). Inactive windows may have a NULL value here if their viewport was discarded.
     KGGuiID                 ViewportId;                         // We backup the viewport id (since the viewport may disappear or never be created if the window is inactive)
-    ImVec2                  ViewportPos;                        // We backup the viewport position (since the viewport may disappear or never be created if the window is inactive)
+    KGVec2                  ViewportPos;                        // We backup the viewport position (since the viewport may disappear or never be created if the window is inactive)
     int                     ViewportAllowPlatformMonitorExtend; // Reset to -1 every frame (index is guaranteed to be valid between NewFrame..EndFrame), only used in the Appearing frame of a tooltip/popup to enforce clamping to a given monitor
-    ImVec2                  Pos;                                // Position (always rounded-up to nearest pixel)
-    ImVec2                  Size;                               // Current size (==SizeFull or collapsed title bar size)
-    ImVec2                  SizeFull;                           // Size when non collapsed
-    ImVec2                  ContentSize;                        // Size of contents/scrollable client area (calculated from the extents reach of the cursor) from previous frame. Does not include window decoration or window padding.
-    ImVec2                  ContentSizeIdeal;
-    ImVec2                  ContentSizeExplicit;                // Size of contents/scrollable client area explicitly request by the user via SetNextWindowContentSize().
-    ImVec2                  WindowPadding;                      // Window padding at the time of Begin().
+    KGVec2                  Pos;                                // Position (always rounded-up to nearest pixel)
+    KGVec2                  Size;                               // Current size (==SizeFull or collapsed title bar size)
+    KGVec2                  SizeFull;                           // Size when non collapsed
+    KGVec2                  ContentSize;                        // Size of contents/scrollable client area (calculated from the extents reach of the cursor) from previous frame. Does not include window decoration or window padding.
+    KGVec2                  ContentSizeIdeal;
+    KGVec2                  ContentSizeExplicit;                // Size of contents/scrollable client area explicitly request by the user via SetNextWindowContentSize().
+    KGVec2                  WindowPadding;                      // Window padding at the time of Begin().
     KGU32                   BgColor;                            // Client specified window background color
     float                   WindowRounding;                     // Window rounding at the time of Begin(). May be clamped lower to avoid rendering artifacts with title bar, menu bar etc.
     float                   WindowBorderSize;                   // Window border size at the time of Begin().
@@ -2286,12 +2297,12 @@ struct KARMA_API KGGuiWindow
     KGGuiID                 MoveId;                             // == window->GetID("#MOVE")
     KGGuiID                 TabId;                              // == window->GetID("#TAB")
     KGGuiID                 ChildId;                            // ID of corresponding item in parent window (for navigation to return from child window to parent window)
-    ImVec2                  Scroll;
-    ImVec2                  ScrollMax;
-    ImVec2                  ScrollTarget;                       // target scroll position. stored as cursor position with scrolling canceled out, so the highest point is always 0.0f. (FLT_MAX for no change)
-    ImVec2                  ScrollTargetCenterRatio;            // 0.0f = scroll so that target position is at top, 0.5f = scroll so that target position is centered
-    ImVec2                  ScrollTargetEdgeSnapDist;           // 0.0f = no snapping, >0.0f snapping threshold
-    ImVec2                  ScrollbarSizes;                     // Size taken by each scrollbars on their smaller axis. Pay attention! ScrollbarSizes.x == width of the vertical scrollbar, ScrollbarSizes.y = height of the horizontal scrollbar.
+    KGVec2                  Scroll;
+    KGVec2                  ScrollMax;
+    KGVec2                  ScrollTarget;                       // target scroll position. stored as cursor position with scrolling canceled out, so the highest point is always 0.0f. (FLT_MAX for no change)
+    KGVec2                  ScrollTargetCenterRatio;            // 0.0f = scroll so that target position is at top, 0.5f = scroll so that target position is centered
+    KGVec2                  ScrollTargetEdgeSnapDist;           // 0.0f = no snapping, >0.0f snapping threshold
+    KGVec2                  ScrollbarSizes;                     // Size taken by each scrollbars on their smaller axis. Pay attention! ScrollbarSizes.x == width of the vertical scrollbar, ScrollbarSizes.y = height of the horizontal scrollbar.
     bool                    bUseCustomBgColor;                  // Shoule we use custom (client specified) bg color for window?
     bool                    ScrollbarX, ScrollbarY;             // Are scrollbars visible?
     bool                    ViewportOwned;
@@ -2325,8 +2336,8 @@ struct KARMA_API KGGuiWindow
     KarmaGuiCond               SetWindowSizeAllowFlags : 8;        // store acceptable condition flags for SetNextWindowSize() use.
     KarmaGuiCond               SetWindowCollapsedAllowFlags : 8;   // store acceptable condition flags for SetNextWindowCollapsed() use.
     KarmaGuiCond               SetWindowDockAllowFlags : 8;        // store acceptable condition flags for SetNextWindowDock() use.
-    ImVec2                  SetWindowPosVal;                    // store window position when using a non-zero Pivot (position set needs to be processed when we know the window size)
-    ImVec2                  SetWindowPosPivot;                  // store window pivot for positioning. ImVec2(0, 0) when positioning from top-left corner; ImVec2(0.5f, 0.5f) for centering; ImVec2(1, 1) for bottom right.
+    KGVec2                  SetWindowPosVal;                    // store window position when using a non-zero Pivot (position set needs to be processed when we know the window size)
+    KGVec2                  SetWindowPosPivot;                  // store window pivot for positioning. KGVec2(0, 0) when positioning from top-left corner; KGVec2(0.5f, 0.5f) for centering; KGVec2(1, 1) for bottom right.
 
     KGVector<KGGuiID>       IDStack;                            // ID stack. ID are hashes seeded with the value at the top of the stack. (In theory this should be in the TempData structure)
     KGGuiWindowTempData     DC;                                 // Temporary per-window data, reset at the beginning of the frame. This used to be called ImGuiDrawContext, hence the "DC" variable name.
@@ -2398,7 +2409,7 @@ public:
     KGRect      Rect() const            { return KGRect(Pos.x, Pos.y, Pos.x + Size.x, Pos.y + Size.y); }
     float       CalcFontSize() const    { KarmaGuiContext& g = *GKarmaGui; float scale = g.FontBaseSize * FontWindowScale * FontDpiScale; if (ParentWindow) scale *= ParentWindow->FontWindowScale; return scale; }
     float       TitleBarHeight() const  { KarmaGuiContext& g = *GKarmaGui; return (Flags & KGGuiWindowFlags_NoTitleBar) ? 0.0f : CalcFontSize() + g.Style.FramePadding.y * 2.0f; }
-    KGRect      TitleBarRect() const    { return KGRect(Pos, ImVec2(Pos.x + SizeFull.x, Pos.y + TitleBarHeight())); }
+    KGRect      TitleBarRect() const    { return KGRect(Pos, KGVec2(Pos.x + SizeFull.x, Pos.y + TitleBarHeight())); }
     float       MenuBarHeight() const   { KarmaGuiContext& g = *GKarmaGui; return (Flags & KGGuiWindowFlags_MenuBar) ? DC.MenuBarOffset.y + CalcFontSize() + g.Style.FramePadding.y * 2.0f : 0.0f; }
     KGRect      MenuBarRect() const     { float y1 = Pos.y + TitleBarHeight(); return KGRect(Pos.x, y1, Pos.x + SizeFull.x, y1 + MenuBarHeight()); }
 };
@@ -2446,7 +2457,7 @@ struct KGGuiTabItem
 };
 
 // Storage for a tab bar (sizeof() 152 bytes)
-struct KARMA_API KGGuiTabBar
+struct  KGGuiTabBar
 {
     KGVector<KGGuiTabItem> Tabs;
     KarmaGuiTabBarFlags    Flags;
@@ -2476,8 +2487,8 @@ struct KARMA_API KGGuiTabBar
     KGS16               TabsActiveCount;        // Number of tabs submitted this frame.
     KGS16               LastTabItemIdx;         // Index of last BeginTabItem() tab for use by EndTabItem()
     float               ItemSpacingY;
-    ImVec2              FramePadding;           // style.FramePadding locked at the time of BeginTabBar()
-    ImVec2              BackupCursorPos;
+    KGVec2              FramePadding;           // style.FramePadding locked at the time of BeginTabBar()
+    KGVec2              BackupCursorPos;
     KarmaGuiTextBuffer     TabsNames;              // For non-docking tab bar we re-append names in a contiguous buffer.
 
     KGGuiTabBar();
@@ -2583,7 +2594,7 @@ struct KGGuiTableInstanceData
 };
 
 // FIXME-TABLE: more transient data could be stored in a stacked KGGuiTableTempData: e.g. SortSpecs, incoming RowData
-struct KARMA_API KGGuiTable
+struct  KGGuiTable
 {
     KGGuiID                     ID;
     KarmaGuiTableFlags             Flags;
@@ -2699,19 +2710,19 @@ struct KARMA_API KGGuiTable
 // Transient data that are only needed between BeginTable() and EndTable(), those buffers are shared (1 per level of stacked table).
 // - Accessing those requires chasing an extra pointer so for very frequently used data we leave them in the main table structure.
 // - We also leave out of this structure data that tend to be particularly useful for debugging/metrics.
-struct KARMA_API KGGuiTableTempData
+struct  KGGuiTableTempData
 {
     int                         TableIndex;                 // Index in g.Tables.Buf[] pool
     float                       LastTimeActive;             // Last timestamp this structure was used
 
-    ImVec2                      UserOuterSize;              // outer_size.x passed to BeginTable()
+    KGVec2                      UserOuterSize;              // outer_size.x passed to BeginTable()
     KGDrawListSplitter          DrawSplitter;
 
     KGRect                      HostBackupWorkRect;         // Backup of InnerWindow->WorkRect at the end of BeginTable()
     KGRect                      HostBackupParentWorkRect;   // Backup of InnerWindow->ParentWorkRect at the end of BeginTable()
-    ImVec2                      HostBackupPrevLineSize;     // Backup of InnerWindow->DC.PrevLineSize at the end of BeginTable()
-    ImVec2                      HostBackupCurrLineSize;     // Backup of InnerWindow->DC.CurrLineSize at the end of BeginTable()
-    ImVec2                      HostBackupCursorMaxPos;     // Backup of InnerWindow->DC.CursorMaxPos at the end of BeginTable()
+    KGVec2                      HostBackupPrevLineSize;     // Backup of InnerWindow->DC.PrevLineSize at the end of BeginTable()
+    KGVec2                      HostBackupCurrLineSize;     // Backup of InnerWindow->DC.CurrLineSize at the end of BeginTable()
+    KGVec2                      HostBackupCursorMaxPos;     // Backup of InnerWindow->DC.CursorMaxPos at the end of BeginTable()
     KGVec1                      HostBackupColumnsOffset;    // Backup of OuterWindow->DC.ColumnsOffset at the end of BeginTable()
     float                       HostBackupItemWidth;        // Backup of OuterWindow->DC.ItemWidth at the end of BeginTable()
     int                         HostBackupItemWidthStackSize;//Backup of OuterWindow->DC.ItemWidthStack.Size at the end of BeginTable()
@@ -2757,553 +2768,614 @@ struct KGGuiTableSettings
     KGGuiTableColumnSettings*   GetColumnSettings()     { return (KGGuiTableColumnSettings*)(this + 1); }
 };
 
-//-----------------------------------------------------------------------------
-// [SECTION] ImGui internal API
-// No guarantee of forward compatibility here!
-//-----------------------------------------------------------------------------
 
 namespace Karma
 {
-    // Windows
-    // We should always have a CurrentWindow in the stack (there is an implicit "Debug" window)
-    // If this ever crash because g.CurrentWindow is NULL it means that either
-    // - ImGui::NewFrame() has never been called, which is illegal.
-    // - You are calling ImGui functions after ImGui::EndFrame()/ImGui::Render() and before the next ImGui::NewFrame(), which is also illegal.
-    inline    KGGuiWindow*  GetCurrentWindowRead()      { KarmaGuiContext& g = *GKarmaGui; return g.CurrentWindow; }
-    inline    KGGuiWindow*  GetCurrentWindow()          { KarmaGuiContext& g = *GKarmaGui; g.CurrentWindow->WriteAccessed = true; return g.CurrentWindow; }
-    KARMA_API KGGuiWindow*  FindWindowByID(KGGuiID id);
-    KARMA_API KGGuiWindow*  FindWindowByName(const char* name);
-    KARMA_API void          UpdateWindowParentAndRootLinks(KGGuiWindow* window, KarmaGuiWindowFlags flags, KGGuiWindow* parent_window);
-    KARMA_API ImVec2        CalcWindowNextAutoFitSize(KGGuiWindow* window);
-    KARMA_API bool          IsWindowChildOf(KGGuiWindow* window, KGGuiWindow* potential_parent, bool popup_hierarchy, bool dock_hierarchy);
-    KARMA_API bool          IsWindowWithinBeginStackOf(KGGuiWindow* window, KGGuiWindow* potential_parent);
-    KARMA_API bool          IsWindowAbove(KGGuiWindow* potential_above, KGGuiWindow* potential_below);
-    KARMA_API bool          IsWindowNavFocusable(KGGuiWindow* window);
-    KARMA_API void          SetWindowPos(KGGuiWindow* window, const ImVec2& pos, KarmaGuiCond cond = 0);
-    KARMA_API void          SetWindowSize(KGGuiWindow* window, const ImVec2& size, KarmaGuiCond cond = 0);
-    KARMA_API void          SetWindowCollapsed(KGGuiWindow* window, bool collapsed, KarmaGuiCond cond = 0);
-    KARMA_API void          SetWindowHitTestHole(KGGuiWindow* window, const ImVec2& pos, const ImVec2& size);
-    inline KGRect           WindowRectAbsToRel(KGGuiWindow* window, const KGRect& r) { ImVec2 off = window->DC.CursorStartPos; return KGRect(r.Min.x - off.x, r.Min.y - off.y, r.Max.x - off.x, r.Max.y - off.y); }
-    inline KGRect           WindowRectRelToAbs(KGGuiWindow* window, const KGRect& r) { ImVec2 off = window->DC.CursorStartPos; return KGRect(r.Min.x + off.x, r.Min.y + off.y, r.Max.x + off.x, r.Max.y + off.y); }
+	class  KARMA_API KarmaGuiInternal
+	{
+	public:
+		static KarmaGuiContext*   GKarmaGui;
+		static KarmaGuiMemAllocFunc    GImAllocatorAllocFunc ;
+		static KarmaGuiMemFreeFunc     GImAllocatorFreeFunc;
+		static void*                GImAllocatorUserData;
+	public:
+		// Some helpers defined in KarmaGui.cpp
+		static void             SetCurrentWindow(KGGuiWindow* window);
+		static void             FindHoveredWindow();
+		static KGGuiWindow*     CreateNewWindow(const char* name, KarmaGuiWindowFlags flags);
+		static KGVec2           CalcNextScrollFromScrollTargetAndClamp(KGGuiWindow* window);
 
-    // Windows: Display Order and Focus Order
-    KARMA_API void          FocusWindow(KGGuiWindow* window);
-    KARMA_API void          FocusTopMostWindowUnderOne(KGGuiWindow* under_this_window, KGGuiWindow* ignore_window);
-    KARMA_API void          BringWindowToFocusFront(KGGuiWindow* window);
-    KARMA_API void          BringWindowToDisplayFront(KGGuiWindow* window);
-    KARMA_API void          BringWindowToDisplayBack(KGGuiWindow* window);
-    KARMA_API void          BringWindowToDisplayBehind(KGGuiWindow* window, KGGuiWindow* above_window);
-    KARMA_API int           FindWindowDisplayIndex(KGGuiWindow* window);
-    KARMA_API KGGuiWindow*  FindBottomMostVisibleWindowWithinBeginStack(KGGuiWindow* window);
+		static void             AddDrawListToDrawData(KGVector<KGDrawList*>* out_list, KGDrawList* draw_list);
+		static void             AddWindowToSortBuffer(KGVector<KGGuiWindow*>* out_sorted_windows, KGGuiWindow* window);
 
-    // Fonts, drawing
-    KARMA_API void          SetCurrentFont(KGFont* font);
-    inline KGFont*          GetDefaultFont() { KarmaGuiContext& g = *GKarmaGui; return g.IO.FontDefault ? g.IO.FontDefault : g.IO.Fonts->Fonts[0]; }
-    inline KGDrawList*      GetForegroundDrawList(KGGuiWindow* window) { return KarmaGui::GetForegroundDrawList(window->Viewport); }
+		// Settings
+		static void             WindowSettingsHandler_ClearAll(KarmaGuiContext*, KGGuiSettingsHandler*);
+		static void*            WindowSettingsHandler_ReadOpen(KarmaGuiContext*, KGGuiSettingsHandler*, const char* name);
+		static void             WindowSettingsHandler_ReadLine(KarmaGuiContext*, KGGuiSettingsHandler*, void* entry, const char* line);
+		static void             WindowSettingsHandler_ApplyAll(KarmaGuiContext*, KGGuiSettingsHandler*);
+		static void             WindowSettingsHandler_WriteAll(KarmaGuiContext*, KGGuiSettingsHandler*, KarmaGuiTextBuffer* buf);
 
-    // Init
-    KARMA_API void          Initialize();
-    KARMA_API void          Shutdown();    // Since 1.60 this is a _private_ function. You can call DestroyContext() to destroy the context created by CreateContext().
+		// Platform Dependents default implementation for IO functions
+		static const char*      GetClipboardTextFn_DefaultImpl(void* user_data);
+		static void             SetClipboardTextFn_DefaultImpl(void* user_data, const char* text);
+		static void             SetPlatformImeDataFn_DefaultImpl(KarmaGuiViewport* viewport, KarmaGuiPlatformImeData* data);
 
-    // NewFrame
-    KARMA_API void          UpdateInputEvents(bool trickle_fast_inputs);
-    KARMA_API void          UpdateHoveredWindowAndCaptureFlags();
-    KARMA_API void          StartMouseMovingWindow(KGGuiWindow* window);
-    KARMA_API void          StartMouseMovingWindowOrNode(KGGuiWindow* window, KGGuiDockNode* node, bool undock_floating_node);
-    KARMA_API void          UpdateMouseMovingWindowNewFrame();
-    KARMA_API void          UpdateMouseMovingWindowEndFrame();
+		// Navigation
+		static void             NavUpdate();
+		static void             NavUpdateWindowing();
+		static void             NavUpdateWindowingOverlay();
+		static void             NavUpdateCancelRequest();
+		static void             NavUpdateCreateMoveRequest();
+		static void             NavUpdateCreateTabbingRequest();
+		static float            NavUpdatePageUpPageDown();
+		static inline void      NavUpdateAnyRequestFlag();
+		static void             NavUpdateCreateWrappingRequest();
+		static void             NavEndFrame();
+		static bool             NavScoreItem(KGGuiNavItemData* result);
+		static void             NavApplyItemToResult(KGGuiNavItemData* result);
+		static void             NavProcessItem();
+		static void             NavProcessItemForTabbingRequest(KGGuiID id);
+		static KGVec2           NavCalcPreferredRefPos();
+		static void             NavSaveLastChildNavWindowIntoParent(KGGuiWindow* nav_window);
+		static KGGuiWindow*     NavRestoreLastChildNavWindow(KGGuiWindow* window);
+		static void             NavRestoreLayer(KGGuiNavLayer layer);
+		static void             NavRestoreHighlightAfterMove();
+		static int              FindWindowFocusIndex(KGGuiWindow* window);
 
-    // Generic context hooks
-    KARMA_API KGGuiID       AddContextHook(KarmaGuiContext* context, const KGGuiContextHook* hook);
-    KARMA_API void          RemoveContextHook(KarmaGuiContext* context, KGGuiID hook_to_remove);
-    KARMA_API void          CallContextHooks(KarmaGuiContext* context, ImGuiContextHookType type);
+		// Error Checking and Debug Tools
+		static void             ErrorCheckNewFrameSanityChecks();
+		static void             ErrorCheckEndFrameSanityChecks();
+		static void             UpdateDebugToolItemPicker();
+		static void             UpdateDebugToolStackQueries();
 
-    // Viewports
-    KARMA_API void          TranslateWindowsInViewport(KGGuiViewportP* viewport, const ImVec2& old_pos, const ImVec2& new_pos);
-    KARMA_API void          ScaleWindowsInViewport(KGGuiViewportP* viewport, float scale);
-    KARMA_API void          DestroyPlatformWindow(KGGuiViewportP* viewport);
-    KARMA_API void          SetWindowViewport(KGGuiWindow* window, KGGuiViewportP* viewport);
-    KARMA_API void          SetCurrentViewport(KGGuiWindow* window, KGGuiViewportP* viewport);
-    KARMA_API const KarmaGuiPlatformMonitor*   GetViewportPlatformMonitor(KarmaGuiViewport* viewport);
-    KARMA_API KGGuiViewportP*               FindHoveredViewportFromPlatformWindowStack(const ImVec2& mouse_platform_pos);
+		// Inputs
+		static void             UpdateKeyboardInputs();
+		static void             UpdateMouseInputs();
+		static void             UpdateMouseWheel();
+		static void             UpdateKeyRoutingTable(KGGuiKeyRoutingTable* rt);
 
-    // Settings
-    KARMA_API void                  MarkIniSettingsDirty();
-    KARMA_API void                  MarkIniSettingsDirty(KGGuiWindow* window);
-    KARMA_API void                  ClearIniSettings();
-    KARMA_API KGGuiWindowSettings*  CreateNewWindowSettings(const char* name);
-    KARMA_API KGGuiWindowSettings*  FindWindowSettings(KGGuiID id);
-    KARMA_API KGGuiWindowSettings*  FindOrCreateWindowSettings(const char* name);
-    KARMA_API void                  AddSettingsHandler(const KGGuiSettingsHandler* handler);
-    KARMA_API void                  RemoveSettingsHandler(const char* type_name);
-    KARMA_API KGGuiSettingsHandler* FindSettingsHandler(const char* type_name);
+		// Misc
+		static void             UpdateSettings();
+		static bool             UpdateWindowManualResize(KGGuiWindow* window, const KGVec2& size_auto_fit, int* border_held, int resize_grip_count, KGU32 resize_grip_col[4], const KGRect& visibility_rect);
+		static void             RenderWindowOuterBorders(KGGuiWindow* window);
+		static void             RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_bar_rect, bool title_bar_is_highlight, bool handle_borders_and_resize_grips, int resize_grip_count, const KGU32 resize_grip_col[4], float resize_grip_draw_size);
+		static void             RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& title_bar_rect, const char* name, bool* p_open);
+		static void             RenderDimmedBackgroundBehindWindow(KGGuiWindow* window, KGU32 col);
+		static void             RenderDimmedBackgrounds();
+		static KGGuiWindow*     FindBlockingModal(KGGuiWindow* window);
 
-    // Localization
-    KARMA_API void          LocalizeRegisterEntries(const KGGuiLocEntry* entries, int count);
-    inline const char*      LocalizeGetMsg(KGGuiLocKey key) { KarmaGuiContext& g = *GKarmaGui; const char* msg = g.LocalizationTable[key]; return msg ? msg : "*Missing Text*"; }
+		// Viewports
+		const KGGuiID           IMGUI_VIEWPORT_DEFAULT_ID = 0x11111111; // Using an arbitrary constant instead of e.g. KGHashStr("ViewportDefault", 0); so it's easier to spot in the debugger. The exact value doesn't matter.
+		static KGGuiViewportP*  AddUpdateViewport(KGGuiWindow* window, KGGuiID id, const KGVec2& platform_pos, const KGVec2& size, KarmaGuiViewportFlags flags);
+		static void             DestroyViewport(KGGuiViewportP* viewport);
+		static void             UpdateViewportsNewFrame();
+		static void             UpdateViewportsEndFrame();
+		static void             WindowSelectViewport(KGGuiWindow* window);
+		static void             WindowSyncOwnedViewport(KGGuiWindow* window, KGGuiWindow* parent_window_in_stack);
+		static bool             UpdateTryMergeWindowIntoHostViewport(KGGuiWindow* window, KGGuiViewportP* host_viewport);
+		static bool             UpdateTryMergeWindowIntoHostViewports(KGGuiWindow* window);
+		static bool             GetWindowAlwaysWantOwnViewport(KGGuiWindow* window);
+		static int              FindPlatformMonitorForPos(const KGVec2& pos);
+		static int              FindPlatformMonitorForRect(const KGRect& r);
+		static void             UpdateViewportPlatformMonitor(KGGuiViewportP* viewport);
 
-    // Scrolling
-    KARMA_API void          SetScrollX(KGGuiWindow* window, float scroll_x);
-    KARMA_API void          SetScrollY(KGGuiWindow* window, float scroll_y);
-    KARMA_API void          SetScrollFromPosX(KGGuiWindow* window, float local_x, float center_x_ratio);
-    KARMA_API void          SetScrollFromPosY(KGGuiWindow* window, float local_y, float center_y_ratio);
+	public:
+		// Windows
+		// We should always have a CurrentWindow in the stack (there is an implicit "Debug" window)
+		// If this ever crash because g.CurrentWindow is NULL it means that either
+		// - ImGui::NewFrame() has never been called, which is illegal.
+		// - You are calling ImGui functions after ImGui::EndFrame()/ImGui::Render() and before the next ImGui::NewFrame(), which is also illegal.
+		static inline    KGGuiWindow*  GetCurrentWindowRead()      { KarmaGuiContext& g = *GKarmaGui; return g.CurrentWindow; }
+		static inline    KGGuiWindow*  GetCurrentWindow()          { KarmaGuiContext& g = *GKarmaGui; g.CurrentWindow->WriteAccessed = true; return g.CurrentWindow; }
+		static KGGuiWindow*  FindWindowByID(KGGuiID id);
+		static KGGuiWindow*  FindWindowByName(const char* name);
+		static void          UpdateWindowParentAndRootLinks(KGGuiWindow* window, KarmaGuiWindowFlags flags, KGGuiWindow* parent_window);
+		static KGVec2        CalcWindowNextAutoFitSize(KGGuiWindow* window);
+		static bool          IsWindowChildOf(KGGuiWindow* window, KGGuiWindow* potential_parent, bool popup_hierarchy, bool dock_hierarchy);
+		static bool          IsWindowWithinBeginStackOf(KGGuiWindow* window, KGGuiWindow* potential_parent);
+		static bool          IsWindowAbove(KGGuiWindow* potential_above, KGGuiWindow* potential_below);
+		static bool          IsWindowNavFocusable(KGGuiWindow* window);
+		static void          SetWindowPos(KGGuiWindow* window, const KGVec2& pos, KarmaGuiCond cond = 0);
+		static void          SetWindowSize(KGGuiWindow* window, const KGVec2& size, KarmaGuiCond cond = 0);
+		static void          SetWindowCollapsed(KGGuiWindow* window, bool collapsed, KarmaGuiCond cond = 0);
+		static void          SetWindowHitTestHole(KGGuiWindow* window, const KGVec2& pos, const KGVec2& size);
+		static inline KGRect           WindowRectAbsToRel(KGGuiWindow* window, const KGRect& r) { KGVec2 off = window->DC.CursorStartPos; return KGRect(r.Min.x - off.x, r.Min.y - off.y, r.Max.x - off.x, r.Max.y - off.y); }
+		static inline KGRect           WindowRectRelToAbs(KGGuiWindow* window, const KGRect& r) { KGVec2 off = window->DC.CursorStartPos; return KGRect(r.Min.x + off.x, r.Min.y + off.y, r.Max.x + off.x, r.Max.y + off.y); }
 
-    // Early work-in-progress API (ScrollToItem() will become public)
-    KARMA_API void          ScrollToItem(KGGuiScrollFlags flags = 0);
-    KARMA_API void          ScrollToRect(KGGuiWindow* window, const KGRect& rect, KGGuiScrollFlags flags = 0);
-    KARMA_API ImVec2        ScrollToRectEx(KGGuiWindow* window, const KGRect& rect, KGGuiScrollFlags flags = 0);
-//#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-    inline void             ScrollToBringRectIntoView(KGGuiWindow* window, const KGRect& rect) { ScrollToRect(window, rect, KGGuiScrollFlags_KeepVisibleEdgeY); }
-//#endif
+		// Windows: Display Order and Focus Order
+		static void          FocusWindow(KGGuiWindow* window);
+		static void          FocusTopMostWindowUnderOne(KGGuiWindow* under_this_window, KGGuiWindow* ignore_window);
+		static void          BringWindowToFocusFront(KGGuiWindow* window);
+		static void          BringWindowToDisplayFront(KGGuiWindow* window);
+		static void          BringWindowToDisplayBack(KGGuiWindow* window);
+		static void          BringWindowToDisplayBehind(KGGuiWindow* window, KGGuiWindow* above_window);
+		static int           FindWindowDisplayIndex(KGGuiWindow* window);
+		static KGGuiWindow*  FindBottomMostVisibleWindowWithinBeginStack(KGGuiWindow* window);
 
-    // Basic Accessors
-    inline KGGuiItemStatusFlags GetItemStatusFlags(){ KarmaGuiContext& g = *GKarmaGui; return g.LastItemData.StatusFlags; }
-    inline KGGuiItemFlags   GetItemFlags()  { KarmaGuiContext& g = *GKarmaGui; return g.LastItemData.InFlags; }
-    inline KGGuiID          GetActiveID()   { KarmaGuiContext& g = *GKarmaGui; return g.ActiveId; }
-    inline KGGuiID          GetFocusID()    { KarmaGuiContext& g = *GKarmaGui; return g.NavId; }
-    KARMA_API void          SetActiveID(KGGuiID id, KGGuiWindow* window);
-    KARMA_API void          SetFocusID(KGGuiID id, KGGuiWindow* window);
-    KARMA_API void          ClearActiveID();
-    KARMA_API KGGuiID       GetHoveredID();
-    KARMA_API void          SetHoveredID(KGGuiID id);
-    KARMA_API void          KeepAliveID(KGGuiID id);
-    KARMA_API void          MarkItemEdited(KGGuiID id);     // Mark data associated to given item as "edited", used by IsItemDeactivatedAfterEdit() function.
-    KARMA_API void          PushOverrideID(KGGuiID id);     // Push given value as-is at the top of the ID stack (whereas PushID combines old and new hashes)
-    KARMA_API KGGuiID       GetIDWithSeed(const char* str_id_begin, const char* str_id_end, KGGuiID seed);
+		// Fonts, drawing
+		static void          SetCurrentFont(KGFont* font);
+		static inline KGFont*          GetDefaultFont() { KarmaGuiContext& g = *GKarmaGui; return g.IO.FontDefault ? g.IO.FontDefault : g.IO.Fonts->Fonts[0]; }
+		static inline KGDrawList*      GetForegroundDrawList(KGGuiWindow* window) { return KarmaGui::GetForegroundDrawList(window->Viewport); }
 
-    // Basic Helpers for widget code
-    KARMA_API void          ItemSize(const ImVec2& size, float text_baseline_y = -1.0f);
-    inline void             ItemSize(const KGRect& bb, float text_baseline_y = -1.0f) { ItemSize(bb.GetSize(), text_baseline_y); } // FIXME: This is a misleading API since we expect CursorPos to be bb.Min.
-    KARMA_API bool          ItemAdd(const KGRect& bb, KGGuiID id, const KGRect* nav_bb = NULL, KGGuiItemFlags extra_flags = 0);
-    KARMA_API bool          ItemHoverable(const KGRect& bb, KGGuiID id);
-    KARMA_API bool          IsClippedEx(const KGRect& bb, KGGuiID id);
-    KARMA_API void          SetLastItemData(KGGuiID item_id, KGGuiItemFlags in_flags, KGGuiItemStatusFlags status_flags, const KGRect& item_rect);
-    KARMA_API ImVec2        CalcItemSize(ImVec2 size, float default_w, float default_h);
-    KARMA_API float         CalcWrapWidthForPos(const ImVec2& pos, float wrap_pos_x);
-    KARMA_API void          PushMultiItemsWidths(int components, float width_full);
-    KARMA_API bool          IsItemToggledSelection();                                   // Was the last item selection toggled? (after Selectable(), TreeNode() etc. We only returns toggle _event_ in order to handle clipping correctly)
-    KARMA_API ImVec2        GetContentRegionMaxAbs();
-    KARMA_API void          ShrinkWidths(KGGuiShrinkWidthItem* items, int count, float width_excess);
+		// Init
+		static void          Initialize();
+		static void          Shutdown();    // Since 1.60 this is a _private_ function. You can call DestroyContext() to destroy the context created by CreateContext().
 
-    // Parameter stacks (shared)
-    KARMA_API void          PushItemFlag(KGGuiItemFlags option, bool enabled);
-    KARMA_API void          PopItemFlag();
+		static // NewFrame
+		static void          UpdateInputEvents(bool trickle_fast_inputs);
+		static void          UpdateHoveredWindowAndCaptureFlags();
+		static void          StartMouseMovingWindow(KGGuiWindow* window);
+		static void          StartMouseMovingWindowOrNode(KGGuiWindow* window, KGGuiDockNode* node, bool undock_floating_node);
+		static void          UpdateMouseMovingWindowNewFrame();
+		static void          UpdateMouseMovingWindowEndFrame();
 
-    // Logging/Capture
-    KARMA_API void          LogBegin(KGGuiLogType type, int auto_open_depth);           // -> BeginCapture() when we design v2 api, for now stay under the radar by using the old name.
-    KARMA_API void          LogToBuffer(int auto_open_depth = -1);                      // Start logging/capturing to internal buffer
-    KARMA_API void          LogRenderedText(const ImVec2* ref_pos, const char* text, const char* text_end = NULL);
-    KARMA_API void          LogSetNextTextDecoration(const char* prefix, const char* suffix);
+		// Generic context hooks
+		static KGGuiID       AddContextHook(KarmaGuiContext* context, const KGGuiContextHook* hook);
+		static void          RemoveContextHook(KarmaGuiContext* context, KGGuiID hook_to_remove);
+		static void          CallContextHooks(KarmaGuiContext* context, ImGuiContextHookType type);
 
-    // Popups, Modals, Tooltips
-    KARMA_API bool          BeginChildEx(const char* name, KGGuiID id, const ImVec2& size_arg, bool border, KarmaGuiWindowFlags flags);
-    KARMA_API void          OpenPopupEx(KGGuiID id, KarmaGuiPopupFlags popup_flags = KGGuiPopupFlags_None);
-    KARMA_API void          ClosePopupToLevel(int remaining, bool restore_focus_to_window_under_popup);
-    KARMA_API void          ClosePopupsOverWindow(KGGuiWindow* ref_window, bool restore_focus_to_window_under_popup);
-    KARMA_API void          ClosePopupsExceptModals();
-    KARMA_API bool          IsPopupOpen(KGGuiID id, KarmaGuiPopupFlags popup_flags);
-    KARMA_API bool          BeginPopupEx(KGGuiID id, KarmaGuiWindowFlags extra_flags);
-    KARMA_API void          BeginTooltipEx(KGGuiTooltipFlags tooltip_flags, KarmaGuiWindowFlags extra_window_flags);
-    KARMA_API KGRect        GetPopupAllowedExtentRect(KGGuiWindow* window);
-    KARMA_API KGGuiWindow*  GetTopMostPopupModal();
-    KARMA_API KGGuiWindow*  GetTopMostAndVisiblePopupModal();
-    KARMA_API ImVec2        FindBestWindowPosForPopup(KGGuiWindow* window);
-    KARMA_API ImVec2        FindBestWindowPosForPopupEx(const ImVec2& ref_pos, const ImVec2& size, KarmaGuiDir* last_dir, const KGRect& r_outer, const KGRect& r_avoid, KGGuiPopupPositionPolicy policy);
+		// Viewports
+		static void          TranslateWindowsInViewport(KGGuiViewportP* viewport, const KGVec2& old_pos, const KGVec2& new_pos);
+		static void          ScaleWindowsInViewport(KGGuiViewportP* viewport, float scale);
+		static void          DestroyPlatformWindow(KGGuiViewportP* viewport);
+		static void          SetWindowViewport(KGGuiWindow* window, KGGuiViewportP* viewport);
+		static void          SetCurrentViewport(KGGuiWindow* window, KGGuiViewportP* viewport);
+		static const KarmaGuiPlatformMonitor*   GetViewportPlatformMonitor(KarmaGuiViewport* viewport);
+		static KGGuiViewportP*               FindHoveredViewportFromPlatformWindowStack(const KGVec2& mouse_platform_pos);
 
-    // Menus
-    KARMA_API bool          BeginViewportSideBar(const char* name, KarmaGuiViewport* viewport, KarmaGuiDir dir, float size, KarmaGuiWindowFlags window_flags);
-    KARMA_API bool          BeginMenuEx(const char* label, const char* icon, bool enabled = true);
-    KARMA_API bool          MenuItemEx(const char* label, const char* icon, const char* shortcut = NULL, bool selected = false, bool enabled = true);
+		// Settings
+		static void                  MarkIniSettingsDirty();
+		static void                  MarkIniSettingsDirty(KGGuiWindow* window);
+		static void                  ClearIniSettings();
+		static KGGuiWindowSettings*  CreateNewWindowSettings(const char* name);
+		static KGGuiWindowSettings*  FindWindowSettings(KGGuiID id);
+		static KGGuiWindowSettings*  FindOrCreateWindowSettings(const char* name);
+		static void                  AddSettingsHandler(const KGGuiSettingsHandler* handler);
+		static void                  RemoveSettingsHandler(const char* type_name);
+		static KGGuiSettingsHandler* FindSettingsHandler(const char* type_name);
 
-    // Combos
-    KARMA_API bool          BeginComboPopup(KGGuiID popup_id, const KGRect& bb, KarmaGuiComboFlags flags);
-    KARMA_API bool          BeginComboPreview();
-    KARMA_API void          EndComboPreview();
+		// Localization
+		static void          LocalizeRegisterEntries(const KGGuiLocEntry* entries, int count);
+		static inline const char*      LocalizeGetMsg(KGGuiLocKey key) { KarmaGuiContext& g = *GKarmaGui; const char* msg = g.LocalizationTable[key]; return msg ? msg : "*Missing Text*"; }
 
-    // Gamepad/Keyboard Navigation
-    KARMA_API void          NavInitWindow(KGGuiWindow* window, bool force_reinit);
-    KARMA_API void          NavInitRequestApplyResult();
-    KARMA_API bool          NavMoveRequestButNoResultYet();
-    KARMA_API void          NavMoveRequestSubmit(KarmaGuiDir move_dir, KarmaGuiDir clip_dir, KGGuiNavMoveFlags move_flags, KGGuiScrollFlags scroll_flags);
-    KARMA_API void          NavMoveRequestForward(KarmaGuiDir move_dir, KarmaGuiDir clip_dir, KGGuiNavMoveFlags move_flags, KGGuiScrollFlags scroll_flags);
-    KARMA_API void          NavMoveRequestResolveWithLastItem(KGGuiNavItemData* result);
-    KARMA_API void          NavMoveRequestCancel();
-    KARMA_API void          NavMoveRequestApplyResult();
-    KARMA_API void          NavMoveRequestTryWrapping(KGGuiWindow* window, KGGuiNavMoveFlags move_flags);
-    KARMA_API void          ActivateItem(KGGuiID id);   // Remotely activate a button, checkbox, tree node etc. given its unique ID. activation is queued and processed on the next frame when the item is encountered again.
-    KARMA_API void          SetNavWindow(KGGuiWindow* window);
-    KARMA_API void          SetNavID(KGGuiID id, KGGuiNavLayer nav_layer, KGGuiID focus_scope_id, const KGRect& rect_rel);
+		// Scrolling
+		static void          SetScrollX(KGGuiWindow* window, float scroll_x);
+		static void          SetScrollY(KGGuiWindow* window, float scroll_y);
+		static void          SetScrollFromPosX(KGGuiWindow* window, float local_x, float center_x_ratio);
+		static void          SetScrollFromPosY(KGGuiWindow* window, float local_y, float center_y_ratio);
 
-    // Inputs
-    // FIXME: Eventually we should aim to move e.g. IsActiveIdUsingKey() into IsKeyXXX functions.
-    inline bool             IsNamedKey(KarmaGuiKey key)                                    { return key >= KGGuiKey_NamedKey_BEGIN && key < KGGuiKey_NamedKey_END; }
-    inline bool             IsNamedKeyOrModKey(KarmaGuiKey key)                            { return (key >= KGGuiKey_NamedKey_BEGIN && key < KGGuiKey_NamedKey_END) || key == KGGuiMod_Ctrl || key == KGGuiMod_Shift || key == KGGuiMod_Alt || key == KGGuiMod_Super || key == KGGuiMod_Shortcut; }
-    inline bool             IsLegacyKey(KarmaGuiKey key)                                   { return key >= KGGuiKey_LegacyNativeKey_BEGIN && key < KGGuiKey_LegacyNativeKey_END; }
-    inline bool             IsKeyboardKey(KarmaGuiKey key)                                 { return key >= KGGuiKey_Keyboard_BEGIN && key < KGGuiKey_Keyboard_END; }
-    inline bool             IsGamepadKey(KarmaGuiKey key)                                  { return key >= KGGuiKey_Gamepad_BEGIN && key < KGGuiKey_Gamepad_END; }
-    inline bool             IsMouseKey(KarmaGuiKey key)                                    { return key >= KGGuiKey_Mouse_BEGIN && key < KGGuiKey_Mouse_END; }
-    inline bool             IsAliasKey(KarmaGuiKey key)                                    { return key >= KGGuiKey_Aliases_BEGIN && key < KGGuiKey_Aliases_END; }
-    inline KarmaGuiKeyChord    ConvertShortcutMod(KarmaGuiKeyChord key_chord)                 { KarmaGuiContext& g = *GKarmaGui; KR_CORE_ASSERT(key_chord & KGGuiMod_Shortcut, "");return (key_chord & ~KGGuiMod_Shortcut) | (g.IO.ConfigMacOSXBehaviors ? KGGuiMod_Super : KGGuiMod_Ctrl); }
-    inline KarmaGuiKey         ConvertSingleModFlagToKey(KarmaGuiKey key)
-    {
-        KarmaGuiContext& g = *GKarmaGui;
-        if (key == KGGuiMod_Ctrl) return KGGuiKey_ReservedForModCtrl;
-        if (key == KGGuiMod_Shift) return KGGuiKey_ReservedForModShift;
-        if (key == KGGuiMod_Alt) return KGGuiKey_ReservedForModAlt;
-        if (key == KGGuiMod_Super) return KGGuiKey_ReservedForModSuper;
-        if (key == KGGuiMod_Shortcut) return (g.IO.ConfigMacOSXBehaviors ? KGGuiKey_ReservedForModSuper : KGGuiKey_ReservedForModCtrl);
-        return key;
-    }
+		// Early work-in-progress API (ScrollToItem() will become public)
+		static void          ScrollToItem(KGGuiScrollFlags flags = 0);
+		static void          ScrollToRect(KGGuiWindow* window, const KGRect& rect, KGGuiScrollFlags flags = 0);
+		static KGVec2        ScrollToRectEx(KGGuiWindow* window, const KGRect& rect, KGGuiScrollFlags flags = 0);
 
-    KARMA_API KarmaGuiKeyData* GetKeyData(KarmaGuiKey key);
-    KARMA_API void          GetKeyChordName(KarmaGuiKeyChord key_chord, char* out_buf, int out_buf_size);
-    inline KarmaGuiKey         MouseButtonToKey(KarmaGuiMouseButton button)                   { KR_CORE_ASSERT(button >= 0 && button < KGGuiMouseButton_COUNT, ""); return (KarmaGuiKey)(KGGuiKey_MouseLeft + button); }
-    KARMA_API bool          IsMouseDragPastThreshold(KarmaGuiMouseButton button, float lock_threshold = -1.0f);
-    KARMA_API ImVec2        GetKeyMagnitude2d(KarmaGuiKey key_left, KarmaGuiKey key_right, KarmaGuiKey key_up, KarmaGuiKey key_down);
-    KARMA_API float         GetNavTweakPressedAmount(KGGuiAxis axis);
-    KARMA_API int           CalcTypematicRepeatAmount(float t0, float t1, float repeat_delay, float repeat_rate);
-    KARMA_API void          GetTypematicRepeatRate(KarmaGuiInputFlags flags, float* repeat_delay, float* repeat_rate);
-    KARMA_API void          SetActiveIdUsingAllKeyboardKeys();
-    inline bool             IsActiveIdUsingNavDir(KarmaGuiDir dir)                         { KarmaGuiContext& g = *GKarmaGui; return (g.ActiveIdUsingNavDirMask & (1 << dir)) != 0; }
+		// Basic Accessors
+		static inline KGGuiItemStatusFlags GetItemStatusFlags(){ KarmaGuiContext& g = *GKarmaGui; return g.LastItemData.StatusFlags; }
+		static inline KGGuiItemFlags   GetItemFlags()  { KarmaGuiContext& g = *GKarmaGui; return g.LastItemData.InFlags; }
+		static inline KGGuiID          GetActiveID()   { KarmaGuiContext& g = *GKarmaGui; return g.ActiveId; }
+		static inline KGGuiID          GetFocusID()    { KarmaGuiContext& g = *GKarmaGui; return g.NavId; }
+		static void          SetActiveID(KGGuiID id, KGGuiWindow* window);
+		static void          SetFocusID(KGGuiID id, KGGuiWindow* window);
+		static void          ClearActiveID();
+		static KGGuiID       GetHoveredID();
+		static void          SetHoveredID(KGGuiID id);
+		static void          KeepAliveID(KGGuiID id);
+		static void          MarkItemEdited(KGGuiID id);     // Mark data associated to given item as "edited", used by IsItemDeactivatedAfterEdit() function.
+		static void          PushOverrideID(KGGuiID id);     // Push given value as-is at the top of the ID stack (whereas PushID combines old and new hashes)
+		static KGGuiID       GetIDWithSeed(const char* str_id_begin, const char* str_id_end, KGGuiID seed);
 
-    // [EXPERIMENTAL] Low-Level: Key/Input Ownership
-    // - The idea is that instead of "eating" a given input, we can link to an owner id.
-    // - Ownership is most often claimed as a result of reacting to a press/down event (but occasionally may be claimed ahead).
-    // - Input queries can then read input by specifying KGGuiKeyOwner_Any (== 0), KGGuiKeyOwner_None (== -1) or a custom ID.
-    // - Legacy input queries (without specifying an owner or _Any or _None) are equivalent to using KGGuiKeyOwner_Any (== 0).
-    // - Input ownership is automatically released on the frame after a key is released. Therefore:
-    //   - for ownership registration happening as a result of a down/press event, the SetKeyOwner() call may be done once (common case).
-    //   - for ownership registration happening ahead of a down/press event, the SetKeyOwner() call needs to be made every frame (happens if e.g. claiming ownership on hover).
-    // - SetItemKeyOwner() is a shortcut for common simple case. A custom widget will probably want to call SetKeyOwner() multiple times directly based on its interaction state.
-    // - This is marked experimental because not all widgets are fully honoring the Set/Test idioms. We will need to move forward step by step.
-    //   Please open a GitHub Issue to submit your usage scenario or if there's a use case you need solved.
-    KARMA_API KGGuiID           GetKeyOwner(KarmaGuiKey key);
-    KARMA_API void              SetKeyOwner(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags flags = 0);
-    KARMA_API void              SetItemKeyOwner(KarmaGuiKey key, KarmaGuiInputFlags flags = 0);           // Set key owner to last item if it is hovered or active. Equivalent to 'if (IsItemHovered() || IsItemActive()) { SetKeyOwner(key, GetItemID());'.
-    KARMA_API bool              TestKeyOwner(KarmaGuiKey key, KGGuiID owner_id);                       // Test that key is either not owned, either owned by 'owner_id'
-    inline KGGuiKeyOwnerData*   GetKeyOwnerData(KarmaGuiKey key)     { if (key & KGGuiMod_Mask_) key = ConvertSingleModFlagToKey(key); KR_CORE_ASSERT(IsNamedKey(key), ""); return &GKarmaGui->KeysOwnerData[key - KGGuiKey_NamedKey_BEGIN]; }
+		// Basic Helpers for widget code
+		static void          ItemSize(const KGVec2& size, float text_baseline_y = -1.0f);
+		static inline void             ItemSize(const KGRect& bb, float text_baseline_y = -1.0f) { ItemSize(bb.GetSize(), text_baseline_y); } // FIXME: This is a misleading API since we expect CursorPos to be bb.Min.
+		static bool          ItemAdd(const KGRect& bb, KGGuiID id, const KGRect* nav_bb = NULL, KGGuiItemFlags extra_flags = 0);
+		static bool          ItemHoverable(const KGRect& bb, KGGuiID id);
+		static bool          IsClippedEx(const KGRect& bb, KGGuiID id);
+		static void          SetLastItemData(KGGuiID item_id, KGGuiItemFlags in_flags, KGGuiItemStatusFlags status_flags, const KGRect& item_rect);
+		static KGVec2        CalcItemSize(KGVec2 size, float default_w, float default_h);
+		static float         CalcWrapWidthForPos(const KGVec2& pos, float wrap_pos_x);
+		static void          PushMultiItemsWidths(int components, float width_full);
+		static bool          IsItemToggledSelection();                                   // Was the last item selection toggled? (after Selectable(), TreeNode() etc. We only returns toggle _event_ in order to handle clipping correctly)
+		static KGVec2        GetContentRegionMaxAbs();
+		static void          ShrinkWidths(KGGuiShrinkWidthItem* items, int count, float width_excess);
 
-    // [EXPERIMENTAL] High-Level: Input Access functions w/ support for Key/Input Ownership
-    // - Important: legacy IsKeyPressed(KarmaGuiKey, bool repeat=true) _DEFAULTS_ to repeat, new IsKeyPressed() requires _EXPLICIT_ KGGuiInputFlags_Repeat flag.
-    // - Expected to be later promoted to public API, the prototypes are designed to replace existing ones (since owner_id can default to Any == 0)
-    // - Specifying a value for 'KGGuiID owner' will test that EITHER the key is NOT owned (UNLESS locked), EITHER the key is owned by 'owner'.
-    //   Legacy functions use KGGuiKeyOwner_Any meaning that they typically ignore ownership, unless a call to SetKeyOwner() explicitly used KGGuiInputFlags_LockThisFrame or KGGuiInputFlags_LockUntilRelease.
-    // - Binding generators may want to ignore those for now, or suffix them with Ex() until we decide if this gets moved into public API.
-    KARMA_API bool              IsKeyDown(KarmaGuiKey key, KGGuiID owner_id);
-    KARMA_API bool              IsKeyPressed(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags flags = 0);    // Important: when transitioning from old to new IsKeyPressed(): old API has "bool repeat = true", so would default to repeat. New API requiress explicit KGGuiInputFlags_Repeat.
-    KARMA_API bool              IsKeyReleased(KarmaGuiKey key, KGGuiID owner_id);
-    KARMA_API bool              IsMouseDown(KarmaGuiMouseButton button, KGGuiID owner_id);
-    KARMA_API bool              IsMouseClicked(KarmaGuiMouseButton button, KGGuiID owner_id, KarmaGuiInputFlags flags = 0);
-    KARMA_API bool              IsMouseReleased(KarmaGuiMouseButton button, KGGuiID owner_id);
+		// Parameter stacks (shared)
+		static void          PushItemFlag(KGGuiItemFlags option, bool enabled);
+		static void          PopItemFlag();
 
-    // [EXPERIMENTAL] Low-Level: Shortcut Routing
-    // - Routes are resolved during NewFrame(): if keyboard modifiers are matching current ones: SetKeyOwner() is called + route is granted for the frame.
-    // - Route is granted to a single owner. When multiple requests are made we have policies to select the winning route.
-    // - Multiple read sites may use the same owner id and will all get the granted route.
-    // - For routing: when owner_id is 0 we use the current Focus Scope ID as a default owner in order to identify our location.
-    KARMA_API bool              SetShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id = 0, KarmaGuiInputFlags flags = 0);
-    KARMA_API bool              TestShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id);
-    KARMA_API KGGuiKeyRoutingData* GetShortcutRoutingData(KarmaGuiKeyChord key_chord);
+		// Logging/Capture
+		static void          LogBegin(KGGuiLogType type, int auto_open_depth);           // -> BeginCapture() when we design v2 api, for now stay under the radar by using the old name.
+		static void          LogToBuffer(int auto_open_depth = -1);                      // Start logging/capturing to internal buffer
+		static void          LogRenderedText(const KGVec2* ref_pos, const char* text, const char* text_end = NULL);
+		static void          LogSetNextTextDecoration(const char* prefix, const char* suffix);
 
-    // Docking
-    // (some functions are only declared in imgui.cpp, see Docking section)
-    KARMA_API void          DockContextInitialize(KarmaGuiContext* ctx);
-    KARMA_API void          DockContextShutdown(KarmaGuiContext* ctx);
-    KARMA_API void          DockContextClearNodes(KarmaGuiContext* ctx, KGGuiID root_id, bool clear_settings_refs); // Use root_id==0 to clear all
-    KARMA_API void          DockContextRebuildNodes(KarmaGuiContext* ctx);
-    KARMA_API void          DockContextNewFrameUpdateUndocking(KarmaGuiContext* ctx);
-    KARMA_API void          DockContextNewFrameUpdateDocking(KarmaGuiContext* ctx);
-    KARMA_API void          DockContextEndFrame(KarmaGuiContext* ctx);
-    KARMA_API KGGuiID       DockContextGenNodeID(KarmaGuiContext* ctx);
-    KARMA_API void          DockContextQueueDock(KarmaGuiContext* ctx, KGGuiWindow* target, KGGuiDockNode* target_node, KGGuiWindow* payload, KarmaGuiDir split_dir, float split_ratio, bool split_outer);
-    KARMA_API void          DockContextQueueUndockWindow(KarmaGuiContext* ctx, KGGuiWindow* window);
-    KARMA_API void          DockContextQueueUndockNode(KarmaGuiContext* ctx, KGGuiDockNode* node);
-    KARMA_API bool          DockContextCalcDropPosForDocking(KGGuiWindow* target, KGGuiDockNode* target_node, KGGuiWindow* payload_window, KGGuiDockNode* payload_node, KarmaGuiDir split_dir, bool split_outer, ImVec2* out_pos);
-    KARMA_API KGGuiDockNode*DockContextFindNodeByID(KarmaGuiContext* ctx, KGGuiID id);
-    KARMA_API bool          DockNodeBeginAmendTabBar(KGGuiDockNode* node);
-    KARMA_API void          DockNodeEndAmendTabBar();
-    inline KGGuiDockNode*   DockNodeGetRootNode(KGGuiDockNode* node)                 { while (node->ParentNode) node = node->ParentNode; return node; }
-    inline bool             DockNodeIsInHierarchyOf(KGGuiDockNode* node, KGGuiDockNode* parent) { while (node) { if (node == parent) return true; node = node->ParentNode; } return false; }
-    inline int              DockNodeGetDepth(const KGGuiDockNode* node)              { int depth = 0; while (node->ParentNode) { node = node->ParentNode; depth++; } return depth; }
-    inline KGGuiID          DockNodeGetWindowMenuButtonId(const KGGuiDockNode* node) { return KGHashStr("#COLLAPSE", 0, node->ID); }
-    inline KGGuiDockNode*   GetWindowDockNode()                                      { KarmaGuiContext& g = *GKarmaGui; return g.CurrentWindow->DockNode; }
-    KARMA_API bool          GetWindowAlwaysWantOwnTabBar(KGGuiWindow* window);
-    KARMA_API void          BeginDocked(KGGuiWindow* window, bool* p_open);
-    KARMA_API void          BeginDockableDragDropSource(KGGuiWindow* window);
-    KARMA_API void          BeginDockableDragDropTarget(KGGuiWindow* window);
-    KARMA_API void          SetWindowDock(KGGuiWindow* window, KGGuiID dock_id, KarmaGuiCond cond);
+		// Popups, Modals, Tooltips
+		static bool          BeginChildEx(const char* name, KGGuiID id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags flags);
+		static void          OpenPopupEx(KGGuiID id, KarmaGuiPopupFlags popup_flags = KGGuiPopupFlags_None);
+		static void          ClosePopupToLevel(int remaining, bool restore_focus_to_window_under_popup);
+		static void          ClosePopupsOverWindow(KGGuiWindow* ref_window, bool restore_focus_to_window_under_popup);
+		static void          ClosePopupsExceptModals();
+		static bool          IsPopupOpen(KGGuiID id, KarmaGuiPopupFlags popup_flags);
+		static bool          BeginPopupEx(KGGuiID id, KarmaGuiWindowFlags extra_flags);
+		static void          BeginTooltipEx(KGGuiTooltipFlags tooltip_flags, KarmaGuiWindowFlags extra_window_flags);
+		static KGRect        GetPopupAllowedExtentRect(KGGuiWindow* window);
+		static KGGuiWindow*  GetTopMostPopupModal();
+		static KGGuiWindow*  GetTopMostAndVisiblePopupModal();
+		static KGVec2        FindBestWindowPosForPopup(KGGuiWindow* window);
+		static KGVec2        FindBestWindowPosForPopupEx(const KGVec2& ref_pos, const KGVec2& size, KarmaGuiDir* last_dir, const KGRect& r_outer, const KGRect& r_avoid, KGGuiPopupPositionPolicy policy);
 
-    // Docking - Builder function needs to be generally called before the node is used/submitted.
-    // - The DockBuilderXXX functions are designed to _eventually_ become a public API, but it is too early to expose it and guarantee stability.
-    // - Do not hold on KGGuiDockNode* pointers! They may be invalidated by any split/merge/remove operation and every frame.
-    // - To create a DockSpace() node, make sure to set the KGGuiDockNodeFlags_DockSpace flag when calling DockBuilderAddNode().
-    //   You can create dockspace nodes (attached to a window) _or_ floating nodes (carry its own window) with this API.
-    // - DockBuilderSplitNode() create 2 child nodes within 1 node. The initial node becomes a parent node.
-    // - If you intend to split the node immediately after creation using DockBuilderSplitNode(), make sure
-    //   to call DockBuilderSetNodeSize() beforehand. If you don't, the resulting split sizes may not be reliable.
-    // - Call DockBuilderFinish() after you are done.
-    KARMA_API void          DockBuilderDockWindow(const char* window_name, KGGuiID node_id);
-    KARMA_API KGGuiDockNode*DockBuilderGetNode(KGGuiID node_id);
-    inline KGGuiDockNode*   DockBuilderGetCentralNode(KGGuiID node_id)              { KGGuiDockNode* node = DockBuilderGetNode(node_id); if (!node) return NULL; return DockNodeGetRootNode(node)->CentralNode; }
-    KARMA_API KGGuiID       DockBuilderAddNode(KGGuiID node_id = 0, KarmaGuiDockNodeFlags flags = 0);
-    KARMA_API void          DockBuilderRemoveNode(KGGuiID node_id);                 // Remove node and all its child, undock all windows
-    KARMA_API void          DockBuilderRemoveNodeDockedWindows(KGGuiID node_id, bool clear_settings_refs = true);
-    KARMA_API void          DockBuilderRemoveNodeChildNodes(KGGuiID node_id);       // Remove all split/hierarchy. All remaining docked windows will be re-docked to the remaining root node (node_id).
-    KARMA_API void          DockBuilderSetNodePos(KGGuiID node_id, ImVec2 pos);
-    KARMA_API void          DockBuilderSetNodeSize(KGGuiID node_id, ImVec2 size);
-    KARMA_API KGGuiID       DockBuilderSplitNode(KGGuiID node_id, KarmaGuiDir split_dir, float size_ratio_for_node_at_dir, KGGuiID* out_id_at_dir, KGGuiID* out_id_at_opposite_dir); // Create 2 child nodes in this parent node.
-    KARMA_API void          DockBuilderCopyDockSpace(KGGuiID src_dockspace_id, KGGuiID dst_dockspace_id, KGVector<const char*>* in_window_remap_pairs);
-    KARMA_API void          DockBuilderCopyNode(KGGuiID src_node_id, KGGuiID dst_node_id, KGVector<KGGuiID>* out_node_remap_pairs);
-    KARMA_API void          DockBuilderCopyWindowSettings(const char* src_name, const char* dst_name);
-    KARMA_API void          DockBuilderFinish(KGGuiID node_id);
+		// Menus
+		static bool          BeginViewportSideBar(const char* name, KarmaGuiViewport* viewport, KarmaGuiDir dir, float size, KarmaGuiWindowFlags window_flags);
+		static bool          BeginMenuEx(const char* label, const char* icon, bool enabled = true);
+		static bool          MenuItemEx(const char* label, const char* icon, const char* shortcut = NULL, bool selected = false, bool enabled = true);
 
-    // [EXPERIMENTAL] Focus Scope
-    // This is generally used to identify a unique input location (for e.g. a selection set)
-    // There is one per window (automatically set in Begin), but:
-    // - Selection patterns generally need to react (e.g. clear a selection) when landing on one item of the set.
-    //   So in order to identify a set multiple lists in same window may each need a focus scope.
-    //   If you imagine an hypothetical BeginSelectionGroup()/EndSelectionGroup() api, it would likely call PushFocusScope()/EndFocusScope()
-    // - Shortcut routing also use focus scope as a default location identifier if an owner is not provided.
-    // We don't use the ID Stack for this as it is common to want them separate.
-    KARMA_API void          PushFocusScope(KGGuiID id);
-    KARMA_API void          PopFocusScope();
-    inline KGGuiID          GetCurrentFocusScope() { KarmaGuiContext& g = *GKarmaGui; return g.CurrentFocusScopeId; }   // Focus scope we are outputting into, set by PushFocusScope()
+		// Combos
+		static bool          BeginComboPopup(KGGuiID popup_id, const KGRect& bb, KarmaGuiComboFlags flags);
+		static bool          BeginComboPreview();
+		static void          EndComboPreview();
 
-    // Drag and Drop
-    KARMA_API bool          IsDragDropActive();
-    KARMA_API bool          BeginDragDropTargetCustom(const KGRect& bb, KGGuiID id);
-    KARMA_API void          ClearDragDrop();
-    KARMA_API bool          IsDragDropPayloadBeingAccepted();
-    KARMA_API void          RenderDragDropTargetRect(const KGRect& bb);
+		// Gamepad/Keyboard Navigation
+		static void          NavInitWindow(KGGuiWindow* window, bool force_reinit);
+		static void          NavInitRequestApplyResult();
+		static bool          NavMoveRequestButNoResultYet();
+		static void          NavMoveRequestSubmit(KarmaGuiDir move_dir, KarmaGuiDir clip_dir, KGGuiNavMoveFlags move_flags, KGGuiScrollFlags scroll_flags);
+		static void          NavMoveRequestForward(KarmaGuiDir move_dir, KarmaGuiDir clip_dir, KGGuiNavMoveFlags move_flags, KGGuiScrollFlags scroll_flags);
+		static void          NavMoveRequestResolveWithLastItem(KGGuiNavItemData* result);
+		static void          NavMoveRequestCancel();
+		static void          NavMoveRequestApplyResult();
+		static void          NavMoveRequestTryWrapping(KGGuiWindow* window, KGGuiNavMoveFlags move_flags);
+		static void          ActivateItem(KGGuiID id);   // Remotely activate a button, checkbox, tree node etc. given its unique ID. activation is queued and processed on the next frame when the item is encountered again.
+		static void          SetNavWindow(KGGuiWindow* window);
+		static void          SetNavID(KGGuiID id, KGGuiNavLayer nav_layer, KGGuiID focus_scope_id, const KGRect& rect_rel);
 
-    // Internal Columns API (this is not exposed because we will encourage transitioning to the Tables API)
-    KARMA_API void          SetWindowClipRectBeforeSetChannel(KGGuiWindow* window, const KGRect& clip_rect);
-    KARMA_API void          BeginColumns(const char* str_id, int count, KGGuiOldColumnFlags flags = 0); // setup number of columns. use an identifier to distinguish multiple column sets. close with EndColumns().
-    KARMA_API void          EndColumns();                                                               // close columns
-    KARMA_API void          PushColumnClipRect(int column_index);
-    KARMA_API void          PushColumnsBackground();
-    KARMA_API void          PopColumnsBackground();
-    KARMA_API KGGuiID       GetColumnsID(const char* str_id, int count);
-    KARMA_API KGGuiOldColumns* FindOrCreateColumns(KGGuiWindow* window, KGGuiID id);
-    KARMA_API float         GetColumnOffsetFromNorm(const KGGuiOldColumns* columns, float offset_norm);
-    KARMA_API float         GetColumnNormFromOffset(const KGGuiOldColumns* columns, float offset);
+		// Inputs
+		// FIXME: Eventually we should aim to move e.g. IsActiveIdUsingKey() into IsKeyXXX functions.
+		static inline bool             IsNamedKey(KarmaGuiKey key)                                    { return key >= KGGuiKey_NamedKey_BEGIN && key < KGGuiKey_NamedKey_END; }
+		static inline bool             IsNamedKeyOrModKey(KarmaGuiKey key)                            { return (key >= KGGuiKey_NamedKey_BEGIN && key < KGGuiKey_NamedKey_END) || key == KGGuiMod_Ctrl || key == KGGuiMod_Shift || key == KGGuiMod_Alt || key == KGGuiMod_Super || key == KGGuiMod_Shortcut; }
+		static inline bool             IsLegacyKey(KarmaGuiKey key)                                   { return key >= KGGuiKey_LegacyNativeKey_BEGIN && key < KGGuiKey_LegacyNativeKey_END; }
+		static inline bool             IsKeyboardKey(KarmaGuiKey key)                                 { return key >= KGGuiKey_Keyboard_BEGIN && key < KGGuiKey_Keyboard_END; }
+		static inline bool             IsGamepadKey(KarmaGuiKey key)                                  { return key >= KGGuiKey_Gamepad_BEGIN && key < KGGuiKey_Gamepad_END; }
+		static inline bool             IsMouseKey(KarmaGuiKey key)                                    { return key >= KGGuiKey_Mouse_BEGIN && key < KGGuiKey_Mouse_END; }
+		static inline bool             IsAliasKey(KarmaGuiKey key)                                    { return key >= KGGuiKey_Aliases_BEGIN && key < KGGuiKey_Aliases_END; }
+		static inline KarmaGuiKeyChord    ConvertShortcutMod(KarmaGuiKeyChord key_chord)                 { KarmaGuiContext& g = *GKarmaGui; KR_CORE_ASSERT(key_chord & KGGuiMod_Shortcut, "");return (key_chord & ~KGGuiMod_Shortcut) | (g.IO.ConfigMacOSXBehaviors ? KGGuiMod_Super : KGGuiMod_Ctrl); }
+		static inline KarmaGuiKey         ConvertSingleModFlagToKey(KarmaGuiKey key)
+		{
+			KarmaGuiContext& g = *GKarmaGui;
+			if (key == KGGuiMod_Ctrl) return KGGuiKey_ReservedForModCtrl;
+			if (key == KGGuiMod_Shift) return KGGuiKey_ReservedForModShift;
+			if (key == KGGuiMod_Alt) return KGGuiKey_ReservedForModAlt;
+			if (key == KGGuiMod_Super) return KGGuiKey_ReservedForModSuper;
+			if (key == KGGuiMod_Shortcut) return (g.IO.ConfigMacOSXBehaviors ? KGGuiKey_ReservedForModSuper : KGGuiKey_ReservedForModCtrl);
+			return key;
+		}
 
-    // Tables: Candidates for public API
-    KARMA_API void          TableOpenContextMenu(int column_n = -1);
-    KARMA_API void          TableSetColumnWidth(int column_n, float width);
-    KARMA_API void          TableSetColumnSortDirection(int column_n, KarmaGuiSortDirection sort_direction, bool append_to_sort_specs);
-    KARMA_API int           TableGetHoveredColumn(); // May use (TableGetColumnFlags() & KGGuiTableColumnFlags_IsHovered) instead. Return hovered column. return -1 when table is not hovered. return columns_count if the unused space at the right of visible columns is hovered.
-    KARMA_API float         TableGetHeaderRowHeight();
-    KARMA_API void          TablePushBackgroundChannel();
-    KARMA_API void          TablePopBackgroundChannel();
+		static KarmaGuiKeyData* GetKeyData(KarmaGuiKey key);
+		static void          GetKeyChordName(KarmaGuiKeyChord key_chord, char* out_buf, int out_buf_size);
+		static inline KarmaGuiKey         MouseButtonToKey(KarmaGuiMouseButton button)                   { KR_CORE_ASSERT(button >= 0 && button < KGGuiMouseButton_COUNT, ""); return (KarmaGuiKey)(KGGuiKey_MouseLeft + button); }
+		static bool          IsMouseDragPastThreshold(KarmaGuiMouseButton button, float lock_threshold = -1.0f);
+		static KGVec2        GetKeyMagnitude2d(KarmaGuiKey key_left, KarmaGuiKey key_right, KarmaGuiKey key_up, KarmaGuiKey key_down);
+		static float         GetNavTweakPressedAmount(KGGuiAxis axis);
+		static int           CalcTypematicRepeatAmount(float t0, float t1, float repeat_delay, float repeat_rate);
+		static void          GetTypematicRepeatRate(KarmaGuiInputFlags flags, float* repeat_delay, float* repeat_rate);
+		static void          SetActiveIdUsingAllKeyboardKeys();
+		static inline bool             IsActiveIdUsingNavDir(KarmaGuiDir dir)                         { KarmaGuiContext& g = *GKarmaGui; return (g.ActiveIdUsingNavDirMask & (1 << dir)) != 0; }
 
-    // Tables: Internals
-    inline    KGGuiTable*   GetCurrentTable() { KarmaGuiContext& g = *GKarmaGui; return g.CurrentTable; }
-    KARMA_API KGGuiTable*   TableFindByID(KGGuiID id);
-    KARMA_API bool          BeginTableEx(const char* name, KGGuiID id, int columns_count, KarmaGuiTableFlags flags = 0, const ImVec2& outer_size = ImVec2(0, 0), float inner_width = 0.0f);
-    KARMA_API void          TableBeginInitMemory(KGGuiTable* table, int columns_count);
-    KARMA_API void          TableBeginApplyRequests(KGGuiTable* table);
-    KARMA_API void          TableSetupDrawChannels(KGGuiTable* table);
-    KARMA_API void          TableUpdateLayout(KGGuiTable* table);
-    KARMA_API void          TableUpdateBorders(KGGuiTable* table);
-    KARMA_API void          TableUpdateColumnsWeightFromWidth(KGGuiTable* table);
-    KARMA_API void          TableDrawBorders(KGGuiTable* table);
-    KARMA_API void          TableDrawContextMenu(KGGuiTable* table);
-    KARMA_API bool          TableBeginContextMenuPopup(KGGuiTable* table);
-    KARMA_API void          TableMergeDrawChannels(KGGuiTable* table);
-    inline KGGuiTableInstanceData*   TableGetInstanceData(KGGuiTable* table, int instance_no) { if (instance_no == 0) return &table->InstanceDataFirst; return &table->InstanceDataExtra[instance_no - 1]; }
-    KARMA_API void          TableSortSpecsSanitize(KGGuiTable* table);
-    KARMA_API void          TableSortSpecsBuild(KGGuiTable* table);
-    KARMA_API KarmaGuiSortDirection TableGetColumnNextSortDirection(KGGuiTableColumn* column);
-    KARMA_API void          TableFixColumnSortDirection(KGGuiTable* table, KGGuiTableColumn* column);
-    KARMA_API float         TableGetColumnWidthAuto(KGGuiTable* table, KGGuiTableColumn* column);
-    KARMA_API void          TableBeginRow(KGGuiTable* table);
-    KARMA_API void          TableEndRow(KGGuiTable* table);
-    KARMA_API void          TableBeginCell(KGGuiTable* table, int column_n);
-    KARMA_API void          TableEndCell(KGGuiTable* table);
-    KARMA_API KGRect        TableGetCellBgRect(const KGGuiTable* table, int column_n);
-    KARMA_API const char*   TableGetColumnName(const KGGuiTable* table, int column_n);
-    KARMA_API KGGuiID       TableGetColumnResizeID(const KGGuiTable* table, int column_n, int instance_no = 0);
-    KARMA_API float         TableGetMaxColumnWidth(const KGGuiTable* table, int column_n);
-    KARMA_API void          TableSetColumnWidthAutoSingle(KGGuiTable* table, int column_n);
-    KARMA_API void          TableSetColumnWidthAutoAll(KGGuiTable* table);
-    KARMA_API void          TableRemove(KGGuiTable* table);
-    KARMA_API void          TableGcCompactTransientBuffers(KGGuiTable* table);
-    KARMA_API void          TableGcCompactTransientBuffers(KGGuiTableTempData* table);
-    KARMA_API void          TableGcCompactSettings();
+		// [EXPERIMENTAL] Low-Level: Key/Input Ownership
+		// - The idea is that instead of "eating" a given input, we can link to an owner id.
+		// - Ownership is most often claimed as a result of reacting to a press/down event (but occasionally may be claimed ahead).
+		// - Input queries can then read input by specifying KGGuiKeyOwner_Any (== 0), KGGuiKeyOwner_None (== -1) or a custom ID.
+		// - Legacy input queries (without specifying an owner or _Any or _None) are equivalent to using KGGuiKeyOwner_Any (== 0).
+		// - Input ownership is automatically released on the frame after a key is released. Therefore:
+		//   - for ownership registration happening as a result of a down/press event, the SetKeyOwner() call may be done once (common case).
+		//   - for ownership registration happening ahead of a down/press event, the SetKeyOwner() call needs to be made every frame (happens if e.g. claiming ownership on hover).
+		// - SetItemKeyOwner() is a shortcut for common simple case. A custom widget will probably want to call SetKeyOwner() multiple times directly based on its interaction state.
+		// - This is marked experimental because not all widgets are fully honoring the Set/Test idioms. We will need to move forward step by step.
+		//   Please open a GitHub Issue to submit your usage scenario or if there's a use case you need solved.
+		static KGGuiID           GetKeyOwner(KarmaGuiKey key);
+		static void              SetKeyOwner(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags flags = 0);
+		static void              SetItemKeyOwner(KarmaGuiKey key, KarmaGuiInputFlags flags = 0);           // Set key owner to last item if it is hovered or active. Equivalent to 'if (IsItemHovered() || IsItemActive()) { SetKeyOwner(key, GetItemID());'.
+		static bool              TestKeyOwner(KarmaGuiKey key, KGGuiID owner_id);                       // Test that key is either not owned, either owned by 'owner_id'
+		static inline KGGuiKeyOwnerData*   GetKeyOwnerData(KarmaGuiKey key)     { if (key & KGGuiMod_Mask_) key = ConvertSingleModFlagToKey(key); KR_CORE_ASSERT(IsNamedKey(key), ""); return &GKarmaGui->KeysOwnerData[key - KGGuiKey_NamedKey_BEGIN]; }
 
-    // Tables: Settings
-    KARMA_API void                  TableLoadSettings(KGGuiTable* table);
-    KARMA_API void                  TableSaveSettings(KGGuiTable* table);
-    KARMA_API void                  TableResetSettings(KGGuiTable* table);
-    KARMA_API KGGuiTableSettings*   TableGetBoundSettings(KGGuiTable* table);
-    KARMA_API void                  TableSettingsAddSettingsHandler();
-    KARMA_API KGGuiTableSettings*   TableSettingsCreate(KGGuiID id, int columns_count);
-    KARMA_API KGGuiTableSettings*   TableSettingsFindByID(KGGuiID id);
+		// [EXPERIMENTAL] High-Level: Input Access functions w/ support for Key/Input Ownership
+		// - Important: legacy IsKeyPressed(KarmaGuiKey, bool repeat=true) _DEFAULTS_ to repeat, new IsKeyPressed() requires _EXPLICIT_ KGGuiInputFlags_Repeat flag.
+		// - Expected to be later promoted to public API, the prototypes are designed to replace existing ones (since owner_id can default to Any == 0)
+		// - Specifying a value for 'KGGuiID owner' will test that EITHER the key is NOT owned (UNLESS locked), EITHER the key is owned by 'owner'.
+		//   Legacy functions use KGGuiKeyOwner_Any meaning that they typically ignore ownership, unless a call to SetKeyOwner() explicitly used KGGuiInputFlags_LockThisFrame or KGGuiInputFlags_LockUntilRelease.
+		// - Binding generators may want to ignore those for now, or suffix them with Ex() until we decide if this gets moved into public API.
+		static bool              IsKeyDown(KarmaGuiKey key, KGGuiID owner_id);
+		static bool              IsKeyPressed(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags flags = 0);    // Important: when transitioning from old to new IsKeyPressed(): old API has "bool repeat = true", so would default to repeat. New API requiress explicit KGGuiInputFlags_Repeat.
+		static bool              IsKeyReleased(KarmaGuiKey key, KGGuiID owner_id);
+		static bool              IsMouseDown(KarmaGuiMouseButton button, KGGuiID owner_id);
+		static bool              IsMouseClicked(KarmaGuiMouseButton button, KGGuiID owner_id, KarmaGuiInputFlags flags = 0);
+		static bool              IsMouseReleased(KarmaGuiMouseButton button, KGGuiID owner_id);
 
-    // Tab Bars
-    KARMA_API bool          BeginTabBarEx(KGGuiTabBar* tab_bar, const KGRect& bb, KarmaGuiTabBarFlags flags, KGGuiDockNode* dock_node);
-    KARMA_API KGGuiTabItem* TabBarFindTabByID(KGGuiTabBar* tab_bar, KGGuiID tab_id);
-    KARMA_API KGGuiTabItem* TabBarFindMostRecentlySelectedTabForActiveWindow(KGGuiTabBar* tab_bar);
-    KARMA_API void          TabBarAddTab(KGGuiTabBar* tab_bar, KarmaGuiTabItemFlags tab_flags, KGGuiWindow* window);
-    KARMA_API void          TabBarRemoveTab(KGGuiTabBar* tab_bar, KGGuiID tab_id);
-    KARMA_API void          TabBarCloseTab(KGGuiTabBar* tab_bar, KGGuiTabItem* tab);
-    KARMA_API void          TabBarQueueReorder(KGGuiTabBar* tab_bar, const KGGuiTabItem* tab, int offset);
-    KARMA_API void          TabBarQueueReorderFromMousePos(KGGuiTabBar* tab_bar, const KGGuiTabItem* tab, ImVec2 mouse_pos);
-    KARMA_API bool          TabBarProcessReorder(KGGuiTabBar* tab_bar);
-    KARMA_API bool          TabItemEx(KGGuiTabBar* tab_bar, const char* label, bool* p_open, KarmaGuiTabItemFlags flags, KGGuiWindow* docked_window);
-    KARMA_API ImVec2        TabItemCalcSize(const char* label, bool has_close_button_or_unsaved_marker);
-    KARMA_API ImVec2        TabItemCalcSize(KGGuiWindow* window);
-    KARMA_API void          TabItemBackground(KGDrawList* draw_list, const KGRect& bb, KarmaGuiTabItemFlags flags, KGU32 col);
-    KARMA_API void          TabItemLabelAndCloseButton(KGDrawList* draw_list, const KGRect& bb, KarmaGuiTabItemFlags flags, ImVec2 frame_padding, const char* label, KGGuiID tab_id, KGGuiID close_button_id, bool is_contents_visible, bool* out_just_closed, bool* out_text_clipped);
+		// [EXPERIMENTAL] Low-Level: Shortcut Routing
+		// - Routes are resolved during NewFrame(): if keyboard modifiers are matching current ones: SetKeyOwner() is called + route is granted for the frame.
+		// - Route is granted to a single owner. When multiple requests are made we have policies to select the winning route.
+		// - Multiple read sites may use the same owner id and will all get the granted route.
+		// - For routing: when owner_id is 0 we use the current Focus Scope ID as a default owner in order to identify our location.
+		static bool              SetShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id = 0, KarmaGuiInputFlags flags = 0);
+		static bool              TestShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id);
+		static KGGuiKeyRoutingData* GetShortcutRoutingData(KarmaGuiKeyChord key_chord);
 
-    // Render helpers
-    // AVOID USING OUTSIDE OF IMGUI.CPP! NOT FOR PUBLIC CONSUMPTION. THOSE FUNCTIONS ARE A MESS. THEIR SIGNATURE AND BEHAVIOR WILL CHANGE, THEY NEED TO BE REFACTORED INTO SOMETHING DECENT.
-    // NB: All position are in absolute pixels coordinates (we are never using window coordinates internally)
-    KARMA_API void          RenderText(ImVec2 pos, const char* text, const char* text_end = NULL, bool hide_text_after_hash = true);
-    KARMA_API void          RenderTextWrapped(ImVec2 pos, const char* text, const char* text_end, float wrap_width);
-    KARMA_API void          RenderTextClipped(const ImVec2& pos_min, const ImVec2& pos_max, const char* text, const char* text_end, const ImVec2* text_size_if_known, const ImVec2& align = ImVec2(0, 0), const KGRect* clip_rect = NULL);
-    KARMA_API void          RenderTextClippedEx(KGDrawList* draw_list, const ImVec2& pos_min, const ImVec2& pos_max, const char* text, const char* text_end, const ImVec2* text_size_if_known, const ImVec2& align = ImVec2(0, 0), const KGRect* clip_rect = NULL);
-    KARMA_API void          RenderTextEllipsis(KGDrawList* draw_list, const ImVec2& pos_min, const ImVec2& pos_max, float clip_max_x, float ellipsis_max_x, const char* text, const char* text_end, const ImVec2* text_size_if_known);
-    KARMA_API void          RenderFrame(ImVec2 p_min, ImVec2 p_max, KGU32 fill_col, bool border = true, float rounding = 0.0f);
-    KARMA_API void          RenderFrameBorder(ImVec2 p_min, ImVec2 p_max, float rounding = 0.0f);
-    KARMA_API void          RenderColorRectWithAlphaCheckerboard(KGDrawList* draw_list, ImVec2 p_min, ImVec2 p_max, KGU32 fill_col, float grid_step, ImVec2 grid_off, float rounding = 0.0f, KGDrawFlags flags = 0);
-    KARMA_API void          RenderNavHighlight(const KGRect& bb, KGGuiID id, KGGuiNavHighlightFlags flags = KGGuiNavHighlightFlags_TypeDefault); // Navigation highlight
-    KARMA_API const char*   FindRenderedTextEnd(const char* text, const char* text_end = NULL); // Find the optional ## from which we stop displaying text.
-    KARMA_API void          RenderMouseCursor(ImVec2 pos, float scale, KarmaGuiMouseCursor mouse_cursor, KGU32 col_fill, KGU32 col_border, KGU32 col_shadow);
+		// Docking
+		// (some functions are only declared in imgui.cpp, see Docking section)
+		static void          DockContextInitialize(KarmaGuiContext* ctx);
+		static void          DockContextShutdown(KarmaGuiContext* ctx);
+		static void          DockContextClearNodes(KarmaGuiContext* ctx, KGGuiID root_id, bool clear_settings_refs); // Use root_id==0 to clear all
+		static void          DockContextRebuildNodes(KarmaGuiContext* ctx);
+		static void          DockContextNewFrameUpdateUndocking(KarmaGuiContext* ctx);
+		static void          DockContextNewFrameUpdateDocking(KarmaGuiContext* ctx);
+		static void          DockContextEndFrame(KarmaGuiContext* ctx);
+		static KGGuiID       DockContextGenNodeID(KarmaGuiContext* ctx);
+		static void          DockContextQueueDock(KarmaGuiContext* ctx, KGGuiWindow* target, KGGuiDockNode* target_node, KGGuiWindow* payload, KarmaGuiDir split_dir, float split_ratio, bool split_outer);
+		static void          DockContextQueueUndockWindow(KarmaGuiContext* ctx, KGGuiWindow* window);
+		static void          DockContextQueueUndockNode(KarmaGuiContext* ctx, KGGuiDockNode* node);
+		static bool          DockContextCalcDropPosForDocking(KGGuiWindow* target, KGGuiDockNode* target_node, KGGuiWindow* payload_window, KGGuiDockNode* payload_node, KarmaGuiDir split_dir, bool split_outer, KGVec2* out_pos);
+		static KGGuiDockNode*DockContextFindNodeByID(KarmaGuiContext* ctx, KGGuiID id);
+		static bool          DockNodeBeginAmendTabBar(KGGuiDockNode* node);
+		static void          DockNodeEndAmendTabBar();
+		static inline KGGuiDockNode*   DockNodeGetRootNode(KGGuiDockNode* node)                 { while (node->ParentNode) node = node->ParentNode; return node; }
+		static inline bool             DockNodeIsInHierarchyOf(KGGuiDockNode* node, KGGuiDockNode* parent) { while (node) { if (node == parent) return true; node = node->ParentNode; } return false; }
+		static inline int              DockNodeGetDepth(const KGGuiDockNode* node)              { int depth = 0; while (node->ParentNode) { node = node->ParentNode; depth++; } return depth; }
+		static inline KGGuiID          DockNodeGetWindowMenuButtonId(const KGGuiDockNode* node) { return KGHashStr("#COLLAPSE", 0, node->ID); }
+		static inline KGGuiDockNode*   GetWindowDockNode()                                      { KarmaGuiContext& g = *GKarmaGui; return g.CurrentWindow->DockNode; }
+		static bool          GetWindowAlwaysWantOwnTabBar(KGGuiWindow* window);
+		static void          BeginDocked(KGGuiWindow* window, bool* p_open);
+		static void          BeginDockableDragDropSource(KGGuiWindow* window);
+		static void          BeginDockableDragDropTarget(KGGuiWindow* window);
+		static void          SetWindowDock(KGGuiWindow* window, KGGuiID dock_id, KarmaGuiCond cond);
 
-    // Render helpers (those functions don't access any ImGui state!)
-    KARMA_API void          RenderArrow(KGDrawList* draw_list, ImVec2 pos, KGU32 col, KarmaGuiDir dir, float scale = 1.0f);
-    KARMA_API void          RenderBullet(KGDrawList* draw_list, ImVec2 pos, KGU32 col);
-    KARMA_API void          RenderCheckMark(KGDrawList* draw_list, ImVec2 pos, KGU32 col, float sz);
-    KARMA_API void          RenderArrowPointingAt(KGDrawList* draw_list, ImVec2 pos, ImVec2 half_sz, KarmaGuiDir direction, KGU32 col);
-    KARMA_API void          RenderArrowDockMenu(KGDrawList* draw_list, ImVec2 p_min, float sz, KGU32 col);
-    KARMA_API void          RenderRectFilledRangeH(KGDrawList* draw_list, const KGRect& rect, KGU32 col, float x_start_norm, float x_end_norm, float rounding);
-    KARMA_API void          RenderRectFilledWithHole(KGDrawList* draw_list, const KGRect& outer, const KGRect& inner, KGU32 col, float rounding);
-    KARMA_API KGDrawFlags   CalcRoundingFlagsForRectInRect(const KGRect& r_in, const KGRect& r_outer, float threshold);
+		// Docking - Builder function needs to be generally called before the node is used/submitted.
+		// - The DockBuilderXXX functions are designed to _eventually_ become a public API, but it is too early to expose it and guarantee stability.
+		// - Do not hold on KGGuiDockNode* pointers! They may be invalidated by any split/merge/remove operation and every frame.
+		// - To create a DockSpace() node, make sure to set the KGGuiDockNodeFlags_DockSpace flag when calling DockBuilderAddNode().
+		//   You can create dockspace nodes (attached to a window) _or_ floating nodes (carry its own window) with this API.
+		// - DockBuilderSplitNode() create 2 child nodes within 1 node. The initial node becomes a parent node.
+		// - If you intend to split the node immediately after creation using DockBuilderSplitNode(), make sure
+		//   to call DockBuilderSetNodeSize() beforehand. If you don't, the resulting split sizes may not be reliable.
+		// - Call DockBuilderFinish() after you are done.
+		static void          DockBuilderDockWindow(const char* window_name, KGGuiID node_id);
+		static KGGuiDockNode*DockBuilderGetNode(KGGuiID node_id);
+		static inline KGGuiDockNode*   DockBuilderGetCentralNode(KGGuiID node_id)              { KGGuiDockNode* node = DockBuilderGetNode(node_id); if (!node) return NULL; return DockNodeGetRootNode(node)->CentralNode; }
+		static KGGuiID       DockBuilderAddNode(KGGuiID node_id = 0, KarmaGuiDockNodeFlags flags = 0);
+		static void          DockBuilderRemoveNode(KGGuiID node_id);                 // Remove node and all its child, undock all windows
+		static void          DockBuilderRemoveNodeDockedWindows(KGGuiID node_id, bool clear_settings_refs = true);
+		static void          DockBuilderRemoveNodeChildNodes(KGGuiID node_id);       // Remove all split/hierarchy. All remaining docked windows will be re-docked to the remaining root node (node_id).
+		static void          DockBuilderSetNodePos(KGGuiID node_id, KGVec2 pos);
+		static void          DockBuilderSetNodeSize(KGGuiID node_id, KGVec2 size);
+		static KGGuiID       DockBuilderSplitNode(KGGuiID node_id, KarmaGuiDir split_dir, float size_ratio_for_node_at_dir, KGGuiID* out_id_at_dir, KGGuiID* out_id_at_opposite_dir); // Create 2 child nodes in this parent node.
+		static void          DockBuilderCopyDockSpace(KGGuiID src_dockspace_id, KGGuiID dst_dockspace_id, KGVector<const char*>* in_window_remap_pairs);
+		static void          DockBuilderCopyNode(KGGuiID src_node_id, KGGuiID dst_node_id, KGVector<KGGuiID>* out_node_remap_pairs);
+		static void          DockBuilderCopyWindowSettings(const char* src_name, const char* dst_name);
+		static void          DockBuilderFinish(KGGuiID node_id);
 
-    // Widgets
-    KARMA_API void          TextEx(const char* text, const char* text_end = NULL, KGGuiTextFlags flags = 0);
-    KARMA_API bool          ButtonEx(const char* label, const ImVec2& size_arg = ImVec2(0, 0), KarmaGuiButtonFlags flags = 0);
-    KARMA_API bool          ArrowButtonEx(const char* str_id, KarmaGuiDir dir, ImVec2 size_arg, KarmaGuiButtonFlags flags = 0);
-    KARMA_API bool          ImageButtonEx(KGGuiID id, KGTextureID texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& bg_col, const ImVec4& tint_col);
-    KARMA_API void          SeparatorEx(KGGuiSeparatorFlags flags);
-    KARMA_API bool          CheckboxFlags(const char* label, KGS64* flags, KGS64 flags_value);
-    KARMA_API bool          CheckboxFlags(const char* label, KGU64* flags, KGU64 flags_value);
+		// [EXPERIMENTAL] Focus Scope
+		// This is generally used to identify a unique input location (for e.g. a selection set)
+		// There is one per window (automatically set in Begin), but:
+		// - Selection patterns generally need to react (e.g. clear a selection) when landing on one item of the set.
+		//   So in order to identify a set multiple lists in same window may each need a focus scope.
+		//   If you imagine an hypothetical BeginSelectionGroup()/EndSelectionGroup() api, it would likely call PushFocusScope()/EndFocusScope()
+		// - Shortcut routing also use focus scope as a default location identifier if an owner is not provided.
+		// We don't use the ID Stack for this as it is common to want them separate.
+		static void          PushFocusScope(KGGuiID id);
+		static void          PopFocusScope();
+		static inline KGGuiID          GetCurrentFocusScope() { KarmaGuiContext& g = *GKarmaGui; return g.CurrentFocusScopeId; }   // Focus scope we are outputting into, set by PushFocusScope()
 
-    // Widgets: Window Decorations
-    KARMA_API bool          CloseButton(KGGuiID id, const ImVec2& pos);
-    KARMA_API bool          CollapseButton(KGGuiID id, const ImVec2& pos, KGGuiDockNode* dock_node);
-    KARMA_API void          Scrollbar(KGGuiAxis axis);
-    KARMA_API bool          ScrollbarEx(const KGRect& bb, KGGuiID id, KGGuiAxis axis, KGS64* p_scroll_v, KGS64 avail_v, KGS64 contents_v, KGDrawFlags flags);
-    KARMA_API KGRect        GetWindowScrollbarRect(KGGuiWindow* window, KGGuiAxis axis);
-    KARMA_API KGGuiID       GetWindowScrollbarID(KGGuiWindow* window, KGGuiAxis axis);
-    KARMA_API KGGuiID       GetWindowResizeCornerID(KGGuiWindow* window, int n); // 0..3: corners
-    KARMA_API KGGuiID       GetWindowResizeBorderID(KGGuiWindow* window, KarmaGuiDir dir);
+		// Drag and Drop
+		static bool          IsDragDropActive();
+		static bool          BeginDragDropTargetCustom(const KGRect& bb, KGGuiID id);
+		static void          ClearDragDrop();
+		static bool          IsDragDropPayloadBeingAccepted();
+		static void          RenderDragDropTargetRect(const KGRect& bb);
 
-    // Widgets low-level behaviors
-    KARMA_API bool          ButtonBehavior(const KGRect& bb, KGGuiID id, bool* out_hovered, bool* out_held, KarmaGuiButtonFlags flags = 0);
-    KARMA_API bool          DragBehavior(KGGuiID id, KarmaGuiDataType data_type, void* p_v, float v_speed, const void* p_min, const void* p_max, const char* format, KarmaGuiSliderFlags flags);
-    KARMA_API bool          SliderBehavior(const KGRect& bb, KGGuiID id, KarmaGuiDataType data_type, void* p_v, const void* p_min, const void* p_max, const char* format, KarmaGuiSliderFlags flags, KGRect* out_grab_bb);
-    KARMA_API bool          SplitterBehavior(const KGRect& bb, KGGuiID id, KGGuiAxis axis, float* size1, float* size2, float min_size1, float min_size2, float hover_extend = 0.0f, float hover_visibility_delay = 0.0f, KGU32 bg_col = 0);
-    KARMA_API bool          TreeNodeBehavior(KGGuiID id, KarmaGuiTreeNodeFlags flags, const char* label, const char* label_end = NULL);
-    KARMA_API void          TreePushOverrideID(KGGuiID id);
-    KARMA_API void          TreeNodeSetOpen(KGGuiID id, bool open);
-    KARMA_API bool          TreeNodeUpdateNextOpen(KGGuiID id, KarmaGuiTreeNodeFlags flags);   // Return open state. Consume previous SetNextItemOpen() data, if any. May return true when logging.
+		// Internal Columns API (this is not exposed because we will encourage transitioning to the Tables API)
+		static void          SetWindowClipRectBeforeSetChannel(KGGuiWindow* window, const KGRect& clip_rect);
+		static void          BeginColumns(const char* str_id, int count, KGGuiOldColumnFlags flags = 0); // setup number of columns. use an identifier to distinguish multiple column sets. close with EndColumns().
+		static void          EndColumns();                                                               // close columns
+		static void          PushColumnClipRect(int column_index);
+		static void          PushColumnsBackground();
+		static void          PopColumnsBackground();
+		static KGGuiID       GetColumnsID(const char* str_id, int count);
+		static KGGuiOldColumns* FindOrCreateColumns(KGGuiWindow* window, KGGuiID id);
+		static float         GetColumnOffsetFromNorm(const KGGuiOldColumns* columns, float offset_norm);
+		static float         GetColumnNormFromOffset(const KGGuiOldColumns* columns, float offset);
 
-    // Template functions are instantiated in imgui_widgets.cpp for a finite number of types.
-    // To use them externally (for custom widget) you may need an "extern template" statement in your code in order to link to existing instances and silence Clang warnings (see #2036).
-    // e.g. " extern template KARMA_API float RoundScalarWithFormatT<float, float>(const char* format, KarmaGuiDataType data_type, float v); "
-    template<typename T, typename SIGNED_T, typename FLOAT_T>   KARMA_API float ScaleRatioFromValueT(KarmaGuiDataType data_type, T v, T v_min, T v_max, bool is_logarithmic, float logarithmic_zero_epsilon, float zero_deadzone_size);
-    template<typename T, typename SIGNED_T, typename FLOAT_T>   KARMA_API T     ScaleValueFromRatioT(KarmaGuiDataType data_type, float t, T v_min, T v_max, bool is_logarithmic, float logarithmic_zero_epsilon, float zero_deadzone_size);
-    template<typename T, typename SIGNED_T, typename FLOAT_T>   KARMA_API bool  DragBehaviorT(KarmaGuiDataType data_type, T* v, float v_speed, T v_min, T v_max, const char* format, KarmaGuiSliderFlags flags);
-    template<typename T, typename SIGNED_T, typename FLOAT_T>   KARMA_API bool  SliderBehaviorT(const KGRect& bb, KGGuiID id, KarmaGuiDataType data_type, T* v, T v_min, T v_max, const char* format, KarmaGuiSliderFlags flags, KGRect* out_grab_bb);
-    template<typename T>                                        KARMA_API T     RoundScalarWithFormatT(const char* format, KarmaGuiDataType data_type, T v);
-    template<typename T>                                        KARMA_API bool  CheckboxFlagsT(const char* label, T* flags, T flags_value);
+		// Tables: Candidates for public API
+		static void          TableOpenContextMenu(int column_n = -1);
+		static void          TableSetColumnWidth(int column_n, float width);
+		static void          TableSetColumnSortDirection(int column_n, KarmaGuiSortDirection sort_direction, bool append_to_sort_specs);
+		static int           TableGetHoveredColumn(); // May use (TableGetColumnFlags() & KGGuiTableColumnFlags_IsHovered) instead. Return hovered column. return -1 when table is not hovered. return columns_count if the unused space at the right of visible columns is hovered.
+		static float         TableGetHeaderRowHeight();
+		static void          TablePushBackgroundChannel();
+		static void          TablePopBackgroundChannel();
 
-    // Data type helpers
-    KARMA_API const KGGuiDataTypeInfo*  DataTypeGetInfo(KarmaGuiDataType data_type);
-    KARMA_API int           DataTypeFormatString(char* buf, int buf_size, KarmaGuiDataType data_type, const void* p_data, const char* format);
-    KARMA_API void          DataTypeApplyOp(KarmaGuiDataType data_type, int op, void* output, const void* arg_1, const void* arg_2);
-    KARMA_API bool          DataTypeApplyFromText(const char* buf, KarmaGuiDataType data_type, void* p_data, const char* format);
-    KARMA_API int           DataTypeCompare(KarmaGuiDataType data_type, const void* arg_1, const void* arg_2);
-    KARMA_API bool          DataTypeClamp(KarmaGuiDataType data_type, void* p_data, const void* p_min, const void* p_max);
+		// Tables: Internals
+		static inline    KGGuiTable*   GetCurrentTable() { KarmaGuiContext& g = *GKarmaGui; return g.CurrentTable; }
+		static KGGuiTable*   TableFindByID(KGGuiID id);
+		static bool          BeginTableEx(const char* name, KGGuiID id, int columns_count, KarmaGuiTableFlags flags = 0, const KGVec2& outer_size = KGVec2(0, 0), float inner_width = 0.0f);
+		static void          TableBeginInitMemory(KGGuiTable* table, int columns_count);
+		static void          TableBeginApplyRequests(KGGuiTable* table);
+		static void          TableSetupDrawChannels(KGGuiTable* table);
+		static void          TableUpdateLayout(KGGuiTable* table);
+		static void          TableUpdateBorders(KGGuiTable* table);
+		static void          TableUpdateColumnsWeightFromWidth(KGGuiTable* table);
+		static void          TableDrawBorders(KGGuiTable* table);
+		static void          TableDrawContextMenu(KGGuiTable* table);
+		static bool          TableBeginContextMenuPopup(KGGuiTable* table);
+		static void          TableMergeDrawChannels(KGGuiTable* table);
+		static inline KGGuiTableInstanceData*   TableGetInstanceData(KGGuiTable* table, int instance_no) { if (instance_no == 0) return &table->InstanceDataFirst; return &table->InstanceDataExtra[instance_no - 1]; }
+		static void          TableSortSpecsSanitize(KGGuiTable* table);
+		static void          TableSortSpecsBuild(KGGuiTable* table);
+		static KarmaGuiSortDirection TableGetColumnNextSortDirection(KGGuiTableColumn* column);
+		static void          TableFixColumnSortDirection(KGGuiTable* table, KGGuiTableColumn* column);
+		static float         TableGetColumnWidthAuto(KGGuiTable* table, KGGuiTableColumn* column);
+		static void          TableBeginRow(KGGuiTable* table);
+		static void          TableEndRow(KGGuiTable* table);
+		static void          TableBeginCell(KGGuiTable* table, int column_n);
+		static void          TableEndCell(KGGuiTable* table);
+		static KGRect        TableGetCellBgRect(const KGGuiTable* table, int column_n);
+		static const char*   TableGetColumnName(const KGGuiTable* table, int column_n);
+		static KGGuiID       TableGetColumnResizeID(const KGGuiTable* table, int column_n, int instance_no = 0);
+		static float         TableGetMaxColumnWidth(const KGGuiTable* table, int column_n);
+		static void          TableSetColumnWidthAutoSingle(KGGuiTable* table, int column_n);
+		static void          TableSetColumnWidthAutoAll(KGGuiTable* table);
+		static void          TableRemove(KGGuiTable* table);
+		static void          TableGcCompactTransientBuffers(KGGuiTable* table);
+		static void          TableGcCompactTransientBuffers(KGGuiTableTempData* table);
+		static void          TableGcCompactSettings();
 
-    // InputText
-    KARMA_API bool          InputTextEx(const char* label, const char* hint, char* buf, int buf_size, const ImVec2& size_arg, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback = NULL, void* user_data = NULL);
-    KARMA_API bool          TempInputText(const KGRect& bb, KGGuiID id, const char* label, char* buf, int buf_size, KarmaGuiInputTextFlags flags);
-    KARMA_API bool          TempInputScalar(const KGRect& bb, KGGuiID id, const char* label, KarmaGuiDataType data_type, void* p_data, const char* format, const void* p_clamp_min = NULL, const void* p_clamp_max = NULL);
-    inline bool             TempInputIsActive(KGGuiID id)       { KarmaGuiContext& g = *GKarmaGui; return (g.ActiveId == id && g.TempInputId == id); }
-    inline KGGuiInputTextState* GetInputTextState(KGGuiID id)   { KarmaGuiContext& g = *GKarmaGui; return (id != 0 && g.InputTextState.ID == id) ? &g.InputTextState : NULL; } // Get input text state if active
+		// Tables: Settings
+		static void                  TableLoadSettings(KGGuiTable* table);
+		static void                  TableSaveSettings(KGGuiTable* table);
+		static void                  TableResetSettings(KGGuiTable* table);
+		static KGGuiTableSettings*   TableGetBoundSettings(KGGuiTable* table);
+		static void                  TableSettingsAddSettingsHandler();
+		static KGGuiTableSettings*   TableSettingsCreate(KGGuiID id, int columns_count);
+		static KGGuiTableSettings*   TableSettingsFindByID(KGGuiID id);
 
-    // Color
-    KARMA_API void          ColorTooltip(const char* text, const float* col, KarmaGuiColorEditFlags flags);
-    KARMA_API void          ColorEditOptionsPopup(const float* col, KarmaGuiColorEditFlags flags);
-    KARMA_API void          ColorPickerOptionsPopup(const float* ref_col, KarmaGuiColorEditFlags flags);
+		// Tab Bars
+		static bool          BeginTabBarEx(KGGuiTabBar* tab_bar, const KGRect& bb, KarmaGuiTabBarFlags flags, KGGuiDockNode* dock_node);
+		static KGGuiTabItem* TabBarFindTabByID(KGGuiTabBar* tab_bar, KGGuiID tab_id);
+		static KGGuiTabItem* TabBarFindMostRecentlySelectedTabForActiveWindow(KGGuiTabBar* tab_bar);
+		static void          TabBarAddTab(KGGuiTabBar* tab_bar, KarmaGuiTabItemFlags tab_flags, KGGuiWindow* window);
+		static void          TabBarRemoveTab(KGGuiTabBar* tab_bar, KGGuiID tab_id);
+		static void          TabBarCloseTab(KGGuiTabBar* tab_bar, KGGuiTabItem* tab);
+		static void          TabBarQueueReorder(KGGuiTabBar* tab_bar, const KGGuiTabItem* tab, int offset);
+		static void          TabBarQueueReorderFromMousePos(KGGuiTabBar* tab_bar, const KGGuiTabItem* tab, KGVec2 mouse_pos);
+		static bool          TabBarProcessReorder(KGGuiTabBar* tab_bar);
+		static bool          TabItemEx(KGGuiTabBar* tab_bar, const char* label, bool* p_open, KarmaGuiTabItemFlags flags, KGGuiWindow* docked_window);
+		static KGVec2        TabItemCalcSize(const char* label, bool has_close_button_or_unsaved_marker);
+		static KGVec2        TabItemCalcSize(KGGuiWindow* window);
+		static void          TabItemBackground(KGDrawList* draw_list, const KGRect& bb, KarmaGuiTabItemFlags flags, KGU32 col);
+		static void          TabItemLabelAndCloseButton(KGDrawList* draw_list, const KGRect& bb, KarmaGuiTabItemFlags flags, KGVec2 frame_padding, const char* label, KGGuiID tab_id, KGGuiID close_button_id, bool is_contents_visible, bool* out_just_closed, bool* out_text_clipped);
 
-    // Plot
-    KARMA_API int           PlotEx(KGGuiPlotType plot_type, const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 frame_size);
+		// Render helpers
+		// AVOID USING OUTSIDE OF IMGUI.CPP! NOT FOR PUBLIC CONSUMPTION. THOSE FUNCTIONS ARE A MESS. THEIR SIGNATURE AND BEHAVIOR WILL CHANGE, THEY NEED TO BE REFACTORED INTO SOMETHING DECENT.
+		// NB: All position are in absolute pixels coordinates (we are never using window coordinates internally)
+		static void          RenderText(KGVec2 pos, const char* text, const char* text_end = NULL, bool hide_text_after_hash = true);
+		static void          RenderTextWrapped(KGVec2 pos, const char* text, const char* text_end, float wrap_width);
+		static void          RenderTextClipped(const KGVec2& pos_min, const KGVec2& pos_max, const char* text, const char* text_end, const KGVec2* text_size_if_known, const KGVec2& align = KGVec2(0, 0), const KGRect* clip_rect = NULL);
+		static void          RenderTextClippedEx(KGDrawList* draw_list, const KGVec2& pos_min, const KGVec2& pos_max, const char* text, const char* text_end, const KGVec2* text_size_if_known, const KGVec2& align = KGVec2(0, 0), const KGRect* clip_rect = NULL);
+		static void          RenderTextEllipsis(KGDrawList* draw_list, const KGVec2& pos_min, const KGVec2& pos_max, float clip_max_x, float ellipsis_max_x, const char* text, const char* text_end, const KGVec2* text_size_if_known);
+		static void          RenderFrame(KGVec2 p_min, KGVec2 p_max, KGU32 fill_col, bool border = true, float rounding = 0.0f);
+		static void          RenderFrameBorder(KGVec2 p_min, KGVec2 p_max, float rounding = 0.0f);
+		static void          RenderColorRectWithAlphaCheckerboard(KGDrawList* draw_list, KGVec2 p_min, KGVec2 p_max, KGU32 fill_col, float grid_step, KGVec2 grid_off, float rounding = 0.0f, KGDrawFlags flags = 0);
+		static void          RenderNavHighlight(const KGRect& bb, KGGuiID id, KGGuiNavHighlightFlags flags = KGGuiNavHighlightFlags_TypeDefault); // Navigation highlight
+		static const char*   FindRenderedTextEnd(const char* text, const char* text_end = NULL); // Find the optional ## from which we stop displaying text.
+		static void          RenderMouseCursor(KGVec2 pos, float scale, KarmaGuiMouseCursor mouse_cursor, KGU32 col_fill, KGU32 col_border, KGU32 col_shadow);
 
-    // Shade functions (write over already created vertices)
-    KARMA_API void          ShadeVertsLinearColorGradientKeepAlpha(KGDrawList* draw_list, int vert_start_idx, int vert_end_idx, ImVec2 gradient_p0, ImVec2 gradient_p1, KGU32 col0, KGU32 col1);
-    KARMA_API void          ShadeVertsLinearUV(KGDrawList* draw_list, int vert_start_idx, int vert_end_idx, const ImVec2& a, const ImVec2& b, const ImVec2& uv_a, const ImVec2& uv_b, bool clamp);
+		// Render helpers (those functions don't access any ImGui state!)
+		static void          RenderArrow(KGDrawList* draw_list, KGVec2 pos, KGU32 col, KarmaGuiDir dir, float scale = 1.0f);
+		static void          RenderBullet(KGDrawList* draw_list, KGVec2 pos, KGU32 col);
+		static void          RenderCheckMark(KGDrawList* draw_list, KGVec2 pos, KGU32 col, float sz);
+		static void          RenderArrowPointingAt(KGDrawList* draw_list, KGVec2 pos, KGVec2 half_sz, KarmaGuiDir direction, KGU32 col);
+		static void          RenderArrowDockMenu(KGDrawList* draw_list, KGVec2 p_min, float sz, KGU32 col);
+		static void          RenderRectFilledRangeH(KGDrawList* draw_list, const KGRect& rect, KGU32 col, float x_start_norm, float x_end_norm, float rounding);
+		static void          RenderRectFilledWithHole(KGDrawList* draw_list, const KGRect& outer, const KGRect& inner, KGU32 col, float rounding);
+		static KGDrawFlags   CalcRoundingFlagsForRectInRect(const KGRect& r_in, const KGRect& r_outer, float threshold);
 
-    // Garbage collection
-    KARMA_API void          GcCompactTransientMiscBuffers();
-    KARMA_API void          GcCompactTransientWindowBuffers(KGGuiWindow* window);
-    KARMA_API void          GcAwakeTransientWindowBuffers(KGGuiWindow* window);
+		// Widgets
+		static void          TextEx(const char* text, const char* text_end = NULL, KGGuiTextFlags flags = 0);
+		static bool          ButtonEx(const char* label, const KGVec2& size_arg = KGVec2(0, 0), KarmaGuiButtonFlags flags = 0);
+		static bool          ArrowButtonEx(const char* str_id, KarmaGuiDir dir, KGVec2 size_arg, KarmaGuiButtonFlags flags = 0);
+		static bool          ImageButtonEx(KGGuiID id, KGTextureID texture_id, const KGVec2& size, const KGVec2& uv0, const KGVec2& uv1, const KGVec4& bg_col, const KGVec4& tint_col);
+		static void          SeparatorEx(KGGuiSeparatorFlags flags);
+		static bool          CheckboxFlags(const char* label, KGS64* flags, KGS64 flags_value);
+		static bool          CheckboxFlags(const char* label, KGU64* flags, KGU64 flags_value);
 
-    // Debug Log
-    KARMA_API void          DebugLog(const char* fmt, ...) KG_FMTARGS(1);
-    KARMA_API void          DebugLogV(const char* fmt, va_list args) KG_FMTLIST(1);
+		// Widgets: Window Decorations
+		static bool          CloseButton(KGGuiID id, const KGVec2& pos);
+		static bool          CollapseButton(KGGuiID id, const KGVec2& pos, KGGuiDockNode* dock_node);
+		static void          Scrollbar(KGGuiAxis axis);
+		static bool          ScrollbarEx(const KGRect& bb, KGGuiID id, KGGuiAxis axis, KGS64* p_scroll_v, KGS64 avail_v, KGS64 contents_v, KGDrawFlags flags);
+		static KGRect        GetWindowScrollbarRect(KGGuiWindow* window, KGGuiAxis axis);
+		static KGGuiID       GetWindowScrollbarID(KGGuiWindow* window, KGGuiAxis axis);
+		static KGGuiID       GetWindowResizeCornerID(KGGuiWindow* window, int n); // 0..3: corners
+		static KGGuiID       GetWindowResizeBorderID(KGGuiWindow* window, KarmaGuiDir dir);
 
-    // Debug Tools
-    KARMA_API void          ErrorCheckEndFrameRecover(KGGuiErrorLogCallback log_callback, void* user_data = NULL);
-    KARMA_API void          ErrorCheckEndWindowRecover(KGGuiErrorLogCallback log_callback, void* user_data = NULL);
-    KARMA_API void          ErrorCheckUsingSetCursorPosToExtendParentBoundaries();
-    KARMA_API void          DebugLocateItem(KGGuiID target_id);                     // Call sparingly: only 1 at the same time!
-    KARMA_API void          DebugLocateItemOnHover(KGGuiID target_id);              // Only call on reaction to a mouse Hover: because only 1 at the same time!
-    KARMA_API void          DebugLocateItemResolveWithLastItem();
-    inline void             DebugDrawItemRect(KGU32 col = KG_COL32(255,0,0,255))    { KarmaGuiContext& g = *GKarmaGui; KGGuiWindow* window = g.CurrentWindow; GetForegroundDrawList(window)->AddRect(g.LastItemData.Rect.Min, g.LastItemData.Rect.Max, col); }
-    inline void             DebugStartItemPicker()                                  { KarmaGuiContext& g = *GKarmaGui; g.DebugItemPickerActive = true; }
-    KARMA_API void          ShowFontAtlas(KGFontAtlas* atlas);
-    KARMA_API void          DebugHookIdInfo(KGGuiID id, KarmaGuiDataType data_type, const void* data_id, const void* data_id_end);
-    KARMA_API void          DebugNodeColumns(KGGuiOldColumns* columns);
-    KARMA_API void          DebugNodeDockNode(KGGuiDockNode* node, const char* label);
-    KARMA_API void          DebugNodeDrawList(KGGuiWindow* window, KGGuiViewportP* viewport, const KGDrawList* draw_list, const char* label);
-    KARMA_API void          DebugNodeDrawCmdShowMeshAndBoundingBox(KGDrawList* out_draw_list, const KGDrawList* draw_list, const KGDrawCmd* draw_cmd, bool show_mesh, bool show_aabb);
-    KARMA_API void          DebugNodeFont(KGFont* font);
-    KARMA_API void          DebugNodeFontGlyph(KGFont* font, const KGFontGlyph* glyph);
-    KARMA_API void          DebugNodeStorage(KarmaGuiStorage* storage, const char* label);
-    KARMA_API void          DebugNodeTabBar(KGGuiTabBar* tab_bar, const char* label);
-    KARMA_API void          DebugNodeTable(KGGuiTable* table);
-    KARMA_API void          DebugNodeTableSettings(KGGuiTableSettings* settings);
-    KARMA_API void          DebugNodeInputTextState(KGGuiInputTextState* state);
-    KARMA_API void          DebugNodeWindow(KGGuiWindow* window, const char* label);
-    KARMA_API void          DebugNodeWindowSettings(KGGuiWindowSettings* settings);
-    KARMA_API void          DebugNodeWindowsList(KGVector<KGGuiWindow*>* windows, const char* label);
-    KARMA_API void          DebugNodeWindowsListByBeginStackParent(KGGuiWindow** windows, int windows_size, KGGuiWindow* parent_in_begin_stack);
-    KARMA_API void          DebugNodeViewport(KGGuiViewportP* viewport);
-    KARMA_API void          DebugRenderKeyboardPreview(KGDrawList* draw_list);
-    KARMA_API void          DebugRenderViewportThumbnail(KGDrawList* draw_list, KGGuiViewportP* viewport, const KGRect& bb);
+		// Widgets low-level behaviors
+		static bool          ButtonBehavior(const KGRect& bb, KGGuiID id, bool* out_hovered, bool* out_held, KarmaGuiButtonFlags flags = 0);
+		static bool          DragBehavior(KGGuiID id, KarmaGuiDataType data_type, void* p_v, float v_speed, const void* p_min, const void* p_max, const char* format, KarmaGuiSliderFlags flags);
+		static bool          SliderBehavior(const KGRect& bb, KGGuiID id, KarmaGuiDataType data_type, void* p_v, const void* p_min, const void* p_max, const char* format, KarmaGuiSliderFlags flags, KGRect* out_grab_bb);
+		static bool          SplitterBehavior(const KGRect& bb, KGGuiID id, KGGuiAxis axis, float* size1, float* size2, float min_size1, float min_size2, float hover_extend = 0.0f, float hover_visibility_delay = 0.0f, KGU32 bg_col = 0);
+		static bool          TreeNodeBehavior(KGGuiID id, KarmaGuiTreeNodeFlags flags, const char* label, const char* label_end = NULL);
+		static void          TreePushOverrideID(KGGuiID id);
+		static void          TreeNodeSetOpen(KGGuiID id, bool open);
+		static bool          TreeNodeUpdateNextOpen(KGGuiID id, KarmaGuiTreeNodeFlags flags);   // Return open state. Consume previous SetNextItemOpen() data, if any. May return true when logging.
 
-    // Obsolete functions
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-    inline void     SetItemUsingMouseWheel()                                            { SetItemKeyOwner(KGGuiKey_MouseWheelY); }      // Changed in 1.89
-    inline bool     TreeNodeBehaviorIsOpen(KGGuiID id, KarmaGuiTreeNodeFlags flags = 0)    { return TreeNodeUpdateNextOpen(id, flags); }   // Renamed in 1.89
+		// Template functions are instantiated in imgui_widgets.cpp for a finite number of types.
+		// To use them externally (for custom widget) you may need an "extern template" statement in your code in order to link to existing instances and silence Clang warnings (see #2036).
+		// e.g. " extern template  float RoundScalarWithFormatT<float, float>(const char* format, KarmaGuiDataType data_type, float v); "
+		template<typename T, typename SIGNED_T, typename FLOAT_T>    float ScaleRatioFromValueT(KarmaGuiDataType data_type, T v, T v_min, T v_max, bool is_logarithmic, float logarithmic_zero_epsilon, float zero_deadzone_size);
+		template<typename T, typename SIGNED_T, typename FLOAT_T>    T     ScaleValueFromRatioT(KarmaGuiDataType data_type, float t, T v_min, T v_max, bool is_logarithmic, float logarithmic_zero_epsilon, float zero_deadzone_size);
+		template<typename T, typename SIGNED_T, typename FLOAT_T>    bool  DragBehaviorT(KarmaGuiDataType data_type, T* v, float v_speed, T v_min, T v_max, const char* format, KarmaGuiSliderFlags flags);
+		template<typename T, typename SIGNED_T, typename FLOAT_T>    bool  SliderBehaviorT(const KGRect& bb, KGGuiID id, KarmaGuiDataType data_type, T* v, T v_min, T v_max, const char* format, KarmaGuiSliderFlags flags, KGRect* out_grab_bb);
+		template<typename T>                                         T     RoundScalarWithFormatT(const char* format, KarmaGuiDataType data_type, T v);
+		template<typename T>                                         bool  CheckboxFlagsT(const char* label, T* flags, T flags_value);
 
-    // Refactored focus/nav/tabbing system in 1.82 and 1.84. If you have old/custom copy-and-pasted widgets that used FocusableItemRegister():
-    //  (Old) IMGUI_VERSION_NUM  < 18209: using 'ItemAdd(....)'                              and 'bool tab_focused = FocusableItemRegister(...)'
-    //  (Old) IMGUI_VERSION_NUM >= 18209: using 'ItemAdd(..., ImGuiItemAddFlags_Focusable)'  and 'bool tab_focused = (GetItemStatusFlags() & KGGuiItemStatusFlags_Focused) != 0'
-    //  (New) IMGUI_VERSION_NUM >= 18413: using 'ItemAdd(..., KGGuiItemFlags_Inputable)'     and 'bool tab_focused = (GetItemStatusFlags() & KGGuiItemStatusFlags_FocusedTabbing) != 0 || g.NavActivateInputId == id' (WIP)
-    // Widget code are simplified as there's no need to call FocusableItemUnregister() while managing the transition from regular widget to TempInputText()
-    inline bool     FocusableItemRegister(KGGuiWindow* window, KGGuiID id)              { KR_CORE_ASSERT(0, ""); KG_UNUSED(window); KG_UNUSED(id); return false; } // -> pass ImGuiItemAddFlags_Inputable flag to ItemAdd()
-    inline void     FocusableItemUnregister(KGGuiWindow* window)                        { KR_CORE_ASSERT(0, ""); KG_UNUSED(window); }                              // -> unnecessary: TempInputText() uses KGGuiInputTextFlags_MergedItem
-#endif
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
-    inline bool     IsKeyPressedMap(KarmaGuiKey key, bool repeat = true)                   { KR_CORE_ASSERT(IsNamedKey(key), ""); return IsKeyPressed(key, repeat); } // Removed in 1.87: Mapping from named key is always identity!
-#endif
+		// Data type helpers
+		static const KGGuiDataTypeInfo*  DataTypeGetInfo(KarmaGuiDataType data_type);
+		static int           DataTypeFormatString(char* buf, int buf_size, KarmaGuiDataType data_type, const void* p_data, const char* format);
+		static void          DataTypeApplyOp(KarmaGuiDataType data_type, int op, void* output, const void* arg_1, const void* arg_2);
+		static bool          DataTypeApplyFromText(const char* buf, KarmaGuiDataType data_type, void* p_data, const char* format);
+		static int           DataTypeCompare(KarmaGuiDataType data_type, const void* arg_1, const void* arg_2);
+		static bool          DataTypeClamp(KarmaGuiDataType data_type, void* p_data, const void* p_min, const void* p_max);
 
+		// InputText
+		static bool          InputTextEx(const char* label, const char* hint, char* buf, int buf_size, const KGVec2& size_arg, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback = NULL, void* user_data = NULL);
+		static bool          TempInputText(const KGRect& bb, KGGuiID id, const char* label, char* buf, int buf_size, KarmaGuiInputTextFlags flags);
+		static bool          TempInputScalar(const KGRect& bb, KGGuiID id, const char* label, KarmaGuiDataType data_type, void* p_data, const char* format, const void* p_clamp_min = NULL, const void* p_clamp_max = NULL);
+		static inline bool             TempInputIsActive(KGGuiID id)       { KarmaGuiContext& g = *GKarmaGui; return (g.ActiveId == id && g.TempInputId == id); }
+		static inline KGGuiInputTextState* GetInputTextState(KGGuiID id)   { KarmaGuiContext& g = *GKarmaGui; return (id != 0 && g.InputTextState.ID == id) ? &g.InputTextState : NULL; } // Get input text state if active
+
+		// Color
+		static void          ColorTooltip(const char* text, const float* col, KarmaGuiColorEditFlags flags);
+		static void          ColorEditOptionsPopup(const float* col, KarmaGuiColorEditFlags flags);
+		static void          ColorPickerOptionsPopup(const float* ref_col, KarmaGuiColorEditFlags flags);
+
+		// Plot
+		static int           PlotEx(KGGuiPlotType plot_type, const char* label, float (*values_getter)(void* data, int idx), void* data, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, KGVec2 frame_size);
+
+		// Shade functions (write over already created vertices)
+		static void          ShadeVertsLinearColorGradientKeepAlpha(KGDrawList* draw_list, int vert_start_idx, int vert_end_idx, KGVec2 gradient_p0, KGVec2 gradient_p1, KGU32 col0, KGU32 col1);
+		static void          ShadeVertsLinearUV(KGDrawList* draw_list, int vert_start_idx, int vert_end_idx, const KGVec2& a, const KGVec2& b, const KGVec2& uv_a, const KGVec2& uv_b, bool clamp);
+
+		// Garbage collection
+		static void          GcCompactTransientMiscBuffers();
+		static void          GcCompactTransientWindowBuffers(KGGuiWindow* window);
+		static void          GcAwakeTransientWindowBuffers(KGGuiWindow* window);
+
+		// Debug Tools
+		static void          ErrorCheckEndFrameRecover(KGGuiErrorLogCallback log_callback, void* user_data = NULL);
+		static void          ErrorCheckEndWindowRecover(KGGuiErrorLogCallback log_callback, void* user_data = NULL);
+		static void          ErrorCheckUsingSetCursorPosToExtendParentBoundaries();
+		static void          DebugLocateItem(KGGuiID target_id);                     // Call sparingly: only 1 at the same time!
+		static void          DebugLocateItemOnHover(KGGuiID target_id);              // Only call on reaction to a mouse Hover: because only 1 at the same time!
+		static void          DebugLocateItemResolveWithLastItem();
+		static inline void             DebugDrawItemRect(KGU32 col = KG_COL32(255,0,0,255))    { KarmaGuiContext& g = *GKarmaGui; KGGuiWindow* window = g.CurrentWindow; GetForegroundDrawList(window)->AddRect(g.LastItemData.Rect.Min, g.LastItemData.Rect.Max, col); }
+		static inline void             DebugStartItemPicker()                                  { KarmaGuiContext& g = *GKarmaGui; g.DebugItemPickerActive = true; }
+		static void          ShowFontAtlas(KGFontAtlas* atlas);
+		static void          DebugHookIdInfo(KGGuiID id, KarmaGuiDataType data_type, const void* data_id, const void* data_id_end);
+		static void          DebugNodeColumns(KGGuiOldColumns* columns);
+		static void          DebugNodeDockNode(KGGuiDockNode* node, const char* label);
+		static void          DebugNodeDrawList(KGGuiWindow* window, KGGuiViewportP* viewport, const KGDrawList* draw_list, const char* label);
+		static void          DebugNodeDrawCmdShowMeshAndBoundingBox(KGDrawList* out_draw_list, const KGDrawList* draw_list, const KGDrawCmd* draw_cmd, bool show_mesh, bool show_aabb);
+		static void          DebugNodeFont(KGFont* font);
+		static void          DebugNodeFontGlyph(KGFont* font, const KGFontGlyph* glyph);
+		static void          DebugNodeStorage(KarmaGuiStorage* storage, const char* label);
+		static void          DebugNodeTabBar(KGGuiTabBar* tab_bar, const char* label);
+		static void          DebugNodeTable(KGGuiTable* table);
+		static void          DebugNodeTableSettings(KGGuiTableSettings* settings);
+		static void          DebugNodeInputTextState(KGGuiInputTextState* state);
+		static void          DebugNodeWindow(KGGuiWindow* window, const char* label);
+		static void          DebugNodeWindowSettings(KGGuiWindowSettings* settings);
+		static void          DebugNodeWindowsList(KGVector<KGGuiWindow*>* windows, const char* label);
+		static void          DebugNodeWindowsListByBeginStackParent(KGGuiWindow** windows, int windows_size, KGGuiWindow* parent_in_begin_stack);
+		static void          DebugNodeViewport(KGGuiViewportP* viewport);
+		static void          DebugRenderKeyboardPreview(KGDrawList* draw_list);
+		static void          DebugRenderViewportThumbnail(KGDrawList* draw_list, KGGuiViewportP* viewport, const KGRect& bb);
+	};
 } // namespace Karma
 
 
@@ -3319,16 +3391,16 @@ struct KGFontBuilderIO
 
 // Helper for font builder
 #ifdef KGGUI_ENABLE_STB_TRUETYPE
-KARMA_API const KGFontBuilderIO* ImFontAtlasGetBuilderForStbTruetype();
+ const KGFontBuilderIO* ImFontAtlasGetBuilderForStbTruetype();
 #endif
-KARMA_API void      ImFontAtlasBuildInit(KGFontAtlas* atlas);
-KARMA_API void      ImFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* font_config, float ascent, float descent);
-KARMA_API void      ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opaque);
-KARMA_API void      ImFontAtlasBuildFinish(KGFontAtlas* atlas);
-KARMA_API void      ImFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned char in_marker_pixel_value);
-KARMA_API void      ImFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned int in_marker_pixel_value);
-KARMA_API void      ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], float in_multiply_factor);
-KARMA_API void      ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride);
+ void      ImFontAtlasBuildInit(KGFontAtlas* atlas);
+ void      ImFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* font_config, float ascent, float descent);
+ void      ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opaque);
+ void      ImFontAtlasBuildFinish(KGFontAtlas* atlas);
+ void      ImFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned char in_marker_pixel_value);
+ void      ImFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned int in_marker_pixel_value);
+ void      ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], float in_multiply_factor);
+ void      ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride);
 
 //-----------------------------------------------------------------------------
 // [SECTION] Test Engine specific hooks (imgui_test_engine)

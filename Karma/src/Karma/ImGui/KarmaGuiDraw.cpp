@@ -174,188 +174,188 @@ using namespace IMGUI_STB_NAMESPACE;
 void ImGui::StyleColorsDark(KarmaGuiStyle* dst)
 {
     KarmaGuiStyle* style = dst ? dst : &ImGui::GetStyle();
-    ImVec4* colors = style->Colors;
+    KGVec4* colors = style->Colors;
 
-    colors[KGGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-    colors[KGGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-    colors[KGGuiCol_WindowBg]               = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-    colors[KGGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[KGGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-    colors[KGGuiCol_Border]                 = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
-    colors[KGGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[KGGuiCol_FrameBg]                = ImVec4(0.16f, 0.29f, 0.48f, 0.54f);
-    colors[KGGuiCol_FrameBgHovered]         = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
-    colors[KGGuiCol_FrameBgActive]          = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
-    colors[KGGuiCol_TitleBg]                = ImVec4(0.04f, 0.04f, 0.04f, 1.00f);
-    colors[KGGuiCol_TitleBgActive]          = ImVec4(0.16f, 0.29f, 0.48f, 1.00f);
-    colors[KGGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
-    colors[KGGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-    colors[KGGuiCol_ScrollbarBg]            = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
-    colors[KGGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
-    colors[KGGuiCol_ScrollbarGrabHovered]   = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
-    colors[KGGuiCol_ScrollbarGrabActive]    = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
-    colors[KGGuiCol_CheckMark]              = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-    colors[KGGuiCol_SliderGrab]             = ImVec4(0.24f, 0.52f, 0.88f, 1.00f);
-    colors[KGGuiCol_SliderGrabActive]       = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-    colors[KGGuiCol_Button]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
-    colors[KGGuiCol_ButtonHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-    colors[KGGuiCol_ButtonActive]           = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
-    colors[KGGuiCol_Header]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.31f);
-    colors[KGGuiCol_HeaderHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
-    colors[KGGuiCol_HeaderActive]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[KGGuiCol_Text]                   = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[KGGuiCol_TextDisabled]           = KGVec4(0.50f, 0.50f, 0.50f, 1.00f);
+    colors[KGGuiCol_WindowBg]               = KGVec4(0.06f, 0.06f, 0.06f, 0.94f);
+    colors[KGGuiCol_ChildBg]                = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[KGGuiCol_PopupBg]                = KGVec4(0.08f, 0.08f, 0.08f, 0.94f);
+    colors[KGGuiCol_Border]                 = KGVec4(0.43f, 0.43f, 0.50f, 0.50f);
+    colors[KGGuiCol_BorderShadow]           = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[KGGuiCol_FrameBg]                = KGVec4(0.16f, 0.29f, 0.48f, 0.54f);
+    colors[KGGuiCol_FrameBgHovered]         = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
+    colors[KGGuiCol_FrameBgActive]          = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
+    colors[KGGuiCol_TitleBg]                = KGVec4(0.04f, 0.04f, 0.04f, 1.00f);
+    colors[KGGuiCol_TitleBgActive]          = KGVec4(0.16f, 0.29f, 0.48f, 1.00f);
+    colors[KGGuiCol_TitleBgCollapsed]       = KGVec4(0.00f, 0.00f, 0.00f, 0.51f);
+    colors[KGGuiCol_MenuBarBg]              = KGVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    colors[KGGuiCol_ScrollbarBg]            = KGVec4(0.02f, 0.02f, 0.02f, 0.53f);
+    colors[KGGuiCol_ScrollbarGrab]          = KGVec4(0.31f, 0.31f, 0.31f, 1.00f);
+    colors[KGGuiCol_ScrollbarGrabHovered]   = KGVec4(0.41f, 0.41f, 0.41f, 1.00f);
+    colors[KGGuiCol_ScrollbarGrabActive]    = KGVec4(0.51f, 0.51f, 0.51f, 1.00f);
+    colors[KGGuiCol_CheckMark]              = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[KGGuiCol_SliderGrab]             = KGVec4(0.24f, 0.52f, 0.88f, 1.00f);
+    colors[KGGuiCol_SliderGrabActive]       = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[KGGuiCol_Button]                 = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
+    colors[KGGuiCol_ButtonHovered]          = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[KGGuiCol_ButtonActive]           = KGVec4(0.06f, 0.53f, 0.98f, 1.00f);
+    colors[KGGuiCol_Header]                 = KGVec4(0.26f, 0.59f, 0.98f, 0.31f);
+    colors[KGGuiCol_HeaderHovered]          = KGVec4(0.26f, 0.59f, 0.98f, 0.80f);
+    colors[KGGuiCol_HeaderActive]           = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
     colors[KGGuiCol_Separator]              = colors[KGGuiCol_Border];
-    colors[KGGuiCol_SeparatorHovered]       = ImVec4(0.10f, 0.40f, 0.75f, 0.78f);
-    colors[KGGuiCol_SeparatorActive]        = ImVec4(0.10f, 0.40f, 0.75f, 1.00f);
-    colors[KGGuiCol_ResizeGrip]             = ImVec4(0.26f, 0.59f, 0.98f, 0.20f);
-    colors[KGGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
-    colors[KGGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+    colors[KGGuiCol_SeparatorHovered]       = KGVec4(0.10f, 0.40f, 0.75f, 0.78f);
+    colors[KGGuiCol_SeparatorActive]        = KGVec4(0.10f, 0.40f, 0.75f, 1.00f);
+    colors[KGGuiCol_ResizeGrip]             = KGVec4(0.26f, 0.59f, 0.98f, 0.20f);
+    colors[KGGuiCol_ResizeGripHovered]      = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
+    colors[KGGuiCol_ResizeGripActive]       = KGVec4(0.26f, 0.59f, 0.98f, 0.95f);
     colors[KGGuiCol_Tab]                    = KGLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.80f);
     colors[KGGuiCol_TabHovered]             = colors[KGGuiCol_HeaderHovered];
     colors[KGGuiCol_TabActive]              = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
     colors[KGGuiCol_TabUnfocused]           = KGLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
     colors[KGGuiCol_TabUnfocusedActive]     = KGLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
-    colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_HeaderActive] * ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
-    colors[KGGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-    colors[KGGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-    colors[KGGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
-    colors[KGGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
-    colors[KGGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
-    colors[KGGuiCol_TableHeaderBg]          = ImVec4(0.19f, 0.19f, 0.20f, 1.00f);
-    colors[KGGuiCol_TableBorderStrong]      = ImVec4(0.31f, 0.31f, 0.35f, 1.00f);   // Prefer using Alpha=1.0 here
-    colors[KGGuiCol_TableBorderLight]       = ImVec4(0.23f, 0.23f, 0.25f, 1.00f);   // Prefer using Alpha=1.0 here
-    colors[KGGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[KGGuiCol_TableRowBgAlt]          = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
-    colors[KGGuiCol_TextSelectedBg]         = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-    colors[KGGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
-    colors[KGGuiCol_NavHighlight]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-    colors[KGGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-    colors[KGGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-    colors[KGGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_HeaderActive] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
+    colors[KGGuiCol_DockingEmptyBg]         = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    colors[KGGuiCol_PlotLines]              = KGVec4(0.61f, 0.61f, 0.61f, 1.00f);
+    colors[KGGuiCol_PlotLinesHovered]       = KGVec4(1.00f, 0.43f, 0.35f, 1.00f);
+    colors[KGGuiCol_PlotHistogram]          = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[KGGuiCol_PlotHistogramHovered]   = KGVec4(1.00f, 0.60f, 0.00f, 1.00f);
+    colors[KGGuiCol_TableHeaderBg]          = KGVec4(0.19f, 0.19f, 0.20f, 1.00f);
+    colors[KGGuiCol_TableBorderStrong]      = KGVec4(0.31f, 0.31f, 0.35f, 1.00f);   // Prefer using Alpha=1.0 here
+    colors[KGGuiCol_TableBorderLight]       = KGVec4(0.23f, 0.23f, 0.25f, 1.00f);   // Prefer using Alpha=1.0 here
+    colors[KGGuiCol_TableRowBg]             = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[KGGuiCol_TableRowBgAlt]          = KGVec4(1.00f, 1.00f, 1.00f, 0.06f);
+    colors[KGGuiCol_TextSelectedBg]         = KGVec4(0.26f, 0.59f, 0.98f, 0.35f);
+    colors[KGGuiCol_DragDropTarget]         = KGVec4(1.00f, 1.00f, 0.00f, 0.90f);
+    colors[KGGuiCol_NavHighlight]           = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[KGGuiCol_NavWindowingHighlight]  = KGVec4(1.00f, 1.00f, 1.00f, 0.70f);
+    colors[KGGuiCol_NavWindowingDimBg]      = KGVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[KGGuiCol_ModalWindowDimBg]       = KGVec4(0.80f, 0.80f, 0.80f, 0.35f);
 }
 
 void ImGui::StyleColorsClassic(KarmaGuiStyle* dst)
 {
     KarmaGuiStyle* style = dst ? dst : &ImGui::GetStyle();
-    ImVec4* colors = style->Colors;
+    KGVec4* colors = style->Colors;
 
-    colors[KGGuiCol_Text]                   = ImVec4(0.90f, 0.90f, 0.90f, 1.00f);
-    colors[KGGuiCol_TextDisabled]           = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
-    colors[KGGuiCol_WindowBg]               = ImVec4(0.00f, 0.00f, 0.00f, 0.85f);
-    colors[KGGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[KGGuiCol_PopupBg]                = ImVec4(0.11f, 0.11f, 0.14f, 0.92f);
-    colors[KGGuiCol_Border]                 = ImVec4(0.50f, 0.50f, 0.50f, 0.50f);
-    colors[KGGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[KGGuiCol_FrameBg]                = ImVec4(0.43f, 0.43f, 0.43f, 0.39f);
-    colors[KGGuiCol_FrameBgHovered]         = ImVec4(0.47f, 0.47f, 0.69f, 0.40f);
-    colors[KGGuiCol_FrameBgActive]          = ImVec4(0.42f, 0.41f, 0.64f, 0.69f);
-    colors[KGGuiCol_TitleBg]                = ImVec4(0.27f, 0.27f, 0.54f, 0.83f);
-    colors[KGGuiCol_TitleBgActive]          = ImVec4(0.32f, 0.32f, 0.63f, 0.87f);
-    colors[KGGuiCol_TitleBgCollapsed]       = ImVec4(0.40f, 0.40f, 0.80f, 0.20f);
-    colors[KGGuiCol_MenuBarBg]              = ImVec4(0.40f, 0.40f, 0.55f, 0.80f);
-    colors[KGGuiCol_ScrollbarBg]            = ImVec4(0.20f, 0.25f, 0.30f, 0.60f);
-    colors[KGGuiCol_ScrollbarGrab]          = ImVec4(0.40f, 0.40f, 0.80f, 0.30f);
-    colors[KGGuiCol_ScrollbarGrabHovered]   = ImVec4(0.40f, 0.40f, 0.80f, 0.40f);
-    colors[KGGuiCol_ScrollbarGrabActive]    = ImVec4(0.41f, 0.39f, 0.80f, 0.60f);
-    colors[KGGuiCol_CheckMark]              = ImVec4(0.90f, 0.90f, 0.90f, 0.50f);
-    colors[KGGuiCol_SliderGrab]             = ImVec4(1.00f, 1.00f, 1.00f, 0.30f);
-    colors[KGGuiCol_SliderGrabActive]       = ImVec4(0.41f, 0.39f, 0.80f, 0.60f);
-    colors[KGGuiCol_Button]                 = ImVec4(0.35f, 0.40f, 0.61f, 0.62f);
-    colors[KGGuiCol_ButtonHovered]          = ImVec4(0.40f, 0.48f, 0.71f, 0.79f);
-    colors[KGGuiCol_ButtonActive]           = ImVec4(0.46f, 0.54f, 0.80f, 1.00f);
-    colors[KGGuiCol_Header]                 = ImVec4(0.40f, 0.40f, 0.90f, 0.45f);
-    colors[KGGuiCol_HeaderHovered]          = ImVec4(0.45f, 0.45f, 0.90f, 0.80f);
-    colors[KGGuiCol_HeaderActive]           = ImVec4(0.53f, 0.53f, 0.87f, 0.80f);
-    colors[KGGuiCol_Separator]              = ImVec4(0.50f, 0.50f, 0.50f, 0.60f);
-    colors[KGGuiCol_SeparatorHovered]       = ImVec4(0.60f, 0.60f, 0.70f, 1.00f);
-    colors[KGGuiCol_SeparatorActive]        = ImVec4(0.70f, 0.70f, 0.90f, 1.00f);
-    colors[KGGuiCol_ResizeGrip]             = ImVec4(1.00f, 1.00f, 1.00f, 0.10f);
-    colors[KGGuiCol_ResizeGripHovered]      = ImVec4(0.78f, 0.82f, 1.00f, 0.60f);
-    colors[KGGuiCol_ResizeGripActive]       = ImVec4(0.78f, 0.82f, 1.00f, 0.90f);
+    colors[KGGuiCol_Text]                   = KGVec4(0.90f, 0.90f, 0.90f, 1.00f);
+    colors[KGGuiCol_TextDisabled]           = KGVec4(0.60f, 0.60f, 0.60f, 1.00f);
+    colors[KGGuiCol_WindowBg]               = KGVec4(0.00f, 0.00f, 0.00f, 0.85f);
+    colors[KGGuiCol_ChildBg]                = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[KGGuiCol_PopupBg]                = KGVec4(0.11f, 0.11f, 0.14f, 0.92f);
+    colors[KGGuiCol_Border]                 = KGVec4(0.50f, 0.50f, 0.50f, 0.50f);
+    colors[KGGuiCol_BorderShadow]           = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[KGGuiCol_FrameBg]                = KGVec4(0.43f, 0.43f, 0.43f, 0.39f);
+    colors[KGGuiCol_FrameBgHovered]         = KGVec4(0.47f, 0.47f, 0.69f, 0.40f);
+    colors[KGGuiCol_FrameBgActive]          = KGVec4(0.42f, 0.41f, 0.64f, 0.69f);
+    colors[KGGuiCol_TitleBg]                = KGVec4(0.27f, 0.27f, 0.54f, 0.83f);
+    colors[KGGuiCol_TitleBgActive]          = KGVec4(0.32f, 0.32f, 0.63f, 0.87f);
+    colors[KGGuiCol_TitleBgCollapsed]       = KGVec4(0.40f, 0.40f, 0.80f, 0.20f);
+    colors[KGGuiCol_MenuBarBg]              = KGVec4(0.40f, 0.40f, 0.55f, 0.80f);
+    colors[KGGuiCol_ScrollbarBg]            = KGVec4(0.20f, 0.25f, 0.30f, 0.60f);
+    colors[KGGuiCol_ScrollbarGrab]          = KGVec4(0.40f, 0.40f, 0.80f, 0.30f);
+    colors[KGGuiCol_ScrollbarGrabHovered]   = KGVec4(0.40f, 0.40f, 0.80f, 0.40f);
+    colors[KGGuiCol_ScrollbarGrabActive]    = KGVec4(0.41f, 0.39f, 0.80f, 0.60f);
+    colors[KGGuiCol_CheckMark]              = KGVec4(0.90f, 0.90f, 0.90f, 0.50f);
+    colors[KGGuiCol_SliderGrab]             = KGVec4(1.00f, 1.00f, 1.00f, 0.30f);
+    colors[KGGuiCol_SliderGrabActive]       = KGVec4(0.41f, 0.39f, 0.80f, 0.60f);
+    colors[KGGuiCol_Button]                 = KGVec4(0.35f, 0.40f, 0.61f, 0.62f);
+    colors[KGGuiCol_ButtonHovered]          = KGVec4(0.40f, 0.48f, 0.71f, 0.79f);
+    colors[KGGuiCol_ButtonActive]           = KGVec4(0.46f, 0.54f, 0.80f, 1.00f);
+    colors[KGGuiCol_Header]                 = KGVec4(0.40f, 0.40f, 0.90f, 0.45f);
+    colors[KGGuiCol_HeaderHovered]          = KGVec4(0.45f, 0.45f, 0.90f, 0.80f);
+    colors[KGGuiCol_HeaderActive]           = KGVec4(0.53f, 0.53f, 0.87f, 0.80f);
+    colors[KGGuiCol_Separator]              = KGVec4(0.50f, 0.50f, 0.50f, 0.60f);
+    colors[KGGuiCol_SeparatorHovered]       = KGVec4(0.60f, 0.60f, 0.70f, 1.00f);
+    colors[KGGuiCol_SeparatorActive]        = KGVec4(0.70f, 0.70f, 0.90f, 1.00f);
+    colors[KGGuiCol_ResizeGrip]             = KGVec4(1.00f, 1.00f, 1.00f, 0.10f);
+    colors[KGGuiCol_ResizeGripHovered]      = KGVec4(0.78f, 0.82f, 1.00f, 0.60f);
+    colors[KGGuiCol_ResizeGripActive]       = KGVec4(0.78f, 0.82f, 1.00f, 0.90f);
     colors[KGGuiCol_Tab]                    = KGLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.80f);
     colors[KGGuiCol_TabHovered]             = colors[KGGuiCol_HeaderHovered];
     colors[KGGuiCol_TabActive]              = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
     colors[KGGuiCol_TabUnfocused]           = KGLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
     colors[KGGuiCol_TabUnfocusedActive]     = KGLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
-    colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_Header] * ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
-    colors[KGGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-    colors[KGGuiCol_PlotLines]              = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-    colors[KGGuiCol_PlotLinesHovered]       = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
-    colors[KGGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
-    colors[KGGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
-    colors[KGGuiCol_TableHeaderBg]          = ImVec4(0.27f, 0.27f, 0.38f, 1.00f);
-    colors[KGGuiCol_TableBorderStrong]      = ImVec4(0.31f, 0.31f, 0.45f, 1.00f);   // Prefer using Alpha=1.0 here
-    colors[KGGuiCol_TableBorderLight]       = ImVec4(0.26f, 0.26f, 0.28f, 1.00f);   // Prefer using Alpha=1.0 here
-    colors[KGGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[KGGuiCol_TableRowBgAlt]          = ImVec4(1.00f, 1.00f, 1.00f, 0.07f);
-    colors[KGGuiCol_TextSelectedBg]         = ImVec4(0.00f, 0.00f, 1.00f, 0.35f);
-    colors[KGGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+    colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_Header] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
+    colors[KGGuiCol_DockingEmptyBg]         = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    colors[KGGuiCol_PlotLines]              = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[KGGuiCol_PlotLinesHovered]       = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[KGGuiCol_PlotHistogram]          = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[KGGuiCol_PlotHistogramHovered]   = KGVec4(1.00f, 0.60f, 0.00f, 1.00f);
+    colors[KGGuiCol_TableHeaderBg]          = KGVec4(0.27f, 0.27f, 0.38f, 1.00f);
+    colors[KGGuiCol_TableBorderStrong]      = KGVec4(0.31f, 0.31f, 0.45f, 1.00f);   // Prefer using Alpha=1.0 here
+    colors[KGGuiCol_TableBorderLight]       = KGVec4(0.26f, 0.26f, 0.28f, 1.00f);   // Prefer using Alpha=1.0 here
+    colors[KGGuiCol_TableRowBg]             = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[KGGuiCol_TableRowBgAlt]          = KGVec4(1.00f, 1.00f, 1.00f, 0.07f);
+    colors[KGGuiCol_TextSelectedBg]         = KGVec4(0.00f, 0.00f, 1.00f, 0.35f);
+    colors[KGGuiCol_DragDropTarget]         = KGVec4(1.00f, 1.00f, 0.00f, 0.90f);
     colors[KGGuiCol_NavHighlight]           = colors[KGGuiCol_HeaderHovered];
-    colors[KGGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-    colors[KGGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-    colors[KGGuiCol_ModalWindowDimBg]       = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+    colors[KGGuiCol_NavWindowingHighlight]  = KGVec4(1.00f, 1.00f, 1.00f, 0.70f);
+    colors[KGGuiCol_NavWindowingDimBg]      = KGVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[KGGuiCol_ModalWindowDimBg]       = KGVec4(0.20f, 0.20f, 0.20f, 0.35f);
 }
 
 // Those light colors are better suited with a thicker font than the default one + FrameBorder
 void ImGui::StyleColorsLight(KarmaGuiStyle* dst)
 {
     KarmaGuiStyle* style = dst ? dst : &ImGui::GetStyle();
-    ImVec4* colors = style->Colors;
+    KGVec4* colors = style->Colors;
 
-    colors[KGGuiCol_Text]                   = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-    colors[KGGuiCol_TextDisabled]           = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);
-    colors[KGGuiCol_WindowBg]               = ImVec4(0.94f, 0.94f, 0.94f, 1.00f);
-    colors[KGGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[KGGuiCol_PopupBg]                = ImVec4(1.00f, 1.00f, 1.00f, 0.98f);
-    colors[KGGuiCol_Border]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.30f);
-    colors[KGGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[KGGuiCol_FrameBg]                = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-    colors[KGGuiCol_FrameBgHovered]         = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
-    colors[KGGuiCol_FrameBgActive]          = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
-    colors[KGGuiCol_TitleBg]                = ImVec4(0.96f, 0.96f, 0.96f, 1.00f);
-    colors[KGGuiCol_TitleBgActive]          = ImVec4(0.82f, 0.82f, 0.82f, 1.00f);
-    colors[KGGuiCol_TitleBgCollapsed]       = ImVec4(1.00f, 1.00f, 1.00f, 0.51f);
-    colors[KGGuiCol_MenuBarBg]              = ImVec4(0.86f, 0.86f, 0.86f, 1.00f);
-    colors[KGGuiCol_ScrollbarBg]            = ImVec4(0.98f, 0.98f, 0.98f, 0.53f);
-    colors[KGGuiCol_ScrollbarGrab]          = ImVec4(0.69f, 0.69f, 0.69f, 0.80f);
-    colors[KGGuiCol_ScrollbarGrabHovered]   = ImVec4(0.49f, 0.49f, 0.49f, 0.80f);
-    colors[KGGuiCol_ScrollbarGrabActive]    = ImVec4(0.49f, 0.49f, 0.49f, 1.00f);
-    colors[KGGuiCol_CheckMark]              = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-    colors[KGGuiCol_SliderGrab]             = ImVec4(0.26f, 0.59f, 0.98f, 0.78f);
-    colors[KGGuiCol_SliderGrabActive]       = ImVec4(0.46f, 0.54f, 0.80f, 0.60f);
-    colors[KGGuiCol_Button]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.40f);
-    colors[KGGuiCol_ButtonHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-    colors[KGGuiCol_ButtonActive]           = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
-    colors[KGGuiCol_Header]                 = ImVec4(0.26f, 0.59f, 0.98f, 0.31f);
-    colors[KGGuiCol_HeaderHovered]          = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
-    colors[KGGuiCol_HeaderActive]           = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
-    colors[KGGuiCol_Separator]              = ImVec4(0.39f, 0.39f, 0.39f, 0.62f);
-    colors[KGGuiCol_SeparatorHovered]       = ImVec4(0.14f, 0.44f, 0.80f, 0.78f);
-    colors[KGGuiCol_SeparatorActive]        = ImVec4(0.14f, 0.44f, 0.80f, 1.00f);
-    colors[KGGuiCol_ResizeGrip]             = ImVec4(0.35f, 0.35f, 0.35f, 0.17f);
-    colors[KGGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
-    colors[KGGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+    colors[KGGuiCol_Text]                   = KGVec4(0.00f, 0.00f, 0.00f, 1.00f);
+    colors[KGGuiCol_TextDisabled]           = KGVec4(0.60f, 0.60f, 0.60f, 1.00f);
+    colors[KGGuiCol_WindowBg]               = KGVec4(0.94f, 0.94f, 0.94f, 1.00f);
+    colors[KGGuiCol_ChildBg]                = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[KGGuiCol_PopupBg]                = KGVec4(1.00f, 1.00f, 1.00f, 0.98f);
+    colors[KGGuiCol_Border]                 = KGVec4(0.00f, 0.00f, 0.00f, 0.30f);
+    colors[KGGuiCol_BorderShadow]           = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[KGGuiCol_FrameBg]                = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
+    colors[KGGuiCol_FrameBgHovered]         = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
+    colors[KGGuiCol_FrameBgActive]          = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
+    colors[KGGuiCol_TitleBg]                = KGVec4(0.96f, 0.96f, 0.96f, 1.00f);
+    colors[KGGuiCol_TitleBgActive]          = KGVec4(0.82f, 0.82f, 0.82f, 1.00f);
+    colors[KGGuiCol_TitleBgCollapsed]       = KGVec4(1.00f, 1.00f, 1.00f, 0.51f);
+    colors[KGGuiCol_MenuBarBg]              = KGVec4(0.86f, 0.86f, 0.86f, 1.00f);
+    colors[KGGuiCol_ScrollbarBg]            = KGVec4(0.98f, 0.98f, 0.98f, 0.53f);
+    colors[KGGuiCol_ScrollbarGrab]          = KGVec4(0.69f, 0.69f, 0.69f, 0.80f);
+    colors[KGGuiCol_ScrollbarGrabHovered]   = KGVec4(0.49f, 0.49f, 0.49f, 0.80f);
+    colors[KGGuiCol_ScrollbarGrabActive]    = KGVec4(0.49f, 0.49f, 0.49f, 1.00f);
+    colors[KGGuiCol_CheckMark]              = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[KGGuiCol_SliderGrab]             = KGVec4(0.26f, 0.59f, 0.98f, 0.78f);
+    colors[KGGuiCol_SliderGrabActive]       = KGVec4(0.46f, 0.54f, 0.80f, 0.60f);
+    colors[KGGuiCol_Button]                 = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
+    colors[KGGuiCol_ButtonHovered]          = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[KGGuiCol_ButtonActive]           = KGVec4(0.06f, 0.53f, 0.98f, 1.00f);
+    colors[KGGuiCol_Header]                 = KGVec4(0.26f, 0.59f, 0.98f, 0.31f);
+    colors[KGGuiCol_HeaderHovered]          = KGVec4(0.26f, 0.59f, 0.98f, 0.80f);
+    colors[KGGuiCol_HeaderActive]           = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[KGGuiCol_Separator]              = KGVec4(0.39f, 0.39f, 0.39f, 0.62f);
+    colors[KGGuiCol_SeparatorHovered]       = KGVec4(0.14f, 0.44f, 0.80f, 0.78f);
+    colors[KGGuiCol_SeparatorActive]        = KGVec4(0.14f, 0.44f, 0.80f, 1.00f);
+    colors[KGGuiCol_ResizeGrip]             = KGVec4(0.35f, 0.35f, 0.35f, 0.17f);
+    colors[KGGuiCol_ResizeGripHovered]      = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
+    colors[KGGuiCol_ResizeGripActive]       = KGVec4(0.26f, 0.59f, 0.98f, 0.95f);
     colors[KGGuiCol_Tab]                    = KGLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.90f);
     colors[KGGuiCol_TabHovered]             = colors[KGGuiCol_HeaderHovered];
     colors[KGGuiCol_TabActive]              = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
     colors[KGGuiCol_TabUnfocused]           = KGLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
     colors[KGGuiCol_TabUnfocusedActive]     = KGLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
-    colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_Header] * ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
-    colors[KGGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-    colors[KGGuiCol_PlotLines]              = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
-    colors[KGGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
-    colors[KGGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
-    colors[KGGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.45f, 0.00f, 1.00f);
-    colors[KGGuiCol_TableHeaderBg]          = ImVec4(0.78f, 0.87f, 0.98f, 1.00f);
-    colors[KGGuiCol_TableBorderStrong]      = ImVec4(0.57f, 0.57f, 0.64f, 1.00f);   // Prefer using Alpha=1.0 here
-    colors[KGGuiCol_TableBorderLight]       = ImVec4(0.68f, 0.68f, 0.74f, 1.00f);   // Prefer using Alpha=1.0 here
-    colors[KGGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[KGGuiCol_TableRowBgAlt]          = ImVec4(0.30f, 0.30f, 0.30f, 0.09f);
-    colors[KGGuiCol_TextSelectedBg]         = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-    colors[KGGuiCol_DragDropTarget]         = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+    colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_Header] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
+    colors[KGGuiCol_DockingEmptyBg]         = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    colors[KGGuiCol_PlotLines]              = KGVec4(0.39f, 0.39f, 0.39f, 1.00f);
+    colors[KGGuiCol_PlotLinesHovered]       = KGVec4(1.00f, 0.43f, 0.35f, 1.00f);
+    colors[KGGuiCol_PlotHistogram]          = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[KGGuiCol_PlotHistogramHovered]   = KGVec4(1.00f, 0.45f, 0.00f, 1.00f);
+    colors[KGGuiCol_TableHeaderBg]          = KGVec4(0.78f, 0.87f, 0.98f, 1.00f);
+    colors[KGGuiCol_TableBorderStrong]      = KGVec4(0.57f, 0.57f, 0.64f, 1.00f);   // Prefer using Alpha=1.0 here
+    colors[KGGuiCol_TableBorderLight]       = KGVec4(0.68f, 0.68f, 0.74f, 1.00f);   // Prefer using Alpha=1.0 here
+    colors[KGGuiCol_TableRowBg]             = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[KGGuiCol_TableRowBgAlt]          = KGVec4(0.30f, 0.30f, 0.30f, 0.09f);
+    colors[KGGuiCol_TextSelectedBg]         = KGVec4(0.26f, 0.59f, 0.98f, 0.35f);
+    colors[KGGuiCol_DragDropTarget]         = KGVec4(0.26f, 0.59f, 0.98f, 0.95f);
     colors[KGGuiCol_NavHighlight]           = colors[KGGuiCol_HeaderHovered];
-    colors[KGGuiCol_NavWindowingHighlight]  = ImVec4(0.70f, 0.70f, 0.70f, 0.70f);
-    colors[KGGuiCol_NavWindowingDimBg]      = ImVec4(0.20f, 0.20f, 0.20f, 0.20f);
-    colors[KGGuiCol_ModalWindowDimBg]       = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+    colors[KGGuiCol_NavWindowingHighlight]  = KGVec4(0.70f, 0.70f, 0.70f, 0.70f);
+    colors[KGGuiCol_NavWindowingDimBg]      = KGVec4(0.20f, 0.20f, 0.20f, 0.20f);
+    colors[KGGuiCol_ModalWindowDimBg]       = KGVec4(0.20f, 0.20f, 0.20f, 0.35f);
 }
 
 //-----------------------------------------------------------------------------
@@ -368,7 +368,7 @@ KGDrawListSharedData::KGDrawListSharedData()
     for (int i = 0; i < KG_ARRAYSIZE(ArcFastVtx); i++)
     {
         const float a = ((float)i * 2 * KG_PI) / (float)KG_ARRAYSIZE(ArcFastVtx);
-        ArcFastVtx[i] = ImVec2(KGCos(a), KGSin(a));
+        ArcFastVtx[i] = KGVec2(KGCos(a), KGSin(a));
     }
     ArcFastRadiusCutoff = KG_DRAWLIST_CIRCLE_AUTO_SEGMENT_CALC_R(IM_DRAWLIST_ARCFAST_SAMPLE_MAX, CircleSegmentMaxError);
 }
@@ -393,8 +393,8 @@ void KGDrawList::_ResetForNewFrame()
 {
     // Verify that the KGDrawCmd fields we want to memcmp() are contiguous in memory.
     KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, ClipRect) == 0);
-    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, TextureId) == sizeof(ImVec4));
-    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, VtxOffset) == sizeof(ImVec4) + sizeof(KGTextureID));
+    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, TextureId) == sizeof(KGVec4));
+    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, VtxOffset) == sizeof(KGVec4) + sizeof(KGTextureID));
     if (_Splitter._Count > 1)
         _Splitter.Merge(this);
 
@@ -506,7 +506,7 @@ void KGDrawList::_OnChangedClipRect()
     // If current command is used with different settings we need to add a new command
     KR_CORE_ASSERT(CmdBuffer.Size > 0);
     KGDrawCmd* curr_cmd = &CmdBuffer.Data[CmdBuffer.Size - 1];
-    if (curr_cmd->ElemCount != 0 && memcmp(&curr_cmd->ClipRect, &_CmdHeader.ClipRect, sizeof(ImVec4)) != 0)
+    if (curr_cmd->ElemCount != 0 && memcmp(&curr_cmd->ClipRect, &_CmdHeader.ClipRect, sizeof(KGVec4)) != 0)
     {
         AddDrawCmd();
         return;
@@ -574,12 +574,12 @@ int KGDrawList::_CalcCircleAutoSegmentCount(float radius) const
 }
 
 // Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
-void KGDrawList::PushClipRect(const ImVec2& cr_min, const ImVec2& cr_max, bool intersect_with_current_clip_rect)
+void KGDrawList::PushClipRect(const KGVec2& cr_min, const KGVec2& cr_max, bool intersect_with_current_clip_rect)
 {
-    ImVec4 cr(cr_min.x, cr_min.y, cr_max.x, cr_max.y);
+    KGVec4 cr(cr_min.x, cr_min.y, cr_max.x, cr_max.y);
     if (intersect_with_current_clip_rect)
     {
-        ImVec4 current = _CmdHeader.ClipRect;
+        KGVec4 current = _CmdHeader.ClipRect;
         if (cr.x < current.x) cr.x = current.x;
         if (cr.y < current.y) cr.y = current.y;
         if (cr.z > current.z) cr.z = current.z;
@@ -595,7 +595,7 @@ void KGDrawList::PushClipRect(const ImVec2& cr_min, const ImVec2& cr_max, bool i
 
 void KGDrawList::PushClipRectFullScreen()
 {
-    PushClipRect(ImVec2(_Data->ClipRectFullscreen.x, _Data->ClipRectFullscreen.y), ImVec2(_Data->ClipRectFullscreen.z, _Data->ClipRectFullscreen.w));
+    PushClipRect(KGVec2(_Data->ClipRectFullscreen.x, _Data->ClipRectFullscreen.y), KGVec2(_Data->ClipRectFullscreen.z, _Data->ClipRectFullscreen.w));
 }
 
 void KGDrawList::PopClipRect()
@@ -659,9 +659,9 @@ void KGDrawList::PrimUnreserve(int idx_count, int vtx_count)
 }
 
 // Fully unrolled with inline call to keep our debug builds decently fast.
-void KGDrawList::PrimRect(const ImVec2& a, const ImVec2& c, KGU32 col)
+void KGDrawList::PrimRect(const KGVec2& a, const KGVec2& c, KGU32 col)
 {
-    ImVec2 b(c.x, a.y), d(a.x, c.y), uv(_Data->TexUvWhitePixel);
+    KGVec2 b(c.x, a.y), d(a.x, c.y), uv(_Data->TexUvWhitePixel);
     KGDrawIdx idx = (KGDrawIdx)_VtxCurrentIdx;
     _IdxWritePtr[0] = idx; _IdxWritePtr[1] = (KGDrawIdx)(idx+1); _IdxWritePtr[2] = (KGDrawIdx)(idx+2);
     _IdxWritePtr[3] = idx; _IdxWritePtr[4] = (KGDrawIdx)(idx+2); _IdxWritePtr[5] = (KGDrawIdx)(idx+3);
@@ -674,9 +674,9 @@ void KGDrawList::PrimRect(const ImVec2& a, const ImVec2& c, KGU32 col)
     _IdxWritePtr += 6;
 }
 
-void KGDrawList::PrimRectUV(const ImVec2& a, const ImVec2& c, const ImVec2& uv_a, const ImVec2& uv_c, KGU32 col)
+void KGDrawList::PrimRectUV(const KGVec2& a, const KGVec2& c, const KGVec2& uv_a, const KGVec2& uv_c, KGU32 col)
 {
-    ImVec2 b(c.x, a.y), d(a.x, c.y), uv_b(uv_c.x, uv_a.y), uv_d(uv_a.x, uv_c.y);
+    KGVec2 b(c.x, a.y), d(a.x, c.y), uv_b(uv_c.x, uv_a.y), uv_d(uv_a.x, uv_c.y);
     KGDrawIdx idx = (KGDrawIdx)_VtxCurrentIdx;
     _IdxWritePtr[0] = idx; _IdxWritePtr[1] = (KGDrawIdx)(idx+1); _IdxWritePtr[2] = (KGDrawIdx)(idx+2);
     _IdxWritePtr[3] = idx; _IdxWritePtr[4] = (KGDrawIdx)(idx+2); _IdxWritePtr[5] = (KGDrawIdx)(idx+3);
@@ -689,7 +689,7 @@ void KGDrawList::PrimRectUV(const ImVec2& a, const ImVec2& c, const ImVec2& uv_a
     _IdxWritePtr += 6;
 }
 
-void KGDrawList::PrimQuadUV(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& d, const ImVec2& uv_a, const ImVec2& uv_b, const ImVec2& uv_c, const ImVec2& uv_d, KGU32 col)
+void KGDrawList::PrimQuadUV(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& d, const KGVec2& uv_a, const KGVec2& uv_b, const KGVec2& uv_c, const KGVec2& uv_d, KGU32 col)
 {
     KGDrawIdx idx = (KGDrawIdx)_VtxCurrentIdx;
     _IdxWritePtr[0] = idx; _IdxWritePtr[1] = (KGDrawIdx)(idx+1); _IdxWritePtr[2] = (KGDrawIdx)(idx+2);
@@ -703,7 +703,7 @@ void KGDrawList::PrimQuadUV(const ImVec2& a, const ImVec2& b, const ImVec2& c, c
     _IdxWritePtr += 6;
 }
 
-// On AddPolyline() and AddConvexPolyFilled() we intentionally avoid using ImVec2 and superfluous function calls to optimize debug/non-inlined builds.
+// On AddPolyline() and AddConvexPolyFilled() we intentionally avoid using KGVec2 and superfluous function calls to optimize debug/non-inlined builds.
 // - Those macros expects l-values and need to be used as their own statement.
 // - Those macros are intentionally not surrounded by the 'do {} while (0)' idiom because even that translates to runtime with debug compilers.
 #define IM_NORMALIZE2F_OVER_ZERO(VX,VY)     { float d2 = VX*VX + VY*VY; if (d2 > 0.0f) { float inv_len = KGRsqrt(d2); VX *= inv_len; VY *= inv_len; } } (void)0
@@ -711,14 +711,14 @@ void KGDrawList::PrimQuadUV(const ImVec2& a, const ImVec2& b, const ImVec2& c, c
 #define IM_FIXNORMAL2F(VX,VY)               { float d2 = VX*VX + VY*VY; if (d2 > 0.000001f) { float inv_len2 = 1.0f / d2; if (inv_len2 > IM_FIXNORMAL2F_MAX_INVLEN2) inv_len2 = IM_FIXNORMAL2F_MAX_INVLEN2; VX *= inv_len2; VY *= inv_len2; } } (void)0
 
 // TODO: Thickness anti-aliased lines cap are missing their AA fringe.
-// We avoid using the ImVec2 math operators here to reduce cost to a minimum for debug/non-inlined builds.
-void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32 col, KGDrawFlags flags, float thickness)
+// We avoid using the KGVec2 math operators here to reduce cost to a minimum for debug/non-inlined builds.
+void KGDrawList::AddPolyline(const KGVec2* points, const int points_count, KGU32 col, KGDrawFlags flags, float thickness)
 {
     if (points_count < 2)
         return;
 
     const bool closed = (flags & KGDrawFlags_Closed) != 0;
-    const ImVec2 opaque_uv = _Data->TexUvWhitePixel;
+    const KGVec2 opaque_uv = _Data->TexUvWhitePixel;
     const int count = closed ? points_count : points_count - 1; // The number of line segments we need to draw
     const bool thick_line = (thickness > _FringeScale);
 
@@ -748,8 +748,8 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
         // Temporary buffer
         // The first <points_count> items are normals at each line point, then after that there are either 2 or 4 temp points for each line point
         _Data->TempBuffer.reserve_discard(points_count * ((use_texture || !thick_line) ? 3 : 5));
-        ImVec2* temp_normals = _Data->TempBuffer.Data;
-        ImVec2* temp_points = temp_normals + points_count;
+        KGVec2* temp_normals = _Data->TempBuffer.Data;
+        KGVec2* temp_points = temp_normals + points_count;
 
         // Calculate normals (tangents) for each line segment
         for (int i1 = 0; i1 < count; i1++)
@@ -803,7 +803,7 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
                 dm_y *= half_draw_size;
 
                 // Add temporary vertexes for the outer edges
-                ImVec2* out_vtx = &temp_points[i2 * 2];
+                KGVec2* out_vtx = &temp_points[i2 * 2];
                 out_vtx[0].x = points[i2].x + dm_x;
                 out_vtx[0].y = points[i2].y + dm_y;
                 out_vtx[1].x = points[i2].x - dm_x;
@@ -833,17 +833,17 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
             if (use_texture)
             {
                 // If we're using textures we only need to emit the left/right edge vertices
-                ImVec4 tex_uvs = _Data->TexUvLines[integer_thickness];
+                KGVec4 tex_uvs = _Data->TexUvLines[integer_thickness];
                 /*if (fractional_thickness != 0.0f) // Currently always zero when use_texture==false!
                 {
-                    const ImVec4 tex_uvs_1 = _Data->TexUvLines[integer_thickness + 1];
+                    const KGVec4 tex_uvs_1 = _Data->TexUvLines[integer_thickness + 1];
                     tex_uvs.x = tex_uvs.x + (tex_uvs_1.x - tex_uvs.x) * fractional_thickness; // inlined KGLerp()
                     tex_uvs.y = tex_uvs.y + (tex_uvs_1.y - tex_uvs.y) * fractional_thickness;
                     tex_uvs.z = tex_uvs.z + (tex_uvs_1.z - tex_uvs.z) * fractional_thickness;
                     tex_uvs.w = tex_uvs.w + (tex_uvs_1.w - tex_uvs.w) * fractional_thickness;
                 }*/
-                ImVec2 tex_uv0(tex_uvs.x, tex_uvs.y);
-                ImVec2 tex_uv1(tex_uvs.z, tex_uvs.w);
+                KGVec2 tex_uv0(tex_uvs.x, tex_uvs.y);
+                KGVec2 tex_uv1(tex_uvs.z, tex_uvs.w);
                 for (int i = 0; i < points_count; i++)
                 {
                     _VtxWritePtr[0].pos = temp_points[i * 2 + 0]; _VtxWritePtr[0].uv = tex_uv0; _VtxWritePtr[0].col = col; // Left-side outer edge
@@ -901,7 +901,7 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
                 float dm_in_y = dm_y * half_inner_thickness;
 
                 // Add temporary vertices
-                ImVec2* out_vtx = &temp_points[i2 * 4];
+                KGVec2* out_vtx = &temp_points[i2 * 4];
                 out_vtx[0].x = points[i2].x + dm_out_x;
                 out_vtx[0].y = points[i2].y + dm_out_y;
                 out_vtx[1].x = points[i2].x + dm_in_x;
@@ -945,8 +945,8 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
         for (int i1 = 0; i1 < count; i1++)
         {
             const int i2 = (i1 + 1) == points_count ? 0 : i1 + 1;
-            const ImVec2& p1 = points[i1];
-            const ImVec2& p2 = points[i2];
+            const KGVec2& p1 = points[i1];
+            const KGVec2& p2 = points[i2];
 
             float dx = p2.x - p1.x;
             float dy = p2.y - p1.y;
@@ -968,14 +968,14 @@ void KGDrawList::AddPolyline(const ImVec2* points, const int points_count, KGU32
     }
 }
 
-// - We intentionally avoid using ImVec2 and its math operators here to reduce cost to a minimum for debug/non-inlined builds.
+// - We intentionally avoid using KGVec2 and its math operators here to reduce cost to a minimum for debug/non-inlined builds.
 // - Filled shapes must always use clockwise winding order. The anti-aliasing fringe depends on it. Counter-clockwise shapes will have "inward" anti-aliasing.
-void KGDrawList::AddConvexPolyFilled(const ImVec2* points, const int points_count, KGU32 col)
+void KGDrawList::AddConvexPolyFilled(const KGVec2* points, const int points_count, KGU32 col)
 {
     if (points_count < 3)
         return;
 
-    const ImVec2 uv = _Data->TexUvWhitePixel;
+    const KGVec2 uv = _Data->TexUvWhitePixel;
 
     if (Flags & KGDrawListFlags_AntiAliasedFill)
     {
@@ -997,11 +997,11 @@ void KGDrawList::AddConvexPolyFilled(const ImVec2* points, const int points_coun
 
         // Compute normals
         _Data->TempBuffer.reserve_discard(points_count);
-        ImVec2* temp_normals = _Data->TempBuffer.Data;
+        KGVec2* temp_normals = _Data->TempBuffer.Data;
         for (int i0 = points_count - 1, i1 = 0; i1 < points_count; i0 = i1++)
         {
-            const ImVec2& p0 = points[i0];
-            const ImVec2& p1 = points[i1];
+            const KGVec2& p0 = points[i0];
+            const KGVec2& p1 = points[i1];
             float dx = p1.x - p0.x;
             float dy = p1.y - p0.y;
             IM_NORMALIZE2F_OVER_ZERO(dx, dy);
@@ -1012,8 +1012,8 @@ void KGDrawList::AddConvexPolyFilled(const ImVec2* points, const int points_coun
         for (int i0 = points_count - 1, i1 = 0; i1 < points_count; i0 = i1++)
         {
             // Average normals
-            const ImVec2& n0 = temp_normals[i0];
-            const ImVec2& n1 = temp_normals[i1];
+            const KGVec2& n0 = temp_normals[i0];
+            const KGVec2& n1 = temp_normals[i1];
             float dm_x = (n0.x + n1.x) * 0.5f;
             float dm_y = (n0.y + n1.y) * 0.5f;
             IM_FIXNORMAL2F(dm_x, dm_y);
@@ -1052,7 +1052,7 @@ void KGDrawList::AddConvexPolyFilled(const ImVec2* points, const int points_coun
     }
 }
 
-void KGDrawList::_PathArcToFastEx(const ImVec2& center, float radius, int a_min_sample, int a_max_sample, int a_step)
+void KGDrawList::_PathArcToFastEx(const KGVec2& center, float radius, int a_min_sample, int a_max_sample, int a_step)
 {
     if (radius < 0.5f)
     {
@@ -1090,7 +1090,7 @@ void KGDrawList::_PathArcToFastEx(const ImVec2& center, float radius, int a_min_
     }
 
     _Path.resize(_Path.Size + samples);
-    ImVec2* out_ptr = _Path.Data + (_Path.Size - samples);
+    KGVec2* out_ptr = _Path.Data + (_Path.Size - samples);
 
     int sample_index = a_min_sample;
     if (sample_index < 0 || sample_index >= IM_DRAWLIST_ARCFAST_SAMPLE_MAX)
@@ -1108,7 +1108,7 @@ void KGDrawList::_PathArcToFastEx(const ImVec2& center, float radius, int a_min_
             if (sample_index >= IM_DRAWLIST_ARCFAST_SAMPLE_MAX)
                 sample_index -= IM_DRAWLIST_ARCFAST_SAMPLE_MAX;
 
-            const ImVec2 s = _Data->ArcFastVtx[sample_index];
+            const KGVec2 s = _Data->ArcFastVtx[sample_index];
             out_ptr->x = center.x + s.x * radius;
             out_ptr->y = center.y + s.y * radius;
             out_ptr++;
@@ -1122,7 +1122,7 @@ void KGDrawList::_PathArcToFastEx(const ImVec2& center, float radius, int a_min_
             if (sample_index < 0)
                 sample_index += IM_DRAWLIST_ARCFAST_SAMPLE_MAX;
 
-            const ImVec2 s = _Data->ArcFastVtx[sample_index];
+            const KGVec2 s = _Data->ArcFastVtx[sample_index];
             out_ptr->x = center.x + s.x * radius;
             out_ptr->y = center.y + s.y * radius;
             out_ptr++;
@@ -1135,7 +1135,7 @@ void KGDrawList::_PathArcToFastEx(const ImVec2& center, float radius, int a_min_
         if (normalized_max_sample < 0)
             normalized_max_sample += IM_DRAWLIST_ARCFAST_SAMPLE_MAX;
 
-        const ImVec2 s = _Data->ArcFastVtx[normalized_max_sample];
+        const KGVec2 s = _Data->ArcFastVtx[normalized_max_sample];
         out_ptr->x = center.x + s.x * radius;
         out_ptr->y = center.y + s.y * radius;
         out_ptr++;
@@ -1144,7 +1144,7 @@ void KGDrawList::_PathArcToFastEx(const ImVec2& center, float radius, int a_min_
     KR_CORE_ASSERT(_Path.Data + _Path.Size == out_ptr);
 }
 
-void KGDrawList::_PathArcToN(const ImVec2& center, float radius, float a_min, float a_max, int num_segments)
+void KGDrawList::_PathArcToN(const KGVec2& center, float radius, float a_min, float a_max, int num_segments)
 {
     if (radius < 0.5f)
     {
@@ -1158,12 +1158,12 @@ void KGDrawList::_PathArcToN(const ImVec2& center, float radius, float a_min, fl
     for (int i = 0; i <= num_segments; i++)
     {
         const float a = a_min + ((float)i / (float)num_segments) * (a_max - a_min);
-        _Path.push_back(ImVec2(center.x + KGCos(a) * radius, center.y + KGSin(a) * radius));
+        _Path.push_back(KGVec2(center.x + KGCos(a) * radius, center.y + KGSin(a) * radius));
     }
 }
 
 // 0: East, 3: South, 6: West, 9: North, 12: East
-void KGDrawList::PathArcToFast(const ImVec2& center, float radius, int a_min_of_12, int a_max_of_12)
+void KGDrawList::PathArcToFast(const KGVec2& center, float radius, int a_min_of_12, int a_max_of_12)
 {
     if (radius < 0.5f)
     {
@@ -1173,7 +1173,7 @@ void KGDrawList::PathArcToFast(const ImVec2& center, float radius, int a_min_of_
     _PathArcToFastEx(center, radius, a_min_of_12 * IM_DRAWLIST_ARCFAST_SAMPLE_MAX / 12, a_max_of_12 * IM_DRAWLIST_ARCFAST_SAMPLE_MAX / 12, 0);
 }
 
-void KGDrawList::PathArcTo(const ImVec2& center, float radius, float a_min, float a_max, int num_segments)
+void KGDrawList::PathArcTo(const KGVec2& center, float radius, float a_min, float a_max, int num_segments)
 {
     if (radius < 0.5f)
     {
@@ -1208,11 +1208,11 @@ void KGDrawList::PathArcTo(const ImVec2& center, float radius, float a_min, floa
 
         _Path.reserve(_Path.Size + (a_mid_samples + 1 + (a_emit_start ? 1 : 0) + (a_emit_end ? 1 : 0)));
         if (a_emit_start)
-            _Path.push_back(ImVec2(center.x + KGCos(a_min) * radius, center.y + KGSin(a_min) * radius));
+            _Path.push_back(KGVec2(center.x + KGCos(a_min) * radius, center.y + KGSin(a_min) * radius));
         if (a_mid_samples > 0)
             _PathArcToFastEx(center, radius, a_min_sample, a_max_sample, 0);
         if (a_emit_end)
-            _Path.push_back(ImVec2(center.x + KGCos(a_max) * radius, center.y + KGSin(a_max) * radius));
+            _Path.push_back(KGVec2(center.x + KGCos(a_max) * radius, center.y + KGSin(a_max) * radius));
     }
     else
     {
@@ -1223,27 +1223,27 @@ void KGDrawList::PathArcTo(const ImVec2& center, float radius, float a_min, floa
     }
 }
 
-ImVec2 KGBezierCubicCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, float t)
+KGVec2 KGBezierCubicCalc(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, float t)
 {
     float u = 1.0f - t;
     float w1 = u * u * u;
     float w2 = 3 * u * u * t;
     float w3 = 3 * u * t * t;
     float w4 = t * t * t;
-    return ImVec2(w1 * p1.x + w2 * p2.x + w3 * p3.x + w4 * p4.x, w1 * p1.y + w2 * p2.y + w3 * p3.y + w4 * p4.y);
+    return KGVec2(w1 * p1.x + w2 * p2.x + w3 * p3.x + w4 * p4.x, w1 * p1.y + w2 * p2.y + w3 * p3.y + w4 * p4.y);
 }
 
-ImVec2 KGBezierQuadraticCalc(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, float t)
+KGVec2 KGBezierQuadraticCalc(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, float t)
 {
     float u = 1.0f - t;
     float w1 = u * u;
     float w2 = 2 * u * t;
     float w3 = t * t;
-    return ImVec2(w1 * p1.x + w2 * p2.x + w3 * p3.x, w1 * p1.y + w2 * p2.y + w3 * p3.y);
+    return KGVec2(w1 * p1.x + w2 * p2.x + w3 * p3.x, w1 * p1.y + w2 * p2.y + w3 * p3.y);
 }
 
 // Closely mimics KGBezierCubicClosestPointCasteljau() in imgui.cpp
-static void PathBezierCubicCurveToCasteljau(KGVector<ImVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)
+static void PathBezierCubicCurveToCasteljau(KGVector<KGVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)
 {
     float dx = x4 - x1;
     float dy = y4 - y1;
@@ -1253,7 +1253,7 @@ static void PathBezierCubicCurveToCasteljau(KGVector<ImVec2>* path, float x1, fl
     d3 = (d3 >= 0) ? d3 : -d3;
     if ((d2 + d3) * (d2 + d3) < tess_tol * (dx * dx + dy * dy))
     {
-        path->push_back(ImVec2(x4, y4));
+        path->push_back(KGVec2(x4, y4));
     }
     else if (level < 10)
     {
@@ -1268,13 +1268,13 @@ static void PathBezierCubicCurveToCasteljau(KGVector<ImVec2>* path, float x1, fl
     }
 }
 
-static void PathBezierQuadraticCurveToCasteljau(KGVector<ImVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float tess_tol, int level)
+static void PathBezierQuadraticCurveToCasteljau(KGVector<KGVec2>* path, float x1, float y1, float x2, float y2, float x3, float y3, float tess_tol, int level)
 {
     float dx = x3 - x1, dy = y3 - y1;
     float det = (x2 - x3) * dy - (y2 - y3) * dx;
     if (det * det * 4.0f < tess_tol * (dx * dx + dy * dy))
     {
-        path->push_back(ImVec2(x3, y3));
+        path->push_back(KGVec2(x3, y3));
     }
     else if (level < 10)
     {
@@ -1286,9 +1286,9 @@ static void PathBezierQuadraticCurveToCasteljau(KGVector<ImVec2>* path, float x1
     }
 }
 
-void KGDrawList::PathBezierCubicCurveTo(const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, int num_segments)
+void KGDrawList::PathBezierCubicCurveTo(const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, int num_segments)
 {
-    ImVec2 p1 = _Path.back();
+    KGVec2 p1 = _Path.back();
     if (num_segments == 0)
     {
         KR_CORE_ASSERT(_Data->CurveTessellationTol > 0.0f);
@@ -1302,9 +1302,9 @@ void KGDrawList::PathBezierCubicCurveTo(const ImVec2& p2, const ImVec2& p3, cons
     }
 }
 
-void KGDrawList::PathBezierQuadraticCurveTo(const ImVec2& p2, const ImVec2& p3, int num_segments)
+void KGDrawList::PathBezierQuadraticCurveTo(const KGVec2& p2, const KGVec2& p3, int num_segments)
 {
-    ImVec2 p1 = _Path.back();
+    KGVec2 p1 = _Path.back();
     if (num_segments == 0)
     {
         KR_CORE_ASSERT(_Data->CurveTessellationTol > 0.0f);
@@ -1353,7 +1353,7 @@ static inline KGDrawFlags FixRectCornerFlags(KGDrawFlags flags)
     return flags;
 }
 
-void KGDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, KGDrawFlags flags)
+void KGDrawList::PathRect(const KGVec2& a, const KGVec2& b, float rounding, KGDrawFlags flags)
 {
     flags = FixRectCornerFlags(flags);
     rounding = KGMin(rounding, KGFabs(b.x - a.x) * ( ((flags & KGDrawFlags_RoundCornersTop)  == KGDrawFlags_RoundCornersTop)  || ((flags & KGDrawFlags_RoundCornersBottom) == KGDrawFlags_RoundCornersBottom) ? 0.5f : 1.0f ) - 1.0f);
@@ -1362,9 +1362,9 @@ void KGDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, KGDr
     if (rounding < 0.5f || (flags & KGDrawFlags_RoundCornersMask_) == KGDrawFlags_RoundCornersNone)
     {
         PathLineTo(a);
-        PathLineTo(ImVec2(b.x, a.y));
+        PathLineTo(KGVec2(b.x, a.y));
         PathLineTo(b);
-        PathLineTo(ImVec2(a.x, b.y));
+        PathLineTo(KGVec2(a.x, b.y));
     }
     else
     {
@@ -1372,36 +1372,36 @@ void KGDrawList::PathRect(const ImVec2& a, const ImVec2& b, float rounding, KGDr
         const float rounding_tr = (flags & KGDrawFlags_RoundCornersTopRight)    ? rounding : 0.0f;
         const float rounding_br = (flags & KGDrawFlags_RoundCornersBottomRight) ? rounding : 0.0f;
         const float rounding_bl = (flags & KGDrawFlags_RoundCornersBottomLeft)  ? rounding : 0.0f;
-        PathArcToFast(ImVec2(a.x + rounding_tl, a.y + rounding_tl), rounding_tl, 6, 9);
-        PathArcToFast(ImVec2(b.x - rounding_tr, a.y + rounding_tr), rounding_tr, 9, 12);
-        PathArcToFast(ImVec2(b.x - rounding_br, b.y - rounding_br), rounding_br, 0, 3);
-        PathArcToFast(ImVec2(a.x + rounding_bl, b.y - rounding_bl), rounding_bl, 3, 6);
+        PathArcToFast(KGVec2(a.x + rounding_tl, a.y + rounding_tl), rounding_tl, 6, 9);
+        PathArcToFast(KGVec2(b.x - rounding_tr, a.y + rounding_tr), rounding_tr, 9, 12);
+        PathArcToFast(KGVec2(b.x - rounding_br, b.y - rounding_br), rounding_br, 0, 3);
+        PathArcToFast(KGVec2(a.x + rounding_bl, b.y - rounding_bl), rounding_bl, 3, 6);
     }
 }
 
-void KGDrawList::AddLine(const ImVec2& p1, const ImVec2& p2, KGU32 col, float thickness)
+void KGDrawList::AddLine(const KGVec2& p1, const KGVec2& p2, KGU32 col, float thickness)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
-    PathLineTo(p1 + ImVec2(0.5f, 0.5f));
-    PathLineTo(p2 + ImVec2(0.5f, 0.5f));
+    PathLineTo(p1 + KGVec2(0.5f, 0.5f));
+    PathLineTo(p2 + KGVec2(0.5f, 0.5f));
     PathStroke(col, 0, thickness);
 }
 
 // p_min = upper-left, p_max = lower-right
 // Note we don't render 1 pixels sized rectangles properly.
-void KGDrawList::AddRect(const ImVec2& p_min, const ImVec2& p_max, KGU32 col, float rounding, KGDrawFlags flags, float thickness)
+void KGDrawList::AddRect(const KGVec2& p_min, const KGVec2& p_max, KGU32 col, float rounding, KGDrawFlags flags, float thickness)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
     if (Flags & KGDrawListFlags_AntiAliasedLines)
-        PathRect(p_min + ImVec2(0.50f, 0.50f), p_max - ImVec2(0.50f, 0.50f), rounding, flags);
+        PathRect(p_min + KGVec2(0.50f, 0.50f), p_max - KGVec2(0.50f, 0.50f), rounding, flags);
     else
-        PathRect(p_min + ImVec2(0.50f, 0.50f), p_max - ImVec2(0.49f, 0.49f), rounding, flags); // Better looking lower-right corner and rounded non-AA shapes.
+        PathRect(p_min + KGVec2(0.50f, 0.50f), p_max - KGVec2(0.49f, 0.49f), rounding, flags); // Better looking lower-right corner and rounded non-AA shapes.
     PathStroke(col, KGDrawFlags_Closed, thickness);
 }
 
-void KGDrawList::AddRectFilled(const ImVec2& p_min, const ImVec2& p_max, KGU32 col, float rounding, KGDrawFlags flags)
+void KGDrawList::AddRectFilled(const KGVec2& p_min, const KGVec2& p_max, KGU32 col, float rounding, KGDrawFlags flags)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1418,22 +1418,22 @@ void KGDrawList::AddRectFilled(const ImVec2& p_min, const ImVec2& p_max, KGU32 c
 }
 
 // p_min = upper-left, p_max = lower-right
-void KGDrawList::AddRectFilledMultiColor(const ImVec2& p_min, const ImVec2& p_max, KGU32 col_upr_left, KGU32 col_upr_right, KGU32 col_bot_right, KGU32 col_bot_left)
+void KGDrawList::AddRectFilledMultiColor(const KGVec2& p_min, const KGVec2& p_max, KGU32 col_upr_left, KGU32 col_upr_right, KGU32 col_bot_right, KGU32 col_bot_left)
 {
     if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) & KG_COL32_A_MASK) == 0)
         return;
 
-    const ImVec2 uv = _Data->TexUvWhitePixel;
+    const KGVec2 uv = _Data->TexUvWhitePixel;
     PrimReserve(6, 4);
     PrimWriteIdx((KGDrawIdx)(_VtxCurrentIdx)); PrimWriteIdx((KGDrawIdx)(_VtxCurrentIdx + 1)); PrimWriteIdx((KGDrawIdx)(_VtxCurrentIdx + 2));
     PrimWriteIdx((KGDrawIdx)(_VtxCurrentIdx)); PrimWriteIdx((KGDrawIdx)(_VtxCurrentIdx + 2)); PrimWriteIdx((KGDrawIdx)(_VtxCurrentIdx + 3));
     PrimWriteVtx(p_min, uv, col_upr_left);
-    PrimWriteVtx(ImVec2(p_max.x, p_min.y), uv, col_upr_right);
+    PrimWriteVtx(KGVec2(p_max.x, p_min.y), uv, col_upr_right);
     PrimWriteVtx(p_max, uv, col_bot_right);
-    PrimWriteVtx(ImVec2(p_min.x, p_max.y), uv, col_bot_left);
+    PrimWriteVtx(KGVec2(p_min.x, p_max.y), uv, col_bot_left);
 }
 
-void KGDrawList::AddQuad(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col, float thickness)
+void KGDrawList::AddQuad(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col, float thickness)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1445,7 +1445,7 @@ void KGDrawList::AddQuad(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, c
     PathStroke(col, KGDrawFlags_Closed, thickness);
 }
 
-void KGDrawList::AddQuadFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col)
+void KGDrawList::AddQuadFilled(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1457,7 +1457,7 @@ void KGDrawList::AddQuadFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2&
     PathFillConvex(col);
 }
 
-void KGDrawList::AddTriangle(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col, float thickness)
+void KGDrawList::AddTriangle(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col, float thickness)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1468,7 +1468,7 @@ void KGDrawList::AddTriangle(const ImVec2& p1, const ImVec2& p2, const ImVec2& p
     PathStroke(col, KGDrawFlags_Closed, thickness);
 }
 
-void KGDrawList::AddTriangleFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col)
+void KGDrawList::AddTriangleFilled(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1479,7 +1479,7 @@ void KGDrawList::AddTriangleFilled(const ImVec2& p1, const ImVec2& p2, const ImV
     PathFillConvex(col);
 }
 
-void KGDrawList::AddCircle(const ImVec2& center, float radius, KGU32 col, int num_segments, float thickness)
+void KGDrawList::AddCircle(const KGVec2& center, float radius, KGU32 col, int num_segments, float thickness)
 {
     if ((col & KG_COL32_A_MASK) == 0 || radius < 0.5f)
         return;
@@ -1503,7 +1503,7 @@ void KGDrawList::AddCircle(const ImVec2& center, float radius, KGU32 col, int nu
     PathStroke(col, KGDrawFlags_Closed, thickness);
 }
 
-void KGDrawList::AddCircleFilled(const ImVec2& center, float radius, KGU32 col, int num_segments)
+void KGDrawList::AddCircleFilled(const KGVec2& center, float radius, KGU32 col, int num_segments)
 {
     if ((col & KG_COL32_A_MASK) == 0 || radius < 0.5f)
         return;
@@ -1528,7 +1528,7 @@ void KGDrawList::AddCircleFilled(const ImVec2& center, float radius, KGU32 col, 
 }
 
 // Guaranteed to honor 'num_segments'
-void KGDrawList::AddNgon(const ImVec2& center, float radius, KGU32 col, int num_segments, float thickness)
+void KGDrawList::AddNgon(const KGVec2& center, float radius, KGU32 col, int num_segments, float thickness)
 {
     if ((col & KG_COL32_A_MASK) == 0 || num_segments <= 2)
         return;
@@ -1540,7 +1540,7 @@ void KGDrawList::AddNgon(const ImVec2& center, float radius, KGU32 col, int num_
 }
 
 // Guaranteed to honor 'num_segments'
-void KGDrawList::AddNgonFilled(const ImVec2& center, float radius, KGU32 col, int num_segments)
+void KGDrawList::AddNgonFilled(const KGVec2& center, float radius, KGU32 col, int num_segments)
 {
     if ((col & KG_COL32_A_MASK) == 0 || num_segments <= 2)
         return;
@@ -1552,7 +1552,7 @@ void KGDrawList::AddNgonFilled(const ImVec2& center, float radius, KGU32 col, in
 }
 
 // Cubic Bezier takes 4 controls points
-void KGDrawList::AddBezierCubic(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col, float thickness, int num_segments)
+void KGDrawList::AddBezierCubic(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col, float thickness, int num_segments)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1563,7 +1563,7 @@ void KGDrawList::AddBezierCubic(const ImVec2& p1, const ImVec2& p2, const ImVec2
 }
 
 // Quadratic Bezier takes 3 controls points
-void KGDrawList::AddBezierQuadratic(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col, float thickness, int num_segments)
+void KGDrawList::AddBezierQuadratic(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col, float thickness, int num_segments)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1573,7 +1573,7 @@ void KGDrawList::AddBezierQuadratic(const ImVec2& p1, const ImVec2& p2, const Im
     PathStroke(col, 0, thickness);
 }
 
-void KGDrawList::AddText(const KGFont* font, float font_size, const ImVec2& pos, KGU32 col, const char* text_begin, const char* text_end, float wrap_width, const ImVec4* cpu_fine_clip_rect)
+void KGDrawList::AddText(const KGFont* font, float font_size, const KGVec2& pos, KGU32 col, const char* text_begin, const char* text_end, float wrap_width, const KGVec4* cpu_fine_clip_rect)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1591,7 +1591,7 @@ void KGDrawList::AddText(const KGFont* font, float font_size, const ImVec2& pos,
 
     KR_CORE_ASSERT(font->ContainerAtlas->TexID == _CmdHeader.TextureId);  // Use high-level ImGui::PushFont() or low-level KGDrawList::PushTextureId() to change font.
 
-    ImVec4 clip_rect = _CmdHeader.ClipRect;
+    KGVec4 clip_rect = _CmdHeader.ClipRect;
     if (cpu_fine_clip_rect)
     {
         clip_rect.x = KGMax(clip_rect.x, cpu_fine_clip_rect->x);
@@ -1602,12 +1602,12 @@ void KGDrawList::AddText(const KGFont* font, float font_size, const ImVec2& pos,
     font->RenderText(this, font_size, pos, col, clip_rect, text_begin, text_end, wrap_width, cpu_fine_clip_rect != NULL);
 }
 
-void KGDrawList::AddText(const ImVec2& pos, KGU32 col, const char* text_begin, const char* text_end)
+void KGDrawList::AddText(const KGVec2& pos, KGU32 col, const char* text_begin, const char* text_end)
 {
     AddText(NULL, 0.0f, pos, col, text_begin, text_end);
 }
 
-void KGDrawList::AddImage(KGTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, KGU32 col)
+void KGDrawList::AddImage(KGTextureID user_texture_id, const KGVec2& p_min, const KGVec2& p_max, const KGVec2& uv_min, const KGVec2& uv_max, KGU32 col)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1623,7 +1623,7 @@ void KGDrawList::AddImage(KGTextureID user_texture_id, const ImVec2& p_min, cons
         PopTextureID();
 }
 
-void KGDrawList::AddImageQuad(KGTextureID user_texture_id, const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& uv1, const ImVec2& uv2, const ImVec2& uv3, const ImVec2& uv4, KGU32 col)
+void KGDrawList::AddImageQuad(KGTextureID user_texture_id, const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& uv1, const KGVec2& uv2, const KGVec2& uv3, const KGVec2& uv4, KGU32 col)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1639,7 +1639,7 @@ void KGDrawList::AddImageQuad(KGTextureID user_texture_id, const ImVec2& p1, con
         PopTextureID();
 }
 
-void KGDrawList::AddImageRounded(KGTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, KGU32 col, float rounding, KGDrawFlags flags)
+void KGDrawList::AddImageRounded(KGTextureID user_texture_id, const KGVec2& p_min, const KGVec2& p_max, const KGVec2& uv_min, const KGVec2& uv_max, KGU32 col, float rounding, KGDrawFlags flags)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -1665,7 +1665,7 @@ void KGDrawList::AddImageRounded(KGTextureID user_texture_id, const ImVec2& p_mi
         PopTextureID();
 }
 
-void KGDrawList::SetWindowBackgroundColor(ImVec4 bgColor)
+void KGDrawList::SetWindowBackgroundColor(KGVec4 bgColor)
 {
     KGGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems || (window->Size.x <= window->TitleBarRect().GetSize().x && window->Size.y <= window->TitleBarRect().GetSize().y))
@@ -1849,7 +1849,7 @@ void KGDrawData::DeIndexAllBuffers()
 // Helper to scale the ClipRect field of each KGDrawCmd.
 // Use if your final output buffer is at a different scale than draw_data->DisplaySize,
 // or if there is a difference between your window resolution and framebuffer resolution.
-void KGDrawData::ScaleClipRects(const ImVec2& fb_scale)
+void KGDrawData::ScaleClipRects(const KGVec2& fb_scale)
 {
     for (int i = 0; i < CmdListsCount; i++)
     {
@@ -1857,7 +1857,7 @@ void KGDrawData::ScaleClipRects(const ImVec2& fb_scale)
         for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
         {
             KGDrawCmd* cmd = &cmd_list->CmdBuffer[cmd_i];
-            cmd->ClipRect = ImVec4(cmd->ClipRect.x * fb_scale.x, cmd->ClipRect.y * fb_scale.y, cmd->ClipRect.z * fb_scale.x, cmd->ClipRect.w * fb_scale.y);
+            cmd->ClipRect = KGVec4(cmd->ClipRect.x * fb_scale.x, cmd->ClipRect.y * fb_scale.y, cmd->ClipRect.z * fb_scale.x, cmd->ClipRect.w * fb_scale.y);
         }
     }
 }
@@ -1867,9 +1867,9 @@ void KGDrawData::ScaleClipRects(const ImVec2& fb_scale)
 //-----------------------------------------------------------------------------
 
 // Generic linear color gradient, write to RGB fields, leave A untouched.
-void ImGui::ShadeVertsLinearColorGradientKeepAlpha(KGDrawList* draw_list, int vert_start_idx, int vert_end_idx, ImVec2 gradient_p0, ImVec2 gradient_p1, KGU32 col0, KGU32 col1)
+void ImGui::ShadeVertsLinearColorGradientKeepAlpha(KGDrawList* draw_list, int vert_start_idx, int vert_end_idx, KGVec2 gradient_p0, KGVec2 gradient_p1, KGU32 col0, KGU32 col1)
 {
-    ImVec2 gradient_extent = gradient_p1 - gradient_p0;
+    KGVec2 gradient_extent = gradient_p1 - gradient_p0;
     float gradient_inv_length2 = 1.0f / KGLengthSqr(gradient_extent);
     KGDrawVert* vert_start = draw_list->VtxBuffer.Data + vert_start_idx;
     KGDrawVert* vert_end = draw_list->VtxBuffer.Data + vert_end_idx;
@@ -1891,11 +1891,11 @@ void ImGui::ShadeVertsLinearColorGradientKeepAlpha(KGDrawList* draw_list, int ve
 }
 
 // Distribute UV over (a, b) rectangle
-void ImGui::ShadeVertsLinearUV(KGDrawList* draw_list, int vert_start_idx, int vert_end_idx, const ImVec2& a, const ImVec2& b, const ImVec2& uv_a, const ImVec2& uv_b, bool clamp)
+void ImGui::ShadeVertsLinearUV(KGDrawList* draw_list, int vert_start_idx, int vert_end_idx, const KGVec2& a, const KGVec2& b, const KGVec2& uv_a, const KGVec2& uv_b, bool clamp)
 {
-    const ImVec2 size = b - a;
-    const ImVec2 uv_size = uv_b - uv_a;
-    const ImVec2 scale = ImVec2(
+    const KGVec2 size = b - a;
+    const KGVec2 uv_size = uv_b - uv_a;
+    const KGVec2 scale = KGVec2(
         size.x != 0.0f ? (uv_size.x / size.x) : 0.0f,
         size.y != 0.0f ? (uv_size.y / size.y) : 0.0f);
 
@@ -1903,15 +1903,15 @@ void ImGui::ShadeVertsLinearUV(KGDrawList* draw_list, int vert_start_idx, int ve
     KGDrawVert* vert_end = draw_list->VtxBuffer.Data + vert_end_idx;
     if (clamp)
     {
-        const ImVec2 min = KGMin(uv_a, uv_b);
-        const ImVec2 max = KGMax(uv_a, uv_b);
+        const KGVec2 min = KGMin(uv_a, uv_b);
+        const KGVec2 max = KGMax(uv_a, uv_b);
         for (KGDrawVert* vertex = vert_start; vertex < vert_end; ++vertex)
-            vertex->uv = KGClamp(uv_a + KGMul(ImVec2(vertex->pos.x, vertex->pos.y) - a, scale), min, max);
+            vertex->uv = KGClamp(uv_a + KGMul(KGVec2(vertex->pos.x, vertex->pos.y) - a, scale), min, max);
     }
     else
     {
         for (KGDrawVert* vertex = vert_start; vertex < vert_end; ++vertex)
-            vertex->uv = uv_a + KGMul(ImVec2(vertex->pos.x, vertex->pos.y) - a, scale);
+            vertex->uv = uv_a + KGMul(KGVec2(vertex->pos.x, vertex->pos.y) - a, scale);
     }
 }
 
@@ -1970,18 +1970,18 @@ static const char FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS[FONT_ATLAS_DEFAULT_TEX_DATA
     "                                                      -    XX           XX    -                                           "
 };
 
-static const ImVec2 FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[KGGuiMouseCursor_COUNT][3] =
+static const KGVec2 FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[KGGuiMouseCursor_COUNT][3] =
 {
     // Pos ........ Size ......... Offset ......
-    { ImVec2( 0,3), ImVec2(12,19), ImVec2( 0, 0) }, // KGGuiMouseCursor_Arrow
-    { ImVec2(13,0), ImVec2( 7,16), ImVec2( 1, 8) }, // KGGuiMouseCursor_TextInput
-    { ImVec2(31,0), ImVec2(23,23), ImVec2(11,11) }, // KGGuiMouseCursor_ResizeAll
-    { ImVec2(21,0), ImVec2( 9,23), ImVec2( 4,11) }, // KGGuiMouseCursor_ResizeNS
-    { ImVec2(55,18),ImVec2(23, 9), ImVec2(11, 4) }, // KGGuiMouseCursor_ResizeEW
-    { ImVec2(73,0), ImVec2(17,17), ImVec2( 8, 8) }, // KGGuiMouseCursor_ResizeNESW
-    { ImVec2(55,0), ImVec2(17,17), ImVec2( 8, 8) }, // KGGuiMouseCursor_ResizeNWSE
-    { ImVec2(91,0), ImVec2(17,22), ImVec2( 5, 0) }, // KGGuiMouseCursor_Hand
-    { ImVec2(109,0),ImVec2(13,15), ImVec2( 6, 7) }, // KGGuiMouseCursor_NotAllowed
+    { KGVec2( 0,3), KGVec2(12,19), KGVec2( 0, 0) }, // KGGuiMouseCursor_Arrow
+    { KGVec2(13,0), KGVec2( 7,16), KGVec2( 1, 8) }, // KGGuiMouseCursor_TextInput
+    { KGVec2(31,0), KGVec2(23,23), KGVec2(11,11) }, // KGGuiMouseCursor_ResizeAll
+    { KGVec2(21,0), KGVec2( 9,23), KGVec2( 4,11) }, // KGGuiMouseCursor_ResizeNS
+    { KGVec2(55,18),KGVec2(23, 9), KGVec2(11, 4) }, // KGGuiMouseCursor_ResizeEW
+    { KGVec2(73,0), KGVec2(17,17), KGVec2( 8, 8) }, // KGGuiMouseCursor_ResizeNESW
+    { KGVec2(55,0), KGVec2(17,17), KGVec2( 8, 8) }, // KGGuiMouseCursor_ResizeNWSE
+    { KGVec2(91,0), KGVec2(17,22), KGVec2( 5, 0) }, // KGGuiMouseCursor_Hand
+    { KGVec2(109,0),KGVec2(13,15), KGVec2( 6, 7) }, // KGGuiMouseCursor_NotAllowed
 };
 
 KGFontAtlas::KGFontAtlas()
@@ -2221,7 +2221,7 @@ int KGFontAtlas::AddCustomRectRegular(int width, int height)
     return CustomRects.Size - 1; // Return index
 }
 
-int KGFontAtlas::AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int height, float advance_x, const ImVec2& offset)
+int KGFontAtlas::AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int height, float advance_x, const KGVec2& offset)
 {
 #ifdef IMGUI_USE_WCHAR32
     KR_CORE_ASSERT(id <= KG_UNICODE_CODEPOINT_MAX);
@@ -2240,15 +2240,15 @@ int KGFontAtlas::AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int
     return CustomRects.Size - 1; // Return index
 }
 
-void KGFontAtlas::CalcCustomRectUV(const KGFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max) const
+void KGFontAtlas::CalcCustomRectUV(const KGFontAtlasCustomRect* rect, KGVec2* out_uv_min, KGVec2* out_uv_max) const
 {
     KR_CORE_ASSERT(TexWidth > 0 && TexHeight > 0);   // Font atlas needs to be built before we can calculate UV coordinates
     KR_CORE_ASSERT(rect->IsPacked());                // Make sure the rectangle has been packed
-    *out_uv_min = ImVec2((float)rect->X * TexUvScale.x, (float)rect->Y * TexUvScale.y);
-    *out_uv_max = ImVec2((float)(rect->X + rect->Width) * TexUvScale.x, (float)(rect->Y + rect->Height) * TexUvScale.y);
+    *out_uv_min = KGVec2((float)rect->X * TexUvScale.x, (float)rect->Y * TexUvScale.y);
+    *out_uv_max = KGVec2((float)(rect->X + rect->Width) * TexUvScale.x, (float)(rect->Y + rect->Height) * TexUvScale.y);
 }
 
-bool KGFontAtlas::GetMouseCursorTexData(KarmaGuiMouseCursor cursor_type, ImVec2* out_offset, ImVec2* out_size, ImVec2 out_uv_border[2], ImVec2 out_uv_fill[2])
+bool KGFontAtlas::GetMouseCursorTexData(KarmaGuiMouseCursor cursor_type, KGVec2* out_offset, KGVec2* out_size, KGVec2 out_uv_border[2], KGVec2 out_uv_fill[2])
 {
     if (cursor_type <= KGGuiMouseCursor_None || cursor_type >= KGGuiMouseCursor_COUNT)
         return false;
@@ -2257,8 +2257,8 @@ bool KGFontAtlas::GetMouseCursorTexData(KarmaGuiMouseCursor cursor_type, ImVec2*
 
     KR_CORE_ASSERT(PackIdMouseCursors != -1);
     KGFontAtlasCustomRect* r = GetCustomRectByIndex(PackIdMouseCursors);
-    ImVec2 pos = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][0] + ImVec2((float)r->X, (float)r->Y);
-    ImVec2 size = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][1];
+    KGVec2 pos = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][0] + KGVec2((float)r->X, (float)r->Y);
+    KGVec2 size = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][1];
     *out_size = size;
     *out_offset = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][2];
     out_uv_border[0] = (pos) * TexUvScale;
@@ -2363,8 +2363,8 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
     // Clear atlas
     atlas->TexID = (KGTextureID)NULL;
     atlas->TexWidth = atlas->TexHeight = 0;
-    atlas->TexUvScale = ImVec2(0.0f, 0.0f);
-    atlas->TexUvWhitePixel = ImVec2(0.0f, 0.0f);
+    atlas->TexUvScale = KGVec2(0.0f, 0.0f);
+    atlas->TexUvWhitePixel = KGVec2(0.0f, 0.0f);
     atlas->ClearTexData();
 
     // Temporary storage for building
@@ -2531,7 +2531,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 
     // 7. Allocate texture
     atlas->TexHeight = (atlas->Flags & KGFontAtlasFlags_NoPowerOfTwoHeight) ? (atlas->TexHeight + 1) : KGUpperPowerOfTwo(atlas->TexHeight);
-    atlas->TexUvScale = ImVec2(1.0f / atlas->TexWidth, 1.0f / atlas->TexHeight);
+    atlas->TexUvScale = KGVec2(1.0f / atlas->TexWidth, 1.0f / atlas->TexHeight);
     atlas->TexPixelsAlpha8 = (unsigned char*)KG_ALLOC(atlas->TexWidth * atlas->TexHeight);
     memset(atlas->TexPixelsAlpha8, 0, atlas->TexWidth * atlas->TexHeight);
     spc.pixels = atlas->TexPixelsAlpha8;
@@ -2714,7 +2714,7 @@ static void ImFontAtlasBuildRenderDefaultTexData(KGFontAtlas* atlas)
             atlas->TexPixelsRGBA32[offset] = atlas->TexPixelsRGBA32[offset + 1] = atlas->TexPixelsRGBA32[offset + w] = atlas->TexPixelsRGBA32[offset + w + 1] = KG_COL32_WHITE;
         }
     }
-    atlas->TexUvWhitePixel = ImVec2((r->X + 0.5f) * atlas->TexUvScale.x, (r->Y + 0.5f) * atlas->TexUvScale.y);
+    atlas->TexUvWhitePixel = KGVec2((r->X + 0.5f) * atlas->TexUvScale.x, (r->Y + 0.5f) * atlas->TexUvScale.y);
 }
 
 static void ImFontAtlasBuildRenderLinesTexData(KGFontAtlas* atlas)
@@ -2761,10 +2761,10 @@ static void ImFontAtlasBuildRenderLinesTexData(KGFontAtlas* atlas)
         }
 
         // Calculate UVs for this line
-        ImVec2 uv0 = ImVec2((float)(r->X + pad_left - 1), (float)(r->Y + y)) * atlas->TexUvScale;
-        ImVec2 uv1 = ImVec2((float)(r->X + pad_left + line_width + 1), (float)(r->Y + y + 1)) * atlas->TexUvScale;
+        KGVec2 uv0 = KGVec2((float)(r->X + pad_left - 1), (float)(r->Y + y)) * atlas->TexUvScale;
+        KGVec2 uv1 = KGVec2((float)(r->X + pad_left + line_width + 1), (float)(r->Y + y + 1)) * atlas->TexUvScale;
         float half_v = (uv0.y + uv1.y) * 0.5f; // Calculate a constant V in the middle of the row to avoid sampling artifacts
-        atlas->TexUvLines[n] = ImVec4(uv0.x, half_v, uv1.x, half_v);
+        atlas->TexUvLines[n] = KGVec4(uv0.x, half_v, uv1.x, half_v);
     }
 }
 
@@ -2806,7 +2806,7 @@ void ImFontAtlasBuildFinish(KGFontAtlas* atlas)
 
         // Will ignore KGFontConfig settings: GlyphMinAdvanceX, GlyphMinAdvanceY, GlyphExtraSpacing, PixelSnapH
         KR_CORE_ASSERT(r->Font->ContainerAtlas == atlas);
-        ImVec2 uv0, uv1;
+        KGVec2 uv0, uv1;
         atlas->CalcCustomRectUV(r, &uv0, &uv1);
         r->Font->AddGlyph(NULL, (KGWchar)r->GlyphID, r->GlyphOffset.x, r->GlyphOffset.y, r->GlyphOffset.x + r->Width, r->GlyphOffset.y + r->Height, uv0.x, uv0.y, uv1.x, uv1.y, r->GlyphAdvanceX);
     }
@@ -3465,7 +3465,7 @@ const char* KGFont::CalcWordWrapPositionA(float scale, const char* text, const c
     return s;
 }
 
-ImVec2 KGFont::CalcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end, const char** remaining) const
+KGVec2 KGFont::CalcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end, const char** remaining) const
 {
     if (!text_end)
         text_end = text_begin + strlen(text_begin); // FIXME-OPT: Need to avoid this.
@@ -3473,7 +3473,7 @@ ImVec2 KGFont::CalcTextSizeA(float size, float max_width, float wrap_width, cons
     const float line_height = size;
     const float scale = size / FontSize;
 
-    ImVec2 text_size = ImVec2(0, 0);
+    KGVec2 text_size = KGVec2(0, 0);
     float line_width = 0.0f;
 
     const bool word_wrap_enabled = (wrap_width > 0.0f);
@@ -3550,7 +3550,7 @@ ImVec2 KGFont::CalcTextSizeA(float size, float max_width, float wrap_width, cons
 }
 
 // Note: as with every KGDrawList drawing function, this expects that the font atlas texture is bound.
-void KGFont::RenderChar(KGDrawList* draw_list, float size, const ImVec2& pos, KGU32 col, KGWchar c) const
+void KGFont::RenderChar(KGDrawList* draw_list, float size, const KGVec2& pos, KGU32 col, KGWchar c) const
 {
     const KGFontGlyph* glyph = FindGlyph(c);
     if (!glyph || !glyph->Visible)
@@ -3561,11 +3561,11 @@ void KGFont::RenderChar(KGDrawList* draw_list, float size, const ImVec2& pos, KG
     float x = KG_FLOOR(pos.x);
     float y = KG_FLOOR(pos.y);
     draw_list->PrimReserve(6, 4);
-    draw_list->PrimRectUV(ImVec2(x + glyph->X0 * scale, y + glyph->Y0 * scale), ImVec2(x + glyph->X1 * scale, y + glyph->Y1 * scale), ImVec2(glyph->U0, glyph->V0), ImVec2(glyph->U1, glyph->V1), col);
+    draw_list->PrimRectUV(KGVec2(x + glyph->X0 * scale, y + glyph->Y0 * scale), KGVec2(x + glyph->X1 * scale, y + glyph->Y1 * scale), KGVec2(glyph->U0, glyph->V0), KGVec2(glyph->U1, glyph->V1), col);
 }
 
 // Note: as with every KGDrawList drawing function, this expects that the font atlas texture is bound.
-void KGFont::RenderText(KGDrawList* draw_list, float size, const ImVec2& pos, KGU32 col, const ImVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width, bool cpu_fine_clip) const
+void KGFont::RenderText(KGDrawList* draw_list, float size, const KGVec2& pos, KGU32 col, const KGVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width, bool cpu_fine_clip) const
 {
     if (!text_end)
         text_end = text_begin + strlen(text_begin); // KarmaGui:: functions generally already provides a valid text_end, so this is merely to handle direct calls.
@@ -3774,28 +3774,28 @@ void KGFont::RenderText(KGDrawList* draw_list, float size, const ImVec2& pos, KG
 //-----------------------------------------------------------------------------
 
 // Render an arrow aimed to be aligned with text (p_min is a position in the same space text would be positioned). To e.g. denote expanded/collapsed state
-void ImGui::RenderArrow(KGDrawList* draw_list, ImVec2 pos, KGU32 col, KarmaGuiDir dir, float scale)
+void ImGui::RenderArrow(KGDrawList* draw_list, KGVec2 pos, KGU32 col, KarmaGuiDir dir, float scale)
 {
     const float h = draw_list->_Data->FontSize * 1.00f;
     float r = h * 0.40f * scale;
-    ImVec2 center = pos + ImVec2(h * 0.50f, h * 0.50f * scale);
+    KGVec2 center = pos + KGVec2(h * 0.50f, h * 0.50f * scale);
 
-    ImVec2 a, b, c;
+    KGVec2 a, b, c;
     switch (dir)
     {
     case KGGuiDir_Up:
     case KGGuiDir_Down:
         if (dir == KGGuiDir_Up) r = -r;
-        a = ImVec2(+0.000f, +0.750f) * r;
-        b = ImVec2(-0.866f, -0.750f) * r;
-        c = ImVec2(+0.866f, -0.750f) * r;
+        a = KGVec2(+0.000f, +0.750f) * r;
+        b = KGVec2(-0.866f, -0.750f) * r;
+        c = KGVec2(+0.866f, -0.750f) * r;
         break;
     case KGGuiDir_Left:
     case KGGuiDir_Right:
         if (dir == KGGuiDir_Left) r = -r;
-        a = ImVec2(+0.750f, +0.000f) * r;
-        b = ImVec2(-0.750f, +0.866f) * r;
-        c = ImVec2(-0.750f, -0.866f) * r;
+        a = KGVec2(+0.750f, +0.000f) * r;
+        b = KGVec2(-0.750f, +0.866f) * r;
+        c = KGVec2(-0.750f, -0.866f) * r;
         break;
     case KGGuiDir_None:
     case KGGuiDir_COUNT:
@@ -3805,45 +3805,45 @@ void ImGui::RenderArrow(KGDrawList* draw_list, ImVec2 pos, KGU32 col, KarmaGuiDi
     draw_list->AddTriangleFilled(center + a, center + b, center + c, col);
 }
 
-void ImGui::RenderBullet(KGDrawList* draw_list, ImVec2 pos, KGU32 col)
+void ImGui::RenderBullet(KGDrawList* draw_list, KGVec2 pos, KGU32 col)
 {
     draw_list->AddCircleFilled(pos, draw_list->_Data->FontSize * 0.20f, col, 8);
 }
 
-void ImGui::RenderCheckMark(KGDrawList* draw_list, ImVec2 pos, KGU32 col, float sz)
+void ImGui::RenderCheckMark(KGDrawList* draw_list, KGVec2 pos, KGU32 col, float sz)
 {
     float thickness = KGMax(sz / 5.0f, 1.0f);
     sz -= thickness * 0.5f;
-    pos += ImVec2(thickness * 0.25f, thickness * 0.25f);
+    pos += KGVec2(thickness * 0.25f, thickness * 0.25f);
 
     float third = sz / 3.0f;
     float bx = pos.x + third;
     float by = pos.y + sz - third * 0.5f;
-    draw_list->PathLineTo(ImVec2(bx - third, by - third));
-    draw_list->PathLineTo(ImVec2(bx, by));
-    draw_list->PathLineTo(ImVec2(bx + third * 2.0f, by - third * 2.0f));
+    draw_list->PathLineTo(KGVec2(bx - third, by - third));
+    draw_list->PathLineTo(KGVec2(bx, by));
+    draw_list->PathLineTo(KGVec2(bx + third * 2.0f, by - third * 2.0f));
     draw_list->PathStroke(col, 0, thickness);
 }
 
 // Render an arrow. 'pos' is position of the arrow tip. half_sz.x is length from base to tip. half_sz.y is length on each side.
-void ImGui::RenderArrowPointingAt(KGDrawList* draw_list, ImVec2 pos, ImVec2 half_sz, KarmaGuiDir direction, KGU32 col)
+void ImGui::RenderArrowPointingAt(KGDrawList* draw_list, KGVec2 pos, KGVec2 half_sz, KarmaGuiDir direction, KGU32 col)
 {
     switch (direction)
     {
-    case KGGuiDir_Left:  draw_list->AddTriangleFilled(ImVec2(pos.x + half_sz.x, pos.y - half_sz.y), ImVec2(pos.x + half_sz.x, pos.y + half_sz.y), pos, col); return;
-    case KGGuiDir_Right: draw_list->AddTriangleFilled(ImVec2(pos.x - half_sz.x, pos.y + half_sz.y), ImVec2(pos.x - half_sz.x, pos.y - half_sz.y), pos, col); return;
-    case KGGuiDir_Up:    draw_list->AddTriangleFilled(ImVec2(pos.x + half_sz.x, pos.y + half_sz.y), ImVec2(pos.x - half_sz.x, pos.y + half_sz.y), pos, col); return;
-    case KGGuiDir_Down:  draw_list->AddTriangleFilled(ImVec2(pos.x - half_sz.x, pos.y - half_sz.y), ImVec2(pos.x + half_sz.x, pos.y - half_sz.y), pos, col); return;
+    case KGGuiDir_Left:  draw_list->AddTriangleFilled(KGVec2(pos.x + half_sz.x, pos.y - half_sz.y), KGVec2(pos.x + half_sz.x, pos.y + half_sz.y), pos, col); return;
+    case KGGuiDir_Right: draw_list->AddTriangleFilled(KGVec2(pos.x - half_sz.x, pos.y + half_sz.y), KGVec2(pos.x - half_sz.x, pos.y - half_sz.y), pos, col); return;
+    case KGGuiDir_Up:    draw_list->AddTriangleFilled(KGVec2(pos.x + half_sz.x, pos.y + half_sz.y), KGVec2(pos.x - half_sz.x, pos.y + half_sz.y), pos, col); return;
+    case KGGuiDir_Down:  draw_list->AddTriangleFilled(KGVec2(pos.x - half_sz.x, pos.y - half_sz.y), KGVec2(pos.x + half_sz.x, pos.y - half_sz.y), pos, col); return;
     case KGGuiDir_None: case KGGuiDir_COUNT: break; // Fix warnings
     }
 }
 
 // This is less wide than RenderArrow() and we use in dock nodes instead of the regular RenderArrow() to denote a change of functionality,
 // and because the saved space means that the left-most tab label can stay at exactly the same position as the label of a loose window.
-void ImGui::RenderArrowDockMenu(KGDrawList* draw_list, ImVec2 p_min, float sz, KGU32 col)
+void ImGui::RenderArrowDockMenu(KGDrawList* draw_list, KGVec2 p_min, float sz, KGU32 col)
 {
-    draw_list->AddRectFilled(p_min + ImVec2(sz * 0.20f, sz * 0.15f), p_min + ImVec2(sz * 0.80f, sz * 0.30f), col);
-    RenderArrowPointingAt(draw_list, p_min + ImVec2(sz * 0.50f, sz * 0.85f), ImVec2(sz * 0.30f, sz * 0.40f), KGGuiDir_Down, col);
+    draw_list->AddRectFilled(p_min + KGVec2(sz * 0.20f, sz * 0.15f), p_min + KGVec2(sz * 0.80f, sz * 0.30f), col);
+    RenderArrowPointingAt(draw_list, p_min + KGVec2(sz * 0.50f, sz * 0.85f), KGVec2(sz * 0.30f, sz * 0.40f), KGGuiDir_Down, col);
 }
 
 static inline float ImAcos01(float x)
@@ -3862,8 +3862,8 @@ void ImGui::RenderRectFilledRangeH(KGDrawList* draw_list, const KGRect& rect, KG
     if (x_start_norm > x_end_norm)
         KGSwap(x_start_norm, x_end_norm);
 
-    ImVec2 p0 = ImVec2(KGLerp(rect.Min.x, rect.Max.x, x_start_norm), rect.Min.y);
-    ImVec2 p1 = ImVec2(KGLerp(rect.Min.x, rect.Max.x, x_end_norm), rect.Max.y);
+    KGVec2 p0 = KGVec2(KGLerp(rect.Min.x, rect.Max.x, x_start_norm), rect.Min.y);
+    KGVec2 p1 = KGVec2(KGLerp(rect.Min.x, rect.Max.x, x_end_norm), rect.Max.y);
     if (rounding == 0.0f)
     {
         draw_list->AddRectFilled(p0, p1, col, 0.0f);
@@ -3878,18 +3878,18 @@ void ImGui::RenderRectFilledRangeH(KGDrawList* draw_list, const KGRect& rect, KG
     const float x0 = KGMax(p0.x, rect.Min.x + rounding);
     if (arc0_b == arc0_e)
     {
-        draw_list->PathLineTo(ImVec2(x0, p1.y));
-        draw_list->PathLineTo(ImVec2(x0, p0.y));
+        draw_list->PathLineTo(KGVec2(x0, p1.y));
+        draw_list->PathLineTo(KGVec2(x0, p0.y));
     }
     else if (arc0_b == 0.0f && arc0_e == half_pi)
     {
-        draw_list->PathArcToFast(ImVec2(x0, p1.y - rounding), rounding, 3, 6); // BL
-        draw_list->PathArcToFast(ImVec2(x0, p0.y + rounding), rounding, 6, 9); // TR
+        draw_list->PathArcToFast(KGVec2(x0, p1.y - rounding), rounding, 3, 6); // BL
+        draw_list->PathArcToFast(KGVec2(x0, p0.y + rounding), rounding, 6, 9); // TR
     }
     else
     {
-        draw_list->PathArcTo(ImVec2(x0, p1.y - rounding), rounding, KG_PI - arc0_e, KG_PI - arc0_b, 3); // BL
-        draw_list->PathArcTo(ImVec2(x0, p0.y + rounding), rounding, KG_PI + arc0_b, KG_PI + arc0_e, 3); // TR
+        draw_list->PathArcTo(KGVec2(x0, p1.y - rounding), rounding, KG_PI - arc0_e, KG_PI - arc0_b, 3); // BL
+        draw_list->PathArcTo(KGVec2(x0, p0.y + rounding), rounding, KG_PI + arc0_b, KG_PI + arc0_e, 3); // TR
     }
     if (p1.x > rect.Min.x + rounding)
     {
@@ -3898,18 +3898,18 @@ void ImGui::RenderRectFilledRangeH(KGDrawList* draw_list, const KGRect& rect, KG
         const float x1 = KGMin(p1.x, rect.Max.x - rounding);
         if (arc1_b == arc1_e)
         {
-            draw_list->PathLineTo(ImVec2(x1, p0.y));
-            draw_list->PathLineTo(ImVec2(x1, p1.y));
+            draw_list->PathLineTo(KGVec2(x1, p0.y));
+            draw_list->PathLineTo(KGVec2(x1, p1.y));
         }
         else if (arc1_b == 0.0f && arc1_e == half_pi)
         {
-            draw_list->PathArcToFast(ImVec2(x1, p0.y + rounding), rounding, 9, 12); // TR
-            draw_list->PathArcToFast(ImVec2(x1, p1.y - rounding), rounding, 0, 3);  // BR
+            draw_list->PathArcToFast(KGVec2(x1, p0.y + rounding), rounding, 9, 12); // TR
+            draw_list->PathArcToFast(KGVec2(x1, p1.y - rounding), rounding, 0, 3);  // BR
         }
         else
         {
-            draw_list->PathArcTo(ImVec2(x1, p0.y + rounding), rounding, -arc1_e, -arc1_b, 3); // TR
-            draw_list->PathArcTo(ImVec2(x1, p1.y - rounding), rounding, +arc1_b, +arc1_e, 3); // BR
+            draw_list->PathArcTo(KGVec2(x1, p0.y + rounding), rounding, -arc1_e, -arc1_b, 3); // TR
+            draw_list->PathArcTo(KGVec2(x1, p1.y - rounding), rounding, +arc1_b, +arc1_e, 3); // BR
         }
     }
     draw_list->PathFillConvex(col);
@@ -3921,14 +3921,14 @@ void ImGui::RenderRectFilledWithHole(KGDrawList* draw_list, const KGRect& outer,
     const bool fill_R = (inner.Max.x < outer.Max.x);
     const bool fill_U = (inner.Min.y > outer.Min.y);
     const bool fill_D = (inner.Max.y < outer.Max.y);
-    if (fill_L) draw_list->AddRectFilled(ImVec2(outer.Min.x, inner.Min.y), ImVec2(inner.Min.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopLeft)    | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomLeft));
-    if (fill_R) draw_list->AddRectFilled(ImVec2(inner.Max.x, inner.Min.y), ImVec2(outer.Max.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopRight)   | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomRight));
-    if (fill_U) draw_list->AddRectFilled(ImVec2(inner.Min.x, outer.Min.y), ImVec2(inner.Max.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_L ? 0 : KGDrawFlags_RoundCornersTopLeft)    | (fill_R ? 0 : KGDrawFlags_RoundCornersTopRight));
-    if (fill_D) draw_list->AddRectFilled(ImVec2(inner.Min.x, inner.Max.y), ImVec2(inner.Max.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_L ? 0 : KGDrawFlags_RoundCornersBottomLeft) | (fill_R ? 0 : KGDrawFlags_RoundCornersBottomRight));
-    if (fill_L && fill_U) draw_list->AddRectFilled(ImVec2(outer.Min.x, outer.Min.y), ImVec2(inner.Min.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersTopLeft);
-    if (fill_R && fill_U) draw_list->AddRectFilled(ImVec2(inner.Max.x, outer.Min.y), ImVec2(outer.Max.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersTopRight);
-    if (fill_L && fill_D) draw_list->AddRectFilled(ImVec2(outer.Min.x, inner.Max.y), ImVec2(inner.Min.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersBottomLeft);
-    if (fill_R && fill_D) draw_list->AddRectFilled(ImVec2(inner.Max.x, inner.Max.y), ImVec2(outer.Max.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersBottomRight);
+    if (fill_L) draw_list->AddRectFilled(KGVec2(outer.Min.x, inner.Min.y), KGVec2(inner.Min.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopLeft)    | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomLeft));
+    if (fill_R) draw_list->AddRectFilled(KGVec2(inner.Max.x, inner.Min.y), KGVec2(outer.Max.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopRight)   | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomRight));
+    if (fill_U) draw_list->AddRectFilled(KGVec2(inner.Min.x, outer.Min.y), KGVec2(inner.Max.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_L ? 0 : KGDrawFlags_RoundCornersTopLeft)    | (fill_R ? 0 : KGDrawFlags_RoundCornersTopRight));
+    if (fill_D) draw_list->AddRectFilled(KGVec2(inner.Min.x, inner.Max.y), KGVec2(inner.Max.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_L ? 0 : KGDrawFlags_RoundCornersBottomLeft) | (fill_R ? 0 : KGDrawFlags_RoundCornersBottomRight));
+    if (fill_L && fill_U) draw_list->AddRectFilled(KGVec2(outer.Min.x, outer.Min.y), KGVec2(inner.Min.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersTopLeft);
+    if (fill_R && fill_U) draw_list->AddRectFilled(KGVec2(inner.Max.x, outer.Min.y), KGVec2(outer.Max.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersTopRight);
+    if (fill_L && fill_D) draw_list->AddRectFilled(KGVec2(outer.Min.x, inner.Max.y), KGVec2(inner.Min.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersBottomLeft);
+    if (fill_R && fill_D) draw_list->AddRectFilled(KGVec2(inner.Max.x, inner.Max.y), KGVec2(outer.Max.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersBottomRight);
 }
 
 KGDrawFlags ImGui::CalcRoundingFlagsForRectInRect(const KGRect& r_in, const KGRect& r_outer, float threshold)
@@ -3946,7 +3946,7 @@ KGDrawFlags ImGui::CalcRoundingFlagsForRectInRect(const KGRect& r_in, const KGRe
 // NB: This is rather brittle and will show artifact when rounding this enabled if rounded corners overlap multiple cells. Caller currently responsible for avoiding that.
 // Spent a non reasonable amount of time trying to getting this right for ColorButton with rounding+anti-aliasing+KGGuiColorEditFlags_HalfAlphaPreview flag + various grid sizes and offsets, and eventually gave up... probably more reasonable to disable rounding altogether.
 // FIXME: uses ImGui::GetColorU32
-void ImGui::RenderColorRectWithAlphaCheckerboard(KGDrawList* draw_list, ImVec2 p_min, ImVec2 p_max, KGU32 col, float grid_step, ImVec2 grid_off, float rounding, KGDrawFlags flags)
+void ImGui::RenderColorRectWithAlphaCheckerboard(KGDrawList* draw_list, KGVec2 p_min, KGVec2 p_max, KGU32 col, float grid_step, KGVec2 grid_off, float rounding, KGDrawFlags flags)
 {
     if ((flags & KGDrawFlags_RoundCornersMask_) == 0)
         flags = KGDrawFlags_RoundCornersDefault_;
@@ -3973,7 +3973,7 @@ void ImGui::RenderColorRectWithAlphaCheckerboard(KGDrawList* draw_list, ImVec2 p
 
                 // Combine flags
                 cell_flags = (flags == KGDrawFlags_RoundCornersNone || cell_flags == KGDrawFlags_RoundCornersNone) ? KGDrawFlags_RoundCornersNone : (cell_flags & flags);
-                draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), col_bg2, rounding, cell_flags);
+                draw_list->AddRectFilled(KGVec2(x1, y1), KGVec2(x2, y2), col_bg2, rounding, cell_flags);
             }
         }
     }

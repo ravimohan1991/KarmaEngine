@@ -131,25 +131,25 @@ typedef void    (*KarmaGuiSizeCallback)(KarmaGuiSizeCallbackData* data);        
 typedef void*   (*KarmaGuiMemAllocFunc)(size_t sz, void* user_data);                  // Function signature for ImGui::SetAllocatorFunctions()
 typedef void    (*KarmaGuiMemFreeFunc)(void* ptr, void* user_data);                   // Function signature for ImGui::SetAllocatorFunctions()
 
-// ImVec2: 2D vector used to store positions, sizes etc. [Compile-time configurable type]
+// KGVec2: 2D vector used to store positions, sizes etc. [Compile-time configurable type]
 // This is a frequently used type in the API. Consider using IM_VEC2_CLASS_EXTRA to create implicit cast from/to our preferred type.
-struct ImVec2
+struct KGVec2
 {
 	float                                   x, y;
-	constexpr ImVec2()                      : x(0.0f), y(0.0f) { }
-	constexpr ImVec2(float _x, float _y)    : x(_x), y(_y) { }
+	constexpr KGVec2()                      : x(0.0f), y(0.0f) { }
+	constexpr KGVec2(float _x, float _y)    : x(_x), y(_y) { }
 	float  operator[] (size_t idx) const    { KR_CORE_ASSERT(idx <= 1, ""); return (&x)[idx]; }    // We very rarely use this [] operator, the assert overhead is fine.
 	float& operator[] (size_t idx)          { KR_CORE_ASSERT(idx <= 1, ""); return (&x)[idx]; }    // We very rarely use this [] operator, the assert overhead is fine.
 };
 
-// ImVec4: 4D vector used to store clipping rectangles, colors etc. [Compile-time configurable type]
-struct ImVec4
+// KGVec4: 4D vector used to store clipping rectangles, colors etc. [Compile-time configurable type]
+struct KGVec4
 {
 	float                                                     x, y, z, w;
-	constexpr ImVec4()                                        : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { }
-	constexpr ImVec4(float _x, float _y, float _z, float _w)  : x(_x), y(_y), z(_z), w(_w) { }
+	constexpr KGVec4()                                        : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { }
+	constexpr KGVec4(float _x, float _y, float _z, float _w)  : x(_x), y(_y), z(_z), w(_w) { }
 #ifdef KG_VEC4_CLASS_EXTRA
-	KG_VEC4_CLASS_EXTRA     // Define additional constructors and implicit cast operators in imconfig.h to convert back and forth between your math types and ImVec4.
+	KG_VEC4_CLASS_EXTRA     // Define additional constructors and implicit cast operators in imconfig.h to convert back and forth between your math types and KGVec4.
 #endif
 };
 
@@ -206,14 +206,14 @@ namespace Karma
 
 		// Child Windows
 		// - Use child windows to begin into a self-contained independent scrolling/clipping regions within a host window. Child windows can embed their own child.
-		// - For each independent axis of 'size': ==0.0f: use remaining host window size / >0.0f: fixed size / <0.0f: use remaining window size minus abs(size) / Each axis can use a different mode, e.g. ImVec2(0,400).
+		// - For each independent axis of 'size': ==0.0f: use remaining host window size / >0.0f: fixed size / <0.0f: use remaining window size minus abs(size) / Each axis can use a different mode, e.g. KGVec2(0,400).
 		// - BeginChild() returns false to indicate the window is collapsed or fully clipped, so you may early out and omit submitting anything to the window.
 		//   Always call a matching EndChild() for each BeginChild() call, regardless of its return value.
 		//   [Important: due to legacy reason, this is inconsistent with most other functions such as BeginMenu/EndMenu,
 		//    BeginPopup/EndPopup, etc. where the EndXXX call should only be called if the corresponding BeginXXX function
 		//    returned true. Begin and BeginChild are the only odd ones out. Will be fixed in a future update.]
-		static bool          BeginChild(const char* str_id, const ImVec2& size = ImVec2(0, 0), bool border = false, KarmaGuiWindowFlags flags = 0);
-		static bool          BeginChild(KGGuiID id, const ImVec2& size = ImVec2(0, 0), bool border = false, KarmaGuiWindowFlags flags = 0);
+		static bool          BeginChild(const char* str_id, const KGVec2& size = KGVec2(0, 0), bool border = false, KarmaGuiWindowFlags flags = 0);
+		static bool          BeginChild(KGGuiID id, const KGVec2& size = KGVec2(0, 0), bool border = false, KarmaGuiWindowFlags flags = 0);
 		static void          EndChild();
 
 		// Windows Utilities
@@ -224,40 +224,40 @@ namespace Karma
 		static bool          IsWindowHovered(KarmaGuiHoveredFlags flags=0); // is current window hovered (and typically: not blocked by a popup/modal)? see flags for options. NB: If you are trying to check whether your mouse should be dispatched to imgui or to your app, you should use the 'io.WantCaptureMouse' boolean for that! Please read the FAQ!
 		static KGDrawList*   GetWindowDrawList();                        // get draw list associated to the current window, to append your own drawing primitives
 		static float         GetWindowDpiScale();                        // get DPI scale currently associated to the current window's viewport.
-		static ImVec2        GetWindowPos();                             // get current window position in screen space (useful if you want to do your own drawing via the DrawList API)
-		static ImVec2        GetWindowSize();                            // get current window size
+		static KGVec2        GetWindowPos();                             // get current window position in screen space (useful if you want to do your own drawing via the DrawList API)
+		static KGVec2        GetWindowSize();                            // get current window size
 		static float         GetWindowWidth();                           // get current window width (shortcut for GetWindowSize().x)
 		static float         GetWindowHeight();                          // get current window height (shortcut for GetWindowSize().y)
 		static KarmaGuiViewport*GetWindowViewport();                        // get viewport currently associated to the current window.
 
 		// Window manipulation
 		// - Prefer using SetNextXXX functions (before Begin) rather that SetXXX functions (after Begin).
-		static void          SetNextWindowPos(const ImVec2& pos, KarmaGuiCond cond = 0, const ImVec2& pivot = ImVec2(0, 0)); // set next window position. call before Begin(). use pivot=(0.5f,0.5f) to center on given point, etc.
-		static void          SetNextWindowSize(const ImVec2& size, KarmaGuiCond cond = 0);                  // set next window size. set axis to 0.0f to force an auto-fit on this axis. call before Begin()
-		static void          SetNextWindowSizeConstraints(const ImVec2& size_min, const ImVec2& size_max, KarmaGuiSizeCallback custom_callback = NULL, void* custom_callback_data = NULL); // set next window size limits. use -1,-1 on either X/Y axis to preserve the current size. Sizes will be rounded down. Use callback to apply non-trivial programmatic constraints.
-		static void          SetNextWindowContentSize(const ImVec2& size);                               // set next window content size (~ scrollable client area, which enforce the range of scrollbars). Not including window decorations (title bar, menu bar, etc.) nor WindowPadding. set an axis to 0.0f to leave it automatic. call before Begin()
+		static void          SetNextWindowPos(const KGVec2& pos, KarmaGuiCond cond = 0, const KGVec2& pivot = KGVec2(0, 0)); // set next window position. call before Begin(). use pivot=(0.5f,0.5f) to center on given point, etc.
+		static void          SetNextWindowSize(const KGVec2& size, KarmaGuiCond cond = 0);                  // set next window size. set axis to 0.0f to force an auto-fit on this axis. call before Begin()
+		static void          SetNextWindowSizeConstraints(const KGVec2& size_min, const KGVec2& size_max, KarmaGuiSizeCallback custom_callback = NULL, void* custom_callback_data = NULL); // set next window size limits. use -1,-1 on either X/Y axis to preserve the current size. Sizes will be rounded down. Use callback to apply non-trivial programmatic constraints.
+		static void          SetNextWindowContentSize(const KGVec2& size);                               // set next window content size (~ scrollable client area, which enforce the range of scrollbars). Not including window decorations (title bar, menu bar, etc.) nor WindowPadding. set an axis to 0.0f to leave it automatic. call before Begin()
 		static void          SetNextWindowCollapsed(bool collapsed, KarmaGuiCond cond = 0);                 // set next window collapsed state. call before Begin()
 		static void          SetNextWindowFocus();                                                       // set next window to be focused / top-most. call before Begin()
-		static void          SetNextWindowScroll(const ImVec2& scroll);                                  // set next window scrolling value (use < 0.0f to not affect a given axis).
+		static void          SetNextWindowScroll(const KGVec2& scroll);                                  // set next window scrolling value (use < 0.0f to not affect a given axis).
 		static void          SetNextWindowBgAlpha(float alpha);                                          // set next window background color alpha. helper to easily override the Alpha component of KGGuiCol_WindowBg/ChildBg/PopupBg. you may also use KGGuiWindowFlags_NoBackground.
 		static void          SetNextWindowViewport(KGGuiID viewport_id);                                 // set next window viewport
-		static void          SetWindowPos(const ImVec2& pos, KarmaGuiCond cond = 0);                        // (not recommended) set current window position - call within Begin()/End(). prefer using SetNextWindowPos(), as this may incur tearing and side-effects.
-		static void          SetWindowSize(const ImVec2& size, KarmaGuiCond cond = 0);                      // (not recommended) set current window size - call within Begin()/End(). set to ImVec2(0, 0) to force an auto-fit. prefer using SetNextWindowSize(), as this may incur tearing and minor side-effects.
+		static void          SetWindowPos(const KGVec2& pos, KarmaGuiCond cond = 0);                        // (not recommended) set current window position - call within Begin()/End(). prefer using SetNextWindowPos(), as this may incur tearing and side-effects.
+		static void          SetWindowSize(const KGVec2& size, KarmaGuiCond cond = 0);                      // (not recommended) set current window size - call within Begin()/End(). set to KGVec2(0, 0) to force an auto-fit. prefer using SetNextWindowSize(), as this may incur tearing and minor side-effects.
 		static void          SetWindowCollapsed(bool collapsed, KarmaGuiCond cond = 0);                     // (not recommended) set current window collapsed state. prefer using SetNextWindowCollapsed().
 		static void          SetWindowFocus();                                                           // (not recommended) set current window to be focused / top-most. prefer using SetNextWindowFocus().
 		static void          SetWindowFontScale(float scale);                                            // [OBSOLETE] set font scale. Adjust IO.FontGlobalScale if you want to scale all windows. This is an old API! For correct scaling, prefer to reload font + rebuild KGFontAtlas + call style.ScaleAllSizes().
-		static void          SetWindowPos(const char* name, const ImVec2& pos, KarmaGuiCond cond = 0);      // set named window position.
-		static void          SetWindowSize(const char* name, const ImVec2& size, KarmaGuiCond cond = 0);    // set named window size. set axis to 0.0f to force an auto-fit on this axis.
+		static void          SetWindowPos(const char* name, const KGVec2& pos, KarmaGuiCond cond = 0);      // set named window position.
+		static void          SetWindowSize(const char* name, const KGVec2& size, KarmaGuiCond cond = 0);    // set named window size. set axis to 0.0f to force an auto-fit on this axis.
 		static void          SetWindowCollapsed(const char* name, bool collapsed, KarmaGuiCond cond = 0);   // set named window collapsed state
 		static void          SetWindowFocus(const char* name);                                           // set named window to be focused / top-most. use NULL to remove focus.
 
 		// Content region
 		// - Retrieve available space from a given point. GetContentRegionAvail() is frequently useful.
 		// - Those functions are bound to be redesigned (they are confusing, incomplete and the Min/Max return values are in local window coordinates which increases confusion)
-		static ImVec2        GetContentRegionAvail();                                        // == GetContentRegionMax() - GetCursorPos()
-		static ImVec2        GetContentRegionMax();                                          // current content boundaries (typically window boundaries including scrolling, or current column boundaries), in windows coordinates
-		static ImVec2        GetWindowContentRegionMin();                                    // content boundaries min for the full window (roughly (0,0)-Scroll), in window coordinates
-		static ImVec2        GetWindowContentRegionMax();                                    // content boundaries max for the full window (roughly (0,0)+Size-Scroll) where Size can be overridden with SetNextWindowContentSize(), in window coordinates
+		static KGVec2        GetContentRegionAvail();                                        // == GetContentRegionMax() - GetCursorPos()
+		static KGVec2        GetContentRegionMax();                                          // current content boundaries (typically window boundaries including scrolling, or current column boundaries), in windows coordinates
+		static KGVec2        GetWindowContentRegionMin();                                    // content boundaries min for the full window (roughly (0,0)-Scroll), in window coordinates
+		static KGVec2        GetWindowContentRegionMax();                                    // content boundaries max for the full window (roughly (0,0)+Size-Scroll) where Size can be overridden with SetNextWindowContentSize(), in window coordinates
 
 		// Windows Scrolling
 		// - Any change of Scroll will be applied at the beginning of next frame in the first call to Begin().
@@ -277,10 +277,10 @@ namespace Karma
 		static void          PushFont(KGFont* font);                                         // use NULL as a shortcut to push default font
 		static void          PopFont();
 		static void          PushStyleColor(KarmaGuiCol idx, KGU32 col);                        // modify a style color. always use this if you modify the style after NewFrame().
-		static void          PushStyleColor(KarmaGuiCol idx, const ImVec4& col);
+		static void          PushStyleColor(KarmaGuiCol idx, const KGVec4& col);
 		static void          PopStyleColor(int count = 1);
 		static void          PushStyleVar(KarmaGuiStyleVar idx, float val);                     // modify a style float variable. always use this if you modify the style after NewFrame().
-		static void          PushStyleVar(KarmaGuiStyleVar idx, const ImVec2& val);             // modify a style ImVec2 variable. always use this if you modify the style after NewFrame().
+		static void          PushStyleVar(KarmaGuiStyleVar idx, const KGVec2& val);             // modify a style KGVec2 variable. always use this if you modify the style after NewFrame().
 		static void          PopStyleVar(int count = 1);
 		static void          PushAllowKeyboardFocus(bool allow_keyboard_focus);              // == tab stop enable. Allow focusing using TAB/Shift-TAB, enabled by default but you can disable it for certain widgets
 		static void          PopAllowKeyboardFocus();
@@ -299,11 +299,11 @@ namespace Karma
 		// - Use the style editor (ShowStyleEditor() function) to interactively see what the colors are)
 		static KGFont*       GetFont();                                                      // get current font
 		static float         GetFontSize();                                                  // get current font size (= height in pixels) of current font with current scale applied
-		static ImVec2        GetFontTexUvWhitePixel();                                       // get UV coordinate for a while pixel, useful to draw custom shapes via the KGDrawList API
+		static KGVec2        GetFontTexUvWhitePixel();                                       // get UV coordinate for a while pixel, useful to draw custom shapes via the KGDrawList API
 		static KGU32         GetColorU32(KarmaGuiCol idx, float alpha_mul = 1.0f);              // retrieve given style color with style alpha applied and optional extra alpha multiplier, packed as a 32-bit value suitable for KGDrawList
-		static KGU32         GetColorU32(const ImVec4& col);                                 // retrieve given color with style alpha applied, packed as a 32-bit value suitable for KGDrawList
+		static KGU32         GetColorU32(const KGVec4& col);                                 // retrieve given color with style alpha applied, packed as a 32-bit value suitable for KGDrawList
 		static KGU32         GetColorU32(KGU32 col);                                         // retrieve given color with style alpha applied, packed as a 32-bit value suitable for KGDrawList
-		static const ImVec4& GetStyleColorVec4(KarmaGuiCol idx);                                // retrieve style color as stored in KarmaGuiStyle structure. use to feed back into PushStyleColor(), otherwise use GetColorU32() to get style color with style alpha baked in.
+		static const KGVec4& GetStyleColorVec4(KarmaGuiCol idx);                                // retrieve style color as stored in KarmaGuiStyle structure. use to feed back into PushStyleColor(), otherwise use GetColorU32() to get style color with style alpha baked in.
 
 		// Cursor / Layout
 		// - By "cursor" we mean the current output position.
@@ -316,20 +316,20 @@ namespace Karma
 		static void          SameLine(float offset_from_start_x=0.0f, float spacing=-1.0f);  // call between widgets or groups to layout them horizontally. X position given in window coordinates.
 		static void          NewLine();                                                      // undo a SameLine() or force a new line when in a horizontal-layout context.
 		static void          Spacing();                                                      // add vertical spacing.
-		static void          Dummy(const ImVec2& size);                                      // add a dummy item of given size. unlike InvisibleButton(), Dummy() won't take the mouse click or be navigable into.
+		static void          Dummy(const KGVec2& size);                                      // add a dummy item of given size. unlike InvisibleButton(), Dummy() won't take the mouse click or be navigable into.
 		static void          Indent(float indent_w = 0.0f);                                  // move content position toward the right, by indent_w, or style.IndentSpacing if indent_w <= 0
 		static void          Unindent(float indent_w = 0.0f);                                // move content position back to the left, by indent_w, or style.IndentSpacing if indent_w <= 0
 		static void          BeginGroup();                                                   // lock horizontal starting position
 		static void          EndGroup();                                                     // unlock horizontal starting position + capture the whole group bounding box into one "item" (so you can use IsItemHovered() or layout primitives such as SameLine() on whole group, etc.)
-		static ImVec2        GetCursorPos();                                                 // cursor position in window coordinates (relative to window position)
+		static KGVec2        GetCursorPos();                                                 // cursor position in window coordinates (relative to window position)
 		static float         GetCursorPosX();                                                //   (some functions are using window-relative coordinates, such as: GetCursorPos, GetCursorStartPos, GetContentRegionMax, GetWindowContentRegion* etc.
 		static float         GetCursorPosY();                                                //    other functions such as GetCursorScreenPos or everything in KGDrawList::
-		static void          SetCursorPos(const ImVec2& local_pos);                          //    are using the main, absolute coordinate system.
+		static void          SetCursorPos(const KGVec2& local_pos);                          //    are using the main, absolute coordinate system.
 		static void          SetCursorPosX(float local_x);                                   //    GetWindowPos() + GetCursorPos() == GetCursorScreenPos() etc.)
 		static void          SetCursorPosY(float local_y);                                   //
-		static ImVec2        GetCursorStartPos();                                            // initial cursor position in window coordinates
-		static ImVec2        GetCursorScreenPos();                                           // cursor position in absolute coordinates (useful to work with KGDrawList API). generally top-left == GetMainViewport()->Pos == (0,0) in single viewport mode, and bottom-right == GetMainViewport()->Pos+Size == io.DisplaySize in single-viewport mode.
-		static void          SetCursorScreenPos(const ImVec2& pos);                          // cursor position in absolute coordinates
+		static KGVec2        GetCursorStartPos();                                            // initial cursor position in window coordinates
+		static KGVec2        GetCursorScreenPos();                                           // cursor position in absolute coordinates (useful to work with KGDrawList API). generally top-left == GetMainViewport()->Pos == (0,0) in single viewport mode, and bottom-right == GetMainViewport()->Pos+Size == io.DisplaySize in single-viewport mode.
+		static void          SetCursorScreenPos(const KGVec2& pos);                          // cursor position in absolute coordinates
 		static void          AlignTextToFramePadding();                                      // vertically align upcoming text baseline to FramePadding.y so that it will align properly to regularly framed items (call if you have text on a line before a framed item)
 		static float         GetTextLineHeight();                                            // ~ FontSize
 		static float         GetTextLineHeightWithSpacing();                                 // ~ FontSize + style.ItemSpacing.y (distance in pixels between 2 consecutive lines of text)
@@ -360,8 +360,8 @@ namespace Karma
 		static void          TextUnformatted(const char* text, const char* text_end = NULL); // raw text without formatting. Roughly equivalent to Text("%s", text) but: A) doesn't require null terminated string if 'text_end' is specified, B) it's faster, no memory copy is done, no buffer size limits, recommended for long chunks of text.
 		static void          Text(const char* fmt, ...)                                      KG_FMTARGS(1); // formatted text
 		static void          TextV(const char* fmt, va_list args)                            KG_FMTLIST(1);
-		static void          TextColored(const ImVec4& col, const char* fmt, ...)            KG_FMTARGS(2); // shortcut for PushStyleColor(KGGuiCol_Text, col); Text(fmt, ...); PopStyleColor();
-		static void          TextColoredV(const ImVec4& col, const char* fmt, va_list args)  KG_FMTLIST(2);
+		static void          TextColored(const KGVec4& col, const char* fmt, ...)            KG_FMTARGS(2); // shortcut for PushStyleColor(KGGuiCol_Text, col); Text(fmt, ...); PopStyleColor();
+		static void          TextColoredV(const KGVec4& col, const char* fmt, va_list args)  KG_FMTLIST(2);
 		static void          TextDisabled(const char* fmt, ...)                              KG_FMTARGS(1); // shortcut for PushStyleColor(KGGuiCol_Text, style.Colors[KGGuiCol_TextDisabled]); Text(fmt, ...); PopStyleColor();
 		static void          TextDisabledV(const char* fmt, va_list args)                    KG_FMTLIST(1);
 		static void          TextWrapped(const char* fmt, ...)                               KG_FMTARGS(1); // shortcut for PushTextWrapPos(0.0f); Text(fmt, ...); PopTextWrapPos();. Note that this won't work on an auto-resizing window if there's no other widgets to extend the window width, yoy may need to set a size using SetNextWindowSize().
@@ -374,22 +374,22 @@ namespace Karma
 		// Widgets: Main
 		// - Most widgets return true when the value has been changed or when pressed/selected
 		// - You may also use one of the many IsItemXXX functions (e.g. IsItemActive, IsItemHovered, etc.) to query widget state.
-		static bool          Button(const char* label, const ImVec2& size = ImVec2(0, 0));   // button
+		static bool          Button(const char* label, const KGVec2& size = KGVec2(0, 0));   // button
 		static bool          SmallButton(const char* label);                                 // button with FramePadding=(0,0) to easily embed within text
-		static bool          InvisibleButton(const char* str_id, const ImVec2& size, KarmaGuiButtonFlags flags = 0); // flexible button behavior without the visuals, frequently useful to build custom behaviors using the public api (along with IsItemActive, IsItemHovered, etc.)
+		static bool          InvisibleButton(const char* str_id, const KGVec2& size, KarmaGuiButtonFlags flags = 0); // flexible button behavior without the visuals, frequently useful to build custom behaviors using the public api (along with IsItemActive, IsItemHovered, etc.)
 		static bool          ArrowButton(const char* str_id, KarmaGuiDir dir);                  // square button with an arrow shape
 		static bool          Checkbox(const char* label, bool* v);
 		static bool          CheckboxFlags(const char* label, int* flags, int flags_value);
 		static bool          CheckboxFlags(const char* label, unsigned int* flags, unsigned int flags_value);
 		static bool          RadioButton(const char* label, bool active);                    // use with e.g. if (RadioButton("one", my_value==1)) { my_value = 1; }
 		static bool          RadioButton(const char* label, int* v, int v_button);           // shortcut to handle the above pattern when value is an integer
-		static void          ProgressBar(float fraction, const ImVec2& size_arg = ImVec2(-FLT_MIN, 0), const char* overlay = NULL);
+		static void          ProgressBar(float fraction, const KGVec2& size_arg = KGVec2(-FLT_MIN, 0), const char* overlay = NULL);
 		static void          Bullet();                                                       // draw a small circle + keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses
 
 		// Widgets: Images
 		// - Read about KGTextureID here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
-		static void          Image(KGTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1, 1), const ImVec4& tint_col = ImVec4(1, 1, 1, 1), const ImVec4& border_col = ImVec4(0, 0, 0, 0));
-		static bool          ImageButton(const char* str_id, KGTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1, 1), const ImVec4& bg_col = ImVec4(0, 0, 0, 0), const ImVec4& tint_col = ImVec4(1, 1, 1, 1));
+		static void          Image(KGTextureID user_texture_id, const KGVec2& size, const KGVec2& uv0 = KGVec2(0, 0), const KGVec2& uv1 = KGVec2(1, 1), const KGVec4& tint_col = KGVec4(1, 1, 1, 1), const KGVec4& border_col = KGVec4(0, 0, 0, 0));
+		static bool          ImageButton(const char* str_id, KGTextureID user_texture_id, const KGVec2& size, const KGVec2& uv0 = KGVec2(0, 0), const KGVec2& uv1 = KGVec2(1, 1), const KGVec4& bg_col = KGVec4(0, 0, 0, 0), const KGVec4& tint_col = KGVec4(1, 1, 1, 1));
 
 		// Widgets: Combo Box (Dropdown)
 		// - The BeginCombo()/EndCombo() api allows you to manage your contents and selection state however you want it, by creating e.g. Selectable() items.
@@ -442,15 +442,15 @@ namespace Karma
 		static bool          SliderInt4(const char* label, int v[4], int v_min, int v_max, const char* format = "%d", KarmaGuiSliderFlags flags = 0);
 		static bool          SliderScalar(const char* label, KarmaGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format = NULL, KarmaGuiSliderFlags flags = 0);
 		static bool          SliderScalarN(const char* label, KarmaGuiDataType data_type, void* p_data, int components, const void* p_min, const void* p_max, const char* format = NULL, KarmaGuiSliderFlags flags = 0);
-		static bool          VSliderFloat(const char* label, const ImVec2& size, float* v, float v_min, float v_max, const char* format = "%.3f", KarmaGuiSliderFlags flags = 0);
-		static bool          VSliderInt(const char* label, const ImVec2& size, int* v, int v_min, int v_max, const char* format = "%d", KarmaGuiSliderFlags flags = 0);
-		static bool          VSliderScalar(const char* label, const ImVec2& size, KarmaGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format = NULL, KarmaGuiSliderFlags flags = 0);
+		static bool          VSliderFloat(const char* label, const KGVec2& size, float* v, float v_min, float v_max, const char* format = "%.3f", KarmaGuiSliderFlags flags = 0);
+		static bool          VSliderInt(const char* label, const KGVec2& size, int* v, int v_min, int v_max, const char* format = "%d", KarmaGuiSliderFlags flags = 0);
+		static bool          VSliderScalar(const char* label, const KGVec2& size, KarmaGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format = NULL, KarmaGuiSliderFlags flags = 0);
 
 		// Widgets: Input with Keyboard
 		// - If you want to use InputText() with std::string or any custom dynamic string type, see misc/cpp/imgui_stdlib.h and comments in imgui_demo.cpp.
 		// - Most of the KarmaGuiInputTextFlags flags are only useful for InputText() and not for InputFloatX, InputIntX, InputDouble etc.
 		static bool          InputText(const char* label, char* buf, size_t buf_size, KarmaGuiInputTextFlags flags = 0, KarmaGuiInputTextCallback callback = NULL, void* user_data = NULL);
-		static bool          InputTextMultiline(const char* label, char* buf, size_t buf_size, const ImVec2& size = ImVec2(0, 0), KarmaGuiInputTextFlags flags = 0, KarmaGuiInputTextCallback callback = NULL, void* user_data = NULL);
+		static bool          InputTextMultiline(const char* label, char* buf, size_t buf_size, const KGVec2& size = KGVec2(0, 0), KarmaGuiInputTextFlags flags = 0, KarmaGuiInputTextCallback callback = NULL, void* user_data = NULL);
 		static bool          InputTextWithHint(const char* label, const char* hint, char* buf, size_t buf_size, KarmaGuiInputTextFlags flags = 0, KarmaGuiInputTextCallback callback = NULL, void* user_data = NULL);
 		static bool          InputFloat(const char* label, float* v, float step = 0.0f, float step_fast = 0.0f, const char* format = "%.3f", KarmaGuiInputTextFlags flags = 0);
 		static bool          InputFloat2(const char* label, float v[2], const char* format = "%.3f", KarmaGuiInputTextFlags flags = 0);
@@ -471,7 +471,7 @@ namespace Karma
 		static bool          ColorEdit4(const char* label, float col[4], KarmaGuiColorEditFlags flags = 0);
 		static bool          ColorPicker3(const char* label, float col[3], KarmaGuiColorEditFlags flags = 0);
 		static bool          ColorPicker4(const char* label, float col[4], KarmaGuiColorEditFlags flags = 0, const float* ref_col = NULL);
-		static bool          ColorButton(const char* desc_id, const ImVec4& col, KarmaGuiColorEditFlags flags = 0, const ImVec2& size = ImVec2(0, 0)); // display a color square/button, hover for details, return true when pressed.
+		static bool          ColorButton(const char* desc_id, const KGVec4& col, KarmaGuiColorEditFlags flags = 0, const KGVec2& size = KGVec2(0, 0)); // display a color square/button, hover for details, return true when pressed.
 		static void          SetColorEditOptions(KarmaGuiColorEditFlags flags);                     // initialize current options (generally on application startup) if you want to select a default format, picker type, etc. User will be able to change many settings, unless you pass the _NoOptions flag to your calls.
 
 		// Widgets: Trees
@@ -497,8 +497,8 @@ namespace Karma
 		// Widgets: Selectables
 		// - A selectable highlights when hovered, and can display another color when selected.
 		// - Neighbors selectable extend their highlight bounds in order to leave no gap between them. This is so a series of selected Selectable appear contiguous.
-		static bool          Selectable(const char* label, bool selected = false, KarmaGuiSelectableFlags flags = 0, const ImVec2& size = ImVec2(0, 0)); // "bool selected" carry the selection state (read-only). Selectable() is clicked is returns true so you can modify your selection state. size.x==0.0: use remaining width, size.x>0.0: specify width. size.y==0.0: use label height, size.y>0.0: specify height
-		static bool          Selectable(const char* label, bool* p_selected, KarmaGuiSelectableFlags flags = 0, const ImVec2& size = ImVec2(0, 0));      // "bool* p_selected" point to the selection state (read-write), as a convenient helper.
+		static bool          Selectable(const char* label, bool selected = false, KarmaGuiSelectableFlags flags = 0, const KGVec2& size = KGVec2(0, 0)); // "bool selected" carry the selection state (read-only). Selectable() is clicked is returns true so you can modify your selection state. size.x==0.0: use remaining width, size.x>0.0: specify width. size.y==0.0: use label height, size.y>0.0: specify height
+		static bool          Selectable(const char* label, bool* p_selected, KarmaGuiSelectableFlags flags = 0, const KGVec2& size = KGVec2(0, 0));      // "bool* p_selected" point to the selection state (read-write), as a convenient helper.
 
 		// Widgets: List Boxes
 		// - This is essentially a thin wrapper to using BeginChild/EndChild with some stylistic changes.
@@ -506,17 +506,17 @@ namespace Karma
 		// - The simplified/old ListBox() api are helpers over BeginListBox()/EndListBox() which are kept available for convenience purpose. This is analoguous to how Combos are created.
 		// - Choose frame width:   size.x > 0.0f: custom  /  size.x < 0.0f or -FLT_MIN: right-align   /  size.x = 0.0f (default): use current ItemWidth
 		// - Choose frame height:  size.y > 0.0f: custom  /  size.y < 0.0f or -FLT_MIN: bottom-align  /  size.y = 0.0f (default): arbitrary default height which can fit ~7 items
-		static bool          BeginListBox(const char* label, const ImVec2& size = ImVec2(0, 0)); // open a framed scrolling region
+		static bool          BeginListBox(const char* label, const KGVec2& size = KGVec2(0, 0)); // open a framed scrolling region
 		static void          EndListBox();                                                       // only call EndListBox() if BeginListBox() returned true!
 		static bool          ListBox(const char* label, int* current_item, const char* const items[], int items_count, int height_in_items = -1);
 		static bool          ListBox(const char* label, int* current_item, bool (*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, int height_in_items = -1);
 
 		// Widgets: Data Plotting
 		// - Consider using ImPlot (https://github.com/epezent/implot) which is much better!
-		static void          PlotLines(const char* label, const float* values, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, ImVec2 graph_size = ImVec2(0, 0), int stride = sizeof(float));
-		static void          PlotLines(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, ImVec2 graph_size = ImVec2(0, 0));
-		static void          PlotHistogram(const char* label, const float* values, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, ImVec2 graph_size = ImVec2(0, 0), int stride = sizeof(float));
-		static void          PlotHistogram(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, ImVec2 graph_size = ImVec2(0, 0));
+		static void          PlotLines(const char* label, const float* values, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, KGVec2 graph_size = KGVec2(0, 0), int stride = sizeof(float));
+		static void          PlotLines(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, KGVec2 graph_size = KGVec2(0, 0));
+		static void          PlotHistogram(const char* label, const float* values, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, KGVec2 graph_size = KGVec2(0, 0), int stride = sizeof(float));
+		static void          PlotHistogram(const char* label, float(*values_getter)(void* data, int idx), void* data, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, KGVec2 graph_size = KGVec2(0, 0));
 
 		// Widgets: Value() Helpers.
 		// - Those are merely shortcut to calling Text() with a format string. Output single value in "name: value" format (tip: freely declare more in your code to handle your types. you can add functions to the ImGui namespace)
@@ -613,7 +613,7 @@ namespace Karma
 		//        TableNextRow()                           -> Text("Hello 0")                                               // Not OK! Missing TableSetColumnIndex() or TableNextColumn()! Text will not appear!
 		//        --------------------------------------------------------------------------------------------------------
 		// - 5. Call EndTable()
-		static bool          BeginTable(const char* str_id, int column, KarmaGuiTableFlags flags = 0, const ImVec2& outer_size = ImVec2(0.0f, 0.0f), float inner_width = 0.0f);
+		static bool          BeginTable(const char* str_id, int column, KarmaGuiTableFlags flags = 0, const KGVec2& outer_size = KGVec2(0.0f, 0.0f), float inner_width = 0.0f);
 		static void          EndTable();                                         // only call EndTable() if BeginTable() returns true!
 		static void          TableNextRow(KarmaGuiTableRowFlags row_flags = 0, float min_row_height = 0.0f); // append into the first cell of a new row.
 		static bool          TableNextColumn();                                  // append into the next column (or first column of next row if currently in last column). Return true when column is visible.
@@ -680,7 +680,7 @@ namespace Karma
 		// - Important: Dockspaces need to be submitted _before_ any window they can host. Submit it early in your frame!
 		// - Important: Dockspaces need to be kept alive if hidden, otherwise windows docked into it will be undocked.
 		//   e.g. if you have multiple tabs with a dockspace inside each tab: submit the non-visible dockspaces with KGGuiDockNodeFlags_KeepAliveOnly.
-		static KGGuiID       DockSpace(KGGuiID id, const ImVec2& size = ImVec2(0, 0), KarmaGuiDockNodeFlags flags = 0, const KarmaGuiWindowClass* window_class = NULL);
+		static KGGuiID       DockSpace(KGGuiID id, const KGVec2& size = KGVec2(0, 0), KarmaGuiDockNodeFlags flags = 0, const KarmaGuiWindowClass* window_class = NULL);
 		static KGGuiID       DockSpaceOverViewport(const KarmaGuiViewport* viewport = NULL, KarmaGuiDockNodeFlags flags = 0, const KarmaGuiWindowClass* window_class = NULL);
 		static void          SetNextWindowDockID(KGGuiID dock_id, KarmaGuiCond cond = 0);           // set next window dock id
 		static void          SetNextWindowClass(const KarmaGuiWindowClass* window_class);           // set next window class (control docking compatibility + provide hints to platform backend via custom viewport flags and platform parent/child relationship)
@@ -719,7 +719,7 @@ namespace Karma
 
 		// Clipping
 		// - Mouse hovering is affected by ImGui::PushClipRect() calls, unlike direct calls to KGDrawList::PushClipRect() which are render only.
-		static void          PushClipRect(const ImVec2& clip_rect_min, const ImVec2& clip_rect_max, bool intersect_with_current_clip_rect);
+		static void          PushClipRect(const KGVec2& clip_rect_min, const KGVec2& clip_rect_max, bool intersect_with_current_clip_rect);
 		static void          PopClipRect();
 
 		// Focus, Activation
@@ -744,9 +744,9 @@ namespace Karma
 		static bool          IsAnyItemActive();                                                  // is any item active?
 		static bool          IsAnyItemFocused();                                                 // is any item focused?
 		static KGGuiID       GetItemID();                                                        // get ID of last item (~~ often same ImGui::GetID(label) beforehand)
-		static ImVec2        GetItemRectMin();                                                   // get upper-left bounding rectangle of the last item (screen space)
-		static ImVec2        GetItemRectMax();                                                   // get lower-right bounding rectangle of the last item (screen space)
-		static ImVec2        GetItemRectSize();                                                  // get size of last item
+		static KGVec2        GetItemRectMin();                                                   // get upper-left bounding rectangle of the last item (screen space)
+		static KGVec2        GetItemRectMax();                                                   // get lower-right bounding rectangle of the last item (screen space)
+		static KGVec2        GetItemRectSize();                                                  // get size of last item
 		static void          SetItemAllowOverlap();                                              // allow last item to be overlapped by a subsequent item. sometimes useful with invisible buttons, selectables, etc. to catch unused area.
 
 		// Viewports
@@ -762,23 +762,23 @@ namespace Karma
 		static KGDrawList*   GetForegroundDrawList(KarmaGuiViewport* viewport);                     // get foreground draw list for the given viewport. this draw list will be the last rendered one. Useful to quickly draw shapes/text over dear imgui contents.
 
 		// Miscellaneous Utilities
-		static bool          IsRectVisible(const ImVec2& size);                                  // test if rectangle (of given size, starting from cursor position) is visible / not clipped.
-		static bool          IsRectVisible(const ImVec2& rect_min, const ImVec2& rect_max);      // test if rectangle (in screen space) is visible / not clipped. to perform coarse clipping on user's side.
+		static bool          IsRectVisible(const KGVec2& size);                                  // test if rectangle (of given size, starting from cursor position) is visible / not clipped.
+		static bool          IsRectVisible(const KGVec2& rect_min, const KGVec2& rect_max);      // test if rectangle (in screen space) is visible / not clipped. to perform coarse clipping on user's side.
 		static double        GetTime();                                                          // get global imgui time. incremented by io.DeltaTime every frame.
 		static int           GetFrameCount();                                                    // get global imgui frame count. incremented by 1 every frame.
 		static KGDrawListSharedData* GetDrawListSharedData();                                    // you may use this when creating your own KGDrawList instances.
 		static const char*   GetStyleColorName(KarmaGuiCol idx);                                    // get a string corresponding to the enum value (for display, saving, etc.).
 		static void          SetStateStorage(KarmaGuiStorage* storage);                             // replace current window storage with our own (if you want to manipulate it yourself, typically clear subsection of it)
 		static KarmaGuiStorage* GetStateStorage();
-		static bool          BeginChildFrame(KGGuiID id, const ImVec2& size, KarmaGuiWindowFlags flags = 0); // helper to create a child window / scrolling region that looks like a normal widget frame
+		static bool          BeginChildFrame(KGGuiID id, const KGVec2& size, KarmaGuiWindowFlags flags = 0); // helper to create a child window / scrolling region that looks like a normal widget frame
 		static void          EndChildFrame();                                                    // always call EndChildFrame() regardless of BeginChildFrame() return values (which indicates a collapsed/clipped window)
 
 		// Text Utilities
-		static ImVec2        CalcTextSize(const char* text, const char* text_end = NULL, bool hide_text_after_double_hash = false, float wrap_width = -1.0f);
+		static KGVec2        CalcTextSize(const char* text, const char* text_end = NULL, bool hide_text_after_double_hash = false, float wrap_width = -1.0f);
 
 		// Color Utilities
-		static ImVec4        ColorConvertU32ToFloat4(KGU32 in);
-		static KGU32         ColorConvertFloat4ToU32(const ImVec4& in);
+		static KGVec4        ColorConvertU32ToFloat4(KGU32 in);
+		static KGU32         ColorConvertFloat4ToU32(const KGVec4& in);
 		static void          ColorConvertRGBtoHSV(float r, float g, float b, float& out_h, float& out_s, float& out_v);
 		static void          ColorConvertHSVtoRGB(float h, float s, float v, float& out_r, float& out_g, float& out_b);
 
@@ -818,13 +818,13 @@ namespace Karma
 		static bool          IsMouseReleased(KarmaGuiMouseButton button);                           // did mouse button released? (went from Down to !Down)
 		static bool          IsMouseDoubleClicked(KarmaGuiMouseButton button);                      // did mouse button double-clicked? Same as GetMouseClickedCount() == 2. (note that a double-click will also report IsMouseClicked() == true)
 		static int           GetMouseClickedCount(KarmaGuiMouseButton button);                      // return the number of successive mouse-clicks at the time where a click happen (otherwise 0).
-		static bool          IsMouseHoveringRect(const ImVec2& r_min, const ImVec2& r_max, bool clip = true);// is mouse hovering given bounding rect (in screen space). clipped by current clipping settings, but disregarding of other consideration of focus/window ordering/popup-block.
-		static bool          IsMousePosValid(const ImVec2* mouse_pos = NULL);                    // by convention we use (-FLT_MAX,-FLT_MAX) to denote that there is no mouse available
+		static bool          IsMouseHoveringRect(const KGVec2& r_min, const KGVec2& r_max, bool clip = true);// is mouse hovering given bounding rect (in screen space). clipped by current clipping settings, but disregarding of other consideration of focus/window ordering/popup-block.
+		static bool          IsMousePosValid(const KGVec2* mouse_pos = NULL);                    // by convention we use (-FLT_MAX,-FLT_MAX) to denote that there is no mouse available
 		static bool          IsAnyMouseDown();                                                   // [WILL OBSOLETE] is any mouse button held? This was designed for backends, but prefer having backend maintain a mask of held mouse buttons, because upcoming input queue system will make this invalid.
-		static ImVec2        GetMousePos();                                                      // shortcut to ImGui::GetIO().MousePos provided by user, to be consistent with other calls
-		static ImVec2        GetMousePosOnOpeningCurrentPopup();                                 // retrieve mouse position at the time of opening popup we have BeginPopup() into (helper to avoid user backing that value themselves)
+		static KGVec2        GetMousePos();                                                      // shortcut to ImGui::GetIO().MousePos provided by user, to be consistent with other calls
+		static KGVec2        GetMousePosOnOpeningCurrentPopup();                                 // retrieve mouse position at the time of opening popup we have BeginPopup() into (helper to avoid user backing that value themselves)
 		static bool          IsMouseDragging(KarmaGuiMouseButton button, float lock_threshold = -1.0f);         // is mouse dragging? (if lock_threshold < -1.0f, uses io.MouseDraggingThreshold)
-		static ImVec2        GetMouseDragDelta(KarmaGuiMouseButton button = 0, float lock_threshold = -1.0f);   // return the delta from the initial clicking position while the mouse button is pressed or was just released. This is locked and return 0.0f until the mouse moves past a distance threshold at least once (if lock_threshold < -1.0f, uses io.MouseDraggingThreshold)
+		static KGVec2        GetMouseDragDelta(KarmaGuiMouseButton button = 0, float lock_threshold = -1.0f);   // return the delta from the initial clicking position while the mouse button is pressed or was just released. This is locked and return 0.0f until the mouse moves past a distance threshold at least once (if lock_threshold < -1.0f, uses io.MouseDraggingThreshold)
 		static void          ResetMouseDragDelta(KarmaGuiMouseButton button = 0);                   //
 		static KarmaGuiMouseCursor GetMouseCursor();                                                // get desired mouse cursor shape. Important: reset in ImGui::NewFrame(), this is updated during the frame. valid before Render(). If you use software rendering by setting io.MouseDrawCursor ImGui will render those for you
 		static void          SetMouseCursor(KarmaGuiMouseCursor cursor_type);                       // set desired mouse cursor shape
@@ -891,7 +891,7 @@ enum KGGuiWindowFlags_
     KGGuiWindowFlags_NoSavedSettings        = 1 << 8,   // Never load/save settings in .ini file
     KGGuiWindowFlags_NoMouseInputs          = 1 << 9,   // Disable catching mouse, hovering test with pass through.
     KGGuiWindowFlags_MenuBar                = 1 << 10,  // Has a menu-bar
-    KGGuiWindowFlags_HorizontalScrollbar    = 1 << 11,  // Allow horizontal scrollbar to appear (off by default). You may use SetNextWindowContentSize(ImVec2(width,0.0f)); prior to calling Begin() to specify width. Read code in imgui_demo in the "Horizontal Scrolling" section.
+    KGGuiWindowFlags_HorizontalScrollbar    = 1 << 11,  // Allow horizontal scrollbar to appear (off by default). You may use SetNextWindowContentSize(KGVec2(width,0.0f)); prior to calling Begin() to specify width. Read code in imgui_demo in the "Horizontal Scrolling" section.
     KGGuiWindowFlags_NoFocusOnAppearing     = 1 << 12,  // Disable taking focus when transitioning from hidden to visible state
     KGGuiWindowFlags_NoBringToFrontOnFocus  = 1 << 13,  // Disable bringing window to front when taking focus (e.g. clicking on it or programmatically giving it focus)
     KGGuiWindowFlags_AlwaysVerticalScrollbar= 1 << 14,  // Always show vertical scrollbar (even if ContentSize.y < Size.y)
@@ -1573,29 +1573,29 @@ enum KGGuiStyleVar_
     // Enum name --------------------- // Member in KarmaGuiStyle structure (see KarmaGuiStyle for descriptions)
     KGGuiStyleVar_Alpha,               // float     Alpha
     KGGuiStyleVar_DisabledAlpha,       // float     DisabledAlpha
-    KGGuiStyleVar_WindowPadding,       // ImVec2    WindowPadding
+    KGGuiStyleVar_WindowPadding,       // KGVec2    WindowPadding
     KGGuiStyleVar_WindowRounding,      // float     WindowRounding
     KGGuiStyleVar_WindowBorderSize,    // float     WindowBorderSize
-    KGGuiStyleVar_WindowMinSize,       // ImVec2    WindowMinSize
-    KGGuiStyleVar_WindowTitleAlign,    // ImVec2    WindowTitleAlign
+    KGGuiStyleVar_WindowMinSize,       // KGVec2    WindowMinSize
+    KGGuiStyleVar_WindowTitleAlign,    // KGVec2    WindowTitleAlign
     KGGuiStyleVar_ChildRounding,       // float     ChildRounding
     KGGuiStyleVar_ChildBorderSize,     // float     ChildBorderSize
     KGGuiStyleVar_PopupRounding,       // float     PopupRounding
     KGGuiStyleVar_PopupBorderSize,     // float     PopupBorderSize
-    KGGuiStyleVar_FramePadding,        // ImVec2    FramePadding
+    KGGuiStyleVar_FramePadding,        // KGVec2    FramePadding
     KGGuiStyleVar_FrameRounding,       // float     FrameRounding
     KGGuiStyleVar_FrameBorderSize,     // float     FrameBorderSize
-    KGGuiStyleVar_ItemSpacing,         // ImVec2    ItemSpacing
-    KGGuiStyleVar_ItemInnerSpacing,    // ImVec2    ItemInnerSpacing
+    KGGuiStyleVar_ItemSpacing,         // KGVec2    ItemSpacing
+    KGGuiStyleVar_ItemInnerSpacing,    // KGVec2    ItemInnerSpacing
     KGGuiStyleVar_IndentSpacing,       // float     IndentSpacing
-    KGGuiStyleVar_CellPadding,         // ImVec2    CellPadding
+    KGGuiStyleVar_CellPadding,         // KGVec2    CellPadding
     KGGuiStyleVar_ScrollbarSize,       // float     ScrollbarSize
     KGGuiStyleVar_ScrollbarRounding,   // float     ScrollbarRounding
     KGGuiStyleVar_GrabMinSize,         // float     GrabMinSize
     KGGuiStyleVar_GrabRounding,        // float     GrabRounding
     KGGuiStyleVar_TabRounding,         // float     TabRounding
-    KGGuiStyleVar_ButtonTextAlign,     // ImVec2    ButtonTextAlign
-    KGGuiStyleVar_SelectableTextAlign, // ImVec2    SelectableTextAlign
+    KGGuiStyleVar_ButtonTextAlign,     // KGVec2    ButtonTextAlign
+    KGGuiStyleVar_SelectableTextAlign, // KGVec2    SelectableTextAlign
     KGGuiStyleVar_COUNT
 };
 
@@ -1814,27 +1814,27 @@ struct KGVector
 // and ImGui::PushStyleColor(KGGuiCol_XXX)/PopStyleColor() for colors.
 //-----------------------------------------------------------------------------
 
-struct KARMA_API KarmaGuiStyle
+struct KarmaGuiStyle
 {
     float       Alpha;                      // Global alpha applies to everything in Dear ImGui.
     float       DisabledAlpha;              // Additional alpha multiplier applied by BeginDisabled(). Multiply over current value of Alpha.
-    ImVec2      WindowPadding;              // Padding within a window.
+    KGVec2      WindowPadding;              // Padding within a window.
     float       WindowRounding;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
     float       WindowBorderSize;           // Thickness of border around windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    ImVec2      WindowMinSize;              // Minimum window size. This is a global setting. If you want to constrain individual windows, use SetNextWindowSizeConstraints().
-    ImVec2      WindowTitleAlign;           // Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
+    KGVec2      WindowMinSize;              // Minimum window size. This is a global setting. If you want to constrain individual windows, use SetNextWindowSizeConstraints().
+    KGVec2      WindowTitleAlign;           // Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
     KarmaGuiDir    WindowMenuButtonPosition;   // Side of the collapsing/docking button in the title bar (None/Left/Right). Defaults to KGGuiDir_Left.
     float       ChildRounding;              // Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
     float       ChildBorderSize;            // Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
     float       PopupRounding;              // Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding)
     float       PopupBorderSize;            // Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    ImVec2      FramePadding;               // Padding within a framed rectangle (used by most widgets).
+    KGVec2      FramePadding;               // Padding within a framed rectangle (used by most widgets).
     float       FrameRounding;              // Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
     float       FrameBorderSize;            // Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
-    ImVec2      ItemSpacing;                // Horizontal and vertical spacing between widgets/lines.
-    ImVec2      ItemInnerSpacing;           // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
-    ImVec2      CellPadding;                // Padding within a table cell
-    ImVec2      TouchExtraPadding;          // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
+    KGVec2      ItemSpacing;                // Horizontal and vertical spacing between widgets/lines.
+    KGVec2      ItemInnerSpacing;           // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label).
+    KGVec2      CellPadding;                // Padding within a table cell
+    KGVec2      TouchExtraPadding;          // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
     float       IndentSpacing;              // Horizontal indentation when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
     float       ColumnsMinSpacing;          // Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
     float       ScrollbarSize;              // Width of the vertical scrollbar, Height of the horizontal scrollbar.
@@ -1846,20 +1846,20 @@ struct KARMA_API KarmaGuiStyle
     float       TabBorderSize;              // Thickness of border around tabs.
     float       TabMinWidthForCloseButton;  // Minimum width for close button to appear on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
     KarmaGuiDir    ColorButtonPosition;        // Side of the color button in the ColorEdit4 widget (left/right). Defaults to KGGuiDir_Right.
-    ImVec2      ButtonTextAlign;            // Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
-    ImVec2      SelectableTextAlign;        // Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
-    ImVec2      DisplayWindowPadding;       // Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
-    ImVec2      DisplaySafeAreaPadding;     // If you cannot see the edges of your screen (e.g. on a TV) increase the safe area padding. Apply to popups/tooltips as well regular windows. NB: Prefer configuring your TV sets correctly!
+    KGVec2      ButtonTextAlign;            // Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
+    KGVec2      SelectableTextAlign;        // Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
+    KGVec2      DisplayWindowPadding;       // Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
+    KGVec2      DisplaySafeAreaPadding;     // If you cannot see the edges of your screen (e.g. on a TV) increase the safe area padding. Apply to popups/tooltips as well regular windows. NB: Prefer configuring your TV sets correctly!
     float       MouseCursorScale;           // Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). We apply per-monitor DPI scaling over this scale. May be removed later.
     bool        AntiAliasedLines;           // Enable anti-aliased lines/borders. Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to KGDrawList).
     bool        AntiAliasedLinesUseTex;     // Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering (NOT point/nearest filtering). Latched at the beginning of the frame (copied to KGDrawList).
     bool        AntiAliasedFill;            // Enable anti-aliased edges around filled shapes (rounded rectangles, circles, etc.). Disable if you are really tight on CPU/GPU. Latched at the beginning of the frame (copied to KGDrawList).
     float       CurveTessellationTol;       // Tessellation tolerance when using PathBezierCurveTo() without a specific number of segments. Decrease for highly tessellated curves (higher quality, more polygons), increase to reduce quality.
     float       CircleTessellationMaxError; // Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
-    ImVec4      Colors[KGGuiCol_COUNT];
+    KGVec4      Colors[KGGuiCol_COUNT];
 
     KarmaGuiStyle();
-    static void ScaleAllSizes(float scale_factor);
+    void ScaleAllSizes(float scale_factor);
 };
 
 //-----------------------------------------------------------------------------
@@ -1887,7 +1887,7 @@ struct KARMA_API KarmaGuiIO
 
     KarmaGuiConfigFlags   ConfigFlags;             // = 0              // See KGGuiConfigFlags_ enum. Set by user/application. Gamepad/keyboard navigation options, etc.
     KarmaGuiBackendFlags  BackendFlags;            // = 0              // See KGGuiBackendFlags_ enum. Set by backend (imgui_impl_xxx files or custom backend) to communicate features supported by the backend.
-    ImVec2      DisplaySize;                    // <unset>          // Main display size, in pixels (generally == GetMainViewport()->Size). May change every frame.
+    KGVec2      DisplaySize;                    // <unset>          // Main display size, in pixels (generally == GetMainViewport()->Size). May change every frame.
     float       DeltaTime;                      // = 1.0f/60.0f     // Time elapsed since last frame, in seconds. May change every frame.
     float       IniSavingRate;                  // = 5.0f           // Minimum time between saving positions/sizes to .ini file, in seconds.
     const char* IniFilename;                    // = "kggui.ini"    // Path to .ini file (important: default "kggui.ini" is relative to current working dir!). Set NULL to disable automatic .ini loading/saving or if you want to manually call LoadIniSettingsXXX() / SaveIniSettingsXXX() functions.
@@ -1905,7 +1905,7 @@ struct KARMA_API KarmaGuiIO
     float       FontGlobalScale;                // = 1.0f           // Global scale all fonts
     bool        FontAllowUserScaling;           // = false          // Allow user scaling text of individual window with CTRL+Wheel.
     KGFont*     FontDefault;                    // = NULL           // Font to use on NewFrame(). Use NULL to uses Fonts->Fonts[0].
-    ImVec2      DisplayFramebufferScale;        // = (1, 1)         // For retina display or other situations where window coordinates are different from framebuffer coordinates. This generally ends up in KGDrawData::FramebufferScale.
+    KGVec2      DisplayFramebufferScale;        // = (1, 1)         // For retina display or other situations where window coordinates are different from framebuffer coordinates. This generally ends up in KGDrawData::FramebufferScale.
 
     // Docking options (when KGGuiConfigFlags_DockingEnable is set)
     bool        ConfigDockingNoSplit;           // = false          // Simplified docking mode: disable window splitting, so docking is limited to merging multiple windows together into tab-bars.
@@ -1963,20 +1963,20 @@ struct KARMA_API KarmaGuiIO
 
     // Input Functions
     static void  AddKeyEvent(KarmaGuiKey key, bool down);                   // Queue a new key down/up event. Key should be "translated" (as in, generally KGGuiKey_A matches the key end-user would use to emit an 'A' character)
-    static void  AddKeyAnalogEvent(KarmaGuiKey key, bool down, float v);    // Queue a new key down/up event for analog values (e.g. KGGuiKey_Gamepad_ values). Dead-zones should be handled by the backend.
+    void  AddKeyAnalogEvent(KarmaGuiKey key, bool down, float v);    // Queue a new key down/up event for analog values (e.g. KGGuiKey_Gamepad_ values). Dead-zones should be handled by the backend.
     static void  AddMousePosEvent(float x, float y);                     // Queue a mouse position update. Use -FLT_MAX,-FLT_MAX to signify no mouse (e.g. app not focused and not hovered)
     static void  AddMouseButtonEvent(int button, bool down);             // Queue a mouse button change
     static void  AddMouseWheelEvent(float wh_x, float wh_y);             // Queue a mouse wheel update
     static void  AddMouseViewportEvent(KGGuiID id);                      // Queue a mouse hovered viewport. Requires backend to set KGGuiBackendFlags_HasMouseHoveredViewport to call this (for multi-viewport support).
     static void  AddFocusEvent(bool focused);                            // Queue a gain/loss of focus for the application (generally based on OS/platform focus of your window)
-    static void  AddInputCharacter(unsigned int c);                      // Queue a new character input
-    static void  AddInputCharacterUTF16(KGWchar16 c);                    // Queue a new character input from a UTF-16 character, it can be a surrogate
-    static void  AddInputCharactersUTF8(const char* str);                // Queue a new characters input from a UTF-8 string
+    void  AddInputCharacter(unsigned int c);                      // Queue a new character input
+    void  AddInputCharacterUTF16(KGWchar16 c);                    // Queue a new character input from a UTF-16 character, it can be a surrogate
+    void  AddInputCharactersUTF8(const char* str);                // Queue a new characters input from a UTF-8 string
 
     static void  SetKeyEventNativeData(KarmaGuiKey key, int native_keycode, int native_scancode, int native_legacy_index = -1); // [Optional] Specify index for legacy <1.87 IsKeyXXX() functions with native indices + specify native keycode, scancode.
     static void  SetAppAcceptingEvents(bool accepting_events);           // Set master flag for accepting key/mouse/text events (default to true). Useful if you have native dialog boxes that are interrupting your application loop/refresh, and you want to disable events being queued while your app is frozen.
-    static void  ClearInputCharacters();                                 // [Internal] Clear the text input buffer manually
-    static void  ClearInputKeys();                                       // [Internal] Release all keys
+    void  ClearInputCharacters();                                 // [Internal] Clear the text input buffer manually
+    void  ClearInputKeys();                                       // [Internal] Release all keys
 
     //------------------------------------------------------------------
     // Output - Updated by NewFrame() or EndFrame()/Render()
@@ -1997,7 +1997,7 @@ struct KARMA_API KarmaGuiIO
     int         MetricsRenderWindows;               // Number of visible windows
     int         MetricsActiveWindows;               // Number of active windows
     int         MetricsActiveAllocations;           // Number of active allocations, updated by MemAlloc/MemFree based on current context. May be off if you have multiple imgui contexts.
-    ImVec2      MouseDelta;                         // Mouse delta. Note that this is zero if either current or previous position are invalid (-FLT_MAX,-FLT_MAX), so a disappearing/reappearing mouse won't have a huge delta.
+    KGVec2      MouseDelta;                         // Mouse delta. Note that this is zero if either current or previous position are invalid (-FLT_MAX,-FLT_MAX), so a disappearing/reappearing mouse won't have a huge delta.
 
     // Legacy: before 1.87, we required backend to fill io.KeyMap[] (imgui->native map) during initialization and io.KeysDown[] (native indices) every frame.
     // This is still temporarily supported as a legacy feature. However the new preferred scheme is for backend to call io.AddKeyEvent().
@@ -2015,7 +2015,7 @@ struct KARMA_API KarmaGuiIO
     // Main Input State
     // (this block used to be written by backend, since 1.87 it is best to NOT write to those directly, call the AddXXX functions above instead)
     // (reading from those variables is fair game, as they are extremely unlikely to be moving anywhere)
-    ImVec2      MousePos;                           // Mouse position, in pixels. Set to ImVec2(-FLT_MAX, -FLT_MAX) if mouse is unavailable (on another screen, etc.)
+    KGVec2      MousePos;                           // Mouse position, in pixels. Set to KGVec2(-FLT_MAX, -FLT_MAX) if mouse is unavailable (on another screen, etc.)
     bool        MouseDown[5];                       // Mouse buttons: 0=left, 1=right, 2=middle + extras (KGGuiMouseButton_COUNT == 5). Dear ImGui mostly uses left and right buttons. Other buttons allow us to track if the mouse is being used by your application + available to user as a convenience via IsMouse** API.
     float       MouseWheel;                         // Mouse wheel Vertical: 1 unit scrolls about 5 lines text.
     float       MouseWheelH;                        // Mouse wheel Horizontal. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends.
@@ -2029,8 +2029,8 @@ struct KARMA_API KarmaGuiIO
     KarmaGuiKeyChord KeyMods;                          // Key mods flags (any of KGGuiMod_Ctrl/KGGuiMod_Shift/KGGuiMod_Alt/KGGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags. DOES NOT CONTAINS KGGuiMod_Shortcut which is pretranslated). Read-only, updated by NewFrame()
     KarmaGuiKeyData  KeysData[KGGuiKey_KeysData_SIZE]; // Key state for all known keys. Use IsKeyXXX() functions to access this.
     bool        WantCaptureMouseUnlessPopupClose;   // Alternative to WantCaptureMouse: (WantCaptureMouse == true && WantCaptureMouseUnlessPopupClose == false) when a click over void is expected to close a popup.
-    ImVec2      MousePosPrev;                       // Previous mouse position (note that MouseDelta is not necessary == MousePos-MousePosPrev, in case either position is invalid)
-    ImVec2      MouseClickedPos[5];                 // Position at time of clicking
+    KGVec2      MousePosPrev;                       // Previous mouse position (note that MouseDelta is not necessary == MousePos-MousePosPrev, in case either position is invalid)
+    KGVec2      MouseClickedPos[5];                 // Position at time of clicking
     double      MouseClickedTime[5];                // Time of last click (used to figure out double-click)
     bool        MouseClicked[5];                    // Mouse button went from !Down to Down (same as MouseClickedCount[x] != 0)
     bool        MouseDoubleClicked[5];              // Has mouse button been double-clicked? (same as MouseClickedCount[x] == 2)
@@ -2041,7 +2041,7 @@ struct KARMA_API KarmaGuiIO
     bool        MouseDownOwnedUnlessPopupClose[5];  // Track if button was clicked inside a dear imgui window.
     float       MouseDownDuration[5];               // Duration the mouse button has been down (0.0f == just clicked)
     float       MouseDownDurationPrev[5];           // Previous time the mouse button has been down
-    ImVec2      MouseDragMaxDistanceAbs[5];         // Maximum distance, absolute, on each axis, of how much mouse has traveled from the clicking point
+    KGVec2      MouseDragMaxDistanceAbs[5];         // Maximum distance, absolute, on each axis, of how much mouse has traveled from the clicking point
     float       MouseDragMaxDistanceSqr[5];         // Squared maximum distance of how much mouse has traveled from the clicking point (used for moving thresholds)
     float       PenPressure;                        // Touch/Pen pressure (0.0f to 1.0f, should be >0.0f only when MouseDown[0] == true). Helper storage currently unused by Dear ImGui.
     bool        AppFocusLost;                       // Only modify via AddFocusEvent()
@@ -2101,9 +2101,9 @@ struct KARMA_API KarmaGuiInputTextCallbackData
 struct KARMA_API KarmaGuiSizeCallbackData
 {
     void*   UserData;       // Read-only.   What user passed to SetNextWindowSizeConstraints(). Generally store an integer or float in here (need reinterpret_cast<>).
-    ImVec2  Pos;            // Read-only.   Window position, for reference.
-    ImVec2  CurrentSize;    // Read-only.   Current window size.
-    ImVec2  DesiredSize;    // Read-write.  Desired size, based on user's mouse position. Write to this field to restrain resizing.
+    KGVec2  Pos;            // Read-only.   Window position, for reference.
+    KGVec2  CurrentSize;    // Read-only.   Current window size.
+    KGVec2  DesiredSize;    // Read-write.  Desired size, based on user's mouse position. Write to this field to restrain resizing.
 };
 
 // [ALPHA] Rarely used / very advanced uses only. Use with SetNextWindowClass() and DockSpace() functions.
@@ -2345,21 +2345,21 @@ struct KARMA_API KarmaGuiListClipper
 #define KG_COL32_BLACK       KG_COL32(0,0,0,255)        // Opaque black
 #define KG_COL32_BLACK_TRANS KG_COL32(0,0,0,0)          // Transparent black = 0x00000000
 
-// Helper: KGColor() implicitly converts colors to either KGU32 (packed 4x1 byte) or ImVec4 (4x1 float)
+// Helper: KGColor() implicitly converts colors to either KGU32 (packed 4x1 byte) or KGVec4 (4x1 float)
 // Prefer using KG_COL32() macros if you want a guaranteed compile-time KGU32 for usage with KGDrawList API.
-// **Avoid storing KGColor! Store either u32 of ImVec4. This is not a full-featured color class. MAY OBSOLETE.
-// **None of the ImGui API are using KGColor directly but you can use it as a convenience to pass colors in either KGU32 or ImVec4 formats. Explicitly cast to KGU32 or ImVec4 if needed.
+// **Avoid storing KGColor! Store either u32 of KGVec4. This is not a full-featured color class. MAY OBSOLETE.
+// **None of the ImGui API are using KGColor directly but you can use it as a convenience to pass colors in either KGU32 or KGVec4 formats. Explicitly cast to KGU32 or KGVec4 if needed.
 struct KARMA_API KGColor
 {
-    ImVec4          Value;
+    KGVec4          Value;
 
     constexpr KGColor()                                             { }
     constexpr KGColor(float r, float g, float b, float a = 1.0f)    : Value(r, g, b, a) { }
-    constexpr KGColor(const ImVec4& col)                            : Value(col) {}
+    constexpr KGColor(const KGVec4& col)                            : Value(col) {}
     KGColor(int r, int g, int b, int a = 255)                       { float sc = 1.0f / 255.0f; Value.x = (float)r * sc; Value.y = (float)g * sc; Value.z = (float)b * sc; Value.w = (float)a * sc; }
     KGColor(KGU32 rgba)                                             { float sc = 1.0f / 255.0f; Value.x = (float)((rgba >> KG_COL32_R_SHIFT) & 0xFF) * sc; Value.y = (float)((rgba >> KG_COL32_G_SHIFT) & 0xFF) * sc; Value.z = (float)((rgba >> KG_COL32_B_SHIFT) & 0xFF) * sc; Value.w = (float)((rgba >> KG_COL32_A_SHIFT) & 0xFF) * sc; }
     inline operator KGU32() const                                   { return Karma::KarmaGui::ColorConvertFloat4ToU32(Value); }
-    inline operator ImVec4() const                                  { return Value; }
+    inline operator KGVec4() const                                  { return Value; }
 
     // FIXME-OBSOLETE: May need to obsolete/cleanup those helpers.
     inline void    SetHSV(float h, float s, float v, float a = 1.0f){ Karma::KarmaGui::ColorConvertHSVtoRGB(h, s, v, Value.x, Value.y, Value.z); Value.w = a; }
@@ -2400,7 +2400,7 @@ typedef void (*KGDrawCallback)(const KGDrawList* parent_list, const KGDrawCmd* c
 // - The ClipRect/TextureId/VtxOffset fields must be contiguous as we memcmp() them together (this is asserted for).
 struct KARMA_API KGDrawCmd
 {
-    ImVec4          ClipRect;           // 4*4  // Clipping rectangle (x1, y1, x2, y2). Subtract KGDrawData->DisplayPos to get clipping rectangle in "viewport" coordinates
+    KGVec4          ClipRect;           // 4*4  // Clipping rectangle (x1, y1, x2, y2). Subtract KGDrawData->DisplayPos to get clipping rectangle in "viewport" coordinates
     KGTextureID     TextureId;          // 4-8  // User-provided texture ID. Set by user in ImfontAtlas::SetTexID() for fonts or passed to Image*() functions. Ignore if never using images or multiple fonts atlas.
     unsigned int    VtxOffset;          // 4    // Start offset in vertex buffer. KGGuiBackendFlags_RendererHasVtxOffset: always 0, otherwise may be >0 to support meshes larger than 64K vertices with 16-bit indices.
     unsigned int    IdxOffset;          // 4    // Start offset in index buffer.
@@ -2419,14 +2419,14 @@ struct KARMA_API KGDrawCmd
 #ifndef IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT
 struct KARMA_API KGDrawVert
 {
-    ImVec2  pos;
-    ImVec2  uv;
+    KGVec2  pos;
+    KGVec2  uv;
     KGU32   col;
 };
 #else
 // You can override the vertex format layout by defining IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT in imconfig.h
-// The code expect ImVec2 pos (8 bytes), ImVec2 uv (8 bytes), KGU32 col (4 bytes), but you can re-order them or add other fields as needed to simplify integration in your engine.
-// The type has to be described within the macro (you can either declare the struct or use a typedef). This is because ImVec2/KGU32 are likely not declared at the time you'd want to set your type up.
+// The code expect KGVec2 pos (8 bytes), KGVec2 uv (8 bytes), KGU32 col (4 bytes), but you can re-order them or add other fields as needed to simplify integration in your engine.
+// The type has to be described within the macro (you can either declare the struct or use a typedef). This is because KGVec2/KGU32 are likely not declared at the time you'd want to set your type up.
 // NOTE: IMGUI DOESN'T CLEAR THE STRUCTURE AND DOESN'T CALL A CONSTRUCTOR SO ANY CUSTOM FIELD WILL BE UNINITIALIZED. IF YOU ADD EXTRA FIELDS (SUCH AS A 'Z' COORDINATES) YOU WILL NEED TO CLEAR THEM DURING RENDER OR TO IGNORE THEM.
 IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT;
 #endif
@@ -2434,7 +2434,7 @@ IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT;
 // [Internal] For use by KGDrawList
 struct ImDrawCmdHeader
 {
-    ImVec4          ClipRect;
+    KGVec4          ClipRect;
     KGTextureID     TextureId;
     unsigned int    VtxOffset;
 };
@@ -2518,9 +2518,9 @@ struct KARMA_API KGDrawList
     const char*             _OwnerName;         // Pointer to owner window's name for debugging
     KGDrawVert*             _VtxWritePtr;       // [Internal] point within VtxBuffer.Data after each add command (to avoid using the KGVector<> operators too much)
     KGDrawIdx*              _IdxWritePtr;       // [Internal] point within IdxBuffer.Data after each add command (to avoid using the KGVector<> operators too much)
-    KGVector<ImVec4>        _ClipRectStack;     // [Internal]
+    KGVector<KGVec4>        _ClipRectStack;     // [Internal]
     KGVector<KGTextureID>   _TextureIdStack;    // [Internal]
-    KGVector<ImVec2>        _Path;              // [Internal] current path building
+    KGVector<KGVec2>        _Path;              // [Internal] current path building
     ImDrawCmdHeader         _CmdHeader;         // [Internal] template of active commands. Fields should match those of CmdBuffer.back().
     KGDrawListSplitter      _Splitter;          // [Internal] for channels api (note: prefer using your own persistent instance of KGDrawListSplitter!)
     float                   _FringeScale;       // [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content
@@ -2529,13 +2529,13 @@ struct KARMA_API KGDrawList
     KGDrawList(KGDrawListSharedData* shared_data) { memset(this, 0, sizeof(*this)); _Data = shared_data; }
 
     ~KGDrawList() { _ClearFreeMemory(); }
-    static void  PushClipRect(const ImVec2& clip_rect_min, const ImVec2& clip_rect_max, bool intersect_with_current_clip_rect = false);  // Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
+    static void  PushClipRect(const KGVec2& clip_rect_min, const KGVec2& clip_rect_max, bool intersect_with_current_clip_rect = false);  // Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
     static void  PushClipRectFullScreen();
     static void  PopClipRect();
     static void  PushTextureID(KGTextureID texture_id);
     static void  PopTextureID();
-    inline ImVec2   GetClipRectMin() const { const ImVec4& cr = _ClipRectStack.back(); return ImVec2(cr.x, cr.y); }
-    inline ImVec2   GetClipRectMax() const { const ImVec4& cr = _ClipRectStack.back(); return ImVec2(cr.z, cr.w); }
+    inline KGVec2   GetClipRectMin() const { const KGVec4& cr = _ClipRectStack.back(); return KGVec2(cr.x, cr.y); }
+    inline KGVec2   GetClipRectMax() const { const KGVec4& cr = _ClipRectStack.back(); return KGVec2(cr.z, cr.w); }
 
     // Primitives
     // - Filled shapes must always use clockwise winding order. The anti-aliasing fringe depends on it. Counter-clockwise shapes will have "inward" anti-aliasing.
@@ -2544,48 +2544,48 @@ struct KARMA_API KGDrawList
     //   In older versions (until Dear ImGui 1.77) the AddCircle functions defaulted to num_segments == 12.
     //   In future versions we will use textures to provide cheaper and higher-quality circles.
     //   Use AddNgon() and AddNgonFilled() functions if you need to guarantee a specific number of sides.
-    static void  AddLine(const ImVec2& p1, const ImVec2& p2, KGU32 col, float thickness = 1.0f);
-    static void  AddRect(const ImVec2& p_min, const ImVec2& p_max, KGU32 col, float rounding = 0.0f, KGDrawFlags flags = 0, float thickness = 1.0f);   // a: upper-left, b: lower-right (== upper-left + size)
-    static void  AddRectFilled(const ImVec2& p_min, const ImVec2& p_max, KGU32 col, float rounding = 0.0f, KGDrawFlags flags = 0);                     // a: upper-left, b: lower-right (== upper-left + size)
-    static void  AddRectFilledMultiColor(const ImVec2& p_min, const ImVec2& p_max, KGU32 col_upr_left, KGU32 col_upr_right, KGU32 col_bot_right, KGU32 col_bot_left);
-    static void  AddQuad(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col, float thickness = 1.0f);
-    static void  AddQuadFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col);
-    static void  AddTriangle(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col, float thickness = 1.0f);
-    static void  AddTriangleFilled(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col);
-    static void  AddCircle(const ImVec2& center, float radius, KGU32 col, int num_segments = 0, float thickness = 1.0f);
-    static void  AddCircleFilled(const ImVec2& center, float radius, KGU32 col, int num_segments = 0);
-    static void  AddNgon(const ImVec2& center, float radius, KGU32 col, int num_segments, float thickness = 1.0f);
-    static void  AddNgonFilled(const ImVec2& center, float radius, KGU32 col, int num_segments);
-    static void  AddText(const ImVec2& pos, KGU32 col, const char* text_begin, const char* text_end = NULL);
-    static void  AddText(const KGFont* font, float font_size, const ImVec2& pos, KGU32 col, const char* text_begin, const char* text_end = NULL, float wrap_width = 0.0f, const ImVec4* cpu_fine_clip_rect = NULL);
-    static void  AddPolyline(const ImVec2* points, int num_points, KGU32 col, KGDrawFlags flags, float thickness);
-    static void  AddConvexPolyFilled(const ImVec2* points, int num_points, KGU32 col);
-    static void  AddBezierCubic(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, KGU32 col, float thickness, int num_segments = 0); // Cubic Bezier (4 control points)
-    static void  AddBezierQuadratic(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, KGU32 col, float thickness, int num_segments = 0);               // Quadratic Bezier (3 control points)
+    static void  AddLine(const KGVec2& p1, const KGVec2& p2, KGU32 col, float thickness = 1.0f);
+    static void  AddRect(const KGVec2& p_min, const KGVec2& p_max, KGU32 col, float rounding = 0.0f, KGDrawFlags flags = 0, float thickness = 1.0f);   // a: upper-left, b: lower-right (== upper-left + size)
+    static void  AddRectFilled(const KGVec2& p_min, const KGVec2& p_max, KGU32 col, float rounding = 0.0f, KGDrawFlags flags = 0);                     // a: upper-left, b: lower-right (== upper-left + size)
+    static void  AddRectFilledMultiColor(const KGVec2& p_min, const KGVec2& p_max, KGU32 col_upr_left, KGU32 col_upr_right, KGU32 col_bot_right, KGU32 col_bot_left);
+    static void  AddQuad(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col, float thickness = 1.0f);
+    static void  AddQuadFilled(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col);
+    static void  AddTriangle(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col, float thickness = 1.0f);
+    static void  AddTriangleFilled(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col);
+    static void  AddCircle(const KGVec2& center, float radius, KGU32 col, int num_segments = 0, float thickness = 1.0f);
+    static void  AddCircleFilled(const KGVec2& center, float radius, KGU32 col, int num_segments = 0);
+    static void  AddNgon(const KGVec2& center, float radius, KGU32 col, int num_segments, float thickness = 1.0f);
+    static void  AddNgonFilled(const KGVec2& center, float radius, KGU32 col, int num_segments);
+    static void  AddText(const KGVec2& pos, KGU32 col, const char* text_begin, const char* text_end = NULL);
+    static void  AddText(const KGFont* font, float font_size, const KGVec2& pos, KGU32 col, const char* text_begin, const char* text_end = NULL, float wrap_width = 0.0f, const KGVec4* cpu_fine_clip_rect = NULL);
+    static void  AddPolyline(const KGVec2* points, int num_points, KGU32 col, KGDrawFlags flags, float thickness);
+    static void  AddConvexPolyFilled(const KGVec2* points, int num_points, KGU32 col);
+    static void  AddBezierCubic(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col, float thickness, int num_segments = 0); // Cubic Bezier (4 control points)
+    static void  AddBezierQuadratic(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col, float thickness, int num_segments = 0);               // Quadratic Bezier (3 control points)
 
     // Image primitives
     // - Read FAQ to understand what KGTextureID is.
     // - "p_min" and "p_max" represent the upper-left and lower-right corners of the rectangle.
     // - "uv_min" and "uv_max" represent the normalized texture coordinates to use for those corners. Using (0,0)->(1,1) texture coordinates will generally display the entire texture.
-    static void  AddImage(KGTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min = ImVec2(0, 0), const ImVec2& uv_max = ImVec2(1, 1), KGU32 col = KG_COL32_WHITE);
-    static void  AddImageQuad(KGTextureID user_texture_id, const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& uv1 = ImVec2(0, 0), const ImVec2& uv2 = ImVec2(1, 0), const ImVec2& uv3 = ImVec2(1, 1), const ImVec2& uv4 = ImVec2(0, 1), KGU32 col = KG_COL32_WHITE);
-    static void  AddImageRounded(KGTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, KGU32 col, float rounding, KGDrawFlags flags = 0);
+    static void  AddImage(KGTextureID user_texture_id, const KGVec2& p_min, const KGVec2& p_max, const KGVec2& uv_min = KGVec2(0, 0), const KGVec2& uv_max = KGVec2(1, 1), KGU32 col = KG_COL32_WHITE);
+    static void  AddImageQuad(KGTextureID user_texture_id, const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& uv1 = KGVec2(0, 0), const KGVec2& uv2 = KGVec2(1, 0), const KGVec2& uv3 = KGVec2(1, 1), const KGVec2& uv4 = KGVec2(0, 1), KGU32 col = KG_COL32_WHITE);
+    static void  AddImageRounded(KGTextureID user_texture_id, const KGVec2& p_min, const KGVec2& p_max, const KGVec2& uv_min, const KGVec2& uv_max, KGU32 col, float rounding, KGDrawFlags flags = 0);
 
     // Add custom background color to a window
-    static void SetWindowBackgroundColor(ImVec4 bgColor);
+    static void SetWindowBackgroundColor(KGVec4 bgColor);
 
     // Stateful path API, add points then finish with PathFillConvex() or PathStroke()
     // - Filled shapes must always use clockwise winding order. The anti-aliasing fringe depends on it. Counter-clockwise shapes will have "inward" anti-aliasing.
     inline    void  PathClear()                                                 { _Path.Size = 0; }
-    inline    void  PathLineTo(const ImVec2& pos)                               { _Path.push_back(pos); }
-    inline    void  PathLineToMergeDuplicate(const ImVec2& pos)                 { if (_Path.Size == 0 || memcmp(&_Path.Data[_Path.Size - 1], &pos, 8) != 0) _Path.push_back(pos); }
+    inline    void  PathLineTo(const KGVec2& pos)                               { _Path.push_back(pos); }
+    inline    void  PathLineToMergeDuplicate(const KGVec2& pos)                 { if (_Path.Size == 0 || memcmp(&_Path.Data[_Path.Size - 1], &pos, 8) != 0) _Path.push_back(pos); }
     inline    void  PathFillConvex(KGU32 col)                                   { AddConvexPolyFilled(_Path.Data, _Path.Size, col); _Path.Size = 0; }
     inline    void  PathStroke(KGU32 col, KGDrawFlags flags = 0, float thickness = 1.0f) { AddPolyline(_Path.Data, _Path.Size, col, flags, thickness); _Path.Size = 0; }
-    static void  PathArcTo(const ImVec2& center, float radius, float a_min, float a_max, int num_segments = 0);
-    static void  PathArcToFast(const ImVec2& center, float radius, int a_min_of_12, int a_max_of_12);                // Use precomputed angles for a 12 steps circle
-    static void  PathBezierCubicCurveTo(const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, int num_segments = 0); // Cubic Bezier (4 control points)
-    static void  PathBezierQuadraticCurveTo(const ImVec2& p2, const ImVec2& p3, int num_segments = 0);               // Quadratic Bezier (3 control points)
-    static void  PathRect(const ImVec2& rect_min, const ImVec2& rect_max, float rounding = 0.0f, KGDrawFlags flags = 0);
+    static void  PathArcTo(const KGVec2& center, float radius, float a_min, float a_max, int num_segments = 0);
+    static void  PathArcToFast(const KGVec2& center, float radius, int a_min_of_12, int a_max_of_12);                // Use precomputed angles for a 12 steps circle
+    static void  PathBezierCubicCurveTo(const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, int num_segments = 0); // Cubic Bezier (4 control points)
+    static void  PathBezierQuadraticCurveTo(const KGVec2& p2, const KGVec2& p3, int num_segments = 0);               // Quadratic Bezier (3 control points)
+    static void  PathRect(const KGVec2& rect_min, const KGVec2& rect_max, float rounding = 0.0f, KGDrawFlags flags = 0);
 
     // Advanced
     static void  AddCallback(KGDrawCallback callback, void* callback_data);  // Your rendering function must check for 'UserCallback' in KGDrawCmd and call the function instead of rendering triangles.
@@ -2607,12 +2607,12 @@ struct KARMA_API KGDrawList
     // - All primitives needs to be reserved via PrimReserve() beforehand.
     static void  PrimReserve(int idx_count, int vtx_count);
     static void  PrimUnreserve(int idx_count, int vtx_count);
-    static void  PrimRect(const ImVec2& a, const ImVec2& b, KGU32 col);      // Axis aligned rectangle (composed of two triangles)
-    static void  PrimRectUV(const ImVec2& a, const ImVec2& b, const ImVec2& uv_a, const ImVec2& uv_b, KGU32 col);
-    static void  PrimQuadUV(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& d, const ImVec2& uv_a, const ImVec2& uv_b, const ImVec2& uv_c, const ImVec2& uv_d, KGU32 col);
-    inline    void  PrimWriteVtx(const ImVec2& pos, const ImVec2& uv, KGU32 col)    { _VtxWritePtr->pos = pos; _VtxWritePtr->uv = uv; _VtxWritePtr->col = col; _VtxWritePtr++; _VtxCurrentIdx++; }
+    static void  PrimRect(const KGVec2& a, const KGVec2& b, KGU32 col);      // Axis aligned rectangle (composed of two triangles)
+    static void  PrimRectUV(const KGVec2& a, const KGVec2& b, const KGVec2& uv_a, const KGVec2& uv_b, KGU32 col);
+    static void  PrimQuadUV(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& d, const KGVec2& uv_a, const KGVec2& uv_b, const KGVec2& uv_c, const KGVec2& uv_d, KGU32 col);
+    inline    void  PrimWriteVtx(const KGVec2& pos, const KGVec2& uv, KGU32 col)    { _VtxWritePtr->pos = pos; _VtxWritePtr->uv = uv; _VtxWritePtr->col = col; _VtxWritePtr++; _VtxCurrentIdx++; }
     inline    void  PrimWriteIdx(KGDrawIdx idx)                                     { *_IdxWritePtr = idx; _IdxWritePtr++; }
-    inline    void  PrimVtx(const ImVec2& pos, const ImVec2& uv, KGU32 col)         { PrimWriteIdx((KGDrawIdx)_VtxCurrentIdx); PrimWriteVtx(pos, uv, col); } // Write vertex with unique index
+    inline    void  PrimVtx(const KGVec2& pos, const KGVec2& uv, KGU32 col)         { PrimWriteIdx((KGDrawIdx)_VtxCurrentIdx); PrimWriteVtx(pos, uv, col); } // Write vertex with unique index
 
     // [Internal helpers]
     static void  _ResetForNewFrame();
@@ -2623,8 +2623,8 @@ struct KARMA_API KGDrawList
     static void  _OnChangedTextureID();
     static void  _OnChangedVtxOffset();
     static int   _CalcCircleAutoSegmentCount(float radius);
-    static void  _PathArcToFastEx(const ImVec2& center, float radius, int a_min_sample, int a_max_sample, int a_step);
-    static void  _PathArcToN(const ImVec2& center, float radius, float a_min, float a_max, int num_segments);
+    static void  _PathArcToFastEx(const KGVec2& center, float radius, int a_min_sample, int a_max_sample, int a_step);
+    static void  _PathArcToN(const KGVec2& center, float radius, float a_min, float a_max, int num_segments);
 };
 
 // All draw data to render a KarmaGui frame
@@ -2637,16 +2637,16 @@ struct KARMA_API KGDrawData
     int             TotalIdxCount;          // For convenience, sum of all KGDrawList's IdxBuffer.Size
     int             TotalVtxCount;          // For convenience, sum of all KGDrawList's VtxBuffer.Size
     KGDrawList**    CmdLists;               // Array of KGDrawList* to render. The KGDrawList are owned by KarmaGuiContext and only pointed to from here.
-    ImVec2          DisplayPos;             // Top-left position of the viewport to render (== top-left of the orthogonal projection matrix to use) (== GetMainViewport()->Pos for the main viewport, == (0.0) in most single-viewport applications)
-    ImVec2          DisplaySize;            // Size of the viewport to render (== GetMainViewport()->Size for the main viewport, == io.DisplaySize in most single-viewport applications)
-    ImVec2          FramebufferScale;       // Amount of pixels for each unit of DisplaySize. Based on io.DisplayFramebufferScale. Generally (1,1) on normal display, (2,2) on OSX with Retina display.
+    KGVec2          DisplayPos;             // Top-left position of the viewport to render (== top-left of the orthogonal projection matrix to use) (== GetMainViewport()->Pos for the main viewport, == (0.0) in most single-viewport applications)
+    KGVec2          DisplaySize;            // Size of the viewport to render (== GetMainViewport()->Size for the main viewport, == io.DisplaySize in most single-viewport applications)
+    KGVec2          FramebufferScale;       // Amount of pixels for each unit of DisplaySize. Based on io.DisplayFramebufferScale. Generally (1,1) on normal display, (2,2) on OSX with Retina display.
     KarmaGuiViewport*  OwnerViewport;          // Viewport carrying the KGDrawData instance, might be of use to the renderer (generally not).
 
     // Functions
     KGDrawData()    { Clear(); }
     void Clear()    { memset(this, 0, sizeof(*this)); }     // The KGDrawList are owned by KarmaGuiContext!
     static void  DeIndexAllBuffers();                    // Helper to convert all buffers from indexed to non-indexed, in case you cannot render indexed. Note: this is slow and most likely a waste of resources. Always prefer indexed rendering!
-    static void  ScaleClipRects(const ImVec2& fb_scale); // Helper to scale the ClipRect field of each KGDrawCmd. Use if your final output buffer is at a different scale than Dear ImGui expects, or if there is a difference between your window resolution and framebuffer resolution.
+    static void  ScaleClipRects(const KGVec2& fb_scale); // Helper to scale the ClipRect field of each KGDrawCmd. Use if your final output buffer is at a different scale than Dear ImGui expects, or if there is a difference between your window resolution and framebuffer resolution.
 };
 
 //----------------------------------------------------------------------------------------------------------------
@@ -2663,8 +2663,8 @@ struct KARMA_API KGFontConfig
     int             OversampleH;            // 3        // Rasterize at higher quality for sub-pixel positioning. Note the difference between 2 and 3 is minimal so you can reduce this to 2 to save memory. Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
     int             OversampleV;            // 1        // Rasterize at higher quality for sub-pixel positioning. This is not really useful as we don't use sub-pixel positions on the Y axis.
     bool            PixelSnapH;             // false    // Align every glyph to pixel boundary. Useful e.g. if you are merging a non-pixel aligned font with the default font. If enabled, you can set OversampleH/V to 1.
-    ImVec2          GlyphExtraSpacing;      // 0, 0     // Extra spacing (in pixels) between glyphs. Only X axis is supported for now.
-    ImVec2          GlyphOffset;            // 0, 0     // Offset all glyphs from this font input.
+    KGVec2          GlyphExtraSpacing;      // 0, 0     // Extra spacing (in pixels) between glyphs. Only X axis is supported for now.
+    KGVec2          GlyphOffset;            // 0, 0     // Offset all glyphs from this font input.
     const KGWchar*  GlyphRanges;            // NULL     // Pointer to a user-provided list of Unicode range (2 value per range, values are inclusive, zero-terminated list). THE ARRAY DATA NEEDS TO PERSIST AS LONG AS THE FONT IS ALIVE.
     float           GlyphMinAdvanceX;       // 0        // Minimum AdvanceX for glyphs, set Min to align font icons, set both Min/Max to enforce mono-space font
     float           GlyphMaxAdvanceX;       // FLT_MAX  // Maximum AdvanceX for glyphs
@@ -2715,9 +2715,9 @@ struct KARMA_API KGFontAtlasCustomRect
     unsigned short  X, Y;           // Output   // Packed position in Atlas
     unsigned int    GlyphID;        // Input    // For custom font glyphs only (ID < 0x110000)
     float           GlyphAdvanceX;  // Input    // For custom font glyphs only: glyph xadvance
-    ImVec2          GlyphOffset;    // Input    // For custom font glyphs only: glyph display offset
+    KGVec2          GlyphOffset;    // Input    // For custom font glyphs only: glyph display offset
     KGFont*         Font;           // Input    // For custom font glyphs only: target font
-    KGFontAtlasCustomRect()         { Width = Height = 0; X = Y = 0xFFFF; GlyphID = 0; GlyphAdvanceX = 0.0f; GlyphOffset = ImVec2(0, 0); Font = NULL; }
+    KGFontAtlasCustomRect()         { Width = Height = 0; X = Y = 0xFFFF; GlyphID = 0; GlyphAdvanceX = 0.0f; GlyphOffset = KGVec2(0, 0); Font = NULL; }
     bool IsPacked() const           { return X != 0xFFFF; }
 };
 
@@ -2802,12 +2802,12 @@ struct KARMA_API KGFontAtlas
     // - Read docs/FONTS.md for more details about using colorful icons.
     // - Note: this API may be redesigned later in order to support multi-monitor varying DPI settings.
     static int               AddCustomRectRegular(int width, int height);
-    static int               AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int height, float advance_x, const ImVec2& offset = ImVec2(0, 0));
+    static int               AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int height, float advance_x, const KGVec2& offset = KGVec2(0, 0));
     KGFontAtlasCustomRect*      GetCustomRectByIndex(int index) { KR_CORE_ASSERT(index >= 0, ""); return &CustomRects[index]; }
 
     // [Internal]
-    static void              CalcCustomRectUV(const KGFontAtlasCustomRect* rect, ImVec2* out_uv_min, ImVec2* out_uv_max);
-    static bool              GetMouseCursorTexData(KarmaGuiMouseCursor cursor, ImVec2* out_offset, ImVec2* out_size, ImVec2 out_uv_border[2], ImVec2 out_uv_fill[2]);
+    static void              CalcCustomRectUV(const KGFontAtlasCustomRect* rect, KGVec2* out_uv_min, KGVec2* out_uv_max);
+    static bool              GetMouseCursorTexData(KarmaGuiMouseCursor cursor, KGVec2* out_offset, KGVec2* out_size, KGVec2 out_uv_border[2], KGVec2 out_uv_fill[2]);
 
     //-------------------------------------------
     // Members
@@ -2828,12 +2828,12 @@ struct KARMA_API KGFontAtlas
     unsigned int*               TexPixelsRGBA32;    // 4 component per pixel, each component is unsigned 8-bit. Total size = TexWidth * TexHeight * 4
     int                         TexWidth;           // Texture width calculated during Build().
     int                         TexHeight;          // Texture height calculated during Build().
-    ImVec2                      TexUvScale;         // = (1.0f/TexWidth, 1.0f/TexHeight)
-    ImVec2                      TexUvWhitePixel;    // Texture coordinates to a white pixel
+    KGVec2                      TexUvScale;         // = (1.0f/TexWidth, 1.0f/TexHeight)
+    KGVec2                      TexUvWhitePixel;    // Texture coordinates to a white pixel
     KGVector<KGFont*>           Fonts;              // Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
     KGVector<KGFontAtlasCustomRect> CustomRects;    // Rectangles for packing custom texture data into the atlas.
     KGVector<KGFontConfig>      ConfigData;         // Configuration data
-    ImVec4                      TexUvLines[KG_DRAWLIST_TEX_LINES_WIDTH_MAX + 1];  // UVs for baked anti-aliased lines
+    KGVec4                      TexUvLines[KG_DRAWLIST_TEX_LINES_WIDTH_MAX + 1];  // UVs for baked anti-aliased lines
 
     // [Internal] Font builder
     const KGFontBuilderIO*      FontBuilderIO;      // Opaque interface to a font builder (default to stb_truetype, can be changed to use FreeType by defining KGGUI_ENABLE_FREETYPE).
@@ -2886,10 +2886,10 @@ struct KARMA_API KGFont
 
     // 'max_width' stops rendering after a certain width (could be turned into a 2d size). FLT_MAX to disable.
     // 'wrap_width' enable automatic word-wrapping across multiple lines to fit into given width. 0.0f to disable.
-    static ImVec2            CalcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end = NULL, const char** remaining = NULL); // utf8
+    static KGVec2            CalcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end = NULL, const char** remaining = NULL); // utf8
     static const char*       CalcWordWrapPositionA(float scale, const char* text, const char* text_end, float wrap_width);
-    static void              RenderChar(KGDrawList* draw_list, float size, const ImVec2& pos, KGU32 col, KGWchar c);
-    static void              RenderText(KGDrawList* draw_list, float size, const ImVec2& pos, KGU32 col, const ImVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width = 0.0f, bool cpu_fine_clip = false);
+    static void              RenderChar(KGDrawList* draw_list, float size, const KGVec2& pos, KGU32 col, KGWchar c);
+    static void              RenderText(KGDrawList* draw_list, float size, const KGVec2& pos, KGU32 col, const KGVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width = 0.0f, bool cpu_fine_clip = false);
 
     // [Internal] Don't use!
     static void              BuildLookupTable();
@@ -2935,10 +2935,10 @@ struct KARMA_API KarmaGuiViewport
 {
     KGGuiID             ID;                     // Unique identifier for the viewport
     KarmaGuiViewportFlags  Flags;                  // See KGGuiViewportFlags_
-    ImVec2              Pos;                    // Main Area: Position of the viewport (Dear ImGui coordinates are the same as OS desktop/native coordinates)
-    ImVec2              Size;                   // Main Area: Size of the viewport.
-    ImVec2              WorkPos;                // Work Area: Position of the viewport minus task bars, menus bars, status bars (>= Pos)
-    ImVec2              WorkSize;               // Work Area: Size of the viewport minus task bars, menu bars, status bars (<= Size)
+    KGVec2              Pos;                    // Main Area: Position of the viewport (Dear ImGui coordinates are the same as OS desktop/native coordinates)
+    KGVec2              Size;                   // Main Area: Size of the viewport.
+    KGVec2              WorkPos;                // Work Area: Position of the viewport minus task bars, menus bars, status bars (>= Pos)
+    KGVec2              WorkSize;               // Work Area: Size of the viewport minus task bars, menu bars, status bars (<= Size)
     float               DpiScale;               // 1.0f = 96 DPI = No extra scale.
     KGGuiID             ParentViewportId;       // (Advanced) 0: no parent. Instruct the platform backend to setup a parent/child relationship between platform windows.
     KGDrawData*         DrawData;               // The KGDrawData corresponding to this viewport. Valid after Render() and until the next call to NewFrame().
@@ -2961,8 +2961,8 @@ struct KARMA_API KarmaGuiViewport
     ~KarmaGuiViewport()    { KR_CORE_ASSERT(PlatformUserData == NULL && RendererUserData == NULL, ""); }
 
     // Helpers
-    ImVec2              GetCenter() const       { return ImVec2(Pos.x + Size.x * 0.5f, Pos.y + Size.y * 0.5f); }
-    ImVec2              GetWorkCenter() const   { return ImVec2(WorkPos.x + WorkSize.x * 0.5f, WorkPos.y + WorkSize.y * 0.5f); }
+    KGVec2              GetCenter() const       { return KGVec2(Pos.x + Size.x * 0.5f, Pos.y + Size.y * 0.5f); }
+    KGVec2              GetWorkCenter() const   { return KGVec2(WorkPos.x + WorkSize.x * 0.5f, WorkPos.y + WorkSize.y * 0.5f); }
 };
 
 //-----------------------------------------------------------------------------
@@ -2980,7 +2980,7 @@ struct KARMA_API KarmaGuiViewport
 //
 // About the coordinates system:
 // - When multi-viewports are enabled, all Dear ImGui coordinates become absolute coordinates (same as OS coordinates!)
-// - So e.g. ImGui::SetNextWindowPos(ImVec2(0,0)) will position a window relative to your primary monitor!
+// - So e.g. ImGui::SetNextWindowPos(KGVec2(0,0)) will position a window relative to your primary monitor!
 // - If you want to position windows relative to your main application viewport, use ImGui::GetMainViewport()->Pos as a base position.
 //
 // Steps to use multi-viewports in your application, when using a default backend from the examples/ folder:
@@ -3038,10 +3038,10 @@ struct KARMA_API KarmaGuiPlatformIO
     void    (*Platform_CreateWindow)(KarmaGuiViewport* vp);                    // . . U . .  // Create a new platform window for the given viewport
     void    (*Platform_DestroyWindow)(KarmaGuiViewport* vp);                   // N . U . D  //
     void    (*Platform_ShowWindow)(KarmaGuiViewport* vp);                      // . . U . .  // Newly created windows are initially hidden so SetWindowPos/Size/Title can be called on them before showing the window
-    void    (*Platform_SetWindowPos)(KarmaGuiViewport* vp, ImVec2 pos);        // . . U . .  // Set platform window position (given the upper-left corner of client area)
-    ImVec2  (*Platform_GetWindowPos)(KarmaGuiViewport* vp);                    // N . . . .  //
-    void    (*Platform_SetWindowSize)(KarmaGuiViewport* vp, ImVec2 size);      // . . U . .  // Set platform window client area size (ignoring OS decorations such as OS title bar etc.)
-    ImVec2  (*Platform_GetWindowSize)(KarmaGuiViewport* vp);                   // N . . . .  // Get platform window client area size
+    void    (*Platform_SetWindowPos)(KarmaGuiViewport* vp, KGVec2 pos);        // . . U . .  // Set platform window position (given the upper-left corner of client area)
+    KGVec2  (*Platform_GetWindowPos)(KarmaGuiViewport* vp);                    // N . . . .  //
+    void    (*Platform_SetWindowSize)(KarmaGuiViewport* vp, KGVec2 size);      // . . U . .  // Set platform window client area size (ignoring OS decorations such as OS title bar etc.)
+    KGVec2  (*Platform_GetWindowSize)(KarmaGuiViewport* vp);                   // N . . . .  // Get platform window client area size
     void    (*Platform_SetWindowFocus)(KarmaGuiViewport* vp);                  // N . . . .  // Move window to front and set input focus
     bool    (*Platform_GetWindowFocus)(KarmaGuiViewport* vp);                  // . . U . .  //
     bool    (*Platform_GetWindowMinimized)(KarmaGuiViewport* vp);              // N . . . .  // Get platform window minimized state. When minimized, we generally won't attempt to get/set size and contents will be culled more easily
@@ -3057,7 +3057,7 @@ struct KARMA_API KarmaGuiPlatformIO
     // (Optional) Renderer functions (e.g. DirectX, OpenGL, Vulkan)
     void    (*Renderer_CreateWindow)(KarmaGuiViewport* vp);                    // . . U . .  // Create swap chain, frame buffers etc. (called after Platform_CreateWindow)
     void    (*Renderer_DestroyWindow)(KarmaGuiViewport* vp);                   // N . U . D  // Destroy swap chain, frame buffers etc. (called before Platform_DestroyWindow)
-    void    (*Renderer_SetWindowSize)(KarmaGuiViewport* vp, ImVec2 size);      // . . U . .  // Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
+    void    (*Renderer_SetWindowSize)(KarmaGuiViewport* vp, KGVec2 size);      // . . U . .  // Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
     void    (*Renderer_RenderWindow)(KarmaGuiViewport* vp, void* render_arg);  // . . . R .  // (Optional) Clear framebuffer, setup render target, then render the viewport->DrawData. 'render_arg' is the value passed to RenderPlatformWindowsDefault().
     void    (*Renderer_SwapBuffers)(KarmaGuiViewport* vp, void* render_arg);   // . . . R .  // (Optional) Call Present/SwapBuffers. 'render_arg' is the value passed to RenderPlatformWindowsDefault().
 
@@ -3080,17 +3080,17 @@ struct KARMA_API KarmaGuiPlatformIO
 // We use this information for multiple DPI support + clamping the position of popups and tooltips so they don't straddle multiple monitors.
 struct KARMA_API KarmaGuiPlatformMonitor
 {
-    ImVec2  MainPos, MainSize;      // Coordinates of the area displayed on this monitor (Min = upper left, Max = bottom right)
-    ImVec2  WorkPos, WorkSize;      // Coordinates without task bars / side bars / menu bars. Used to avoid positioning popups/tooltips inside this region. If you don't have this info, please copy the value for MainPos/MainSize.
+    KGVec2  MainPos, MainSize;      // Coordinates of the area displayed on this monitor (Min = upper left, Max = bottom right)
+    KGVec2  WorkPos, WorkSize;      // Coordinates without task bars / side bars / menu bars. Used to avoid positioning popups/tooltips inside this region. If you don't have this info, please copy the value for MainPos/MainSize.
     float   DpiScale;               // 1.0f = 96 DPI
-    KarmaGuiPlatformMonitor()          { MainPos = MainSize = WorkPos = WorkSize = ImVec2(0, 0); DpiScale = 1.0f; }
+    KarmaGuiPlatformMonitor()          { MainPos = MainSize = WorkPos = WorkSize = KGVec2(0, 0); DpiScale = 1.0f; }
 };
 
 // (Optional) Support for IME (Input Method Editor) via the io.SetPlatformImeDataFn() function.
 struct KARMA_API KarmaGuiPlatformImeData
 {
     bool    WantVisible;        // A widget wants the IME to be visible
-    ImVec2  InputPos;           // Position of the input cursor
+    KGVec2  InputPos;           // Position of the input cursor
     float   InputLineHeight;    // Line height
 
     KarmaGuiPlatformImeData() { memset(this, 0, sizeof(*this)); }

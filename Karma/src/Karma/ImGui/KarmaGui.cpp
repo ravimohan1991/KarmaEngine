@@ -62,136 +62,17 @@ static const float WINDOWS_MOUSE_WHEEL_SCROLL_LOCK_TIMER    = 0.70f;    // Lock 
 static const float DOCKING_TRANSPARENT_PAYLOAD_ALPHA        = 0.50f;    // For use with io.ConfigDockingTransparentPayload. Apply to Viewport _or_ WindowBg in host viewport.
 static const float DOCKING_SPLITTER_SIZE                    = 2.0f;
 
-
-//-------------------------------------------------------------------------
-// [SECTION] FORWARD DECLARATIONS
-//-------------------------------------------------------------------------
-
-static void             SetCurrentWindow(KGGuiWindow* window);
-static void             FindHoveredWindow();
-static KGGuiWindow*     CreateNewWindow(const char* name, KarmaGuiWindowFlags flags);
-static ImVec2           CalcNextScrollFromScrollTargetAndClamp(KGGuiWindow* window);
-
-static void             AddDrawListToDrawData(KGVector<KGDrawList*>* out_list, KGDrawList* draw_list);
-static void             AddWindowToSortBuffer(KGVector<KGGuiWindow*>* out_sorted_windows, KGGuiWindow* window);
-
-// Settings
-static void             WindowSettingsHandler_ClearAll(KarmaGuiContext*, KGGuiSettingsHandler*);
-static void*            WindowSettingsHandler_ReadOpen(KarmaGuiContext*, KGGuiSettingsHandler*, const char* name);
-static void             WindowSettingsHandler_ReadLine(KarmaGuiContext*, KGGuiSettingsHandler*, void* entry, const char* line);
-static void             WindowSettingsHandler_ApplyAll(KarmaGuiContext*, KGGuiSettingsHandler*);
-static void             WindowSettingsHandler_WriteAll(KarmaGuiContext*, KGGuiSettingsHandler*, KarmaGuiTextBuffer* buf);
-
-// Platform Dependents default implementation for IO functions
-static const char*      GetClipboardTextFn_DefaultImpl(void* user_data);
-static void             SetClipboardTextFn_DefaultImpl(void* user_data, const char* text);
-static void             SetPlatformImeDataFn_DefaultImpl(KarmaGuiViewport* viewport, KarmaGuiPlatformImeData* data);
-
+// Allocators
+static void*   MallocWrapper(size_t size, void* user_data)    { KG_UNUSED(user_data); return malloc(size); }
+static void    FreeWrapper(void* ptr, void* user_data)        { KG_UNUSED(user_data); free(ptr); }
 
 namespace Karma
 {
-// Navigation
-static void             NavUpdate();
-static void             NavUpdateWindowing();
-static void             NavUpdateWindowingOverlay();
-static void             NavUpdateCancelRequest();
-static void             NavUpdateCreateMoveRequest();
-static void             NavUpdateCreateTabbingRequest();
-static float            NavUpdatePageUpPageDown();
-static inline void      NavUpdateAnyRequestFlag();
-static void             NavUpdateCreateWrappingRequest();
-static void             NavEndFrame();
-static bool             NavScoreItem(KGGuiNavItemData* result);
-static void             NavApplyItemToResult(KGGuiNavItemData* result);
-static void             NavProcessItem();
-static void             NavProcessItemForTabbingRequest(KGGuiID id);
-static ImVec2           NavCalcPreferredRefPos();
-static void             NavSaveLastChildNavWindowIntoParent(KGGuiWindow* nav_window);
-static KGGuiWindow*     NavRestoreLastChildNavWindow(KGGuiWindow* window);
-static void             NavRestoreLayer(KGGuiNavLayer layer);
-static void             NavRestoreHighlightAfterMove();
-static int              FindWindowFocusIndex(KGGuiWindow* window);
-
-// Error Checking and Debug Tools
-static void             ErrorCheckNewFrameSanityChecks();
-static void             ErrorCheckEndFrameSanityChecks();
-static void             UpdateDebugToolItemPicker();
-static void             UpdateDebugToolStackQueries();
-
-// Inputs
-static void             UpdateKeyboardInputs();
-static void             UpdateMouseInputs();
-static void             UpdateMouseWheel();
-static void             UpdateKeyRoutingTable(KGGuiKeyRoutingTable* rt);
-
-// Misc
-static void             UpdateSettings();
-static bool             UpdateWindowManualResize(KGGuiWindow* window, const ImVec2& size_auto_fit, int* border_held, int resize_grip_count, KGU32 resize_grip_col[4], const KGRect& visibility_rect);
-static void             RenderWindowOuterBorders(KGGuiWindow* window);
-static void             RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_bar_rect, bool title_bar_is_highlight, bool handle_borders_and_resize_grips, int resize_grip_count, const KGU32 resize_grip_col[4], float resize_grip_draw_size);
-static void             RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& title_bar_rect, const char* name, bool* p_open);
-static void             RenderDimmedBackgroundBehindWindow(KGGuiWindow* window, KGU32 col);
-static void             RenderDimmedBackgrounds();
-static KGGuiWindow*     FindBlockingModal(KGGuiWindow* window);
-
-// Viewports
-const KGGuiID           IMGUI_VIEWPORT_DEFAULT_ID = 0x11111111; // Using an arbitrary constant instead of e.g. KGHashStr("ViewportDefault", 0); so it's easier to spot in the debugger. The exact value doesn't matter.
-static KGGuiViewportP*  AddUpdateViewport(KGGuiWindow* window, KGGuiID id, const ImVec2& platform_pos, const ImVec2& size, KarmaGuiViewportFlags flags);
-static void             DestroyViewport(KGGuiViewportP* viewport);
-static void             UpdateViewportsNewFrame();
-static void             UpdateViewportsEndFrame();
-static void             WindowSelectViewport(KGGuiWindow* window);
-static void             WindowSyncOwnedViewport(KGGuiWindow* window, KGGuiWindow* parent_window_in_stack);
-static bool             UpdateTryMergeWindowIntoHostViewport(KGGuiWindow* window, KGGuiViewportP* host_viewport);
-static bool             UpdateTryMergeWindowIntoHostViewports(KGGuiWindow* window);
-static bool             GetWindowAlwaysWantOwnViewport(KGGuiWindow* window);
-static int              FindPlatformMonitorForPos(const ImVec2& pos);
-static int              FindPlatformMonitorForRect(const KGRect& r);
-static void             UpdateViewportPlatformMonitor(KGGuiViewportP* viewport);
-
+	KarmaGuiContext*   KarmaGuiInternal::GKarmaGui = nullptr;
+	KarmaGuiMemAllocFunc    KarmaGuiInternal::GImAllocatorAllocFunc = MallocWrapper;
+	KarmaGuiMemFreeFunc     KarmaGuiInternal::GImAllocatorFreeFunc = FreeWrapper;
+	void*                KarmaGuiInternal::GImAllocatorUserData = NULL;
 }
-
-//-----------------------------------------------------------------------------
-// [SECTION] CONTEXT AND MEMORY ALLOCATORS
-//-----------------------------------------------------------------------------
-
-// DLL users:
-// - Heaps and globals are not shared across DLL boundaries!
-// - You will need to call SetCurrentContext() + SetAllocatorFunctions() for each static/DLL boundary you are calling from.
-// - Same applies for hot-reloading mechanisms that are reliant on reloading DLL (note that many hot-reloading mechanisms work without DLL).
-// - Using Dear ImGui via a shared library is not recommended, because of function call overhead and because we don't guarantee backward nor forward ABI compatibility.
-// - Confused? In a debugger: add GKarmaGui to your watch window and notice how its value changes depending on your current location (which DLL boundary you are in).
-
-// Current context pointer. Implicitly used by all Dear ImGui functions. Always assumed to be != NULL.
-// - KarmaGui::CreateContext() will automatically set this pointer if it is NULL.
-//   Change to a different context by calling KarmaGui::SetCurrentContext().
-// - Important: Dear ImGui functions are not thread-safe because of this pointer.
-//   If you want thread-safety to allow N threads to access N different contexts:
-//   - Change this variable to use thread local storage so each thread can refer to a different context, in your imconfig.h:
-//         struct KarmaGuiContext;
-//         extern thread_local KarmaGuiContext* MyImGuiTLS;
-//         #define GKarmaGui MyImGuiTLS
-//     And then define MyImGuiTLS in one of your cpp files. Note that thread_local is a C++11 keyword, earlier C++ uses compiler-specific keyword.
-//   - Future development aims to make this context pointer explicit to all calls. Also read https://github.com/ocornut/imgui/issues/586
-//   - If you need a finite number of contexts, you may compile and use multiple instances of the ImGui code from a different namespace.
-// - DLL users: read comments above.
-#ifndef GKarmaGui
-KarmaGuiContext*   GKarmaGui = NULL;
-#endif
-
-// Memory Allocator functions. Use SetAllocatorFunctions() to change them.
-// - You probably don't want to modify that mid-program, and if you use global/static e.g. KGVector<> instances you may need to keep them accessible during program destruction.
-// - DLL users: read comments above.
-#ifndef IMGUI_DISABLE_DEFAULT_ALLOCATORS
-static void*   MallocWrapper(size_t size, void* user_data)    { KG_UNUSED(user_data); return malloc(size); }
-static void    FreeWrapper(void* ptr, void* user_data)        { KG_UNUSED(user_data); free(ptr); }
-#else
-static void*   MallocWrapper(size_t size, void* user_data)    { KG_UNUSED(user_data); KG_UNUSED(size); KR_CORE_ASSERT(0); return NULL; }
-static void    FreeWrapper(void* ptr, void* user_data)        { KG_UNUSED(user_data); KG_UNUSED(ptr); KR_CORE_ASSERT(0); }
-#endif
-static KarmaGuiMemAllocFunc    GImAllocatorAllocFunc = MallocWrapper;
-static KarmaGuiMemFreeFunc     GImAllocatorFreeFunc = FreeWrapper;
-static void*                GImAllocatorUserData = NULL;
 
 //-----------------------------------------------------------------------------
 // [SECTION] USER FACING STRUCTURES (KarmaGuiStyle, KarmaGuiIO)
@@ -201,23 +82,23 @@ KarmaGuiStyle::KarmaGuiStyle()
 {
     Alpha                   = 1.0f;             // Global alpha applies to everything in Dear ImGui.
     DisabledAlpha           = 0.60f;            // Additional alpha multiplier applied by BeginDisabled(). Multiply over current value of Alpha.
-    WindowPadding           = ImVec2(8,8);      // Padding within a window
+    WindowPadding           = KGVec2(8,8);      // Padding within a window
     WindowRounding          = 0.0f;             // Radius of window corners rounding. Set to 0.0f to have rectangular windows. Large values tend to lead to variety of artifacts and are not recommended.
     WindowBorderSize        = 1.0f;             // Thickness of border around windows. Generally set to 0.0f or 1.0f. Other values not well tested.
-    WindowMinSize           = ImVec2(32,32);    // Minimum window size
-    WindowTitleAlign        = ImVec2(0.0f,0.5f);// Alignment for title bar text
+    WindowMinSize           = KGVec2(32,32);    // Minimum window size
+    WindowTitleAlign        = KGVec2(0.0f,0.5f);// Alignment for title bar text
     WindowMenuButtonPosition= KGGuiDir_Left;    // Position of the collapsing/docking button in the title bar (left/right). Defaults to KGGuiDir_Left.
     ChildRounding           = 0.0f;             // Radius of child window corners rounding. Set to 0.0f to have rectangular child windows
     ChildBorderSize         = 1.0f;             // Thickness of border around child windows. Generally set to 0.0f or 1.0f. Other values not well tested.
     PopupRounding           = 0.0f;             // Radius of popup window corners rounding. Set to 0.0f to have rectangular child windows
     PopupBorderSize         = 1.0f;             // Thickness of border around popup or tooltip windows. Generally set to 0.0f or 1.0f. Other values not well tested.
-    FramePadding            = ImVec2(4,3);      // Padding within a framed rectangle (used by most widgets)
+    FramePadding            = KGVec2(4,3);      // Padding within a framed rectangle (used by most widgets)
     FrameRounding           = 0.0f;             // Radius of frame corners rounding. Set to 0.0f to have rectangular frames (used by most widgets).
     FrameBorderSize         = 0.0f;             // Thickness of border around frames. Generally set to 0.0f or 1.0f. Other values not well tested.
-    ItemSpacing             = ImVec2(8,4);      // Horizontal and vertical spacing between widgets/lines
-    ItemInnerSpacing        = ImVec2(4,4);      // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label)
-    CellPadding             = ImVec2(4,2);      // Padding within a table cell
-    TouchExtraPadding       = ImVec2(0,0);      // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
+    ItemSpacing             = KGVec2(8,4);      // Horizontal and vertical spacing between widgets/lines
+    ItemInnerSpacing        = KGVec2(4,4);      // Horizontal and vertical spacing between within elements of a composed widget (e.g. a slider and its label)
+    CellPadding             = KGVec2(4,2);      // Padding within a table cell
+    TouchExtraPadding       = KGVec2(0,0);      // Expand reactive bounding box for touch-based system where touch position is not accurate enough. Unfortunately we don't sort widgets so priority on overlap will always be given to the first widget. So don't grow this too much!
     IndentSpacing           = 21.0f;            // Horizontal spacing when e.g. entering a tree node. Generally == (FontSize + FramePadding.x*2).
     ColumnsMinSpacing       = 6.0f;             // Minimum horizontal spacing between two columns. Preferably > (FramePadding.x + 1).
     ScrollbarSize           = 14.0f;            // Width of the vertical scrollbar, Height of the horizontal scrollbar
@@ -229,10 +110,10 @@ KarmaGuiStyle::KarmaGuiStyle()
     TabBorderSize           = 0.0f;             // Thickness of border around tabs.
     TabMinWidthForCloseButton = 0.0f;           // Minimum width for close button to appear on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
     ColorButtonPosition     = KGGuiDir_Right;   // Side of the color button in the ColorEdit4 widget (left/right). Defaults to KGGuiDir_Right.
-    ButtonTextAlign         = ImVec2(0.5f,0.5f);// Alignment of button text when button is larger than text.
-    SelectableTextAlign     = ImVec2(0.0f,0.0f);// Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
-    DisplayWindowPadding    = ImVec2(19,19);    // Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
-    DisplaySafeAreaPadding  = ImVec2(3,3);      // If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
+    ButtonTextAlign         = KGVec2(0.5f,0.5f);// Alignment of button text when button is larger than text.
+    SelectableTextAlign     = KGVec2(0.0f,0.0f);// Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
+    DisplayWindowPadding    = KGVec2(19,19);    // Window position are clamped to be visible within the display area or monitors by at least this amount. Only applies to regular windows.
+    DisplaySafeAreaPadding  = KGVec2(3,3);      // If you cannot see the edge of your screen (e.g. on a TV) increase the safe area padding. Covers popups/tooltips as well regular windows.
     MouseCursorScale        = 1.0f;             // Scale software rendered mouse cursor (when io.MouseDrawCursor is enabled). May be removed later.
     AntiAliasedLines        = true;             // Enable anti-aliased lines/borders. Disable if you are really tight on CPU/GPU.
     AntiAliasedLinesUseTex  = true;             // Enable anti-aliased lines/borders using textures where possible. Require backend to render with bilinear filtering (NOT point/nearest filtering).
@@ -241,7 +122,7 @@ KarmaGuiStyle::KarmaGuiStyle()
     CircleTessellationMaxError = 0.30f;         // Maximum error (in pixels) allowed when using AddCircle()/AddCircleFilled() or drawing rounded corner rectangles with no explicit segment count specified. Decrease for higher quality but more geometry.
 
     // Default theme
-    KarmaGui::StyleColorsDark(this);
+    Karma::KarmaGui::StyleColorsDark(this);
 }
 
 // To scale your entire UI (e.g. if you want your app to use High DPI or generally be DPI aware) you may use this helper function. Scaling the fonts is done separately and is up to you.
@@ -282,7 +163,7 @@ KarmaGuiIO::KarmaGuiIO()
     // Settings
     ConfigFlags = KGGuiConfigFlags_None;
     BackendFlags = KGGuiBackendFlags_None;
-    DisplaySize = ImVec2(-1.0f, -1.0f);
+    DisplaySize = KGVec2(-1.0f, -1.0f);
     DeltaTime = 1.0f / 60.0f;
     IniSavingRate = 5.0f;
     IniFilename = "kggui.ini"; // Important: "kggui.ini" is relative to current working dir, most apps will want to lock this to an absolute path (e.g. same path as executables).
@@ -303,7 +184,7 @@ KarmaGuiIO::KarmaGuiIO()
     FontGlobalScale = 1.0f;
     FontDefault = NULL;
     FontAllowUserScaling = false;
-    DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+    DisplayFramebufferScale = KGVec2(1.0f, 1.0f);
 
     // Docking options (when KGGuiConfigFlags_DockingEnable is set)
     ConfigDockingNoSplit = false;
@@ -335,14 +216,14 @@ KarmaGuiIO::KarmaGuiIO()
     // Platform Functions
     BackendPlatformName = BackendRendererName = NULL;
     BackendPlatformUserData = BackendRendererUserData = BackendLanguageUserData = NULL;
-    GetClipboardTextFn = GetClipboardTextFn_DefaultImpl;   // Platform dependent default implementations
-    SetClipboardTextFn = SetClipboardTextFn_DefaultImpl;
+    GetClipboardTextFn = Karma::KarmaGuiInternal::GetClipboardTextFn_DefaultImpl;   // Platform dependent default implementations
+    SetClipboardTextFn = Karma::KarmaGuiInternal::SetClipboardTextFn_DefaultImpl;
     ClipboardUserData = NULL;
-    SetPlatformImeDataFn = SetPlatformImeDataFn_DefaultImpl;
+    SetPlatformImeDataFn = Karma::KarmaGuiInternal::SetPlatformImeDataFn_DefaultImpl;
 
     // Input (NB: we already have memset zero the entire structure!)
-    MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
-    MousePosPrev = ImVec2(-FLT_MAX, -FLT_MAX);
+    MousePos = KGVec2(-FLT_MAX, -FLT_MAX);
+    MousePosPrev = KGVec2(-FLT_MAX, -FLT_MAX);
     MouseDragThreshold = 6.0f;
     for (int i = 0; i < KG_ARRAYSIZE(MouseDownDuration); i++) MouseDownDuration[i] = MouseDownDurationPrev[i] = -1.0f;
     for (int i = 0; i < KG_ARRAYSIZE(KeysData); i++) { KeysData[i].DownDuration = KeysData[i].DownDurationPrev = -1.0f; }
@@ -358,7 +239,7 @@ KarmaGuiIO::KarmaGuiIO()
 void KarmaGuiIO::AddInputCharacter(unsigned int c)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(&g.IO == this && "Can only add events to current context.");
+    KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
     if (c == 0 || !AppAcceptingEvents)
         return;
 
@@ -438,7 +319,7 @@ void KarmaGuiIO::ClearInputKeys()
     }
     KeyCtrl = KeyShift = KeyAlt = KeySuper = false;
     KeyMods = KGGuiMod_None;
-    MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+    MousePos = KGVec2(-FLT_MAX, -FLT_MAX);
     for (int n = 0; n < KG_ARRAYSIZE(MouseDown); n++)
     {
         MouseDown[n] = false;
@@ -474,25 +355,25 @@ void KarmaGuiIO::AddKeyAnalogEvent(KarmaGuiKey key, bool down, float analog_valu
     if (key == KGGuiKey_None || !AppAcceptingEvents)
         return;
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(&g.IO == this && "Can only add events to current context.");
-    KR_CORE_ASSERT(KarmaGui::IsNamedKeyOrModKey(key)); // Backend needs to pass a valid KGGuiKey_ constant. 0..511 values are legacy native key codes which are not accepted by this API.
-    KR_CORE_ASSERT(!KarmaGui::IsAliasKey(key)); // Backend cannot submit KGGuiKey_MouseXXX values they are automatically inferred from AddMouseXXX() events.
-    KR_CORE_ASSERT(key != KGGuiMod_Shortcut); // We could easily support the translation here but it seems saner to not accept it (TestEngine perform a translation itself)
+    KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
+    KR_CORE_ASSERT(Karma::KarmaGuiInternal::IsNamedKeyOrModKey(key), ""); // Backend needs to pass a valid KGGuiKey_ constant. 0..511 values are legacy native key codes which are not accepted by this API.
+    KR_CORE_ASSERT(!Karma::KarmaGuiInternal::IsAliasKey(key), ""); // Backend cannot submit KGGuiKey_MouseXXX values they are automatically inferred from AddMouseXXX() events.
+    KR_CORE_ASSERT(key != KGGuiMod_Shortcut, ""); // We could easily support the translation here but it seems saner to not accept it (TestEngine perform a translation itself)
 
     // Verify that backend isn't mixing up using new io.AddKeyEvent() api and old io.KeysDown[] + io.KeyMap[] data.
 #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
-    KR_CORE_ASSERT((BackendUsingLegacyKeyArrays == -1 || BackendUsingLegacyKeyArrays == 0) && "Backend needs to either only use io.AddKeyEvent(), either only fill legacy io.KeysDown[] + io.KeyMap[]. Not both!");
+    KR_CORE_ASSERT((BackendUsingLegacyKeyArrays == -1 || BackendUsingLegacyKeyArrays == 0), "Backend needs to either only use io.AddKeyEvent(), either only fill legacy io.KeysDown[] + io.KeyMap[]. Not both!");
     if (BackendUsingLegacyKeyArrays == -1)
         for (int n = KGGuiKey_NamedKey_BEGIN; n < KGGuiKey_NamedKey_END; n++)
-            KR_CORE_ASSERT(KeyMap[n] == -1 && "Backend needs to either only use io.AddKeyEvent(), either only fill legacy io.KeysDown[] + io.KeyMap[]. Not both!");
+            KR_CORE_ASSERT(KeyMap[n] == -1, "Backend needs to either only use io.AddKeyEvent(), either only fill legacy io.KeysDown[] + io.KeyMap[]. Not both!");
     BackendUsingLegacyKeyArrays = 0;
 #endif
-    if (KarmaGui::IsGamepadKey(key))
+    if (Karma::KarmaGuiInternal::IsGamepadKey(key))
         BackendUsingLegacyNavInputArray = false;
 
     // Filter duplicate (in particular: key mods and gamepad analog values are commonly spammed)
     const KGGuiInputEvent* latest_event = FindLatestInputEvent(KGGuiInputEventType_Key, (int)key);
-    const KarmaGuiKeyData* key_data = KarmaGui::GetKeyData(key);
+    const KarmaGuiKeyData* key_data = Karma::KarmaGuiInternal::GetKeyData(key);
     const bool latest_key_down = latest_event ? latest_event->Key.Down : key_data->Down;
     const float latest_key_analog = latest_event ? latest_event->Key.AnalogValue : key_data->AnalogValue;
     if (latest_key_down == down && latest_key_analog == analog_value)
@@ -501,7 +382,7 @@ void KarmaGuiIO::AddKeyAnalogEvent(KarmaGuiKey key, bool down, float analog_valu
     // Add event
     KGGuiInputEvent e;
     e.Type = KGGuiInputEventType_Key;
-    e.Source = KarmaGui::IsGamepadKey(key) ? KGGuiInputSource_Gamepad : KGGuiInputSource_Keyboard;
+    e.Source = Karma::KarmaGuiInternal::IsGamepadKey(key) ? KGGuiInputSource_Gamepad : KGGuiInputSource_Keyboard;
     e.Key.Key = key;
     e.Key.Down = down;
     e.Key.AnalogValue = analog_value;
@@ -555,11 +436,11 @@ void KarmaGuiIO::AddMousePosEvent(float x, float y)
         return;
 
     // Apply same flooring as UpdateMouseInputs()
-    ImVec2 pos((x > -FLT_MAX) ? KGFloorSigned(x) : x, (y > -FLT_MAX) ? KGFloorSigned(y) : y);
+    KGVec2 pos((x > -FLT_MAX) ? KGFloorSigned(x) : x, (y > -FLT_MAX) ? KGFloorSigned(y) : y);
 
     // Filter duplicate
     const KGGuiInputEvent* latest_event = FindLatestInputEvent(KGGuiInputEventType_MousePos);
-    const ImVec2 latest_pos = latest_event ? ImVec2(latest_event->MousePos.PosX, latest_event->MousePos.PosY) : g.IO.MousePos;
+    const KGVec2 latest_pos = latest_event ? KGVec2(latest_event->MousePos.PosX, latest_event->MousePos.PosY) : g.IO.MousePos;
     if (latest_pos.x == pos.x && latest_pos.y == pos.y)
         return;
 
@@ -653,17 +534,17 @@ void KarmaGuiIO::AddFocusEvent(bool focused)
 // [SECTION] MISC HELPERS/UTILITIES (Geometry functions)
 //-----------------------------------------------------------------------------
 
-ImVec2 KGBezierCubicClosestPoint(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& p, int num_segments)
+KGVec2 KGBezierCubicClosestPoint(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& p, int num_segments)
 {
     KR_CORE_ASSERT(num_segments > 0); // Use KGBezierCubicClosestPointCasteljau()
-    ImVec2 p_last = p1;
-    ImVec2 p_closest;
+    KGVec2 p_last = p1;
+    KGVec2 p_closest;
     float p_closest_dist2 = FLT_MAX;
     float t_step = 1.0f / (float)num_segments;
     for (int i_step = 1; i_step <= num_segments; i_step++)
     {
-        ImVec2 p_current = KGBezierCubicCalc(p1, p2, p3, p4, t_step * i_step);
-        ImVec2 p_line = KGLineClosestPoint(p_last, p_current, p);
+        KGVec2 p_current = KGBezierCubicCalc(p1, p2, p3, p4, t_step * i_step);
+        KGVec2 p_line = KGLineClosestPoint(p_last, p_current, p);
         float dist2 = KGLengthSqr(p - p_line);
         if (dist2 < p_closest_dist2)
         {
@@ -676,7 +557,7 @@ ImVec2 KGBezierCubicClosestPoint(const ImVec2& p1, const ImVec2& p2, const ImVec
 }
 
 // Closely mimics PathBezierToCasteljau() in imgui_draw.cpp
-static void ImBezierCubicClosestPointCasteljauStep(const ImVec2& p, ImVec2& p_closest, ImVec2& p_last, float& p_closest_dist2, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)
+static void ImBezierCubicClosestPointCasteljauStep(const KGVec2& p, KGVec2& p_closest, KGVec2& p_last, float& p_closest_dist2, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float tess_tol, int level)
 {
     float dx = x4 - x1;
     float dy = y4 - y1;
@@ -686,8 +567,8 @@ static void ImBezierCubicClosestPointCasteljauStep(const ImVec2& p, ImVec2& p_cl
     d3 = (d3 >= 0) ? d3 : -d3;
     if ((d2 + d3) * (d2 + d3) < tess_tol * (dx * dx + dy * dy))
     {
-        ImVec2 p_current(x4, y4);
-        ImVec2 p_line = KGLineClosestPoint(p_last, p_current, p);
+        KGVec2 p_current(x4, y4);
+        KGVec2 p_line = KGLineClosestPoint(p_last, p_current, p);
         float dist2 = KGLengthSqr(p - p_line);
         if (dist2 < p_closest_dist2)
         {
@@ -711,20 +592,20 @@ static void ImBezierCubicClosestPointCasteljauStep(const ImVec2& p, ImVec2& p_cl
 
 // tess_tol is generally the same value you would find in KarmaGui::GetStyle().CurveTessellationTol
 // Because those ImXXX functions are lower-level than KarmaGui:: we cannot access this value automatically.
-ImVec2 KGBezierCubicClosestPointCasteljau(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& p, float tess_tol)
+KGVec2 KGBezierCubicClosestPointCasteljau(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& p, float tess_tol)
 {
     KR_CORE_ASSERT(tess_tol > 0.0f);
-    ImVec2 p_last = p1;
-    ImVec2 p_closest;
+    KGVec2 p_last = p1;
+    KGVec2 p_closest;
     float p_closest_dist2 = FLT_MAX;
     ImBezierCubicClosestPointCasteljauStep(p, p_closest, p_last, p_closest_dist2, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, p4.x, p4.y, tess_tol, 0);
     return p_closest;
 }
 
-ImVec2 KGLineClosestPoint(const ImVec2& a, const ImVec2& b, const ImVec2& p)
+KGVec2 KGLineClosestPoint(const KGVec2& a, const KGVec2& b, const KGVec2& p)
 {
-    ImVec2 ap = p - a;
-    ImVec2 ab_dir = b - a;
+    KGVec2 ap = p - a;
+    KGVec2 ab_dir = b - a;
     float dot = ap.x * ab_dir.x + ap.y * ab_dir.y;
     if (dot < 0.0f)
         return a;
@@ -734,7 +615,7 @@ ImVec2 KGLineClosestPoint(const ImVec2& a, const ImVec2& b, const ImVec2& p)
     return a + ab_dir * dot / ab_len_sqr;
 }
 
-bool KGTriangleContainsPoint(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& p)
+bool KGTriangleContainsPoint(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& p)
 {
     bool b1 = ((p.x - b.x) * (a.y - b.y) - (p.y - b.y) * (a.x - b.x)) < 0.0f;
     bool b2 = ((p.x - c.x) * (b.y - c.y) - (p.y - c.y) * (b.x - c.x)) < 0.0f;
@@ -742,22 +623,22 @@ bool KGTriangleContainsPoint(const ImVec2& a, const ImVec2& b, const ImVec2& c, 
     return ((b1 == b2) && (b2 == b3));
 }
 
-void KGTriangleBarycentricCoords(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& p, float& out_u, float& out_v, float& out_w)
+void KGTriangleBarycentricCoords(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& p, float& out_u, float& out_v, float& out_w)
 {
-    ImVec2 v0 = b - a;
-    ImVec2 v1 = c - a;
-    ImVec2 v2 = p - a;
+    KGVec2 v0 = b - a;
+    KGVec2 v1 = c - a;
+    KGVec2 v2 = p - a;
     const float denom = v0.x * v1.y - v1.x * v0.y;
     out_v = (v2.x * v1.y - v1.x * v2.y) / denom;
     out_w = (v0.x * v2.y - v2.x * v0.y) / denom;
     out_u = 1.0f - out_v - out_w;
 }
 
-ImVec2 KGTriangleClosestPoint(const ImVec2& a, const ImVec2& b, const ImVec2& c, const ImVec2& p)
+KGVec2 KGTriangleClosestPoint(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& p)
 {
-    ImVec2 proj_ab = KGLineClosestPoint(a, b, p);
-    ImVec2 proj_bc = KGLineClosestPoint(b, c, p);
-    ImVec2 proj_ca = KGLineClosestPoint(c, a, p);
+    KGVec2 proj_ab = KGLineClosestPoint(a, b, p);
+    KGVec2 proj_bc = KGLineClosestPoint(b, c, p);
+    KGVec2 proj_ca = KGLineClosestPoint(c, a, p);
     float dist2_ab = KGLengthSqr(p - proj_ab);
     float dist2_bc = KGLengthSqr(p - proj_bc);
     float dist2_ca = KGLengthSqr(p - proj_ca);
@@ -1747,7 +1628,7 @@ void KarmaGui::CalcListClipping(int items_count, float items_height, int* out_it
     if (g.NavJustMovedToId && window->NavLastIds[0] == g.NavJustMovedToId)
         rect.Add(WindowRectRelToAbs(window, window->NavRectRel[0])); // Could store and use NavJustMovedToRectRel
 
-    const ImVec2 pos = window->DC.CursorPos;
+    const KGVec2 pos = window->DC.CursorPos;
     int start = (int)((rect.Min.y - pos.y) / items_height);
     int end = (int)((rect.Max.y - pos.y) / items_height);
 
@@ -2181,18 +2062,18 @@ void KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, float val)
     KR_CORE_ASSERT(0 && "Called PushStyleVar() float variant but variable is not a float!");
 }
 
-void KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, const ImVec2& val)
+void KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, const KGVec2& val)
 {
     const ImGuiStyleVarInfo* var_info = GetStyleVarInfo(idx);
     if (var_info->Type == KGGuiDataType_Float && var_info->Count == 2)
     {
         KarmaGuiContext& g = *GKarmaGui;
-        ImVec2* pvar = (ImVec2*)var_info->GetVarPtr(&g.Style);
+        KGVec2* pvar = (KGVec2*)var_info->GetVarPtr(&g.Style);
         g.StyleVarStack.push_back(KGGuiStyleMod(idx, *pvar));
         *pvar = val;
         return;
     }
-    KR_CORE_ASSERT(0 && "Called PushStyleVar() ImVec2 variant but variable is not a ImVec2!");
+    KR_CORE_ASSERT(0 && "Called PushStyleVar() KGVec2 variant but variable is not a KGVec2!");
 }
 
 void KarmaGui::PopStyleVar(int count)
@@ -2302,7 +2183,7 @@ const char* KarmaGui::FindRenderedTextEnd(const char* text, const char* text_end
 
 // Internal ImGui functions to render text
 // RenderText***() functions calls KGDrawList::AddText() calls ImBitmapFont::RenderText()
-void KarmaGui::RenderText(ImVec2 pos, const char* text, const char* text_end, bool hide_text_after_hash)
+void KarmaGui::RenderText(KGVec2 pos, const char* text, const char* text_end, bool hide_text_after_hash)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -2328,7 +2209,7 @@ void KarmaGui::RenderText(ImVec2 pos, const char* text, const char* text_end, bo
     }
 }
 
-void KarmaGui::RenderTextWrapped(ImVec2 pos, const char* text, const char* text_end, float wrap_width)
+void KarmaGui::RenderTextWrapped(KGVec2 pos, const char* text, const char* text_end, float wrap_width)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -2346,14 +2227,14 @@ void KarmaGui::RenderTextWrapped(ImVec2 pos, const char* text, const char* text_
 
 // Default clip_rect uses (pos_min,pos_max)
 // Handle clipping on CPU immediately (vs typically let the GPU clip the triangles that are overlapping the clipping rectangle edges)
-void KarmaGui::RenderTextClippedEx(KGDrawList* draw_list, const ImVec2& pos_min, const ImVec2& pos_max, const char* text, const char* text_display_end, const ImVec2* text_size_if_known, const ImVec2& align, const KGRect* clip_rect)
+void KarmaGui::RenderTextClippedEx(KGDrawList* draw_list, const KGVec2& pos_min, const KGVec2& pos_max, const char* text, const char* text_display_end, const KGVec2* text_size_if_known, const KGVec2& align, const KGRect* clip_rect)
 {
     // Perform CPU side clipping for single clipped element to avoid using scissor state
-    ImVec2 pos = pos_min;
-    const ImVec2 text_size = text_size_if_known ? *text_size_if_known : CalcTextSize(text, text_display_end, false, 0.0f);
+    KGVec2 pos = pos_min;
+    const KGVec2 text_size = text_size_if_known ? *text_size_if_known : CalcTextSize(text, text_display_end, false, 0.0f);
 
-    const ImVec2* clip_min = clip_rect ? &clip_rect->Min : &pos_min;
-    const ImVec2* clip_max = clip_rect ? &clip_rect->Max : &pos_max;
+    const KGVec2* clip_min = clip_rect ? &clip_rect->Min : &pos_min;
+    const KGVec2* clip_max = clip_rect ? &clip_rect->Max : &pos_max;
     bool need_clipping = (pos.x + text_size.x >= clip_max->x) || (pos.y + text_size.y >= clip_max->y);
     if (clip_rect) // If we had no explicit clipping rectangle then pos==clip_min
         need_clipping |= (pos.x < clip_min->x) || (pos.y < clip_min->y);
@@ -2374,7 +2255,7 @@ void KarmaGui::RenderTextClippedEx(KGDrawList* draw_list, const ImVec2& pos_min,
     }
 }
 
-void KarmaGui::RenderTextClipped(const ImVec2& pos_min, const ImVec2& pos_max, const char* text, const char* text_end, const ImVec2* text_size_if_known, const ImVec2& align, const KGRect* clip_rect)
+void KarmaGui::RenderTextClipped(const KGVec2& pos_min, const KGVec2& pos_max, const char* text, const char* text_end, const KGVec2* text_size_if_known, const KGVec2& align, const KGRect* clip_rect)
 {
     // Hide anything after a '##' string
     const char* text_display_end = FindRenderedTextEnd(text, text_end);
@@ -2393,16 +2274,16 @@ void KarmaGui::RenderTextClipped(const ImVec2& pos_min, const ImVec2& pos_max, c
 // Another overly complex function until we reorganize everything into a nice all-in-one helper.
 // This is made more complex because we have dissociated the layout rectangle (pos_min..pos_max) which define _where_ the ellipsis is, from actual clipping of text and limit of the ellipsis display.
 // This is because in the context of tabs we selectively hide part of the text when the Close Button appears, but we don't want the ellipsis to move.
-void KarmaGui::RenderTextEllipsis(KGDrawList* draw_list, const ImVec2& pos_min, const ImVec2& pos_max, float clip_max_x, float ellipsis_max_x, const char* text, const char* text_end_full, const ImVec2* text_size_if_known)
+void KarmaGui::RenderTextEllipsis(KGDrawList* draw_list, const KGVec2& pos_min, const KGVec2& pos_max, float clip_max_x, float ellipsis_max_x, const char* text, const char* text_end_full, const KGVec2* text_size_if_known)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (text_end_full == NULL)
         text_end_full = FindRenderedTextEnd(text);
-    const ImVec2 text_size = text_size_if_known ? *text_size_if_known : CalcTextSize(text, text_end_full, false, 0.0f);
+    const KGVec2 text_size = text_size_if_known ? *text_size_if_known : CalcTextSize(text, text_end_full, false, 0.0f);
 
-    //draw_list->AddLine(ImVec2(pos_max.x, pos_min.y - 4), ImVec2(pos_max.x, pos_max.y + 4), KG_COL32(0, 0, 255, 255));
-    //draw_list->AddLine(ImVec2(ellipsis_max_x, pos_min.y-2), ImVec2(ellipsis_max_x, pos_max.y+2), KG_COL32(0, 255, 0, 255));
-    //draw_list->AddLine(ImVec2(clip_max_x, pos_min.y), ImVec2(clip_max_x, pos_max.y), KG_COL32(255, 0, 0, 255));
+    //draw_list->AddLine(KGVec2(pos_max.x, pos_min.y - 4), KGVec2(pos_max.x, pos_max.y + 4), KG_COL32(0, 0, 255, 255));
+    //draw_list->AddLine(KGVec2(ellipsis_max_x, pos_min.y-2), KGVec2(ellipsis_max_x, pos_max.y+2), KG_COL32(0, 255, 0, 255));
+    //draw_list->AddLine(KGVec2(clip_max_x, pos_min.y), KGVec2(clip_max_x, pos_max.y), KG_COL32(255, 0, 0, 255));
     // FIXME: We could technically remove (last_glyph->AdvanceX - last_glyph->X1) from text_size.x here and save a few pixels.
     if (text_size.x > pos_max.x - pos_min.x)
     {
@@ -2452,18 +2333,18 @@ void KarmaGui::RenderTextEllipsis(KGDrawList* draw_list, const ImVec2& pos_min, 
         }
 
         // Render text, render ellipsis
-        RenderTextClippedEx(draw_list, pos_min, ImVec2(clip_max_x, pos_max.y), text, text_end_ellipsis, &text_size, ImVec2(0.0f, 0.0f));
+        RenderTextClippedEx(draw_list, pos_min, KGVec2(clip_max_x, pos_max.y), text, text_end_ellipsis, &text_size, KGVec2(0.0f, 0.0f));
         float ellipsis_x = pos_min.x + text_size_clipped_x;
         if (ellipsis_x + ellipsis_total_width <= ellipsis_max_x)
             for (int i = 0; i < ellipsis_char_count; i++)
             {
-                font->RenderChar(draw_list, font_size, ImVec2(ellipsis_x, pos_min.y), GetColorU32(KGGuiCol_Text), ellipsis_char);
+                font->RenderChar(draw_list, font_size, KGVec2(ellipsis_x, pos_min.y), GetColorU32(KGGuiCol_Text), ellipsis_char);
                 ellipsis_x += ellipsis_glyph_width;
             }
     }
     else
     {
-        RenderTextClippedEx(draw_list, pos_min, ImVec2(clip_max_x, pos_max.y), text, text_end_full, &text_size, ImVec2(0.0f, 0.0f));
+        RenderTextClippedEx(draw_list, pos_min, KGVec2(clip_max_x, pos_max.y), text, text_end_full, &text_size, KGVec2(0.0f, 0.0f));
     }
 
     if (g.LogEnabled)
@@ -2471,7 +2352,7 @@ void KarmaGui::RenderTextEllipsis(KGDrawList* draw_list, const ImVec2& pos_min, 
 }
 
 // Render a rectangle shaped with optional rounding and borders
-void KarmaGui::RenderFrame(ImVec2 p_min, ImVec2 p_max, KGU32 fill_col, bool border, float rounding)
+void KarmaGui::RenderFrame(KGVec2 p_min, KGVec2 p_max, KGU32 fill_col, bool border, float rounding)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -2479,19 +2360,19 @@ void KarmaGui::RenderFrame(ImVec2 p_min, ImVec2 p_max, KGU32 fill_col, bool bord
     const float border_size = g.Style.FrameBorderSize;
     if (border && border_size > 0.0f)
     {
-        window->DrawList->AddRect(p_min + ImVec2(1, 1), p_max + ImVec2(1, 1), GetColorU32(KGGuiCol_BorderShadow), rounding, 0, border_size);
+        window->DrawList->AddRect(p_min + KGVec2(1, 1), p_max + KGVec2(1, 1), GetColorU32(KGGuiCol_BorderShadow), rounding, 0, border_size);
         window->DrawList->AddRect(p_min, p_max, GetColorU32(KGGuiCol_Border), rounding, 0, border_size);
     }
 }
 
-void KarmaGui::RenderFrameBorder(ImVec2 p_min, ImVec2 p_max, float rounding)
+void KarmaGui::RenderFrameBorder(KGVec2 p_min, KGVec2 p_max, float rounding)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     const float border_size = g.Style.FrameBorderSize;
     if (border_size > 0.0f)
     {
-        window->DrawList->AddRect(p_min + ImVec2(1, 1), p_max + ImVec2(1, 1), GetColorU32(KGGuiCol_BorderShadow), rounding, 0, border_size);
+        window->DrawList->AddRect(p_min + KGVec2(1, 1), p_max + KGVec2(1, 1), GetColorU32(KGGuiCol_BorderShadow), rounding, 0, border_size);
         window->DrawList->AddRect(p_min, p_max, GetColorU32(KGGuiCol_Border), rounding, 0, border_size);
     }
 }
@@ -2514,11 +2395,11 @@ void KarmaGui::RenderNavHighlight(const KGRect& bb, KGGuiID id, KGGuiNavHighligh
     {
         const float THICKNESS = 2.0f;
         const float DISTANCE = 3.0f + THICKNESS * 0.5f;
-        display_rect.Expand(ImVec2(DISTANCE, DISTANCE));
+        display_rect.Expand(KGVec2(DISTANCE, DISTANCE));
         bool fully_visible = window->ClipRect.Contains(display_rect);
         if (!fully_visible)
             window->DrawList->PushClipRect(display_rect.Min, display_rect.Max);
-        window->DrawList->AddRect(display_rect.Min + ImVec2(THICKNESS * 0.5f, THICKNESS * 0.5f), display_rect.Max - ImVec2(THICKNESS * 0.5f, THICKNESS * 0.5f), GetColorU32(KGGuiCol_NavHighlight), rounding, 0, THICKNESS);
+        window->DrawList->AddRect(display_rect.Min + KGVec2(THICKNESS * 0.5f, THICKNESS * 0.5f), display_rect.Max - KGVec2(THICKNESS * 0.5f, THICKNESS * 0.5f), GetColorU32(KGGuiCol_NavHighlight), rounding, 0, THICKNESS);
         if (!fully_visible)
             window->DrawList->PopClipRect();
     }
@@ -2528,7 +2409,7 @@ void KarmaGui::RenderNavHighlight(const KGRect& bb, KGGuiID id, KGGuiNavHighligh
     }
 }
 
-void KarmaGui::RenderMouseCursor(ImVec2 base_pos, float base_scale, KarmaGuiMouseCursor mouse_cursor, KGU32 col_fill, KGU32 col_border, KGU32 col_shadow)
+void KarmaGui::RenderMouseCursor(KGVec2 base_pos, float base_scale, KarmaGuiMouseCursor mouse_cursor, KGU32 col_fill, KGU32 col_border, KGU32 col_shadow)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(mouse_cursor > KGGuiMouseCursor_None && mouse_cursor < KGGuiMouseCursor_COUNT);
@@ -2536,19 +2417,19 @@ void KarmaGui::RenderMouseCursor(ImVec2 base_pos, float base_scale, KarmaGuiMous
     for (int n = 0; n < g.Viewports.Size; n++)
     {
         // We scale cursor with current viewport/monitor, however Windows 10 for its own hardware cursor seems to be using a different scale factor.
-        ImVec2 offset, size, uv[4];
+        KGVec2 offset, size, uv[4];
         if (!font_atlas->GetMouseCursorTexData(mouse_cursor, &offset, &size, &uv[0], &uv[2]))
             continue;
         KGGuiViewportP* viewport = g.Viewports[n];
-        const ImVec2 pos = base_pos - offset;
+        const KGVec2 pos = base_pos - offset;
         const float scale = base_scale * viewport->DpiScale;
-        if (!viewport->GetMainRect().Overlaps(KGRect(pos, pos + ImVec2(size.x + 2, size.y + 2) * scale)))
+        if (!viewport->GetMainRect().Overlaps(KGRect(pos, pos + KGVec2(size.x + 2, size.y + 2) * scale)))
             continue;
         KGDrawList* draw_list = GetForegroundDrawList(viewport);
         KGTextureID tex_id = font_atlas->TexID;
         draw_list->PushTextureID(tex_id);
-        draw_list->AddImage(tex_id, pos + ImVec2(1, 0) * scale, pos + (ImVec2(1, 0) + size) * scale, uv[2], uv[3], col_shadow);
-        draw_list->AddImage(tex_id, pos + ImVec2(2, 0) * scale, pos + (ImVec2(2, 0) + size) * scale, uv[2], uv[3], col_shadow);
+        draw_list->AddImage(tex_id, pos + KGVec2(1, 0) * scale, pos + (KGVec2(1, 0) + size) * scale, uv[2], uv[3], col_shadow);
+        draw_list->AddImage(tex_id, pos + KGVec2(2, 0) * scale, pos + (KGVec2(2, 0) + size) * scale, uv[2], uv[3], col_shadow);
         draw_list->AddImage(tex_id, pos,                        pos + size * scale,                  uv[2], uv[3], col_border);
         draw_list->AddImage(tex_id, pos,                        pos + size * scale,                  uv[0], uv[1], col_fill);
         draw_list->PopTextureID();
@@ -2793,15 +2674,15 @@ KGGuiWindow::KGGuiWindow(KarmaGuiContext* context, const char* name) : DrawListI
     ID = KGHashStr(name);
     IDStack.push_back(ID);
     ViewportAllowPlatformMonitorExtend = -1;
-    ViewportPos = ImVec2(FLT_MAX, FLT_MAX);
+    ViewportPos = KGVec2(FLT_MAX, FLT_MAX);
     MoveId = GetID("#MOVE");
     TabId = GetID("#TAB");
-    ScrollTarget = ImVec2(FLT_MAX, FLT_MAX);
-    ScrollTargetCenterRatio = ImVec2(0.5f, 0.5f);
+    ScrollTarget = KGVec2(FLT_MAX, FLT_MAX);
+    ScrollTargetCenterRatio = KGVec2(0.5f, 0.5f);
     AutoFitFramesX = AutoFitFramesY = -1;
     AutoPosLastDirection = KGGuiDir_None;
     SetWindowPosAllowFlags = SetWindowSizeAllowFlags = SetWindowCollapsedAllowFlags = SetWindowDockAllowFlags = KGGuiCond_Always | KGGuiCond_Once | KGGuiCond_FirstUseEver | KGGuiCond_Appearing;
-    SetWindowPosVal = SetWindowPosPivot = ImVec2(FLT_MAX, FLT_MAX);
+    SetWindowPosVal = SetWindowPosPivot = KGVec2(FLT_MAX, FLT_MAX);
     LastFrameActive = -1;
     LastFrameJustFocused = -1;
     LastTimeActive = -1.0f;
@@ -3181,7 +3062,7 @@ void KarmaGui::SetLastItemData(KGGuiID item_id, KGGuiItemFlags in_flags, KGGuiIt
     g.LastItemData.Rect = item_rect;
 }
 
-float KarmaGui::CalcWrapWidthForPos(const ImVec2& pos, float wrap_pos_x)
+float KarmaGui::CalcWrapWidthForPos(const KGVec2& pos, float wrap_pos_x)
 {
     if (wrap_pos_x < 0.0f)
         return 0.0f;
@@ -3390,7 +3271,7 @@ void KarmaGui::UpdateMouseMovingWindowNewFrame()
         const bool window_disappared = ((!moving_window->WasActive && !moving_window->Active) || moving_window->Viewport == NULL);
         if (g.IO.MouseDown[0] && IsMousePosValid(&g.IO.MousePos) && !window_disappared)
         {
-            ImVec2 pos = g.IO.MousePos - g.ActiveIdClickOffset;
+            KGVec2 pos = g.IO.MousePos - g.ActiveIdClickOffset;
             if (moving_window->Pos.x != pos.x || moving_window->Pos.y != pos.y)
             {
                 SetWindowPos(moving_window, pos, KGGuiCond_Always);
@@ -3492,7 +3373,7 @@ void KarmaGui::UpdateMouseMovingWindowEndFrame()
 
 // This is called during NewFrame()->UpdateViewportsNewFrame() only.
 // Need to keep in sync with SetWindowPos()
-static void TranslateWindow(KGGuiWindow* window, const ImVec2& delta)
+static void TranslateWindow(KGGuiWindow* window, const KGVec2& delta)
 {
     window->Pos += delta;
     window->ClipRect.Translate(delta);
@@ -3506,7 +3387,7 @@ static void TranslateWindow(KGGuiWindow* window, const ImVec2& delta)
 
 static void ScaleWindow(KGGuiWindow* window, float scale)
 {
-    ImVec2 origin = window->Viewport->Pos;
+    KGVec2 origin = window->Viewport->Pos;
     window->Pos = KGFloor((window->Pos - origin) * scale + origin);
     window->Size = KGFloor(window->Size * scale);
     window->SizeFull = KGFloor(window->SizeFull * scale);
@@ -3523,7 +3404,7 @@ void KarmaGui::UpdateHoveredWindowAndCaptureFlags()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiIO& io = g.IO;
-    g.WindowsHoverPadding = KGMax(g.Style.TouchExtraPadding, ImVec2(WINDOWS_HOVER_PADDING, WINDOWS_HOVER_PADDING));
+    g.WindowsHoverPadding = KGMax(g.Style.TouchExtraPadding, KGVec2(WINDOWS_HOVER_PADDING, WINDOWS_HOVER_PADDING));
 
     // Find the window hovered by mouse:
     // - Child windows can extend beyond the limit of their parent so we need to derive HoveredRootWindow from HoveredWindow.
@@ -3853,7 +3734,7 @@ void KarmaGui::NewFrame()
     // We don't use "Debug" to avoid colliding with user trying to create a "Debug" window with custom flags.
     // This fallback is particularly important as it prevents KarmaGui:: calls from crashing.
     g.WithinFrameScopeWithImplicitWindow = true;
-    SetNextWindowSize(ImVec2(400, 400), KGGuiCond_FirstUseEver);
+    SetNextWindowSize(KGVec2(400, 400), KGGuiCond_FirstUseEver);
     Begin("Debug##Default");
     KR_CORE_ASSERT(g.CurrentWindow->IsFallbackWindow == true);
 
@@ -3985,7 +3866,7 @@ static void SetupViewportDrawData(KGGuiViewportP* viewport, KGVector<KGDrawList*
     draw_data->CmdListsCount = draw_lists->Size;
     draw_data->TotalVtxCount = draw_data->TotalIdxCount = 0;
     draw_data->DisplayPos = viewport->Pos;
-    draw_data->DisplaySize = is_minimized ? ImVec2(0.0f, 0.0f) : viewport->Size;
+    draw_data->DisplaySize = is_minimized ? KGVec2(0.0f, 0.0f) : viewport->Size;
     draw_data->FramebufferScale = io.DisplayFramebufferScale; // FIXME-VIEWPORT: This may vary on a per-monitor/viewport basis?
     draw_data->OwnerViewport = viewport;
     for (int n = 0; n < draw_lists->Size; n++)
@@ -4003,7 +3884,7 @@ static void SetupViewportDrawData(KGGuiViewportP* viewport, KGVector<KGDrawList*
 // - If the code here changes, may need to update code of functions like NextColumn() and PushColumnClipRect():
 //   some frequently called functions which to modify both channels and clipping simultaneously tend to use the
 //   more specialized SetWindowClipRectBeforeSetChannel() to avoid extraneous updates of underlying ImDrawCmds.
-void KarmaGui::PushClipRect(const ImVec2& clip_rect_min, const ImVec2& clip_rect_max, bool intersect_with_current_clip_rect)
+void KarmaGui::PushClipRect(const KGVec2& clip_rect_min, const KGVec2& clip_rect_max, bool intersect_with_current_clip_rect)
 {
     KGGuiWindow* window = GetCurrentWindow();
     window->DrawList->PushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect);
@@ -4041,7 +3922,7 @@ static void KarmaGui::RenderDimmedBackgroundBehindWindow(KGGuiWindow* window, KG
         KGDrawList* draw_list = window->RootWindowDockTree->DrawList;
         if (draw_list->CmdBuffer.Size == 0)
             draw_list->AddDrawCmd();
-        draw_list->PushClipRect(viewport_rect.Min - ImVec2(1, 1), viewport_rect.Max + ImVec2(1, 1), false); // Ensure KGDrawCmd are not merged
+        draw_list->PushClipRect(viewport_rect.Min - KGVec2(1, 1), viewport_rect.Max + KGVec2(1, 1), false); // Ensure KGDrawCmd are not merged
         draw_list->AddRectFilled(viewport_rect.Min, viewport_rect.Max, col);
         KGDrawCmd cmd = draw_list->CmdBuffer.back();
         KR_CORE_ASSERT(cmd.ElemCount == 6);
@@ -4297,8 +4178,8 @@ void KarmaGui::Render()
 }
 
 // Calculate text size. Text can be multi-line. Optionally ignore text after a ## marker.
-// CalcTextSize("") should return ImVec2(0.0f, g.FontSize)
-ImVec2 KarmaGui::CalcTextSize(const char* text, const char* text_end, bool hide_text_after_double_hash, float wrap_width)
+// CalcTextSize("") should return KGVec2(0.0f, g.FontSize)
+KGVec2 KarmaGui::CalcTextSize(const char* text, const char* text_end, bool hide_text_after_double_hash, float wrap_width)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -4311,8 +4192,8 @@ ImVec2 KarmaGui::CalcTextSize(const char* text, const char* text_end, bool hide_
     KGFont* font = g.Font;
     const float font_size = g.FontSize;
     if (text == text_display_end)
-        return ImVec2(0.0f, font_size);
-    ImVec2 text_size = font->CalcTextSizeA(font_size, FLT_MAX, wrap_width, text, text_display_end, NULL);
+        return KGVec2(0.0f, font_size);
+    KGVec2 text_size = font->CalcTextSizeA(font_size, FLT_MAX, wrap_width, text, text_display_end, NULL);
 
     // Round
     // FIXME: This has been here since Dec 2015 (7b0bf230) but down the line we want this out.
@@ -4342,8 +4223,8 @@ static void FindHoveredWindow()
     if (g.MovingWindow && !(g.MovingWindow->Flags & KGGuiWindowFlags_NoMouseInputs))
         hovered_window = g.MovingWindow;
 
-    ImVec2 padding_regular = g.Style.TouchExtraPadding;
-    ImVec2 padding_for_resize = g.IO.ConfigWindowsResizeFromEdges ? g.WindowsHoverPadding : padding_regular;
+    KGVec2 padding_regular = g.Style.TouchExtraPadding;
+    KGVec2 padding_for_resize = g.IO.ConfigWindowsResizeFromEdges ? g.WindowsHoverPadding : padding_regular;
     for (int i = g.Windows.Size - 1; i >= 0; i--)
     {
         KGGuiWindow* window = g.Windows[i];
@@ -4369,8 +4250,8 @@ static void FindHoveredWindow()
         // FIXME: Consider generalizing hit-testing override (with more generic data, callback, etc.) (#1512)
         if (window->HitTestHoleSize.x != 0)
         {
-            ImVec2 hole_pos(window->Pos.x + (float)window->HitTestHoleOffset.x, window->Pos.y + (float)window->HitTestHoleOffset.y);
-            ImVec2 hole_size((float)window->HitTestHoleSize.x, (float)window->HitTestHoleSize.y);
+            KGVec2 hole_pos(window->Pos.x + (float)window->HitTestHoleOffset.x, window->Pos.y + (float)window->HitTestHoleOffset.y);
+            KGVec2 hole_size((float)window->HitTestHoleSize.x, (float)window->HitTestHoleSize.y);
             if (KGRect(hole_pos, hole_pos + hole_size).Contains(g.IO.MousePos))
                 continue;
         }
@@ -4515,25 +4396,25 @@ KGGuiID KarmaGui::GetItemID()
     return g.LastItemData.ID;
 }
 
-ImVec2 KarmaGui::GetItemRectMin()
+KGVec2 KarmaGui::GetItemRectMin()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.LastItemData.Rect.Min;
 }
 
-ImVec2 KarmaGui::GetItemRectMax()
+KGVec2 KarmaGui::GetItemRectMax()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.LastItemData.Rect.Max;
 }
 
-ImVec2 KarmaGui::GetItemRectSize()
+KGVec2 KarmaGui::GetItemRectSize()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.LastItemData.Rect.GetSize();
 }
 
-bool KarmaGui::BeginChildEx(const char* name, KGGuiID id, const ImVec2& size_arg, bool border, KarmaGuiWindowFlags flags)
+bool KarmaGui::BeginChildEx(const char* name, KGGuiID id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* parent_window = g.CurrentWindow;
@@ -4542,8 +4423,8 @@ bool KarmaGui::BeginChildEx(const char* name, KGGuiID id, const ImVec2& size_arg
     flags |= (parent_window->Flags & KGGuiWindowFlags_NoMove);  // Inherit the NoMove flag
 
     // Size
-    const ImVec2 content_avail = GetContentRegionAvail();
-    ImVec2 size = KGFloor(size_arg);
+    const KGVec2 content_avail = GetContentRegionAvail();
+    KGVec2 size = KGFloor(size_arg);
     const int auto_fit_axises = ((size.x == 0.0f) ? (1 << KGGuiAxis_X) : 0x00) | ((size.y == 0.0f) ? (1 << KGGuiAxis_Y) : 0x00);
     if (size.x <= 0.0f)
         size.x = KGMax(content_avail.x + size.x, 4.0f); // Arbitrary minimum child size (0.0f causing too many issues)
@@ -4584,13 +4465,13 @@ bool KarmaGui::BeginChildEx(const char* name, KGGuiID id, const ImVec2& size_arg
     return ret;
 }
 
-bool KarmaGui::BeginChild(const char* str_id, const ImVec2& size_arg, bool border, KarmaGuiWindowFlags extra_flags)
+bool KarmaGui::BeginChild(const char* str_id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags extra_flags)
 {
     KGGuiWindow* window = GetCurrentWindow();
     return BeginChildEx(str_id, window->GetID(str_id), size_arg, border, extra_flags);
 }
 
-bool KarmaGui::BeginChild(KGGuiID id, const ImVec2& size_arg, bool border, KarmaGuiWindowFlags extra_flags)
+bool KarmaGui::BeginChild(KGGuiID id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags extra_flags)
 {
     KR_CORE_ASSERT(id != 0);
     return BeginChildEx(NULL, id, size_arg, border, extra_flags);
@@ -4611,7 +4492,7 @@ void KarmaGui::EndChild()
     }
     else
     {
-        ImVec2 sz = window->Size;
+        KGVec2 sz = window->Size;
         if (window->AutoFitChildAxises & (1 << KGGuiAxis_X)) // Arbitrary minimum zero-ish child size of 4.0f causes less trouble than a 0.0f
             sz.x = KGMax(4.0f, sz.x);
         if (window->AutoFitChildAxises & (1 << KGGuiAxis_Y))
@@ -4628,7 +4509,7 @@ void KarmaGui::EndChild()
 
             // When browsing a window that has no activable items (scroll only) we keep a highlight on the child (pass g.NavId to trick into always displaying)
             if (window->DC.NavLayersActiveMask == 0 && window == g.NavWindow)
-                RenderNavHighlight(KGRect(bb.Min - ImVec2(2, 2), bb.Max + ImVec2(2, 2)), g.NavId, KGGuiNavHighlightFlags_TypeThin);
+                RenderNavHighlight(KGRect(bb.Min - KGVec2(2, 2), bb.Max + KGVec2(2, 2)), g.NavId, KGGuiNavHighlightFlags_TypeThin);
         }
         else
         {
@@ -4643,7 +4524,7 @@ void KarmaGui::EndChild()
 }
 
 // Helper to create a child window / scrolling region that looks like a normal widget frame.
-bool KarmaGui::BeginChildFrame(KGGuiID id, const ImVec2& size, KarmaGuiWindowFlags extra_flags)
+bool KarmaGui::BeginChildFrame(KGGuiID id, const KGVec2& size, KarmaGuiWindowFlags extra_flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
@@ -4689,11 +4570,11 @@ static void ApplyWindowSettings(KGGuiWindow* window, KGGuiWindowSettings* settin
     if (settings->ViewportId)
     {
         window->ViewportId = settings->ViewportId;
-        window->ViewportPos = ImVec2(settings->ViewportPos.x, settings->ViewportPos.y);
+        window->ViewportPos = KGVec2(settings->ViewportPos.x, settings->ViewportPos.y);
     }
-    window->Pos = KGFloor(ImVec2(settings->Pos.x + window->ViewportPos.x, settings->Pos.y + window->ViewportPos.y));
+    window->Pos = KGFloor(KGVec2(settings->Pos.x + window->ViewportPos.x, settings->Pos.y + window->ViewportPos.y));
     if (settings->Size.x > 0 && settings->Size.y > 0)
-        window->Size = window->SizeFull = KGFloor(ImVec2(settings->Size.x, settings->Size.y));
+        window->Size = window->SizeFull = KGFloor(KGVec2(settings->Size.x, settings->Size.y));
     window->Collapsed = settings->Collapsed;
     window->DockId = settings->DockId;
     window->DockOrder = settings->DockOrder;
@@ -4734,7 +4615,7 @@ static KGGuiWindow* CreateNewWindow(const char* name, KarmaGuiWindowFlags flags)
 
     // Default/arbitrary window position. Use SetNextWindowPos() with the appropriate condition flag to change the initial position of a window.
     const KarmaGuiViewport* main_viewport = KarmaGui::GetMainViewport();
-    window->Pos = main_viewport->Pos + ImVec2(60, 60);
+    window->Pos = main_viewport->Pos + KGVec2(60, 60);
     window->ViewportPos = main_viewport->Pos;
 
     // User can disable loading and saving of settings. Tooltip and child windows also don't store settings.
@@ -4780,10 +4661,10 @@ static KGGuiWindow* GetWindowForTitleAndMenuHeight(KGGuiWindow* window)
     return (window->DockNodeAsHost && window->DockNodeAsHost->VisibleWindow) ? window->DockNodeAsHost->VisibleWindow : window;
 }
 
-static ImVec2 CalcWindowSizeAfterConstraint(KGGuiWindow* window, const ImVec2& size_desired)
+static KGVec2 CalcWindowSizeAfterConstraint(KGGuiWindow* window, const KGVec2& size_desired)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    ImVec2 new_size = size_desired;
+    KGVec2 new_size = size_desired;
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasSizeConstraint)
     {
         // Using -1,-1 on either X/Y axis to preserve the current size.
@@ -4815,7 +4696,7 @@ static ImVec2 CalcWindowSizeAfterConstraint(KGGuiWindow* window, const ImVec2& s
     return new_size;
 }
 
-static void CalcWindowContentSizes(KGGuiWindow* window, ImVec2* content_size_current, ImVec2* content_size_ideal)
+static void CalcWindowContentSizes(KGGuiWindow* window, KGVec2* content_size_current, KGVec2* content_size_ideal)
 {
     bool preserve_old_content_sizes = false;
     if (window->Collapsed && window->AutoFitFramesX <= 0 && window->AutoFitFramesY <= 0)
@@ -4835,14 +4716,14 @@ static void CalcWindowContentSizes(KGGuiWindow* window, ImVec2* content_size_cur
     content_size_ideal->y = (window->ContentSizeExplicit.y != 0.0f) ? window->ContentSizeExplicit.y : KG_FLOOR(KGMax(window->DC.CursorMaxPos.y, window->DC.IdealMaxPos.y) - window->DC.CursorStartPos.y);
 }
 
-static ImVec2 CalcWindowAutoFitSize(KGGuiWindow* window, const ImVec2& size_contents)
+static KGVec2 CalcWindowAutoFitSize(KGGuiWindow* window, const KGVec2& size_contents)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiStyle& style = g.Style;
     const float decoration_w_without_scrollbars = window->DecoOuterSizeX1 + window->DecoOuterSizeX2 - window->ScrollbarSizes.x;
     const float decoration_h_without_scrollbars = window->DecoOuterSizeY1 + window->DecoOuterSizeY2 - window->ScrollbarSizes.y;
-    ImVec2 size_pad = window->WindowPadding * 2.0f;
-    ImVec2 size_desired = size_contents + size_pad + ImVec2(decoration_w_without_scrollbars, decoration_h_without_scrollbars);
+    KGVec2 size_pad = window->WindowPadding * 2.0f;
+    KGVec2 size_desired = size_contents + size_pad + KGVec2(decoration_w_without_scrollbars, decoration_h_without_scrollbars);
     if (window->Flags & KGGuiWindowFlags_Tooltip)
     {
         // Tooltip always resize
@@ -4853,21 +4734,21 @@ static ImVec2 CalcWindowAutoFitSize(KGGuiWindow* window, const ImVec2& size_cont
         // Maximum window size is determined by the viewport size or monitor size
         const bool is_popup = (window->Flags & KGGuiWindowFlags_Popup) != 0;
         const bool is_menu = (window->Flags & KGGuiWindowFlags_ChildMenu) != 0;
-        ImVec2 size_min = style.WindowMinSize;
+        KGVec2 size_min = style.WindowMinSize;
         if (is_popup || is_menu) // Popups and menus bypass style.WindowMinSize by default, but we give then a non-zero minimum size to facilitate understanding problematic cases (e.g. empty popups)
-            size_min = KGMin(size_min, ImVec2(4.0f, 4.0f));
+            size_min = KGMin(size_min, KGVec2(4.0f, 4.0f));
 
-        ImVec2 avail_size = window->Viewport->WorkSize;
+        KGVec2 avail_size = window->Viewport->WorkSize;
         if (window->ViewportOwned)
-            avail_size = ImVec2(FLT_MAX, FLT_MAX);
+            avail_size = KGVec2(FLT_MAX, FLT_MAX);
         const int monitor_idx = window->ViewportAllowPlatformMonitorExtend;
         if (monitor_idx >= 0 && monitor_idx < g.PlatformIO.Monitors.Size)
             avail_size = g.PlatformIO.Monitors[monitor_idx].WorkSize;
-        ImVec2 size_auto_fit = KGClamp(size_desired, size_min, KGMax(size_min, avail_size - style.DisplaySafeAreaPadding * 2.0f));
+        KGVec2 size_auto_fit = KGClamp(size_desired, size_min, KGMax(size_min, avail_size - style.DisplaySafeAreaPadding * 2.0f));
 
         // When the window cannot fit all contents (either because of constraints, either because screen is too small),
         // we are growing the size on the other axis to compensate for expected scrollbar. FIXME: Might turn bigger than ViewportSize-WindowPadding.
-        ImVec2 size_auto_fit_after_constraint = CalcWindowSizeAfterConstraint(window, size_auto_fit);
+        KGVec2 size_auto_fit_after_constraint = CalcWindowSizeAfterConstraint(window, size_auto_fit);
         bool will_have_scrollbar_x = (size_auto_fit_after_constraint.x - size_pad.x - decoration_w_without_scrollbars < size_contents.x  && !(window->Flags & KGGuiWindowFlags_NoScrollbar) && (window->Flags & KGGuiWindowFlags_HorizontalScrollbar)) || (window->Flags & KGGuiWindowFlags_AlwaysHorizontalScrollbar);
         bool will_have_scrollbar_y = (size_auto_fit_after_constraint.y - size_pad.y - decoration_h_without_scrollbars < size_contents.y && !(window->Flags & KGGuiWindowFlags_NoScrollbar)) || (window->Flags & KGGuiWindowFlags_AlwaysVerticalScrollbar);
         if (will_have_scrollbar_x)
@@ -4878,13 +4759,13 @@ static ImVec2 CalcWindowAutoFitSize(KGGuiWindow* window, const ImVec2& size_cont
     }
 }
 
-ImVec2 KarmaGui::CalcWindowNextAutoFitSize(KGGuiWindow* window)
+KGVec2 KarmaGui::CalcWindowNextAutoFitSize(KGGuiWindow* window)
 {
-    ImVec2 size_contents_current;
-    ImVec2 size_contents_ideal;
+    KGVec2 size_contents_current;
+    KGVec2 size_contents_ideal;
     CalcWindowContentSizes(window, &size_contents_current, &size_contents_ideal);
-    ImVec2 size_auto_fit = CalcWindowAutoFitSize(window, size_contents_ideal);
-    ImVec2 size_final = CalcWindowSizeAfterConstraint(window, size_auto_fit);
+    KGVec2 size_auto_fit = CalcWindowAutoFitSize(window, size_contents_ideal);
+    KGVec2 size_final = CalcWindowSizeAfterConstraint(window, size_auto_fit);
     return size_final;
 }
 
@@ -4897,12 +4778,12 @@ static KarmaGuiCol GetWindowBgColorIdx(KGGuiWindow* window)
     return KGGuiCol_WindowBg;
 }
 
-static void CalcResizePosSizeFromAnyCorner(KGGuiWindow* window, const ImVec2& corner_target, const ImVec2& corner_norm, ImVec2* out_pos, ImVec2* out_size)
+static void CalcResizePosSizeFromAnyCorner(KGGuiWindow* window, const KGVec2& corner_target, const KGVec2& corner_norm, KGVec2* out_pos, KGVec2* out_size)
 {
-    ImVec2 pos_min = KGLerp(corner_target, window->Pos, corner_norm);                // Expected window upper-left
-    ImVec2 pos_max = KGLerp(window->Pos + window->Size, corner_target, corner_norm); // Expected window lower-right
-    ImVec2 size_expected = pos_max - pos_min;
-    ImVec2 size_constrained = CalcWindowSizeAfterConstraint(window, size_expected);
+    KGVec2 pos_min = KGLerp(corner_target, window->Pos, corner_norm);                // Expected window upper-left
+    KGVec2 pos_max = KGLerp(window->Pos + window->Size, corner_target, corner_norm); // Expected window lower-right
+    KGVec2 size_expected = pos_max - pos_min;
+    KGVec2 size_constrained = CalcWindowSizeAfterConstraint(window, size_expected);
     *out_pos = pos_min;
     if (corner_norm.x == 0.0f)
         out_pos->x -= (size_constrained.x - size_expected.x);
@@ -4914,38 +4795,38 @@ static void CalcResizePosSizeFromAnyCorner(KGGuiWindow* window, const ImVec2& co
 // Data for resizing from corner
 struct ImGuiResizeGripDef
 {
-    ImVec2  CornerPosN;
-    ImVec2  InnerDir;
+    KGVec2  CornerPosN;
+    KGVec2  InnerDir;
     int     AngleMin12, AngleMax12;
 };
 static const ImGuiResizeGripDef resize_grip_def[4] =
 {
-    { ImVec2(1, 1), ImVec2(-1, -1), 0, 3 },  // Lower-right
-    { ImVec2(0, 1), ImVec2(+1, -1), 3, 6 },  // Lower-left
-    { ImVec2(0, 0), ImVec2(+1, +1), 6, 9 },  // Upper-left (Unused)
-    { ImVec2(1, 0), ImVec2(-1, +1), 9, 12 }  // Upper-right (Unused)
+    { KGVec2(1, 1), KGVec2(-1, -1), 0, 3 },  // Lower-right
+    { KGVec2(0, 1), KGVec2(+1, -1), 3, 6 },  // Lower-left
+    { KGVec2(0, 0), KGVec2(+1, +1), 6, 9 },  // Upper-left (Unused)
+    { KGVec2(1, 0), KGVec2(-1, +1), 9, 12 }  // Upper-right (Unused)
 };
 
 // Data for resizing from borders
 struct ImGuiResizeBorderDef
 {
-    ImVec2 InnerDir;
-    ImVec2 SegmentN1, SegmentN2;
+    KGVec2 InnerDir;
+    KGVec2 SegmentN1, SegmentN2;
     float  OuterAngle;
 };
 static const ImGuiResizeBorderDef resize_border_def[4] =
 {
-    { ImVec2(+1, 0), ImVec2(0, 1), ImVec2(0, 0), KG_PI * 1.00f }, // Left
-    { ImVec2(-1, 0), ImVec2(1, 0), ImVec2(1, 1), KG_PI * 0.00f }, // Right
-    { ImVec2(0, +1), ImVec2(0, 0), ImVec2(1, 0), KG_PI * 1.50f }, // Up
-    { ImVec2(0, -1), ImVec2(1, 1), ImVec2(0, 1), KG_PI * 0.50f }  // Down
+    { KGVec2(+1, 0), KGVec2(0, 1), KGVec2(0, 0), KG_PI * 1.00f }, // Left
+    { KGVec2(-1, 0), KGVec2(1, 0), KGVec2(1, 1), KG_PI * 0.00f }, // Right
+    { KGVec2(0, +1), KGVec2(0, 0), KGVec2(1, 0), KG_PI * 1.50f }, // Up
+    { KGVec2(0, -1), KGVec2(1, 1), KGVec2(0, 1), KG_PI * 0.50f }  // Down
 };
 
 static KGRect GetResizeBorderRect(KGGuiWindow* window, int border_n, float perp_padding, float thickness)
 {
     KGRect rect = window->Rect();
     if (thickness == 0.0f)
-        rect.Max -= ImVec2(1, 1);
+        rect.Max -= KGVec2(1, 1);
     if (border_n == KGGuiDir_Left)  { return KGRect(rect.Min.x - thickness,    rect.Min.y + perp_padding, rect.Min.x + thickness,    rect.Max.y - perp_padding); }
     if (border_n == KGGuiDir_Right) { return KGRect(rect.Max.x - thickness,    rect.Min.y + perp_padding, rect.Max.x + thickness,    rect.Max.y - perp_padding); }
     if (border_n == KGGuiDir_Up)    { return KGRect(rect.Min.x + perp_padding, rect.Min.y - thickness,    rect.Max.x - perp_padding, rect.Min.y + thickness);    }
@@ -4977,7 +4858,7 @@ KGGuiID KarmaGui::GetWindowResizeBorderID(KGGuiWindow* window, KarmaGuiDir dir)
 
 // Handle resize for: Resize Grips, Borders, Gamepad
 // Return true when using auto-fit (double-click on resize grip)
-static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const ImVec2& size_auto_fit, int* border_held, int resize_grip_count, KGU32 resize_grip_col[4], const KGRect& visibility_rect)
+static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const KGVec2& size_auto_fit, int* border_held, int resize_grip_count, KGU32 resize_grip_col[4], const KGRect& visibility_rect)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiWindowFlags flags = window->Flags;
@@ -4993,8 +4874,8 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const ImVec2
     const float grip_hover_inner_size = KG_FLOOR(grip_draw_size * 0.75f);
     const float grip_hover_outer_size = g.IO.ConfigWindowsResizeFromEdges ? WINDOWS_HOVER_PADDING : 0.0f;
 
-    ImVec2 pos_target(FLT_MAX, FLT_MAX);
-    ImVec2 size_target(FLT_MAX, FLT_MAX);
+    KGVec2 pos_target(FLT_MAX, FLT_MAX);
+    KGVec2 size_target(FLT_MAX, FLT_MAX);
 
     // Clip mouse interaction rectangles within the viewport rectangle (in practice the narrowing is going to happen most of the time).
     // - Not narrowing would mostly benefit the situation where OS windows _without_ decoration have a threshold for hovering when outside their limits.
@@ -5014,7 +4895,7 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const ImVec2
     for (int resize_grip_n = 0; resize_grip_n < resize_grip_count; resize_grip_n++)
     {
         const ImGuiResizeGripDef& def = resize_grip_def[resize_grip_n];
-        const ImVec2 corner = KGLerp(window->Pos, window->Pos + window->Size, def.CornerPosN);
+        const KGVec2 corner = KGLerp(window->Pos, window->Pos + window->Size, def.CornerPosN);
 
         // Using the FlattenChilds button flag we make the resize button accessible even if we are hovering over a child window
         bool hovered, held;
@@ -5039,9 +4920,9 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const ImVec2
         {
             // Resize from any of the four corners
             // We don't use an incremental MouseDelta but rather compute an absolute target size based on mouse position
-            ImVec2 clamp_min = ImVec2(def.CornerPosN.x == 1.0f ? visibility_rect.Min.x : -FLT_MAX, def.CornerPosN.y == 1.0f ? visibility_rect.Min.y : -FLT_MAX);
-            ImVec2 clamp_max = ImVec2(def.CornerPosN.x == 0.0f ? visibility_rect.Max.x : +FLT_MAX, def.CornerPosN.y == 0.0f ? visibility_rect.Max.y : +FLT_MAX);
-            ImVec2 corner_target = g.IO.MousePos - g.ActiveIdClickOffset + KGLerp(def.InnerDir * grip_hover_outer_size, def.InnerDir * -grip_hover_inner_size, def.CornerPosN); // Corner of the window corresponding to our corner grip
+            KGVec2 clamp_min = KGVec2(def.CornerPosN.x == 1.0f ? visibility_rect.Min.x : -FLT_MAX, def.CornerPosN.y == 1.0f ? visibility_rect.Min.y : -FLT_MAX);
+            KGVec2 clamp_max = KGVec2(def.CornerPosN.x == 0.0f ? visibility_rect.Max.x : +FLT_MAX, def.CornerPosN.y == 0.0f ? visibility_rect.Max.y : +FLT_MAX);
+            KGVec2 corner_target = g.IO.MousePos - g.ActiveIdClickOffset + KGLerp(def.InnerDir * grip_hover_outer_size, def.InnerDir * -grip_hover_inner_size, def.CornerPosN); // Corner of the window corresponding to our corner grip
             corner_target = KGClamp(corner_target, clamp_min, clamp_max);
             CalcResizePosSizeFromAnyCorner(window, corner_target, def.CornerPosN, &pos_target, &size_target);
         }
@@ -5069,9 +4950,9 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const ImVec2
         }
         if (held)
         {
-            ImVec2 clamp_min(border_n == KGGuiDir_Right ? visibility_rect.Min.x : -FLT_MAX, border_n == KGGuiDir_Down ? visibility_rect.Min.y : -FLT_MAX);
-            ImVec2 clamp_max(border_n == KGGuiDir_Left  ? visibility_rect.Max.x : +FLT_MAX, border_n == KGGuiDir_Up   ? visibility_rect.Max.y : +FLT_MAX);
-            ImVec2 border_target = window->Pos;
+            KGVec2 clamp_min(border_n == KGGuiDir_Right ? visibility_rect.Min.x : -FLT_MAX, border_n == KGGuiDir_Down ? visibility_rect.Min.y : -FLT_MAX);
+            KGVec2 clamp_max(border_n == KGGuiDir_Left  ? visibility_rect.Max.x : +FLT_MAX, border_n == KGGuiDir_Up   ? visibility_rect.Max.y : +FLT_MAX);
+            KGVec2 border_target = window->Pos;
             border_target[axis] = g.IO.MousePos[axis] - g.ActiveIdClickOffset[axis] + WINDOWS_HOVER_PADDING;
             border_target = KGClamp(border_target, clamp_min, clamp_max);
             CalcResizePosSizeFromAnyCorner(window, border_target, KGMin(def.SegmentN1, def.SegmentN2), &pos_target, &size_target);
@@ -5087,7 +4968,7 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const ImVec2
     // Not even sure the callback works here.
     if (g.NavWindowingTarget && g.NavWindowingTarget->RootWindowDockTree == window)
     {
-        ImVec2 nav_resize_dir;
+        KGVec2 nav_resize_dir;
         if (g.NavInputSource == KGGuiInputSource_Keyboard && g.IO.KeyShift)
             nav_resize_dir = GetKeyMagnitude2d(KGGuiKey_LeftArrow, KGGuiKey_RightArrow, KGGuiKey_UpArrow, KGGuiKey_DownArrow);
         if (g.NavInputSource == KGGuiInputSource_Gamepad)
@@ -5101,7 +4982,7 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const ImVec2
             g.NavWindowingToggleLayer = false;
             g.NavDisableMouseHover = true;
             resize_grip_col[0] = GetColorU32(KGGuiCol_ResizeGripActive);
-            ImVec2 accum_floored = KGFloor(g.NavWindowingAccumDeltaSize);
+            KGVec2 accum_floored = KGFloor(g.NavWindowingAccumDeltaSize);
             if (accum_floored.x != 0.0f || accum_floored.y != 0.0f)
             {
                 // FIXME-NAV: Should store and accumulate into a separate size buffer to handle sizing constraints properly, right now a constraint will make us stuck.
@@ -5130,7 +5011,7 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const ImVec2
 static inline void ClampWindowPos(KGGuiWindow* window, const KGRect& visibility_rect)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    ImVec2 size_for_clamping = window->Size;
+    KGVec2 size_for_clamping = window->Size;
     if (g.IO.ConfigWindowsMoveFromTitleBarOnly && (!(window->Flags & KGGuiWindowFlags_NoTitleBar) || window->DockNodeAsHost))
         size_for_clamping.y = KarmaGui::GetFrameHeight(); // Not using window->TitleBarHeight() as DockNodeAsHost will report 0.0f here.
     window->Pos = KGClamp(window->Pos, visibility_rect.Min - size_for_clamping, visibility_rect.Max);
@@ -5149,14 +5030,14 @@ static void KarmaGui::RenderWindowOuterBorders(KGGuiWindow* window)
     {
         const ImGuiResizeBorderDef& def = resize_border_def[border_held];
         KGRect border_r = GetResizeBorderRect(window, border_held, rounding, 0.0f);
-        window->DrawList->PathArcTo(KGLerp(border_r.Min, border_r.Max, def.SegmentN1) + ImVec2(0.5f, 0.5f) + def.InnerDir * rounding, rounding, def.OuterAngle - KG_PI * 0.25f, def.OuterAngle);
-        window->DrawList->PathArcTo(KGLerp(border_r.Min, border_r.Max, def.SegmentN2) + ImVec2(0.5f, 0.5f) + def.InnerDir * rounding, rounding, def.OuterAngle, def.OuterAngle + KG_PI * 0.25f);
+        window->DrawList->PathArcTo(KGLerp(border_r.Min, border_r.Max, def.SegmentN1) + KGVec2(0.5f, 0.5f) + def.InnerDir * rounding, rounding, def.OuterAngle - KG_PI * 0.25f, def.OuterAngle);
+        window->DrawList->PathArcTo(KGLerp(border_r.Min, border_r.Max, def.SegmentN2) + KGVec2(0.5f, 0.5f) + def.InnerDir * rounding, rounding, def.OuterAngle, def.OuterAngle + KG_PI * 0.25f);
         window->DrawList->PathStroke(GetColorU32(KGGuiCol_SeparatorActive), 0, KGMax(2.0f, border_size)); // Thicker than usual
     }
     if (g.Style.FrameBorderSize > 0 && !(window->Flags & KGGuiWindowFlags_NoTitleBar) && !window->DockIsActive)
     {
         float y = window->Pos.y + window->TitleBarHeight() - 1;
-        window->DrawList->AddLine(ImVec2(window->Pos.x + border_size, y), ImVec2(window->Pos.x + window->Size.x - border_size, y), GetColorU32(KGGuiCol_Border), g.Style.FrameBorderSize);
+        window->DrawList->AddLine(KGVec2(window->Pos.x + border_size, y), KGVec2(window->Pos.x + window->Size.x - border_size, y), GetColorU32(KGGuiCol_Border), g.Style.FrameBorderSize);
     }
 }
 
@@ -5235,7 +5116,7 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
             KGDrawList* bg_draw_list = window->DockIsActive ? window->DockNode->HostWindow->DrawList : window->DrawList;
             if (window->DockIsActive || (flags & KGGuiWindowFlags_DockNodeHost))
                 bg_draw_list->ChannelsSetCurrent(DOCKING_HOST_DRAW_CHANNEL_BG);
-            bg_draw_list->AddRectFilled(window->Pos + ImVec2(0, window->TitleBarHeight()), window->Pos + window->Size, bg_col, window_rounding, (flags & KGGuiWindowFlags_NoTitleBar) ? 0 : KGDrawFlags_RoundCornersBottom);
+            bg_draw_list->AddRectFilled(window->Pos + KGVec2(0, window->TitleBarHeight()), window->Pos + window->Size, bg_col, window_rounding, (flags & KGGuiWindowFlags_NoTitleBar) ? 0 : KGDrawFlags_RoundCornersBottom);
             if (window->DockIsActive || (flags & KGGuiWindowFlags_DockNodeHost))
                 bg_draw_list->ChannelsSetCurrent(DOCKING_HOST_DRAW_CHANNEL_FG);
         }
@@ -5256,7 +5137,7 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
         {
             KGRect menu_bar_rect = window->MenuBarRect();
             menu_bar_rect.ClipWith(window->Rect());  // Soft clipping, in particular child window don't have minimum size covering the menu bar so this is useful for them.
-            window->DrawList->AddRectFilled(menu_bar_rect.Min + ImVec2(window_border_size, 0), menu_bar_rect.Max - ImVec2(window_border_size, 0), GetColorU32(KGGuiCol_MenuBarBg), (flags & KGGuiWindowFlags_NoTitleBar) ? window_rounding : 0.0f, KGDrawFlags_RoundCornersTop);
+            window->DrawList->AddRectFilled(menu_bar_rect.Min + KGVec2(window_border_size, 0), menu_bar_rect.Max - KGVec2(window_border_size, 0), GetColorU32(KGGuiCol_MenuBarBg), (flags & KGGuiWindowFlags_NoTitleBar) ? window_rounding : 0.0f, KGDrawFlags_RoundCornersTop);
             if (style.FrameBorderSize > 0.0f && menu_bar_rect.Max.y < window->Pos.y + window->Size.y)
                 window->DrawList->AddLine(menu_bar_rect.GetBL(), menu_bar_rect.GetBR(), GetColorU32(KGGuiCol_Border), style.FrameBorderSize);
         }
@@ -5267,8 +5148,8 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
         {
             float unhide_sz_draw = KGFloor(g.FontSize * 0.70f);
             float unhide_sz_hit = KGFloor(g.FontSize * 0.55f);
-            ImVec2 p = node->Pos;
-            KGRect r(p, p + ImVec2(unhide_sz_hit, unhide_sz_hit));
+            KGVec2 p = node->Pos;
+            KGRect r(p, p + KGVec2(unhide_sz_hit, unhide_sz_hit));
             KGGuiID unhide_id = window->GetID("#UNHIDE");
             KeepAliveID(unhide_id);
             bool hovered, held;
@@ -5279,7 +5160,7 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
 
             // FIXME-DOCK: Ideally we'd use KGGuiCol_TitleBgActive/KGGuiCol_TitleBg here, but neither is guaranteed to be visible enough at this sort of size..
             KGU32 col = GetColorU32(((held && hovered) || (node->IsFocused && !hovered)) ? KGGuiCol_ButtonActive : hovered ? KGGuiCol_ButtonHovered : KGGuiCol_Button);
-            window->DrawList->AddTriangleFilled(p, p + ImVec2(unhide_sz_draw, 0.0f), p + ImVec2(0.0f, unhide_sz_draw), col);
+            window->DrawList->AddTriangleFilled(p, p + KGVec2(unhide_sz_draw, 0.0f), p + KGVec2(0.0f, unhide_sz_draw), col);
         }
 
         // Scrollbars
@@ -5294,10 +5175,10 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
             for (int resize_grip_n = 0; resize_grip_n < resize_grip_count; resize_grip_n++)
             {
                 const ImGuiResizeGripDef& grip = resize_grip_def[resize_grip_n];
-                const ImVec2 corner = KGLerp(window->Pos, window->Pos + window->Size, grip.CornerPosN);
-                window->DrawList->PathLineTo(corner + grip.InnerDir * ((resize_grip_n & 1) ? ImVec2(window_border_size, resize_grip_draw_size) : ImVec2(resize_grip_draw_size, window_border_size)));
-                window->DrawList->PathLineTo(corner + grip.InnerDir * ((resize_grip_n & 1) ? ImVec2(resize_grip_draw_size, window_border_size) : ImVec2(window_border_size, resize_grip_draw_size)));
-                window->DrawList->PathArcToFast(ImVec2(corner.x + grip.InnerDir.x * (window_rounding + window_border_size), corner.y + grip.InnerDir.y * (window_rounding + window_border_size)), window_rounding, grip.AngleMin12, grip.AngleMax12);
+                const KGVec2 corner = KGLerp(window->Pos, window->Pos + window->Size, grip.CornerPosN);
+                window->DrawList->PathLineTo(corner + grip.InnerDir * ((resize_grip_n & 1) ? KGVec2(window_border_size, resize_grip_draw_size) : KGVec2(resize_grip_draw_size, window_border_size)));
+                window->DrawList->PathLineTo(corner + grip.InnerDir * ((resize_grip_n & 1) ? KGVec2(resize_grip_draw_size, window_border_size) : KGVec2(window_border_size, resize_grip_draw_size)));
+                window->DrawList->PathArcToFast(KGVec2(corner.x + grip.InnerDir.x * (window_rounding + window_border_size), corner.y + grip.InnerDir.y * (window_rounding + window_border_size)), window_rounding, grip.AngleMin12, grip.AngleMax12);
                 window->DrawList->PathFillConvex(resize_grip_col[resize_grip_n]);
             }
         }
@@ -5330,21 +5211,21 @@ void KarmaGui::RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& t
     float pad_l = style.FramePadding.x;
     float pad_r = style.FramePadding.x;
     float button_sz = g.FontSize;
-    ImVec2 close_button_pos;
-    ImVec2 collapse_button_pos;
+    KGVec2 close_button_pos;
+    KGVec2 collapse_button_pos;
     if (has_close_button)
     {
         pad_r += button_sz;
-        close_button_pos = ImVec2(title_bar_rect.Max.x - pad_r - style.FramePadding.x, title_bar_rect.Min.y);
+        close_button_pos = KGVec2(title_bar_rect.Max.x - pad_r - style.FramePadding.x, title_bar_rect.Min.y);
     }
     if (has_collapse_button && style.WindowMenuButtonPosition == KGGuiDir_Right)
     {
         pad_r += button_sz;
-        collapse_button_pos = ImVec2(title_bar_rect.Max.x - pad_r - style.FramePadding.x, title_bar_rect.Min.y);
+        collapse_button_pos = KGVec2(title_bar_rect.Max.x - pad_r - style.FramePadding.x, title_bar_rect.Min.y);
     }
     if (has_collapse_button && style.WindowMenuButtonPosition == KGGuiDir_Left)
     {
-        collapse_button_pos = ImVec2(title_bar_rect.Min.x + pad_l - style.FramePadding.x, title_bar_rect.Min.y);
+        collapse_button_pos = KGVec2(title_bar_rect.Min.x + pad_l - style.FramePadding.x, title_bar_rect.Min.y);
         pad_l += button_sz;
     }
 
@@ -5364,7 +5245,7 @@ void KarmaGui::RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& t
     // Title bar text (with: horizontal alignment, avoiding collapse/close button, optional "unsaved document" marker)
     // FIXME: Refactor text alignment facilities along with RenderText helpers, this is WAY too much messy code..
     const float marker_size_x = (flags & KGGuiWindowFlags_UnsavedDocument) ? button_sz * 0.80f : 0.0f;
-    const ImVec2 text_size = CalcTextSize(name, NULL, true) + ImVec2(marker_size_x, 0.0f);
+    const KGVec2 text_size = CalcTextSize(name, NULL, true) + KGVec2(marker_size_x, 0.0f);
 
     // As a nice touch we try to ensure that centered title text doesn't get affected by visibility of Close/Collapse button,
     // while uncentered title text will still reach edges correctly.
@@ -5384,7 +5265,7 @@ void KarmaGui::RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& t
     KGRect clip_r(layout_r.Min.x, layout_r.Min.y, KGMin(layout_r.Max.x + g.Style.ItemInnerSpacing.x, title_bar_rect.Max.x), layout_r.Max.y);
     if (flags & KGGuiWindowFlags_UnsavedDocument)
     {
-        ImVec2 marker_pos;
+        KGVec2 marker_pos;
         marker_pos.x = KGClamp(layout_r.Min.x + (layout_r.GetWidth() - text_size.x) * style.WindowTitleAlign.x + text_size.x, layout_r.Min.x, layout_r.Max.x);
         marker_pos.y = (layout_r.Min.y + layout_r.Max.y) * 0.5f;
         if (marker_pos.x > layout_r.Min.x)
@@ -5630,7 +5511,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasContentSize)
         window->ContentSizeExplicit = g.NextWindowData.ContentSizeVal;
     else if (first_begin_of_the_frame)
-        window->ContentSizeExplicit = ImVec2(0.0f, 0.0f);
+        window->ContentSizeExplicit = KGVec2(0.0f, 0.0f);
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasWindowClass)
         window->WindowClass = g.NextWindowData.WindowClass;
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasCollapsed)
@@ -5706,7 +5587,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
                     window->Size.x = window->SizeFull.x = 0.f;
                 if (!window_size_y_set_by_api)
                     window->Size.y = window->SizeFull.y = 0.f;
-                window->ContentSize = window->ContentSizeIdeal = ImVec2(0.f, 0.f);
+                window->ContentSize = window->ContentSizeIdeal = KGVec2(0.f, 0.f);
             }
         }
 
@@ -5727,7 +5608,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         else
             window->WindowBorderSize = ((flags & (KGGuiWindowFlags_Popup | KGGuiWindowFlags_Tooltip)) && !(flags & KGGuiWindowFlags_Modal)) ? style.PopupBorderSize : style.WindowBorderSize;
         if (!window->DockIsActive && (flags & KGGuiWindowFlags_ChildWindow) && !(flags & (KGGuiWindowFlags_AlwaysUseWindowPadding | KGGuiWindowFlags_Popup)) && window->WindowBorderSize == 0.0f)
-            window->WindowPadding = ImVec2(0.0f, (flags & KGGuiWindowFlags_MenuBar) ? style.WindowPadding.y : 0.0f);
+            window->WindowPadding = KGVec2(0.0f, (flags & KGGuiWindowFlags_MenuBar) ? style.WindowPadding.y : 0.0f);
         else
             window->WindowPadding = style.WindowPadding;
 
@@ -5764,15 +5645,15 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
 
         // Outer Decoration Sizes
         // (we need to clear ScrollbarSize immediatly as CalcWindowAutoFitSize() needs it and can be called from other locations).
-        const ImVec2 scrollbar_sizes_from_last_frame = window->ScrollbarSizes;
+        const KGVec2 scrollbar_sizes_from_last_frame = window->ScrollbarSizes;
         window->DecoOuterSizeX1 = 0.0f;
         window->DecoOuterSizeX2 = 0.0f;
         window->DecoOuterSizeY1 = window->TitleBarHeight() + window->MenuBarHeight();
         window->DecoOuterSizeY2 = 0.0f;
-        window->ScrollbarSizes = ImVec2(0.0f, 0.0f);
+        window->ScrollbarSizes = KGVec2(0.0f, 0.0f);
 
         // Calculate auto-fit size, handle automatic resize
-        const ImVec2 size_auto_fit = CalcWindowAutoFitSize(window, window->ContentSizeIdeal);
+        const KGVec2 size_auto_fit = CalcWindowAutoFitSize(window, window->ContentSizeIdeal);
         if ((flags & KGGuiWindowFlags_AlwaysAutoResize) && !window->Collapsed)
         {
             // Using SetNextWindowSize() overrides KGGuiWindowFlags_AlwaysAutoResize, so it can be used on tooltips/popups, etc.
@@ -5861,7 +5742,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         // When clamping to stay visible, we will enforce that window->Pos stays inside of visibility_rect.
         KGRect viewport_rect(window->Viewport->GetMainRect());
         KGRect viewport_work_rect(window->Viewport->GetWorkRect());
-        ImVec2 visibility_padding = KGMax(style.DisplayWindowPadding, style.DisplaySafeAreaPadding);
+        KGVec2 visibility_padding = KGMax(style.DisplayWindowPadding, style.DisplaySafeAreaPadding);
         KGRect visibility_rect(viewport_work_rect.Min + visibility_padding, viewport_work_rect.Max - visibility_padding);
 
         // Clamp position/size so window stays visible within its viewport or monitor
@@ -5968,9 +5849,9 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
             // When reading the current size we need to read it after size constraints have been applied.
             // Intentionally use previous frame values for InnerRect and ScrollbarSizes.
             // And when we use window->DecorationUp here it doesn't have ScrollbarSizes.y applied yet.
-            ImVec2 avail_size_from_current_frame = ImVec2(window->SizeFull.x, window->SizeFull.y - (window->DecoOuterSizeY1 + window->DecoOuterSizeY2));
-            ImVec2 avail_size_from_last_frame = window->InnerRect.GetSize() + scrollbar_sizes_from_last_frame;
-            ImVec2 needed_size_from_last_frame = window_just_created ? ImVec2(0, 0) : window->ContentSize + window->WindowPadding * 2.0f;
+            KGVec2 avail_size_from_current_frame = KGVec2(window->SizeFull.x, window->SizeFull.y - (window->DecoOuterSizeY1 + window->DecoOuterSizeY2));
+            KGVec2 avail_size_from_last_frame = window->InnerRect.GetSize() + scrollbar_sizes_from_last_frame;
+            KGVec2 needed_size_from_last_frame = window_just_created ? KGVec2(0, 0) : window->ContentSize + window->WindowPadding * 2.0f;
             float size_x_for_scrollbars = use_current_size_for_scrollbar_x ? avail_size_from_current_frame.x : avail_size_from_last_frame.x;
             float size_y_for_scrollbars = use_current_size_for_scrollbar_y ? avail_size_from_current_frame.y : avail_size_from_last_frame.y;
             //bool scrollbar_y_from_last_frame = window->ScrollbarY; // FIXME: May want to use that in the ScrollbarX expression? How many pros vs cons?
@@ -5978,7 +5859,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
             window->ScrollbarX = (flags & KGGuiWindowFlags_AlwaysHorizontalScrollbar) || ((needed_size_from_last_frame.x > size_x_for_scrollbars - (window->ScrollbarY ? style.ScrollbarSize : 0.0f)) && !(flags & KGGuiWindowFlags_NoScrollbar) && (flags & KGGuiWindowFlags_HorizontalScrollbar));
             if (window->ScrollbarX && !window->ScrollbarY)
                 window->ScrollbarY = (needed_size_from_last_frame.y > size_y_for_scrollbars) && !(flags & KGGuiWindowFlags_NoScrollbar);
-            window->ScrollbarSizes = ImVec2(window->ScrollbarY ? style.ScrollbarSize : 0.0f, window->ScrollbarX ? style.ScrollbarSize : 0.0f);
+            window->ScrollbarSizes = KGVec2(window->ScrollbarY ? style.ScrollbarSize : 0.0f, window->ScrollbarX ? style.ScrollbarSize : 0.0f);
 
             // Amend the partially filled window->DecorationXXX values.
             window->DecoOuterSizeX2 += window->ScrollbarSizes.x;
@@ -6043,7 +5924,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
 
         // Apply scrolling
         window->Scroll = CalcNextScrollFromScrollTargetAndClamp(window);
-        window->ScrollTarget = ImVec2(FLT_MAX, FLT_MAX);
+        window->ScrollTarget = KGVec2(FLT_MAX, FLT_MAX);
         window->DecoInnerSizeX1 = window->DecoInnerSizeY1 = 0.0f;
 
         // DRAWING
@@ -6118,13 +5999,13 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         // This is used by clipper to compensate and fix the most common use case of large scroll area. Easy and cheap, next best thing compared to switching everything to double or KGU64.
         double start_pos_highp_x = (double)window->Pos.x + window->WindowPadding.x - (double)window->Scroll.x + window->DecoOuterSizeX1 + window->DC.ColumnsOffset.x;
         double start_pos_highp_y = (double)window->Pos.y + window->WindowPadding.y - (double)window->Scroll.y + window->DecoOuterSizeY1;
-        window->DC.CursorStartPos  = ImVec2((float)start_pos_highp_x, (float)start_pos_highp_y);
-        window->DC.CursorStartPosLossyness = ImVec2((float)(start_pos_highp_x - window->DC.CursorStartPos.x), (float)(start_pos_highp_y - window->DC.CursorStartPos.y));
+        window->DC.CursorStartPos  = KGVec2((float)start_pos_highp_x, (float)start_pos_highp_y);
+        window->DC.CursorStartPosLossyness = KGVec2((float)(start_pos_highp_x - window->DC.CursorStartPos.x), (float)(start_pos_highp_y - window->DC.CursorStartPos.y));
         window->DC.CursorPos = window->DC.CursorStartPos;
         window->DC.CursorPosPrevLine = window->DC.CursorPos;
         window->DC.CursorMaxPos = window->DC.CursorStartPos;
         window->DC.IdealMaxPos = window->DC.CursorStartPos;
-        window->DC.CurrLineSize = window->DC.PrevLineSize = ImVec2(0.0f, 0.0f);
+        window->DC.CurrLineSize = window->DC.PrevLineSize = KGVec2(0.0f, 0.0f);
         window->DC.CurrLineTextBaseOffset = window->DC.PrevLineTextBaseOffset = 0.0f;
         window->DC.IsSameLine = window->DC.IsSetPos = false;
 
@@ -6799,14 +6680,14 @@ float KarmaGui::GetWindowHeight()
     return window->Size.y;
 }
 
-ImVec2 KarmaGui::GetWindowPos()
+KGVec2 KarmaGui::GetWindowPos()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     return window->Pos;
 }
 
-void KarmaGui::SetWindowPos(KGGuiWindow* window, const ImVec2& pos, KarmaGuiCond cond)
+void KarmaGui::SetWindowPos(KGGuiWindow* window, const KGVec2& pos, KarmaGuiCond cond)
 {
     // Test condition (NB: bit 0 is always true) and clear flags for next time
     if (cond && (window->SetWindowPosAllowFlags & cond) == 0)
@@ -6814,12 +6695,12 @@ void KarmaGui::SetWindowPos(KGGuiWindow* window, const ImVec2& pos, KarmaGuiCond
 
     KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond)); // Make sure the user doesn't attempt to combine multiple condition flags.
     window->SetWindowPosAllowFlags &= ~(KGGuiCond_Once | KGGuiCond_FirstUseEver | KGGuiCond_Appearing);
-    window->SetWindowPosVal = ImVec2(FLT_MAX, FLT_MAX);
+    window->SetWindowPosVal = KGVec2(FLT_MAX, FLT_MAX);
 
     // Set
-    const ImVec2 old_pos = window->Pos;
+    const KGVec2 old_pos = window->Pos;
     window->Pos = KGFloor(pos);
-    ImVec2 offset = window->Pos - old_pos;
+    KGVec2 offset = window->Pos - old_pos;
     if (offset.x == 0.0f && offset.y == 0.0f)
         return;
     MarkIniSettingsDirty(window);
@@ -6830,25 +6711,25 @@ void KarmaGui::SetWindowPos(KGGuiWindow* window, const ImVec2& pos, KarmaGuiCond
     window->DC.CursorStartPos += offset;
 }
 
-void KarmaGui::SetWindowPos(const ImVec2& pos, KarmaGuiCond cond)
+void KarmaGui::SetWindowPos(const KGVec2& pos, KarmaGuiCond cond)
 {
     KGGuiWindow* window = GetCurrentWindowRead();
     SetWindowPos(window, pos, cond);
 }
 
-void KarmaGui::SetWindowPos(const char* name, const ImVec2& pos, KarmaGuiCond cond)
+void KarmaGui::SetWindowPos(const char* name, const KGVec2& pos, KarmaGuiCond cond)
 {
     if (KGGuiWindow* window = FindWindowByName(name))
         SetWindowPos(window, pos, cond);
 }
 
-ImVec2 KarmaGui::GetWindowSize()
+KGVec2 KarmaGui::GetWindowSize()
 {
     KGGuiWindow* window = GetCurrentWindowRead();
     return window->Size;
 }
 
-void KarmaGui::SetWindowSize(KGGuiWindow* window, const ImVec2& size, KarmaGuiCond cond)
+void KarmaGui::SetWindowSize(KGGuiWindow* window, const KGVec2& size, KarmaGuiCond cond)
 {
     // Test condition (NB: bit 0 is always true) and clear flags for next time
     if (cond && (window->SetWindowSizeAllowFlags & cond) == 0)
@@ -6858,7 +6739,7 @@ void KarmaGui::SetWindowSize(KGGuiWindow* window, const ImVec2& size, KarmaGuiCo
     window->SetWindowSizeAllowFlags &= ~(KGGuiCond_Once | KGGuiCond_FirstUseEver | KGGuiCond_Appearing);
 
     // Set
-    ImVec2 old_size = window->SizeFull;
+    KGVec2 old_size = window->SizeFull;
     window->AutoFitFramesX = (size.x <= 0.0f) ? 2 : 0;
     window->AutoFitFramesY = (size.y <= 0.0f) ? 2 : 0;
     if (size.x <= 0.0f)
@@ -6873,12 +6754,12 @@ void KarmaGui::SetWindowSize(KGGuiWindow* window, const ImVec2& size, KarmaGuiCo
         MarkIniSettingsDirty(window);
 }
 
-void KarmaGui::SetWindowSize(const ImVec2& size, KarmaGuiCond cond)
+void KarmaGui::SetWindowSize(const KGVec2& size, KarmaGuiCond cond)
 {
     SetWindowSize(GKarmaGui->CurrentWindow, size, cond);
 }
 
-void KarmaGui::SetWindowSize(const char* name, const ImVec2& size, KarmaGuiCond cond)
+void KarmaGui::SetWindowSize(const char* name, const KGVec2& size, KarmaGuiCond cond)
 {
     if (KGGuiWindow* window = FindWindowByName(name))
         SetWindowSize(window, size, cond);
@@ -6895,7 +6776,7 @@ void KarmaGui::SetWindowCollapsed(KGGuiWindow* window, bool collapsed, KarmaGuiC
     window->Collapsed = collapsed;
 }
 
-void KarmaGui::SetWindowHitTestHole(KGGuiWindow* window, const ImVec2& pos, const ImVec2& size)
+void KarmaGui::SetWindowHitTestHole(KGGuiWindow* window, const KGVec2& pos, const KGVec2& size)
 {
     KR_CORE_ASSERT(window->HitTestHoleSize.x == 0);     // We don't support multiple holes/hit test filters
     window->HitTestHoleSize = KGVec2ih(size);
@@ -6943,7 +6824,7 @@ void KarmaGui::SetWindowFocus(const char* name)
     }
 }
 
-void KarmaGui::SetNextWindowPos(const ImVec2& pos, KarmaGuiCond cond, const ImVec2& pivot)
+void KarmaGui::SetNextWindowPos(const KGVec2& pos, KarmaGuiCond cond, const KGVec2& pivot)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond)); // Make sure the user doesn't attempt to combine multiple condition flags.
@@ -6954,7 +6835,7 @@ void KarmaGui::SetNextWindowPos(const ImVec2& pos, KarmaGuiCond cond, const ImVe
     g.NextWindowData.PosUndock = true;
 }
 
-void KarmaGui::SetNextWindowSize(const ImVec2& size, KarmaGuiCond cond)
+void KarmaGui::SetNextWindowSize(const KGVec2& size, KarmaGuiCond cond)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond)); // Make sure the user doesn't attempt to combine multiple condition flags.
@@ -6963,7 +6844,7 @@ void KarmaGui::SetNextWindowSize(const ImVec2& size, KarmaGuiCond cond)
     g.NextWindowData.SizeCond = cond ? cond : KGGuiCond_Always;
 }
 
-void KarmaGui::SetNextWindowSizeConstraints(const ImVec2& size_min, const ImVec2& size_max, KarmaGuiSizeCallback custom_callback, void* custom_callback_user_data)
+void KarmaGui::SetNextWindowSizeConstraints(const KGVec2& size_min, const KGVec2& size_max, KarmaGuiSizeCallback custom_callback, void* custom_callback_user_data)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasSizeConstraint;
@@ -6973,15 +6854,15 @@ void KarmaGui::SetNextWindowSizeConstraints(const ImVec2& size_min, const ImVec2
 }
 
 // Content size = inner scrollable rectangle, padded with WindowPadding.
-// SetNextWindowContentSize(ImVec2(100,100) + KGGuiWindowFlags_AlwaysAutoResize will always allow submitting a 100x100 item.
-void KarmaGui::SetNextWindowContentSize(const ImVec2& size)
+// SetNextWindowContentSize(KGVec2(100,100) + KGGuiWindowFlags_AlwaysAutoResize will always allow submitting a 100x100 item.
+void KarmaGui::SetNextWindowContentSize(const KGVec2& size)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasContentSize;
     g.NextWindowData.ContentSizeVal = KGFloor(size);
 }
 
-void KarmaGui::SetNextWindowScroll(const ImVec2& scroll)
+void KarmaGui::SetNextWindowScroll(const KGVec2& scroll)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasScroll;
@@ -7062,7 +6943,7 @@ float KarmaGui::GetFontSize()
     return GKarmaGui->FontSize;
 }
 
-ImVec2 KarmaGui::GetFontTexUvWhitePixel()
+KGVec2 KarmaGui::GetFontTexUvWhitePixel()
 {
     return GKarmaGui->DrawListSharedData.TexUvWhitePixel;
 }
@@ -7241,13 +7122,13 @@ KGGuiID KarmaGui::GetID(const void* ptr_id)
     return window->GetID(ptr_id);
 }
 
-bool KarmaGui::IsRectVisible(const ImVec2& size)
+bool KarmaGui::IsRectVisible(const KGVec2& size)
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ClipRect.Overlaps(KGRect(window->DC.CursorPos, window->DC.CursorPos + size));
 }
 
-bool KarmaGui::IsRectVisible(const ImVec2& rect_min, const ImVec2& rect_max)
+bool KarmaGui::IsRectVisible(const KGVec2& rect_min, const KGVec2& rect_max)
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ClipRect.Overlaps(KGRect(rect_min, rect_max));
@@ -7454,9 +7335,9 @@ int KarmaGui::GetKeyPressedAmount(KarmaGuiKey key, float repeat_delay, float rep
 }
 
 // Return 2D vector representing the combination of four cardinal direction, with analog value support (for e.g. KGGuiKey_GamepadLStick* values).
-ImVec2 KarmaGui::GetKeyMagnitude2d(KarmaGuiKey key_left, KarmaGuiKey key_right, KarmaGuiKey key_up, KarmaGuiKey key_down)
+KGVec2 KarmaGui::GetKeyMagnitude2d(KarmaGuiKey key_left, KarmaGuiKey key_right, KarmaGuiKey key_up, KarmaGuiKey key_down)
 {
-    return ImVec2(
+    return KGVec2(
         GetKeyData(key_right)->AnalogValue - GetKeyData(key_left)->AnalogValue,
         GetKeyData(key_down)->AnalogValue - GetKeyData(key_up)->AnalogValue);
 }
@@ -7775,7 +7656,7 @@ int KarmaGui::GetMouseClickedCount(KarmaGuiMouseButton button)
 // Test if mouse cursor is hovering given rectangle
 // NB- Rectangle is clipped by our current clip setting
 // NB- Expand the rectangle to be generous on imprecise inputs systems (g.Style.TouchExtraPadding)
-bool KarmaGui::IsMouseHoveringRect(const ImVec2& r_min, const ImVec2& r_max, bool clip)
+bool KarmaGui::IsMouseHoveringRect(const KGVec2& r_min, const KGVec2& r_max, bool clip)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -7813,14 +7694,14 @@ bool KarmaGui::IsMouseDragging(KarmaGuiMouseButton button, float lock_threshold)
     return IsMouseDragPastThreshold(button, lock_threshold);
 }
 
-ImVec2 KarmaGui::GetMousePos()
+KGVec2 KarmaGui::GetMousePos()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.IO.MousePos;
 }
 
 // NB: prefer to call right after BeginPopup(). At the time Selectable/MenuItem is activated, the popup is already closed!
-ImVec2 KarmaGui::GetMousePosOnOpeningCurrentPopup()
+KGVec2 KarmaGui::GetMousePosOnOpeningCurrentPopup()
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (g.BeginPopupStack.Size > 0)
@@ -7828,14 +7709,14 @@ ImVec2 KarmaGui::GetMousePosOnOpeningCurrentPopup()
     return g.IO.MousePos;
 }
 
-// We typically use ImVec2(-FLT_MAX,-FLT_MAX) to denote an invalid mouse position.
-bool KarmaGui::IsMousePosValid(const ImVec2* mouse_pos)
+// We typically use KGVec2(-FLT_MAX,-FLT_MAX) to denote an invalid mouse position.
+bool KarmaGui::IsMousePosValid(const KGVec2* mouse_pos)
 {
     // The assert is only to silence a false-positive in XCode Static Analysis.
     // Because GKarmaGui is not dereferenced in every code path, the static analyzer assume that it may be NULL (which it doesn't for other functions).
     KR_CORE_ASSERT(GKarmaGui != NULL);
     const float MOUSE_INVALID = -256000.0f;
-    ImVec2 p = mouse_pos ? *mouse_pos : GKarmaGui->IO.MousePos;
+    KGVec2 p = mouse_pos ? *mouse_pos : GKarmaGui->IO.MousePos;
     return p.x >= MOUSE_INVALID && p.y >= MOUSE_INVALID;
 }
 
@@ -7852,7 +7733,7 @@ bool KarmaGui::IsAnyMouseDown()
 // Return the delta from the initial clicking position while the mouse button is clicked or was just released.
 // This is locked and return 0.0f until the mouse moves past a distance threshold at least once.
 // NB: This is only valid if IsMousePosValid(). backends in theory should always keep mouse position valid when dragging even outside the client window.
-ImVec2 KarmaGui::GetMouseDragDelta(KarmaGuiMouseButton button, float lock_threshold)
+KGVec2 KarmaGui::GetMouseDragDelta(KarmaGuiMouseButton button, float lock_threshold)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
@@ -7862,7 +7743,7 @@ ImVec2 KarmaGui::GetMouseDragDelta(KarmaGuiMouseButton button, float lock_thresh
         if (g.IO.MouseDragMaxDistanceSqr[button] >= lock_threshold * lock_threshold)
             if (IsMousePosValid(&g.IO.MousePos) && IsMousePosValid(&g.IO.MouseClickedPos[button]))
                 return g.IO.MousePos - g.IO.MouseClickedPos[button];
-    return ImVec2(0.0f, 0.0f);
+    return KGVec2(0.0f, 0.0f);
 }
 
 void KarmaGui::ResetMouseDragDelta(KarmaGuiMouseButton button)
@@ -8039,7 +7920,7 @@ static void KarmaGui::UpdateMouseInputs()
     if (IsMousePosValid(&io.MousePos) && IsMousePosValid(&io.MousePosPrev))
         io.MouseDelta = io.MousePos - io.MousePosPrev;
     else
-        io.MouseDelta = ImVec2(0.0f, 0.0f);
+        io.MouseDelta = KGVec2(0.0f, 0.0f);
 
     // If mouse moved we re-enable mouse hovering in case it was disabled by gamepad/keyboard. In theory should use a >0.0f threshold but would need to reset in everywhere we set this to true.
     if (io.MouseDelta.x != 0.0f || io.MouseDelta.y != 0.0f)
@@ -8058,7 +7939,7 @@ static void KarmaGui::UpdateMouseInputs()
             bool is_repeated_click = false;
             if ((float)(g.Time - io.MouseClickedTime[i]) < io.MouseDoubleClickTime)
             {
-                ImVec2 delta_from_click_pos = IsMousePosValid(&io.MousePos) ? (io.MousePos - io.MouseClickedPos[i]) : ImVec2(0.0f, 0.0f);
+                KGVec2 delta_from_click_pos = IsMousePosValid(&io.MousePos) ? (io.MousePos - io.MouseClickedPos[i]) : KGVec2(0.0f, 0.0f);
                 if (KGLengthSqr(delta_from_click_pos) < io.MouseDoubleClickMaxDist * io.MouseDoubleClickMaxDist)
                     is_repeated_click = true;
             }
@@ -8069,13 +7950,13 @@ static void KarmaGui::UpdateMouseInputs()
             io.MouseClickedTime[i] = g.Time;
             io.MouseClickedPos[i] = io.MousePos;
             io.MouseClickedCount[i] = io.MouseClickedLastCount[i];
-            io.MouseDragMaxDistanceAbs[i] = ImVec2(0.0f, 0.0f);
+            io.MouseDragMaxDistanceAbs[i] = KGVec2(0.0f, 0.0f);
             io.MouseDragMaxDistanceSqr[i] = 0.0f;
         }
         else if (io.MouseDown[i])
         {
             // Maintain the maximum distance we reaching from the initial click position, which is used with dragging threshold
-            ImVec2 delta_from_click_pos = IsMousePosValid(&io.MousePos) ? (io.MousePos - io.MouseClickedPos[i]) : ImVec2(0.0f, 0.0f);
+            KGVec2 delta_from_click_pos = IsMousePosValid(&io.MousePos) ? (io.MousePos - io.MouseClickedPos[i]) : KGVec2(0.0f, 0.0f);
             io.MouseDragMaxDistanceSqr[i] = KGMax(io.MouseDragMaxDistanceSqr[i], KGLengthSqr(delta_from_click_pos));
             io.MouseDragMaxDistanceAbs[i].x = KGMax(io.MouseDragMaxDistanceAbs[i].x, delta_from_click_pos.x < 0.0f ? -delta_from_click_pos.x : delta_from_click_pos.x);
             io.MouseDragMaxDistanceAbs[i].y = KGMax(io.MouseDragMaxDistanceAbs[i].y, delta_from_click_pos.y < 0.0f ? -delta_from_click_pos.y : delta_from_click_pos.y);
@@ -8105,11 +7986,11 @@ static void LockWheelingWindow(KGGuiWindow* window, float wheel_amount)
     if (window == NULL)
     {
         g.WheelingWindowStartFrame = -1;
-        g.WheelingAxisAvg = ImVec2(0.0f, 0.0f);
+        g.WheelingAxisAvg = KGVec2(0.0f, 0.0f);
     }
 }
 
-static KGGuiWindow* FindBestWheelingWindow(const ImVec2& wheel)
+static KGGuiWindow* FindBestWheelingWindow(const KGVec2& wheel)
 {
     // For each axis, find window in the hierarchy that may want to use scrolling
     KarmaGuiContext& g = *GKarmaGui;
@@ -8163,7 +8044,7 @@ void KarmaGui::UpdateMouseWheel()
             LockWheelingWindow(NULL, 0.0f);
     }
 
-    ImVec2 wheel;
+    KGVec2 wheel;
     wheel.x = TestKeyOwner(KGGuiKey_MouseWheelX, KGGuiKeyOwner_None) ? g.IO.MouseWheelH : 0.0f;
     wheel.y = TestKeyOwner(KGGuiKey_MouseWheelY, KGGuiKeyOwner_None) ? g.IO.MouseWheel : 0.0f;
 
@@ -8183,7 +8064,7 @@ void KarmaGui::UpdateMouseWheel()
         window->FontWindowScale = new_font_scale;
         if (window == window->RootWindow)
         {
-            const ImVec2 offset = window->Size * (1.0f - scale) * (g.IO.MousePos - window->Pos) / window->Size;
+            const KGVec2 offset = window->Size * (1.0f - scale) * (g.IO.MousePos - window->Pos) / window->Size;
             SetWindowPos(window, window->Pos + offset, 0);
             window->Size = KGFloor(window->Size * scale);
             window->SizeFull = KGFloor(window->SizeFull * scale);
@@ -8210,7 +8091,7 @@ void KarmaGui::UpdateMouseWheel()
 
     // In the rare situation where FindBestWheelingWindow() had to defer first frame of wheeling due to ambiguous main axis, reinject it now.
     wheel += g.WheelingWindowWheelRemainder;
-    g.WheelingWindowWheelRemainder = ImVec2(0.0f, 0.0f);
+    g.WheelingWindowWheelRemainder = KGVec2(0.0f, 0.0f);
     if (wheel.x == 0.0f && wheel.y == 0.0f)
         return;
 
@@ -8297,7 +8178,7 @@ void KarmaGui::UpdateInputEvents(bool trickle_fast_inputs)
         if (e->Type == KGGuiInputEventType_MousePos)
         {
             // Trickling Rule: Stop processing queued events if we already handled a mouse button change
-            ImVec2 event_pos(e->MousePos.PosX, e->MousePos.PosY);
+            KGVec2 event_pos(e->MousePos.PosX, e->MousePos.PosY);
             if (trickle_fast_inputs && (mouse_button_changed != 0 || mouse_wheeled || key_changed || text_inputted))
                 break;
             io.MousePos = event_pos;
@@ -8531,7 +8412,7 @@ bool KarmaGui::DebugCheckVersionAndDataLayout(const char* version, size_t sz_io,
     if (strcmp(version, IMGUI_VERSION) != 0) { error = true; KR_CORE_ASSERT(strcmp(version, IMGUI_VERSION) == 0 && "Mismatched version string!"); }
     if (sz_io != sizeof(KarmaGuiIO)) { error = true; KR_CORE_ASSERT(sz_io == sizeof(KarmaGuiIO) && "Mismatched struct layout!"); }
     if (sz_style != sizeof(KarmaGuiStyle)) { error = true; KR_CORE_ASSERT(sz_style == sizeof(KarmaGuiStyle) && "Mismatched struct layout!"); }
-    if (sz_vec2 != sizeof(ImVec2)) { error = true; KR_CORE_ASSERT(sz_vec2 == sizeof(ImVec2) && "Mismatched struct layout!"); }
+    if (sz_vec2 != sizeof(KGVec2)) { error = true; KR_CORE_ASSERT(sz_vec2 == sizeof(KGVec2) && "Mismatched struct layout!"); }
     if (sz_vec4 != sizeof(ImVec4)) { error = true; KR_CORE_ASSERT(sz_vec4 == sizeof(ImVec4) && "Mismatched struct layout!"); }
     if (sz_vert != sizeof(KGDrawVert)) { error = true; KR_CORE_ASSERT(sz_vert == sizeof(KGDrawVert) && "Mismatched struct layout!"); }
     if (sz_idx != sizeof(KGDrawIdx)) { error = true; KR_CORE_ASSERT(sz_idx == sizeof(KGDrawIdx) && "Mismatched struct layout!"); }
@@ -8543,11 +8424,11 @@ bool KarmaGui::DebugCheckVersionAndDataLayout(const char* version, size_t sz_io,
 // See https://github.com/ocornut/imgui/issues/5548 for more details.
 // [Scenario 1]
 //  Previously this would make the window content size ~200x200:
-//    Begin(...) + SetCursorScreenPos(GetCursorScreenPos() + ImVec2(200,200)) + End();  // NOT OK
+//    Begin(...) + SetCursorScreenPos(GetCursorScreenPos() + KGVec2(200,200)) + End();  // NOT OK
 //  Instead, please submit an item:
-//    Begin(...) + SetCursorScreenPos(GetCursorScreenPos() + ImVec2(200,200)) + Dummy(ImVec2(0,0)) + End(); // OK
+//    Begin(...) + SetCursorScreenPos(GetCursorScreenPos() + KGVec2(200,200)) + Dummy(KGVec2(0,0)) + End(); // OK
 //  Alternative:
-//    Begin(...) + Dummy(ImVec2(200,200)) + End(); // OK
+//    Begin(...) + Dummy(KGVec2(200,200)) + End(); // OK
 // [Scenario 2]
 //  For reference this is one of the issue what we aim to fix with this change:
 //    BeginGroup() + SomeItem("foobar") + SetCursorScreenPos(GetCursorScreenPos()) + EndGroup()
@@ -8851,7 +8732,7 @@ void KGGuiStackSizes::CompareWithCurrentState()
 // Advance cursor given item size for layout.
 // Register minimum needed size so it can extend the bounding box used for auto-fit calculation.
 // See comments in ItemAdd() about how/why the size provided to ItemSize() vs ItemAdd() may often different.
-void KarmaGui::ItemSize(const ImVec2& size, float text_baseline_y)
+void KarmaGui::ItemSize(const KGVec2& size, float text_baseline_y)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -8867,7 +8748,7 @@ void KarmaGui::ItemSize(const ImVec2& size, float text_baseline_y)
     const float line_height = KGMax(window->DC.CurrLineSize.y, /*KGMax(*/window->DC.CursorPos.y - line_y1/*, 0.0f)*/ + size.y + offset_to_match_baseline_y);
 
     // Always align ourselves on pixel boundaries
-    //if (g.IO.KeyAlt) window->DrawList->AddRect(window->DC.CursorPos, window->DC.CursorPos + ImVec2(size.x, line_height), KG_COL32(255,0,0,200)); // [DEBUG]
+    //if (g.IO.KeyAlt) window->DrawList->AddRect(window->DC.CursorPos, window->DC.CursorPos + KGVec2(size.x, line_height), KG_COL32(255,0,0,200)); // [DEBUG]
     window->DC.CursorPosPrevLine.x = window->DC.CursorPos.x + size.x;
     window->DC.CursorPosPrevLine.y = line_y1;
     window->DC.CursorPos.x = KG_FLOOR(window->Pos.x + window->DC.Indent.x + window->DC.ColumnsOffset.x);    // Next line
@@ -8995,7 +8876,7 @@ void KarmaGui::SameLine(float offset_from_start_x, float spacing_w)
     window->DC.IsSameLine = true;
 }
 
-ImVec2 KarmaGui::GetCursorScreenPos()
+KGVec2 KarmaGui::GetCursorScreenPos()
 {
     KGGuiWindow* window = GetCurrentWindowRead();
     return window->DC.CursorPos;
@@ -9003,8 +8884,8 @@ ImVec2 KarmaGui::GetCursorScreenPos()
 
 // 2022/08/05: Setting cursor position also extend boundaries (via modifying CursorMaxPos) used to compute window size, group size etc.
 // I believe this was is a judicious choice but it's probably being relied upon (it has been the case since 1.31 and 1.50)
-// It would be sane if we requested user to use SetCursorPos() + Dummy(ImVec2(0,0)) to extend CursorMaxPos...
-void KarmaGui::SetCursorScreenPos(const ImVec2& pos)
+// It would be sane if we requested user to use SetCursorPos() + Dummy(KGVec2(0,0)) to extend CursorMaxPos...
+void KarmaGui::SetCursorScreenPos(const KGVec2& pos)
 {
     KGGuiWindow* window = GetCurrentWindow();
     window->DC.CursorPos = pos;
@@ -9014,7 +8895,7 @@ void KarmaGui::SetCursorScreenPos(const ImVec2& pos)
 
 // User generally sees positions in window coordinates. Internally we store CursorPos in absolute screen coordinates because it is more convenient.
 // Conversion happens as we pass the value to user, but it makes our naming convention confusing because GetCursorPos() == (DC.CursorPos - window.Pos). May want to rename 'DC.CursorPos'.
-ImVec2 KarmaGui::GetCursorPos()
+KGVec2 KarmaGui::GetCursorPos()
 {
     KGGuiWindow* window = GetCurrentWindowRead();
     return window->DC.CursorPos - window->Pos + window->Scroll;
@@ -9032,7 +8913,7 @@ float KarmaGui::GetCursorPosY()
     return window->DC.CursorPos.y - window->Pos.y + window->Scroll.y;
 }
 
-void KarmaGui::SetCursorPos(const ImVec2& local_pos)
+void KarmaGui::SetCursorPos(const KGVec2& local_pos)
 {
     KGGuiWindow* window = GetCurrentWindow();
     window->DC.CursorPos = window->Pos - window->Scroll + local_pos;
@@ -9056,7 +8937,7 @@ void KarmaGui::SetCursorPosY(float y)
     window->DC.IsSetPos = true;
 }
 
-ImVec2 KarmaGui::GetCursorStartPos()
+KGVec2 KarmaGui::GetCursorStartPos()
 {
     KGGuiWindow* window = GetCurrentWindowRead();
     return window->DC.CursorStartPos - window->Pos;
@@ -9142,12 +9023,12 @@ float KarmaGui::CalcItemWidth()
 // Those two functions CalcItemWidth vs CalcItemSize are awkwardly named because they are not fully symmetrical.
 // Note that only CalcItemWidth() is publicly exposed.
 // The 4.0f here may be changed to match CalcItemWidth() and/or BeginChild() (right now we have a mismatch which is harmless but undesirable)
-ImVec2 KarmaGui::CalcItemSize(ImVec2 size, float default_w, float default_h)
+KGVec2 KarmaGui::CalcItemSize(KGVec2 size, float default_w, float default_h)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
 
-    ImVec2 region_max;
+    KGVec2 region_max;
     if (size.x < 0.0f || size.y < 0.0f)
         region_max = GetContentRegionMaxAbs();
 
@@ -9191,41 +9072,41 @@ float KarmaGui::GetFrameHeightWithSpacing()
 // FIXME: All the Contents Region function are messy or misleading. WE WILL AIM TO OBSOLETE ALL OF THEM WITH A NEW "WORK RECT" API. Thanks for your patience!
 
 // FIXME: This is in window space (not screen space!).
-ImVec2 KarmaGui::GetContentRegionMax()
+KGVec2 KarmaGui::GetContentRegionMax()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
-    ImVec2 mx = window->ContentRegionRect.Max - window->Pos;
+    KGVec2 mx = window->ContentRegionRect.Max - window->Pos;
     if (window->DC.CurrentColumns || g.CurrentTable)
         mx.x = window->WorkRect.Max.x - window->Pos.x;
     return mx;
 }
 
 // [Internal] Absolute coordinate. Saner. This is not exposed until we finishing refactoring work rect features.
-ImVec2 KarmaGui::GetContentRegionMaxAbs()
+KGVec2 KarmaGui::GetContentRegionMaxAbs()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
-    ImVec2 mx = window->ContentRegionRect.Max;
+    KGVec2 mx = window->ContentRegionRect.Max;
     if (window->DC.CurrentColumns || g.CurrentTable)
         mx.x = window->WorkRect.Max.x;
     return mx;
 }
 
-ImVec2 KarmaGui::GetContentRegionAvail()
+KGVec2 KarmaGui::GetContentRegionAvail()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return GetContentRegionMaxAbs() - window->DC.CursorPos;
 }
 
 // In window space (not screen space!)
-ImVec2 KarmaGui::GetWindowContentRegionMin()
+KGVec2 KarmaGui::GetWindowContentRegionMin()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ContentRegionRect.Min - window->Pos;
 }
 
-ImVec2 KarmaGui::GetWindowContentRegionMax()
+KGVec2 KarmaGui::GetWindowContentRegionMax()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ContentRegionRect.Max - window->Pos;
@@ -9256,7 +9137,7 @@ void KarmaGui::BeginGroup()
     window->DC.GroupOffset.x = window->DC.CursorPos.x - window->Pos.x - window->DC.ColumnsOffset.x;
     window->DC.Indent = window->DC.GroupOffset;
     window->DC.CursorMaxPos = window->DC.CursorPos;
-    window->DC.CurrLineSize = ImVec2(0.0f, 0.0f);
+    window->DC.CurrLineSize = KGVec2(0.0f, 0.0f);
     if (g.LogEnabled)
         g.LogLinePosY = -FLT_MAX; // To enforce a carriage return
 }
@@ -9342,10 +9223,10 @@ static float CalcScrollEdgeSnap(float target, float snap_min, float snap_max, fl
     return target;
 }
 
-static ImVec2 CalcNextScrollFromScrollTargetAndClamp(KGGuiWindow* window)
+static KGVec2 CalcNextScrollFromScrollTargetAndClamp(KGGuiWindow* window)
 {
-    ImVec2 scroll = window->Scroll;
-    ImVec2 decoration_size(window->DecoOuterSizeX1 + window->DecoInnerSizeX1 + window->DecoOuterSizeX2, window->DecoOuterSizeY1 + window->DecoInnerSizeY1 + window->DecoOuterSizeY2);
+    KGVec2 scroll = window->Scroll;
+    KGVec2 decoration_size(window->DecoOuterSizeX1 + window->DecoInnerSizeX1 + window->DecoOuterSizeX2, window->DecoOuterSizeY1 + window->DecoInnerSizeY1 + window->DecoOuterSizeY2);
     for (int axis = 0; axis < 2; axis++)
     {
         if (window->ScrollTarget[axis] < FLT_MAX)
@@ -9380,10 +9261,10 @@ void KarmaGui::ScrollToRect(KGGuiWindow* window, const KGRect& item_rect, KGGuiS
 }
 
 // Scroll to keep newly navigated item fully into view
-ImVec2 KarmaGui::ScrollToRectEx(KGGuiWindow* window, const KGRect& item_rect, KGGuiScrollFlags flags)
+KGVec2 KarmaGui::ScrollToRectEx(KGGuiWindow* window, const KGRect& item_rect, KGGuiScrollFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KGRect scroll_rect(window->InnerRect.Min - ImVec2(1, 1), window->InnerRect.Max + ImVec2(1, 1));
+    KGRect scroll_rect(window->InnerRect.Min - KGVec2(1, 1), window->InnerRect.Max + KGVec2(1, 1));
     scroll_rect.Min.x = KGMin(scroll_rect.Min.x + window->DecoInnerSizeX1, scroll_rect.Max.x);
     scroll_rect.Min.y = KGMin(scroll_rect.Min.y + window->DecoInnerSizeY1, scroll_rect.Max.y);
     //GetForegroundDrawList(window)->AddRect(item_rect.Min, item_rect.Max, KG_COL32(255,0,0,255), 0.0f, 0, 5.0f); // [DEBUG]
@@ -9435,8 +9316,8 @@ ImVec2 KarmaGui::ScrollToRectEx(KGGuiWindow* window, const KGRect& item_rect, KG
             SetScrollFromPosY(window, item_rect.Min.y - window->Pos.y, 0.0f);
     }
 
-    ImVec2 next_scroll = CalcNextScrollFromScrollTargetAndClamp(window);
-    ImVec2 delta_scroll = next_scroll - window->Scroll;
+    KGVec2 next_scroll = CalcNextScrollFromScrollTargetAndClamp(window);
+    KGVec2 delta_scroll = next_scroll - window->Scroll;
 
     // Also scroll parent window to keep us into view if necessary
     if (!(flags & KGGuiScrollFlags_NoScrollParent) && (window->Flags & KGGuiWindowFlags_ChildWindow))
@@ -9584,8 +9465,8 @@ void KarmaGui::BeginTooltipEx(KGGuiTooltipFlags tooltip_flags, KarmaGuiWindowFla
         // The default tooltip position is a little offset to give space to see the context menu (it's also clamped within the current viewport/monitor)
         // In the context of a dragging tooltip we try to reduce that offset and we enforce following the cursor.
         // Whatever we do we want to call SetNextWindowPos() to enforce a tooltip position and disable clipping the tooltip without our display area, like regular tooltip do.
-        //ImVec2 tooltip_pos = g.IO.MousePos - g.ActiveIdClickOffset - g.Style.WindowPadding;
-        ImVec2 tooltip_pos = g.IO.MousePos + ImVec2(16 * g.Style.MouseCursorScale, 8 * g.Style.MouseCursorScale);
+        //KGVec2 tooltip_pos = g.IO.MousePos - g.ActiveIdClickOffset - g.Style.WindowPadding;
+        KGVec2 tooltip_pos = g.IO.MousePos + KGVec2(16 * g.Style.MouseCursorScale, 8 * g.Style.MouseCursorScale);
         SetNextWindowPos(tooltip_pos);
         SetNextWindowBgAlpha(g.Style.Colors[KGGuiCol_PopupBg].w * 0.60f);
         //PushStyleVar(KGGuiStyleVar_Alpha, g.Style.Alpha * 0.60f); // This would be nice but e.g ColorButton with checkboard has issue with transparent colors :(
@@ -9934,7 +9815,7 @@ bool KarmaGui::BeginPopupModal(const char* name, bool* p_open, KarmaGuiWindowFla
     if ((g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasPos) == 0)
     {
         const KarmaGuiViewport* viewport = window->WasActive ? window->Viewport : GetMainViewport(); // FIXME-VIEWPORT: What may be our reference viewport?
-        SetNextWindowPos(viewport->GetCenter(), KGGuiCond_FirstUseEver, ImVec2(0.5f, 0.5f));
+        SetNextWindowPos(viewport->GetCenter(), KGGuiCond_FirstUseEver, KGVec2(0.5f, 0.5f));
     }
 
     flags |= KGGuiWindowFlags_Popup | KGGuiWindowFlags_Modal | KGGuiWindowFlags_NoCollapse | KGGuiWindowFlags_NoDocking;
@@ -10046,9 +9927,9 @@ bool KarmaGui::BeginPopupContextVoid(const char* str_id, KarmaGuiPopupFlags popu
 // (r_outer is usually equivalent to the viewport rectangle minus padding, but when multi-viewports are enabled and monitor
 //  information are available, it may represent the entire platform monitor from the frame of reference of the current viewport.
 //  this allows us to have tooltips/popups displayed out of the parent viewport.)
-ImVec2 KarmaGui::FindBestWindowPosForPopupEx(const ImVec2& ref_pos, const ImVec2& size, KarmaGuiDir* last_dir, const KGRect& r_outer, const KGRect& r_avoid, KGGuiPopupPositionPolicy policy)
+KGVec2 KarmaGui::FindBestWindowPosForPopupEx(const KGVec2& ref_pos, const KGVec2& size, KarmaGuiDir* last_dir, const KGRect& r_outer, const KGRect& r_avoid, KGGuiPopupPositionPolicy policy)
 {
-    ImVec2 base_pos_clamped = KGClamp(ref_pos, r_outer.Min, r_outer.Max - size);
+    KGVec2 base_pos_clamped = KGClamp(ref_pos, r_outer.Min, r_outer.Max - size);
     //GetForegroundDrawList()->AddRect(r_avoid.Min, r_avoid.Max, KG_COL32(255,0,0,255));
     //GetForegroundDrawList()->AddRect(r_outer.Min, r_outer.Max, KG_COL32(0,255,0,255));
 
@@ -10061,11 +9942,11 @@ ImVec2 KarmaGui::FindBestWindowPosForPopupEx(const ImVec2& ref_pos, const ImVec2
             const KarmaGuiDir dir = (n == -1) ? *last_dir : dir_prefered_order[n];
             if (n != -1 && dir == *last_dir) // Already tried this direction?
                 continue;
-            ImVec2 pos;
-            if (dir == KGGuiDir_Down)  pos = ImVec2(r_avoid.Min.x, r_avoid.Max.y);          // Below, Toward Right (default)
-            if (dir == KGGuiDir_Right) pos = ImVec2(r_avoid.Min.x, r_avoid.Min.y - size.y); // Above, Toward Right
-            if (dir == KGGuiDir_Left)  pos = ImVec2(r_avoid.Max.x - size.x, r_avoid.Max.y); // Below, Toward Left
-            if (dir == KGGuiDir_Up)    pos = ImVec2(r_avoid.Max.x - size.x, r_avoid.Min.y - size.y); // Above, Toward Left
+            KGVec2 pos;
+            if (dir == KGGuiDir_Down)  pos = KGVec2(r_avoid.Min.x, r_avoid.Max.y);          // Below, Toward Right (default)
+            if (dir == KGGuiDir_Right) pos = KGVec2(r_avoid.Min.x, r_avoid.Min.y - size.y); // Above, Toward Right
+            if (dir == KGGuiDir_Left)  pos = KGVec2(r_avoid.Max.x - size.x, r_avoid.Max.y); // Below, Toward Left
+            if (dir == KGGuiDir_Up)    pos = KGVec2(r_avoid.Max.x - size.x, r_avoid.Min.y - size.y); // Above, Toward Left
             if (!r_outer.Contains(KGRect(pos, pos + size)))
                 continue;
             *last_dir = dir;
@@ -10093,7 +9974,7 @@ ImVec2 KarmaGui::FindBestWindowPosForPopupEx(const ImVec2& ref_pos, const ImVec2
             if (avail_h < size.y && (dir == KGGuiDir_Up || dir == KGGuiDir_Down))
                 continue;
 
-            ImVec2 pos;
+            KGVec2 pos;
             pos.x = (dir == KGGuiDir_Left) ? r_avoid.Min.x - size.x : (dir == KGGuiDir_Right) ? r_avoid.Max.x : base_pos_clamped.x;
             pos.y = (dir == KGGuiDir_Up) ? r_avoid.Min.y - size.y : (dir == KGGuiDir_Down) ? r_avoid.Max.y : base_pos_clamped.y;
 
@@ -10111,10 +9992,10 @@ ImVec2 KarmaGui::FindBestWindowPosForPopupEx(const ImVec2& ref_pos, const ImVec2
 
     // For tooltip we prefer avoiding the cursor at all cost even if it means that part of the tooltip won't be visible.
     if (policy == KGGuiPopupPositionPolicy_Tooltip)
-        return ref_pos + ImVec2(2, 2);
+        return ref_pos + KGVec2(2, 2);
 
     // Otherwise try to keep within display
-    ImVec2 pos = ref_pos;
+    KGVec2 pos = ref_pos;
     pos.x = KGMax(KGMin(pos.x + size.x, r_outer.Max.x) - size.x, r_outer.Min.x);
     pos.y = KGMax(KGMin(pos.y + size.y, r_outer.Max.y) - size.y, r_outer.Min.y);
     return pos;
@@ -10137,12 +10018,12 @@ KGRect KarmaGui::GetPopupAllowedExtentRect(KGGuiWindow* window)
         // Use the full viewport area (not work area) for popups
         r_screen = window->Viewport->GetMainRect();
     }
-    ImVec2 padding = g.Style.DisplaySafeAreaPadding;
-    r_screen.Expand(ImVec2((r_screen.GetWidth() > padding.x * 2) ? -padding.x : 0.0f, (r_screen.GetHeight() > padding.y * 2) ? -padding.y : 0.0f));
+    KGVec2 padding = g.Style.DisplaySafeAreaPadding;
+    r_screen.Expand(KGVec2((r_screen.GetWidth() > padding.x * 2) ? -padding.x : 0.0f, (r_screen.GetHeight() > padding.y * 2) ? -padding.y : 0.0f));
     return r_screen;
 }
 
-ImVec2 KarmaGui::FindBestWindowPosForPopup(KGGuiWindow* window)
+KGVec2 KarmaGui::FindBestWindowPosForPopup(KGGuiWindow* window)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -10168,7 +10049,7 @@ ImVec2 KarmaGui::FindBestWindowPosForPopup(KGGuiWindow* window)
     {
         // Position tooltip (always follows mouse)
         float sc = g.Style.MouseCursorScale;
-        ImVec2 ref_pos = NavCalcPreferredRefPos();
+        KGVec2 ref_pos = NavCalcPreferredRefPos();
         KGRect r_avoid;
         if (!g.NavDisableHighlight && g.NavDisableMouseHover && !(g.IO.ConfigFlags & KGGuiConfigFlags_NavEnableSetMousePos))
             r_avoid = KGRect(ref_pos.x - 16, ref_pos.y - 8, ref_pos.x + 16, ref_pos.y + 8);
@@ -10338,7 +10219,7 @@ static bool KarmaGui::NavScoreItem(KGGuiNavItemData* result)
         KGDrawList* draw_list = GetForegroundDrawList(window);
         draw_list->AddRect(curr.Min, curr.Max, KG_COL32(255,200,0,100));
         draw_list->AddRect(cand.Min, cand.Max, KG_COL32(255,255,0,200));
-        draw_list->AddRectFilled(cand.Max - ImVec2(4, 4), cand.Max + CalcTextSize(buf) + ImVec2(4, 4), KG_COL32(40,0,0,150));
+        draw_list->AddRectFilled(cand.Max - KGVec2(4, 4), cand.Max + CalcTextSize(buf) + KGVec2(4, 4), KG_COL32(40,0,0,150));
         draw_list->AddText(cand.Max, ~0U, buf);
     }
     else if (g.IO.KeyCtrl) // Hold to preview score in matching quadrant. Press C to rotate.
@@ -10690,7 +10571,7 @@ void KarmaGui::NavInitWindow(KGGuiWindow* window, bool force_reinit)
     }
 }
 
-static ImVec2 KarmaGui::NavCalcPreferredRefPos()
+static KGVec2 KarmaGui::NavCalcPreferredRefPos()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.NavWindow;
@@ -10699,8 +10580,8 @@ static ImVec2 KarmaGui::NavCalcPreferredRefPos()
         // Mouse (we need a fallback in case the mouse becomes invalid after being used)
         // The +1.0f offset when stored by OpenPopupEx() allows reopening this or another popup (same or another mouse button) while not moving the mouse, it is pretty standard.
         // In theory we could move that +1.0f offset in OpenPopupEx()
-        ImVec2 p = IsMousePosValid(&g.IO.MousePos) ? g.IO.MousePos : g.MouseLastValidPos;
-        return ImVec2(p.x + 1.0f, p.y);
+        KGVec2 p = IsMousePosValid(&g.IO.MousePos) ? g.IO.MousePos : g.MouseLastValidPos;
+        return KGVec2(p.x + 1.0f, p.y);
     }
     else
     {
@@ -10709,10 +10590,10 @@ static ImVec2 KarmaGui::NavCalcPreferredRefPos()
         KGRect rect_rel = WindowRectRelToAbs(window, window->NavRectRel[g.NavLayer]);
         if (window->LastFrameActive != g.FrameCount && (window->ScrollTarget.x != FLT_MAX || window->ScrollTarget.y != FLT_MAX))
         {
-            ImVec2 next_scroll = CalcNextScrollFromScrollTargetAndClamp(window);
+            KGVec2 next_scroll = CalcNextScrollFromScrollTargetAndClamp(window);
             rect_rel.Translate(window->Scroll - next_scroll);
         }
-        ImVec2 pos = ImVec2(rect_rel.Min.x + KGMin(g.Style.FramePadding.x * 4, rect_rel.GetWidth()), rect_rel.Max.y - KGMin(g.Style.FramePadding.y, rect_rel.GetHeight()));
+        KGVec2 pos = KGVec2(rect_rel.Min.x + KGMin(g.Style.FramePadding.x * 4, rect_rel.GetWidth()), rect_rel.Max.y - KGMin(g.Style.FramePadding.y, rect_rel.GetHeight()));
         KarmaGuiViewport* viewport = window->Viewport;
         return KGFloor(KGClamp(pos, viewport->Pos, viewport->Pos + viewport->Size)); // KGFloor() is important because non-integer mouse position application in backend might be lossy and result in undesirable non-zero delta.
     }
@@ -10869,7 +10750,7 @@ static void KarmaGui::NavUpdate()
         // Next movement request will clamp the NavId reference rectangle to the visible area, so navigation will resume within those bounds.
         if (nav_gamepad_active)
         {
-            const ImVec2 scroll_dir = GetKeyMagnitude2d(KGGuiKey_GamepadLStickLeft, KGGuiKey_GamepadLStickRight, KGGuiKey_GamepadLStickUp, KGGuiKey_GamepadLStickDown);
+            const KGVec2 scroll_dir = GetKeyMagnitude2d(KGGuiKey_GamepadLStickLeft, KGGuiKey_GamepadLStickRight, KGGuiKey_GamepadLStickUp, KGGuiKey_GamepadLStickDown);
             const float tweak_factor = IsKeyDown(KGGuiKey_NavGamepadTweakSlow) ? 1.0f / 10.0f : IsKeyDown(KGGuiKey_NavGamepadTweakFast) ? 10.0f : 1.0f;
             if (scroll_dir.x != 0.0f && window->ScrollbarX)
                 SetScrollX(window, KGFloor(window->Scroll.x + scroll_dir.x * scroll_speed * tweak_factor));
@@ -10901,7 +10782,7 @@ static void KarmaGui::NavUpdate()
     {
         KGDrawList* draw_list = GetForegroundDrawList(g.NavWindow);
         if (1) { for (int layer = 0; layer < 2; layer++) { KGRect r = WindowRectRelToAbs(g.NavWindow, g.NavWindow->NavRectRel[layer]); draw_list->AddRect(r.Min, r.Max, KG_COL32(255,200,0,255)); } } // [DEBUG]
-        if (1) { KGU32 col = (!g.NavWindow->Hidden) ? KG_COL32(255,0,255,255) : KG_COL32(255,0,0,255); ImVec2 p = NavCalcPreferredRefPos(); char buf[32]; KGFormatString(buf, 32, "%d", g.NavLayer); draw_list->AddCircleFilled(p, 3.0f, col); draw_list->AddText(NULL, 13.0f, p + ImVec2(8,-4), col, buf); }
+        if (1) { KGU32 col = (!g.NavWindow->Hidden) ? KG_COL32(255,0,255,255) : KG_COL32(255,0,0,255); KGVec2 p = NavCalcPreferredRefPos(); char buf[32]; KGFormatString(buf, 32, "%d", g.NavLayer); draw_list->AddCircleFilled(p, 3.0f, col); draw_list->AddText(NULL, 13.0f, p + KGVec2(8,-4), col, buf); }
     }
 #endif
 }
@@ -10999,7 +10880,7 @@ void KarmaGui::NavUpdateCreateMoveRequest()
     {
         bool clamp_x = (g.NavMoveFlags & (KGGuiNavMoveFlags_LoopX | KGGuiNavMoveFlags_WrapX)) == 0;
         bool clamp_y = (g.NavMoveFlags & (KGGuiNavMoveFlags_LoopY | KGGuiNavMoveFlags_WrapY)) == 0;
-        KGRect inner_rect_rel = WindowRectAbsToRel(window, KGRect(window->InnerRect.Min - ImVec2(1, 1), window->InnerRect.Max + ImVec2(1, 1)));
+        KGRect inner_rect_rel = WindowRectAbsToRel(window, KGRect(window->InnerRect.Min - KGVec2(1, 1), window->InnerRect.Max + KGVec2(1, 1)));
         if ((clamp_x || clamp_y) && !inner_rect_rel.Contains(window->NavRectRel[g.NavLayer]))
         {
             //KARMAGUI_DEBUG_LOG_NAV("[nav] NavMoveRequest: clamp NavRectRel for gamepad move\n");
@@ -11378,7 +11259,7 @@ static void NavUpdateWindowingHighlightWindow(int focus_change_dir)
     if (window_target) // Don't reset windowing target if there's a single window in the list
     {
         g.NavWindowingTarget = g.NavWindowingTargetAnim = window_target;
-        g.NavWindowingAccumDeltaPos = g.NavWindowingAccumDeltaSize = ImVec2(0.0f, 0.0f);
+        g.NavWindowingAccumDeltaPos = g.NavWindowingAccumDeltaSize = KGVec2(0.0f, 0.0f);
     }
     g.NavWindowingToggleLayer = false;
 }
@@ -11419,7 +11300,7 @@ static void KarmaGui::NavUpdateWindowing()
         {
             g.NavWindowingTarget = g.NavWindowingTargetAnim = window->RootWindow;
             g.NavWindowingTimer = g.NavWindowingHighlightAlpha = 0.0f;
-            g.NavWindowingAccumDeltaPos = g.NavWindowingAccumDeltaSize = ImVec2(0.0f, 0.0f);
+            g.NavWindowingAccumDeltaPos = g.NavWindowingAccumDeltaSize = KGVec2(0.0f, 0.0f);
             g.NavWindowingToggleLayer = start_windowing_with_gamepad ? true : false; // Gamepad starts toggling layer
             g.NavInputSource = start_windowing_with_keyboard ? KGGuiInputSource_Keyboard : KGGuiInputSource_Gamepad;
         }
@@ -11493,7 +11374,7 @@ static void KarmaGui::NavUpdateWindowing()
     // Move window
     if (g.NavWindowingTarget && !(g.NavWindowingTarget->Flags & KGGuiWindowFlags_NoMove))
     {
-        ImVec2 nav_move_dir;
+        KGVec2 nav_move_dir;
         if (g.NavInputSource == KGGuiInputSource_Keyboard && !io.KeyShift)
             nav_move_dir = GetKeyMagnitude2d(KGGuiKey_LeftArrow, KGGuiKey_RightArrow, KGGuiKey_UpArrow, KGGuiKey_DownArrow);
         if (g.NavInputSource == KGGuiInputSource_Gamepad)
@@ -11504,7 +11385,7 @@ static void KarmaGui::NavUpdateWindowing()
             const float move_step = NAV_MOVE_SPEED * io.DeltaTime * KGMin(io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
             g.NavWindowingAccumDeltaPos += nav_move_dir * move_step;
             g.NavDisableMouseHover = true;
-            ImVec2 accum_floored = KGFloor(g.NavWindowingAccumDeltaPos);
+            KGVec2 accum_floored = KGFloor(g.NavWindowingAccumDeltaPos);
             if (accum_floored.x != 0.0f || accum_floored.y != 0.0f)
             {
                 KGGuiWindow* moving_window = g.NavWindowingTarget->RootWindowDockTree;
@@ -11600,8 +11481,8 @@ void KarmaGui::NavUpdateWindowingOverlay()
     if (g.NavWindowingListWindow == NULL)
         g.NavWindowingListWindow = FindWindowByName("###NavWindowingList");
     const KarmaGuiViewport* viewport = /*g.NavWindow ? g.NavWindow->Viewport :*/ GetMainViewport();
-    SetNextWindowSizeConstraints(ImVec2(viewport->Size.x * 0.20f, viewport->Size.y * 0.20f), ImVec2(FLT_MAX, FLT_MAX));
-    SetNextWindowPos(viewport->GetCenter(), KGGuiCond_Always, ImVec2(0.5f, 0.5f));
+    SetNextWindowSizeConstraints(KGVec2(viewport->Size.x * 0.20f, viewport->Size.y * 0.20f), KGVec2(FLT_MAX, FLT_MAX));
+    SetNextWindowPos(viewport->GetCenter(), KGGuiCond_Always, KGVec2(0.5f, 0.5f));
     PushStyleVar(KGGuiStyleVar_WindowPadding, g.Style.WindowPadding * 2.0f);
     Begin("###NavWindowingList", NULL, KGGuiWindowFlags_NoTitleBar | KGGuiWindowFlags_NoFocusOnAppearing | KGGuiWindowFlags_NoResize | KGGuiWindowFlags_NoMove | KGGuiWindowFlags_NoInputs | KGGuiWindowFlags_AlwaysAutoResize | KGGuiWindowFlags_NoSavedSettings);
     for (int n = g.WindowsFocusOrder.Size - 1; n >= 0; n--)
@@ -11912,7 +11793,7 @@ const KarmaGuiPayload* KarmaGui::AcceptDragDropPayload(const char* type, KarmaGu
     payload.Preview = was_accepted_previously;
     flags |= (g.DragDropSourceFlags & KGGuiDragDropFlags_AcceptNoDrawDefaultRect); // Source can also inhibit the preview (useful for external sources that live for 1 frame)
     if (!(flags & KGGuiDragDropFlags_AcceptNoDrawDefaultRect) && payload.Preview)
-        window->DrawList->AddRect(r.Min - ImVec2(3.5f,3.5f), r.Max + ImVec2(3.5f, 3.5f), GetColorU32(KGGuiCol_DragDropTarget), 0.0f, 0, 2.0f);
+        window->DrawList->AddRect(r.Min - KGVec2(3.5f,3.5f), r.Max + KGVec2(3.5f, 3.5f), GetColorU32(KGGuiCol_DragDropTarget), 0.0f, 0, 2.0f);
 
     g.DragDropAcceptFrameCount = g.FrameCount;
     payload.Delivery = was_accepted_previously && !IsMouseDown(g.DragDropMouseButton); // For extern drag sources affecting os window focus, it's easier to just test !IsMouseDown() instead of IsMouseReleased()
@@ -11925,7 +11806,7 @@ const KarmaGuiPayload* KarmaGui::AcceptDragDropPayload(const char* type, KarmaGu
 // FIXME-DRAGDROP: Settle on a proper default visuals for drop target.
 void KarmaGui::RenderDragDropTargetRect(const KGRect& bb)
 {
-    GetWindowDrawList()->AddRect(bb.Min - ImVec2(3.5f, 3.5f), bb.Max + ImVec2(3.5f, 3.5f), GetColorU32(KGGuiCol_DragDropTarget), 0.0f, 0, 2.0f);
+    GetWindowDrawList()->AddRect(bb.Min - KGVec2(3.5f, 3.5f), bb.Max + KGVec2(3.5f, 3.5f), GetColorU32(KGGuiCol_DragDropTarget), 0.0f, 0, 2.0f);
 }
 
 const KarmaGuiPayload* KarmaGui::GetDragDropPayload()
@@ -11989,7 +11870,7 @@ void KarmaGui::LogTextV(const char* fmt, va_list args)
 // Internal version that takes a position to decide on newline placement and pad items according to their depth.
 // We split text into individual lines to add current tree level padding
 // FIXME: This code is a little complicated perhaps, considering simplifying the whole system.
-void KarmaGui::LogRenderedText(const ImVec2* ref_pos, const char* text, const char* text_end)
+void KarmaGui::LogRenderedText(const KGVec2* ref_pos, const char* text, const char* text_end)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -12631,7 +12512,7 @@ void KarmaGui::SetWindowViewport(KGGuiWindow* window, KGGuiViewportP* viewport)
 {
     // Abandon viewport
     if (window->ViewportOwned && window->Viewport->Window == window)
-        window->Viewport->Size = ImVec2(0.0f, 0.0f);
+        window->Viewport->Size = KGVec2(0.0f, 0.0f);
 
     window->Viewport = viewport;
     window->ViewportId = viewport->ID;
@@ -12697,7 +12578,7 @@ static bool KarmaGui::UpdateTryMergeWindowIntoHostViewports(KGGuiWindow* window)
 
 // Translate Dear ImGui windows when a Host Viewport has been moved
 // (This additionally keeps windows at the same place when KGGuiConfigFlags_ViewportsEnable is toggled!)
-void KarmaGui::TranslateWindowsInViewport(KGGuiViewportP* viewport, const ImVec2& old_pos, const ImVec2& new_pos)
+void KarmaGui::TranslateWindowsInViewport(KGGuiViewportP* viewport, const KGVec2& old_pos, const KGVec2& new_pos)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(viewport->Window == NULL && (viewport->Flags & KGGuiViewportFlags_CanHostOtherWindows));
@@ -12709,7 +12590,7 @@ void KarmaGui::TranslateWindowsInViewport(KGGuiViewportP* viewport, const ImVec2
     // and so the window will appear to teleport when releasing the mouse.
     const bool translate_all_windows = (g.ConfigFlagsCurrFrame & KGGuiConfigFlags_ViewportsEnable) != (g.ConfigFlagsLastFrame & KGGuiConfigFlags_ViewportsEnable);
     KGRect test_still_fit_rect(old_pos, old_pos + viewport->Size);
-    ImVec2 delta_pos = new_pos - old_pos;
+    KGVec2 delta_pos = new_pos - old_pos;
     for (int window_n = 0; window_n < g.Windows.Size; window_n++) // FIXME-OPT
         if (translate_all_windows || (g.Windows[window_n]->Viewport == viewport && test_still_fit_rect.Contains(g.Windows[window_n]->Rect())))
             TranslateWindow(g.Windows[window_n], delta_pos);
@@ -12734,7 +12615,7 @@ void KarmaGui::ScaleWindowsInViewport(KGGuiViewportP* viewport, float scale)
 // If the backend doesn't set MouseLastHoveredViewport or doesn't honor KGGuiViewportFlags_NoInputs, we do a search ourselves.
 // A) It won't take account of the possibility that non-imgui windows may be in-between our dragged window and our target window.
 // B) It requires Platform_GetWindowFocus to be implemented by backend.
-KGGuiViewportP* KarmaGui::FindHoveredViewportFromPlatformWindowStack(const ImVec2& mouse_platform_pos)
+KGGuiViewportP* KarmaGui::FindHoveredViewportFromPlatformWindowStack(const KGVec2& mouse_platform_pos)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiViewportP* best_candidate = NULL;
@@ -12779,8 +12660,8 @@ static void KarmaGui::UpdateViewportsNewFrame()
     KGGuiViewportP* main_viewport = g.Viewports[0];
     KR_CORE_ASSERT(main_viewport->ID == IMGUI_VIEWPORT_DEFAULT_ID);
     KR_CORE_ASSERT(main_viewport->Window == NULL);
-    ImVec2 main_viewport_pos = viewports_enabled ? g.PlatformIO.Platform_GetWindowPos(main_viewport) : ImVec2(0.0f, 0.0f);
-    ImVec2 main_viewport_size = g.IO.DisplaySize;
+    KGVec2 main_viewport_pos = viewports_enabled ? g.PlatformIO.Platform_GetWindowPos(main_viewport) : KGVec2(0.0f, 0.0f);
+    KGVec2 main_viewport_size = g.IO.DisplaySize;
     if (viewports_enabled && (main_viewport->Flags & KGGuiViewportFlags_Minimized))
     {
         main_viewport_pos = main_viewport->Pos;    // Preserve last pos/size when minimized (FIXME: We don't do the same for Size outside of the viewport path)
@@ -12825,7 +12706,7 @@ static void KarmaGui::UpdateViewportsNewFrame()
         // Lock down space taken by menu bars and status bars, reset the offset for functions like BeginMainMenuBar() to alter them again.
         viewport->WorkOffsetMin = viewport->BuildWorkOffsetMin;
         viewport->WorkOffsetMax = viewport->BuildWorkOffsetMax;
-        viewport->BuildWorkOffsetMin = viewport->BuildWorkOffsetMax = ImVec2(0.0f, 0.0f);
+        viewport->BuildWorkOffsetMin = viewport->BuildWorkOffsetMax = KGVec2(0.0f, 0.0f);
         viewport->UpdateWorkRect();
 
         // Reset alpha every frame. Users of transparency (docking) needs to request a lower alpha back.
@@ -12833,7 +12714,7 @@ static void KarmaGui::UpdateViewportsNewFrame()
 
         // Translate Dear ImGui windows when a Host Viewport has been moved
         // (This additionally keeps windows at the same place when KGGuiConfigFlags_ViewportsEnable is toggled!)
-        const ImVec2 viewport_delta_pos = viewport->Pos - viewport->LastPos;
+        const KGVec2 viewport_delta_pos = viewport->Pos - viewport->LastPos;
         if ((viewport->Flags & KGGuiViewportFlags_CanHostOtherWindows) && (viewport_delta_pos.x != 0.0f || viewport_delta_pos.y != 0.0f))
             TranslateWindowsInViewport(viewport, viewport->LastPos, viewport->Pos);
 
@@ -12946,7 +12827,7 @@ static void KarmaGui::UpdateViewportsEndFrame()
 }
 
 // FIXME: We should ideally refactor the system to call this every frame (we currently don't)
-KGGuiViewportP* KarmaGui::AddUpdateViewport(KGGuiWindow* window, KGGuiID id, const ImVec2& pos, const ImVec2& size, KarmaGuiViewportFlags flags)
+KGGuiViewportP* KarmaGui::AddUpdateViewport(KGGuiWindow* window, KGGuiID id, const KGVec2& pos, const KGVec2& size, KarmaGuiViewportFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(id != 0);
@@ -13126,7 +13007,7 @@ static void KarmaGui::WindowSelectViewport(KGGuiWindow* window)
         {
             // We need to take account of the possibility that mouse may become invalid.
             // Popups/Tooltip always set ViewportAllowPlatformMonitorExtend so GetWindowAllowedExtentRect() will return full monitor bounds.
-            ImVec2 mouse_ref = (flags & KGGuiWindowFlags_Tooltip) ? g.IO.MousePos : g.BeginPopupStack.back().OpenMousePos;
+            KGVec2 mouse_ref = (flags & KGGuiWindowFlags_Tooltip) ? g.IO.MousePos : g.BeginPopupStack.back().OpenMousePos;
             bool use_mouse_ref = (g.NavDisableHighlight || !g.NavDisableMouseHover || !g.NavWindow);
             bool mouse_valid = IsMousePosValid(&mouse_ref);
             if ((window->Appearing || (flags & (KGGuiWindowFlags_Tooltip | KGGuiWindowFlags_ChildMenu))) && (!use_mouse_ref || mouse_valid))
@@ -13296,7 +13177,7 @@ void KarmaGui::UpdatePlatformWindows()
             if (g.PlatformIO.Renderer_CreateWindow != NULL)
                 g.PlatformIO.Renderer_CreateWindow(viewport);
             viewport->LastNameHash = 0;
-            viewport->LastPlatformPos = viewport->LastPlatformSize = ImVec2(FLT_MAX, FLT_MAX); // By clearing those we'll enforce a call to Platform_SetWindowPos/Size below, before Platform_ShowWindow (FIXME: Is that necessary?)
+            viewport->LastPlatformPos = viewport->LastPlatformSize = KGVec2(FLT_MAX, FLT_MAX); // By clearing those we'll enforce a call to Platform_SetWindowPos/Size below, before Platform_ShowWindow (FIXME: Is that necessary?)
             viewport->LastRendererSize = viewport->Size;                                       // We don't need to call Renderer_SetWindowSize() as it is expected Renderer_CreateWindow() already did it.
             viewport->PlatformWindowCreated = true;
         }
@@ -13415,7 +13296,7 @@ void KarmaGui::RenderPlatformWindowsDefault(void* platform_render_arg, void* ren
     }
 }
 
-static int KarmaGui::FindPlatformMonitorForPos(const ImVec2& pos)
+static int KarmaGui::FindPlatformMonitorForPos(const KGVec2& pos)
 {
     KarmaGuiContext& g = *GKarmaGui;
     for (int monitor_n = 0; monitor_n < g.PlatformIO.Monitors.Size; monitor_n++)
@@ -13689,18 +13570,18 @@ namespace ImGui
     static bool             DockNodeIsDropAllowed(KGGuiWindow* host_window, KGGuiWindow* payload_window);
     static void             DockNodePreviewDockSetup(KGGuiWindow* host_window, KGGuiDockNode* host_node, KGGuiWindow* payload_window, KGGuiDockNode* payload_node, ImGuiDockPreviewData* preview_data, bool is_explicit_target, bool is_outer_docking);
     static void             DockNodePreviewDockRender(KGGuiWindow* host_window, KGGuiDockNode* host_node, KGGuiWindow* payload_window, const ImGuiDockPreviewData* preview_data);
-    static void             DockNodeCalcTabBarLayout(const KGGuiDockNode* node, KGRect* out_title_rect, KGRect* out_tab_bar_rect, ImVec2* out_window_menu_button_pos, ImVec2* out_close_button_pos);
-    static void             DockNodeCalcSplitRects(ImVec2& pos_old, ImVec2& size_old, ImVec2& pos_new, ImVec2& size_new, KarmaGuiDir dir, ImVec2 size_new_desired);
-    static bool             DockNodeCalcDropRectsAndTestMousePos(const KGRect& parent, KarmaGuiDir dir, KGRect& out_draw, bool outer_docking, ImVec2* test_mouse_pos);
+    static void             DockNodeCalcTabBarLayout(const KGGuiDockNode* node, KGRect* out_title_rect, KGRect* out_tab_bar_rect, KGVec2* out_window_menu_button_pos, KGVec2* out_close_button_pos);
+    static void             DockNodeCalcSplitRects(KGVec2& pos_old, KGVec2& size_old, KGVec2& pos_new, KGVec2& size_new, KarmaGuiDir dir, KGVec2 size_new_desired);
+    static bool             DockNodeCalcDropRectsAndTestMousePos(const KGRect& parent, KarmaGuiDir dir, KGRect& out_draw, bool outer_docking, KGVec2* test_mouse_pos);
     static const char*      DockNodeGetHostWindowTitle(KGGuiDockNode* node, char* buf, int buf_size) { KGFormatString(buf, buf_size, "##DockNode_%02X", node->ID); return buf; }
     static int              DockNodeGetTabOrder(KGGuiWindow* window);
 
     // KGGuiDockNode tree manipulations
     static void             DockNodeTreeSplit(KarmaGuiContext* ctx, KGGuiDockNode* parent_node, KGGuiAxis split_axis, int split_first_child, float split_ratio, KGGuiDockNode* new_node);
     static void             DockNodeTreeMerge(KarmaGuiContext* ctx, KGGuiDockNode* parent_node, KGGuiDockNode* merge_lead_child);
-    static void             DockNodeTreeUpdatePosSize(KGGuiDockNode* node, ImVec2 pos, ImVec2 size, KGGuiDockNode* only_write_to_single_node = NULL);
+    static void             DockNodeTreeUpdatePosSize(KGGuiDockNode* node, KGVec2 pos, KGVec2 size, KGGuiDockNode* only_write_to_single_node = NULL);
     static void             DockNodeTreeUpdateSplitter(KGGuiDockNode* node);
-    static KGGuiDockNode*   DockNodeTreeFindVisibleNodeByPos(KGGuiDockNode* node, ImVec2 pos);
+    static KGGuiDockNode*   DockNodeTreeFindVisibleNodeByPos(KGGuiDockNode* node, KGVec2 pos);
     static KGGuiDockNode*   DockNodeTreeFindFallbackLeafNode(KGGuiDockNode* node);
 
     // Settings
@@ -13876,7 +13757,7 @@ void KarmaGui::DockContextEndFrame(KarmaGuiContext* ctx)
         if (KGGuiDockNode* node = (KGGuiDockNode*)dc->Nodes.Data[n].val_p)
             if (node->LastFrameActive == g.FrameCount && node->IsVisible && node->HostWindow && node->IsLeafNode() && !node->IsBgDrawnThisFrame)
             {
-                KGRect bg_rect(node->Pos + ImVec2(0.0f, GetFrameHeight()), node->Pos + node->Size);
+                KGRect bg_rect(node->Pos + KGVec2(0.0f, GetFrameHeight()), node->Pos + node->Size);
                 KGDrawFlags bg_rounding_flags = CalcRoundingFlagsForRectInRect(bg_rect, node->HostWindow->Rect(), DOCKING_SPLITTER_SIZE);
                 node->HostWindow->DrawList->ChannelsSetCurrent(DOCKING_HOST_DRAW_CHANNEL_BG);
                 node->HostWindow->DrawList->AddRectFilled(bg_rect.Min, bg_rect.Max, node->LastBgColor, node->HostWindow->WindowRounding, bg_rounding_flags);
@@ -14036,9 +13917,9 @@ static void KarmaGui::DockContextBuildNodesFromSettings(KarmaGuiContext* ctx, KG
             continue;
         KGGuiDockNode* node = DockContextAddNode(ctx, settings->ID);
         node->ParentNode = settings->ParentNodeId ? DockContextFindNodeByID(ctx, settings->ParentNodeId) : NULL;
-        node->Pos = ImVec2(settings->Pos.x, settings->Pos.y);
-        node->Size = ImVec2(settings->Size.x, settings->Size.y);
-        node->SizeRef = ImVec2(settings->SizeRef.x, settings->SizeRef.y);
+        node->Pos = KGVec2(settings->Pos.x, settings->Pos.y);
+        node->Size = KGVec2(settings->Size.x, settings->Size.y);
+        node->SizeRef = KGVec2(settings->SizeRef.x, settings->SizeRef.y);
         node->AuthorityForPos = node->AuthorityForSize = node->AuthorityForViewport = KGGuiDataAuthority_DockNode;
         if (node->ParentNode && node->ParentNode->ChildNodes[0] == NULL)
             node->ParentNode->ChildNodes[0] = node;
@@ -14272,13 +14153,13 @@ void KarmaGui::DockContextProcessDock(KarmaGuiContext* ctx, KGGuiDockRequest* re
 // Solution:
 //   When undocking a window we currently force its maximum size to 90% of the host viewport or monitor.
 // Reevaluate this when we implement preserving docked/undocked size ("docking_wip/undocked_size" branch).
-static ImVec2 FixLargeWindowsWhenUndocking(const ImVec2& size, KarmaGuiViewport* ref_viewport)
+static KGVec2 FixLargeWindowsWhenUndocking(const KGVec2& size, KarmaGuiViewport* ref_viewport)
 {
     if (ref_viewport == NULL)
         return size;
 
     KarmaGuiContext& g = *GKarmaGui;
-    ImVec2 max_size = KGFloor(ref_viewport->WorkSize * 0.90f);
+    KGVec2 max_size = KGFloor(ref_viewport->WorkSize * 0.90f);
     if (g.ConfigFlagsCurrFrame & KGGuiConfigFlags_ViewportsEnable)
     {
         const KarmaGuiPlatformMonitor* monitor = KarmaGui::GetViewportPlatformMonitor(ref_viewport);
@@ -14346,7 +14227,7 @@ void KarmaGui::DockContextProcessUndockNode(KarmaGuiContext* ctx, KGGuiDockNode*
 }
 
 // This is mostly used for automation.
-bool KarmaGui::DockContextCalcDropPosForDocking(KGGuiWindow* target, KGGuiDockNode* target_node, KGGuiWindow* payload_window, KGGuiDockNode* payload_node, KarmaGuiDir split_dir, bool split_outer, ImVec2* out_pos)
+bool KarmaGui::DockContextCalcDropPosForDocking(KGGuiWindow* target, KGGuiDockNode* target_node, KGGuiWindow* payload_window, KGGuiDockNode* payload_node, KarmaGuiDir split_dir, bool split_outer, KGVec2* out_pos)
 {
     // In DockNodePreviewDockSetup() for a root central node instead of showing both "inner" and "outer" drop rects
     // (which would be functionally identical) we only show the outer one. Reflect this here.
@@ -14997,7 +14878,7 @@ static void KarmaGui::DockNodeUpdate(KGGuiDockNode* node)
             window_flags |= KGGuiWindowFlags_NoTitleBar;
 
             SetNextWindowBgAlpha(0.0f); // Don't set KGGuiWindowFlags_NoBackground because it disables borders
-            PushStyleVar(KGGuiStyleVar_WindowPadding, ImVec2(0, 0));
+            PushStyleVar(KGGuiStyleVar_WindowPadding, KGVec2(0, 0));
             Begin(window_label, NULL, window_flags);
             PopStyleVar();
             beginned_into_host_window = true;
@@ -15165,9 +15046,9 @@ static KGGuiID KarmaGui::DockNodeUpdateWindowMenu(KGGuiDockNode* node, KGGuiTabB
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiID ret_tab_id = 0;
     if (g.Style.WindowMenuButtonPosition == KGGuiDir_Left)
-        SetNextWindowPos(ImVec2(node->Pos.x, node->Pos.y + GetFrameHeight()), KGGuiCond_Always, ImVec2(0.0f, 0.0f));
+        SetNextWindowPos(KGVec2(node->Pos.x, node->Pos.y + GetFrameHeight()), KGGuiCond_Always, KGVec2(0.0f, 0.0f));
     else
-        SetNextWindowPos(ImVec2(node->Pos.x + node->Size.x, node->Pos.y + GetFrameHeight()), KGGuiCond_Always, ImVec2(1.0f, 0.0f));
+        SetNextWindowPos(KGVec2(node->Pos.x + node->Size.x, node->Pos.y + GetFrameHeight()), KGGuiCond_Always, KGVec2(1.0f, 0.0f));
     if (BeginPopup("#WindowMenu"))
     {
         node->IsFocused = true;
@@ -15311,8 +15192,8 @@ static void KarmaGui::DockNodeUpdateTabBar(KGGuiDockNode* node, KGGuiWindow* hos
 
     // Layout
     KGRect title_bar_rect, tab_bar_rect;
-    ImVec2 window_menu_button_pos;
-    ImVec2 close_button_pos;
+    KGVec2 window_menu_button_pos;
+    KGVec2 close_button_pos;
     DockNodeCalcTabBarLayout(node, &title_bar_rect, &tab_bar_rect, &window_menu_button_pos, &close_button_pos);
 
     // Submit new tabs, they will be added as Unsorted and sorted below based on relative DockOrder value.
@@ -15569,7 +15450,7 @@ static bool KarmaGui::DockNodeIsDropAllowed(KGGuiWindow* host_window, KGGuiWindo
 
 // window menu button == collapse button when not in a dock node.
 // FIXME: This is similar to RenderWindowTitleBarContents(), may want to share code.
-static void KarmaGui::DockNodeCalcTabBarLayout(const KGGuiDockNode* node, KGRect* out_title_rect, KGRect* out_tab_bar_rect, ImVec2* out_window_menu_button_pos, ImVec2* out_close_button_pos)
+static void KarmaGui::DockNodeCalcTabBarLayout(const KGGuiDockNode* node, KGRect* out_title_rect, KGRect* out_tab_bar_rect, KGVec2* out_window_menu_button_pos, KGVec2* out_close_button_pos)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiStyle& style = g.Style;
@@ -15582,13 +15463,13 @@ static void KarmaGui::DockNodeCalcTabBarLayout(const KGGuiDockNode* node, KGRect
 
     float button_sz = g.FontSize;
 
-    ImVec2 window_menu_button_pos = r.Min;
+    KGVec2 window_menu_button_pos = r.Min;
     r.Min.x += style.FramePadding.x;
     r.Max.x -= style.FramePadding.x;
     if (node->HasCloseButton)
     {
         r.Max.x -= button_sz;
-        if (out_close_button_pos) *out_close_button_pos = ImVec2(r.Max.x - style.FramePadding.x, r.Min.y);
+        if (out_close_button_pos) *out_close_button_pos = KGVec2(r.Max.x - style.FramePadding.x, r.Min.y);
     }
     if (node->HasWindowMenuButton && style.WindowMenuButtonPosition == KGGuiDir_Left)
     {
@@ -15597,13 +15478,13 @@ static void KarmaGui::DockNodeCalcTabBarLayout(const KGGuiDockNode* node, KGRect
     else if (node->HasWindowMenuButton && style.WindowMenuButtonPosition == KGGuiDir_Right)
     {
         r.Max.x -= button_sz + style.FramePadding.x;
-        window_menu_button_pos = ImVec2(r.Max.x, r.Min.y);
+        window_menu_button_pos = KGVec2(r.Max.x, r.Min.y);
     }
     if (out_tab_bar_rect) { *out_tab_bar_rect = r; }
     if (out_window_menu_button_pos) { *out_window_menu_button_pos = window_menu_button_pos; }
 }
 
-void KarmaGui::DockNodeCalcSplitRects(ImVec2& pos_old, ImVec2& size_old, ImVec2& pos_new, ImVec2& size_new, KarmaGuiDir dir, ImVec2 size_new_desired)
+void KarmaGui::DockNodeCalcSplitRects(KGVec2& pos_old, KGVec2& size_old, KGVec2& pos_new, KGVec2& size_new, KarmaGuiDir dir, KGVec2 size_new_desired)
 {
     KarmaGuiContext& g = *GKarmaGui;
     const float dock_spacing = g.Style.ItemInnerSpacing.x;
@@ -15637,7 +15518,7 @@ void KarmaGui::DockNodeCalcSplitRects(ImVec2& pos_old, ImVec2& size_old, ImVec2&
 }
 
 // Retrieve the drop rectangles for a given direction or for the center + perform hit testing.
-bool KarmaGui::DockNodeCalcDropRectsAndTestMousePos(const KGRect& parent, KarmaGuiDir dir, KGRect& out_r, bool outer_docking, ImVec2* test_mouse_pos)
+bool KarmaGui::DockNodeCalcDropRectsAndTestMousePos(const KGRect& parent, KarmaGuiDir dir, KGRect& out_r, bool outer_docking, KGVec2* test_mouse_pos)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -15645,24 +15526,24 @@ bool KarmaGui::DockNodeCalcDropRectsAndTestMousePos(const KGRect& parent, KarmaG
     const float hs_for_central_nodes = KGMin(g.FontSize * 1.5f, KGMax(g.FontSize * 0.5f, parent_smaller_axis / 8.0f));
     float hs_w; // Half-size, longer axis
     float hs_h; // Half-size, smaller axis
-    ImVec2 off; // Distance from edge or center
+    KGVec2 off; // Distance from edge or center
     if (outer_docking)
     {
         //hs_w = KGFloor(KGClamp(parent_smaller_axis - hs_for_central_nodes * 4.0f, g.FontSize * 0.5f, g.FontSize * 8.0f));
         //hs_h = KGFloor(hs_w * 0.15f);
-        //off = ImVec2(KGFloor(parent.GetWidth() * 0.5f - GetFrameHeightWithSpacing() * 1.4f - hs_h), KGFloor(parent.GetHeight() * 0.5f - GetFrameHeightWithSpacing() * 1.4f - hs_h));
+        //off = KGVec2(KGFloor(parent.GetWidth() * 0.5f - GetFrameHeightWithSpacing() * 1.4f - hs_h), KGFloor(parent.GetHeight() * 0.5f - GetFrameHeightWithSpacing() * 1.4f - hs_h));
         hs_w = KGFloor(hs_for_central_nodes * 1.50f);
         hs_h = KGFloor(hs_for_central_nodes * 0.80f);
-        off = ImVec2(KGFloor(parent.GetWidth() * 0.5f - hs_h), KGFloor(parent.GetHeight() * 0.5f - hs_h));
+        off = KGVec2(KGFloor(parent.GetWidth() * 0.5f - hs_h), KGFloor(parent.GetHeight() * 0.5f - hs_h));
     }
     else
     {
         hs_w = KGFloor(hs_for_central_nodes);
         hs_h = KGFloor(hs_for_central_nodes * 0.90f);
-        off = ImVec2(KGFloor(hs_w * 2.40f), KGFloor(hs_w * 2.40f));
+        off = KGVec2(KGFloor(hs_w * 2.40f), KGFloor(hs_w * 2.40f));
     }
 
-    ImVec2 c = KGFloor(parent.GetCenter());
+    KGVec2 c = KGFloor(parent.GetCenter());
     if      (dir == KGGuiDir_None)  { out_r = KGRect(c.x - hs_w, c.y - hs_w,         c.x + hs_w, c.y + hs_w);         }
     else if (dir == KGGuiDir_Up)    { out_r = KGRect(c.x - hs_w, c.y - off.y - hs_h, c.x + hs_w, c.y - off.y + hs_h); }
     else if (dir == KGGuiDir_Down)  { out_r = KGRect(c.x - hs_w, c.y + off.y - hs_h, c.x + hs_w, c.y + off.y + hs_h); }
@@ -15677,7 +15558,7 @@ bool KarmaGui::DockNodeCalcDropRectsAndTestMousePos(const KGRect& parent, KarmaG
     {
         // Custom hit testing for the 5-way selection, designed to reduce flickering when moving diagonally between sides
         hit_r.Expand(KGFloor(hs_w * 0.30f));
-        ImVec2 mouse_delta = (*test_mouse_pos - c);
+        KGVec2 mouse_delta = (*test_mouse_pos - c);
         float mouse_delta_len2 = KGLengthSqr(mouse_delta);
         float r_threshold_center = hs_w * 1.4f;
         float r_threshold_sides = hs_w * (1.4f + 1.2f);
@@ -15767,8 +15648,8 @@ static void KarmaGui::DockNodePreviewDockSetup(KGGuiWindow* host_window, KGGuiDo
     {
         KarmaGuiDir split_dir = data->SplitDir;
         KGGuiAxis split_axis = (split_dir == KGGuiDir_Left || split_dir == KGGuiDir_Right) ? KGGuiAxis_X : KGGuiAxis_Y;
-        ImVec2 pos_new, pos_old = data->FutureNode.Pos;
-        ImVec2 size_new, size_old = data->FutureNode.Size;
+        KGVec2 pos_new, pos_old = data->FutureNode.Pos;
+        KGVec2 size_new, size_old = data->FutureNode.Size;
         DockNodeCalcSplitRects(pos_old, size_old, pos_new, size_new, split_dir, payload_window->Size);
 
         // Calculate split ratio so we can pass it down the docking request
@@ -15819,7 +15700,7 @@ static void KarmaGui::DockNodePreviewDockRender(KGGuiWindow* host_window, KGGuiD
         // Compute target tab bar geometry so we can locate our preview tabs
         KGRect tab_bar_rect;
         DockNodeCalcTabBarLayout(&data->FutureNode, NULL, &tab_bar_rect, NULL, NULL);
-        ImVec2 tab_pos = tab_bar_rect.Min;
+        KGVec2 tab_pos = tab_bar_rect.Min;
         if (host_node && host_node->TabBar)
         {
             if (!host_node->IsHiddenTabBar() && !host_node->IsNoTabBar())
@@ -15847,7 +15728,7 @@ static void KarmaGui::DockNodePreviewDockRender(KGGuiWindow* host_window, KGGuiD
                 continue;
 
             // Calculate the tab bounding box for each payload window
-            ImVec2 tab_size = TabItemCalcSize(payload_window);
+            KGVec2 tab_size = TabItemCalcSize(payload_window);
             KGRect tab_bb(tab_pos.x, tab_pos.y, tab_pos.x + tab_size.x, tab_pos.y + tab_size.y);
             tab_pos.x += tab_size.x + g.Style.ItemInnerSpacing.x;
             const KGU32 overlay_col_text = GetColorU32(payload_window->DockStyle.Colors[KGGuiWindowDockStyleCol_Text]);
@@ -15879,13 +15760,13 @@ static void KarmaGui::DockNodePreviewDockRender(KGGuiWindow* host_window, KGGuiD
             KGU32 overlay_col = (data->SplitDir == (KarmaGuiDir)dir && data->IsSplitDirExplicit) ? overlay_col_drop_hovered : overlay_col_drop;
             for (int overlay_n = 0; overlay_n < overlay_draw_lists_count; overlay_n++)
             {
-                ImVec2 center = KGFloor(draw_r_in.GetCenter());
+                KGVec2 center = KGFloor(draw_r_in.GetCenter());
                 overlay_draw_lists[overlay_n]->AddRectFilled(draw_r.Min, draw_r.Max, overlay_col, overlay_rounding);
                 overlay_draw_lists[overlay_n]->AddRect(draw_r_in.Min, draw_r_in.Max, overlay_col_lines, overlay_rounding);
                 if (dir == KGGuiDir_Left || dir == KGGuiDir_Right)
-                    overlay_draw_lists[overlay_n]->AddLine(ImVec2(center.x, draw_r_in.Min.y), ImVec2(center.x, draw_r_in.Max.y), overlay_col_lines);
+                    overlay_draw_lists[overlay_n]->AddLine(KGVec2(center.x, draw_r_in.Min.y), KGVec2(center.x, draw_r_in.Max.y), overlay_col_lines);
                 if (dir == KGGuiDir_Up || dir == KGGuiDir_Down)
-                    overlay_draw_lists[overlay_n]->AddLine(ImVec2(draw_r_in.Min.x, center.y), ImVec2(draw_r_in.Max.x, center.y), overlay_col_lines);
+                    overlay_draw_lists[overlay_n]->AddLine(KGVec2(draw_r_in.Min.x, center.y), KGVec2(draw_r_in.Max.x, center.y), overlay_col_lines);
             }
         }
 
@@ -15966,7 +15847,7 @@ void KarmaGui::DockNodeTreeMerge(KarmaGuiContext* ctx, KGGuiDockNode* parent_nod
     }
     KARMAGUI_DEBUG_LOG_DOCKING("[docking] DockNodeTreeMerge: 0x%08X + 0x%08X back into parent 0x%08X\n", child_0 ? child_0->ID : 0, child_1 ? child_1->ID : 0, parent_node->ID);
 
-    ImVec2 backup_last_explicit_size = parent_node->SizeRef;
+    KGVec2 backup_last_explicit_size = parent_node->SizeRef;
     DockNodeMoveChildNodes(parent_node, merge_lead_child);
     if (child_0)
     {
@@ -16004,7 +15885,7 @@ void KarmaGui::DockNodeTreeMerge(KarmaGuiContext* ctx, KGGuiDockNode* parent_nod
 
 // Update Pos/Size for a node hierarchy (don't affect child Windows yet)
 // (Depth-first, Pre-Order)
-void KarmaGui::DockNodeTreeUpdatePosSize(KGGuiDockNode* node, ImVec2 pos, ImVec2 size, KGGuiDockNode* only_write_to_single_node)
+void KarmaGui::DockNodeTreeUpdatePosSize(KGGuiDockNode* node, KGVec2 pos, KGVec2 size, KGGuiDockNode* only_write_to_single_node)
 {
     // During the regular dock node update we write to all nodes.
     // 'only_write_to_single_node' is only set when turning a node visible mid-frame and we need its size right-away.
@@ -16020,8 +15901,8 @@ void KarmaGui::DockNodeTreeUpdatePosSize(KGGuiDockNode* node, ImVec2 pos, ImVec2
 
     KGGuiDockNode* child_0 = node->ChildNodes[0];
     KGGuiDockNode* child_1 = node->ChildNodes[1];
-    ImVec2 child_0_pos = pos, child_1_pos = pos;
-    ImVec2 child_0_size = size, child_1_size = size;
+    KGVec2 child_0_pos = pos, child_1_pos = pos;
+    KGVec2 child_0_size = size, child_1_size = size;
 
     const bool child_0_is_toward_single_node = (only_write_to_single_node != NULL && DockNodeIsInHierarchyOf(only_write_to_single_node, child_0));
     const bool child_1_is_toward_single_node = (only_write_to_single_node != NULL && DockNodeIsInHierarchyOf(only_write_to_single_node, child_1));
@@ -16174,9 +16055,9 @@ void KarmaGui::DockNodeTreeUpdateSplitter(KGGuiDockNode* node)
                     for (int touching_node_n = 0; touching_node_n < touching_nodes[n].Size; touching_node_n++)
                         draw_list->AddRect(touching_nodes[n][touching_node_n]->Pos, touching_nodes[n][touching_node_n]->Pos + touching_nodes[n][touching_node_n]->Size, KG_COL32(0, 255, 0, 255));
                     if (axis == KGGuiAxis_X)
-                        draw_list->AddLine(ImVec2(resize_limits[n], node->ChildNodes[n]->Pos.y), ImVec2(resize_limits[n], node->ChildNodes[n]->Pos.y + node->ChildNodes[n]->Size.y), KG_COL32(255, 0, 255, 255), 3.0f);
+                        draw_list->AddLine(KGVec2(resize_limits[n], node->ChildNodes[n]->Pos.y), KGVec2(resize_limits[n], node->ChildNodes[n]->Pos.y + node->ChildNodes[n]->Size.y), KG_COL32(255, 0, 255, 255), 3.0f);
                     else
-                        draw_list->AddLine(ImVec2(node->ChildNodes[n]->Pos.x, resize_limits[n]), ImVec2(node->ChildNodes[n]->Pos.x + node->ChildNodes[n]->Size.x, resize_limits[n]), KG_COL32(255, 0, 255, 255), 3.0f);
+                        draw_list->AddLine(KGVec2(node->ChildNodes[n]->Pos.x, resize_limits[n]), KGVec2(node->ChildNodes[n]->Pos.x + node->ChildNodes[n]->Size.x, resize_limits[n]), KG_COL32(255, 0, 255, 255), 3.0f);
                 }
                 */
             }
@@ -16243,7 +16124,7 @@ KGGuiDockNode* KarmaGui::DockNodeTreeFindFallbackLeafNode(KGGuiDockNode* node)
     return NULL;
 }
 
-KGGuiDockNode* KarmaGui::DockNodeTreeFindVisibleNodeByPos(KGGuiDockNode* node, ImVec2 pos)
+KGGuiDockNode* KarmaGui::DockNodeTreeFindVisibleNodeByPos(KGGuiDockNode* node, KGVec2 pos)
 {
     if (!node->IsVisible)
         return NULL;
@@ -16314,7 +16195,7 @@ void KarmaGui::SetWindowDock(KGGuiWindow* window, KGGuiID dock_id, KarmaGuiCond 
 // Create an explicit dockspace node within an existing window. Also expose dock node flags and creates a CentralNode by default.
 // The Central Node is always displayed even when empty and shrink/extend according to the requested size of its neighbors.
 // DockSpace() needs to be submitted _before_ any window they can host. If you use a dockspace, submit it early in your app.
-KGGuiID KarmaGui::DockSpace(KGGuiID id, const ImVec2& size_arg, KarmaGuiDockNodeFlags flags, const KarmaGuiWindowClass* window_class)
+KGGuiID KarmaGui::DockSpace(KGGuiID id, const KGVec2& size_arg, KarmaGuiDockNodeFlags flags, const KarmaGuiWindowClass* window_class)
 {
     KarmaGuiContext* ctx = GKarmaGui;
     KarmaGuiContext& g = *ctx;
@@ -16359,8 +16240,8 @@ KGGuiID KarmaGui::DockSpace(KGGuiID id, const ImVec2& size_arg, KarmaGuiDockNode
         return id;
     }
 
-    const ImVec2 content_avail = GetContentRegionAvail();
-    ImVec2 size = KGFloor(size_arg);
+    const KGVec2 content_avail = GetContentRegionAvail();
+    KGVec2 size = KGFloor(size_arg);
     if (size.x <= 0.0f)
         size.x = KGMax(content_avail.x + size.x, 4.0f); // Arbitrary minimum child size (0.0f causing too much issues)
     if (size.y <= 0.0f)
@@ -16435,12 +16316,12 @@ KGGuiID KarmaGui::DockSpaceOverViewport(const KarmaGuiViewport* viewport, KarmaG
 
     PushStyleVar(KGGuiStyleVar_WindowRounding, 0.0f);
     PushStyleVar(KGGuiStyleVar_WindowBorderSize, 0.0f);
-    PushStyleVar(KGGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    PushStyleVar(KGGuiStyleVar_WindowPadding, KGVec2(0.0f, 0.0f));
     Begin(label, NULL, host_window_flags);
     PopStyleVar(3);
 
     KGGuiID dockspace_id = GetID("DockSpace");
-    DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags, window_class);
+    DockSpace(dockspace_id, KGVec2(0.0f, 0.0f), dockspace_flags, window_class);
     End();
 
     return dockspace_id;
@@ -16496,7 +16377,7 @@ KGGuiDockNode* KarmaGui::DockBuilderGetNode(KGGuiID node_id)
     return DockContextFindNodeByID(ctx, node_id);
 }
 
-void KarmaGui::DockBuilderSetNodePos(KGGuiID node_id, ImVec2 pos)
+void KarmaGui::DockBuilderSetNodePos(KGGuiID node_id, KGVec2 pos)
 {
     KarmaGuiContext* ctx = GKarmaGui;
     KGGuiDockNode* node = DockContextFindNodeByID(ctx, node_id);
@@ -16506,7 +16387,7 @@ void KarmaGui::DockBuilderSetNodePos(KGGuiID node_id, ImVec2 pos)
     node->AuthorityForPos = KGGuiDataAuthority_DockNode;
 }
 
-void KarmaGui::DockBuilderSetNodeSize(KGGuiID node_id, ImVec2 size)
+void KarmaGui::DockBuilderSetNodeSize(KGGuiID node_id, KGVec2 size)
 {
     KarmaGuiContext* ctx = GKarmaGui;
     KGGuiDockNode* node = DockContextFindNodeByID(ctx, node_id);
@@ -16534,7 +16415,7 @@ KGGuiID KarmaGui::DockBuilderAddNode(KGGuiID id, KarmaGuiDockNodeFlags flags)
     KGGuiDockNode* node = NULL;
     if (flags & KGGuiDockNodeFlags_DockSpace)
     {
-        DockSpace(id, ImVec2(0, 0), (flags & ~KGGuiDockNodeFlags_DockSpace) | KGGuiDockNodeFlags_KeepAliveOnly);
+        DockSpace(id, KGVec2(0, 0), (flags & ~KGGuiDockNodeFlags_DockSpace) | KGGuiDockNodeFlags_KeepAliveOnly);
         node = DockContextFindNodeByID(ctx, id);
     }
     else
@@ -17129,7 +17010,7 @@ void KarmaGui::BeginDockableDragDropTarget(KGGuiWindow* window)
                 dock_into_floating_window = true; // Dock into a regular window
         }
 
-        const KGRect explicit_target_rect = (node && node->TabBar && !node->IsHiddenTabBar() && !node->IsNoTabBar()) ? node->TabBar->BarRect : KGRect(window->Pos, window->Pos + ImVec2(window->Size.x, GetFrameHeight()));
+        const KGRect explicit_target_rect = (node && node->TabBar && !node->IsHiddenTabBar() && !node->IsNoTabBar()) ? node->TabBar->BarRect : KGRect(window->Pos, window->Pos + KGVec2(window->Size.x, GetFrameHeight()));
         const bool is_explicit_target = g.IO.ConfigDockingWithShift || IsMouseHoveringRect(explicit_target_rect.Min, explicit_target_rect.Max);
 
         // Preview docking request and find out split direction/ratio
@@ -17501,13 +17382,13 @@ static const char* GetClipboardTextFn_DefaultImpl(void*)
 #else
 
 // Local Dear ImGui-only clipboard implementation, if user hasn't defined better clipboard handlers.
-static const char* GetClipboardTextFn_DefaultImpl(void*)
+const char* Karma::KarmaGuiInternal::GetClipboardTextFn_DefaultImpl(void*)
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.ClipboardHandlerData.empty() ? NULL : g.ClipboardHandlerData.begin();
 }
 
-static void SetClipboardTextFn_DefaultImpl(void*, const char* text)
+void Karma::KarmaGuiInternal::SetClipboardTextFn_DefaultImpl(void*, const char* text)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.ClipboardHandlerData.clear();
@@ -17557,7 +17438,10 @@ static void SetPlatformImeDataFn_DefaultImpl(KarmaGuiViewport* viewport, KarmaGu
 
 #else
 
-static void SetPlatformImeDataFn_DefaultImpl(KarmaGuiViewport*, KarmaGuiPlatformImeData*) {}
+void Karma::KarmaGuiInternal::SetPlatformImeDataFn_DefaultImpl(KarmaGuiViewport*, KarmaGuiPlatformImeData*)
+{
+
+}
 
 #endif
 
@@ -17592,8 +17476,8 @@ void KarmaGui::DebugRenderViewportThumbnail(KGDrawList* draw_list, KGGuiViewport
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
 
-    ImVec2 scale = bb.GetSize() / viewport->Size;
-    ImVec2 off = bb.Min - viewport->Pos * scale;
+    KGVec2 scale = bb.GetSize() / viewport->Size;
+    KGVec2 off = bb.Min - viewport->Pos * scale;
     float alpha_mul = (viewport->Flags & KGGuiViewportFlags_Minimized) ? 0.30f : 1.00f;
     window->DrawList->AddRectFilled(bb.Min, bb.Max, KarmaGui::GetColorU32(KGGuiCol_Border, alpha_mul * 0.40f));
     for (int i = 0; i != g.Windows.Size; i++)
@@ -17607,7 +17491,7 @@ void KarmaGui::DebugRenderViewportThumbnail(KGDrawList* draw_list, KGGuiViewport
         KGRect thumb_r = thumb_window->Rect();
         KGRect title_r = thumb_window->TitleBarRect();
         thumb_r = KGRect(KGFloor(off + thumb_r.Min * scale), KGFloor(off +  thumb_r.Max * scale));
-        title_r = KGRect(KGFloor(off + title_r.Min * scale), KGFloor(off +  ImVec2(title_r.Max.x, title_r.Min.y) * scale) + ImVec2(0,5)); // Exaggerate title bar height
+        title_r = KGRect(KGFloor(off + title_r.Min * scale), KGFloor(off +  KGVec2(title_r.Max.x, title_r.Min.y) * scale) + KGVec2(0,5)); // Exaggerate title bar height
         thumb_r.ClipWithFull(bb);
         title_r.ClipWithFull(bb);
         const bool window_is_focused = (g.NavWindow && thumb_window->RootWindowForTitleBarHighlight == g.NavWindow->RootWindowForTitleBarHighlight);
@@ -17629,8 +17513,8 @@ static void RenderViewportsThumbnails()
     KGRect bb_full(FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX);
     for (int n = 0; n < g.Viewports.Size; n++)
         bb_full.Add(g.Viewports[n]->GetMainRect());
-    ImVec2 p = window->DC.CursorPos;
-    ImVec2 off = p - bb_full.Min * SCALE;
+    KGVec2 p = window->DC.CursorPos;
+    KGVec2 off = p - bb_full.Min * SCALE;
     for (int n = 0; n < g.Viewports.Size; n++)
     {
         KGGuiViewportP* viewport = g.Viewports[n];
@@ -17650,18 +17534,18 @@ static int KARMAGUI_CDECL ViewportComparerByFrontMostStampCount(const void* lhs,
 // Draw an arbitrary US keyboard layout to visualize translated keys
 void KarmaGui::DebugRenderKeyboardPreview(KGDrawList* draw_list)
 {
-    const ImVec2 key_size = ImVec2(35.0f, 35.0f);
+    const KGVec2 key_size = KGVec2(35.0f, 35.0f);
     const float  key_rounding = 3.0f;
-    const ImVec2 key_face_size = ImVec2(25.0f, 25.0f);
-    const ImVec2 key_face_pos = ImVec2(5.0f, 3.0f);
+    const KGVec2 key_face_size = KGVec2(25.0f, 25.0f);
+    const KGVec2 key_face_pos = KGVec2(5.0f, 3.0f);
     const float  key_face_rounding = 2.0f;
-    const ImVec2 key_label_pos = ImVec2(7.0f, 4.0f);
-    const ImVec2 key_step = ImVec2(key_size.x - 1.0f, key_size.y - 1.0f);
+    const KGVec2 key_label_pos = KGVec2(7.0f, 4.0f);
+    const KGVec2 key_step = KGVec2(key_size.x - 1.0f, key_size.y - 1.0f);
     const float  key_row_offset = 9.0f;
 
-    ImVec2 board_min = GetCursorScreenPos();
-    ImVec2 board_max = ImVec2(board_min.x + 3 * key_step.x + 2 * key_row_offset + 10.0f, board_min.y + 3 * key_step.y + 10.0f);
-    ImVec2 start_pos = ImVec2(board_min.x + 5.0f - key_step.x, board_min.y);
+    KGVec2 board_min = GetCursorScreenPos();
+    KGVec2 board_max = KGVec2(board_min.x + 3 * key_step.x + 2 * key_row_offset + 10.0f, board_min.y + 3 * key_step.y + 10.0f);
+    KGVec2 start_pos = KGVec2(board_min.x + 5.0f - key_step.x, board_min.y);
 
     struct KeyLayoutData { int Row, Col; const char* Label; KarmaGuiKey Key; };
     const KeyLayoutData keys_to_display[] =
@@ -17680,15 +17564,15 @@ void KarmaGui::DebugRenderKeyboardPreview(KGDrawList* draw_list)
     for (int n = 0; n < KG_ARRAYSIZE(keys_to_display); n++)
     {
         const KeyLayoutData* key_data = &keys_to_display[n];
-        ImVec2 key_min = ImVec2(start_pos.x + key_data->Col * key_step.x + key_data->Row * key_row_offset, start_pos.y + key_data->Row * key_step.y);
-        ImVec2 key_max = key_min + key_size;
+        KGVec2 key_min = KGVec2(start_pos.x + key_data->Col * key_step.x + key_data->Row * key_row_offset, start_pos.y + key_data->Row * key_step.y);
+        KGVec2 key_max = key_min + key_size;
         draw_list->AddRectFilled(key_min, key_max, KG_COL32(204, 204, 204, 255), key_rounding);
         draw_list->AddRect(key_min, key_max, KG_COL32(24, 24, 24, 255), key_rounding);
-        ImVec2 face_min = ImVec2(key_min.x + key_face_pos.x, key_min.y + key_face_pos.y);
-        ImVec2 face_max = ImVec2(face_min.x + key_face_size.x, face_min.y + key_face_size.y);
+        KGVec2 face_min = KGVec2(key_min.x + key_face_pos.x, key_min.y + key_face_pos.y);
+        KGVec2 face_max = KGVec2(face_min.x + key_face_size.x, face_min.y + key_face_size.y);
         draw_list->AddRect(face_min, face_max, KG_COL32(193, 193, 193, 255), key_face_rounding, KGDrawFlags_None, 2.0f);
         draw_list->AddRectFilled(face_min, face_max, KG_COL32(252, 252, 252, 255), key_face_rounding);
-        ImVec2 label_min = ImVec2(key_min.x + key_label_pos.x, key_min.y + key_label_pos.y);
+        KGVec2 label_min = KGVec2(key_min.x + key_label_pos.x, key_min.y + key_label_pos.y);
         draw_list->AddText(label_min, KG_COL32(64, 64, 64, 255), key_data->Label);
         if (KarmaGui::IsKeyDown(key_data->Key))
             draw_list->AddRectFilled(key_min, key_max, KG_COL32(255, 0, 0, 128), key_rounding);
@@ -17760,7 +17644,7 @@ void KarmaGui::ShowFontAtlas(KGFontAtlas* atlas)
     {
         ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
         ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f);
-        Image(atlas->TexID, ImVec2((float)atlas->TexWidth, (float)atlas->TexHeight), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), tint_col, border_col);
+        Image(atlas->TexID, KGVec2((float)atlas->TexWidth, (float)atlas->TexHeight), KGVec2(0.0f, 0.0f), KGVec2(1.0f, 1.0f), tint_col, border_col);
         TreePop();
     }
 }
@@ -17829,8 +17713,8 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
             else if (rect_type == WRT_InnerRect)            { return window->InnerRect; }
             else if (rect_type == WRT_InnerClipRect)        { return window->InnerClipRect; }
             else if (rect_type == WRT_WorkRect)             { return window->WorkRect; }
-            else if (rect_type == WRT_Content)       { ImVec2 min = window->InnerRect.Min - window->Scroll + window->WindowPadding; return KGRect(min, min + window->ContentSize); }
-            else if (rect_type == WRT_ContentIdeal)         { ImVec2 min = window->InnerRect.Min - window->Scroll + window->WindowPadding; return KGRect(min, min + window->ContentSizeIdeal); }
+            else if (rect_type == WRT_Content)       { KGVec2 min = window->InnerRect.Min - window->Scroll + window->WindowPadding; return KGRect(min, min + window->ContentSize); }
+            else if (rect_type == WRT_ContentIdeal)         { KGVec2 min = window->InnerRect.Min - window->Scroll + window->WindowPadding; return KGRect(min, min + window->ContentSizeIdeal); }
             else if (rect_type == WRT_ContentRegionRect)    { return window->ContentRegionRect; }
             KR_CORE_ASSERT(0);
             return KGRect();
@@ -17900,7 +17784,7 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
 
                 BulletText("Table 0x%08X (%d columns, in '%s')", table->ID, table->ColumnsCount, table->OuterWindow->Name);
                 if (IsItemHovered())
-                    GetForegroundDrawList()->AddRect(table->OuterRect.Min - ImVec2(1, 1), table->OuterRect.Max + ImVec2(1, 1), KG_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
+                    GetForegroundDrawList()->AddRect(table->OuterRect.Min - KGVec2(1, 1), table->OuterRect.Max + KGVec2(1, 1), KG_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
                 Indent();
                 char buf[128];
                 for (int rect_n = 0; rect_n < TRT_Count; rect_n++)
@@ -17915,7 +17799,7 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
                             KGFormatString(buf, KG_ARRAYSIZE(buf), "(%6.1f,%6.1f) (%6.1f,%6.1f) Size (%6.1f,%6.1f) Col %d %s", r.Min.x, r.Min.y, r.Max.x, r.Max.y, r.GetWidth(), r.GetHeight(), column_n, trt_rects_names[rect_n]);
                             Selectable(buf);
                             if (IsItemHovered())
-                                GetForegroundDrawList()->AddRect(r.Min - ImVec2(1, 1), r.Max + ImVec2(1, 1), KG_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
+                                GetForegroundDrawList()->AddRect(r.Min - KGVec2(1, 1), r.Max + KGVec2(1, 1), KG_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
                         }
                     }
                     else
@@ -17924,7 +17808,7 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
                         KGFormatString(buf, KG_ARRAYSIZE(buf), "(%6.1f,%6.1f) (%6.1f,%6.1f) Size (%6.1f,%6.1f) %s", r.Min.x, r.Min.y, r.Max.x, r.Max.y, r.GetWidth(), r.GetHeight(), trt_rects_names[rect_n]);
                         Selectable(buf);
                         if (IsItemHovered())
-                            GetForegroundDrawList()->AddRect(r.Min - ImVec2(1, 1), r.Max + ImVec2(1, 1), KG_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
+                            GetForegroundDrawList()->AddRect(r.Min - KGVec2(1, 1), r.Max + KGVec2(1, 1), KG_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
                     }
                 }
                 Unindent();
@@ -18158,7 +18042,7 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
 
         if (TreeNode("SettingsIniData", "Settings unpacked data (.ini): %d bytes", g.SettingsIniData.size()))
         {
-            InputTextMultiline("##Ini", (char*)(void*)g.SettingsIniData.c_str(), g.SettingsIniData.Buf.Size, ImVec2(-FLT_MIN, GetTextLineHeight() * 20), KGGuiInputTextFlags_ReadOnly);
+            InputTextMultiline("##Ini", (char*)(void*)g.SettingsIniData.c_str(), g.SettingsIniData.Buf.Size, KGVec2(-FLT_MIN, GetTextLineHeight() * 20), KGGuiInputTextFlags_ReadOnly);
             TreePop();
         }
         TreePop();
@@ -18215,7 +18099,7 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
         Text("KEY OWNERS");
         {
             Indent();
-            if (BeginListBox("##owners", ImVec2(-FLT_MIN, GetTextLineHeightWithSpacing() * 6)))
+            if (BeginListBox("##owners", KGVec2(-FLT_MIN, GetTextLineHeightWithSpacing() * 6)))
             {
                 for (KarmaGuiKey key = KGGuiKey_NamedKey_BEGIN; key < KGGuiKey_NamedKey_END; key = (KarmaGuiKey)(key + 1))
                 {
@@ -18233,7 +18117,7 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
         Text("SHORTCUT ROUTING");
         {
             Indent();
-            if (BeginListBox("##routes", ImVec2(-FLT_MIN, GetTextLineHeightWithSpacing() * 6)))
+            if (BeginListBox("##routes", KGVec2(-FLT_MIN, GetTextLineHeightWithSpacing() * 6)))
             {
                 for (KarmaGuiKey key = KGGuiKey_NamedKey_BEGIN; key < KGGuiKey_NamedKey_END; key = (KarmaGuiKey)(key + 1))
                 {
@@ -18316,7 +18200,7 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
                 char buf[32];
                 KGFormatString(buf, KG_ARRAYSIZE(buf), "%d", window->BeginOrderWithinContext);
                 float font_size = GetFontSize();
-                draw_list->AddRectFilled(window->Pos, window->Pos + ImVec2(font_size, font_size), KG_COL32(200, 100, 100, 255));
+                draw_list->AddRectFilled(window->Pos, window->Pos + KGVec2(font_size, font_size), KG_COL32(200, 100, 100, 255));
                 draw_list->AddText(window->Pos, KG_COL32(255, 255, 255, 255), buf);
             }
         }
@@ -18362,9 +18246,9 @@ void KarmaGui::ShowMetricsWindow(bool* p_open)
         p += KGFormatString(p, buf + KG_ARRAYSIZE(buf) - p, "Size: (%.0f, %.0f)\n", node->Size.x, node->Size.y);
         p += KGFormatString(p, buf + KG_ARRAYSIZE(buf) - p, "SizeRef: (%.0f, %.0f)\n", node->SizeRef.x, node->SizeRef.y);
         int depth = DockNodeGetDepth(node);
-        overlay_draw_list->AddRect(node->Pos + ImVec2(3, 3) * (float)depth, node->Pos + node->Size - ImVec2(3, 3) * (float)depth, KG_COL32(200, 100, 100, 255));
-        ImVec2 pos = node->Pos + ImVec2(3, 3) * (float)depth;
-        overlay_draw_list->AddRectFilled(pos - ImVec2(1, 1), pos + CalcTextSize(buf) + ImVec2(1, 1), KG_COL32(200, 100, 100, 255));
+        overlay_draw_list->AddRect(node->Pos + KGVec2(3, 3) * (float)depth, node->Pos + node->Size - KGVec2(3, 3) * (float)depth, KG_COL32(200, 100, 100, 255));
+        KGVec2 pos = node->Pos + KGVec2(3, 3) * (float)depth;
+        overlay_draw_list->AddRectFilled(pos - KGVec2(1, 1), pos + CalcTextSize(buf) + KGVec2(1, 1), KG_COL32(200, 100, 100, 255));
         overlay_draw_list->AddText(NULL, 0.0f, pos, KG_COL32(255, 255, 255, 255), buf);
     }
 #endif // #ifdef KARMAGUI_HAS_DOCK
@@ -18387,7 +18271,7 @@ static void DebugNodeDockNodeFlags(KarmaGuiDockNodeFlags* p_flags, const char* l
 {
     using namespace ImGui;
     PushID(label);
-    PushStyleVar(KGGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+    PushStyleVar(KGGuiStyleVar_FramePadding, KGVec2(0.0f, 0.0f));
     Text("%s:", label);
     if (!enabled)
         BeginDisabled();
@@ -18522,7 +18406,7 @@ void KarmaGui::DebugNodeDrawList(KGGuiWindow* window, KGGuiViewportP* viewport, 
         float total_area = 0.0f;
         for (unsigned int idx_n = pcmd->IdxOffset; idx_n < pcmd->IdxOffset + pcmd->ElemCount; )
         {
-            ImVec2 triangle[3];
+            KGVec2 triangle[3];
             for (int n = 0; n < 3; n++, idx_n++)
                 triangle[n] = vtx_buffer[idx_buffer ? idx_buffer[idx_n] : idx_n].pos;
             total_area += KGTriangleArea(triangle[0], triangle[1], triangle[2]);
@@ -18541,7 +18425,7 @@ void KarmaGui::DebugNodeDrawList(KGGuiWindow* window, KGGuiViewportP* viewport, 
             for (int prim = clipper.DisplayStart, idx_i = pcmd->IdxOffset + clipper.DisplayStart * 3; prim < clipper.DisplayEnd; prim++)
             {
                 char* buf_p = buf, * buf_end = buf + KG_ARRAYSIZE(buf);
-                ImVec2 triangle[3];
+                KGVec2 triangle[3];
                 for (int n = 0; n < 3; n++, idx_i++)
                 {
                     const KGDrawVert& v = vtx_buffer[idx_buffer ? idx_buffer[idx_i] : idx_i];
@@ -18579,7 +18463,7 @@ void KarmaGui::DebugNodeDrawCmdShowMeshAndBoundingBox(KGDrawList* out_draw_list,
         KGDrawIdx* idx_buffer = (draw_list->IdxBuffer.Size > 0) ? draw_list->IdxBuffer.Data : NULL; // We don't hold on those pointers past iterations as ->AddPolyline() may invalidate them if out_draw_list==draw_list
         KGDrawVert* vtx_buffer = draw_list->VtxBuffer.Data + draw_cmd->VtxOffset;
 
-        ImVec2 triangle[3];
+        KGVec2 triangle[3];
         for (int n = 0; n < 3; n++, idx_n++)
             vtxs_rect.Add((triangle[n] = vtx_buffer[idx_buffer ? idx_buffer[idx_n] : idx_n].pos));
         if (show_mesh)
@@ -18659,13 +18543,13 @@ void KarmaGui::DebugNodeFont(KGFont* font)
                 continue;
 
             // Draw a 16x16 grid of glyphs
-            ImVec2 base_pos = GetCursorScreenPos();
+            KGVec2 base_pos = GetCursorScreenPos();
             for (unsigned int n = 0; n < 256; n++)
             {
                 // We use KGFont::RenderChar as a shortcut because we don't have UTF-8 conversion functions
                 // available here and thus cannot easily generate a zero-terminated UTF-8 encoded string.
-                ImVec2 cell_p1(base_pos.x + (n % 16) * (cell_size + cell_spacing), base_pos.y + (n / 16) * (cell_size + cell_spacing));
-                ImVec2 cell_p2(cell_p1.x + cell_size, cell_p1.y + cell_size);
+                KGVec2 cell_p1(base_pos.x + (n % 16) * (cell_size + cell_spacing), base_pos.y + (n / 16) * (cell_size + cell_spacing));
+                KGVec2 cell_p2(cell_p1.x + cell_size, cell_p1.y + cell_size);
                 const KGFontGlyph* glyph = font->FindGlyphNoFallback((KGWchar)(base + n));
                 draw_list->AddRect(cell_p1, cell_p2, glyph ? KG_COL32(255, 255, 255, 100) : KG_COL32(255, 255, 255, 50));
                 if (!glyph)
@@ -18678,7 +18562,7 @@ void KarmaGui::DebugNodeFont(KGFont* font)
                     EndTooltip();
                 }
             }
-            Dummy(ImVec2((cell_size + cell_spacing) * 16, (cell_size + cell_spacing) * 16));
+            Dummy(KGVec2((cell_size + cell_spacing) * 16, (cell_size + cell_spacing) * 16));
             TreePop();
         }
         TreePop();
@@ -18733,8 +18617,8 @@ void KarmaGui::DebugNodeTabBar(KGGuiTabBar* tab_bar, const char* label)
     {
         KGDrawList* draw_list = GetForegroundDrawList();
         draw_list->AddRect(tab_bar->BarRect.Min, tab_bar->BarRect.Max, KG_COL32(255, 255, 0, 255));
-        draw_list->AddLine(ImVec2(tab_bar->ScrollingRectMinX, tab_bar->BarRect.Min.y), ImVec2(tab_bar->ScrollingRectMinX, tab_bar->BarRect.Max.y), KG_COL32(0, 255, 0, 255));
-        draw_list->AddLine(ImVec2(tab_bar->ScrollingRectMaxX, tab_bar->BarRect.Min.y), ImVec2(tab_bar->ScrollingRectMaxX, tab_bar->BarRect.Max.y), KG_COL32(0, 255, 0, 255));
+        draw_list->AddLine(KGVec2(tab_bar->ScrollingRectMinX, tab_bar->BarRect.Min.y), KGVec2(tab_bar->ScrollingRectMinX, tab_bar->BarRect.Max.y), KG_COL32(0, 255, 0, 255));
+        draw_list->AddLine(KGVec2(tab_bar->ScrollingRectMaxX, tab_bar->BarRect.Min.y), KGVec2(tab_bar->ScrollingRectMaxX, tab_bar->BarRect.Max.y), KG_COL32(0, 255, 0, 255));
     }
     if (open)
     {
@@ -18762,7 +18646,7 @@ void KarmaGui::DebugNodeViewport(KGGuiViewportP* viewport)
             viewport->Pos.x, viewport->Pos.y, viewport->Size.x, viewport->Size.y,
             viewport->WorkOffsetMin.x, viewport->WorkOffsetMin.y, viewport->WorkOffsetMax.x, viewport->WorkOffsetMax.y,
             viewport->PlatformMonitor, viewport->DpiScale * 100.0f);
-        if (viewport->Idx > 0) { SameLine(); if (SmallButton("Reset Pos")) { viewport->Pos = ImVec2(200, 200); viewport->UpdateWorkRect(); if (viewport->Window) viewport->Window->Pos = viewport->Pos; } }
+        if (viewport->Idx > 0) { SameLine(); if (SmallButton("Reset Pos")) { viewport->Pos = KGVec2(200, 200); viewport->UpdateWorkRect(); if (viewport->Window) viewport->Window->Pos = viewport->Pos; } }
         BulletText("Flags: 0x%04X =%s%s%s%s%s%s%s%s%s%s%s%s", viewport->Flags,
             //(flags & KGGuiViewportFlags_IsPlatformWindow) ? " IsPlatformWindow" : "", // Omitting because it is the standard
             (flags & KGGuiViewportFlags_IsPlatformMonitor) ? " IsPlatformMonitor" : "",
@@ -18914,7 +18798,7 @@ void KarmaGui::ShowDebugLogWindow(bool* p_open)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (!(g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasSize))
-        SetNextWindowSize(ImVec2(0.0f, GetFontSize() * 12.0f), KGGuiCond_FirstUseEver);
+        SetNextWindowSize(KGVec2(0.0f, GetFontSize() * 12.0f), KGGuiCond_FirstUseEver);
     if (!Begin("Dear ImGui Debug Log", p_open) || GetCurrentWindow()->BeginCount > 1)
     {
         End();
@@ -18941,7 +18825,7 @@ void KarmaGui::ShowDebugLogWindow(bool* p_open)
     SameLine();
     if (SmallButton("Copy"))
         SetClipboardText(g.DebugLogBuf.c_str());
-    BeginChild("##log", ImVec2(0.0f, 0.0f), true, KGGuiWindowFlags_AlwaysVerticalScrollbar | KGGuiWindowFlags_AlwaysHorizontalScrollbar);
+    BeginChild("##log", KGVec2(0.0f, 0.0f), true, KGGuiWindowFlags_AlwaysVerticalScrollbar | KGGuiWindowFlags_AlwaysHorizontalScrollbar);
 
     KarmaGuiListClipper clipper;
     clipper.Begin(g.DebugLogIndex.size());
@@ -18958,9 +18842,9 @@ void KarmaGui::ShowDebugLogWindow(bool* p_open)
                     KGGuiID id = 0;
                     if (p[0] != '0' || (p[1] != 'x' && p[1] != 'X') || sscanf(p + 2, "%X", &id) != 1)
                         continue;
-                    ImVec2 p0 = CalcTextSize(line_begin, p);
-                    ImVec2 p1 = CalcTextSize(p, p + 10);
-                    g.LastItemData.Rect = KGRect(text_rect.Min + ImVec2(p0.x, 0.0f), text_rect.Min + ImVec2(p0.x + p1.x, p1.y));
+                    KGVec2 p0 = CalcTextSize(line_begin, p);
+                    KGVec2 p1 = CalcTextSize(p, p + 10);
+                    g.LastItemData.Rect = KGRect(text_rect.Min + KGVec2(p0.x, 0.0f), text_rect.Min + KGVec2(p0.x + p1.x, p1.y));
                     if (IsMouseHoveringRect(g.LastItemData.Rect.Min, g.LastItemData.Rect.Max, true))
                         DebugLocateItemOnHover(id);
                     p += 10;
@@ -18992,7 +18876,7 @@ void KarmaGui::DebugLocateItemOnHover(KGGuiID target_id)
         return;
     KarmaGuiContext& g = *GKarmaGui;
     DebugLocateItem(target_id);
-    GetForegroundDrawList(g.CurrentWindow)->AddRect(g.LastItemData.Rect.Min - ImVec2(3.0f, 3.0f), g.LastItemData.Rect.Max + ImVec2(3.0f, 3.0f), DEBUG_LOCATE_ITEM_COLOR);
+    GetForegroundDrawList(g.CurrentWindow)->AddRect(g.LastItemData.Rect.Min - KGVec2(3.0f, 3.0f), g.LastItemData.Rect.Max + KGVec2(3.0f, 3.0f), DEBUG_LOCATE_ITEM_COLOR);
 }
 
 void KarmaGui::DebugLocateItemResolveWithLastItem()
@@ -19003,8 +18887,8 @@ void KarmaGui::DebugLocateItemResolveWithLastItem()
     KGDrawList* draw_list = GetForegroundDrawList(g.CurrentWindow);
     KGRect r = item_data.Rect;
     r.Expand(3.0f);
-    ImVec2 p1 = g.IO.MousePos;
-    ImVec2 p2 = ImVec2((p1.x < r.Min.x) ? r.Min.x : (p1.x > r.Max.x) ? r.Max.x : p1.x, (p1.y < r.Min.y) ? r.Min.y : (p1.y > r.Max.y) ? r.Max.y : p1.y);
+    KGVec2 p1 = g.IO.MousePos;
+    KGVec2 p2 = KGVec2((p1.x < r.Min.x) ? r.Min.x : (p1.x > r.Max.x) ? r.Max.x : p1.x, (p1.y < r.Min.y) ? r.Min.y : (p1.y > r.Max.y) ? r.Max.y : p1.y);
     draw_list->AddRect(r.Min, r.Max, DEBUG_LOCATE_ITEM_COLOR);
     draw_list->AddLine(p1, p2, DEBUG_LOCATE_ITEM_COLOR);
 }
@@ -19152,7 +19036,7 @@ void KarmaGui::ShowStackToolWindow(bool* p_open)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (!(g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasSize))
-        SetNextWindowSize(ImVec2(0.0f, GetFontSize() * 8.0f), KGGuiCond_FirstUseEver);
+        SetNextWindowSize(KGVec2(0.0f, GetFontSize() * 8.0f), KGGuiCond_FirstUseEver);
     if (!Begin("Dear ImGui Stack Tool", p_open) || GetCurrentWindow()->BeginCount > 1)
     {
         End();

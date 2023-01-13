@@ -75,7 +75,7 @@ Index of this file:
 //-----------------------------------------------------------------------------
 // About 'outer_size':
 // Its meaning needs to differ slightly depending on if we are using ScrollX/ScrollY flags.
-// Default value is ImVec2(0.0f, 0.0f).
+// Default value is KGVec2(0.0f, 0.0f).
 //   X
 //   - outer_size.x <= 0.0f  ->  Right-align from window/work-rect right-most edge. With -FLT_MIN or 0.0f will align exactly on right-most edge.
 //   - outer_size.x  > 0.0f  ->  Set Fixed width.
@@ -301,13 +301,13 @@ KGGuiTable* ImGui::TableFindByID(KGGuiID id)
 }
 
 // Read about "TABLE SIZING" at the top of this file.
-bool    ImGui::BeginTable(const char* str_id, int columns_count, KarmaGuiTableFlags flags, const ImVec2& outer_size, float inner_width)
+bool    ImGui::BeginTable(const char* str_id, int columns_count, KarmaGuiTableFlags flags, const KGVec2& outer_size, float inner_width)
 {
     KGGuiID id = GetID(str_id);
     return BeginTableEx(str_id, id, columns_count, flags, outer_size, inner_width);
 }
 
-bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, KarmaGuiTableFlags flags, const ImVec2& outer_size, float inner_width)
+bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, KarmaGuiTableFlags flags, const KGVec2& outer_size, float inner_width)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* outer_window = GetCurrentWindow();
@@ -321,8 +321,8 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
 
     // If an outer size is specified ahead we will be able to early out when not visible. Exact clipping rules may evolve.
     const bool use_child_window = (flags & (KGGuiTableFlags_ScrollX | KGGuiTableFlags_ScrollY)) != 0;
-    const ImVec2 avail_size = GetContentRegionAvail();
-    ImVec2 actual_outer_size = CalcItemSize(outer_size, KGMax(avail_size.x, 1.0f), use_child_window ? KGMax(avail_size.y, 1.0f) : 0.0f);
+    const KGVec2 avail_size = GetContentRegionAvail();
+    KGVec2 actual_outer_size = CalcItemSize(outer_size, KGMax(avail_size.x, 1.0f), use_child_window ? KGMax(avail_size.y, 1.0f) : 0.0f);
     KGRect outer_rect(outer_window->DC.CursorPos, outer_window->DC.CursorPos + actual_outer_size);
     if (use_child_window && IsClippedEx(outer_rect, 0))
     {
@@ -369,7 +369,7 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
     {
         // Ensure no vertical scrollbar appears if we only want horizontal one, to make flag consistent
         // (we have no other way to disable vertical scrollbar of a window while keeping the horizontal one showing)
-        ImVec2 override_content_size(FLT_MAX, FLT_MAX);
+        KGVec2 override_content_size(FLT_MAX, FLT_MAX);
         if ((flags & KGGuiTableFlags_ScrollX) && !(flags & KGGuiTableFlags_ScrollY))
             override_content_size.y = FLT_MIN;
 
@@ -381,11 +381,11 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
             override_content_size.x = inner_width;
 
         if (override_content_size.x != FLT_MAX || override_content_size.y != FLT_MAX)
-            SetNextWindowContentSize(ImVec2(override_content_size.x != FLT_MAX ? override_content_size.x : 0.0f, override_content_size.y != FLT_MAX ? override_content_size.y : 0.0f));
+            SetNextWindowContentSize(KGVec2(override_content_size.x != FLT_MAX ? override_content_size.x : 0.0f, override_content_size.y != FLT_MAX ? override_content_size.y : 0.0f));
 
         // Reset scroll if we are reactivating it
         if ((table_last_flags & (KGGuiTableFlags_ScrollX | KGGuiTableFlags_ScrollY)) == 0)
-            SetNextWindowScroll(ImVec2(0.0f, 0.0f));
+            SetNextWindowScroll(KGVec2(0.0f, 0.0f));
 
         // Create scrolling region (without border and zero window padding)
         KarmaGuiWindowFlags child_flags = (flags & KGGuiTableFlags_ScrollX) ? KGGuiWindowFlags_HorizontalScrollbar : KGGuiWindowFlags_None;
@@ -427,7 +427,7 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
     temp_data->HostBackupCursorMaxPos = inner_window->DC.CursorMaxPos;
     temp_data->HostBackupItemWidth = outer_window->DC.ItemWidth;
     temp_data->HostBackupItemWidthStackSize = outer_window->DC.ItemWidthStack.Size;
-    inner_window->DC.PrevLineSize = inner_window->DC.CurrLineSize = ImVec2(0.0f, 0.0f);
+    inner_window->DC.PrevLineSize = inner_window->DC.CurrLineSize = KGVec2(0.0f, 0.0f);
 
     // Padding and Spacing
     // - None               ........Content..... Pad .....Content........
@@ -1350,7 +1350,7 @@ void    ImGui::EndTable()
     PopID();
 
     // Restore window data that we modified
-    const ImVec2 backup_outer_max_pos = outer_window->DC.CursorMaxPos;
+    const KGVec2 backup_outer_max_pos = outer_window->DC.CursorMaxPos;
     inner_window->WorkRect = temp_data->HostBackupWorkRect;
     inner_window->ParentWorkRect = temp_data->HostBackupParentWorkRect;
     inner_window->SkipItems = table->HostSkipItems;
@@ -1741,7 +1741,7 @@ void ImGui::TableBeginRow(KGGuiTable* table)
     table->RowTextBaseline = 0.0f;
     table->RowIndentOffsetX = window->DC.Indent.x - table->HostIndentX; // Lock indent
     window->DC.PrevLineTextBaseOffset = 0.0f;
-    window->DC.CurrLineSize = ImVec2(0.0f, 0.0f);
+    window->DC.CurrLineSize = KGVec2(0.0f, 0.0f);
     window->DC.IsSameLine = window->DC.IsSetPos = false;
     window->DC.CursorMaxPos.y = next_y1;
 
@@ -1843,11 +1843,11 @@ void ImGui::TableEndRow(KGGuiTable* table)
 
         // Draw top border
         if (border_col && bg_y1 >= table->BgClipRect.Min.y && bg_y1 < table->BgClipRect.Max.y)
-            window->DrawList->AddLine(ImVec2(table->BorderX1, bg_y1), ImVec2(table->BorderX2, bg_y1), border_col, border_size);
+            window->DrawList->AddLine(KGVec2(table->BorderX1, bg_y1), KGVec2(table->BorderX2, bg_y1), border_col, border_size);
 
         // Draw bottom border at the row unfreezing mark (always strong)
         if (draw_strong_bottom_border && bg_y2 >= table->BgClipRect.Min.y && bg_y2 < table->BgClipRect.Max.y)
-            window->DrawList->AddLine(ImVec2(table->BorderX1, bg_y2), ImVec2(table->BorderX2, bg_y2), table->BorderColorStrong, border_size);
+            window->DrawList->AddLine(KGVec2(table->BorderX1, bg_y2), KGVec2(table->BorderX2, bg_y2), table->BorderColorStrong, border_size);
     }
 
     // End frozen rows (when we are past the last frozen row line, teleport cursor and alter clipping rectangle)
@@ -2435,8 +2435,8 @@ void ImGui::TableMergeDrawChannels(KGGuiTable* table)
                 continue;
             char buf[32];
             KGFormatString(buf, 32, "MG%d:%d", merge_group_n, merge_group->ChannelsCount);
-            ImVec2 text_pos = merge_group->ClipRect.Min + ImVec2(4, 4);
-            ImVec2 text_size = CalcTextSize(buf, NULL);
+            KGVec2 text_pos = merge_group->ClipRect.Min + KGVec2(4, 4);
+            KGVec2 text_size = CalcTextSize(buf, NULL);
             GetForegroundDrawList()->AddRectFilled(text_pos, text_pos + text_size, KG_COL32(0, 0, 0, 255));
             GetForegroundDrawList()->AddText(text_pos, KG_COL32(255, 255, 0, 255), buf, NULL);
             GetForegroundDrawList()->AddRect(merge_group->ClipRect.Min, merge_group->ClipRect.Max, KG_COL32(255, 255, 0, 255));
@@ -2577,7 +2577,7 @@ void ImGui::TableDrawBorders(KGGuiTable* table)
             }
 
             if (draw_y2 > draw_y1)
-                inner_drawlist->AddLine(ImVec2(column->MaxX, draw_y1), ImVec2(column->MaxX, draw_y2), col, border_size);
+                inner_drawlist->AddLine(KGVec2(column->MaxX, draw_y1), KGVec2(column->MaxX, draw_y2), col, border_size);
         }
     }
 
@@ -2598,13 +2598,13 @@ void ImGui::TableDrawBorders(KGGuiTable* table)
         }
         else if (table->Flags & KGGuiTableFlags_BordersOuterV)
         {
-            inner_drawlist->AddLine(outer_border.Min, ImVec2(outer_border.Min.x, outer_border.Max.y), outer_col, border_size);
-            inner_drawlist->AddLine(ImVec2(outer_border.Max.x, outer_border.Min.y), outer_border.Max, outer_col, border_size);
+            inner_drawlist->AddLine(outer_border.Min, KGVec2(outer_border.Min.x, outer_border.Max.y), outer_col, border_size);
+            inner_drawlist->AddLine(KGVec2(outer_border.Max.x, outer_border.Min.y), outer_border.Max, outer_col, border_size);
         }
         else if (table->Flags & KGGuiTableFlags_BordersOuterH)
         {
-            inner_drawlist->AddLine(outer_border.Min, ImVec2(outer_border.Max.x, outer_border.Min.y), outer_col, border_size);
-            inner_drawlist->AddLine(ImVec2(outer_border.Min.x, outer_border.Max.y), outer_border.Max, outer_col, border_size);
+            inner_drawlist->AddLine(outer_border.Min, KGVec2(outer_border.Max.x, outer_border.Min.y), outer_col, border_size);
+            inner_drawlist->AddLine(KGVec2(outer_border.Min.x, outer_border.Max.y), outer_border.Max, outer_col, border_size);
         }
     }
     if ((table->Flags & KGGuiTableFlags_BordersInnerH) && table->RowPosY2 < table->OuterRect.Max.y)
@@ -2612,7 +2612,7 @@ void ImGui::TableDrawBorders(KGGuiTable* table)
         // Draw bottom-most row border
         const float border_y = table->RowPosY2;
         if (border_y >= table->BgClipRect.Min.y && border_y < table->BgClipRect.Max.y)
-            inner_drawlist->AddLine(ImVec2(table->BorderX1, border_y), ImVec2(table->BorderX2, border_y), table->BorderColorLight, border_size);
+            inner_drawlist->AddLine(KGVec2(table->BorderX1, border_y), KGVec2(table->BorderX2, border_y), table->BorderColorLight, border_size);
     }
 
     inner_drawlist->PopClipRect();
@@ -2879,7 +2879,7 @@ void ImGui::TableHeadersRow()
     }
 
     // Allow opening popup from the right-most section after the last column.
-    ImVec2 mouse_pos = ImGui::GetMousePos();
+    KGVec2 mouse_pos = ImGui::GetMousePos();
     if (IsMouseReleased(1) && TableGetHoveredColumn() == columns_count)
         if (mouse_pos.y >= row_y1 && mouse_pos.y < row_y1 + row_height)
             TableOpenContextMenu(-1); // Will open a non-column-specific popup.
@@ -2905,8 +2905,8 @@ void ImGui::TableHeader(const char* label)
     if (label == NULL)
         label = "";
     const char* label_end = FindRenderedTextEnd(label);
-    ImVec2 label_size = CalcTextSize(label, label_end, true);
-    ImVec2 label_pos = window->DC.CursorPos;
+    KGVec2 label_size = CalcTextSize(label, label_end, true);
+    KGVec2 label_pos = window->DC.CursorPos;
 
     // If we already got a row height, there's use that.
     // FIXME-TABLE: Padding problem if the correct outer-padding CellBgRect strays off our ClipRect?
@@ -2937,7 +2937,7 @@ void ImGui::TableHeader(const char* label)
     const bool selected = (table->IsContextPopupOpen && table->ContextPopupColumn == column_n && table->InstanceInteracted == table->InstanceCurrent);
     KGGuiID id = window->GetID(label);
     KGRect bb(cell_r.Min.x, cell_r.Min.y, cell_r.Max.x, KGMax(cell_r.Max.y, cell_r.Min.y + label_height + g.Style.CellPadding.y * 2.0f));
-    ItemSize(ImVec2(0.0f, label_height)); // Don't declare unclipped width, it'll be fed ContentMaxPosHeadersIdeal
+    ItemSize(KGVec2(0.0f, label_height)); // Don't declare unclipped width, it'll be fed ContentMaxPosHeadersIdeal
     if (!ItemAdd(bb, id))
         return;
 
@@ -2998,11 +2998,11 @@ void ImGui::TableHeader(const char* label)
             if (column->SortOrder > 0)
             {
                 PushStyleColor(KGGuiCol_Text, GetColorU32(KGGuiCol_Text, 0.70f));
-                RenderText(ImVec2(x + g.Style.ItemInnerSpacing.x, y), sort_order_suf);
+                RenderText(KGVec2(x + g.Style.ItemInnerSpacing.x, y), sort_order_suf);
                 PopStyleColor();
                 x += w_sort_text;
             }
-            RenderArrow(window->DrawList, ImVec2(x, y), GetColorU32(KGGuiCol_Text), column->SortDirection == KGGuiSortDirection_Ascending ? KGGuiDir_Up : KGGuiDir_Down, ARROW_SCALE);
+            RenderArrow(window->DrawList, KGVec2(x, y), GetColorU32(KGGuiCol_Text), column->SortDirection == KGGuiSortDirection_Ascending ? KGGuiDir_Up : KGGuiDir_Down, ARROW_SCALE);
         }
 
         // Handle clicking on column header to adjust Sort Order
@@ -3015,8 +3015,8 @@ void ImGui::TableHeader(const char* label)
 
     // Render clipped label. Clipping here ensure that in the majority of situations, all our header cells will
     // be merged into a single draw call.
-    //window->DrawList->AddCircleFilled(ImVec2(ellipsis_max, label_pos.y), 40, KG_COL32_WHITE);
-    RenderTextEllipsis(window->DrawList, label_pos, ImVec2(ellipsis_max, label_pos.y + label_height + g.Style.FramePadding.y), ellipsis_max, ellipsis_max, label, label_end, &label_size);
+    //window->DrawList->AddCircleFilled(KGVec2(ellipsis_max, label_pos.y), 40, KG_COL32_WHITE);
+    RenderTextEllipsis(window->DrawList, label_pos, KGVec2(ellipsis_max, label_pos.y + label_height + g.Style.FramePadding.y), ellipsis_max, ellipsis_max, label, label_end, &label_size);
 
     const bool text_clipped = label_size.x > (ellipsis_max - label_pos.x);
     if (text_clipped && hovered && g.ActiveId == 0 && IsItemHovered(KGGuiHoveredFlags_DelayNormal))
@@ -3682,7 +3682,7 @@ void ImGui::DebugNodeTableSettings(KGGuiTableSettings*) {}
 // the subsequent single call to SetCurrentChannel() does it things once.
 void ImGui::SetWindowClipRectBeforeSetChannel(KGGuiWindow* window, const KGRect& clip_rect)
 {
-    ImVec4 clip_rect_vec4 = clip_rect.ToVec4();
+    KGVec4 clip_rect_vec4 = clip_rect.ToVec4();
     window->ClipRect = clip_rect;
     window->DrawList->_CmdHeader.ClipRect = clip_rect_vec4;
     window->DrawList->_ClipRectStack.Data[window->DrawList->_ClipRectStack.Size - 1] = clip_rect_vec4;
@@ -3989,7 +3989,7 @@ void ImGui::NextColumn()
     }
     window->DC.CursorPos.x = KG_FLOOR(window->Pos.x + window->DC.Indent.x + window->DC.ColumnsOffset.x);
     window->DC.CursorPos.y = columns->LineMinY;
-    window->DC.CurrLineSize = ImVec2(0.0f, 0.0f);
+    window->DC.CurrLineSize = KGVec2(0.0f, 0.0f);
     window->DC.CurrLineTextBaseOffset = 0.0f;
 
     // FIXME-COLUMNS: Share code with BeginColumns() - move code on columns setup.
@@ -4035,7 +4035,7 @@ void ImGui::EndColumns()
             float x = window->Pos.x + GetColumnOffset(n);
             const KGGuiID column_id = columns->ID + KGGuiID(n);
             const float column_hit_hw = COLUMNS_HIT_RECT_HALF_WIDTH;
-            const KGRect column_hit_rect(ImVec2(x - column_hit_hw, y1), ImVec2(x + column_hit_hw, y2));
+            const KGRect column_hit_rect(KGVec2(x - column_hit_hw, y1), KGVec2(x + column_hit_hw, y2));
             if (!ItemAdd(column_hit_rect, column_id, NULL, KGGuiItemFlags_NoNav))
                 continue;
 
@@ -4052,7 +4052,7 @@ void ImGui::EndColumns()
             // Draw column
             const KGU32 col = GetColorU32(held ? KGGuiCol_SeparatorActive : hovered ? KGGuiCol_SeparatorHovered : KGGuiCol_Separator);
             const float xi = KG_FLOOR(x);
-            window->DrawList->AddLine(ImVec2(xi, y1 + 1.0f), ImVec2(xi, y2), col);
+            window->DrawList->AddLine(KGVec2(xi, y1 + 1.0f), KGVec2(xi, y2), col);
         }
 
         // Apply dragging after drawing the column lines, so our rendered lines are in sync with how items were displayed during the frame.
