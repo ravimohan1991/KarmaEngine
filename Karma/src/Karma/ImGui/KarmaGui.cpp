@@ -238,7 +238,7 @@ KarmaGuiIO::KarmaGuiIO()
 // FIXME: Should in theory be called "AddCharacterEvent()" to be consistent with new API
 void KarmaGuiIO::AddInputCharacter(unsigned int c)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
     if (c == 0 || !AppAcceptingEvents)
         return;
@@ -330,7 +330,7 @@ void KarmaGuiIO::ClearInputKeys()
 
 static KGGuiInputEvent* FindLatestInputEvent(KGGuiInputEventType type, int arg = -1)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     for (int n = g.InputEventsQueue.Size - 1; n >= 0; n--)
     {
         KGGuiInputEvent* e = &g.InputEventsQueue[n];
@@ -354,7 +354,7 @@ void KarmaGuiIO::AddKeyAnalogEvent(KarmaGuiKey key, bool down, float analog_valu
     //if (e->Down) { KARMAGUI_DEBUG_LOG_IO("AddKeyEvent() Key='%s' %d, NativeKeycode = %d, NativeScancode = %d\n", KarmaGui::GetKeyName(e->Key), e->Down, e->NativeKeycode, e->NativeScancode); }
     if (key == KGGuiKey_None || !AppAcceptingEvents)
         return;
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
     KR_CORE_ASSERT(Karma::KarmaGuiInternal::IsNamedKeyOrModKey(key), ""); // Backend needs to pass a valid KGGuiKey_ constant. 0..511 values are legacy native key codes which are not accepted by this API.
     KR_CORE_ASSERT(!Karma::KarmaGuiInternal::IsAliasKey(key), ""); // Backend cannot submit KGGuiKey_MouseXXX values they are automatically inferred from AddMouseXXX() events.
@@ -403,15 +403,15 @@ void KarmaGuiIO::SetKeyEventNativeData(KarmaGuiKey key, int native_keycode, int 
 {
     if (key == KGGuiKey_None)
         return;
-    KR_CORE_ASSERT(KarmaGui::IsNamedKey(key)); // >= 512
-    KR_CORE_ASSERT(native_legacy_index == -1 || KarmaGui::IsLegacyKey((KarmaGuiKey)native_legacy_index)); // >= 0 && <= 511
+    KR_CORE_ASSERT(Karma::KarmaGuiInternal::IsNamedKey(key), ""); // >= 512
+    KR_CORE_ASSERT(native_legacy_index == -1 || Karma::KarmaGuiInternal::IsLegacyKey((KarmaGuiKey)native_legacy_index), ""); // >= 0 && <= 511
     KG_UNUSED(native_keycode);  // Yet unused
     KG_UNUSED(native_scancode); // Yet unused
 
     // Build native->imgui map so old user code can still call key functions with native 0..511 values.
 #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
     const int legacy_key = (native_legacy_index != -1) ? native_legacy_index : native_keycode;
-    if (!KarmaGui::IsLegacyKey((KarmaGuiKey)legacy_key))
+    if (!Karma::KarmaGuiInternal::IsLegacyKey((KarmaGuiKey)legacy_key))
         return;
     KeyMap[legacy_key] = key;
     KeyMap[key] = legacy_key;
@@ -430,8 +430,8 @@ void KarmaGuiIO::SetAppAcceptingEvents(bool accepting_events)
 // Queue a mouse move event
 void KarmaGuiIO::AddMousePosEvent(float x, float y)
 {
-    KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(&g.IO == this && "Can only add events to current context.");
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
     if (!AppAcceptingEvents)
         return;
 
@@ -454,9 +454,9 @@ void KarmaGuiIO::AddMousePosEvent(float x, float y)
 
 void KarmaGuiIO::AddMouseButtonEvent(int mouse_button, bool down)
 {
-    KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(&g.IO == this && "Can only add events to current context.");
-    KR_CORE_ASSERT(mouse_button >= 0 && mouse_button < KGGuiMouseButton_COUNT);
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
+    KR_CORE_ASSERT(mouse_button >= 0 && mouse_button < KGGuiMouseButton_COUNT, "");
     if (!AppAcceptingEvents)
         return;
 
@@ -477,8 +477,8 @@ void KarmaGuiIO::AddMouseButtonEvent(int mouse_button, bool down)
 // Queue a mouse wheel event (most mouse/API will only have a Y component)
 void KarmaGuiIO::AddMouseWheelEvent(float wheel_x, float wheel_y)
 {
-    KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(&g.IO == this && "Can only add events to current context.");
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
 
     // Filter duplicate (unlike most events, wheel values are relative and easy to filter)
     if (!AppAcceptingEvents || (wheel_x == 0.0f && wheel_y == 0.0f))
@@ -494,9 +494,9 @@ void KarmaGuiIO::AddMouseWheelEvent(float wheel_x, float wheel_y)
 
 void KarmaGuiIO::AddMouseViewportEvent(KGGuiID viewport_id)
 {
-    KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(&g.IO == this && "Can only add events to current context.");
-    KR_CORE_ASSERT(g.IO.BackendFlags & KGGuiBackendFlags_HasMouseHoveredViewport);
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
+    KR_CORE_ASSERT(g.IO.BackendFlags & KGGuiBackendFlags_HasMouseHoveredViewport, "");
     if (!AppAcceptingEvents)
         return;
 
@@ -515,8 +515,8 @@ void KarmaGuiIO::AddMouseViewportEvent(KGGuiID viewport_id)
 
 void KarmaGuiIO::AddFocusEvent(bool focused)
 {
-    KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(&g.IO == this && "Can only add events to current context.");
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
 
     // Filter duplicate
     const KGGuiInputEvent* latest_event = FindLatestInputEvent(KGGuiInputEventType_Focus);
@@ -536,7 +536,7 @@ void KarmaGuiIO::AddFocusEvent(bool focused)
 
 KGVec2 KGBezierCubicClosestPoint(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& p, int num_segments)
 {
-    KR_CORE_ASSERT(num_segments > 0); // Use KGBezierCubicClosestPointCasteljau()
+    KR_CORE_ASSERT(num_segments > 0, ""); // Use KGBezierCubicClosestPointCasteljau()
     KGVec2 p_last = p1;
     KGVec2 p_closest;
     float p_closest_dist2 = FLT_MAX;
@@ -594,7 +594,7 @@ static void ImBezierCubicClosestPointCasteljauStep(const KGVec2& p, KGVec2& p_cl
 // Because those ImXXX functions are lower-level than KarmaGui:: we cannot access this value automatically.
 KGVec2 KGBezierCubicClosestPointCasteljau(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& p, float tess_tol)
 {
-    KR_CORE_ASSERT(tess_tol > 0.0f);
+    KR_CORE_ASSERT(tess_tol > 0.0f, "");
     KGVec2 p_last = p1;
     KGVec2 p_closest;
     float p_closest_dist2 = FLT_MAX;
@@ -830,7 +830,7 @@ int KGFormatStringV(char* buf, size_t buf_size, const char* fmt, va_list args)
 
 void KGFormatStringToTempBuffer(const char** out_buf, const char** out_buf_end, const char* fmt, ...)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     va_list args;
     va_start(args, fmt);
     int buf_len = KGFormatStringV(g.TempBuffer.Data, g.TempBuffer.Size, fmt, args);
@@ -841,7 +841,7 @@ void KGFormatStringToTempBuffer(const char** out_buf, const char** out_buf_end, 
 
 void KGFormatStringToTempBufferV(const char** out_buf, const char** out_buf_end, const char* fmt, va_list args)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     int buf_len = KGFormatStringV(g.TempBuffer.Data, g.TempBuffer.Size, fmt, args);
     *out_buf = g.TempBuffer.Data;
     if (out_buf_end) { *out_buf_end = g.TempBuffer.Data + buf_len; }
@@ -953,7 +953,7 @@ KGU64   KGFileWrite(const void* data, KGU64 sz, KGU64 count, ImFileHandle f)    
 // This can't really be used with "rt" because fseek size won't match read size.
 void*   KGFileLoadToMemory(const char* filename, const char* mode, size_t* out_file_size, int padding_bytes)
 {
-    KR_CORE_ASSERT(filename && mode);
+    KR_CORE_ASSERT(filename && mode, "");
     if (out_file_size)
         *out_file_size = 0;
 
@@ -1184,17 +1184,17 @@ KARMA_API KGU32 KGAlphaBlendColors(KGU32 col_a, KGU32 col_b)
     return KG_COL32(r, g, b, 0xFF);
 }
 
-ImVec4 KarmaGui::ColorConvertU32ToFloat4(KGU32 in)
+KGVec4 Karma::KarmaGui::ColorConvertU32ToFloat4(KGU32 in)
 {
     float s = 1.0f / 255.0f;
-    return ImVec4(
+    return KGVec4(
         ((in >> KG_COL32_R_SHIFT) & 0xFF) * s,
         ((in >> KG_COL32_G_SHIFT) & 0xFF) * s,
         ((in >> KG_COL32_B_SHIFT) & 0xFF) * s,
         ((in >> KG_COL32_A_SHIFT) & 0xFF) * s);
 }
 
-KGU32 KarmaGui::ColorConvertFloat4ToU32(const ImVec4& in)
+KGU32 Karma::KarmaGui::ColorConvertFloat4ToU32(const KGVec4& in)
 {
     KGU32 out;
     out  = ((KGU32)KG_F32_TO_INT8_SAT(in.x)) << KG_COL32_R_SHIFT;
@@ -1206,7 +1206,7 @@ KGU32 KarmaGui::ColorConvertFloat4ToU32(const ImVec4& in)
 
 // Convert rgb floats ([0-1],[0-1],[0-1]) to hsv floats ([0-1],[0-1],[0-1]), from Foley & van Dam p592
 // Optimized http://lolengine.net/blog/2013/01/13/fast-rgb-to-hsv
-void KarmaGui::ColorConvertRGBtoHSV(float r, float g, float b, float& out_h, float& out_s, float& out_v)
+void Karma::KarmaGui::ColorConvertRGBtoHSV(float r, float g, float b, float& out_h, float& out_s, float& out_v)
 {
     float K = 0.f;
     if (g < b)
@@ -1228,7 +1228,7 @@ void KarmaGui::ColorConvertRGBtoHSV(float r, float g, float b, float& out_h, flo
 
 // Convert hsv floats ([0-1],[0-1],[0-1]) to rgb floats ([0-1],[0-1],[0-1]), from Foley & van Dam p593
 // also http://en.wikipedia.org/wiki/HSL_and_HSV
-void KarmaGui::ColorConvertHSVtoRGB(float h, float s, float v, float& out_r, float& out_g, float& out_b)
+void Karma::KarmaGui::ColorConvertHSVtoRGB(float h, float s, float v, float& out_r, float& out_g, float& out_b)
 {
     if (s == 0.0f)
     {
@@ -1261,7 +1261,7 @@ void KarmaGui::ColorConvertHSVtoRGB(float h, float s, float v, float& out_r, flo
 //-----------------------------------------------------------------------------
 
 // std::lower_bound but without the bullshit
-static KarmaGuiStorage::ImGuiStoragePair* LowerBound(KGVector<KarmaGuiStorage::ImGuiStoragePair>& data, KGGuiID key)
+KarmaGuiStorage::ImGuiStoragePair* Karma::KarmaGuiInternal::LowerBound(KGVector<KarmaGuiStorage::ImGuiStoragePair>& data, KGGuiID key)
 {
     KarmaGuiStorage::ImGuiStoragePair* first = data.Data;
     KarmaGuiStorage::ImGuiStoragePair* last = data.Data + data.Size;
@@ -1301,7 +1301,7 @@ void KarmaGuiStorage::BuildSortByKey()
 
 int KarmaGuiStorage::GetInt(KGGuiID key, int default_val) const
 {
-    ImGuiStoragePair* it = LowerBound(const_cast<KGVector<ImGuiStoragePair>&>(Data), key);
+    ImGuiStoragePair* it = Karma::KarmaGuiInternal::LowerBound(const_cast<KGVector<ImGuiStoragePair>&>(Data), key);
     if (it == Data.end() || it->key != key)
         return default_val;
     return it->val_i;
@@ -1314,7 +1314,7 @@ bool KarmaGuiStorage::GetBool(KGGuiID key, bool default_val) const
 
 float KarmaGuiStorage::GetFloat(KGGuiID key, float default_val) const
 {
-    ImGuiStoragePair* it = LowerBound(const_cast<KGVector<ImGuiStoragePair>&>(Data), key);
+    ImGuiStoragePair* it = Karma::KarmaGuiInternal::LowerBound(const_cast<KGVector<ImGuiStoragePair>&>(Data), key);
     if (it == Data.end() || it->key != key)
         return default_val;
     return it->val_f;
@@ -1322,7 +1322,7 @@ float KarmaGuiStorage::GetFloat(KGGuiID key, float default_val) const
 
 void* KarmaGuiStorage::GetVoidPtr(KGGuiID key) const
 {
-    ImGuiStoragePair* it = LowerBound(const_cast<KGVector<ImGuiStoragePair>&>(Data), key);
+    ImGuiStoragePair* it = Karma::KarmaGuiInternal::LowerBound(const_cast<KGVector<ImGuiStoragePair>&>(Data), key);
     if (it == Data.end() || it->key != key)
         return NULL;
     return it->val_p;
@@ -1331,7 +1331,7 @@ void* KarmaGuiStorage::GetVoidPtr(KGGuiID key) const
 // References are only valid until a new value is added to the storage. Calling a Set***() function or a Get***Ref() function invalidates the pointer.
 int* KarmaGuiStorage::GetIntRef(KGGuiID key, int default_val)
 {
-    ImGuiStoragePair* it = LowerBound(Data, key);
+    ImGuiStoragePair* it = Karma::KarmaGuiInternal::LowerBound(Data, key);
     if (it == Data.end() || it->key != key)
         it = Data.insert(it, ImGuiStoragePair(key, default_val));
     return &it->val_i;
@@ -1344,7 +1344,7 @@ bool* KarmaGuiStorage::GetBoolRef(KGGuiID key, bool default_val)
 
 float* KarmaGuiStorage::GetFloatRef(KGGuiID key, float default_val)
 {
-    ImGuiStoragePair* it = LowerBound(Data, key);
+    ImGuiStoragePair* it = Karma::KarmaGuiInternal::LowerBound(Data, key);
     if (it == Data.end() || it->key != key)
         it = Data.insert(it, ImGuiStoragePair(key, default_val));
     return &it->val_f;
@@ -1352,7 +1352,7 @@ float* KarmaGuiStorage::GetFloatRef(KGGuiID key, float default_val)
 
 void** KarmaGuiStorage::GetVoidPtrRef(KGGuiID key, void* default_val)
 {
-    ImGuiStoragePair* it = LowerBound(Data, key);
+    ImGuiStoragePair* it = Karma::KarmaGuiInternal::LowerBound(Data, key);
     if (it == Data.end() || it->key != key)
         it = Data.insert(it, ImGuiStoragePair(key, default_val));
     return &it->val_p;
@@ -1361,7 +1361,7 @@ void** KarmaGuiStorage::GetVoidPtrRef(KGGuiID key, void* default_val)
 // FIXME-OPT: Need a way to reuse the result of lower_bound when doing GetInt()/SetInt() - not too bad because it only happens on explicit interaction (maximum one a frame)
 void KarmaGuiStorage::SetInt(KGGuiID key, int val)
 {
-    ImGuiStoragePair* it = LowerBound(Data, key);
+    ImGuiStoragePair* it = Karma::KarmaGuiInternal::LowerBound(Data, key);
     if (it == Data.end() || it->key != key)
     {
         Data.insert(it, ImGuiStoragePair(key, val));
@@ -1377,7 +1377,7 @@ void KarmaGuiStorage::SetBool(KGGuiID key, bool val)
 
 void KarmaGuiStorage::SetFloat(KGGuiID key, float val)
 {
-    ImGuiStoragePair* it = LowerBound(Data, key);
+    ImGuiStoragePair* it = Karma::KarmaGuiInternal::LowerBound(Data, key);
     if (it == Data.end() || it->key != key)
     {
         Data.insert(it, ImGuiStoragePair(key, val));
@@ -1388,7 +1388,7 @@ void KarmaGuiStorage::SetFloat(KGGuiID key, float val)
 
 void KarmaGuiStorage::SetVoidPtr(KGGuiID key, void* val)
 {
-    ImGuiStoragePair* it = LowerBound(Data, key);
+    ImGuiStoragePair* it = Karma::KarmaGuiInternal::LowerBound(Data, key);
     if (it == Data.end() || it->key != key)
     {
         Data.insert(it, ImGuiStoragePair(key, val));
@@ -1422,8 +1422,8 @@ KarmaGuiTextFilter::KarmaGuiTextFilter(const char* default_filter) //-V1077
 bool KarmaGuiTextFilter::Draw(const char* label, float width)
 {
     if (width != 0.0f)
-        KarmaGui::SetNextItemWidth(width);
-    bool value_changed = KarmaGui::InputText(label, InputBuf, KG_ARRAYSIZE(InputBuf));
+        Karma::KarmaGui::SetNextItemWidth(width);
+    bool value_changed = Karma::KarmaGui::InputText(label, InputBuf, KG_ARRAYSIZE(InputBuf));
     if (value_changed)
         Build();
     return value_changed;
@@ -1573,7 +1573,7 @@ void KarmaGuiTextBuffer::appendfv(const char* fmt, va_list args)
 
 void KGGuiTextIndex::append(const char* base, int old_size, int new_size)
 {
-    KR_CORE_ASSERT(old_size >= 0 && new_size >= old_size && new_size >= EndOffset);
+    KR_CORE_ASSERT(old_size >= 0 && new_size >= old_size && new_size >= EndOffset, "");
     if (old_size == new_size)
         return;
     if (EndOffset == 0 || base[EndOffset - 1] == '\n')
@@ -1595,57 +1595,10 @@ void KGGuiTextIndex::append(const char* base, int old_size, int new_size)
 // The problem we have is that without a Begin/End scheme for rows using the clipper is ambiguous.
 static bool GetSkipItemForListClipping()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     return (g.CurrentTable ? g.CurrentTable->HostSkipItems : g.CurrentWindow->SkipItems);
 }
 
-#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-// Legacy helper to calculate coarse clipping of large list of evenly sized items.
-// This legacy API is not ideal because it assumes we will return a single contiguous rectangle.
-// Prefer using KarmaGuiListClipper which can returns non-contiguous ranges.
-void KarmaGui::CalcListClipping(int items_count, float items_height, int* out_items_display_start, int* out_items_display_end)
-{
-    KarmaGuiContext& g = *GKarmaGui;
-    KGGuiWindow* window = g.CurrentWindow;
-    if (g.LogEnabled)
-    {
-        // If logging is active, do not perform any clipping
-        *out_items_display_start = 0;
-        *out_items_display_end = items_count;
-        return;
-    }
-    if (GetSkipItemForListClipping())
-    {
-        *out_items_display_start = *out_items_display_end = 0;
-        return;
-    }
-
-    // We create the union of the ClipRect and the scoring rect which at worst should be 1 page away from ClipRect
-    // We don't include g.NavId's rectangle in there (unless g.NavJustMovedToId is set) because the rectangle enlargement can get costly.
-    KGRect rect = window->ClipRect;
-    if (g.NavMoveScoringItems)
-        rect.Add(g.NavScoringNoClipRect);
-    if (g.NavJustMovedToId && window->NavLastIds[0] == g.NavJustMovedToId)
-        rect.Add(WindowRectRelToAbs(window, window->NavRectRel[0])); // Could store and use NavJustMovedToRectRel
-
-    const KGVec2 pos = window->DC.CursorPos;
-    int start = (int)((rect.Min.y - pos.y) / items_height);
-    int end = (int)((rect.Max.y - pos.y) / items_height);
-
-    // When performing a navigation request, ensure we have one item extra in the direction we are moving to
-    // FIXME: Verify this works with tabbing
-    const bool is_nav_request = (g.NavMoveScoringItems && g.NavWindow && g.NavWindow->RootWindowForNav == window->RootWindowForNav);
-    if (is_nav_request && g.NavMoveClipDir == KGGuiDir_Up)
-        start--;
-    if (is_nav_request && g.NavMoveClipDir == KGGuiDir_Down)
-        end++;
-
-    start = KGClamp(start, 0, items_count);
-    end = KGClamp(end + 1, start, items_count);
-    *out_items_display_start = start;
-    *out_items_display_end = end;
-}
-#endif
 
 static void ImGuiListClipper_SortAndFuseRanges(KGVector<KGGuiListClipperRange>& ranges, int offset = 0)
 {
@@ -1661,7 +1614,7 @@ static void ImGuiListClipper_SortAndFuseRanges(KGVector<KGGuiListClipperRange>& 
     // Now fuse ranges together as much as possible.
     for (int i = 1 + offset; i < ranges.Size; i++)
     {
-        KR_CORE_ASSERT(!ranges[i].PosToIndexConvert && !ranges[i - 1].PosToIndexConvert);
+        KR_CORE_ASSERT(!ranges[i].PosToIndexConvert && !ranges[i - 1].PosToIndexConvert, "");
         if (ranges[i - 1].Max < ranges[i].Min)
             continue;
         ranges[i - 1].Min = KGMin(ranges[i - 1].Min, ranges[i].Min);
@@ -1676,7 +1629,7 @@ static void ImGuiListClipper_SeekCursorAndSetupPrevLine(float pos_y, float line_
     // Set cursor position and a few other things so that SetScrollHereY() and Columns() can work when seeking cursor.
     // FIXME: It is problematic that we have to do that here, because custom/equivalent end-user code would stumble on the same issue.
     // The clipper should probably have a final step to display the last item in a regular manner, maybe with an opt-out flag for data sets which may have costly seek?
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     float off_y = pos_y - window->DC.CursorPos.y;
     window->DC.CursorPos.y = pos_y;
@@ -1688,7 +1641,7 @@ static void ImGuiListClipper_SeekCursorAndSetupPrevLine(float pos_y, float line_
     if (KGGuiTable* table = g.CurrentTable)
     {
         if (table->IsInsideRow)
-            KarmaGui::TableEndRow(table);
+            Karma::KarmaGuiInternal::TableEndRow(table);
         table->RowPosY2 = window->DC.CursorPos.y;
         const int row_increase = (int)((off_y / line_height) + 0.5f);
         //table->CurrentRow += row_increase; // Can't do without fixing TableEndRow()
@@ -1718,13 +1671,13 @@ KarmaGuiListClipper::~KarmaGuiListClipper()
 
 void KarmaGuiListClipper::Begin(int items_count, float items_height)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
-    KARMAGUI_DEBUG_LOG_CLIPPER("Clipper: Begin(%d,%.2f) in '%s'\n", items_count, items_height, window->Name);
+    KR_CORE_INFO("Clipper: Begin(%d,%.2f) in '%s'\n", items_count, items_height, window->Name);
 
     if (KGGuiTable* table = g.CurrentTable)
         if (table->IsInsideRow)
-            KarmaGui::TableEndRow(table);
+            Karma::KarmaGuiInternal::TableEndRow(table);
 
     StartPosY = window->DC.CursorPos.y;
     ItemsHeight = items_height;
@@ -1743,16 +1696,16 @@ void KarmaGuiListClipper::Begin(int items_count, float items_height)
 
 void KarmaGuiListClipper::End()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     if (KGGuiListClipperData* data = (KGGuiListClipperData*)TempData)
     {
         // In theory here we should assert that we are already at the right position, but it seems saner to just seek at the end and not assert/crash the user.
-        KARMAGUI_DEBUG_LOG_CLIPPER("Clipper: End() in '%s'\n", g.CurrentWindow->Name);
+        KR_CORE_INFO("Clipper: End() in '%s'\n", g.CurrentWindow->Name);
         if (ItemsCount >= 0 && ItemsCount < INT_MAX && DisplayStart >= 0)
             ImGuiListClipper_SeekCursorForItem(this, ItemsCount);
 
         // Restore temporary buffer and fix back pointers which may be invalidated when nesting
-        KR_CORE_ASSERT(data->ListClipper == this);
+        KR_CORE_ASSERT(data->ListClipper == this, "");
         data->StepNo = data->Ranges.Size;
         if (--g.ClipperTempDataStacked > 0)
         {
@@ -1767,22 +1720,22 @@ void KarmaGuiListClipper::End()
 void KarmaGuiListClipper::ForceDisplayRangeByIndices(int item_min, int item_max)
 {
     KGGuiListClipperData* data = (KGGuiListClipperData*)TempData;
-    KR_CORE_ASSERT(DisplayStart < 0); // Only allowed after Begin() and if there has not been a specified range yet.
-    KR_CORE_ASSERT(item_min <= item_max);
+    KR_CORE_ASSERT(DisplayStart < 0, ""); // Only allowed after Begin() and if there has not been a specified range yet.
+    KR_CORE_ASSERT(item_min <= item_max, "");
     if (item_min < item_max)
         data->Ranges.push_back(KGGuiListClipperRange::FromIndices(item_min, item_max));
 }
 
 static bool ImGuiListClipper_StepInternal(KarmaGuiListClipper* clipper)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     KGGuiListClipperData* data = (KGGuiListClipperData*)clipper->TempData;
-    KR_CORE_ASSERT(data != NULL && "Called KarmaGuiListClipper::Step() too many times, or before KarmaGuiListClipper::Begin() ?");
+    KR_CORE_ASSERT(data != NULL, "Called KarmaGuiListClipper::Step() too many times, or before KarmaGuiListClipper::Begin() ?");
 
     KGGuiTable* table = g.CurrentTable;
     if (table && table->IsInsideRow)
-        KarmaGui::TableEndRow(table);
+        Karma::KarmaGuiInternal::TableEndRow(table);
 
     // No items
     if (clipper->ItemsCount == 0 || GetSkipItemForListClipping())
@@ -1819,16 +1772,16 @@ static bool ImGuiListClipper_StepInternal(KarmaGuiListClipper* clipper)
     // Step 1: Let the clipper infer height from first range
     if (clipper->ItemsHeight <= 0.0f)
     {
-        KR_CORE_ASSERT(data->StepNo == 1);
+        KR_CORE_ASSERT(data->StepNo == 1, "");
         if (table)
-            KR_CORE_ASSERT(table->RowPosY1 == clipper->StartPosY && table->RowPosY2 == window->DC.CursorPos.y);
+            KR_CORE_ASSERT(table->RowPosY1 == clipper->StartPosY && table->RowPosY2 == window->DC.CursorPos.y, "");
 
         clipper->ItemsHeight = (window->DC.CursorPos.y - clipper->StartPosY) / (float)(clipper->DisplayEnd - clipper->DisplayStart);
         bool affected_by_floating_point_precision = KGIsFloatAboveGuaranteedIntegerPrecision(clipper->StartPosY) || KGIsFloatAboveGuaranteedIntegerPrecision(window->DC.CursorPos.y);
         if (affected_by_floating_point_precision)
             clipper->ItemsHeight = window->DC.PrevLineSize.y + g.Style.ItemSpacing.y; // FIXME: Technically wouldn't allow multi-line entries.
 
-        KR_CORE_ASSERT(clipper->ItemsHeight > 0.0f && "Unable to calculate item height! First item hasn't moved the cursor vertically!");
+        KR_CORE_ASSERT(clipper->ItemsHeight > 0.0f, "Unable to calculate item height! First item hasn't moved the cursor vertically!");
         calc_clipping = true;   // If item height had to be calculated, calculate clipping afterwards.
     }
 
@@ -1851,7 +1804,7 @@ static bool ImGuiListClipper_StepInternal(KarmaGuiListClipper* clipper)
                 data->Ranges.push_back(KGGuiListClipperRange::FromIndices(clipper->ItemsCount - 1, clipper->ItemsCount));
 
             // Add focused/active item
-            KGRect nav_rect_abs = KarmaGui::WindowRectRelToAbs(window, window->NavRectRel[0]);
+            KGRect nav_rect_abs = Karma::KarmaGuiInternal::WindowRectRelToAbs(window, window->NavRectRel[0]);
             if (g.NavId != 0 && window->NavLastIds[0] == g.NavId)
                 data->Ranges.push_back(KGGuiListClipperRange::FromPositions(nav_rect_abs.Min.y, nav_rect_abs.Max.y, 0, 0));
 
@@ -1898,22 +1851,22 @@ static bool ImGuiListClipper_StepInternal(KarmaGuiListClipper* clipper)
 
 bool KarmaGuiListClipper::Step()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     bool need_items_height = (ItemsHeight <= 0.0f);
     bool ret = ImGuiListClipper_StepInternal(this);
     if (ret && (DisplayStart == DisplayEnd))
         ret = false;
     if (g.CurrentTable && g.CurrentTable->IsUnfrozenRows == false)
-        KARMAGUI_DEBUG_LOG_CLIPPER("Clipper: Step(): inside frozen table row.\n");
+        KR_CORE_INFO("Clipper: Step(): inside frozen table row.");
     if (need_items_height && ItemsHeight > 0.0f)
-        KARMAGUI_DEBUG_LOG_CLIPPER("Clipper: Step(): computed ItemsHeight: %.2f.\n", ItemsHeight);
+        KR_CORE_INFO("Clipper: Step(): computed ItemsHeight: %.2f.", ItemsHeight);
     if (ret)
     {
-        KARMAGUI_DEBUG_LOG_CLIPPER("Clipper: Step(): display %d to %d.\n", DisplayStart, DisplayEnd);
+        KR_CORE_INFO("Clipper: Step(): display %d to %d.", DisplayStart, DisplayEnd);
     }
     else
     {
-        KARMAGUI_DEBUG_LOG_CLIPPER("Clipper: Step(): End.\n");
+        KR_CORE_INFO("Clipper: Step(): End.");
         End();
     }
     return ret;
@@ -1923,37 +1876,37 @@ bool KarmaGuiListClipper::Step()
 // [SECTION] STYLING
 //-----------------------------------------------------------------------------
 
-KarmaGuiStyle& KarmaGui::GetStyle()
+KarmaGuiStyle& Karma::KarmaGui::GetStyle()
 {
-    KR_CORE_ASSERT(GKarmaGui != NULL && "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
-    return GKarmaGui->Style;
+    KR_CORE_ASSERT(Karma::KarmaGuiInternal::GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
+    return Karma::KarmaGuiInternal::GKarmaGui->Style;
 }
 
-KGU32 KarmaGui::GetColorU32(KarmaGuiCol idx, float alpha_mul)
+KGU32 Karma::KarmaGui::GetColorU32(KarmaGuiCol idx, float alpha_mul)
 {
-    KarmaGuiStyle& style = GKarmaGui->Style;
-    ImVec4 c = style.Colors[idx];
+    KarmaGuiStyle& style = Karma::KarmaGuiInternal::GKarmaGui->Style;
+    KGVec4 c = style.Colors[idx];
     c.w *= style.Alpha * alpha_mul;
     return ColorConvertFloat4ToU32(c);
 }
 
-KGU32 KarmaGui::GetColorU32(const ImVec4& col)
+KGU32 Karma::KarmaGui::GetColorU32(const KGVec4& col)
 {
-    KarmaGuiStyle& style = GKarmaGui->Style;
-    ImVec4 c = col;
+    KarmaGuiStyle& style = Karma::KarmaGuiInternal::GKarmaGui->Style;
+    KGVec4 c = col;
     c.w *= style.Alpha;
     return ColorConvertFloat4ToU32(c);
 }
 
-const ImVec4& KarmaGui::GetStyleColorVec4(KarmaGuiCol idx)
+const KGVec4& Karma::KarmaGui::GetStyleColorVec4(KarmaGuiCol idx)
 {
-    KarmaGuiStyle& style = GKarmaGui->Style;
+    KarmaGuiStyle& style = Karma::KarmaGuiInternal::GKarmaGui->Style;
     return style.Colors[idx];
 }
 
-KGU32 KarmaGui::GetColorU32(KGU32 col)
+KGU32 Karma::KarmaGui::GetColorU32(KGU32 col)
 {
-    KarmaGuiStyle& style = GKarmaGui->Style;
+    KarmaGuiStyle& style = Karma::KarmaGuiInternal::GKarmaGui->Style;
     if (style.Alpha >= 1.0f)
         return col;
     KGU32 a = (col & KG_COL32_A_MASK) >> KG_COL32_A_SHIFT;
@@ -1962,9 +1915,9 @@ KGU32 KarmaGui::GetColorU32(KGU32 col)
 }
 
 // FIXME: This may incur a round-trip (if the end user got their data from a float4) but eventually we aim to store the in-flight colors as KGU32
-void KarmaGui::PushStyleColor(KarmaGuiCol idx, KGU32 col)
+void Karma::KarmaGui::PushStyleColor(KarmaGuiCol idx, KGU32 col)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KGGuiColorMod backup;
     backup.Col = idx;
     backup.BackupValue = g.Style.Colors[idx];
@@ -1972,9 +1925,9 @@ void KarmaGui::PushStyleColor(KarmaGuiCol idx, KGU32 col)
     g.Style.Colors[idx] = ColorConvertU32ToFloat4(col);
 }
 
-void KarmaGui::PushStyleColor(KarmaGuiCol idx, const ImVec4& col)
+void Karma::KarmaGui::PushStyleColor(KarmaGuiCol idx, const KGVec4& col)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KGGuiColorMod backup;
     backup.Col = idx;
     backup.BackupValue = g.Style.Colors[idx];
@@ -1982,9 +1935,9 @@ void KarmaGui::PushStyleColor(KarmaGuiCol idx, const ImVec4& col)
     g.Style.Colors[idx] = col;
 }
 
-void KarmaGui::PopStyleColor(int count)
+void Karma::KarmaGui::PopStyleColor(int count)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     if (g.ColorStack.Size < count)
     {
         KG_ASSERT_USER_ERROR(g.ColorStack.Size > count, "Calling PopStyleColor() too many times: stack underflow.");
@@ -2014,71 +1967,71 @@ static const KarmaGuiCol GWindowDockStyleColors[KGGuiWindowDockStyleCol_COUNT] =
 
 static const ImGuiStyleVarInfo GStyleVarInfo[] =
 {
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, Alpha) },               // KGGuiStyleVar_Alpha
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, DisabledAlpha) },       // KGGuiStyleVar_DisabledAlpha
-    { KGGuiDataType_Float, 2, (KGU32)IM_OFFSETOF(KarmaGuiStyle, WindowPadding) },       // KGGuiStyleVar_WindowPadding
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, WindowRounding) },      // KGGuiStyleVar_WindowRounding
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, WindowBorderSize) },    // KGGuiStyleVar_WindowBorderSize
-    { KGGuiDataType_Float, 2, (KGU32)IM_OFFSETOF(KarmaGuiStyle, WindowMinSize) },       // KGGuiStyleVar_WindowMinSize
-    { KGGuiDataType_Float, 2, (KGU32)IM_OFFSETOF(KarmaGuiStyle, WindowTitleAlign) },    // KGGuiStyleVar_WindowTitleAlign
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, ChildRounding) },       // KGGuiStyleVar_ChildRounding
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, ChildBorderSize) },     // KGGuiStyleVar_ChildBorderSize
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, PopupRounding) },       // KGGuiStyleVar_PopupRounding
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, PopupBorderSize) },     // KGGuiStyleVar_PopupBorderSize
-    { KGGuiDataType_Float, 2, (KGU32)IM_OFFSETOF(KarmaGuiStyle, FramePadding) },        // KGGuiStyleVar_FramePadding
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, FrameRounding) },       // KGGuiStyleVar_FrameRounding
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, FrameBorderSize) },     // KGGuiStyleVar_FrameBorderSize
-    { KGGuiDataType_Float, 2, (KGU32)IM_OFFSETOF(KarmaGuiStyle, ItemSpacing) },         // KGGuiStyleVar_ItemSpacing
-    { KGGuiDataType_Float, 2, (KGU32)IM_OFFSETOF(KarmaGuiStyle, ItemInnerSpacing) },    // KGGuiStyleVar_ItemInnerSpacing
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, IndentSpacing) },       // KGGuiStyleVar_IndentSpacing
-    { KGGuiDataType_Float, 2, (KGU32)IM_OFFSETOF(KarmaGuiStyle, CellPadding) },         // KGGuiStyleVar_CellPadding
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, ScrollbarSize) },       // KGGuiStyleVar_ScrollbarSize
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, ScrollbarRounding) },   // KGGuiStyleVar_ScrollbarRounding
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, GrabMinSize) },         // KGGuiStyleVar_GrabMinSize
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, GrabRounding) },        // KGGuiStyleVar_GrabRounding
-    { KGGuiDataType_Float, 1, (KGU32)IM_OFFSETOF(KarmaGuiStyle, TabRounding) },         // KGGuiStyleVar_TabRounding
-    { KGGuiDataType_Float, 2, (KGU32)IM_OFFSETOF(KarmaGuiStyle, ButtonTextAlign) },     // KGGuiStyleVar_ButtonTextAlign
-    { KGGuiDataType_Float, 2, (KGU32)IM_OFFSETOF(KarmaGuiStyle, SelectableTextAlign) }, // KGGuiStyleVar_SelectableTextAlign
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, Alpha) },               // KGGuiStyleVar_Alpha
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, DisabledAlpha) },       // KGGuiStyleVar_DisabledAlpha
+    { KGGuiDataType_Float, 2, (KGU32)KG_OFFSETOF(KarmaGuiStyle, WindowPadding) },       // KGGuiStyleVar_WindowPadding
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, WindowRounding) },      // KGGuiStyleVar_WindowRounding
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, WindowBorderSize) },    // KGGuiStyleVar_WindowBorderSize
+    { KGGuiDataType_Float, 2, (KGU32)KG_OFFSETOF(KarmaGuiStyle, WindowMinSize) },       // KGGuiStyleVar_WindowMinSize
+    { KGGuiDataType_Float, 2, (KGU32)KG_OFFSETOF(KarmaGuiStyle, WindowTitleAlign) },    // KGGuiStyleVar_WindowTitleAlign
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, ChildRounding) },       // KGGuiStyleVar_ChildRounding
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, ChildBorderSize) },     // KGGuiStyleVar_ChildBorderSize
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, PopupRounding) },       // KGGuiStyleVar_PopupRounding
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, PopupBorderSize) },     // KGGuiStyleVar_PopupBorderSize
+    { KGGuiDataType_Float, 2, (KGU32)KG_OFFSETOF(KarmaGuiStyle, FramePadding) },        // KGGuiStyleVar_FramePadding
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, FrameRounding) },       // KGGuiStyleVar_FrameRounding
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, FrameBorderSize) },     // KGGuiStyleVar_FrameBorderSize
+    { KGGuiDataType_Float, 2, (KGU32)KG_OFFSETOF(KarmaGuiStyle, ItemSpacing) },         // KGGuiStyleVar_ItemSpacing
+    { KGGuiDataType_Float, 2, (KGU32)KG_OFFSETOF(KarmaGuiStyle, ItemInnerSpacing) },    // KGGuiStyleVar_ItemInnerSpacing
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, IndentSpacing) },       // KGGuiStyleVar_IndentSpacing
+    { KGGuiDataType_Float, 2, (KGU32)KG_OFFSETOF(KarmaGuiStyle, CellPadding) },         // KGGuiStyleVar_CellPadding
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, ScrollbarSize) },       // KGGuiStyleVar_ScrollbarSize
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, ScrollbarRounding) },   // KGGuiStyleVar_ScrollbarRounding
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, GrabMinSize) },         // KGGuiStyleVar_GrabMinSize
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, GrabRounding) },        // KGGuiStyleVar_GrabRounding
+    { KGGuiDataType_Float, 1, (KGU32)KG_OFFSETOF(KarmaGuiStyle, TabRounding) },         // KGGuiStyleVar_TabRounding
+    { KGGuiDataType_Float, 2, (KGU32)KG_OFFSETOF(KarmaGuiStyle, ButtonTextAlign) },     // KGGuiStyleVar_ButtonTextAlign
+    { KGGuiDataType_Float, 2, (KGU32)KG_OFFSETOF(KarmaGuiStyle, SelectableTextAlign) }, // KGGuiStyleVar_SelectableTextAlign
 };
 
 static const ImGuiStyleVarInfo* GetStyleVarInfo(KarmaGuiStyleVar idx)
 {
-    KR_CORE_ASSERT(idx >= 0 && idx < KGGuiStyleVar_COUNT);
-    KR_CORE_ASSERT(KG_ARRAYSIZE(GStyleVarInfo) == KGGuiStyleVar_COUNT);
+    KR_CORE_ASSERT(idx >= 0 && idx < KGGuiStyleVar_COUNT, "");
+    KR_CORE_ASSERT(KG_ARRAYSIZE(GStyleVarInfo) == KGGuiStyleVar_COUNT, "");
     return &GStyleVarInfo[idx];
 }
 
-void KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, float val)
+void Karma::KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, float val)
 {
     const ImGuiStyleVarInfo* var_info = GetStyleVarInfo(idx);
     if (var_info->Type == KGGuiDataType_Float && var_info->Count == 1)
     {
-        KarmaGuiContext& g = *GKarmaGui;
+        KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
         float* pvar = (float*)var_info->GetVarPtr(&g.Style);
         g.StyleVarStack.push_back(KGGuiStyleMod(idx, *pvar));
         *pvar = val;
         return;
     }
-    KR_CORE_ASSERT(0 && "Called PushStyleVar() float variant but variable is not a float!");
+    KR_CORE_ASSERT(0, "Called PushStyleVar() float variant but variable is not a float!");
 }
 
-void KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, const KGVec2& val)
+void Karma::KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, const KGVec2& val)
 {
     const ImGuiStyleVarInfo* var_info = GetStyleVarInfo(idx);
     if (var_info->Type == KGGuiDataType_Float && var_info->Count == 2)
     {
-        KarmaGuiContext& g = *GKarmaGui;
+        KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
         KGVec2* pvar = (KGVec2*)var_info->GetVarPtr(&g.Style);
         g.StyleVarStack.push_back(KGGuiStyleMod(idx, *pvar));
         *pvar = val;
         return;
     }
-    KR_CORE_ASSERT(0 && "Called PushStyleVar() KGVec2 variant but variable is not a KGVec2!");
+    KR_CORE_ASSERT(0, "Called PushStyleVar() KGVec2 variant but variable is not a KGVec2!");
 }
 
-void KarmaGui::PopStyleVar(int count)
+void Karma::KarmaGui::PopStyleVar(int count)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     if (g.StyleVarStack.Size < count)
     {
         KG_ASSERT_USER_ERROR(g.StyleVarStack.Size > count, "Calling PopStyleVar() too many times: stack underflow.");
@@ -2097,7 +2050,7 @@ void KarmaGui::PopStyleVar(int count)
     }
 }
 
-const char* KarmaGui::GetStyleColorName(KarmaGuiCol idx)
+const char* Karma::KarmaGui::GetStyleColorName(KarmaGuiCol idx)
 {
     // Create switch-case from enum with regexp: KGGuiCol_{.*}, --> case KGGuiCol_\1: return "\1";
     switch (idx)
@@ -2158,7 +2111,7 @@ const char* KarmaGui::GetStyleColorName(KarmaGuiCol idx)
     case KGGuiCol_NavWindowingDimBg: return "NavWindowingDimBg";
     case KGGuiCol_ModalWindowDimBg: return "ModalWindowDimBg";
     }
-    KR_CORE_ASSERT(0);
+    KR_CORE_ASSERT(0, "");
     return "Unknown";
 }
 
@@ -2170,7 +2123,7 @@ const char* KarmaGui::GetStyleColorName(KarmaGuiCol idx)
 // Also see imgui_draw.cpp for some more which have been reworked to not rely on KarmaGui:: context.
 //-----------------------------------------------------------------------------
 
-const char* KarmaGui::FindRenderedTextEnd(const char* text, const char* text_end)
+const char* Karma::KarmaGuiInternal::FindRenderedTextEnd(const char* text, const char* text_end)
 {
     const char* text_display_end = text;
     if (!text_end)
@@ -2183,7 +2136,7 @@ const char* KarmaGui::FindRenderedTextEnd(const char* text, const char* text_end
 
 // Internal ImGui functions to render text
 // RenderText***() functions calls KGDrawList::AddText() calls ImBitmapFont::RenderText()
-void KarmaGui::RenderText(KGVec2 pos, const char* text, const char* text_end, bool hide_text_after_hash)
+void Karma::KarmaGuiInternal::RenderText(KGVec2 pos, const char* text, const char* text_end, bool hide_text_after_hash)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -2203,13 +2156,13 @@ void KarmaGui::RenderText(KGVec2 pos, const char* text, const char* text_end, bo
 
     if (text != text_display_end)
     {
-        window->DrawList->AddText(g.Font, g.FontSize, pos, GetColorU32(KGGuiCol_Text), text, text_display_end);
+        window->DrawList->AddText(g.Font, g.FontSize, pos, Karma::KarmaGui::GetColorU32(KGGuiCol_Text), text, text_display_end);
         if (g.LogEnabled)
             LogRenderedText(&pos, text, text_display_end);
     }
 }
 
-void KarmaGui::RenderTextWrapped(KGVec2 pos, const char* text, const char* text_end, float wrap_width)
+void Karma::KarmaGuiInternal::RenderTextWrapped(KGVec2 pos, const char* text, const char* text_end, float wrap_width)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -2219,7 +2172,7 @@ void KarmaGui::RenderTextWrapped(KGVec2 pos, const char* text, const char* text_
 
     if (text != text_end)
     {
-        window->DrawList->AddText(g.Font, g.FontSize, pos, GetColorU32(KGGuiCol_Text), text, text_end, wrap_width);
+        window->DrawList->AddText(g.Font, g.FontSize, pos, Karma::KarmaGui::GetColorU32(KGGuiCol_Text), text, text_end, wrap_width);
         if (g.LogEnabled)
             LogRenderedText(&pos, text, text_end);
     }
@@ -2227,11 +2180,11 @@ void KarmaGui::RenderTextWrapped(KGVec2 pos, const char* text, const char* text_
 
 // Default clip_rect uses (pos_min,pos_max)
 // Handle clipping on CPU immediately (vs typically let the GPU clip the triangles that are overlapping the clipping rectangle edges)
-void KarmaGui::RenderTextClippedEx(KGDrawList* draw_list, const KGVec2& pos_min, const KGVec2& pos_max, const char* text, const char* text_display_end, const KGVec2* text_size_if_known, const KGVec2& align, const KGRect* clip_rect)
+void Karma::KarmaGuiInternal::RenderTextClippedEx(KGDrawList* draw_list, const KGVec2& pos_min, const KGVec2& pos_max, const char* text, const char* text_display_end, const KGVec2* text_size_if_known, const KGVec2& align, const KGRect* clip_rect)
 {
     // Perform CPU side clipping for single clipped element to avoid using scissor state
     KGVec2 pos = pos_min;
-    const KGVec2 text_size = text_size_if_known ? *text_size_if_known : CalcTextSize(text, text_display_end, false, 0.0f);
+    const KGVec2 text_size = text_size_if_known ? *text_size_if_known : Karma::KarmaGui::CalcTextSize(text, text_display_end, false, 0.0f);
 
     const KGVec2* clip_min = clip_rect ? &clip_rect->Min : &pos_min;
     const KGVec2* clip_max = clip_rect ? &clip_rect->Max : &pos_max;
@@ -2246,16 +2199,16 @@ void KarmaGui::RenderTextClippedEx(KGDrawList* draw_list, const KGVec2& pos_min,
     // Render
     if (need_clipping)
     {
-        ImVec4 fine_clip_rect(clip_min->x, clip_min->y, clip_max->x, clip_max->y);
-        draw_list->AddText(NULL, 0.0f, pos, GetColorU32(KGGuiCol_Text), text, text_display_end, 0.0f, &fine_clip_rect);
+        KGVec4 fine_clip_rect(clip_min->x, clip_min->y, clip_max->x, clip_max->y);
+        draw_list->AddText(NULL, 0.0f, pos, Karma::KarmaGui::GetColorU32(KGGuiCol_Text), text, text_display_end, 0.0f, &fine_clip_rect);
     }
     else
     {
-        draw_list->AddText(NULL, 0.0f, pos, GetColorU32(KGGuiCol_Text), text, text_display_end, 0.0f, NULL);
+        draw_list->AddText(NULL, 0.0f, pos, Karma::KarmaGui::GetColorU32(KGGuiCol_Text), text, text_display_end, 0.0f, NULL);
     }
 }
 
-void KarmaGui::RenderTextClipped(const KGVec2& pos_min, const KGVec2& pos_max, const char* text, const char* text_end, const KGVec2* text_size_if_known, const KGVec2& align, const KGRect* clip_rect)
+void Karma::KarmaGuiInternal::RenderTextClipped(const KGVec2& pos_min, const KGVec2& pos_max, const char* text, const char* text_end, const KGVec2* text_size_if_known, const KGVec2& align, const KGRect* clip_rect)
 {
     // Hide anything after a '##' string
     const char* text_display_end = FindRenderedTextEnd(text, text_end);
@@ -2274,12 +2227,12 @@ void KarmaGui::RenderTextClipped(const KGVec2& pos_min, const KGVec2& pos_max, c
 // Another overly complex function until we reorganize everything into a nice all-in-one helper.
 // This is made more complex because we have dissociated the layout rectangle (pos_min..pos_max) which define _where_ the ellipsis is, from actual clipping of text and limit of the ellipsis display.
 // This is because in the context of tabs we selectively hide part of the text when the Close Button appears, but we don't want the ellipsis to move.
-void KarmaGui::RenderTextEllipsis(KGDrawList* draw_list, const KGVec2& pos_min, const KGVec2& pos_max, float clip_max_x, float ellipsis_max_x, const char* text, const char* text_end_full, const KGVec2* text_size_if_known)
+void Karma::KarmaGuiInternal::RenderTextEllipsis(KGDrawList* draw_list, const KGVec2& pos_min, const KGVec2& pos_max, float clip_max_x, float ellipsis_max_x, const char* text, const char* text_end_full, const KGVec2* text_size_if_known)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (text_end_full == NULL)
         text_end_full = FindRenderedTextEnd(text);
-    const KGVec2 text_size = text_size_if_known ? *text_size_if_known : CalcTextSize(text, text_end_full, false, 0.0f);
+    const KGVec2 text_size = text_size_if_known ? *text_size_if_known : Karma::KarmaGui::CalcTextSize(text, text_end_full, false, 0.0f);
 
     //draw_list->AddLine(KGVec2(pos_max.x, pos_min.y - 4), KGVec2(pos_max.x, pos_max.y + 4), KG_COL32(0, 0, 255, 255));
     //draw_list->AddLine(KGVec2(ellipsis_max_x, pos_min.y-2), KGVec2(ellipsis_max_x, pos_max.y+2), KG_COL32(0, 255, 0, 255));
@@ -2338,7 +2291,7 @@ void KarmaGui::RenderTextEllipsis(KGDrawList* draw_list, const KGVec2& pos_min, 
         if (ellipsis_x + ellipsis_total_width <= ellipsis_max_x)
             for (int i = 0; i < ellipsis_char_count; i++)
             {
-                font->RenderChar(draw_list, font_size, KGVec2(ellipsis_x, pos_min.y), GetColorU32(KGGuiCol_Text), ellipsis_char);
+                font->RenderChar(draw_list, font_size, KGVec2(ellipsis_x, pos_min.y), Karma::KarmaGui::GetColorU32(KGGuiCol_Text), ellipsis_char);
                 ellipsis_x += ellipsis_glyph_width;
             }
     }
@@ -2352,7 +2305,7 @@ void KarmaGui::RenderTextEllipsis(KGDrawList* draw_list, const KGVec2& pos_min, 
 }
 
 // Render a rectangle shaped with optional rounding and borders
-void KarmaGui::RenderFrame(KGVec2 p_min, KGVec2 p_max, KGU32 fill_col, bool border, float rounding)
+void Karma::KarmaGuiInternal::RenderFrame(KGVec2 p_min, KGVec2 p_max, KGU32 fill_col, bool border, float rounding)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -2360,24 +2313,24 @@ void KarmaGui::RenderFrame(KGVec2 p_min, KGVec2 p_max, KGU32 fill_col, bool bord
     const float border_size = g.Style.FrameBorderSize;
     if (border && border_size > 0.0f)
     {
-        window->DrawList->AddRect(p_min + KGVec2(1, 1), p_max + KGVec2(1, 1), GetColorU32(KGGuiCol_BorderShadow), rounding, 0, border_size);
-        window->DrawList->AddRect(p_min, p_max, GetColorU32(KGGuiCol_Border), rounding, 0, border_size);
+        window->DrawList->AddRect(p_min + KGVec2(1, 1), p_max + KGVec2(1, 1), Karma::KarmaGui::GetColorU32(KGGuiCol_BorderShadow), rounding, 0, border_size);
+        window->DrawList->AddRect(p_min, p_max, Karma::KarmaGui::GetColorU32(KGGuiCol_Border), rounding, 0, border_size);
     }
 }
 
-void KarmaGui::RenderFrameBorder(KGVec2 p_min, KGVec2 p_max, float rounding)
+void Karma::KarmaGuiInternal::RenderFrameBorder(KGVec2 p_min, KGVec2 p_max, float rounding)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     const float border_size = g.Style.FrameBorderSize;
     if (border_size > 0.0f)
     {
-        window->DrawList->AddRect(p_min + KGVec2(1, 1), p_max + KGVec2(1, 1), GetColorU32(KGGuiCol_BorderShadow), rounding, 0, border_size);
-        window->DrawList->AddRect(p_min, p_max, GetColorU32(KGGuiCol_Border), rounding, 0, border_size);
+        window->DrawList->AddRect(p_min + KGVec2(1, 1), p_max + KGVec2(1, 1), Karma::KarmaGui::GetColorU32(KGGuiCol_BorderShadow), rounding, 0, border_size);
+        window->DrawList->AddRect(p_min, p_max, Karma::KarmaGui::GetColorU32(KGGuiCol_Border), rounding, 0, border_size);
     }
 }
 
-void KarmaGui::RenderNavHighlight(const KGRect& bb, KGGuiID id, KGGuiNavHighlightFlags flags)
+void Karma::KarmaGuiInternal::RenderNavHighlight(const KGRect& bb, KGGuiID id, KGGuiNavHighlightFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (id != g.NavId)
@@ -2399,20 +2352,20 @@ void KarmaGui::RenderNavHighlight(const KGRect& bb, KGGuiID id, KGGuiNavHighligh
         bool fully_visible = window->ClipRect.Contains(display_rect);
         if (!fully_visible)
             window->DrawList->PushClipRect(display_rect.Min, display_rect.Max);
-        window->DrawList->AddRect(display_rect.Min + KGVec2(THICKNESS * 0.5f, THICKNESS * 0.5f), display_rect.Max - KGVec2(THICKNESS * 0.5f, THICKNESS * 0.5f), GetColorU32(KGGuiCol_NavHighlight), rounding, 0, THICKNESS);
+        window->DrawList->AddRect(display_rect.Min + KGVec2(THICKNESS * 0.5f, THICKNESS * 0.5f), display_rect.Max - KGVec2(THICKNESS * 0.5f, THICKNESS * 0.5f), Karma::KarmaGui::GetColorU32(KGGuiCol_NavHighlight), rounding, 0, THICKNESS);
         if (!fully_visible)
             window->DrawList->PopClipRect();
     }
     if (flags & KGGuiNavHighlightFlags_TypeThin)
     {
-        window->DrawList->AddRect(display_rect.Min, display_rect.Max, GetColorU32(KGGuiCol_NavHighlight), rounding, 0, 1.0f);
+        window->DrawList->AddRect(display_rect.Min, display_rect.Max, Karma::KarmaGui::GetColorU32(KGGuiCol_NavHighlight), rounding, 0, 1.0f);
     }
 }
 
-void KarmaGui::RenderMouseCursor(KGVec2 base_pos, float base_scale, KarmaGuiMouseCursor mouse_cursor, KGU32 col_fill, KGU32 col_border, KGU32 col_shadow)
+void Karma::KarmaGuiInternal::RenderMouseCursor(KGVec2 base_pos, float base_scale, KarmaGuiMouseCursor mouse_cursor, KGU32 col_fill, KGU32 col_border, KGU32 col_shadow)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(mouse_cursor > KGGuiMouseCursor_None && mouse_cursor < KGGuiMouseCursor_COUNT);
+    KR_CORE_ASSERT(mouse_cursor > KGGuiMouseCursor_None && mouse_cursor < KGGuiMouseCursor_COUNT, "");
     KGFontAtlas* font_atlas = g.DrawListSharedData.Font->ContainerAtlas;
     for (int n = 0; n < g.Viewports.Size; n++)
     {
@@ -2425,7 +2378,7 @@ void KarmaGui::RenderMouseCursor(KGVec2 base_pos, float base_scale, KarmaGuiMous
         const float scale = base_scale * viewport->DpiScale;
         if (!viewport->GetMainRect().Overlaps(KGRect(pos, pos + KGVec2(size.x + 2, size.y + 2) * scale)))
             continue;
-        KGDrawList* draw_list = GetForegroundDrawList(viewport);
+        KGDrawList* draw_list = Karma::KarmaGui::GetForegroundDrawList(viewport);
         KGTextureID tex_id = font_atlas->TexID;
         draw_list->PushTextureID(tex_id);
         draw_list->AddImage(tex_id, pos + KGVec2(1, 0) * scale, pos + (KGVec2(1, 0) + size) * scale, uv[2], uv[3], col_shadow);
@@ -2442,9 +2395,9 @@ void KarmaGui::RenderMouseCursor(KGVec2 base_pos, float base_scale, KarmaGuiMous
 
 // Internal state access - if you want to share Dear ImGui state between modules (e.g. DLL) or allocate it yourself
 // Note that we still point to some static data and members (such as GFontAtlas), so the state instance you end up using will point to the static data within its module
-KarmaGuiContext* KarmaGui::GetCurrentContext()
+KarmaGuiContext* Karma::KarmaGui::GetCurrentContext()
 {
-    return GKarmaGui;
+    return KarmaGuiInternal::GKarmaGui;
 }
 
 void KarmaGui::SetCurrentContext(KarmaGuiContext* ctx)

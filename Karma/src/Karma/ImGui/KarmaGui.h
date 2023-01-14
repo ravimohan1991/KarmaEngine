@@ -2,9 +2,10 @@
 
 #define KG_FMTARGS(FMT)             __attribute__((format(printf, FMT, FMT+1)))
 #define KG_FMTLIST(FMT)             __attribute__((format(printf, FMT, 0)))
-
 #define KG_ARRAYSIZE(_ARR)          ((int)(sizeof(_ARR) / sizeof(*(_ARR))))     // Size of a static C-style array. Don't use on pointers!
 #define KG_UNUSED(_VAR)             ((void)(_VAR))
+#define KG_OFFSETOF(_TYPE,_MEMBER)  offsetof(_TYPE, _MEMBER)                    // Offset of _MEMBER within _TYPE. Standardized as offsetof() in C++11
+
 
 // Includes
 #include "krpch.h"
@@ -1962,19 +1963,19 @@ struct KARMA_API KarmaGuiIO
     //------------------------------------------------------------------
 
     // Input Functions
-    static void  AddKeyEvent(KarmaGuiKey key, bool down);                   // Queue a new key down/up event. Key should be "translated" (as in, generally KGGuiKey_A matches the key end-user would use to emit an 'A' character)
+    void  AddKeyEvent(KarmaGuiKey key, bool down);                   // Queue a new key down/up event. Key should be "translated" (as in, generally KGGuiKey_A matches the key end-user would use to emit an 'A' character)
     void  AddKeyAnalogEvent(KarmaGuiKey key, bool down, float v);    // Queue a new key down/up event for analog values (e.g. KGGuiKey_Gamepad_ values). Dead-zones should be handled by the backend.
-    static void  AddMousePosEvent(float x, float y);                     // Queue a mouse position update. Use -FLT_MAX,-FLT_MAX to signify no mouse (e.g. app not focused and not hovered)
-    static void  AddMouseButtonEvent(int button, bool down);             // Queue a mouse button change
-    static void  AddMouseWheelEvent(float wh_x, float wh_y);             // Queue a mouse wheel update
-    static void  AddMouseViewportEvent(KGGuiID id);                      // Queue a mouse hovered viewport. Requires backend to set KGGuiBackendFlags_HasMouseHoveredViewport to call this (for multi-viewport support).
-    static void  AddFocusEvent(bool focused);                            // Queue a gain/loss of focus for the application (generally based on OS/platform focus of your window)
+    void  AddMousePosEvent(float x, float y);                     // Queue a mouse position update. Use -FLT_MAX,-FLT_MAX to signify no mouse (e.g. app not focused and not hovered)
+    void  AddMouseButtonEvent(int button, bool down);             // Queue a mouse button change
+    void  AddMouseWheelEvent(float wh_x, float wh_y);             // Queue a mouse wheel update
+    void  AddMouseViewportEvent(KGGuiID id);                      // Queue a mouse hovered viewport. Requires backend to set KGGuiBackendFlags_HasMouseHoveredViewport to call this (for multi-viewport support).
+    void  AddFocusEvent(bool focused);                            // Queue a gain/loss of focus for the application (generally based on OS/platform focus of your window)
     void  AddInputCharacter(unsigned int c);                      // Queue a new character input
     void  AddInputCharacterUTF16(KGWchar16 c);                    // Queue a new character input from a UTF-16 character, it can be a surrogate
     void  AddInputCharactersUTF8(const char* str);                // Queue a new characters input from a UTF-8 string
 
-    static void  SetKeyEventNativeData(KarmaGuiKey key, int native_keycode, int native_scancode, int native_legacy_index = -1); // [Optional] Specify index for legacy <1.87 IsKeyXXX() functions with native indices + specify native keycode, scancode.
-    static void  SetAppAcceptingEvents(bool accepting_events);           // Set master flag for accepting key/mouse/text events (default to true). Useful if you have native dialog boxes that are interrupting your application loop/refresh, and you want to disable events being queued while your app is frozen.
+    void  SetKeyEventNativeData(KarmaGuiKey key, int native_keycode, int native_scancode, int native_legacy_index = -1); // [Optional] Specify index for legacy <1.87 IsKeyXXX() functions with native indices + specify native keycode, scancode.
+    void  SetAppAcceptingEvents(bool accepting_events);           // Set master flag for accepting key/mouse/text events (default to true). Useful if you have native dialog boxes that are interrupting your application loop/refresh, and you want to disable events being queued while your app is frozen.
     void  ClearInputCharacters();                                 // [Internal] Clear the text input buffer manually
     void  ClearInputKeys();                                       // [Internal] Release all keys
 
@@ -2195,9 +2196,9 @@ struct KARMA_API KarmaGuiOnceUponAFrame
 struct KARMA_API KarmaGuiTextFilter
 {
     KarmaGuiTextFilter(const char* default_filter = "");
-    static bool      Draw(const char* label = "Filter (inc,-exc)", float width = 0.0f);  // Helper calling InputText+Build
-    static bool      PassFilter(const char* text, const char* text_end = NULL);
-    static void      Build();
+    bool      Draw(const char* label = "Filter (inc,-exc)", float width = 0.0f);  // Helper calling InputText+Build
+    bool      PassFilter(const char* text, const char* text_end = NULL) const;
+    void      Build();
     void                Clear()          { InputBuf[0] = 0; Build(); }
     bool                IsActive() const { return !Filters.empty(); }
 
@@ -2210,7 +2211,7 @@ struct KARMA_API KarmaGuiTextFilter
         ImGuiTextRange()                                { b = e = NULL; }
         ImGuiTextRange(const char* _b, const char* _e)  { b = _b; e = _e; }
         bool            empty() const                   { return b == e; }
-        static void  split(char separator, KGVector<ImGuiTextRange>* out);
+        void  split(char separator, KGVector<ImGuiTextRange>* out) const;
     };
     char                    InputBuf[256];
     KGVector<ImGuiTextRange>Filters;
@@ -2233,7 +2234,7 @@ struct KARMA_API KarmaGuiTextBuffer
     void                clear()                 { Buf.clear(); }
     void                reserve(int capacity)   { Buf.reserve(capacity); }
     const char*         c_str() const           { return Buf.Data ? Buf.Data : EmptyString; }
-    static void      append(const char* str, const char* str_end = NULL);
+    void      append(const char* str, const char* str_end = NULL);
     void      appendf(const char* fmt, ...) KG_FMTARGS(2);
     void      appendfv(const char* fmt, va_list args) KG_FMTLIST(2);
 };
@@ -2264,29 +2265,29 @@ struct KARMA_API KarmaGuiStorage
     // - Set***() functions find pair, insertion on demand if missing.
     // - Sorted insertion is costly, paid once. A typical frame shouldn't need to insert any new pair.
     void                Clear() { Data.clear(); }
-    static int       GetInt(KGGuiID key, int default_val = 0);
-    static void      SetInt(KGGuiID key, int val);
-    static bool      GetBool(KGGuiID key, bool default_val = false);
-    static void      SetBool(KGGuiID key, bool val);
-    static float     GetFloat(KGGuiID key, float default_val = 0.0f);
-    static void      SetFloat(KGGuiID key, float val);
-    static void*     GetVoidPtr(KGGuiID key); // default_val is NULL
-    static void      SetVoidPtr(KGGuiID key, void* val);
+    int       GetInt(KGGuiID key, int default_val = 0) const;
+    void      SetInt(KGGuiID key, int val);
+    bool      GetBool(KGGuiID key, bool default_val = false) const;
+    void      SetBool(KGGuiID key, bool val);
+    float     GetFloat(KGGuiID key, float default_val = 0.0f) const;
+    void      SetFloat(KGGuiID key, float val);
+    void*     GetVoidPtr(KGGuiID key) const; // default_val is NULL
+    void      SetVoidPtr(KGGuiID key, void* val);
 
     // - Get***Ref() functions finds pair, insert on demand if missing, return pointer. Useful if you intend to do Get+Set.
     // - References are only valid until a new value is added to the storage. Calling a Set***() function or a Get***Ref() function invalidates the pointer.
     // - A typical use case where this is convenient for quick hacking (e.g. add storage during a live Edit&Continue session if you can't modify existing struct)
     //      float* pvar = ImGui::GetFloatRef(key); ImGui::SliderFloat("var", pvar, 0, 100.0f); some_var += *pvar;
-    static int*      GetIntRef(KGGuiID key, int default_val = 0);
-    static bool*     GetBoolRef(KGGuiID key, bool default_val = false);
-    static float*    GetFloatRef(KGGuiID key, float default_val = 0.0f);
-    static void**    GetVoidPtrRef(KGGuiID key, void* default_val = NULL);
+    int*      GetIntRef(KGGuiID key, int default_val = 0);
+    bool*     GetBoolRef(KGGuiID key, bool default_val = false);
+    float*    GetFloatRef(KGGuiID key, float default_val = 0.0f);
+    void**    GetVoidPtrRef(KGGuiID key, void* default_val = NULL);
 
     // Use on your own storage if you know only integer are being stored (open/close all tree nodes)
-    static void      SetAllInt(int val);
+    void      SetAllInt(int val);
 
     // For quicker full rebuild of a storage (instead of an incremental one), you may add all your contents and then sort once.
-    static void      BuildSortByKey();
+    void      BuildSortByKey();
 };
 
 // Helper: Manually clip large list of items.
@@ -2322,12 +2323,12 @@ struct KARMA_API KarmaGuiListClipper
     // items_height: Use -1.0f to be calculated automatically on first step. Otherwise pass in the distance between your items, typically GetTextLineHeightWithSpacing() or GetFrameHeightWithSpacing().
     KarmaGuiListClipper();
     ~KarmaGuiListClipper();
-    static void  Begin(int items_count, float items_height = -1.0f);
-    static void  End();             // Automatically called on the last call of Step() that returns false.
-    static bool  Step();            // Call until it returns false. The DisplayStart/DisplayEnd fields will be set and you can process/draw those items.
+    void  Begin(int items_count, float items_height = -1.0f);
+    void  End();             // Automatically called on the last call of Step() that returns false.
+    bool  Step();            // Call until it returns false. The DisplayStart/DisplayEnd fields will be set and you can process/draw those items.
 
     // Call ForceDisplayRangeByIndices() before first call to Step() if you need a range of items to be displayed regardless of visibility.
-    static void  ForceDisplayRangeByIndices(int item_min, int item_max); // item_max is exclusive e.g. use (42, 42+1) to make item 42 always visible BUT due to alignment/padding of certain items it is likely that an extra item may be included on either end of the display range.
+    void  ForceDisplayRangeByIndices(int item_min, int item_max); // item_max is exclusive e.g. use (42, 42+1) to make item 42 always visible BUT due to alignment/padding of certain items it is likely that an extra item may be included on either end of the display range.
     inline KarmaGuiListClipper(int items_count, float items_height = -1.0f) { memset(this, 0, sizeof(*this)); ItemsCount = -1; Begin(items_count, items_height); } // [removed in 1.79]
 };
 

@@ -392,9 +392,9 @@ void KGDrawListSharedData::SetCircleTessellationMaxError(float max_error)
 void KGDrawList::_ResetForNewFrame()
 {
     // Verify that the KGDrawCmd fields we want to memcmp() are contiguous in memory.
-    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, ClipRect) == 0);
-    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, TextureId) == sizeof(KGVec4));
-    KG_STATIC_ASSERT(IM_OFFSETOF(KGDrawCmd, VtxOffset) == sizeof(KGVec4) + sizeof(KGTextureID));
+    KG_STATIC_ASSERT(KG_OFFSETOF(KGDrawCmd, ClipRect) == 0);
+    KG_STATIC_ASSERT(KG_OFFSETOF(KGDrawCmd, TextureId) == sizeof(KGVec4));
+    KG_STATIC_ASSERT(KG_OFFSETOF(KGDrawCmd, VtxOffset) == sizeof(KGVec4) + sizeof(KGTextureID));
     if (_Splitter._Count > 1)
         _Splitter.Merge(this);
 
@@ -481,7 +481,7 @@ void KGDrawList::AddCallback(KGDrawCallback callback, void* callback_data)
 }
 
 // Compare ClipRect, TextureId and VtxOffset with a single memcmp()
-#define ImDrawCmd_HeaderSize                            (IM_OFFSETOF(KGDrawCmd, VtxOffset) + sizeof(unsigned int))
+#define ImDrawCmd_HeaderSize                            (KG_OFFSETOF(KGDrawCmd, VtxOffset) + sizeof(unsigned int))
 #define ImDrawCmd_HeaderCompare(CMD_LHS, CMD_RHS)       (memcmp(CMD_LHS, CMD_RHS, ImDrawCmd_HeaderSize))    // Compare ClipRect, TextureId, VtxOffset
 #define ImDrawCmd_HeaderCopy(CMD_DST, CMD_SRC)          (memcpy(CMD_DST, CMD_SRC, ImDrawCmd_HeaderSize))    // Copy ClipRect, TextureId, VtxOffset
 #define ImDrawCmd_AreSequentialIdxOffset(CMD_0, CMD_1)  (CMD_0->IdxOffset + CMD_0->ElemCount == CMD_1->IdxOffset)

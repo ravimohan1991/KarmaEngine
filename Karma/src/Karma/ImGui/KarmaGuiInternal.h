@@ -115,7 +115,7 @@ typedef void (*KGGuiErrorLogCallback)(void* user_data, const char* fmt, ...);
 //-----------------------------------------------------------------------------
 
 #ifndef GKarmaGui
-extern  KarmaGuiContext* GKarmaGui;  // Current implicit context pointer
+//extern  KarmaGuiContext* GKarmaGui;  // Current implicit context pointer
 #endif
 
 //-------------------------------------------------------------------------
@@ -150,7 +150,7 @@ namespace KGStb
 #define KARMAGUI_DEBUG_LOG_FOCUS(...)      do { if (g.DebugLogFlags & KGGuiDebugLogFlags_EventFocus)    KARMAGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 #define KARMAGUI_DEBUG_LOG_POPUP(...)      do { if (g.DebugLogFlags & KGGuiDebugLogFlags_EventPopup)    KARMAGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 #define KARMAGUI_DEBUG_LOG_NAV(...)        do { if (g.DebugLogFlags & KGGuiDebugLogFlags_EventNav)      KARMAGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
-#define KARMAGUI_DEBUG_LOG_CLIPPER(...)    do { if (g.DebugLogFlags & KGGuiDebugLogFlags_EventClipper)  KARMAGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
+#define ye_right(...)    do { if (g.DebugLogFlags & KGGuiDebugLogFlags_EventClipper)  KARMAGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 #define KARMAGUI_DEBUG_LOG_IO(...)         do { if (g.DebugLogFlags & KGGuiDebugLogFlags_EventIO)       KARMAGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 #define KARMAGUI_DEBUG_LOG_DOCKING(...)    do { if (g.DebugLogFlags & KGGuiDebugLogFlags_EventDocking)  KARMAGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 #define KARMAGUI_DEBUG_LOG_VIEWPORT(...)   do { if (g.DebugLogFlags & KGGuiDebugLogFlags_EventViewport) KARMAGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
@@ -161,7 +161,7 @@ namespace KGStb
 // Error handling
 // Down the line in some frameworks/languages we would like to have a way to redirect those to the programmer and recover from more faults.
 #ifndef KG_ASSERT_USER_ERROR
-#define KG_ASSERT_USER_ERROR(_EXP,_MSG) KR_CORE_ASSERT((_EXP) && _MSG)   // Recoverable User Error
+#define KG_ASSERT_USER_ERROR(_EXP,_MSG) KR_CORE_ASSERT((_EXP), _MSG)   // Recoverable User Error
 #endif
 
 // Misc Macros
@@ -2858,6 +2858,8 @@ namespace Karma
 		static int              FindPlatformMonitorForPos(const KGVec2& pos);
 		static int              FindPlatformMonitorForRect(const KGRect& r);
 		static void             UpdateViewportPlatformMonitor(KGGuiViewportP* viewport);
+
+		static KarmaGuiStorage::ImGuiStoragePair* LowerBound(KGVector<KarmaGuiStorage::ImGuiStoragePair>& data, KGGuiID key);
 
 	public:
 		// Windows
