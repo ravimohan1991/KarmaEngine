@@ -183,7 +183,6 @@ namespace Karma
 		static bool          ShowStyleSelector(const char* label);       // add style selector block (not a window), essentially a combo listing the default styles.
 		static void          ShowFontSelector(const char* label);        // add font selector block (not a window), essentially a combo listing the loaded fonts.
 		static void          ShowUserGuide();                            // add basic help/info block (not a window): how to manipulate ImGui as an end-user (mouse/keyboard controls).
-		static const char*   GetVersion();                               // get the compiled version string e.g. "1.80 WIP" (essentially the value for IMGUI_VERSION from the compiled version of imgui.cpp)
 
 		// Styles
 		static void          StyleColorsDark(KarmaGuiStyle* dst = NULL);    // new, recommended style (default)

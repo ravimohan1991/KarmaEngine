@@ -41,7 +41,7 @@
 #endif
 
 // Intel intrinsics?
-#include <immintrin.h>
+//#include <immintrin.h>
 
 // Karma's general includes
 #include "Karma/Core.h"

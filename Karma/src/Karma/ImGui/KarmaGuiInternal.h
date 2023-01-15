@@ -2845,7 +2845,7 @@ namespace Karma
 		static KGGuiWindow*     FindBlockingModal(KGGuiWindow* window);
 
 		// Viewports
-		const KGGuiID           IMGUI_VIEWPORT_DEFAULT_ID = 0x11111111; // Using an arbitrary constant instead of e.g. KGHashStr("ViewportDefault", 0); so it's easier to spot in the debugger. The exact value doesn't matter.
+		const static KGGuiID           IMGUI_VIEWPORT_DEFAULT_ID = 0x11111111; // Using an arbitrary constant instead of e.g. KGHashStr("ViewportDefault", 0); so it's easier to spot in the debugger. The exact value doesn't matter.
 		static KGGuiViewportP*  AddUpdateViewport(KGGuiWindow* window, KGGuiID id, const KGVec2& platform_pos, const KGVec2& size, KarmaGuiViewportFlags flags);
 		static void             DestroyViewport(KGGuiViewportP* viewport);
 		static void             UpdateViewportsNewFrame();
