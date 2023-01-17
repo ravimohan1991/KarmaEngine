@@ -1,0 +1,19 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classKarma_1_1Event.html" title=" " alt="" coords="5,283,104,308"/>
+<area shape="rect" id="node2" href="$classKarma_1_1AppRenderEvent.html" title=" " alt="" coords="191,5,353,31"/>
+<area shape="rect" id="node3" href="$classKarma_1_1AppTickEvent.html" title=" " alt="" coords="199,55,345,80"/>
+<area shape="rect" id="node4" href="$classKarma_1_1AppUpdateEvent.html" title=" " alt="" coords="190,104,354,129"/>
+<area shape="rect" id="node5" href="$classKarma_1_1ControllerDeviceConnectedEvent.html" title=" " alt="" coords="161,154,383,194"/>
+<area shape="rect" id="node6" href="$classKarma_1_1ControllerDeviceDisconnectedEvent.html" title=" " alt="" coords="152,218,392,258"/>
+<area shape="rect" id="node7" href="$classKarma_1_1KeyEvent.html" title=" " alt="" coords="211,283,333,308"/>
+<area shape="rect" id="node11" href="$classKarma_1_1MouseButtonEvent.html" title=" " alt="" coords="184,332,360,357"/>
+<area shape="rect" id="node14" href="$classKarma_1_1MouseMovedEvent.html" title=" " alt="" coords="183,381,361,407"/>
+<area shape="rect" id="node15" href="$classKarma_1_1MouseScrolledEvent.html" title=" " alt="" coords="179,431,365,456"/>
+<area shape="rect" id="node16" href="$classKarma_1_1WindowCloseEvent.html" title=" " alt="" coords="183,480,361,505"/>
+<area shape="rect" id="node17" href="$classKarma_1_1WindowResizeEvent.html" title=" " alt="" coords="180,529,364,555"/>
+<area shape="rect" id="node8" href="$classKarma_1_1KeyPressedEvent.html" title=" " alt="" coords="454,184,623,209"/>
+<area shape="rect" id="node9" href="$classKarma_1_1KeyReleasedEvent.html" title=" " alt="" coords="451,233,626,259"/>
+<area shape="rect" id="node10" href="$classKarma_1_1KeyTypedEvent.html" title=" " alt="" coords="461,283,617,308"/>
+<area shape="rect" id="node12" href="$classKarma_1_1MouseButtonPressedEvent.html" title=" " alt="" coords="443,333,634,373"/>
+<area shape="rect" id="node13" href="$classKarma_1_1MouseButtonReleasedEvent.html" title=" " alt="" coords="440,397,637,437"/>
+</map>

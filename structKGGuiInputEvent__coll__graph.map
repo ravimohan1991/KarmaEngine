@@ -1,0 +1,10 @@
+<map id="KGGuiInputEvent" name="KGGuiInputEvent">
+<area shape="rect" id="node1" title=" " alt="" coords="360,153,483,179"/>
+<area shape="rect" id="node2" href="$structKGGuiInputEventMousePos.html" title=" " alt="" coords="19,5,205,31"/>
+<area shape="rect" id="node3" href="$structKGGuiInputEventMouseWheel.html" title=" " alt="" coords="13,55,211,80"/>
+<area shape="rect" id="node4" href="$structKGGuiInputEventMouseButton.html" title=" " alt="" coords="12,104,212,129"/>
+<area shape="rect" id="node5" href="$structKGGuiInputEventMouseViewport.html" title=" " alt="" coords="5,153,219,179"/>
+<area shape="rect" id="node6" href="$structKGGuiInputEventKey.html" title=" " alt="" coords="39,203,185,228"/>
+<area shape="rect" id="node7" href="$structKGGuiInputEventText.html" title=" " alt="" coords="38,252,186,277"/>
+<area shape="rect" id="node8" href="$structKGGuiInputEventAppFocused.html" title=" " alt="" coords="14,301,210,327"/>
+</map>
