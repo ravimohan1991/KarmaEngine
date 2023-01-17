@@ -1,4 +1,5 @@
 // Let me see how far I can push before removing ImGui's defines and smoothly mingle with Karma
+// Dear ImGui is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
 
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
@@ -1288,7 +1289,7 @@ void KarmaGuiStorage::BuildSortByKey()
 {
     struct StaticFunc
     {
-        static int KARMAGUI_CDECL PairComparerByID(const void* lhs, const void* rhs)
+        static int PairComparerByID(const void* lhs, const void* rhs)
         {
             // We can't just do a subtraction because qsort uses signed integers and subtracting our ID doesn't play well with that.
             if (((const ImGuiStoragePair*)lhs)->key > ((const ImGuiStoragePair*)rhs)->key) return +1;
@@ -1942,7 +1943,7 @@ void Karma::KarmaGui::PopStyleColor(int count)
     KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     if (g.ColorStack.Size < count)
     {
-        KG_ASSERT_USER_ERROR(g.ColorStack.Size > count, "Calling PopStyleColor() too many times: stack underflow.");
+        KR_CORE_ASSERT(g.ColorStack.Size > count, "Calling PopStyleColor() too many times: stack underflow.");
         count = g.ColorStack.Size;
     }
     while (count > 0)
@@ -2036,7 +2037,7 @@ void Karma::KarmaGui::PopStyleVar(int count)
     KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     if (g.StyleVarStack.Size < count)
     {
-        KG_ASSERT_USER_ERROR(g.StyleVarStack.Size > count, "Calling PopStyleVar() too many times: stack underflow.");
+        KR_CORE_ASSERT(g.StyleVarStack.Size > count, "Calling PopStyleVar() too many times: stack underflow.");
         count = g.StyleVarStack.Size;
     }
     while (count > 0)
@@ -3184,7 +3185,7 @@ void Karma::KarmaGuiInternal::StartMouseMovingWindow(KGGuiWindow* window)
 // We use 'undock_floating_node == false' when dragging from title bar to allow moving groups of floating nodes without undocking them.
 // - undock_floating_node == true: when dragging from a floating node within a hierarchy, always undock the node.
 // - undock_floating_node == false: when dragging from a floating node within a hierarchy, move root window.
-void KarmaGui::StartMouseMovingWindowOrNode(KGGuiWindow* window, KGGuiDockNode* node, bool undock_floating_node)
+void Karma::KarmaGuiInternal::StartMouseMovingWindowOrNode(KGGuiWindow* window, KGGuiDockNode* node, bool undock_floating_node)
 {
     KarmaGuiContext& g = *GKarmaGui;
     bool can_undock_node = false;
@@ -3199,8 +3200,8 @@ void KarmaGui::StartMouseMovingWindowOrNode(KGGuiWindow* window, KGGuiDockNode* 
                 can_undock_node = true;
     }
 
-    const bool clicked = IsMouseClicked(0);
-    const bool dragging = IsMouseDragging(0, g.IO.MouseDragThreshold * 1.70f);
+    const bool clicked = KarmaGui::IsMouseClicked(0);
+    const bool dragging = KarmaGui::IsMouseDragging(0, g.IO.MouseDragThreshold * 1.70f);
     if (can_undock_node && dragging)
         DockContextQueueUndockNode(&g, node); // Will lead to DockNodeStartMouseMovingWindow() -> StartMouseMovingWindow() being called next frame
     else if (!can_undock_node && (clicked || dragging) && g.MovingWindow != window)
@@ -3212,7 +3213,7 @@ void KarmaGui::StartMouseMovingWindowOrNode(KGGuiWindow* window, KGGuiDockNode* 
 // FIXME: We don't have strong guarantee that g.MovingWindow stay synched with g.ActiveId == g.MovingWindow->MoveId.
 // This is currently enforced by the fact that BeginDragDropSource() is setting all g.ActiveIdUsingXXXX flags to inhibit navigation inputs,
 // but if we should more thoroughly test cases where g.ActiveId or g.MovingWindow gets changed and not the other.
-void KarmaGui::UpdateMouseMovingWindowNewFrame()
+void Karma::KarmaGuiInternal::UpdateMouseMovingWindowNewFrame()
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (g.MovingWindow != NULL)
@@ -3220,12 +3221,12 @@ void KarmaGui::UpdateMouseMovingWindowNewFrame()
         // We actually want to move the root window. g.MovingWindow == window we clicked on (could be a child window).
         // We track it to preserve Focus and so that generally ActiveIdWindow == MovingWindow and ActiveId == MovingWindow->MoveId for consistency.
         KeepAliveID(g.ActiveId);
-        KR_CORE_ASSERT(g.MovingWindow && g.MovingWindow->RootWindowDockTree);
+        KR_CORE_ASSERT(g.MovingWindow && g.MovingWindow->RootWindowDockTree, "");
         KGGuiWindow* moving_window = g.MovingWindow->RootWindowDockTree;
 
         // When a window stop being submitted while being dragged, it may will its viewport until next Begin()
         const bool window_disappared = ((!moving_window->WasActive && !moving_window->Active) || moving_window->Viewport == NULL);
-        if (g.IO.MouseDown[0] && IsMousePosValid(&g.IO.MousePos) && !window_disappared)
+        if (g.IO.MouseDown[0] && KarmaGui::IsMousePosValid(&g.IO.MousePos) && !window_disappared)
         {
             KGVec2 pos = g.IO.MousePos - g.ActiveIdClickOffset;
             if (moving_window->Pos.x != pos.x || moving_window->Pos.y != pos.y)
@@ -3274,7 +3275,7 @@ void KarmaGui::UpdateMouseMovingWindowNewFrame()
 
 // Initiate moving window when clicking on empty space or title bar.
 // Handle left-click and right-click focus.
-void KarmaGui::UpdateMouseMovingWindowEndFrame()
+void Karma::KarmaGuiInternal::UpdateMouseMovingWindowEndFrame()
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (g.ActiveId != 0 || g.HoveredId != 0)
@@ -3356,7 +3357,7 @@ static bool IsWindowActiveAndVisible(KGGuiWindow* window)
 }
 
 // The reason this is exposed in imgui_internal.h is: on touch-based system that don't have hovering, we want to dispatch inputs to the right target (imgui vs imgui+app)
-void KarmaGui::UpdateHoveredWindowAndCaptureFlags()
+void Karma::KarmaGuiInternal::UpdateHoveredWindowAndCaptureFlags()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiIO& io = g.IO;
@@ -3368,7 +3369,7 @@ void KarmaGui::UpdateHoveredWindowAndCaptureFlags()
     // - We also support the moved window toggling the NoInputs flag after moving has started in order to be able to detect windows below it, which is useful for e.g. docking mechanisms.
     bool clear_hovered_windows = false;
     FindHoveredWindow();
-    KR_CORE_ASSERT(g.HoveredWindow == NULL || g.HoveredWindow == g.MovingWindow || g.HoveredWindow->Viewport == g.MouseViewport);
+    KR_CORE_ASSERT(g.HoveredWindow == NULL || g.HoveredWindow == g.MovingWindow || g.HoveredWindow->Viewport == g.MouseViewport, "");
 
     // Modal windows prevents mouse from hovering behind them.
     KGGuiWindow* modal_window = GetTopMostPopupModal();
@@ -3433,10 +3434,10 @@ void KarmaGui::UpdateHoveredWindowAndCaptureFlags()
     io.WantTextInput = (g.WantTextInputNextFrame != -1) ? (g.WantTextInputNextFrame != 0) : false;
 }
 
-void KarmaGui::NewFrame()
+void Karma::KarmaGui::NewFrame()
 {
-    KR_CORE_ASSERT(GKarmaGui != NULL && "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
-    KarmaGuiContext& g = *GKarmaGui;
+    KR_CORE_ASSERT(KarmaGuiInternal::GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
 
     // Remove pending delete hooks before frame start.
     // This deferred removal avoid issues of removal while iterating the hook vector
@@ -3444,15 +3445,15 @@ void KarmaGui::NewFrame()
         if (g.Hooks[n].Type == ImGuiContextHookType_PendingRemoval_)
             g.Hooks.erase(&g.Hooks[n]);
 
-    CallContextHooks(&g, ImGuiContextHookType_NewFramePre);
+    KarmaGuiInternal::CallContextHooks(&g, ImGuiContextHookType_NewFramePre);
 
     // Check and assert for various common IO and Configuration mistakes
     g.ConfigFlagsLastFrame = g.ConfigFlagsCurrFrame;
-    ErrorCheckNewFrameSanityChecks();
+    KarmaGuiInternal::ErrorCheckNewFrameSanityChecks();
     g.ConfigFlagsCurrFrame = g.IO.ConfigFlags;
 
     // Load settings on first frame, save settings when modified (after a delay)
-    UpdateSettings();
+    KarmaGuiInternal::UpdateSettings();
 
     g.Time += g.IO.DeltaTime;
     g.WithinFrameScope = true;
@@ -3470,16 +3471,16 @@ void KarmaGui::NewFrame()
 
     // Process input queue (trickle as many events as possible), turn events into writes to IO structure
     g.InputEventsTrail.resize(0);
-    UpdateInputEvents(g.IO.ConfigInputTrickleEventQueue);
+    KarmaGuiInternal::UpdateInputEvents(g.IO.ConfigInputTrickleEventQueue);
 
     // Update viewports (after processing input queue, so io.MouseHoveredViewport is set)
-    UpdateViewportsNewFrame();
+    KarmaGuiInternal::UpdateViewportsNewFrame();
 
     // Setup current font and draw list shared data
     // FIXME-VIEWPORT: the concept of a single ClipRectFullscreen is not ideal!
     g.IO.Fonts->Locked = true;
-    SetCurrentFont(GetDefaultFont());
-    KR_CORE_ASSERT(g.Font->IsLoaded());
+    KarmaGuiInternal::SetCurrentFont(KarmaGuiInternal::GetDefaultFont());
+    KR_CORE_ASSERT(g.Font->IsLoaded(), "");
     KGRect virtual_space(FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX);
     for (int n = 0; n < g.Viewports.Size; n++)
         virtual_space.Add(g.Viewports[n]->GetMainRect());
@@ -3506,7 +3507,7 @@ void KarmaGui::NewFrame()
 
     // Drag and drop keep the source ID alive so even if the source disappear our state is consistent
     if (g.DragDropActive && g.DragDropPayload.SourceId == g.ActiveId)
-        KeepAliveID(g.DragDropPayload.SourceId);
+        KarmaGuiInternal::KeepAliveID(g.DragDropPayload.SourceId);
 
     // Update HoveredId data
     if (!g.HoveredIdPreviousFrame)
@@ -3527,8 +3528,8 @@ void KarmaGui::NewFrame()
     // As a result, custom widget using ButtonBehavior() _without_ ItemAdd() need to call KeepAliveID() themselves.
     if (g.ActiveId != 0 && g.ActiveIdIsAlive != g.ActiveId && g.ActiveIdPreviousFrame == g.ActiveId)
     {
-        KARMAGUI_DEBUG_LOG_ACTIVEID("NewFrame(): ClearActiveID() because it isn't marked alive anymore!\n");
-        ClearActiveID();
+        KR_CORE_INFO("NewFrame(): ClearActiveID() because it isn't marked alive or interesting anymore!");
+        KarmaGuiInternal::ClearActiveID();
     }
 
     // Update ActiveId data (clear reference to active widget if the widget isn't alive anymore)
@@ -3561,9 +3562,9 @@ void KarmaGui::NewFrame()
         // If your custom widget code used:                 { g.ActiveIdUsingNavInputMask |= (1 << KGGuiNavInput_Cancel); }
         // Since IMGUI_VERSION_NUM >= 18804 it should be:   { SetKeyOwner(KGGuiKey_Escape, g.ActiveId); SetKeyOwner(KGGuiKey_NavGamepadCancel, g.ActiveId); }
         if (g.ActiveIdUsingNavInputMask & (1 << KGGuiNavInput_Cancel))
-            SetKeyOwner(KGGuiKey_Escape, g.ActiveId);
+            KarmaGuiInternal::SetKeyOwner(KGGuiKey_Escape, g.ActiveId);
         if (g.ActiveIdUsingNavInputMask & ~(1 << KGGuiNavInput_Cancel))
-            KR_CORE_ASSERT(0); // Other values unsupported
+            KR_CORE_ASSERT(0, ""); // Other values unsupported
     }
 #endif
 
@@ -3597,7 +3598,7 @@ void KarmaGui::NewFrame()
     //    ClosePopupsExceptModals();
 
     // Update keyboard input state
-    UpdateKeyboardInputs();
+    KarmaGuiInternal::UpdateKeyboardInputs();
 
     //KR_CORE_ASSERT(g.IO.KeyCtrl == IsKeyDown(KGGuiKey_LeftCtrl) || IsKeyDown(KGGuiKey_RightCtrl));
     //KR_CORE_ASSERT(g.IO.KeyShift == IsKeyDown(KGGuiKey_LeftShift) || IsKeyDown(KGGuiKey_RightShift));
@@ -3605,24 +3606,24 @@ void KarmaGui::NewFrame()
     //KR_CORE_ASSERT(g.IO.KeySuper == IsKeyDown(KGGuiKey_LeftSuper) || IsKeyDown(KGGuiKey_RightSuper));
 
     // Update gamepad/keyboard navigation
-    NavUpdate();
+    KarmaGuiInternal::NavUpdate();
 
     // Update mouse input state
-    UpdateMouseInputs();
+    KarmaGuiInternal::UpdateMouseInputs();
 
     // Undocking
     // (needs to be before UpdateMouseMovingWindowNewFrame so the window is already offset and following the mouse on the detaching frame)
-    DockContextNewFrameUpdateUndocking(&g);
+    KarmaGuiInternal::DockContextNewFrameUpdateUndocking(&g);
 
     // Find hovered window
     // (needs to be before UpdateMouseMovingWindowNewFrame so we fill g.HoveredWindowUnderMovingWindow on the mouse release frame)
-    UpdateHoveredWindowAndCaptureFlags();
+    KarmaGuiInternal::UpdateHoveredWindowAndCaptureFlags();
 
     // Handle user moving window with mouse (at the beginning of the frame to avoid input lag or sheering)
-    UpdateMouseMovingWindowNewFrame();
+    KarmaGuiInternal::UpdateMouseMovingWindowNewFrame();
 
     // Background darkening/whitening
-    if (GetTopMostPopupModal() != NULL || (g.NavWindowingTarget != NULL && g.NavWindowingHighlightAlpha > 0.0f))
+    if (KarmaGuiInternal::GetTopMostPopupModal() != NULL || (g.NavWindowingTarget != NULL && g.NavWindowingHighlightAlpha > 0.0f))
         g.DimBgRatio = KGMin(g.DimBgRatio + g.IO.DeltaTime * 6.0f, 1.0f);
     else
         g.DimBgRatio = KGMax(g.DimBgRatio - g.IO.DeltaTime * 10.0f, 0.0f);
@@ -3635,10 +3636,10 @@ void KarmaGui::NewFrame()
     g.PlatformImeData.WantVisible = false;
 
     // Mouse wheel scrolling, scale
-    UpdateMouseWheel();
+    KarmaGuiInternal::UpdateMouseWheel();
 
     // Mark all windows as not visible and compact unused memory.
-    KR_CORE_ASSERT(g.WindowsFocusOrder.Size <= g.Windows.Size);
+    KR_CORE_ASSERT(g.WindowsFocusOrder.Size <= g.Windows.Size, "");
     const float memory_compact_start_time = (g.GcCompactAll || g.IO.ConfigMemoryCompactTimer < 0.0f) ? FLT_MAX : (float)g.Time - g.IO.ConfigMemoryCompactTimer;
     for (int i = 0; i != g.Windows.Size; i++)
     {
@@ -3651,23 +3652,23 @@ void KarmaGui::NewFrame()
 
         // Garbage collect transient buffers of recently unused windows
         if (!window->WasActive && !window->MemoryCompacted && window->LastTimeActive < memory_compact_start_time)
-            GcCompactTransientWindowBuffers(window);
+            KarmaGuiInternal::GcCompactTransientWindowBuffers(window);
     }
 
     // Garbage collect transient buffers of recently unused tables
     for (int i = 0; i < g.TablesLastTimeActive.Size; i++)
         if (g.TablesLastTimeActive[i] >= 0.0f && g.TablesLastTimeActive[i] < memory_compact_start_time)
-            TableGcCompactTransientBuffers(g.Tables.GetByIndex(i));
+            KarmaGuiInternal::TableGcCompactTransientBuffers(g.Tables.GetByIndex(i));
     for (int i = 0; i < g.TablesTempData.Size; i++)
         if (g.TablesTempData[i].LastTimeActive >= 0.0f && g.TablesTempData[i].LastTimeActive < memory_compact_start_time)
-            TableGcCompactTransientBuffers(&g.TablesTempData[i]);
+            KarmaGuiInternal::TableGcCompactTransientBuffers(&g.TablesTempData[i]);
     if (g.GcCompactAll)
-        GcCompactTransientMiscBuffers();
+        KarmaGuiInternal::GcCompactTransientMiscBuffers();
     g.GcCompactAll = false;
 
     // Closing the focused window restore focus to the first active root window in descending z-order
     if (g.NavWindow && !g.NavWindow->WasActive)
-        FocusTopMostWindowUnderOne(NULL, NULL);
+        KarmaGuiInternal::FocusTopMostWindowUnderOne(NULL, NULL);
 
     // No window should be open at the beginning of the frame.
     // But in order to allow the user to call NewFrame() multiple times without calling Render(), we are doing an explicit clear.
@@ -3678,11 +3679,11 @@ void KarmaGui::NewFrame()
     g.GroupStack.resize(0);
 
     // Docking
-    DockContextNewFrameUpdateDocking(&g);
+    KarmaGuiInternal::DockContextNewFrameUpdateDocking(&g);
 
     // [DEBUG] Update debug features
-    UpdateDebugToolItemPicker();
-    UpdateDebugToolStackQueries();
+    KarmaGuiInternal::UpdateDebugToolItemPicker();
+    KarmaGuiInternal::UpdateDebugToolStackQueries();
     if (g.DebugLocateFrames > 0 && --g.DebugLocateFrames == 0)
         g.DebugLocateId = 0;
 
@@ -3692,13 +3693,13 @@ void KarmaGui::NewFrame()
     g.WithinFrameScopeWithImplicitWindow = true;
     SetNextWindowSize(KGVec2(400, 400), KGGuiCond_FirstUseEver);
     Begin("Debug##Default");
-    KR_CORE_ASSERT(g.CurrentWindow->IsFallbackWindow == true);
+    KR_CORE_ASSERT(g.CurrentWindow->IsFallbackWindow == true, "");
 
-    CallContextHooks(&g, ImGuiContextHookType_NewFramePost);
+    KarmaGuiInternal::CallContextHooks(&g, ImGuiContextHookType_NewFramePost);
 }
 
 // FIXME: Add a more explicit sort order in the window structure.
-static int KARMAGUI_CDECL ChildWindowComparer(const void* lhs, const void* rhs)
+static int ChildWindowComparer(const void* lhs, const void* rhs)
 {
     const KGGuiWindow* const a = *(const KGGuiWindow* const *)lhs;
     const KGGuiWindow* const b = *(const KGGuiWindow* const *)rhs;
@@ -3734,10 +3735,12 @@ static void AddDrawListToDrawData(KGVector<KGDrawList*>* out_list, KGDrawList* d
 
     // Draw list sanity check. Detect mismatch between PrimReserve() calls and incrementing _VtxCurrentIdx, _VtxWritePtr etc.
     // May trigger for you if you are using PrimXXX functions incorrectly.
-    KR_CORE_ASSERT(draw_list->VtxBuffer.Size == 0 || draw_list->_VtxWritePtr == draw_list->VtxBuffer.Data + draw_list->VtxBuffer.Size);
-    KR_CORE_ASSERT(draw_list->IdxBuffer.Size == 0 || draw_list->_IdxWritePtr == draw_list->IdxBuffer.Data + draw_list->IdxBuffer.Size);
+    KR_CORE_ASSERT(draw_list->VtxBuffer.Size == 0 || draw_list->_VtxWritePtr == draw_list->VtxBuffer.Data + draw_list->VtxBuffer.Size, "");
+    KR_CORE_ASSERT(draw_list->IdxBuffer.Size == 0 || draw_list->_IdxWritePtr == draw_list->IdxBuffer.Data + draw_list->IdxBuffer.Size, "");
     if (!(draw_list->Flags & KGDrawListFlags_AllowVtxOffset))
-        KR_CORE_ASSERT((int)draw_list->_VtxCurrentIdx == draw_list->VtxBuffer.Size);
+    {
+        KR_CORE_ASSERT((int)draw_list->_VtxCurrentIdx == draw_list->VtxBuffer.Size, "");
+    }
 
     // Check that draw_list doesn't use more vertices than indexable (default KGDrawIdx = unsigned short = 2 bytes = 64K vertices per KGDrawList = per window)
     // If this assert triggers because you are drawing lots of stuff manually:
@@ -3755,14 +3758,16 @@ static void AddDrawListToDrawData(KGVector<KGDrawList*>* out_list, KGDrawList* d
     // - If for some reason neither of those solutions works for you, a workaround is to call BeginChild()/EndChild() before reaching
     //   the 64K limit to split your draw commands in multiple draw lists.
     if (sizeof(KGDrawIdx) == 2)
-        KR_CORE_ASSERT(draw_list->_VtxCurrentIdx < (1 << 16) && "Too many vertices in KGDrawList using 16-bit indices. Read comment above");
+    {
+        KR_CORE_ASSERT(draw_list->_VtxCurrentIdx < (1 << 16) && "Too many vertices in KGDrawList using 16-bit indices. Read comment above", "");
+    }
 
     out_list->push_back(draw_list);
 }
 
 static void AddWindowToDrawData(KGGuiWindow* window, int layer)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KGGuiViewportP* viewport = window->Viewport;
     g.IO.MetricsRenderWindows++;
     if (window->Flags & KGGuiWindowFlags_DockNodeHost)
@@ -3814,7 +3819,7 @@ static void SetupViewportDrawData(KGGuiViewportP* viewport, KGVector<KGDrawList*
     // it earlier in the pipeline, rather than pretend to hide the data at the end of the pipeline.
     const bool is_minimized = (viewport->Flags & KGGuiViewportFlags_Minimized) != 0;
 
-    KarmaGuiIO& io = KarmaGui::GetIO();
+    KarmaGuiIO& io = Karma::KarmaGui::GetIO();
     KGDrawData* draw_data = &viewport->DrawDataP;
     viewport->DrawData = draw_data; // Make publicly accessible
     draw_data->Valid = true;
@@ -3840,16 +3845,16 @@ static void SetupViewportDrawData(KGGuiViewportP* viewport, KGVector<KGDrawList*
 // - If the code here changes, may need to update code of functions like NextColumn() and PushColumnClipRect():
 //   some frequently called functions which to modify both channels and clipping simultaneously tend to use the
 //   more specialized SetWindowClipRectBeforeSetChannel() to avoid extraneous updates of underlying ImDrawCmds.
-void KarmaGui::PushClipRect(const KGVec2& clip_rect_min, const KGVec2& clip_rect_max, bool intersect_with_current_clip_rect)
+void Karma::KarmaGui::PushClipRect(const KGVec2& clip_rect_min, const KGVec2& clip_rect_max, bool intersect_with_current_clip_rect)
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = Karma::KarmaGuiInternal::GetCurrentWindow();
     window->DrawList->PushClipRect(clip_rect_min, clip_rect_max, intersect_with_current_clip_rect);
     window->ClipRect = window->DrawList->_ClipRectStack.back();
 }
 
-void KarmaGui::PopClipRect()
+void Karma::KarmaGui::PopClipRect()
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DrawList->PopClipRect();
     window->ClipRect = window->DrawList->_ClipRectStack.back();
 }
@@ -3862,7 +3867,7 @@ static KGGuiWindow* FindFrontMostVisibleChildWindow(KGGuiWindow* window)
     return window;
 }
 
-static void KarmaGui::RenderDimmedBackgroundBehindWindow(KGGuiWindow* window, KGU32 col)
+void Karma::KarmaGuiInternal::RenderDimmedBackgroundBehindWindow(KGGuiWindow* window, KGU32 col)
 {
     if ((col & KG_COL32_A_MASK) == 0)
         return;
@@ -3881,7 +3886,7 @@ static void KarmaGui::RenderDimmedBackgroundBehindWindow(KGGuiWindow* window, KG
         draw_list->PushClipRect(viewport_rect.Min - KGVec2(1, 1), viewport_rect.Max + KGVec2(1, 1), false); // Ensure KGDrawCmd are not merged
         draw_list->AddRectFilled(viewport_rect.Min, viewport_rect.Max, col);
         KGDrawCmd cmd = draw_list->CmdBuffer.back();
-        KR_CORE_ASSERT(cmd.ElemCount == 6);
+        KR_CORE_ASSERT(cmd.ElemCount == 6, "");
         draw_list->CmdBuffer.pop_back();
         draw_list->CmdBuffer.push_front(cmd);
         draw_list->PopClipRect();
@@ -3900,7 +3905,7 @@ static void KarmaGui::RenderDimmedBackgroundBehindWindow(KGGuiWindow* window, KG
     }
 }
 
-KGGuiWindow* KarmaGui::FindBottomMostVisibleWindowWithinBeginStack(KGGuiWindow* parent_window)
+KGGuiWindow* Karma::KarmaGuiInternal::FindBottomMostVisibleWindowWithinBeginStack(KGGuiWindow* parent_window)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* bottom_most_visible_window = parent_window;
@@ -3917,7 +3922,7 @@ KGGuiWindow* KarmaGui::FindBottomMostVisibleWindowWithinBeginStack(KGGuiWindow* 
     return bottom_most_visible_window;
 }
 
-static void KarmaGui::RenderDimmedBackgrounds()
+void Karma::KarmaGuiInternal::RenderDimmedBackgrounds()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* modal_window = GetTopMostAndVisiblePopupModal();
@@ -3933,15 +3938,15 @@ static void KarmaGui::RenderDimmedBackgrounds()
     {
         // Draw dimming behind modal or a begin stack child, whichever comes first in draw order.
         KGGuiWindow* dim_behind_window = FindBottomMostVisibleWindowWithinBeginStack(modal_window);
-        RenderDimmedBackgroundBehindWindow(dim_behind_window, GetColorU32(KGGuiCol_ModalWindowDimBg, g.DimBgRatio));
+        RenderDimmedBackgroundBehindWindow(dim_behind_window, KarmaGui::GetColorU32(KGGuiCol_ModalWindowDimBg, g.DimBgRatio));
         viewports_already_dimmed[0] = modal_window->Viewport;
     }
     else if (dim_bg_for_window_list)
     {
         // Draw dimming behind CTRL+Tab target window and behind CTRL+Tab UI window
-        RenderDimmedBackgroundBehindWindow(g.NavWindowingTargetAnim, GetColorU32(KGGuiCol_NavWindowingDimBg, g.DimBgRatio));
+        RenderDimmedBackgroundBehindWindow(g.NavWindowingTargetAnim, KarmaGui::GetColorU32(KGGuiCol_NavWindowingDimBg, g.DimBgRatio));
         if (g.NavWindowingListWindow != NULL && g.NavWindowingListWindow->Viewport && g.NavWindowingListWindow->Viewport != g.NavWindowingTargetAnim->Viewport)
-            RenderDimmedBackgroundBehindWindow(g.NavWindowingListWindow, GetColorU32(KGGuiCol_NavWindowingDimBg, g.DimBgRatio));
+            RenderDimmedBackgroundBehindWindow(g.NavWindowingListWindow, KarmaGui::GetColorU32(KGGuiCol_NavWindowingDimBg, g.DimBgRatio));
         viewports_already_dimmed[0] = g.NavWindowingTargetAnim->Viewport;
         viewports_already_dimmed[1] = g.NavWindowingListWindow ? g.NavWindowingListWindow->Viewport : NULL;
 
@@ -3956,7 +3961,7 @@ static void KarmaGui::RenderDimmedBackgrounds()
         if (window->DrawList->CmdBuffer.Size == 0)
             window->DrawList->AddDrawCmd();
         window->DrawList->PushClipRect(viewport->Pos, viewport->Pos + viewport->Size);
-        window->DrawList->AddRect(bb.Min, bb.Max, GetColorU32(KGGuiCol_NavWindowingHighlight, g.NavWindowingHighlightAlpha), window->WindowRounding, 0, 3.0f);
+        window->DrawList->AddRect(bb.Min, bb.Max, KarmaGui::GetColorU32(KGGuiCol_NavWindowingHighlight, g.NavWindowingHighlightAlpha), window->WindowRounding, 0, 3.0f);
         window->DrawList->PopClipRect();
     }
 
@@ -3968,26 +3973,26 @@ static void KarmaGui::RenderDimmedBackgrounds()
             continue;
         if (modal_window && viewport->Window && IsWindowAbove(viewport->Window, modal_window))
             continue;
-        KGDrawList* draw_list = GetForegroundDrawList(viewport);
-        const KGU32 dim_bg_col = GetColorU32(dim_bg_for_modal ? KGGuiCol_ModalWindowDimBg : KGGuiCol_NavWindowingDimBg, g.DimBgRatio);
+        KGDrawList* draw_list = KarmaGui::GetForegroundDrawList(viewport);
+        const KGU32 dim_bg_col = KarmaGui::GetColorU32(dim_bg_for_modal ? KGGuiCol_ModalWindowDimBg : KGGuiCol_NavWindowingDimBg, g.DimBgRatio);
         draw_list->AddRectFilled(viewport->Pos, viewport->Pos + viewport->Size, dim_bg_col);
     }
 }
 
 // This is normally called by Render(). You may want to call it directly if you want to avoid calling Render() but the gain will be very minimal.
-void KarmaGui::EndFrame()
+void Karma::KarmaGui::EndFrame()
 {
-    KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(g.Initialized);
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KR_CORE_ASSERT(g.Initialized, "");
 
     // Don't process EndFrame() multiple times.
     if (g.FrameCountEnded == g.FrameCount)
         return;
-    KR_CORE_ASSERT(g.WithinFrameScope && "Forgot to call KarmaGui::NewFrame()?");
+    KR_CORE_ASSERT(g.WithinFrameScope, "Forgot to call KarmaGui::NewFrame()?");
 
-    CallContextHooks(&g, ImGuiContextHookType_EndFramePre);
+    KarmaGuiInternal::CallContextHooks(&g, ImGuiContextHookType_EndFramePre);
 
-    ErrorCheckEndFrameSanityChecks();
+    KarmaGuiInternal::ErrorCheckEndFrameSanityChecks();
 
     // Notify Platform/OS when our Input Method Editor cursor has moved (e.g. CJK inputs using Microsoft IME)
     if (g.IO.SetPlatformImeDataFn && memcmp(&g.PlatformImeData, &g.PlatformImeDataPrev, sizeof(KarmaGuiPlatformImeData)) != 0)
@@ -4003,12 +4008,12 @@ void KarmaGui::EndFrame()
     End();
 
     // Update navigation: CTRL+Tab, wrap-around requests
-    NavEndFrame();
+    KarmaGuiInternal::NavEndFrame();
 
     // Update docking
-    DockContextEndFrame(&g);
+    KarmaGuiInternal::DockContextEndFrame(&g);
 
-    SetCurrentViewport(NULL, NULL);
+    KarmaGuiInternal::SetCurrentViewport(NULL, NULL);
 
     // Drag and Drop: Elapse payload (if delivered, or if source stops being submitted)
     if (g.DragDropActive)
@@ -4016,7 +4021,7 @@ void KarmaGui::EndFrame()
         bool is_delivered = g.DragDropPayload.Delivery;
         bool is_elapsed = (g.DragDropPayload.DataFrameCount + 1 < g.FrameCount) && ((g.DragDropSourceFlags & KGGuiDragDropFlags_SourceAutoExpirePayload) || !IsMouseDown(g.DragDropMouseButton));
         if (is_delivered || is_elapsed)
-            ClearDragDrop();
+            KarmaGuiInternal::ClearDragDrop();
     }
 
     // Drag and Drop: Fallback for source tooltip. This is not ideal but better than nothing.
@@ -4032,10 +4037,10 @@ void KarmaGui::EndFrame()
     g.FrameCountEnded = g.FrameCount;
 
     // Initiate moving window + handle left-click and right-click focus
-    UpdateMouseMovingWindowEndFrame();
+    KarmaGuiInternal::UpdateMouseMovingWindowEndFrame();
 
     // Update user-facing viewport list (g.Viewports -> g.PlatformIO.Viewports after filtering out some)
-    UpdateViewportsEndFrame();
+    KarmaGuiInternal::UpdateViewportsEndFrame();
 
     // Sort the window list so that all child windows are after their parent
     // We cannot do that on FocusWindow() because children may not exist yet
@@ -4050,7 +4055,7 @@ void KarmaGui::EndFrame()
     }
 
     // This usually assert if there is a mismatch between the KGGuiWindowFlags_ChildWindow / ParentWindow values and DC.ChildWindows[] in parents, aka we've done something wrong.
-    KR_CORE_ASSERT(g.Windows.Size == g.WindowsTempSortBuffer.Size);
+    KR_CORE_ASSERT(g.Windows.Size == g.WindowsTempSortBuffer.Size, "");
     g.Windows.swap(g.WindowsTempSortBuffer);
     g.IO.MetricsActiveWindows = g.WindowsActiveCount;
 
@@ -4062,16 +4067,16 @@ void KarmaGui::EndFrame()
     g.IO.MouseWheel = g.IO.MouseWheelH = 0.0f;
     g.IO.InputQueueCharacters.resize(0);
 
-    CallContextHooks(&g, ImGuiContextHookType_EndFramePost);
+    KarmaGuiInternal::CallContextHooks(&g, ImGuiContextHookType_EndFramePost);
 }
 
 // Prepare the data for rendering so you can call GetDrawData()
 // (As with anything within the KarmaGui:: namspace this doesn't touch your GPU or graphics API at all:
 // it is the role of the ImGui_ImplXXXX_RenderDrawData() function provided by the renderer backend)
-void KarmaGui::Render()
+void Karma::KarmaGui::Render()
 {
-    KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(g.Initialized);
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KR_CORE_ASSERT(g.Initialized, "");
 
     if (g.FrameCountEnded != g.FrameCount)
         EndFrame();
@@ -4079,7 +4084,7 @@ void KarmaGui::Render()
     g.FrameCountRendered = g.FrameCount;
     g.IO.MetricsRenderWindows = 0;
 
-    CallContextHooks(&g, ImGuiContextHookType_RenderPre);
+    Karma::KarmaGuiInternal::CallContextHooks(&g, ImGuiContextHookType_RenderPre);
 
     // Add background KGDrawList (for each active viewport)
     for (int n = 0; n != g.Viewports.Size; n++)
@@ -4107,11 +4112,11 @@ void KarmaGui::Render()
 
     // Draw modal/window whitening backgrounds
     if (first_render_of_frame)
-        RenderDimmedBackgrounds();
+        KarmaGuiInternal::RenderDimmedBackgrounds();
 
     // Draw software mouse cursor if requested by io.MouseDrawCursor flag
     if (g.IO.MouseDrawCursor && first_render_of_frame && g.MouseCursor != KGGuiMouseCursor_None)
-        RenderMouseCursor(g.IO.MousePos, g.Style.MouseCursorScale, g.MouseCursor, KG_COL32_WHITE, KG_COL32_BLACK, KG_COL32(0, 0, 0, 48));
+        KarmaGuiInternal::RenderMouseCursor(g.IO.MousePos, g.Style.MouseCursorScale, g.MouseCursor, KG_COL32_WHITE, KG_COL32_BLACK, KG_COL32(0, 0, 0, 48));
 
     // Setup KGDrawData structures for end-user
     g.IO.MetricsRenderVertices = g.IO.MetricsRenderIndices = 0;
@@ -4130,18 +4135,18 @@ void KarmaGui::Render()
         g.IO.MetricsRenderIndices += draw_data->TotalIdxCount;
     }
 
-    CallContextHooks(&g, ImGuiContextHookType_RenderPost);
+    KarmaGuiInternal::CallContextHooks(&g, ImGuiContextHookType_RenderPost);
 }
 
 // Calculate text size. Text can be multi-line. Optionally ignore text after a ## marker.
 // CalcTextSize("") should return KGVec2(0.0f, g.FontSize)
-KGVec2 KarmaGui::CalcTextSize(const char* text, const char* text_end, bool hide_text_after_double_hash, float wrap_width)
+KGVec2 Karma::KarmaGui::CalcTextSize(const char* text, const char* text_end, bool hide_text_after_double_hash, float wrap_width)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
 
     const char* text_display_end;
     if (hide_text_after_double_hash)
-        text_display_end = FindRenderedTextEnd(text, text_end);      // Hide anything after a '##' string
+        text_display_end = KarmaGuiInternal::FindRenderedTextEnd(text, text_end);      // Hide anything after a '##' string
     else
         text_display_end = text_end;
 
@@ -4167,7 +4172,7 @@ KGVec2 KarmaGui::CalcTextSize(const char* text, const char* text_end, bool hide_
 // called, aka before the next Begin(). Moving window isn't affected.
 static void FindHoveredWindow()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
 
     // Special handling for the window being moved: Ignore the mouse viewport check (because it may reset/lose its viewport during the undocking frame)
     KGGuiViewportP* moving_window_viewport = g.MovingWindow ? g.MovingWindow->Viewport : NULL;
@@ -4189,7 +4194,7 @@ static void FindHoveredWindow()
             continue;
         if (window->Flags & KGGuiWindowFlags_NoMouseInputs)
             continue;
-        KR_CORE_ASSERT(window->Viewport);
+        KR_CORE_ASSERT(window->Viewport, "");
         if (window->Viewport != g.MouseViewport)
             continue;
 
@@ -4228,41 +4233,41 @@ static void FindHoveredWindow()
         g.MovingWindow->Viewport = moving_window_viewport;
 }
 
-bool KarmaGui::IsItemActive()
+bool Karma::KarmaGui::IsItemActive()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     if (g.ActiveId)
         return g.ActiveId == g.LastItemData.ID;
     return false;
 }
 
-bool KarmaGui::IsItemActivated()
+bool Karma::KarmaGui::IsItemActivated()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     if (g.ActiveId)
         if (g.ActiveId == g.LastItemData.ID && g.ActiveIdPreviousFrame != g.LastItemData.ID)
             return true;
     return false;
 }
 
-bool KarmaGui::IsItemDeactivated()
+bool Karma::KarmaGui::IsItemDeactivated()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     if (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_HasDeactivated)
         return (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_Deactivated) != 0;
     return (g.ActiveIdPreviousFrame == g.LastItemData.ID && g.ActiveIdPreviousFrame != 0 && g.ActiveId != g.LastItemData.ID);
 }
 
-bool KarmaGui::IsItemDeactivatedAfterEdit()
+bool Karma::KarmaGui::IsItemDeactivatedAfterEdit()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return IsItemDeactivated() && (g.ActiveIdPreviousFrameHasBeenEditedBefore || (g.ActiveId == 0 && g.ActiveIdHasBeenEditedBefore));
 }
 
 // == GetItemID() == GetFocusID()
-bool KarmaGui::IsItemFocused()
+bool Karma::KarmaGui::IsItemFocused()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     if (g.NavId != g.LastItemData.ID || g.NavId == 0)
         return false;
 
@@ -4277,58 +4282,58 @@ bool KarmaGui::IsItemFocused()
 
 // Important: this can be useful but it is NOT equivalent to the behavior of e.g.Button()!
 // Most widgets have specific reactions based on mouse-up/down state, mouse position etc.
-bool KarmaGui::IsItemClicked(KarmaGuiMouseButton mouse_button)
+bool Karma::KarmaGui::IsItemClicked(KarmaGuiMouseButton mouse_button)
 {
     return IsMouseClicked(mouse_button) && IsItemHovered(KGGuiHoveredFlags_None);
 }
 
-bool KarmaGui::IsItemToggledOpen()
+bool Karma::KarmaGui::IsItemToggledOpen()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_ToggledOpen) ? true : false;
 }
 
-bool KarmaGui::IsItemToggledSelection()
+bool Karma::KarmaGuiInternal::IsItemToggledSelection()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_ToggledSelection) ? true : false;
 }
 
-bool KarmaGui::IsAnyItemHovered()
+bool Karma::KarmaGui::IsAnyItemHovered()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return g.HoveredId != 0 || g.HoveredIdPreviousFrame != 0;
 }
 
-bool KarmaGui::IsAnyItemActive()
+bool Karma::KarmaGui::IsAnyItemActive()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return g.ActiveId != 0;
 }
 
-bool KarmaGui::IsAnyItemFocused()
+bool Karma::KarmaGui::IsAnyItemFocused()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return g.NavId != 0 && !g.NavDisableHighlight;
 }
 
-bool KarmaGui::IsItemVisible()
+bool Karma::KarmaGui::IsItemVisible()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_Visible) != 0;
 }
 
-bool KarmaGui::IsItemEdited()
+bool Karma::KarmaGui::IsItemEdited()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_Edited) != 0;
 }
 
 // Allow last item to be overlapped by a subsequent item. Both may be activated during the same frame before the later one takes priority.
 // FIXME: Although this is exposed, its interaction and ideal idiom with using KGGuiButtonFlags_AllowItemOverlap flag are extremely confusing, need rework.
-void KarmaGui::SetItemAllowOverlap()
+void Karma::KarmaGui::SetItemAllowOverlap()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     KGGuiID id = g.LastItemData.ID;
     if (g.HoveredId == id)
         g.HoveredIdAllowOverlap = true;
@@ -4337,40 +4342,40 @@ void KarmaGui::SetItemAllowOverlap()
 }
 
 // FIXME: It might be undesirable that this will likely disable KeyOwner-aware shortcuts systems. Consider a more fine-tuned version for the two users of this function.
-void KarmaGui::SetActiveIdUsingAllKeyboardKeys()
+void Karma::KarmaGuiInternal::SetActiveIdUsingAllKeyboardKeys()
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(g.ActiveId != 0);
+    KR_CORE_ASSERT(g.ActiveId != 0, "");
     g.ActiveIdUsingNavDirMask = (1 << KGGuiDir_COUNT) - 1;
     g.ActiveIdUsingAllKeyboardKeys = true;
     NavMoveRequestCancel();
 }
 
-KGGuiID KarmaGui::GetItemID()
+KGGuiID Karma::KarmaGui::GetItemID()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return g.LastItemData.ID;
 }
 
-KGVec2 KarmaGui::GetItemRectMin()
+KGVec2 Karma::KarmaGui::GetItemRectMin()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return g.LastItemData.Rect.Min;
 }
 
-KGVec2 KarmaGui::GetItemRectMax()
+KGVec2 Karma::KarmaGui::GetItemRectMax()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return g.LastItemData.Rect.Max;
 }
 
-KGVec2 KarmaGui::GetItemRectSize()
+KGVec2 Karma::KarmaGui::GetItemRectSize()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     return g.LastItemData.Rect.GetSize();
 }
 
-bool KarmaGui::BeginChildEx(const char* name, KGGuiID id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags flags)
+bool Karma::KarmaGuiInternal::BeginChildEx(const char* name, KGGuiID id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* parent_window = g.CurrentWindow;
@@ -4379,14 +4384,14 @@ bool KarmaGui::BeginChildEx(const char* name, KGGuiID id, const KGVec2& size_arg
     flags |= (parent_window->Flags & KGGuiWindowFlags_NoMove);  // Inherit the NoMove flag
 
     // Size
-    const KGVec2 content_avail = GetContentRegionAvail();
+    const KGVec2 content_avail = KarmaGui::GetContentRegionAvail();
     KGVec2 size = KGFloor(size_arg);
     const int auto_fit_axises = ((size.x == 0.0f) ? (1 << KGGuiAxis_X) : 0x00) | ((size.y == 0.0f) ? (1 << KGGuiAxis_Y) : 0x00);
     if (size.x <= 0.0f)
         size.x = KGMax(content_avail.x + size.x, 4.0f); // Arbitrary minimum child size (0.0f causing too many issues)
     if (size.y <= 0.0f)
         size.y = KGMax(content_avail.y + size.y, 4.0f);
-    SetNextWindowSize(size);
+    KarmaGui::SetNextWindowSize(size);
 
     // Build up name. If you need to append to a same child from multiple location in the ID stack, use BeginChild(KGGuiID id) with a stable value.
     const char* temp_window_name;
@@ -4398,7 +4403,7 @@ bool KarmaGui::BeginChildEx(const char* name, KGGuiID id, const KGVec2& size_arg
     const float backup_border_size = g.Style.ChildBorderSize;
     if (!border)
         g.Style.ChildBorderSize = 0.0f;
-    bool ret = Begin(temp_window_name, NULL, flags);
+    bool ret = KarmaGui::Begin(temp_window_name, NULL, flags);
     g.Style.ChildBorderSize = backup_border_size;
 
     KGGuiWindow* child_window = g.CurrentWindow;
@@ -4421,25 +4426,25 @@ bool KarmaGui::BeginChildEx(const char* name, KGGuiID id, const KGVec2& size_arg
     return ret;
 }
 
-bool KarmaGui::BeginChild(const char* str_id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags extra_flags)
+bool Karma::KarmaGui::BeginChild(const char* str_id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags extra_flags)
 {
-    KGGuiWindow* window = GetCurrentWindow();
-    return BeginChildEx(str_id, window->GetID(str_id), size_arg, border, extra_flags);
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
+    return KarmaGuiInternal::BeginChildEx(str_id, window->GetID(str_id), size_arg, border, extra_flags);
 }
 
-bool KarmaGui::BeginChild(KGGuiID id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags extra_flags)
+bool Karma::KarmaGui::BeginChild(KGGuiID id, const KGVec2& size_arg, bool border, KarmaGuiWindowFlags extra_flags)
 {
-    KR_CORE_ASSERT(id != 0);
-    return BeginChildEx(NULL, id, size_arg, border, extra_flags);
+    KR_CORE_ASSERT(id != 0, "");
+    return KarmaGuiInternal::BeginChildEx(NULL, id, size_arg, border, extra_flags);
 }
 
-void KarmaGui::EndChild()
+void Karma::KarmaGui::EndChild()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
 
-    KR_CORE_ASSERT(g.WithinEndChild == false);
-    KR_CORE_ASSERT(window->Flags & KGGuiWindowFlags_ChildWindow);   // Mismatched BeginChild()/EndChild() calls
+    KR_CORE_ASSERT(g.WithinEndChild == false, "");
+    KR_CORE_ASSERT(window->Flags & KGGuiWindowFlags_ChildWindow, "");   // Mismatched BeginChild()/EndChild() calls
 
     g.WithinEndChild = true;
     if (window->BeginCount > 1)
@@ -4457,20 +4462,20 @@ void KarmaGui::EndChild()
 
         KGGuiWindow* parent_window = g.CurrentWindow;
         KGRect bb(parent_window->DC.CursorPos, parent_window->DC.CursorPos + sz);
-        ItemSize(sz);
+        KarmaGuiInternal::ItemSize(sz);
         if ((window->DC.NavLayersActiveMask != 0 || window->DC.NavHasScroll) && !(window->Flags & KGGuiWindowFlags_NavFlattened))
         {
-            ItemAdd(bb, window->ChildId);
-            RenderNavHighlight(bb, window->ChildId);
+            KarmaGuiInternal::ItemAdd(bb, window->ChildId);
+            KarmaGuiInternal::RenderNavHighlight(bb, window->ChildId);
 
             // When browsing a window that has no activable items (scroll only) we keep a highlight on the child (pass g.NavId to trick into always displaying)
             if (window->DC.NavLayersActiveMask == 0 && window == g.NavWindow)
-                RenderNavHighlight(KGRect(bb.Min - KGVec2(2, 2), bb.Max + KGVec2(2, 2)), g.NavId, KGGuiNavHighlightFlags_TypeThin);
+                KarmaGuiInternal::RenderNavHighlight(KGRect(bb.Min - KGVec2(2, 2), bb.Max + KGVec2(2, 2)), g.NavId, KGGuiNavHighlightFlags_TypeThin);
         }
         else
         {
             // Not navigable into
-            ItemAdd(bb, 0);
+            KarmaGuiInternal::ItemAdd(bb, 0);
         }
         if (g.HoveredWindow == window)
             g.LastItemData.StatusFlags |= KGGuiItemStatusFlags_HoveredWindow;
@@ -4480,9 +4485,9 @@ void KarmaGui::EndChild()
 }
 
 // Helper to create a child window / scrolling region that looks like a normal widget frame.
-bool KarmaGui::BeginChildFrame(KGGuiID id, const KGVec2& size, KarmaGuiWindowFlags extra_flags)
+bool Karma::KarmaGui::BeginChildFrame(KGGuiID id, const KGVec2& size, KarmaGuiWindowFlags extra_flags)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
     PushStyleColor(KGGuiCol_ChildBg, style.Colors[KGGuiCol_FrameBg]);
     PushStyleVar(KGGuiStyleVar_ChildRounding, style.FrameRounding);
@@ -4494,7 +4499,7 @@ bool KarmaGui::BeginChildFrame(KGGuiID id, const KGVec2& size, KarmaGuiWindowFla
     return ret;
 }
 
-void KarmaGui::EndChildFrame()
+void Karma::KarmaGui::EndChildFrame()
 {
     EndChild();
 }
@@ -4507,21 +4512,21 @@ static void SetWindowConditionAllowFlags(KGGuiWindow* window, KarmaGuiCond flags
     window->SetWindowDockAllowFlags      = enabled ? (window->SetWindowDockAllowFlags      | flags) : (window->SetWindowDockAllowFlags      & ~flags);
 }
 
-KGGuiWindow* KarmaGui::FindWindowByID(KGGuiID id)
+KGGuiWindow* Karma::KarmaGuiInternal::FindWindowByID(KGGuiID id)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     return (KGGuiWindow*)g.WindowsById.GetVoidPtr(id);
 }
 
-KGGuiWindow* KarmaGui::FindWindowByName(const char* name)
+KGGuiWindow* Karma::KarmaGuiInternal::FindWindowByName(const char* name)
 {
     KGGuiID id = KGHashStr(name);
-    return FindWindowByID(id);
+    return Karma::KarmaGuiInternal::FindWindowByID(id);
 }
 
 static void ApplyWindowSettings(KGGuiWindow* window, KGGuiWindowSettings* settings)
 {
-    const KarmaGuiViewport* main_viewport = KarmaGui::GetMainViewport();
+    const KarmaGuiViewport* main_viewport = Karma::KarmaGui::GetMainViewport();
     window->ViewportPos = main_viewport->Pos;
     if (settings->ViewportId)
     {
@@ -4538,19 +4543,19 @@ static void ApplyWindowSettings(KGGuiWindow* window, KGGuiWindowSettings* settin
 
 static void UpdateWindowInFocusOrderList(KGGuiWindow* window, bool just_created, KarmaGuiWindowFlags new_flags)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
 
     const bool new_is_explicit_child = (new_flags & KGGuiWindowFlags_ChildWindow) != 0 && ((new_flags & KGGuiWindowFlags_Popup) == 0 || (new_flags & KGGuiWindowFlags_ChildMenu) != 0);
     const bool child_flag_changed = new_is_explicit_child != window->IsExplicitChild;
     if ((just_created || child_flag_changed) && !new_is_explicit_child)
     {
-        KR_CORE_ASSERT(!g.WindowsFocusOrder.contains(window));
+        KR_CORE_ASSERT(!g.WindowsFocusOrder.contains(window), "");
         g.WindowsFocusOrder.push_back(window);
         window->FocusOrder = (short)(g.WindowsFocusOrder.Size - 1);
     }
     else if (!just_created && child_flag_changed && new_is_explicit_child)
     {
-        KR_CORE_ASSERT(g.WindowsFocusOrder[window->FocusOrder] == window);
+        KR_CORE_ASSERT(g.WindowsFocusOrder[window->FocusOrder] == window, "");
         for (int n = window->FocusOrder + 1; n < g.WindowsFocusOrder.Size; n++)
             g.WindowsFocusOrder[n]->FocusOrder--;
         g.WindowsFocusOrder.erase(g.WindowsFocusOrder.Data + window->FocusOrder);
@@ -4561,7 +4566,7 @@ static void UpdateWindowInFocusOrderList(KGGuiWindow* window, bool just_created,
 
 static KGGuiWindow* CreateNewWindow(const char* name, KarmaGuiWindowFlags flags)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     //KARMAGUI_DEBUG_LOG("CreateNewWindow '%s', flags = 0x%08X\n", name, flags);
 
     // Create window the first time
@@ -4570,13 +4575,13 @@ static KGGuiWindow* CreateNewWindow(const char* name, KarmaGuiWindowFlags flags)
     g.WindowsById.SetVoidPtr(window->ID, window);
 
     // Default/arbitrary window position. Use SetNextWindowPos() with the appropriate condition flag to change the initial position of a window.
-    const KarmaGuiViewport* main_viewport = KarmaGui::GetMainViewport();
+    const KarmaGuiViewport* main_viewport = Karma::KarmaGui::GetMainViewport();
     window->Pos = main_viewport->Pos + KGVec2(60, 60);
     window->ViewportPos = main_viewport->Pos;
 
     // User can disable loading and saving of settings. Tooltip and child windows also don't store settings.
     if (!(flags & KGGuiWindowFlags_NoSavedSettings))
-        if (KGGuiWindowSettings* settings = KarmaGui::FindWindowSettings(window->ID))
+        if (KGGuiWindowSettings* settings = Karma::KarmaGuiInternal::FindWindowSettings(window->ID))
         {
             // Retrieve settings from .ini file
             window->SettingsOffset = g.SettingsWindows.offset_from_ptr(settings);
@@ -4619,7 +4624,7 @@ static KGGuiWindow* GetWindowForTitleAndMenuHeight(KGGuiWindow* window)
 
 static KGVec2 CalcWindowSizeAfterConstraint(KGGuiWindow* window, const KGVec2& size_desired)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KGVec2 new_size = size_desired;
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasSizeConstraint)
     {
@@ -4674,7 +4679,7 @@ static void CalcWindowContentSizes(KGGuiWindow* window, KGVec2* content_size_cur
 
 static KGVec2 CalcWindowAutoFitSize(KGGuiWindow* window, const KGVec2& size_contents)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KarmaGuiStyle& style = g.Style;
     const float decoration_w_without_scrollbars = window->DecoOuterSizeX1 + window->DecoOuterSizeX2 - window->ScrollbarSizes.x;
     const float decoration_h_without_scrollbars = window->DecoOuterSizeY1 + window->DecoOuterSizeY2 - window->ScrollbarSizes.y;
@@ -4715,7 +4720,7 @@ static KGVec2 CalcWindowAutoFitSize(KGGuiWindow* window, const KGVec2& size_cont
     }
 }
 
-KGVec2 KarmaGui::CalcWindowNextAutoFitSize(KGGuiWindow* window)
+KGVec2 Karma::KarmaGuiInternal::CalcWindowNextAutoFitSize(KGGuiWindow* window)
 {
     KGVec2 size_contents_current;
     KGVec2 size_contents_ideal;
@@ -4787,14 +4792,14 @@ static KGRect GetResizeBorderRect(KGGuiWindow* window, int border_n, float perp_
     if (border_n == KGGuiDir_Right) { return KGRect(rect.Max.x - thickness,    rect.Min.y + perp_padding, rect.Max.x + thickness,    rect.Max.y - perp_padding); }
     if (border_n == KGGuiDir_Up)    { return KGRect(rect.Min.x + perp_padding, rect.Min.y - thickness,    rect.Max.x - perp_padding, rect.Min.y + thickness);    }
     if (border_n == KGGuiDir_Down)  { return KGRect(rect.Min.x + perp_padding, rect.Max.y - thickness,    rect.Max.x - perp_padding, rect.Max.y + thickness);    }
-    KR_CORE_ASSERT(0);
+    KR_CORE_ASSERT(0, "");
     return KGRect();
 }
 
 // 0..3: corners (Lower-right, Lower-left, Unused, Unused)
-KGGuiID KarmaGui::GetWindowResizeCornerID(KGGuiWindow* window, int n)
+KGGuiID Karma::KarmaGuiInternal::GetWindowResizeCornerID(KGGuiWindow* window, int n)
 {
-    KR_CORE_ASSERT(n >= 0 && n < 4);
+    KR_CORE_ASSERT(n >= 0 && n < 4, "");
     KGGuiID id = window->DockIsActive ? window->DockNode->HostWindow->ID : window->ID;
     id = KGHashStr("#RESIZE", 0, id);
     id = KGHashData(&n, sizeof(int), id);
@@ -4802,9 +4807,9 @@ KGGuiID KarmaGui::GetWindowResizeCornerID(KGGuiWindow* window, int n)
 }
 
 // Borders (Left, Right, Up, Down)
-KGGuiID KarmaGui::GetWindowResizeBorderID(KGGuiWindow* window, KarmaGuiDir dir)
+KGGuiID Karma::KarmaGuiInternal::GetWindowResizeBorderID(KGGuiWindow* window, KarmaGuiDir dir)
 {
-    KR_CORE_ASSERT(dir >= 0 && dir < 4);
+    KR_CORE_ASSERT(dir >= 0 && dir < 4, "");
     int n = (int)dir + 4;
     KGGuiID id = window->DockIsActive ? window->DockNode->HostWindow->ID : window->ID;
     id = KGHashStr("#RESIZE", 0, id);
@@ -4814,9 +4819,9 @@ KGGuiID KarmaGui::GetWindowResizeBorderID(KGGuiWindow* window, KarmaGuiDir dir)
 
 // Handle resize for: Resize Grips, Borders, Gamepad
 // Return true when using auto-fit (double-click on resize grip)
-static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const KGVec2& size_auto_fit, int* border_held, int resize_grip_count, KGU32 resize_grip_col[4], const KGRect& visibility_rect)
+bool Karma::KarmaGuiInternal::UpdateWindowManualResize(KGGuiWindow* window, const KGVec2& size_auto_fit, int* border_held, int resize_grip_count, KGU32 resize_grip_col[4], const KGRect& visibility_rect)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
     KarmaGuiWindowFlags flags = window->Flags;
 
     if ((flags & KGGuiWindowFlags_NoResize) || (flags & KGGuiWindowFlags_AlwaysAutoResize) || window->AutoFitFramesX > 0 || window->AutoFitFramesY > 0)
@@ -4847,7 +4852,7 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const KGVec2
     window->DC.NavLayerCurrent = KGGuiNavLayer_Menu;
 
     // Manual resize grips
-    PushID("#RESIZE");
+    KarmaGui::PushID("#RESIZE");
     for (int resize_grip_n = 0; resize_grip_n < resize_grip_count; resize_grip_n++)
     {
         const ImGuiResizeGripDef& def = resize_grip_def[resize_grip_n];
@@ -4885,7 +4890,7 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const KGVec2
 
         // Only lower-left grip is visible before hovering/activating
         if (resize_grip_n == 0 || held || hovered)
-            resize_grip_col[resize_grip_n] = GetColorU32(held ? KGGuiCol_ResizeGripActive : hovered ? KGGuiCol_ResizeGripHovered : KGGuiCol_ResizeGrip);
+            resize_grip_col[resize_grip_n] = KarmaGui::GetColorU32(held ? KGGuiCol_ResizeGripActive : hovered ? KGGuiCol_ResizeGripHovered : KGGuiCol_ResizeGrip);
     }
     for (int border_n = 0; border_n < resize_border_count; border_n++)
     {
@@ -4914,7 +4919,7 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const KGVec2
             CalcResizePosSizeFromAnyCorner(window, border_target, KGMin(def.SegmentN1, def.SegmentN2), &pos_target, &size_target);
         }
     }
-    PopID();
+    KarmaGui::PopID();
 
     // Restore nav layer
     window->DC.NavLayerCurrent = KGGuiNavLayer_Main;
@@ -4937,7 +4942,7 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const KGVec2
             g.NavWindowingAccumDeltaSize = KGMax(g.NavWindowingAccumDeltaSize, visibility_rect.Min - window->Pos - window->Size); // We need Pos+Size >= visibility_rect.Min, so Size >= visibility_rect.Min - Pos, so size_delta >= visibility_rect.Min - window->Pos - window->Size
             g.NavWindowingToggleLayer = false;
             g.NavDisableMouseHover = true;
-            resize_grip_col[0] = GetColorU32(KGGuiCol_ResizeGripActive);
+            resize_grip_col[0] = KarmaGui::GetColorU32(KGGuiCol_ResizeGripActive);
             KGVec2 accum_floored = KGFloor(g.NavWindowingAccumDeltaSize);
             if (accum_floored.x != 0.0f || accum_floored.y != 0.0f)
             {
@@ -4966,20 +4971,20 @@ static bool KarmaGui::UpdateWindowManualResize(KGGuiWindow* window, const KGVec2
 
 static inline void ClampWindowPos(KGGuiWindow* window, const KGRect& visibility_rect)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
     KGVec2 size_for_clamping = window->Size;
     if (g.IO.ConfigWindowsMoveFromTitleBarOnly && (!(window->Flags & KGGuiWindowFlags_NoTitleBar) || window->DockNodeAsHost))
-        size_for_clamping.y = KarmaGui::GetFrameHeight(); // Not using window->TitleBarHeight() as DockNodeAsHost will report 0.0f here.
+        size_for_clamping.y = Karma::KarmaGui::GetFrameHeight(); // Not using window->TitleBarHeight() as DockNodeAsHost will report 0.0f here.
     window->Pos = KGClamp(window->Pos, visibility_rect.Min - size_for_clamping, visibility_rect.Max);
 }
 
-static void KarmaGui::RenderWindowOuterBorders(KGGuiWindow* window)
+void Karma::KarmaGuiInternal::RenderWindowOuterBorders(KGGuiWindow* window)
 {
     KarmaGuiContext& g = *GKarmaGui;
     float rounding = window->WindowRounding;
     float border_size = window->WindowBorderSize;
     if (border_size > 0.0f && !(window->Flags & KGGuiWindowFlags_NoBackground))
-        window->DrawList->AddRect(window->Pos, window->Pos + window->Size, GetColorU32(KGGuiCol_Border), rounding, 0, border_size);
+        window->DrawList->AddRect(window->Pos, window->Pos + window->Size, KarmaGui::GetColorU32(KGGuiCol_Border), rounding, 0, border_size);
 
     int border_held = window->ResizeBorderHeld;
     if (border_held != -1)
@@ -4988,25 +4993,25 @@ static void KarmaGui::RenderWindowOuterBorders(KGGuiWindow* window)
         KGRect border_r = GetResizeBorderRect(window, border_held, rounding, 0.0f);
         window->DrawList->PathArcTo(KGLerp(border_r.Min, border_r.Max, def.SegmentN1) + KGVec2(0.5f, 0.5f) + def.InnerDir * rounding, rounding, def.OuterAngle - KG_PI * 0.25f, def.OuterAngle);
         window->DrawList->PathArcTo(KGLerp(border_r.Min, border_r.Max, def.SegmentN2) + KGVec2(0.5f, 0.5f) + def.InnerDir * rounding, rounding, def.OuterAngle, def.OuterAngle + KG_PI * 0.25f);
-        window->DrawList->PathStroke(GetColorU32(KGGuiCol_SeparatorActive), 0, KGMax(2.0f, border_size)); // Thicker than usual
+        window->DrawList->PathStroke(KarmaGui::GetColorU32(KGGuiCol_SeparatorActive), 0, KGMax(2.0f, border_size)); // Thicker than usual
     }
     if (g.Style.FrameBorderSize > 0 && !(window->Flags & KGGuiWindowFlags_NoTitleBar) && !window->DockIsActive)
     {
         float y = window->Pos.y + window->TitleBarHeight() - 1;
-        window->DrawList->AddLine(KGVec2(window->Pos.x + border_size, y), KGVec2(window->Pos.x + window->Size.x - border_size, y), GetColorU32(KGGuiCol_Border), g.Style.FrameBorderSize);
+        window->DrawList->AddLine(KGVec2(window->Pos.x + border_size, y), KGVec2(window->Pos.x + window->Size.x - border_size, y), KarmaGui::GetColorU32(KGGuiCol_Border), g.Style.FrameBorderSize);
     }
 }
 
 // Draw background and borders
 // Draw and handle scrollbars
-void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_bar_rect, bool title_bar_is_highlight, bool handle_borders_and_resize_grips, int resize_grip_count, const KGU32 resize_grip_col[4], float resize_grip_draw_size)
+void Karma::KarmaGuiInternal::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_bar_rect, bool title_bar_is_highlight, bool handle_borders_and_resize_grips, int resize_grip_count, const KGU32 resize_grip_col[4], float resize_grip_draw_size)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiStyle& style = g.Style;
     KarmaGuiWindowFlags flags = window->Flags;
 
     // Ensure that ScrollBar doesn't read last frame's SkipItems
-    KR_CORE_ASSERT(window->BeginCount == 0);
+    KR_CORE_ASSERT(window->BeginCount == 0, "");
     window->SkipItems = false;
 
     // Draw window + handle manual resize
@@ -5018,7 +5023,7 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
         // Title bar only
         const float backup_border_size = style.FrameBorderSize;
         g.Style.FrameBorderSize = window->WindowBorderSize;
-        KGU32 title_bar_col = GetColorU32((title_bar_is_highlight && !g.NavDisableHighlight) ? KGGuiCol_TitleBgActive : KGGuiCol_TitleBgCollapsed);
+        KGU32 title_bar_col = KarmaGui::GetColorU32((title_bar_is_highlight && !g.NavDisableHighlight) ? KGGuiCol_TitleBgActive : KGGuiCol_TitleBgCollapsed);
         if (window->ViewportOwned)
             title_bar_col |= KG_COL32_A_MASK; // No alpha (we don't support is_docking_transparent_payload here because simpler and less meaningful, but could with a bit of code shuffle/reuse)
         RenderFrame(title_bar_rect.Min, title_bar_rect.Max, title_bar_col, true, window_rounding);
@@ -5034,7 +5039,7 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
                 if (g.DragDropPayload.IsDataType(KARMAGUI_PAYLOAD_TYPE_WINDOW) && *(KGGuiWindow**)g.DragDropPayload.Data == window)
                     is_docking_transparent_payload = true;
 
-            KGU32 bg_col = GetColorU32(GetWindowBgColorIdx(window));
+            KGU32 bg_col = KarmaGui::GetColorU32(GetWindowBgColorIdx(window));
 
             if (window->bUseCustomBgColor)
             {
@@ -5084,7 +5089,7 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
         // in order for their pos/size to be matching their undocking state.)
         if (!(flags & KGGuiWindowFlags_NoTitleBar) && !window->DockIsActive)
         {
-            KGU32 title_bar_col = GetColorU32(title_bar_is_highlight ? KGGuiCol_TitleBgActive : KGGuiCol_TitleBg);
+            KGU32 title_bar_col = KarmaGui::GetColorU32(title_bar_is_highlight ? KGGuiCol_TitleBgActive : KGGuiCol_TitleBg);
             window->DrawList->AddRectFilled(title_bar_rect.Min, title_bar_rect.Max, title_bar_col, window_rounding, KGDrawFlags_RoundCornersTop);
         }
 
@@ -5093,9 +5098,9 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
         {
             KGRect menu_bar_rect = window->MenuBarRect();
             menu_bar_rect.ClipWith(window->Rect());  // Soft clipping, in particular child window don't have minimum size covering the menu bar so this is useful for them.
-            window->DrawList->AddRectFilled(menu_bar_rect.Min + KGVec2(window_border_size, 0), menu_bar_rect.Max - KGVec2(window_border_size, 0), GetColorU32(KGGuiCol_MenuBarBg), (flags & KGGuiWindowFlags_NoTitleBar) ? window_rounding : 0.0f, KGDrawFlags_RoundCornersTop);
+            window->DrawList->AddRectFilled(menu_bar_rect.Min + KGVec2(window_border_size, 0), menu_bar_rect.Max - KGVec2(window_border_size, 0), KarmaGui::GetColorU32(KGGuiCol_MenuBarBg), (flags & KGGuiWindowFlags_NoTitleBar) ? window_rounding : 0.0f, KGDrawFlags_RoundCornersTop);
             if (style.FrameBorderSize > 0.0f && menu_bar_rect.Max.y < window->Pos.y + window->Size.y)
-                window->DrawList->AddLine(menu_bar_rect.GetBL(), menu_bar_rect.GetBR(), GetColorU32(KGGuiCol_Border), style.FrameBorderSize);
+                window->DrawList->AddLine(menu_bar_rect.GetBL(), menu_bar_rect.GetBR(), KarmaGui::GetColorU32(KGGuiCol_Border), style.FrameBorderSize);
         }
 
         // Docking: Unhide tab bar (small triangle in the corner), drag from small triangle to quickly undock
@@ -5111,11 +5116,11 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
             bool hovered, held;
             if (ButtonBehavior(r, unhide_id, &hovered, &held, KGGuiButtonFlags_FlattenChildren))
                 node->WantHiddenTabBarToggle = true;
-            else if (held && IsMouseDragging(0))
+            else if (held && KarmaGui::IsMouseDragging(0))
                 StartMouseMovingWindowOrNode(window, node, true);
 
             // FIXME-DOCK: Ideally we'd use KGGuiCol_TitleBgActive/KGGuiCol_TitleBg here, but neither is guaranteed to be visible enough at this sort of size..
-            KGU32 col = GetColorU32(((held && hovered) || (node->IsFocused && !hovered)) ? KGGuiCol_ButtonActive : hovered ? KGGuiCol_ButtonHovered : KGGuiCol_Button);
+            KGU32 col = KarmaGui::GetColorU32(((held && hovered) || (node->IsFocused && !hovered)) ? KGGuiCol_ButtonActive : hovered ? KGGuiCol_ButtonHovered : KGGuiCol_Button);
             window->DrawList->AddTriangleFilled(p, p + KGVec2(unhide_sz_draw, 0.0f), p + KGVec2(0.0f, unhide_sz_draw), col);
         }
 
@@ -5147,7 +5152,7 @@ void KarmaGui::RenderWindowDecorations(KGGuiWindow* window, const KGRect& title_
 
 // When inside a dock node, this is handled in DockNodeCalcTabBarLayout() instead.
 // Render title text, collapse button, close button
-void KarmaGui::RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& title_bar_rect, const char* name, bool* p_open)
+void Karma::KarmaGuiInternal::RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& title_bar_rect, const char* name, bool* p_open)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiStyle& style = g.Style;
@@ -5201,7 +5206,7 @@ void KarmaGui::RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& t
     // Title bar text (with: horizontal alignment, avoiding collapse/close button, optional "unsaved document" marker)
     // FIXME: Refactor text alignment facilities along with RenderText helpers, this is WAY too much messy code..
     const float marker_size_x = (flags & KGGuiWindowFlags_UnsavedDocument) ? button_sz * 0.80f : 0.0f;
-    const KGVec2 text_size = CalcTextSize(name, NULL, true) + KGVec2(marker_size_x, 0.0f);
+    const KGVec2 text_size = KarmaGui::CalcTextSize(name, NULL, true) + KGVec2(marker_size_x, 0.0f);
 
     // As a nice touch we try to ensure that centered title text doesn't get affected by visibility of Close/Collapse button,
     // while uncentered title text will still reach edges correctly.
@@ -5226,7 +5231,7 @@ void KarmaGui::RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& t
         marker_pos.y = (layout_r.Min.y + layout_r.Max.y) * 0.5f;
         if (marker_pos.x > layout_r.Min.x)
         {
-            RenderBullet(window->DrawList, marker_pos, GetColorU32(KGGuiCol_Text));
+            RenderBullet(window->DrawList, marker_pos, KarmaGui::GetColorU32(KGGuiCol_Text));
             clip_r.Max.x = KGMin(clip_r.Max.x, marker_pos.x - (int)(marker_size_x * 0.5f));
         }
     }
@@ -5235,7 +5240,7 @@ void KarmaGui::RenderWindowTitleBarContents(KGGuiWindow* window, const KGRect& t
     RenderTextClipped(layout_r.Min, layout_r.Max, name, NULL, &text_size, style.WindowTitleAlign, &clip_r);
 }
 
-void KarmaGui::UpdateWindowParentAndRootLinks(KGGuiWindow* window, KarmaGuiWindowFlags flags, KGGuiWindow* parent_window)
+void Karma::KarmaGuiInternal::UpdateWindowParentAndRootLinks(KGGuiWindow* window, KarmaGuiWindowFlags flags, KGGuiWindow* parent_window)
 {
     window->ParentWindow = parent_window;
     window->RootWindow = window->RootWindowPopupTree = window->RootWindowDockTree = window->RootWindowForTitleBarHighlight = window->RootWindowForNav = window;
@@ -5251,7 +5256,7 @@ void KarmaGui::UpdateWindowParentAndRootLinks(KGGuiWindow* window, KarmaGuiWindo
         window->RootWindowForTitleBarHighlight = parent_window->RootWindowForTitleBarHighlight;
     while (window->RootWindowForNav->Flags & KGGuiWindowFlags_NavFlattened)
     {
-        KR_CORE_ASSERT(window->RootWindowForNav->ParentWindow != NULL);
+        KR_CORE_ASSERT(window->RootWindowForNav->ParentWindow != NULL, "");
         window->RootWindowForNav = window->RootWindowForNav->ParentWindow;
     }
 }
@@ -5265,7 +5270,7 @@ void KarmaGui::UpdateWindowParentAndRootLinks(KGGuiWindow* window, KarmaGuiWindo
 //      - Window        //                  .. returns Modal2
 //          - Window    //                  .. returns Modal2
 //          - Modal2    //                  .. returns Modal2
-static KGGuiWindow* KarmaGui::FindBlockingModal(KGGuiWindow* window)
+KGGuiWindow* Karma::KarmaGuiInternal::FindBlockingModal(KGGuiWindow* window)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (g.OpenPopupStack.Size <= 0)
@@ -5295,16 +5300,16 @@ static KGGuiWindow* KarmaGui::FindBlockingModal(KGGuiWindow* window)
 //   You can use the "##" or "###" markers to use the same label with different id, or same id with different label. See documentation at the top of this file.
 // - Return false when window is collapsed, so you can early out in your code. You always need to call KarmaGui::End() even if false is returned.
 // - Passing 'bool* p_open' displays a Close button on the upper-right corner of the window, the pointed value will be set to false when the button is pressed.
-bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
+bool Karma::KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
-    KR_CORE_ASSERT(name != NULL && name[0] != '\0');     // Window name required
-    KR_CORE_ASSERT(g.WithinFrameScope);                  // Forgot to call KarmaGui::NewFrame()
-    KR_CORE_ASSERT(g.FrameCountEnded != g.FrameCount);   // Called KarmaGui::Render() or KarmaGui::EndFrame() and haven't called KarmaGui::NewFrame() again yet
+    KR_CORE_ASSERT(name != NULL && name[0] != '\0', "");     // Window name required
+    KR_CORE_ASSERT(g.WithinFrameScope, "");                  // Forgot to call KarmaGui::NewFrame()
+    KR_CORE_ASSERT(g.FrameCountEnded != g.FrameCount, "");   // Called KarmaGui::Render() or KarmaGui::EndFrame() and haven't called KarmaGui::NewFrame() again yet
 
     // Find or create
-    KGGuiWindow* window = FindWindowByName(name);
+    KGGuiWindow* window = KarmaGuiInternal::FindWindowByName(name);
     const bool window_just_created = (window == NULL);
     if (window_just_created)
         window = CreateNewWindow(name, flags);
@@ -5314,7 +5319,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         flags |= KGGuiWindowFlags_NoMove | KGGuiWindowFlags_NoResize;
 
     if (flags & KGGuiWindowFlags_NavFlattened)
-        KR_CORE_ASSERT(flags & KGGuiWindowFlags_ChildWindow);
+        KR_CORE_ASSERT(flags & KGGuiWindowFlags_ChildWindow, "");
 
     const int current_frame = g.FrameCount;
     const bool first_begin_of_the_frame = (window->LastFrameActive != current_frame);
@@ -5351,22 +5356,22 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
 
     // Docking
     // (NB: during the frame dock nodes are created, it is possible that (window->DockIsActive == false) even though (window->DockNode->Windows.Size > 1)
-    KR_CORE_ASSERT(window->DockNode == NULL || window->DockNodeAsHost == NULL); // Cannot be both
+    KR_CORE_ASSERT(window->DockNode == NULL || window->DockNodeAsHost == NULL, ""); // Cannot be both
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasDock)
-        SetWindowDock(window, g.NextWindowData.DockId, g.NextWindowData.DockCond);
+        KarmaGuiInternal::SetWindowDock(window, g.NextWindowData.DockId, g.NextWindowData.DockCond);
     if (first_begin_of_the_frame)
     {
         bool has_dock_node = (window->DockId != 0 || window->DockNode != NULL);
-        bool new_auto_dock_node = !has_dock_node && GetWindowAlwaysWantOwnTabBar(window);
+        bool new_auto_dock_node = !has_dock_node && KarmaGuiInternal::GetWindowAlwaysWantOwnTabBar(window);
         bool dock_node_was_visible = window->DockNodeIsVisible;
         bool dock_tab_was_visible = window->DockTabIsVisible;
         if (has_dock_node || new_auto_dock_node)
         {
-            BeginDocked(window, p_open);
+            KarmaGuiInternal::BeginDocked(window, p_open);
             flags = window->Flags;
             if (window->DockIsActive)
             {
-                KR_CORE_ASSERT(window->DockNode != NULL);
+                KR_CORE_ASSERT(window->DockNode != NULL, "");
                 g.NextWindowData.Flags &= ~KGGuiNextWindowDataFlags_HasSizeConstraint; // Docking currently override constraints
             }
 
@@ -5386,7 +5391,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
     // Parent window is latched only on the first call to Begin() of the frame, so further append-calls can be done from a different window stack
     KGGuiWindow* parent_window_in_stack = (window->DockIsActive && window->DockNode->HostWindow) ? window->DockNode->HostWindow : g.CurrentWindowStack.empty() ? NULL : g.CurrentWindowStack.back().Window;
     KGGuiWindow* parent_window = first_begin_of_the_frame ? ((flags & (KGGuiWindowFlags_ChildWindow | KGGuiWindowFlags_Popup)) ? parent_window_in_stack : NULL) : window->ParentWindow;
-    KR_CORE_ASSERT(parent_window != NULL || !(flags & KGGuiWindowFlags_ChildWindow));
+    KR_CORE_ASSERT(parent_window != NULL || !(flags & KGGuiWindowFlags_ChildWindow), "");
 
     // We allow window memory to be compacted so recreate the base stack when needed.
     if (window->IDStack.Size == 0)
@@ -5406,12 +5411,12 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
     // Update ->RootWindow and others pointers (before any possible call to FocusWindow)
     if (first_begin_of_the_frame)
     {
-        UpdateWindowParentAndRootLinks(window, flags, parent_window);
+        KarmaGuiInternal::UpdateWindowParentAndRootLinks(window, flags, parent_window);
         window->ParentWindowInBeginStack = parent_window_in_stack;
     }
 
     // Add to focus scope stack
-    PushFocusScope(window->ID);
+    KarmaGuiInternal::PushFocusScope(window->ID);
     window->NavRootFocusScopeId = g.CurrentFocusScopeId;
     g.CurrentWindow = NULL;
 
@@ -5442,14 +5447,14 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         }
         else
         {
-            SetWindowPos(window, g.NextWindowData.PosVal, g.NextWindowData.PosCond);
+            KarmaGuiInternal::SetWindowPos(window, g.NextWindowData.PosVal, g.NextWindowData.PosCond);
         }
     }
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasSize)
     {
         window_size_x_set_by_api = (window->SetWindowSizeAllowFlags & g.NextWindowData.SizeCond) != 0 && (g.NextWindowData.SizeVal.x > 0.0f);
         window_size_y_set_by_api = (window->SetWindowSizeAllowFlags & g.NextWindowData.SizeCond) != 0 && (g.NextWindowData.SizeVal.y > 0.0f);
-        SetWindowSize(window, g.NextWindowData.SizeVal, g.NextWindowData.SizeCond);
+        KarmaGuiInternal::SetWindowSize(window, g.NextWindowData.SizeVal, g.NextWindowData.SizeCond);
     }
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasScroll)
     {
@@ -5471,9 +5476,9 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasWindowClass)
         window->WindowClass = g.NextWindowData.WindowClass;
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasCollapsed)
-        SetWindowCollapsed(window, g.NextWindowData.CollapsedVal, g.NextWindowData.CollapsedCond);
+        KarmaGuiInternal::SetWindowCollapsed(window, g.NextWindowData.CollapsedVal, g.NextWindowData.CollapsedCond);
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasFocus)
-        FocusWindow(window);
+        KarmaGuiInternal::FocusWindow(window);
     if (window->Appearing)
         SetWindowConditionAllowFlags(window, KGGuiCond_Appearing, false);
 
@@ -5485,7 +5490,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         const bool window_just_appearing_after_hidden_for_resize = (window->HiddenFramesCannotSkipItems > 0);
         window->Active = true;
         window->HasCloseButton = (p_open != NULL);
-        window->ClipRect = ImVec4(-FLT_MAX, -FLT_MAX, +FLT_MAX, +FLT_MAX);
+        window->ClipRect = KGVec4(-FLT_MAX, -FLT_MAX, +FLT_MAX, +FLT_MAX);
         window->IDStack.resize(1);
         window->DrawList->_ResetForNewFrame();
         window->DC.CurrentTableIdx = -1;
@@ -5497,7 +5502,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
 
         // Restore buffer capacity when woken from a compacted state, to avoid
         if (window->MemoryCompacted)
-            GcAwakeTransientWindowBuffers(window);
+            KarmaGuiInternal::GcAwakeTransientWindowBuffers(window);
 
         // Update stored window name when it changes (which can _only_ happen with the "###" operator, so the ID would stay unchanged).
         // The title bar always display the 'name' parameter, so we only update the string storage if it needs to be visible to the end-user elsewhere.
@@ -5550,8 +5555,8 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         // SELECT VIEWPORT
         // We need to do this before using any style/font sizes, as viewport with a different DPI may affect font sizes.
 
-        WindowSelectViewport(window);
-        SetCurrentViewport(window, window->Viewport);
+        KarmaGuiInternal::WindowSelectViewport(window);
+        KarmaGuiInternal::SetCurrentViewport(window, window->Viewport);
         window->FontDpiScale = (g.IO.ConfigFlags & KGGuiConfigFlags_DpiEnableScaleFonts) ? window->Viewport->DpiScale : 1.0f;
         SetCurrentWindow(window);
         flags = window->Flags;
@@ -5588,7 +5593,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
                 window->Collapsed = !window->Collapsed;
                 if (!window->Collapsed)
                     use_current_size_for_scrollbar_y = true;
-                MarkIniSettingsDirty(window);
+                KarmaGuiInternal::MarkIniSettingsDirty(window);
             }
         }
         else
@@ -5639,7 +5644,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
                 use_current_size_for_scrollbar_y = true;
             }
             if (!window->Collapsed)
-                MarkIniSettingsDirty(window);
+                KarmaGuiInternal::MarkIniSettingsDirty(window);
         }
 
         // Apply minimum/maximum window size constraints and final size
@@ -5659,7 +5664,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         // Position child window
         if (flags & KGGuiWindowFlags_ChildWindow)
         {
-            KR_CORE_ASSERT(parent_window && parent_window->Active);
+            KR_CORE_ASSERT(parent_window && parent_window->Active, "");
             window->BeginOrderWithinParent = (short)parent_window->DC.ChildWindows.Size;
             parent_window->DC.ChildWindows.push_back(window);
             if (!(flags & KGGuiWindowFlags_Popup) && !window_pos_set_by_api && !window_is_child_tooltip)
@@ -5668,13 +5673,13 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
 
         const bool window_pos_with_pivot = (window->SetWindowPosVal.x != FLT_MAX && window->HiddenFramesCannotSkipItems == 0);
         if (window_pos_with_pivot)
-            SetWindowPos(window, window->SetWindowPosVal - window->Size * window->SetWindowPosPivot, 0); // Position given a pivot (e.g. for centering)
+            KarmaGuiInternal::SetWindowPos(window, window->SetWindowPosVal - window->Size * window->SetWindowPosPivot, 0); // Position given a pivot (e.g. for centering)
         else if ((flags & KGGuiWindowFlags_ChildMenu) != 0)
-            window->Pos = FindBestWindowPosForPopup(window);
+            window->Pos = KarmaGuiInternal::FindBestWindowPosForPopup(window);
         else if ((flags & KGGuiWindowFlags_Popup) != 0 && !window_pos_set_by_api && window_just_appearing_after_hidden_for_resize)
-            window->Pos = FindBestWindowPosForPopup(window);
+            window->Pos = KarmaGuiInternal::FindBestWindowPosForPopup(window);
         else if ((flags & KGGuiWindowFlags_Tooltip) != 0 && !window_pos_set_by_api && !window_is_child_tooltip)
-            window->Pos = FindBestWindowPosForPopup(window);
+            window->Pos = KarmaGuiInternal::FindBestWindowPosForPopup(window);
 
         // Late create viewport if we don't fit within our current host viewport.
         if (window->ViewportAllowPlatformMonitorExtend >= 0 && !window->ViewportOwned && !(window->Viewport->Flags & KGGuiViewportFlags_Minimized))
@@ -5682,17 +5687,17 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
             {
                 // This is based on the assumption that the DPI will be known ahead (same as the DPI of the selection done in UpdateSelectWindowViewport)
                 //KarmaGuiViewport* old_viewport = window->Viewport;
-                window->Viewport = AddUpdateViewport(window, window->ID, window->Pos, window->Size, KGGuiViewportFlags_NoFocusOnAppearing);
+                window->Viewport = KarmaGuiInternal::AddUpdateViewport(window, window->ID, window->Pos, window->Size, KGGuiViewportFlags_NoFocusOnAppearing);
 
                 // FIXME-DPI
                 //KR_CORE_ASSERT(old_viewport->DpiScale == window->Viewport->DpiScale); // FIXME-DPI: Something went wrong
-                SetCurrentViewport(window, window->Viewport);
+                KarmaGuiInternal::SetCurrentViewport(window, window->Viewport);
                 window->FontDpiScale = (g.IO.ConfigFlags & KGGuiConfigFlags_DpiEnableScaleFonts) ? window->Viewport->DpiScale : 1.0f;
                 SetCurrentWindow(window);
             }
 
         if (window->ViewportOwned)
-            WindowSyncOwnedViewport(window, parent_window_in_stack);
+            KarmaGuiInternal::WindowSyncOwnedViewport(window, parent_window_in_stack);
 
         // Calculate the range of allowed position for that window (to be movable and visible past safe area padding)
         // When clamping to stay visible, we will enforce that window->Pos stays inside of visibility_rect.
@@ -5713,7 +5718,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
             else if (window->ViewportOwned && g.PlatformIO.Monitors.Size > 0)
             {
                 // Lost windows (e.g. a monitor disconnected) will naturally moved to the fallback/dummy monitor aka the main viewport.
-                const KarmaGuiPlatformMonitor* monitor = GetViewportPlatformMonitor(window->Viewport);
+                const KarmaGuiPlatformMonitor* monitor = KarmaGuiInternal::GetViewportPlatformMonitor(window->Viewport);
                 visibility_rect.Min = monitor->WorkPos + visibility_padding;
                 visibility_rect.Max = monitor->WorkPos + monitor->WorkSize - visibility_padding;
                 ClampWindowPos(window, visibility_rect);
@@ -5741,8 +5746,8 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
             else if ((window->DockIsActive || (flags & KGGuiWindowFlags_ChildWindow) == 0) && !(flags & KGGuiWindowFlags_Tooltip))
                 want_focus = true;
 
-            KGGuiWindow* modal = GetTopMostPopupModal();
-            if (modal != NULL && !IsWindowWithinBeginStackOf(window, modal))
+            KGGuiWindow* modal = KarmaGuiInternal::GetTopMostPopupModal();
+            if (modal != NULL && !KarmaGuiInternal::IsWindowWithinBeginStackOf(window, modal))
             {
                 // Avoid focusing a window that is created outside of active modal. This will prevent active modal from being closed.
                 // Since window is not focused it would reappear at the same display position like the last time it was visible.
@@ -5751,9 +5756,9 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
                 want_focus = false;
                 if (window == window->RootWindow)
                 {
-                    KGGuiWindow* blocking_modal = FindBlockingModal(window);
-                    KR_CORE_ASSERT(blocking_modal != NULL);
-                    BringWindowToDisplayBehind(window, blocking_modal);
+                    KGGuiWindow* blocking_modal = KarmaGuiInternal::FindBlockingModal(window);
+                    KR_CORE_ASSERT(blocking_modal != NULL, "");
+                    KarmaGuiInternal::BringWindowToDisplayBehind(window, blocking_modal);
                 }
             }
         }
@@ -5779,7 +5784,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         const int resize_grip_count = g.IO.ConfigWindowsResizeFromEdges ? 2 : 1; // Allow resize from lower-left if we have the mouse cursor feedback for it.
         const float resize_grip_draw_size = KG_FLOOR(KGMax(g.FontSize * 1.10f, window->WindowRounding + 1.0f + g.FontSize * 0.2f));
         if (handle_borders_and_resize_grips && !window->Collapsed)
-            if (UpdateWindowManualResize(window, size_auto_fit, &border_held, resize_grip_count, &resize_grip_col[0], visibility_rect))
+            if (KarmaGuiInternal::UpdateWindowManualResize(window, size_auto_fit, &border_held, resize_grip_count, &resize_grip_col[0], visibility_rect))
                 use_current_size_for_scrollbar_x = use_current_size_for_scrollbar_y = true;
         window->ResizeBorderHeld = (signed char)border_held;
 
@@ -5879,14 +5884,14 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         window->ScrollMax.y = KGMax(0.0f, window->ContentSize.y + window->WindowPadding.y * 2.0f - window->InnerRect.GetHeight());
 
         // Apply scrolling
-        window->Scroll = CalcNextScrollFromScrollTargetAndClamp(window);
+        window->Scroll = KarmaGuiInternal::CalcNextScrollFromScrollTargetAndClamp(window);
         window->ScrollTarget = KGVec2(FLT_MAX, FLT_MAX);
         window->DecoInnerSizeX1 = window->DecoInnerSizeY1 = 0.0f;
 
         // DRAWING
 
         // Setup draw list and outer clipping rectangle
-        KR_CORE_ASSERT(window->DrawList->CmdBuffer.Size == 1 && window->DrawList->CmdBuffer[0].ElemCount == 0);
+        KR_CORE_ASSERT(window->DrawList->CmdBuffer.Size == 1 && window->DrawList->CmdBuffer[0].ElemCount == 0, "");
         window->DrawList->PushTextureID(g.Font->ContainerAtlas->TexID);
         PushClipRect(host_rect.Min, host_rect.Max, false);
 
@@ -5913,7 +5918,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
             // Handle title bar, scrollbar, resize grips and resize borders
             const KGGuiWindow* window_to_highlight = g.NavWindowingTarget ? g.NavWindowingTarget : g.NavWindow;
             const bool title_bar_is_highlight = want_focus || (window_to_highlight && (window->RootWindowForTitleBarHighlight == window_to_highlight->RootWindowForTitleBarHighlight || (window->DockNode && window->DockNode == window_to_highlight->DockNode)));
-            RenderWindowDecorations(window, title_bar_rect, title_bar_is_highlight, handle_borders_and_resize_grips, resize_grip_count, resize_grip_col, resize_grip_draw_size);
+            KarmaGuiInternal::RenderWindowDecorations(window, title_bar_rect, title_bar_is_highlight, handle_borders_and_resize_grips, resize_grip_count, resize_grip_col, resize_grip_draw_size);
 
             if (render_decorations_in_parent)
                 window->DrawList = &window->DrawListInst;
@@ -5994,8 +5999,8 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         // Apply focus (we need to call FocusWindow() AFTER setting DC.CursorStartPos so our initial navigation reference rectangle can start around there)
         if (want_focus)
         {
-            FocusWindow(window);
-            NavInitWindow(window, false); // <-- this is in the way for us to be able to defer and sort reappearing FocusWindow() calls
+            KarmaGuiInternal::FocusWindow(window);
+            KarmaGuiInternal::NavInitWindow(window, false); // <-- this is in the way for us to be able to defer and sort reappearing FocusWindow() calls
         }
 
         // Close requested by platform window
@@ -6005,14 +6010,14 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
             {
                 window->Viewport->PlatformRequestClose = false;
                 g.NavWindowingToggleLayer = false; // Assume user mapped PlatformRequestClose on ALT-F4 so we disable ALT for menu toggle. False positive not an issue.
-                KARMAGUI_DEBUG_LOG_VIEWPORT("[viewport] Window '%s' PlatformRequestClose\n", window->Name);
+                KR_CORE_INFO("[viewport] Window '{0}' PlatformRequestClose", window->Name);
                 *p_open = false;
             }
         }
 
         // Title bar
         if (!(flags & KGGuiWindowFlags_NoTitleBar) && !window->DockIsActive)
-            RenderWindowTitleBarContents(window, KGRect(title_bar_rect.Min.x + window->WindowBorderSize, title_bar_rect.Min.y, title_bar_rect.Max.x - window->WindowBorderSize, title_bar_rect.Max.y), name, p_open);
+            KarmaGuiInternal::RenderWindowTitleBarContents(window, KGRect(title_bar_rect.Min.x + window->WindowBorderSize, title_bar_rect.Min.y, title_bar_rect.Max.x - window->WindowBorderSize, title_bar_rect.Max.y), name, p_open);
 
         // Clear hit test shape every frame
         window->HitTestHoleSize.x = window->HitTestHoleSize.y = 0;
@@ -6033,26 +6038,26 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
             // We need to do this _before_ we overwrite window->DC.LastItemId below because BeginDockableDragDropSource() also overwrites it.
             if ((g.MovingWindow == window) && (g.IO.ConfigDockingWithShift == g.IO.KeyShift))
                 if ((window->RootWindowDockTree->Flags & KGGuiWindowFlags_NoDocking) == 0)
-                    BeginDockableDragDropSource(window);
+                    KarmaGuiInternal::BeginDockableDragDropSource(window);
 
             // Docking: Any dockable window can act as a target. For dock node hosts we call BeginDockableDragDropTarget() in DockNodeUpdate() instead.
             if (g.DragDropActive && !(flags & KGGuiWindowFlags_NoDocking))
                 if (g.MovingWindow == NULL || g.MovingWindow->RootWindowDockTree != window)
                     if ((window == window->RootWindowDockTree) && !(window->Flags & KGGuiWindowFlags_DockNodeHost))
-                        BeginDockableDragDropTarget(window);
+                        KarmaGuiInternal::BeginDockableDragDropTarget(window);
         }
 
         // We fill last item data based on Title Bar/Tab, in order for IsItemHovered() and IsItemActive() to be usable after Begin().
         // This is useful to allow creating context menus on title bar only, etc.
         if (window->DockIsActive)
-            SetLastItemData(window->MoveId, g.CurrentItemFlags, window->DockTabItemStatusFlags, window->DockTabItemRect);
+            KarmaGuiInternal::SetLastItemData(window->MoveId, g.CurrentItemFlags, window->DockTabItemStatusFlags, window->DockTabItemRect);
         else
-            SetLastItemData(window->MoveId, g.CurrentItemFlags, IsMouseHoveringRect(title_bar_rect.Min, title_bar_rect.Max, false) ? KGGuiItemStatusFlags_HoveredRect : 0, title_bar_rect);
+            KarmaGuiInternal::SetLastItemData(window->MoveId, g.CurrentItemFlags, IsMouseHoveringRect(title_bar_rect.Min, title_bar_rect.Max, false) ? KGGuiItemStatusFlags_HoveredRect : 0, title_bar_rect);
 
         // [DEBUG]
 #ifndef KARMAGUI_DISABLE_DEBUG_TOOLS
         if (g.DebugLocateId != 0 && (window->ID == g.DebugLocateId || window->MoveId == g.DebugLocateId))
-            DebugLocateItemResolveWithLastItem();
+            KarmaGuiInternal::DebugLocateItemResolveWithLastItem();
 #endif
 
         // [Test Engine] Register title bar / tab
@@ -6064,7 +6069,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
     else
     {
         // Append
-        SetCurrentViewport(window, window->Viewport);
+        KarmaGuiInternal::SetCurrentViewport(window, window->Viewport);
         SetCurrentWindow(window);
     }
 
@@ -6095,7 +6100,7 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         {
             // Child window can be out of sight and have "negative" clip windows.
             // Mark them as collapsed so commands are skipped earlier (we can't manually collapse them because they have no title bar).
-            KR_CORE_ASSERT((flags& KGGuiWindowFlags_NoTitleBar) != 0 || (window->DockIsActive));
+            KR_CORE_ASSERT((flags& KGGuiWindowFlags_NoTitleBar) != 0 || (window->DockIsActive), "");
             if (!(flags & KGGuiWindowFlags_AlwaysAutoResize) && window->AutoFitFramesX <= 0 && window->AutoFitFramesY <= 0) // FIXME: Doesn't make sense for ChildWindow??
             {
                 const bool nav_request = (flags & KGGuiWindowFlags_NavFlattened) && (g.NavAnyRequest && g.NavWindow && g.NavWindow->RootWindowForNav == window->RootWindowForNav);
@@ -6141,13 +6146,15 @@ bool KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
         // - when 'window_just_activated_by_user' is set -> HiddenFramesCannotSkipItems is set -> SkipItems always false
         // - in BeginDocked() path when DockNodeIsVisible == DockTabIsVisible == true -> hidden _should_ be all zero // FIXME: Not formally proven, hence the assert.
         if (window->SkipItems && !window->Appearing)
-            KR_CORE_ASSERT(window->Appearing == false); // Please report on GitHub if this triggers: https://github.com/ocornut/imgui/issues/4177
+	{
+            KR_CORE_ASSERT(window->Appearing == false, ""); // Please report on GitHub if this triggers: https://github.com/ocornut/imgui/issues/4177
+	}
     }
 
     return !window->SkipItems;
 }
 
-void KarmaGui::End()
+void Karma::KarmaGui::End()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -6155,28 +6162,30 @@ void KarmaGui::End()
     // Error checking: verify that user hasn't called End() too many times!
     if (g.CurrentWindowStack.Size <= 1 && g.WithinFrameScopeWithImplicitWindow)
     {
-        KG_ASSERT_USER_ERROR(g.CurrentWindowStack.Size > 1, "Calling End() too many times!");
+        KR_CORE_ASSERT(g.CurrentWindowStack.Size > 1, "Calling End() too many times!");
         return;
     }
-    KR_CORE_ASSERT(g.CurrentWindowStack.Size > 0);
+    KR_CORE_ASSERT(g.CurrentWindowStack.Size > 0, "");
 
     // Error checking: verify that user doesn't directly call End() on a child window.
     if ((window->Flags & KGGuiWindowFlags_ChildWindow) && !(window->Flags & KGGuiWindowFlags_DockNodeHost) && !window->DockIsActive)
-        KG_ASSERT_USER_ERROR(g.WithinEndChild, "Must call EndChild() and not End()!");
+    {
+        KR_CORE_ASSERT(g.WithinEndChild, "Must call EndChild() and not End()!");
+    }
 
     // Close anything that is open
     if (window->DC.CurrentColumns)
-        EndColumns();
+        KarmaGuiInternal::EndColumns();
     if (!(window->Flags & KGGuiWindowFlags_DockNodeHost))   // Pop inner window clip rectangle
         PopClipRect();
-    PopFocusScope();
+    KarmaGuiInternal::PopFocusScope();
 
     // Stop logging
     if (!(window->Flags & KGGuiWindowFlags_ChildWindow))    // FIXME: add more options for scope of logging
         LogFinish();
 
     if (window->DC.IsSetPos)
-        ErrorCheckUsingSetCursorPosToExtendParentBoundaries();
+        KarmaGuiInternal::ErrorCheckUsingSetCursorPosToExtendParentBoundaries();
 
     // Docking: report contents sizes to parent to allow for auto-resize
     if (window->DockNode && window->DockTabIsVisible)
@@ -6193,16 +6202,16 @@ void KarmaGui::End()
     g.CurrentWindowStack.pop_back();
     SetCurrentWindow(g.CurrentWindowStack.Size == 0 ? NULL : g.CurrentWindowStack.back().Window);
     if (g.CurrentWindow)
-        SetCurrentViewport(g.CurrentWindow, g.CurrentWindow->Viewport);
+        KarmaGuiInternal::SetCurrentViewport(g.CurrentWindow, g.CurrentWindow->Viewport);
 }
 
-void KarmaGui::BringWindowToFocusFront(KGGuiWindow* window)
+void Karma::KarmaGuiInternal::BringWindowToFocusFront(KGGuiWindow* window)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(window == window->RootWindow);
+    KR_CORE_ASSERT(window == window->RootWindow, "");
 
     const int cur_order = window->FocusOrder;
-    KR_CORE_ASSERT(g.WindowsFocusOrder[cur_order] == window);
+    KR_CORE_ASSERT(g.WindowsFocusOrder[cur_order] == window, "");
     if (g.WindowsFocusOrder.back() == window)
         return;
 
@@ -6211,13 +6220,13 @@ void KarmaGui::BringWindowToFocusFront(KGGuiWindow* window)
     {
         g.WindowsFocusOrder[n] = g.WindowsFocusOrder[n + 1];
         g.WindowsFocusOrder[n]->FocusOrder--;
-        KR_CORE_ASSERT(g.WindowsFocusOrder[n]->FocusOrder == n);
+        KR_CORE_ASSERT(g.WindowsFocusOrder[n]->FocusOrder == n, "");
     }
     g.WindowsFocusOrder[new_order] = window;
     window->FocusOrder = (short)new_order;
 }
 
-void KarmaGui::BringWindowToDisplayFront(KGGuiWindow* window)
+void Karma::KarmaGuiInternal::BringWindowToDisplayFront(KGGuiWindow* window)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* current_front_window = g.Windows.back();
@@ -6232,7 +6241,7 @@ void KarmaGui::BringWindowToDisplayFront(KGGuiWindow* window)
         }
 }
 
-void KarmaGui::BringWindowToDisplayBack(KGGuiWindow* window)
+void Karma::KarmaGuiInternal::BringWindowToDisplayBack(KGGuiWindow* window)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (g.Windows[0] == window)
@@ -6246,9 +6255,9 @@ void KarmaGui::BringWindowToDisplayBack(KGGuiWindow* window)
         }
 }
 
-void KarmaGui::BringWindowToDisplayBehind(KGGuiWindow* window, KGGuiWindow* behind_window)
+void Karma::KarmaGuiInternal::BringWindowToDisplayBehind(KGGuiWindow* window, KGGuiWindow* behind_window)
 {
-    KR_CORE_ASSERT(window != NULL && behind_window != NULL);
+    KR_CORE_ASSERT(window != NULL && behind_window != NULL, "");
     KarmaGuiContext& g = *GKarmaGui;
     window = window->RootWindow;
     behind_window = behind_window->RootWindow;
@@ -6268,14 +6277,14 @@ void KarmaGui::BringWindowToDisplayBehind(KGGuiWindow* window, KGGuiWindow* behi
     }
 }
 
-int KarmaGui::FindWindowDisplayIndex(KGGuiWindow* window)
+int Karma::KarmaGuiInternal::FindWindowDisplayIndex(KGGuiWindow* window)
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.Windows.index_from_ptr(g.Windows.find(window));
 }
 
 // Moving window to front of display and set focus (which happens to be back of our sorted list)
-void KarmaGui::FocusWindow(KGGuiWindow* window)
+void Karma::KarmaGuiInternal::FocusWindow(KGGuiWindow* window)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -6294,7 +6303,7 @@ void KarmaGui::FocusWindow(KGGuiWindow* window)
     }
 
     // Move the root window to the top of the pile
-    KR_CORE_ASSERT(window == NULL || window->RootWindowDockTree != NULL);
+    KR_CORE_ASSERT(window == NULL || window->RootWindowDockTree != NULL, "");
     KGGuiWindow* focus_front_window = window ? window->RootWindow : NULL;
     KGGuiWindow* display_front_window = window ? window->RootWindowDockTree : NULL;
     KGGuiDockNode* dock_node = window ? window->DockNode : NULL;
@@ -6323,7 +6332,7 @@ void KarmaGui::FocusWindow(KGGuiWindow* window)
         BringWindowToDisplayFront(display_front_window);
 }
 
-void KarmaGui::FocusTopMostWindowUnderOne(KGGuiWindow* under_this_window, KGGuiWindow* ignore_window)
+void Karma::KarmaGuiInternal::FocusTopMostWindowUnderOne(KGGuiWindow* under_this_window, KGGuiWindow* ignore_window)
 {
     KarmaGuiContext& g = *GKarmaGui;
     int start_idx = g.WindowsFocusOrder.Size - 1;
@@ -6342,7 +6351,7 @@ void KarmaGui::FocusTopMostWindowUnderOne(KGGuiWindow* under_this_window, KGGuiW
     {
         // We may later decide to test for different NoXXXInputs based on the active navigation input (mouse vs nav) but that may feel more confusing to the user.
         KGGuiWindow* window = g.WindowsFocusOrder[i];
-        KR_CORE_ASSERT(window == window->RootWindow);
+        KR_CORE_ASSERT(window == window->RootWindow, "");
         if (window != ignore_window && window->WasActive)
             if ((window->Flags & (KGGuiWindowFlags_NoMouseInputs | KGGuiWindowFlags_NoNavInputs)) != (KGGuiWindowFlags_NoMouseInputs | KGGuiWindowFlags_NoNavInputs))
             {
@@ -6359,11 +6368,11 @@ void KarmaGui::FocusTopMostWindowUnderOne(KGGuiWindow* under_this_window, KGGuiW
 }
 
 // Important: this alone doesn't alter current KGDrawList state. This is called by PushFont/PopFont only.
-void KarmaGui::SetCurrentFont(KGFont* font)
+void Karma::KarmaGuiInternal::SetCurrentFont(KGFont* font)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(font && font->IsLoaded());    // Font Atlas not created. Did you call io.Fonts->GetTexDataAsRGBA32 / GetTexDataAsAlpha8 ?
-    KR_CORE_ASSERT(font->Scale > 0.0f);
+    KR_CORE_ASSERT(font && font->IsLoaded(), "");    // Font Atlas not created. Did you call io.Fonts->GetTexDataAsRGBA32 / GetTexDataAsAlpha8 ?
+    KR_CORE_ASSERT(font->Scale > 0.0f, "");
     g.Font = font;
     g.FontBaseSize = KGMax(1.0f, g.IO.FontGlobalScale * g.Font->FontSize * g.Font->Scale);
     g.FontSize = g.CurrentWindow ? g.CurrentWindow->CalcFontSize() : 0.0f;
@@ -6375,29 +6384,29 @@ void KarmaGui::SetCurrentFont(KGFont* font)
     g.DrawListSharedData.FontSize = g.FontSize;
 }
 
-void KarmaGui::PushFont(KGFont* font)
+void Karma::KarmaGui::PushFont(KGFont* font)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (!font)
-        font = GetDefaultFont();
-    SetCurrentFont(font);
+        font = KarmaGuiInternal::GetDefaultFont();
+    KarmaGuiInternal::SetCurrentFont(font);
     g.FontStack.push_back(font);
     g.CurrentWindow->DrawList->PushTextureID(font->ContainerAtlas->TexID);
 }
 
-void  KarmaGui::PopFont()
+void Karma::KarmaGui::PopFont()
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.CurrentWindow->DrawList->PopTextureID();
     g.FontStack.pop_back();
-    SetCurrentFont(g.FontStack.empty() ? GetDefaultFont() : g.FontStack.back());
+    KarmaGuiInternal::SetCurrentFont(g.FontStack.empty() ? KarmaGuiInternal::GetDefaultFont() : g.FontStack.back());
 }
 
-void KarmaGui::PushItemFlag(KGGuiItemFlags option, bool enabled)
+void Karma::KarmaGuiInternal::PushItemFlag(KGGuiItemFlags option, bool enabled)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiItemFlags item_flags = g.CurrentItemFlags;
-    KR_CORE_ASSERT(item_flags == g.ItemFlagsStack.back());
+    KR_CORE_ASSERT(item_flags == g.ItemFlagsStack.back(), "");
     if (enabled)
         item_flags |= option;
     else
@@ -6406,10 +6415,10 @@ void KarmaGui::PushItemFlag(KGGuiItemFlags option, bool enabled)
     g.ItemFlagsStack.push_back(item_flags);
 }
 
-void KarmaGui::PopItemFlag()
+void Karma::KarmaGuiInternal::PopItemFlag()
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(g.ItemFlagsStack.Size > 1); // Too many calls to PopItemFlag() - we always leave a 0 at the bottom of the stack.
+    KR_CORE_ASSERT(g.ItemFlagsStack.Size > 1, ""); // Too many calls to PopItemFlag() - we always leave a 0 at the bottom of the stack.
     g.ItemFlagsStack.pop_back();
     g.CurrentItemFlags = g.ItemFlagsStack.back();
 }
@@ -6420,7 +6429,7 @@ void KarmaGui::PopItemFlag()
 // - Feedback welcome at https://github.com/ocornut/imgui/issues/211
 // - BeginDisabled(false) essentially does nothing useful but is provided to facilitate use of boolean expressions. If you can avoid calling BeginDisabled(False)/EndDisabled() best to avoid it.
 // - Optimized shortcuts instead of PushStyleVar() + PushItemFlag()
-void KarmaGui::BeginDisabled(bool disabled)
+void Karma::KarmaGui::BeginDisabled(bool disabled)
 {
     KarmaGuiContext& g = *GKarmaGui;
     bool was_disabled = (g.CurrentItemFlags & KGGuiItemFlags_Disabled) != 0;
@@ -6435,10 +6444,10 @@ void KarmaGui::BeginDisabled(bool disabled)
     g.DisabledStackSize++;
 }
 
-void KarmaGui::EndDisabled()
+void Karma::KarmaGui::EndDisabled()
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(g.DisabledStackSize > 0);
+    KR_CORE_ASSERT(g.DisabledStackSize > 0, "");
     g.DisabledStackSize--;
     bool was_disabled = (g.CurrentItemFlags & KGGuiItemFlags_Disabled) != 0;
     //PopItemFlag();
@@ -6449,36 +6458,36 @@ void KarmaGui::EndDisabled()
 }
 
 // FIXME: Look into renaming this once we have settled the new Focus/Activation/TabStop system.
-void KarmaGui::PushAllowKeyboardFocus(bool allow_keyboard_focus)
+void Karma::KarmaGui::PushAllowKeyboardFocus(bool allow_keyboard_focus)
 {
-    PushItemFlag(KGGuiItemFlags_NoTabStop, !allow_keyboard_focus);
+    KarmaGuiInternal::PushItemFlag(KGGuiItemFlags_NoTabStop, !allow_keyboard_focus);
 }
 
-void KarmaGui::PopAllowKeyboardFocus()
+void Karma::KarmaGui::PopAllowKeyboardFocus()
 {
-    PopItemFlag();
+    KarmaGuiInternal::PopItemFlag();
 }
 
-void KarmaGui::PushButtonRepeat(bool repeat)
+void Karma::KarmaGui::PushButtonRepeat(bool repeat)
 {
-    PushItemFlag(KGGuiItemFlags_ButtonRepeat, repeat);
+    KarmaGuiInternal::PushItemFlag(KGGuiItemFlags_ButtonRepeat, repeat);
 }
 
-void KarmaGui::PopButtonRepeat()
+void Karma::KarmaGui::PopButtonRepeat()
 {
-    PopItemFlag();
+    KarmaGuiInternal::PopItemFlag();
 }
 
-void KarmaGui::PushTextWrapPos(float wrap_pos_x)
+void Karma::KarmaGui::PushTextWrapPos(float wrap_pos_x)
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DC.TextWrapPosStack.push_back(window->DC.TextWrapPos);
     window->DC.TextWrapPos = wrap_pos_x;
 }
 
-void KarmaGui::PopTextWrapPos()
+void Karma::KarmaGui::PopTextWrapPos()
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DC.TextWrapPos = window->DC.TextWrapPosStack.back();
     window->DC.TextWrapPosStack.pop_back();
 }
@@ -6498,7 +6507,7 @@ static KGGuiWindow* GetCombinedRootWindow(KGGuiWindow* window, bool popup_hierar
     return window;
 }
 
-bool KarmaGui::IsWindowChildOf(KGGuiWindow* window, KGGuiWindow* potential_parent, bool popup_hierarchy, bool dock_hierarchy)
+bool Karma::KarmaGuiInternal::IsWindowChildOf(KGGuiWindow* window, KGGuiWindow* potential_parent, bool popup_hierarchy, bool dock_hierarchy)
 {
     KGGuiWindow* window_root = GetCombinedRootWindow(window, popup_hierarchy, dock_hierarchy);
     if (window_root == potential_parent)
@@ -6514,7 +6523,7 @@ bool KarmaGui::IsWindowChildOf(KGGuiWindow* window, KGGuiWindow* potential_paren
     return false;
 }
 
-bool KarmaGui::IsWindowWithinBeginStackOf(KGGuiWindow* window, KGGuiWindow* potential_parent)
+bool Karma::KarmaGuiInternal::IsWindowWithinBeginStackOf(KGGuiWindow* window, KGGuiWindow* potential_parent)
 {
     if (window->RootWindow == potential_parent)
         return true;
@@ -6527,7 +6536,7 @@ bool KarmaGui::IsWindowWithinBeginStackOf(KGGuiWindow* window, KGGuiWindow* pote
     return false;
 }
 
-bool KarmaGui::IsWindowAbove(KGGuiWindow* potential_above, KGGuiWindow* potential_below)
+bool Karma::KarmaGuiInternal::IsWindowAbove(KGGuiWindow* potential_above, KGGuiWindow* potential_below)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -6547,9 +6556,9 @@ bool KarmaGui::IsWindowAbove(KGGuiWindow* potential_above, KGGuiWindow* potentia
     return false;
 }
 
-bool KarmaGui::IsWindowHovered(KarmaGuiHoveredFlags flags)
+bool Karma::KarmaGui::IsWindowHovered(KarmaGuiHoveredFlags flags)
 {
-    KR_CORE_ASSERT((flags & (KGGuiHoveredFlags_AllowWhenOverlapped | KGGuiHoveredFlags_AllowWhenDisabled)) == 0);   // Flags not supported by this function
+    KR_CORE_ASSERT((flags & (KGGuiHoveredFlags_AllowWhenOverlapped | KGGuiHoveredFlags_AllowWhenDisabled)) == 0, "");   // Flags not supported by this function
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* ref_window = g.HoveredWindow;
     KGGuiWindow* cur_window = g.CurrentWindow;
@@ -6558,7 +6567,7 @@ bool KarmaGui::IsWindowHovered(KarmaGuiHoveredFlags flags)
 
     if ((flags & KGGuiHoveredFlags_AnyWindow) == 0)
     {
-        KR_CORE_ASSERT(cur_window); // Not inside a Begin()/End()
+        KR_CORE_ASSERT(cur_window, ""); // Not inside a Begin()/End()
         const bool popup_hierarchy = (flags & KGGuiHoveredFlags_NoPopupHierarchy) == 0;
         const bool dock_hierarchy = (flags & KGGuiHoveredFlags_DockHierarchy) != 0;
         if (flags & KGGuiHoveredFlags_RootWindow)
@@ -6566,7 +6575,7 @@ bool KarmaGui::IsWindowHovered(KarmaGuiHoveredFlags flags)
 
         bool result;
         if (flags & KGGuiHoveredFlags_ChildWindows)
-            result = IsWindowChildOf(ref_window, cur_window, popup_hierarchy, dock_hierarchy);
+            result = KarmaGuiInternal::IsWindowChildOf(ref_window, cur_window, popup_hierarchy, dock_hierarchy);
         else
             result = (ref_window == cur_window);
         if (!result)
@@ -6581,7 +6590,7 @@ bool KarmaGui::IsWindowHovered(KarmaGuiHoveredFlags flags)
     return true;
 }
 
-bool KarmaGui::IsWindowFocused(KarmaGuiFocusedFlags flags)
+bool Karma::KarmaGui::IsWindowFocused(KarmaGuiFocusedFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* ref_window = g.NavWindow;
@@ -6592,25 +6601,25 @@ bool KarmaGui::IsWindowFocused(KarmaGuiFocusedFlags flags)
     if (flags & KGGuiFocusedFlags_AnyWindow)
         return true;
 
-    KR_CORE_ASSERT(cur_window); // Not inside a Begin()/End()
+    KR_CORE_ASSERT(cur_window, ""); // Not inside a Begin()/End()
     const bool popup_hierarchy = (flags & KGGuiFocusedFlags_NoPopupHierarchy) == 0;
     const bool dock_hierarchy = (flags & KGGuiFocusedFlags_DockHierarchy) != 0;
     if (flags & KGGuiHoveredFlags_RootWindow)
         cur_window = GetCombinedRootWindow(cur_window, popup_hierarchy, dock_hierarchy);
 
     if (flags & KGGuiHoveredFlags_ChildWindows)
-        return IsWindowChildOf(ref_window, cur_window, popup_hierarchy, dock_hierarchy);
+        return KarmaGuiInternal::IsWindowChildOf(ref_window, cur_window, popup_hierarchy, dock_hierarchy);
     else
         return (ref_window == cur_window);
 }
 
-KGGuiID KarmaGui::GetWindowDockID()
+KGGuiID Karma::KarmaGui::GetWindowDockID()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.CurrentWindow->DockId;
 }
 
-bool KarmaGui::IsWindowDocked()
+bool Karma::KarmaGui::IsWindowDocked()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.CurrentWindow->DockIsActive;
@@ -6619,37 +6628,37 @@ bool KarmaGui::IsWindowDocked()
 // Can we focus this window with CTRL+TAB (or PadMenu + PadFocusPrev/PadFocusNext)
 // Note that NoNavFocus makes the window not reachable with CTRL+TAB but it can still be focused with mouse or programmatically.
 // If you want a window to never be focused, you may use the e.g. NoInputs flag.
-bool KarmaGui::IsWindowNavFocusable(KGGuiWindow* window)
+bool Karma::KarmaGuiInternal::IsWindowNavFocusable(KGGuiWindow* window)
 {
     return window->WasActive && window == window->RootWindow && !(window->Flags & KGGuiWindowFlags_NoNavFocus);
 }
 
-float KarmaGui::GetWindowWidth()
+float Karma::KarmaGui::GetWindowWidth()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->Size.x;
 }
 
-float KarmaGui::GetWindowHeight()
+float Karma::KarmaGui::GetWindowHeight()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->Size.y;
 }
 
-KGVec2 KarmaGui::GetWindowPos()
+KGVec2 Karma::KarmaGui::GetWindowPos()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     return window->Pos;
 }
 
-void KarmaGui::SetWindowPos(KGGuiWindow* window, const KGVec2& pos, KarmaGuiCond cond)
+void Karma::KarmaGuiInternal::SetWindowPos(KGGuiWindow* window, const KGVec2& pos, KarmaGuiCond cond)
 {
     // Test condition (NB: bit 0 is always true) and clear flags for next time
     if (cond && (window->SetWindowPosAllowFlags & cond) == 0)
         return;
 
-    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond)); // Make sure the user doesn't attempt to combine multiple condition flags.
+    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond), ""); // Make sure the user doesn't attempt to combine multiple condition flags.
     window->SetWindowPosAllowFlags &= ~(KGGuiCond_Once | KGGuiCond_FirstUseEver | KGGuiCond_Appearing);
     window->SetWindowPosVal = KGVec2(FLT_MAX, FLT_MAX);
 
@@ -6667,31 +6676,31 @@ void KarmaGui::SetWindowPos(KGGuiWindow* window, const KGVec2& pos, KarmaGuiCond
     window->DC.CursorStartPos += offset;
 }
 
-void KarmaGui::SetWindowPos(const KGVec2& pos, KarmaGuiCond cond)
+void Karma::KarmaGui::SetWindowPos(const KGVec2& pos, KarmaGuiCond cond)
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
-    SetWindowPos(window, pos, cond);
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
+    KarmaGuiInternal::SetWindowPos(window, pos, cond);
 }
 
-void KarmaGui::SetWindowPos(const char* name, const KGVec2& pos, KarmaGuiCond cond)
+void Karma::KarmaGui::SetWindowPos(const char* name, const KGVec2& pos, KarmaGuiCond cond)
 {
-    if (KGGuiWindow* window = FindWindowByName(name))
-        SetWindowPos(window, pos, cond);
+    if (KGGuiWindow* window = KarmaGuiInternal::FindWindowByName(name))
+        KarmaGuiInternal::SetWindowPos(window, pos, cond);
 }
 
-KGVec2 KarmaGui::GetWindowSize()
+KGVec2 Karma::KarmaGui::GetWindowSize()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->Size;
 }
 
-void KarmaGui::SetWindowSize(KGGuiWindow* window, const KGVec2& size, KarmaGuiCond cond)
+void Karma::KarmaGuiInternal::SetWindowSize(KGGuiWindow* window, const KGVec2& size, KarmaGuiCond cond)
 {
     // Test condition (NB: bit 0 is always true) and clear flags for next time
     if (cond && (window->SetWindowSizeAllowFlags & cond) == 0)
         return;
 
-    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond)); // Make sure the user doesn't attempt to combine multiple condition flags.
+    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond), ""); // Make sure the user doesn't attempt to combine multiple condition flags.
     window->SetWindowSizeAllowFlags &= ~(KGGuiCond_Once | KGGuiCond_FirstUseEver | KGGuiCond_Appearing);
 
     // Set
@@ -6710,18 +6719,18 @@ void KarmaGui::SetWindowSize(KGGuiWindow* window, const KGVec2& size, KarmaGuiCo
         MarkIniSettingsDirty(window);
 }
 
-void KarmaGui::SetWindowSize(const KGVec2& size, KarmaGuiCond cond)
+void Karma::KarmaGui::SetWindowSize(const KGVec2& size, KarmaGuiCond cond)
 {
-    SetWindowSize(GKarmaGui->CurrentWindow, size, cond);
+    KarmaGuiInternal::SetWindowSize(GKarmaGui->CurrentWindow, size, cond);
 }
 
-void KarmaGui::SetWindowSize(const char* name, const KGVec2& size, KarmaGuiCond cond)
+void Karma::KarmaGui::SetWindowSize(const char* name, const KGVec2& size, KarmaGuiCond cond)
 {
-    if (KGGuiWindow* window = FindWindowByName(name))
-        SetWindowSize(window, size, cond);
+    if (KGGuiWindow* window = KarmaGuiInternal::FindWindowByName(name))
+        KarmaGuiInternal::SetWindowSize(window, size, cond);
 }
 
-void KarmaGui::SetWindowCollapsed(KGGuiWindow* window, bool collapsed, KarmaGuiCond cond)
+void Karma::KarmaGuiInternal::SetWindowCollapsed(KGGuiWindow* window, bool collapsed, KarmaGuiCond cond)
 {
     // Test condition (NB: bit 0 is always true) and clear flags for next time
     if (cond && (window->SetWindowCollapsedAllowFlags & cond) == 0)
@@ -6732,58 +6741,58 @@ void KarmaGui::SetWindowCollapsed(KGGuiWindow* window, bool collapsed, KarmaGuiC
     window->Collapsed = collapsed;
 }
 
-void KarmaGui::SetWindowHitTestHole(KGGuiWindow* window, const KGVec2& pos, const KGVec2& size)
+void Karma::KarmaGuiInternal::SetWindowHitTestHole(KGGuiWindow* window, const KGVec2& pos, const KGVec2& size)
 {
-    KR_CORE_ASSERT(window->HitTestHoleSize.x == 0);     // We don't support multiple holes/hit test filters
+    KR_CORE_ASSERT(window->HitTestHoleSize.x == 0, "");     // We don't support multiple holes/hit test filters
     window->HitTestHoleSize = KGVec2ih(size);
     window->HitTestHoleOffset = KGVec2ih(pos - window->Pos);
 }
 
-void KarmaGui::SetWindowCollapsed(bool collapsed, KarmaGuiCond cond)
+void Karma::KarmaGui::SetWindowCollapsed(bool collapsed, KarmaGuiCond cond)
 {
-    SetWindowCollapsed(GKarmaGui->CurrentWindow, collapsed, cond);
+    KarmaGuiInternal::SetWindowCollapsed(GKarmaGui->CurrentWindow, collapsed, cond);
 }
 
-bool KarmaGui::IsWindowCollapsed()
+bool Karma::KarmaGui::IsWindowCollapsed()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->Collapsed;
 }
 
-bool KarmaGui::IsWindowAppearing()
+bool Karma::KarmaGui::IsWindowAppearing()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->Appearing;
 }
 
-void KarmaGui::SetWindowCollapsed(const char* name, bool collapsed, KarmaGuiCond cond)
+void Karma::KarmaGui::SetWindowCollapsed(const char* name, bool collapsed, KarmaGuiCond cond)
 {
-    if (KGGuiWindow* window = FindWindowByName(name))
-        SetWindowCollapsed(window, collapsed, cond);
+    if (KGGuiWindow* window = KarmaGuiInternal::FindWindowByName(name))
+        KarmaGuiInternal::SetWindowCollapsed(window, collapsed, cond);
 }
 
-void KarmaGui::SetWindowFocus()
+void Karma::KarmaGui::SetWindowFocus()
 {
-    FocusWindow(GKarmaGui->CurrentWindow);
+    KarmaGuiInternal::FocusWindow(GKarmaGui->CurrentWindow);
 }
 
-void KarmaGui::SetWindowFocus(const char* name)
+void Karma::KarmaGui::SetWindowFocus(const char* name)
 {
     if (name)
     {
-        if (KGGuiWindow* window = FindWindowByName(name))
-            FocusWindow(window);
+        if (KGGuiWindow* window = KarmaGuiInternal::FindWindowByName(name))
+            KarmaGuiInternal::FocusWindow(window);
     }
     else
     {
-        FocusWindow(NULL);
+        KarmaGuiInternal::FocusWindow(NULL);
     }
 }
 
-void KarmaGui::SetNextWindowPos(const KGVec2& pos, KarmaGuiCond cond, const KGVec2& pivot)
+void Karma::KarmaGui::SetNextWindowPos(const KGVec2& pos, KarmaGuiCond cond, const KGVec2& pivot)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond)); // Make sure the user doesn't attempt to combine multiple condition flags.
+    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond), ""); // Make sure the user (client) doesn't attempt to combine multiple condition flags.
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasPos;
     g.NextWindowData.PosVal = pos;
     g.NextWindowData.PosPivotVal = pivot;
@@ -6791,16 +6800,16 @@ void KarmaGui::SetNextWindowPos(const KGVec2& pos, KarmaGuiCond cond, const KGVe
     g.NextWindowData.PosUndock = true;
 }
 
-void KarmaGui::SetNextWindowSize(const KGVec2& size, KarmaGuiCond cond)
+void Karma::KarmaGui::SetNextWindowSize(const KGVec2& size, KarmaGuiCond cond)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond)); // Make sure the user doesn't attempt to combine multiple condition flags.
+    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond), ""); // Make sure the user doesn't attempt to combine multiple condition flags.
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasSize;
     g.NextWindowData.SizeVal = size;
     g.NextWindowData.SizeCond = cond ? cond : KGGuiCond_Always;
 }
 
-void KarmaGui::SetNextWindowSizeConstraints(const KGVec2& size_min, const KGVec2& size_max, KarmaGuiSizeCallback custom_callback, void* custom_callback_user_data)
+void Karma::KarmaGui::SetNextWindowSizeConstraints(const KGVec2& size_min, const KGVec2& size_max, KarmaGuiSizeCallback custom_callback, void* custom_callback_user_data)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasSizeConstraint;
@@ -6811,50 +6820,50 @@ void KarmaGui::SetNextWindowSizeConstraints(const KGVec2& size_min, const KGVec2
 
 // Content size = inner scrollable rectangle, padded with WindowPadding.
 // SetNextWindowContentSize(KGVec2(100,100) + KGGuiWindowFlags_AlwaysAutoResize will always allow submitting a 100x100 item.
-void KarmaGui::SetNextWindowContentSize(const KGVec2& size)
+void Karma::KarmaGui::SetNextWindowContentSize(const KGVec2& size)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasContentSize;
     g.NextWindowData.ContentSizeVal = KGFloor(size);
 }
 
-void KarmaGui::SetNextWindowScroll(const KGVec2& scroll)
+void Karma::KarmaGui::SetNextWindowScroll(const KGVec2& scroll)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasScroll;
     g.NextWindowData.ScrollVal = scroll;
 }
 
-void KarmaGui::SetNextWindowCollapsed(bool collapsed, KarmaGuiCond cond)
+void Karma::KarmaGui::SetNextWindowCollapsed(bool collapsed, KarmaGuiCond cond)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond)); // Make sure the user doesn't attempt to combine multiple condition flags.
+    KR_CORE_ASSERT(cond == 0 || KGIsPowerOfTwo(cond), ""); // Make sure the user doesn't attempt to combine multiple condition flags.
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasCollapsed;
     g.NextWindowData.CollapsedVal = collapsed;
     g.NextWindowData.CollapsedCond = cond ? cond : KGGuiCond_Always;
 }
 
-void KarmaGui::SetNextWindowFocus()
+void Karma::KarmaGui::SetNextWindowFocus()
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasFocus;
 }
 
-void KarmaGui::SetNextWindowBgAlpha(float alpha)
+void Karma::KarmaGui::SetNextWindowBgAlpha(float alpha)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasBgAlpha;
     g.NextWindowData.BgAlphaVal = alpha;
 }
 
-void KarmaGui::SetNextWindowViewport(KGGuiID id)
+void Karma::KarmaGui::SetNextWindowViewport(KGGuiID id)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasViewport;
     g.NextWindowData.ViewportId = id;
 }
 
-void KarmaGui::SetNextWindowDockID(KGGuiID id, KarmaGuiCond cond)
+void Karma::KarmaGui::SetNextWindowDockID(KGGuiID id, KarmaGuiCond cond)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasDock;
@@ -6862,86 +6871,86 @@ void KarmaGui::SetNextWindowDockID(KGGuiID id, KarmaGuiCond cond)
     g.NextWindowData.DockId = id;
 }
 
-void KarmaGui::SetNextWindowClass(const KarmaGuiWindowClass* window_class)
+void Karma::KarmaGui::SetNextWindowClass(const KarmaGuiWindowClass* window_class)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT((window_class->ViewportFlagsOverrideSet & window_class->ViewportFlagsOverrideClear) == 0); // Cannot set both set and clear for the same bit
+    KR_CORE_ASSERT((window_class->ViewportFlagsOverrideSet & window_class->ViewportFlagsOverrideClear) == 0, ""); // Cannot set both set and clear for the same bit
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasWindowClass;
     g.NextWindowData.WindowClass = *window_class;
 }
 
-KGDrawList* KarmaGui::GetWindowDrawList()
+KGDrawList* Karma::KarmaGui::GetWindowDrawList()
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     return window->DrawList;
 }
 
-float KarmaGui::GetWindowDpiScale()
+float Karma::KarmaGui::GetWindowDpiScale()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.CurrentDpiScale;
 }
 
-KarmaGuiViewport* KarmaGui::GetWindowViewport()
+KarmaGuiViewport* Karma::KarmaGui::GetWindowViewport()
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(g.CurrentViewport != NULL && g.CurrentViewport == g.CurrentWindow->Viewport);
+    KR_CORE_ASSERT(g.CurrentViewport != NULL && g.CurrentViewport == g.CurrentWindow->Viewport, "");
     return g.CurrentViewport;
 }
 
-KGFont* KarmaGui::GetFont()
+KGFont* Karma::KarmaGui::GetFont()
 {
     return GKarmaGui->Font;
 }
 
-float KarmaGui::GetFontSize()
+float Karma::KarmaGui::GetFontSize()
 {
     return GKarmaGui->FontSize;
 }
 
-KGVec2 KarmaGui::GetFontTexUvWhitePixel()
+KGVec2 Karma::KarmaGui::GetFontTexUvWhitePixel()
 {
     return GKarmaGui->DrawListSharedData.TexUvWhitePixel;
 }
 
-void KarmaGui::SetWindowFontScale(float scale)
+void Karma::KarmaGui::SetWindowFontScale(float scale)
 {
-    KR_CORE_ASSERT(scale > 0.0f);
+    KR_CORE_ASSERT(scale > 0.0f, "");
     KarmaGuiContext& g = *GKarmaGui;
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->FontWindowScale = scale;
     g.FontSize = g.DrawListSharedData.FontSize = window->CalcFontSize();
 }
 
-void KarmaGui::ActivateItem(KGGuiID id)
+void Karma::KarmaGuiInternal::ActivateItem(KGGuiID id)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NavNextActivateId = id;
     g.NavNextActivateFlags = KGGuiActivateFlags_None;
 }
 
-void KarmaGui::PushFocusScope(KGGuiID id)
+void Karma::KarmaGuiInternal::PushFocusScope(KGGuiID id)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.FocusScopeStack.push_back(id);
     g.CurrentFocusScopeId = id;
 }
 
-void KarmaGui::PopFocusScope()
+void Karma::KarmaGuiInternal::PopFocusScope()
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(g.FocusScopeStack.Size > 0); // Too many PopFocusScope() ?
+    KR_CORE_ASSERT(g.FocusScopeStack.Size > 0, ""); // Too many PopFocusScope() ?
     g.FocusScopeStack.pop_back();
     g.CurrentFocusScopeId = g.FocusScopeStack.Size ? g.FocusScopeStack.back() : 0;
 }
 
 // Note: this will likely be called ActivateItem() once we rework our Focus/Activation system!
-void KarmaGui::SetKeyboardFocusHere(int offset)
+void Karma::KarmaGui::SetKeyboardFocusHere(int offset)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
-    KR_CORE_ASSERT(offset >= -1);    // -1 is allowed but not below
-    KARMAGUI_DEBUG_LOG_ACTIVEID("SetKeyboardFocusHere(%d) in window \"%s\"\n", offset, window->Name);
+    KR_CORE_ASSERT(offset >= -1, "");    // -1 is allowed but not below
+    KR_CORE_INFO("SetKeyboardFocusHere(%d) in window \"%s\"\n", offset, window->Name);
 
     // It makes sense in the vast majority of cases to never interrupt a drag and drop.
     // When we refactor this function into ActivateItem() we may want to make this an option.
@@ -6949,17 +6958,17 @@ void KarmaGui::SetKeyboardFocusHere(int offset)
     // is also automatically dropped in the event g.ActiveId is stolen.
     if (g.DragDropActive || g.MovingWindow != NULL)
     {
-        KARMAGUI_DEBUG_LOG_ACTIVEID("SetKeyboardFocusHere() ignored while DragDropActive!\n");
+        KR_CORE_INFO("SetKeyboardFocusHere() ignored while DragDropActive!\n");
         return;
     }
 
-    SetNavWindow(window);
+    KarmaGuiInternal::SetNavWindow(window);
 
     KGGuiScrollFlags scroll_flags = window->Appearing ? KGGuiScrollFlags_KeepVisibleEdgeX | KGGuiScrollFlags_AlwaysCenterY : KGGuiScrollFlags_KeepVisibleEdgeX | KGGuiScrollFlags_KeepVisibleEdgeY;
-    NavMoveRequestSubmit(KGGuiDir_None, offset < 0 ? KGGuiDir_Up : KGGuiDir_Down, KGGuiNavMoveFlags_Tabbing | KGGuiNavMoveFlags_FocusApi, scroll_flags); // FIXME-NAV: Once we refactor tabbing, add LegacyApi flag to not activate non-inputable.
+    KarmaGuiInternal::NavMoveRequestSubmit(KGGuiDir_None, offset < 0 ? KGGuiDir_Up : KGGuiDir_Down, KGGuiNavMoveFlags_Tabbing | KGGuiNavMoveFlags_FocusApi, scroll_flags); // FIXME-NAV: Once we refactor tabbing, add LegacyApi flag to not activate non-inputable.
     if (offset == -1)
     {
-        NavMoveRequestResolveWithLastItem(&g.NavMoveResultLocal);
+        KarmaGuiInternal::NavMoveRequestResolveWithLastItem(&g.NavMoveResultLocal);
     }
     else
     {
@@ -6968,7 +6977,7 @@ void KarmaGui::SetKeyboardFocusHere(int offset)
     }
 }
 
-void KarmaGui::SetItemDefaultFocus()
+void Karma::KarmaGui::SetItemDefaultFocus()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -6979,27 +6988,27 @@ void KarmaGui::SetItemDefaultFocus()
 
     g.NavInitRequest = false;
     g.NavInitResultId = g.LastItemData.ID;
-    g.NavInitResultRectRel = WindowRectAbsToRel(window, g.LastItemData.Rect);
-    NavUpdateAnyRequestFlag();
+    g.NavInitResultRectRel = KarmaGuiInternal::WindowRectAbsToRel(window, g.LastItemData.Rect);
+    KarmaGuiInternal::NavUpdateAnyRequestFlag();
 
     // Scroll could be done in NavInitRequestApplyResult() via an opt-in flag (we however don't want regular init requests to scroll)
     if (!IsItemVisible())
-        ScrollToRectEx(window, g.LastItemData.Rect, KGGuiScrollFlags_None);
+        KarmaGuiInternal::ScrollToRectEx(window, g.LastItemData.Rect, KGGuiScrollFlags_None);
 }
 
-void KarmaGui::SetStateStorage(KarmaGuiStorage* tree)
+void Karma::KarmaGui::SetStateStorage(KarmaGuiStorage* tree)
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     window->DC.StateStorage = tree ? tree : &window->StateStorage;
 }
 
-KarmaGuiStorage* KarmaGui::GetStateStorage()
+KarmaGuiStorage* Karma::KarmaGui::GetStateStorage()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->DC.StateStorage;
 }
 
-void KarmaGui::PushID(const char* str_id)
+void Karma::KarmaGui::PushID(const char* str_id)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -7007,7 +7016,7 @@ void KarmaGui::PushID(const char* str_id)
     window->IDStack.push_back(id);
 }
 
-void KarmaGui::PushID(const char* str_id_begin, const char* str_id_end)
+void Karma::KarmaGui::PushID(const char* str_id_begin, const char* str_id_end)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -7015,7 +7024,7 @@ void KarmaGui::PushID(const char* str_id_begin, const char* str_id_end)
     window->IDStack.push_back(id);
 }
 
-void KarmaGui::PushID(const void* ptr_id)
+void Karma::KarmaGui::PushID(const void* ptr_id)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -7023,7 +7032,7 @@ void KarmaGui::PushID(const void* ptr_id)
     window->IDStack.push_back(id);
 }
 
-void KarmaGui::PushID(int int_id)
+void Karma::KarmaGui::PushID(int int_id)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -7032,7 +7041,7 @@ void KarmaGui::PushID(int int_id)
 }
 
 // Push a given id value ignoring the ID stack as a seed.
-void KarmaGui::PushOverrideID(KGGuiID id)
+void Karma::KarmaGuiInternal::PushOverrideID(KGGuiID id)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -7044,7 +7053,7 @@ void KarmaGui::PushOverrideID(KGGuiID id)
 // Helper to avoid a common series of PushOverrideID -> GetID() -> PopID() call
 // (note that when using this pattern, TestEngine's "Stack Tool" will tend to not display the intermediate stack level.
 //  for that to work we would need to do PushOverrideID() -> ItemAdd() -> PopID() which would alter widget code a little more)
-KGGuiID KarmaGui::GetIDWithSeed(const char* str, const char* str_end, KGGuiID seed)
+KGGuiID Karma::KarmaGuiInternal::GetIDWithSeed(const char* str, const char* str_end, KGGuiID seed)
 {
     KGGuiID id = KGHashStr(str, str_end ? (str_end - str) : 0, seed);
     KarmaGuiContext& g = *GKarmaGui;
@@ -7053,38 +7062,38 @@ KGGuiID KarmaGui::GetIDWithSeed(const char* str, const char* str_end, KGGuiID se
     return id;
 }
 
-void KarmaGui::PopID()
+void Karma::KarmaGui::PopID()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
-    KR_CORE_ASSERT(window->IDStack.Size > 1); // Too many PopID(), or could be popping in a wrong/different window?
+    KR_CORE_ASSERT(window->IDStack.Size > 1, ""); // Too many PopID(), or could be popping in a wrong/different window?
     window->IDStack.pop_back();
 }
 
-KGGuiID KarmaGui::GetID(const char* str_id)
+KGGuiID Karma::KarmaGui::GetID(const char* str_id)
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->GetID(str_id);
 }
 
-KGGuiID KarmaGui::GetID(const char* str_id_begin, const char* str_id_end)
+KGGuiID Karma::KarmaGui::GetID(const char* str_id_begin, const char* str_id_end)
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->GetID(str_id_begin, str_id_end);
 }
 
-KGGuiID KarmaGui::GetID(const void* ptr_id)
+KGGuiID Karma::KarmaGui::GetID(const void* ptr_id)
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->GetID(ptr_id);
 }
 
-bool KarmaGui::IsRectVisible(const KGVec2& size)
+bool Karma::KarmaGui::IsRectVisible(const KGVec2& size)
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ClipRect.Overlaps(KGRect(window->DC.CursorPos, window->DC.CursorPos + size));
 }
 
-bool KarmaGui::IsRectVisible(const KGVec2& rect_min, const KGVec2& rect_max)
+bool Karma::KarmaGui::IsRectVisible(const KGVec2& rect_min, const KGVec2& rect_max)
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ClipRect.Overlaps(KGRect(rect_min, rect_max));
@@ -7154,7 +7163,7 @@ bool KarmaGui::IsRectVisible(const KGVec2& rect_min, const KGVec2& rect_max)
 // - Shortcut() [Internal]
 //-----------------------------------------------------------------------------
 
-KarmaGuiKeyData* KarmaGui::GetKeyData(KarmaGuiKey key)
+KarmaGuiKeyData* Karma::KarmaGuiInternal::GetKeyData(KarmaGuiKey key)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -7163,19 +7172,20 @@ KarmaGuiKeyData* KarmaGui::GetKeyData(KarmaGuiKey key)
         key = ConvertSingleModFlagToKey(key);
 
     int index;
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+/*#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
     KR_CORE_ASSERT(key >= KGGuiKey_LegacyNativeKey_BEGIN && key < KGGuiKey_NamedKey_END);
     if (IsLegacyKey(key))
         index = (g.IO.KeyMap[key] != -1) ? g.IO.KeyMap[key] : key; // Remap native->imgui or imgui->native
     else
         index = key;
-#else
-    KR_CORE_ASSERT(IsNamedKey(key) && "Support for user key indices was dropped in favor of KarmaGuiKey. Please update backend & user code.");
+#else*/
+    KR_CORE_ASSERT(IsNamedKey(key), "Support for user key indices was dropped in favor of KarmaGuiKey. Please update backend & user code.");
     index = key - KGGuiKey_NamedKey_BEGIN;
-#endif
+//#endif
     return &g.IO.KeysData[index];
 }
 
+/*
 #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
 KarmaGuiKey KarmaGui::GetKeyIndex(KarmaGuiKey key)
 {
@@ -7184,10 +7194,10 @@ KarmaGuiKey KarmaGui::GetKeyIndex(KarmaGuiKey key)
     const KarmaGuiKeyData* key_data = GetKeyData(key);
     return (KarmaGuiKey)(key_data - g.IO.KeysData);
 }
-#endif
+#endif*/
 
 // Those names a provided for debugging purpose and are not meant to be saved persistently not compared.
-static const char* const GKeyNames[] =
+const char* const Karma::KarmaGui::GKeyNames[] =
 {
     "Tab", "LeftArrow", "RightArrow", "UpArrow", "DownArrow", "PageUp", "PageDown",
     "Home", "End", "Insert", "Delete", "Backspace", "Space", "Enter", "Escape",
@@ -7209,13 +7219,14 @@ static const char* const GKeyNames[] =
     "MouseLeft", "MouseRight", "MouseMiddle", "MouseX1", "MouseX2", "MouseWheelX", "MouseWheelY",
     "ModCtrl", "ModShift", "ModAlt", "ModSuper", // ReservedForModXXX are showing the ModXXX names.
 };
-KG_STATIC_ASSERT(KGGuiKey_NamedKey_COUNT == KG_ARRAYSIZE(GKeyNames));
+//KR_CORE_ASSERT(KarmaGuiKey::KGGuiKey_NamedKey_COUNT == KG_ARRAYSIZE(Karma::KarmaGui::GKeyNames), "size mismatch");
 
-const char* KarmaGui::GetKeyName(KarmaGuiKey key)
+const char* Karma::KarmaGui::GetKeyName(KarmaGuiKey key)
 {
-#ifdef IMGUI_DISABLE_OBSOLETE_KEYIO
-    KR_CORE_ASSERT((IsNamedKey(key) || key == KGGuiKey_None) && "Support for user key indices was dropped in favor of KarmaGuiKey. Please update backend and user code.");
-#else
+KR_CORE_ASSERT(KarmaGuiKey::KGGuiKey_NamedKey_COUNT == KG_ARRAYSIZE(Karma::KarmaGui::GKeyNames), "size mismatch");
+//#ifdef IMGUI_DISABLE_OBSOLETE_KEYIO
+    KR_CORE_ASSERT((KarmaGuiInternal::IsNamedKey(key) || key == KGGuiKey_None), "Support for user key indices was dropped in favor of KarmaGuiKey. Please update backend and user code.");
+/*#else
     if (IsLegacyKey(key))
     {
         KarmaGuiIO& io = GetIO();
@@ -7224,36 +7235,36 @@ const char* KarmaGui::GetKeyName(KarmaGuiKey key)
         KR_CORE_ASSERT(IsNamedKey((KarmaGuiKey)io.KeyMap[key]));
         key = (KarmaGuiKey)io.KeyMap[key];
     }
-#endif
+#endif*/
     if (key == KGGuiKey_None)
         return "None";
     if (key & KGGuiMod_Mask_)
-        key = ConvertSingleModFlagToKey(key);
-    if (!IsNamedKey(key))
+        key = Karma::KarmaGuiInternal::ConvertSingleModFlagToKey(key);
+    if (!KarmaGuiInternal::IsNamedKey(key))
         return "Unknown";
 
     return GKeyNames[key - KGGuiKey_NamedKey_BEGIN];
 }
 
 // KGGuiMod_Shortcut is translated to either Ctrl or Super.
-void KarmaGui::GetKeyChordName(KarmaGuiKeyChord key_chord, char* out_buf, int out_buf_size)
+void Karma::KarmaGuiInternal::GetKeyChordName(KarmaGuiKeyChord key_chord, char* out_buf, int out_buf_size)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (key_chord & KGGuiMod_Shortcut)
-        key_chord = ConvertShortcutMod(key_chord);
+        key_chord = KarmaGuiInternal::ConvertShortcutMod(key_chord);
     KGFormatString(out_buf, (size_t)out_buf_size, "%s%s%s%s%s",
         (key_chord & KGGuiMod_Ctrl) ? "Ctrl+" : "",
         (key_chord & KGGuiMod_Shift) ? "Shift+" : "",
         (key_chord & KGGuiMod_Alt) ? "Alt+" : "",
         (key_chord & KGGuiMod_Super) ? (g.IO.ConfigMacOSXBehaviors ? "Cmd+" : "Super+") : "",
-        GetKeyName((KarmaGuiKey)(key_chord & ~KGGuiMod_Mask_)));
+        KarmaGui::GetKeyName((KarmaGuiKey)(key_chord & ~KGGuiMod_Mask_)));
 }
 
 // t0 = previous time (e.g.: g.Time - g.IO.DeltaTime)
 // t1 = current time (e.g.: g.Time)
 // An event is triggered at:
 //  t = 0.0f     t = repeat_delay,    t = repeat_delay + repeat_rate*N
-int KarmaGui::CalcTypematicRepeatAmount(float t0, float t1, float repeat_delay, float repeat_rate)
+int Karma::KarmaGuiInternal::CalcTypematicRepeatAmount(float t0, float t1, float repeat_delay, float repeat_rate)
 {
     if (t1 == 0.0f)
         return 1;
@@ -7267,7 +7278,7 @@ int KarmaGui::CalcTypematicRepeatAmount(float t0, float t1, float repeat_delay, 
     return count;
 }
 
-void KarmaGui::GetTypematicRepeatRate(KarmaGuiInputFlags flags, float* repeat_delay, float* repeat_rate)
+void Karma::KarmaGuiInternal::GetTypematicRepeatRate(KarmaGuiInputFlags flags, float* repeat_delay, float* repeat_rate)
 {
     KarmaGuiContext& g = *GKarmaGui;
     switch (flags & KGGuiInputFlags_RepeatRateMask_)
@@ -7280,29 +7291,29 @@ void KarmaGui::GetTypematicRepeatRate(KarmaGuiInputFlags flags, float* repeat_de
 
 // Return value representing the number of presses in the last time period, for the given repeat rate
 // (most often returns 0 or 1. The result is generally only >1 when RepeatRate is smaller than DeltaTime, aka large DeltaTime or fast RepeatRate)
-int KarmaGui::GetKeyPressedAmount(KarmaGuiKey key, float repeat_delay, float repeat_rate)
+int Karma::KarmaGui::GetKeyPressedAmount(KarmaGuiKey key, float repeat_delay, float repeat_rate)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    const KarmaGuiKeyData* key_data = GetKeyData(key);
+    const KarmaGuiKeyData* key_data = KarmaGuiInternal::GetKeyData(key);
     if (!key_data->Down) // In theory this should already be encoded as (DownDuration < 0.0f), but testing this facilitates eating mechanism (until we finish work on key ownership)
         return 0;
     const float t = key_data->DownDuration;
-    return CalcTypematicRepeatAmount(t - g.IO.DeltaTime, t, repeat_delay, repeat_rate);
+    return KarmaGuiInternal::CalcTypematicRepeatAmount(t - g.IO.DeltaTime, t, repeat_delay, repeat_rate);
 }
 
 // Return 2D vector representing the combination of four cardinal direction, with analog value support (for e.g. KGGuiKey_GamepadLStick* values).
-KGVec2 KarmaGui::GetKeyMagnitude2d(KarmaGuiKey key_left, KarmaGuiKey key_right, KarmaGuiKey key_up, KarmaGuiKey key_down)
+KGVec2 Karma::KarmaGuiInternal::GetKeyMagnitude2d(KarmaGuiKey key_left, KarmaGuiKey key_right, KarmaGuiKey key_up, KarmaGuiKey key_down)
 {
     return KGVec2(
-        GetKeyData(key_right)->AnalogValue - GetKeyData(key_left)->AnalogValue,
-        GetKeyData(key_down)->AnalogValue - GetKeyData(key_up)->AnalogValue);
+        KarmaGuiInternal::GetKeyData(key_right)->AnalogValue - KarmaGuiInternal::GetKeyData(key_left)->AnalogValue,
+        KarmaGuiInternal::GetKeyData(key_down)->AnalogValue - KarmaGuiInternal::GetKeyData(key_up)->AnalogValue);
 }
 
 // Rewrite routing data buffers to strip old entries + sort by key to make queries not touch scattered data.
 //   Entries   D,A,B,B,A,C,B     --> A,A,B,B,B,C,D
 //   Index     A:1 B:2 C:5 D:0   --> A:0 B:2 C:5 D:6
 // See 'Metrics->Key Owners & Shortcut Routing' to visualize the result of that operation.
-static void KarmaGui::UpdateKeyRoutingTable(KGGuiKeyRoutingTable* rt)
+void Karma::KarmaGuiInternal::UpdateKeyRoutingTable(KGGuiKeyRoutingTable* rt)
 {
     KarmaGuiContext& g = *GKarmaGui;
     rt->EntriesNext.resize(0);
@@ -7323,7 +7334,7 @@ static void KarmaGui::UpdateKeyRoutingTable(KGGuiKeyRoutingTable* rt)
             // Apply routing to owner if there's no owner already (RoutingCurr == None at this point)
             if (routing_entry->Mods == g.IO.KeyMods)
             {
-                KGGuiKeyOwnerData* owner_data = KarmaGui::GetKeyOwnerData(key);
+                KGGuiKeyOwnerData* owner_data = KarmaGuiInternal::GetKeyOwnerData(key);
                 if (owner_data->OwnerCurr == KGGuiKeyOwner_None)
                     owner_data->OwnerCurr = routing_entry->RoutingCurr;
             }
@@ -7344,7 +7355,7 @@ static inline KGGuiID GetRoutingIdFromOwnerId(KGGuiID owner_id)
     return (owner_id != KGGuiKeyOwner_None && owner_id != KGGuiKeyOwner_Any) ? owner_id : g.CurrentFocusScopeId;
 }
 
-KGGuiKeyRoutingData* KarmaGui::GetShortcutRoutingData(KarmaGuiKeyChord key_chord)
+KGGuiKeyRoutingData* Karma::KarmaGuiInternal::GetShortcutRoutingData(KarmaGuiKeyChord key_chord)
 {
     // Majority of shortcuts will be Key + any number of Mods
     // We accept _Single_ mod with KGGuiKey_None.
@@ -7361,7 +7372,7 @@ KGGuiKeyRoutingData* KarmaGui::GetShortcutRoutingData(KarmaGuiKeyChord key_chord
     KarmaGuiKey mods = (KarmaGuiKey)(key_chord & KGGuiMod_Mask_);
     if (key == KGGuiKey_None)
         key = ConvertSingleModFlagToKey(mods);
-    KR_CORE_ASSERT(IsNamedKey(key));
+    KR_CORE_ASSERT(IsNamedKey(key), "");
 
     // Get (in the majority of case, the linked list will have one element so this should be 2 reads.
     // Subsequent elements will be contiguous in memory as list is sorted/rebuilt in NewFrame).
@@ -7413,7 +7424,7 @@ static int CalcRoutingScore(KGGuiWindow* location, KGGuiID owner_id, KarmaGuiInp
             {
                 if (focused == location)
                 {
-                    KR_CORE_ASSERT(next_score < 255);
+                    KR_CORE_ASSERT(next_score < 255, "");
                     return next_score;
                 }
                 focused = (focused->RootWindow != focused) ? focused->ParentWindow : NULL; // FIXME: This could be later abstracted as a focus path
@@ -7436,13 +7447,13 @@ static int CalcRoutingScore(KGGuiWindow* location, KGGuiID owner_id, KarmaGuiInp
 //   As such, it could be called TrySetXXX or SubmitXXX, or the Submit and Test operations should be separate.)
 // - Using 'owner_id == KGGuiKeyOwner_Any/0': auto-assign an owner based on current focus scope (each window has its focus scope by default)
 // - Using 'owner_id == KGGuiKeyOwner_None': allows disabling/locking a shortcut.
-bool KarmaGui::SetShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id, KarmaGuiInputFlags flags)
+bool Karma::KarmaGuiInternal::SetShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id, KarmaGuiInputFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if ((flags & KGGuiInputFlags_RouteMask_) == 0)
         flags |= KGGuiInputFlags_RouteGlobalHigh; // IMPORTANT: This is the default for SetShortcutRouting() but NOT Shortcut()
     else
-        KR_CORE_ASSERT(KGIsPowerOfTwo(flags & KGGuiInputFlags_RouteMask_)); // Check that only 1 routing flag is used
+        KR_CORE_ASSERT(KGIsPowerOfTwo(flags & KGGuiInputFlags_RouteMask_), ""); // Check that only 1 routing flag is used
 
     if (flags & KGGuiInputFlags_RouteUnlessBgFocused)
         if (g.NavWindow == NULL)
@@ -7471,7 +7482,7 @@ bool KarmaGui::SetShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id, 
 
 // Currently unused by core (but used by tests)
 // Note: this cannot be turned into GetShortcutRouting() because we do the owner_id->routing_id translation, name would be more misleading.
-bool KarmaGui::TestShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id)
+bool Karma::KarmaGuiInternal::TestShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id)
 {
     const KGGuiID routing_id = GetRoutingIdFromOwnerId(owner_id);
     KGGuiKeyRoutingData* routing_data = GetShortcutRoutingData(key_chord); // FIXME: Could avoid creating entry.
@@ -7480,12 +7491,12 @@ bool KarmaGui::TestShortcutRouting(KarmaGuiKeyChord key_chord, KGGuiID owner_id)
 
 // Note that Dear ImGui doesn't know the meaning/semantic of KarmaGuiKey from 0..511: they are legacy native keycodes.
 // Consider transitioning from 'IsKeyDown(MY_ENGINE_KEY_A)' (<1.87) to IsKeyDown(KGGuiKey_A) (>= 1.87)
-bool KarmaGui::IsKeyDown(KarmaGuiKey key)
+bool Karma::KarmaGui::IsKeyDown(KarmaGuiKey key)
 {
-    return IsKeyDown(key, KGGuiKeyOwner_Any);
+    return KarmaGuiInternal::IsKeyDown(key, KGGuiKeyOwner_Any);
 }
 
-bool KarmaGui::IsKeyDown(KarmaGuiKey key, KGGuiID owner_id)
+bool Karma::KarmaGuiInternal::IsKeyDown(KarmaGuiKey key, KGGuiID owner_id)
 {
     const KarmaGuiKeyData* key_data = GetKeyData(key);
     if (!key_data->Down)
@@ -7495,13 +7506,13 @@ bool KarmaGui::IsKeyDown(KarmaGuiKey key, KGGuiID owner_id)
     return true;
 }
 
-bool KarmaGui::IsKeyPressed(KarmaGuiKey key, bool repeat)
+bool Karma::KarmaGui::IsKeyPressed(KarmaGuiKey key, bool repeat)
 {
-    return IsKeyPressed(key, KGGuiKeyOwner_Any, repeat ? KGGuiInputFlags_Repeat : KGGuiInputFlags_None);
+    return KarmaGuiInternal::IsKeyPressed(key, KGGuiKeyOwner_Any, repeat ? KGGuiInputFlags_Repeat : KGGuiInputFlags_None);
 }
 
 // Important: unless legacy IsKeyPressed(KarmaGuiKey, bool repeat=true) which DEFAULT to repeat, this requires EXPLICIT repeat.
-bool KarmaGui::IsKeyPressed(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags flags)
+bool Karma::KarmaGuiInternal::IsKeyPressed(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags flags)
 {
     const KarmaGuiKeyData* key_data = GetKeyData(key);
     if (!key_data->Down) // In theory this should already be encoded as (DownDuration < 0.0f), but testing this facilitates eating mechanism (until we finish work on key ownership)
@@ -7509,14 +7520,14 @@ bool KarmaGui::IsKeyPressed(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlag
     const float t = key_data->DownDuration;
     if (t < 0.0f)
         return false;
-    KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedByIsKeyPressed) == 0); // Passing flags not supported by this function!
+    KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedByIsKeyPressed) == 0, ""); // Passing flags not supported by this function!
 
     bool pressed = (t == 0.0f);
     if (!pressed && ((flags & KGGuiInputFlags_Repeat) != 0))
     {
         float repeat_delay, repeat_rate;
         GetTypematicRepeatRate(flags, &repeat_delay, &repeat_rate);
-        pressed = (t > repeat_delay) && GetKeyPressedAmount(key, repeat_delay, repeat_rate) > 0;
+        pressed = (t > repeat_delay) && KarmaGui::GetKeyPressedAmount(key, repeat_delay, repeat_rate) > 0;
     }
     if (!pressed)
         return false;
@@ -7525,12 +7536,12 @@ bool KarmaGui::IsKeyPressed(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlag
     return true;
 }
 
-bool KarmaGui::IsKeyReleased(KarmaGuiKey key)
+bool Karma::KarmaGui::IsKeyReleased(KarmaGuiKey key)
 {
-    return IsKeyReleased(key, KGGuiKeyOwner_Any);
+    return KarmaGuiInternal::IsKeyReleased(key, KGGuiKeyOwner_Any);
 }
 
-bool KarmaGui::IsKeyReleased(KarmaGuiKey key, KGGuiID owner_id)
+bool Karma::KarmaGuiInternal::IsKeyReleased(KarmaGuiKey key, KGGuiID owner_id)
 {
     const KarmaGuiKeyData* key_data = GetKeyData(key);
     if (key_data->DownDurationPrev < 0.0f || key_data->Down)
@@ -7540,35 +7551,35 @@ bool KarmaGui::IsKeyReleased(KarmaGuiKey key, KGGuiID owner_id)
     return true;
 }
 
-bool KarmaGui::IsMouseDown(KarmaGuiMouseButton button)
+bool Karma::KarmaGui::IsMouseDown(KarmaGuiMouseButton button)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
-    return g.IO.MouseDown[button] && TestKeyOwner(MouseButtonToKey(button), KGGuiKeyOwner_Any); // should be same as IsKeyDown(MouseButtonToKey(button), KGGuiKeyOwner_Any), but this allows legacy code hijacking the io.Mousedown[] array.
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
+    return g.IO.MouseDown[button] && KarmaGuiInternal::TestKeyOwner(KarmaGuiInternal::MouseButtonToKey(button), KGGuiKeyOwner_Any); // should be same as IsKeyDown(MouseButtonToKey(button), KGGuiKeyOwner_Any), but this allows legacy code hijacking the io.Mousedown[] array.
 }
 
-bool KarmaGui::IsMouseDown(KarmaGuiMouseButton button, KGGuiID owner_id)
+bool Karma::KarmaGuiInternal::IsMouseDown(KarmaGuiMouseButton button, KGGuiID owner_id)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
     return g.IO.MouseDown[button] && TestKeyOwner(MouseButtonToKey(button), owner_id); // Should be same as IsKeyDown(MouseButtonToKey(button), owner_id), but this allows legacy code hijacking the io.Mousedown[] array.
 }
 
-bool KarmaGui::IsMouseClicked(KarmaGuiMouseButton button, bool repeat)
+bool Karma::KarmaGui::IsMouseClicked(KarmaGuiMouseButton button, bool repeat)
 {
-    return IsMouseClicked(button, KGGuiKeyOwner_Any, repeat ? KGGuiInputFlags_Repeat : KGGuiInputFlags_None);
+    return KarmaGuiInternal::IsMouseClicked(button, KGGuiKeyOwner_Any, repeat ? KGGuiInputFlags_Repeat : KGGuiInputFlags_None);
 }
 
-bool KarmaGui::IsMouseClicked(KarmaGuiMouseButton button, KGGuiID owner_id, KarmaGuiInputFlags flags)
+bool Karma::KarmaGuiInternal::IsMouseClicked(KarmaGuiMouseButton button, KGGuiID owner_id, KarmaGuiInputFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
     if (!g.IO.MouseDown[button]) // In theory this should already be encoded as (DownDuration < 0.0f), but testing this facilitates eating mechanism (until we finish work on key ownership)
         return false;
     const float t = g.IO.MouseDownDuration[button];
     if (t < 0.0f)
         return false;
-    KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedByIsKeyPressed) == 0); // Passing flags not supported by this function!
+    KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedByIsKeyPressed) == 0, ""); // Passing flags not supported by this function!
 
     const bool repeat = (flags & KGGuiInputFlags_Repeat) != 0;
     const bool pressed = (t == 0.0f) || (repeat && t > g.IO.KeyRepeatDelay && CalcTypematicRepeatAmount(t - g.IO.DeltaTime, t, g.IO.KeyRepeatDelay, g.IO.KeyRepeatRate) > 0);
@@ -7581,38 +7592,38 @@ bool KarmaGui::IsMouseClicked(KarmaGuiMouseButton button, KGGuiID owner_id, Karm
     return true;
 }
 
-bool KarmaGui::IsMouseReleased(KarmaGuiMouseButton button)
+bool Karma::KarmaGui::IsMouseReleased(KarmaGuiMouseButton button)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
-    return g.IO.MouseReleased[button] && TestKeyOwner(MouseButtonToKey(button), KGGuiKeyOwner_Any); // Should be same as IsKeyReleased(MouseButtonToKey(button), KGGuiKeyOwner_Any)
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
+    return g.IO.MouseReleased[button] && KarmaGuiInternal::TestKeyOwner(KarmaGuiInternal::MouseButtonToKey(button), KGGuiKeyOwner_Any); // Should be same as IsKeyReleased(MouseButtonToKey(button), KGGuiKeyOwner_Any)
 }
 
-bool KarmaGui::IsMouseReleased(KarmaGuiMouseButton button, KGGuiID owner_id)
+bool Karma::KarmaGuiInternal::IsMouseReleased(KarmaGuiMouseButton button, KGGuiID owner_id)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
     return g.IO.MouseReleased[button] && TestKeyOwner(MouseButtonToKey(button), owner_id); // Should be same as IsKeyReleased(MouseButtonToKey(button), owner_id)
 }
 
-bool KarmaGui::IsMouseDoubleClicked(KarmaGuiMouseButton button)
+bool Karma::KarmaGui::IsMouseDoubleClicked(KarmaGuiMouseButton button)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
-    return g.IO.MouseClickedCount[button] == 2 && TestKeyOwner(MouseButtonToKey(button), KGGuiKeyOwner_Any);
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
+    return g.IO.MouseClickedCount[button] == 2 && KarmaGuiInternal::TestKeyOwner(KarmaGuiInternal::MouseButtonToKey(button), KGGuiKeyOwner_Any);
 }
 
-int KarmaGui::GetMouseClickedCount(KarmaGuiMouseButton button)
+int Karma::KarmaGui::GetMouseClickedCount(KarmaGuiMouseButton button)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
     return g.IO.MouseClickedCount[button];
 }
 
 // Test if mouse cursor is hovering given rectangle
 // NB- Rectangle is clipped by our current clip setting
 // NB- Expand the rectangle to be generous on imprecise inputs systems (g.Style.TouchExtraPadding)
-bool KarmaGui::IsMouseHoveringRect(const KGVec2& r_min, const KGVec2& r_max, bool clip)
+bool Karma::KarmaGui::IsMouseHoveringRect(const KGVec2& r_min, const KGVec2& r_max, bool clip)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -7632,32 +7643,32 @@ bool KarmaGui::IsMouseHoveringRect(const KGVec2& r_min, const KGVec2& r_max, boo
 
 // Return if a mouse click/drag went past the given threshold. Valid to call during the MouseReleased frame.
 // [Internal] This doesn't test if the button is pressed
-bool KarmaGui::IsMouseDragPastThreshold(KarmaGuiMouseButton button, float lock_threshold)
+bool Karma::KarmaGuiInternal::IsMouseDragPastThreshold(KarmaGuiMouseButton button, float lock_threshold)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
     if (lock_threshold < 0.0f)
         lock_threshold = g.IO.MouseDragThreshold;
     return g.IO.MouseDragMaxDistanceSqr[button] >= lock_threshold * lock_threshold;
 }
 
-bool KarmaGui::IsMouseDragging(KarmaGuiMouseButton button, float lock_threshold)
+bool Karma::KarmaGui::IsMouseDragging(KarmaGuiMouseButton button, float lock_threshold)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
     if (!g.IO.MouseDown[button])
         return false;
-    return IsMouseDragPastThreshold(button, lock_threshold);
+    return KarmaGuiInternal::IsMouseDragPastThreshold(button, lock_threshold);
 }
 
-KGVec2 KarmaGui::GetMousePos()
+KGVec2 Karma::KarmaGui::GetMousePos()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.IO.MousePos;
 }
 
 // NB: prefer to call right after BeginPopup(). At the time Selectable/MenuItem is activated, the popup is already closed!
-KGVec2 KarmaGui::GetMousePosOnOpeningCurrentPopup()
+KGVec2 Karma::KarmaGui::GetMousePosOnOpeningCurrentPopup()
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (g.BeginPopupStack.Size > 0)
@@ -7666,18 +7677,18 @@ KGVec2 KarmaGui::GetMousePosOnOpeningCurrentPopup()
 }
 
 // We typically use KGVec2(-FLT_MAX,-FLT_MAX) to denote an invalid mouse position.
-bool KarmaGui::IsMousePosValid(const KGVec2* mouse_pos)
+bool Karma::KarmaGui::IsMousePosValid(const KGVec2* mouse_pos)
 {
     // The assert is only to silence a false-positive in XCode Static Analysis.
     // Because GKarmaGui is not dereferenced in every code path, the static analyzer assume that it may be NULL (which it doesn't for other functions).
-    KR_CORE_ASSERT(GKarmaGui != NULL);
+    KR_CORE_ASSERT(GKarmaGui != NULL, "");
     const float MOUSE_INVALID = -256000.0f;
     KGVec2 p = mouse_pos ? *mouse_pos : GKarmaGui->IO.MousePos;
     return p.x >= MOUSE_INVALID && p.y >= MOUSE_INVALID;
 }
 
 // [WILL OBSOLETE] This was designed for backends, but prefer having backend maintain a mask of held mouse buttons, because upcoming input queue system will make this invalid.
-bool KarmaGui::IsAnyMouseDown()
+bool Karma::KarmaGui::IsAnyMouseDown()
 {
     KarmaGuiContext& g = *GKarmaGui;
     for (int n = 0; n < KG_ARRAYSIZE(g.IO.MouseDown); n++)
@@ -7689,10 +7700,10 @@ bool KarmaGui::IsAnyMouseDown()
 // Return the delta from the initial clicking position while the mouse button is clicked or was just released.
 // This is locked and return 0.0f until the mouse moves past a distance threshold at least once.
 // NB: This is only valid if IsMousePosValid(). backends in theory should always keep mouse position valid when dragging even outside the client window.
-KGVec2 KarmaGui::GetMouseDragDelta(KarmaGuiMouseButton button, float lock_threshold)
+KGVec2 Karma::KarmaGui::GetMouseDragDelta(KarmaGuiMouseButton button, float lock_threshold)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
     if (lock_threshold < 0.0f)
         lock_threshold = g.IO.MouseDragThreshold;
     if (g.IO.MouseDown[button] || g.IO.MouseReleased[button])
@@ -7702,10 +7713,10 @@ KGVec2 KarmaGui::GetMouseDragDelta(KarmaGuiMouseButton button, float lock_thresh
     return KGVec2(0.0f, 0.0f);
 }
 
-void KarmaGui::ResetMouseDragDelta(KarmaGuiMouseButton button)
+void Karma::KarmaGui::ResetMouseDragDelta(KarmaGuiMouseButton button)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown));
+    KR_CORE_ASSERT(button >= 0 && button < KG_ARRAYSIZE(g.IO.MouseDown), "");
     // NB: We don't need to reset g.IO.MouseDragMaxDistanceSqr
     g.IO.MouseClickedPos[button] = g.IO.MousePos;
 }
@@ -7714,13 +7725,13 @@ void KarmaGui::ResetMouseDragDelta(KarmaGuiMouseButton button)
 // Important: this is meant to be used by a platform backend, it is reset in KarmaGui::NewFrame(),
 // updated during the frame, and locked in EndFrame()/Render().
 // If you use software rendering by setting io.MouseDrawCursor then Dear ImGui will render those for you
-KarmaGuiMouseCursor KarmaGui::GetMouseCursor()
+KarmaGuiMouseCursor Karma::KarmaGui::GetMouseCursor()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.MouseCursor;
 }
 
-void KarmaGui::SetMouseCursor(KarmaGuiMouseCursor cursor_type)
+void Karma::KarmaGui::SetMouseCursor(KarmaGuiMouseCursor cursor_type)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.MouseCursor = cursor_type;
@@ -7728,8 +7739,8 @@ void KarmaGui::SetMouseCursor(KarmaGuiMouseCursor cursor_type)
 
 static void UpdateAliasKey(KarmaGuiKey key, bool v, float analog_value)
 {
-    KR_CORE_ASSERT(KarmaGui::IsAliasKey(key));
-    KarmaGuiKeyData* key_data = KarmaGui::GetKeyData(key);
+    KR_CORE_ASSERT(Karma::KarmaGuiInternal::IsAliasKey(key), "");
+    KarmaGuiKeyData* key_data = Karma::KarmaGuiInternal::GetKeyData(key);
     key_data->Down = v;
     key_data->AnalogValue = analog_value;
 }
@@ -7738,14 +7749,14 @@ static void UpdateAliasKey(KarmaGuiKey key, bool v, float analog_value)
 static KarmaGuiKeyChord GetMergedModsFromKeys()
 {
     KarmaGuiKeyChord mods = 0;
-    if (KarmaGui::IsKeyDown(KGGuiMod_Ctrl))     { mods |= KGGuiMod_Ctrl; }
-    if (KarmaGui::IsKeyDown(KGGuiMod_Shift))    { mods |= KGGuiMod_Shift; }
-    if (KarmaGui::IsKeyDown(KGGuiMod_Alt))      { mods |= KGGuiMod_Alt; }
-    if (KarmaGui::IsKeyDown(KGGuiMod_Super))    { mods |= KGGuiMod_Super; }
+    if (Karma::KarmaGui::IsKeyDown(KGGuiMod_Ctrl))     { mods |= KGGuiMod_Ctrl; }
+    if (Karma::KarmaGui::IsKeyDown(KGGuiMod_Shift))    { mods |= KGGuiMod_Shift; }
+    if (Karma::KarmaGui::IsKeyDown(KGGuiMod_Alt))      { mods |= KGGuiMod_Alt; }
+    if (Karma::KarmaGui::IsKeyDown(KGGuiMod_Super))    { mods |= KGGuiMod_Super; }
     return mods;
 }
 
-static void KarmaGui::UpdateKeyboardInputs()
+void Karma::KarmaGuiInternal::UpdateKeyboardInputs()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiIO& io = g.IO;
@@ -7756,19 +7767,21 @@ static void KarmaGui::UpdateKeyboardInputs()
     {
         // Backend used new io.AddKeyEvent() API: Good! Verify that old arrays are never written to externally.
         for (int n = 0; n < KGGuiKey_LegacyNativeKey_END; n++)
-            KR_CORE_ASSERT((io.KeysDown[n] == false || IsKeyDown((KarmaGuiKey)n)) && "Backend needs to either only use io.AddKeyEvent(), either only fill legacy io.KeysDown[] + io.KeyMap[]. Not both!");
+            KR_CORE_ASSERT((io.KeysDown[n] == false || KarmaGui::IsKeyDown((KarmaGuiKey)n)), "Backend needs to either only use io.AddKeyEvent(), either only fill legacy io.KeysDown[] + io.KeyMap[]. Not both!");
     }
     else
     {
         if (g.FrameCount == 0)
             for (int n = KGGuiKey_LegacyNativeKey_BEGIN; n < KGGuiKey_LegacyNativeKey_END; n++)
-                KR_CORE_ASSERT(g.IO.KeyMap[n] == -1 && "Backend is not allowed to write to io.KeyMap[0..511]!");
+	    {
+                KR_CORE_ASSERT(g.IO.KeyMap[n] == -1, "Backend is not allowed to write to io.KeyMap[0..511]!");
+	    }
 
         // Build reverse KeyMap (Named -> Legacy)
         for (int n = KGGuiKey_NamedKey_BEGIN; n < KGGuiKey_NamedKey_END; n++)
             if (io.KeyMap[n] != -1)
             {
-                KR_CORE_ASSERT(IsLegacyKey((KarmaGuiKey)io.KeyMap[n]));
+                KR_CORE_ASSERT(IsLegacyKey((KarmaGuiKey)io.KeyMap[n]), "");
                 io.KeyMap[io.KeyMap[n]] = n;
             }
 
@@ -7777,7 +7790,7 @@ static void KarmaGui::UpdateKeyboardInputs()
             if (io.KeysDown[n] || io.BackendUsingLegacyKeyArrays == 1)
             {
                 const KarmaGuiKey key = (KarmaGuiKey)(io.KeyMap[n] != -1 ? io.KeyMap[n] : n);
-                KR_CORE_ASSERT(io.KeyMap[n] == -1 || IsNamedKey(key));
+                KR_CORE_ASSERT(io.KeyMap[n] == -1 || IsNamedKey(key), "");
                 io.KeysData[key].Down = io.KeysDown[n];
                 if (key != n)
                     io.KeysDown[key] = io.KeysDown[n]; // Allow legacy code using io.KeysDown[GetKeyIndex()] with old backends
@@ -7863,17 +7876,17 @@ static void KarmaGui::UpdateKeyboardInputs()
     UpdateKeyRoutingTable(&g.KeysRoutingTable);
 }
 
-static void KarmaGui::UpdateMouseInputs()
+void Karma::KarmaGuiInternal::UpdateMouseInputs()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiIO& io = g.IO;
 
     // Round mouse position to avoid spreading non-rounded position (e.g. UpdateManualResize doesn't support them well)
-    if (IsMousePosValid(&io.MousePos))
+    if (KarmaGui::IsMousePosValid(&io.MousePos))
         io.MousePos = g.MouseLastValidPos = KGFloorSigned(io.MousePos);
 
     // If mouse just appeared or disappeared (usually denoted by -FLT_MAX components) we cancel out movement in MouseDelta
-    if (IsMousePosValid(&io.MousePos) && IsMousePosValid(&io.MousePosPrev))
+    if (KarmaGui::IsMousePosValid(&io.MousePos) && KarmaGui::IsMousePosValid(&io.MousePosPrev))
         io.MouseDelta = io.MousePos - io.MousePosPrev;
     else
         io.MouseDelta = KGVec2(0.0f, 0.0f);
@@ -7895,7 +7908,7 @@ static void KarmaGui::UpdateMouseInputs()
             bool is_repeated_click = false;
             if ((float)(g.Time - io.MouseClickedTime[i]) < io.MouseDoubleClickTime)
             {
-                KGVec2 delta_from_click_pos = IsMousePosValid(&io.MousePos) ? (io.MousePos - io.MouseClickedPos[i]) : KGVec2(0.0f, 0.0f);
+                KGVec2 delta_from_click_pos = KarmaGui::IsMousePosValid(&io.MousePos) ? (io.MousePos - io.MouseClickedPos[i]) : KGVec2(0.0f, 0.0f);
                 if (KGLengthSqr(delta_from_click_pos) < io.MouseDoubleClickMaxDist * io.MouseDoubleClickMaxDist)
                     is_repeated_click = true;
             }
@@ -7912,7 +7925,7 @@ static void KarmaGui::UpdateMouseInputs()
         else if (io.MouseDown[i])
         {
             // Maintain the maximum distance we reaching from the initial click position, which is used with dragging threshold
-            KGVec2 delta_from_click_pos = IsMousePosValid(&io.MousePos) ? (io.MousePos - io.MouseClickedPos[i]) : KGVec2(0.0f, 0.0f);
+            KGVec2 delta_from_click_pos = KarmaGui::IsMousePosValid(&io.MousePos) ? (io.MousePos - io.MouseClickedPos[i]) : KGVec2(0.0f, 0.0f);
             io.MouseDragMaxDistanceSqr[i] = KGMax(io.MouseDragMaxDistanceSqr[i], KGLengthSqr(delta_from_click_pos));
             io.MouseDragMaxDistanceAbs[i].x = KGMax(io.MouseDragMaxDistanceAbs[i].x, delta_from_click_pos.x < 0.0f ? -delta_from_click_pos.x : delta_from_click_pos.x);
             io.MouseDragMaxDistanceAbs[i].y = KGMax(io.MouseDragMaxDistanceAbs[i].y, delta_from_click_pos.y < 0.0f ? -delta_from_click_pos.y : delta_from_click_pos.y);
@@ -7936,7 +7949,7 @@ static void LockWheelingWindow(KGGuiWindow* window, float wheel_amount)
         g.WheelingWindowReleaseTimer = 0.0f;
     if (g.WheelingWindow == window)
         return;
-    KARMAGUI_DEBUG_LOG_IO("LockWheelingWindow() \"%s\"\n", window ? window->Name : "NULL");
+    KR_CORE_INFO("LockWheelingWindow() \"{0}\"", window ? window->Name : "NULL");
     g.WheelingWindow = window;
     g.WheelingWindowRefMousePos = g.IO.MousePos;
     if (window == NULL)
@@ -7986,7 +7999,7 @@ static KGGuiWindow* FindBestWheelingWindow(const KGVec2& wheel)
 }
 
 // Called by NewFrame()
-void KarmaGui::UpdateMouseWheel()
+void Karma::KarmaGuiInternal::UpdateMouseWheel()
 {
     // Reset the locked window if we move the mouse or after the timer elapses.
     // FIXME: Ideally we could refactor to have one timer for "changing window w/ same axis" and a shorter timer for "changing window or axis w/ other axis" (#3795)
@@ -7994,7 +8007,7 @@ void KarmaGui::UpdateMouseWheel()
     if (g.WheelingWindow != NULL)
     {
         g.WheelingWindowReleaseTimer -= g.IO.DeltaTime;
-        if (IsMousePosValid() && KGLengthSqr(g.IO.MousePos - g.WheelingWindowRefMousePos) > g.IO.MouseDragThreshold * g.IO.MouseDragThreshold)
+        if (KarmaGui::IsMousePosValid() && KGLengthSqr(g.IO.MousePos - g.WheelingWindowRefMousePos) > g.IO.MouseDragThreshold * g.IO.MouseDragThreshold)
             g.WheelingWindowReleaseTimer = 0.0f;
         if (g.WheelingWindowReleaseTimer <= 0.0f)
             LockWheelingWindow(NULL, 0.0f);
@@ -8077,13 +8090,13 @@ void KarmaGui::UpdateMouseWheel()
         }
 }
 
-void KarmaGui::SetNextFrameWantCaptureKeyboard(bool want_capture_keyboard)
+void Karma::KarmaGui::SetNextFrameWantCaptureKeyboard(bool want_capture_keyboard)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.WantCaptureKeyboardNextFrame = want_capture_keyboard ? 1 : 0;
 }
 
-void KarmaGui::SetNextFrameWantCaptureMouse(bool want_capture_mouse)
+void Karma::KarmaGui::SetNextFrameWantCaptureMouse(bool want_capture_mouse)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.WantCaptureMouseNextFrame = want_capture_mouse ? 1 : 0;
@@ -8093,19 +8106,19 @@ void KarmaGui::SetNextFrameWantCaptureMouse(bool want_capture_mouse)
 static const char* GetInputSourceName(KGGuiInputSource source)
 {
     const char* input_source_names[] = { "None", "Mouse", "Keyboard", "Gamepad", "Nav", "Clipboard" };
-    KR_CORE_ASSERT(KG_ARRAYSIZE(input_source_names) == KGGuiInputSource_COUNT && source >= 0 && source < KGGuiInputSource_COUNT);
+    KR_CORE_ASSERT(KG_ARRAYSIZE(input_source_names) == KGGuiInputSource_COUNT && source >= 0 && source < KGGuiInputSource_COUNT, "");
     return input_source_names[source];
 }
 static void DebugPrintInputEvent(const char* prefix, const KGGuiInputEvent* e)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    if (e->Type == KGGuiInputEventType_MousePos)    { if (e->MousePos.PosX == -FLT_MAX && e->MousePos.PosY == -FLT_MAX) KARMAGUI_DEBUG_LOG_IO("%s: MousePos (-FLT_MAX, -FLT_MAX)\n", prefix); else KARMAGUI_DEBUG_LOG_IO("%s: MousePos (%.1f, %.1f)\n", prefix, e->MousePos.PosX, e->MousePos.PosY); return; }
-    if (e->Type == KGGuiInputEventType_MouseButton) { KARMAGUI_DEBUG_LOG_IO("%s: MouseButton %d %s\n", prefix, e->MouseButton.Button, e->MouseButton.Down ? "Down" : "Up"); return; }
-    if (e->Type == KGGuiInputEventType_MouseWheel)  { KARMAGUI_DEBUG_LOG_IO("%s: MouseWheel (%.3f, %.3f)\n", prefix, e->MouseWheel.WheelX, e->MouseWheel.WheelY); return; }
-    if (e->Type == KGGuiInputEventType_MouseViewport){KARMAGUI_DEBUG_LOG_IO("%s: MouseViewport (0x%08X)\n", prefix, e->MouseViewport.HoveredViewportID); return; }
-    if (e->Type == KGGuiInputEventType_Key)         { KARMAGUI_DEBUG_LOG_IO("%s: Key \"%s\" %s\n", prefix, KarmaGui::GetKeyName(e->Key.Key), e->Key.Down ? "Down" : "Up"); return; }
-    if (e->Type == KGGuiInputEventType_Text)        { KARMAGUI_DEBUG_LOG_IO("%s: Text: %c (U+%08X)\n", prefix, e->Text.Char, e->Text.Char); return; }
-    if (e->Type == KGGuiInputEventType_Focus)       { KARMAGUI_DEBUG_LOG_IO("%s: AppFocused %d\n", prefix, e->AppFocused.Focused); return; }
+    if (e->Type == KGGuiInputEventType_MousePos)    { if (e->MousePos.PosX == -FLT_MAX && e->MousePos.PosY == -FLT_MAX) KR_CORE_INFO("{0}: MousePos (-FLT_MAX, -FLT_MAX)\n", prefix); else KR_CORE_INFO("{0}: MousePos ({1}, {2})", prefix, e->MousePos.PosX, e->MousePos.PosY); return; }
+    if (e->Type == KGGuiInputEventType_MouseButton) { KR_CORE_INFO("{0}: MouseButton {1} {2}", prefix, e->MouseButton.Button, e->MouseButton.Down ? "Down" : "Up"); return; }
+    if (e->Type == KGGuiInputEventType_MouseWheel)  { KR_CORE_INFO("{0}: MouseWheel (%.3f, %.3f)", prefix, e->MouseWheel.WheelX, e->MouseWheel.WheelY); return; }
+    if (e->Type == KGGuiInputEventType_MouseViewport){KR_CORE_INFO("{0}: MouseViewport (0x%08X)", prefix, e->MouseViewport.HoveredViewportID); return; }
+    if (e->Type == KGGuiInputEventType_Key)         { KR_CORE_INFO("{0}: Key \"{1}\" {2}", prefix, Karma::KarmaGui::GetKeyName(e->Key.Key), e->Key.Down ? "Down" : "Up"); return; }
+    if (e->Type == KGGuiInputEventType_Text)        { KR_CORE_INFO("{0}: Text: %c (U+%08X)", prefix, e->Text.Char, e->Text.Char); return; }
+    if (e->Type == KGGuiInputEventType_Focus)       { KR_CORE_INFO("{0}: AppFocused %d", prefix, e->AppFocused.Focused); return; }
 }
 #endif
 
@@ -8113,7 +8126,7 @@ static void DebugPrintInputEvent(const char* prefix, const KGGuiInputEvent* e)
 // We always call this with the value of 'bool g.IO.ConfigInputTrickleEventQueue'.
 // - trickle_fast_inputs = false : process all events, turn into flattened input state (e.g. successive down/up/down/up will be lost)
 // - trickle_fast_inputs = true  : process as many events as possible (successive down/up/down/up will be trickled over several frames so nothing is lost) (new feature in 1.87)
-void KarmaGui::UpdateInputEvents(bool trickle_fast_inputs)
+void Karma::KarmaGuiInternal::UpdateInputEvents(bool trickle_fast_inputs)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiIO& io = g.IO;
@@ -8144,7 +8157,7 @@ void KarmaGui::UpdateInputEvents(bool trickle_fast_inputs)
         {
             // Trickling Rule: Stop processing queued events if we got multiple action on the same button
             const KarmaGuiMouseButton button = e->MouseButton.Button;
-            KR_CORE_ASSERT(button >= 0 && button < KGGuiMouseButton_COUNT);
+            KR_CORE_ASSERT(button >= 0 && button < KGGuiMouseButton_COUNT, "");
             if (trickle_fast_inputs && ((mouse_button_changed & (1 << button)) || mouse_wheeled))
                 break;
             io.MouseDown[button] = e->MouseButton.Down;
@@ -8167,7 +8180,7 @@ void KarmaGui::UpdateInputEvents(bool trickle_fast_inputs)
         {
             // Trickling Rule: Stop processing queued events if we got multiple action on the same button
             KarmaGuiKey key = e->Key.Key;
-            KR_CORE_ASSERT(key != KGGuiKey_None);
+            KR_CORE_ASSERT(key != KGGuiKey_None, "");
             KarmaGuiKeyData* key_data = GetKeyData(key);
             const int key_data_index = (int)(key_data - g.IO.KeysData);
             if (trickle_fast_inputs && key_data->Down != e->Key.Down && (key_changed_mask.TestBit(key_data_index) || text_inputted || mouse_button_changed != 0))
@@ -8203,7 +8216,7 @@ void KarmaGui::UpdateInputEvents(bool trickle_fast_inputs)
         }
         else
         {
-            KR_CORE_ASSERT(0 && "Unknown event!");
+            KR_CORE_ASSERT(0, "Unknown event!");
         }
     }
 
@@ -8233,9 +8246,9 @@ void KarmaGui::UpdateInputEvents(bool trickle_fast_inputs)
         g.IO.ClearInputKeys();
 }
 
-KGGuiID KarmaGui::GetKeyOwner(KarmaGuiKey key)
+KGGuiID Karma::KarmaGuiInternal::GetKeyOwner(KarmaGuiKey key)
 {
-    if (!IsNamedKeyOrModKey(key))
+    if (!KarmaGuiInternal::IsNamedKeyOrModKey(key))
         return KGGuiKeyOwner_None;
 
     KarmaGuiContext& g = *GKarmaGui;
@@ -8253,9 +8266,9 @@ KGGuiID KarmaGui::GetKeyOwner(KarmaGuiKey key)
 // TestKeyOwner(..., None) : (owner == None)
 // TestKeyOwner(..., Any)  : no owner test
 // All paths are also testing for key not being locked, for the rare cases that key have been locked with using KGGuiInputFlags_LockXXX flags.
-bool KarmaGui::TestKeyOwner(KarmaGuiKey key, KGGuiID owner_id)
+bool Karma::KarmaGuiInternal::TestKeyOwner(KarmaGuiKey key, KGGuiID owner_id)
 {
-    if (!IsNamedKeyOrModKey(key))
+    if (!KarmaGuiInternal::IsNamedKeyOrModKey(key))
         return true;
 
     KarmaGuiContext& g = *GKarmaGui;
@@ -8286,10 +8299,10 @@ bool KarmaGui::TestKeyOwner(KarmaGuiKey key, KGGuiID owner_id)
 // - SetKeyOwner(..., None)              : clears owner
 // - SetKeyOwner(..., Any, !Lock)        : illegal (assert)
 // - SetKeyOwner(..., Any or None, Lock) : set lock
-void KarmaGui::SetKeyOwner(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags flags)
+void Karma::KarmaGuiInternal::SetKeyOwner(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags flags)
 {
-    KR_CORE_ASSERT(IsNamedKeyOrModKey(key) && (owner_id != KGGuiKeyOwner_Any || (flags & (KGGuiInputFlags_LockThisFrame | KGGuiInputFlags_LockUntilRelease)))); // Can only use _Any with _LockXXX flags (to eat a key away without an ID to retrieve it)
-    KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedBySetKeyOwner) == 0); // Passing flags not supported by this function!
+    KR_CORE_ASSERT(IsNamedKeyOrModKey(key) && (owner_id != KGGuiKeyOwner_Any || (flags & (KGGuiInputFlags_LockThisFrame | KGGuiInputFlags_LockUntilRelease))), ""); // Can only use _Any with _LockXXX flags (to eat a key away without an ID to retrieve it)
+    KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedBySetKeyOwner) == 0, ""); // Passing flags not supported by this function!
 
     KGGuiKeyOwnerData* owner_data = GetKeyOwnerData(key);
     owner_data->OwnerCurr = owner_data->OwnerNext = owner_id;
@@ -8306,7 +8319,7 @@ void KarmaGui::SetKeyOwner(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags
 // Extensive uses of that (e.g. many calls for a single item) may want to manually perform the tests once and then call SetKeyOwner() multiple times.
 // More advanced usage scenarios may want to call SetKeyOwner() manually based on different condition.
 // Worth noting is that only one item can be hovered and only one item can be active, therefore this usage pattern doesn't need to bother with routing and priority.
-void KarmaGui::SetItemKeyOwner(KarmaGuiKey key, KarmaGuiInputFlags flags)
+void Karma::KarmaGuiInternal::SetItemKeyOwner(KarmaGuiKey key, KarmaGuiInputFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiID id = g.LastItemData.ID;
@@ -8316,23 +8329,23 @@ void KarmaGui::SetItemKeyOwner(KarmaGuiKey key, KarmaGuiInputFlags flags)
         flags |= KGGuiInputFlags_CondDefault_;
     if ((g.HoveredId == id && (flags & KGGuiInputFlags_CondHovered)) || (g.ActiveId == id && (flags & KGGuiInputFlags_CondActive)))
     {
-        KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedBySetItemKeyOwner) == 0); // Passing flags not supported by this function!
+        KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedBySetItemKeyOwner) == 0, ""); // Passing flags not supported by this function!
         SetKeyOwner(key, id, flags & ~KGGuiInputFlags_CondMask_);
     }
 }
 
-bool KarmaGui::Shortcut(KarmaGuiKeyChord key_chord, KGGuiID owner_id, KarmaGuiInputFlags flags)
+bool Karma::KarmaGui::Shortcut(KarmaGuiKeyChord key_chord, KGGuiID owner_id, KarmaGuiInputFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
     // When using (owner_id == 0/Any): SetShortcutRouting() will use CurrentFocusScopeId and filter with this, so IsKeyPressed() is fine with he 0/Any.
     if ((flags & KGGuiInputFlags_RouteMask_) == 0)
         flags |= KGGuiInputFlags_RouteFocused;
-    if (!SetShortcutRouting(key_chord, owner_id, flags))
+    if (!KarmaGuiInternal::SetShortcutRouting(key_chord, owner_id, flags))
         return false;
 
     if (key_chord & KGGuiMod_Shortcut)
-        key_chord = ConvertShortcutMod(key_chord);
+        key_chord = KarmaGuiInternal::ConvertShortcutMod(key_chord);
     KarmaGuiKey mods = (KarmaGuiKey)(key_chord & KGGuiMod_Mask_);
     if (g.IO.KeyMods != mods)
         return false;
@@ -8340,11 +8353,11 @@ bool KarmaGui::Shortcut(KarmaGuiKeyChord key_chord, KGGuiID owner_id, KarmaGuiIn
     // Special storage location for mods
     KarmaGuiKey key = (KarmaGuiKey)(key_chord & ~KGGuiMod_Mask_);
     if (key == KGGuiKey_None)
-        key = ConvertSingleModFlagToKey(mods);
+        key = KarmaGuiInternal::ConvertSingleModFlagToKey(mods);
 
-    if (!IsKeyPressed(key, owner_id, (flags & (KGGuiInputFlags_Repeat | (KarmaGuiInputFlags)KGGuiInputFlags_RepeatRateMask_))))
+    if (!KarmaGuiInternal::IsKeyPressed(key, owner_id, (flags & (KGGuiInputFlags_Repeat | (KarmaGuiInputFlags)KGGuiInputFlags_RepeatRateMask_))))
         return false;
-    KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedByShortcut) == 0); // Passing flags not supported by this function!
+    KR_CORE_ASSERT((flags & ~KGGuiInputFlags_SupportedByShortcut) == 0, ""); // Passing flags not supported by this function!
 
     return true;
 }
@@ -8362,16 +8375,15 @@ bool KarmaGui::Shortcut(KarmaGuiKeyChord key_chord, KGGuiID owner_id, KarmaGuiIn
 //   The configuration settings mentioned in imconfig.h must be set for all compilation units involved with Dear ImGui,
 //   which is way it is required you put them in your imconfig file (and not just before including imgui.h).
 //   Otherwise it is possible that different compilation units would see different structure layout
-bool KarmaGui::DebugCheckVersionAndDataLayout(const char* version, size_t sz_io, size_t sz_style, size_t sz_vec2, size_t sz_vec4, size_t sz_vert, size_t sz_idx)
+bool Karma::KarmaGui::DebugCheckVersionAndDataLayout(const char* version, size_t sz_io, size_t sz_style, size_t sz_vec2, size_t sz_vec4, size_t sz_vert, size_t sz_idx)
 {
     bool error = false;
-    if (strcmp(version, IMGUI_VERSION) != 0) { error = true; KR_CORE_ASSERT(strcmp(version, IMGUI_VERSION) == 0 && "Mismatched version string!"); }
-    if (sz_io != sizeof(KarmaGuiIO)) { error = true; KR_CORE_ASSERT(sz_io == sizeof(KarmaGuiIO) && "Mismatched struct layout!"); }
-    if (sz_style != sizeof(KarmaGuiStyle)) { error = true; KR_CORE_ASSERT(sz_style == sizeof(KarmaGuiStyle) && "Mismatched struct layout!"); }
-    if (sz_vec2 != sizeof(KGVec2)) { error = true; KR_CORE_ASSERT(sz_vec2 == sizeof(KGVec2) && "Mismatched struct layout!"); }
-    if (sz_vec4 != sizeof(ImVec4)) { error = true; KR_CORE_ASSERT(sz_vec4 == sizeof(ImVec4) && "Mismatched struct layout!"); }
-    if (sz_vert != sizeof(KGDrawVert)) { error = true; KR_CORE_ASSERT(sz_vert == sizeof(KGDrawVert) && "Mismatched struct layout!"); }
-    if (sz_idx != sizeof(KGDrawIdx)) { error = true; KR_CORE_ASSERT(sz_idx == sizeof(KGDrawIdx) && "Mismatched struct layout!"); }
+    if (sz_io != sizeof(KarmaGuiIO)) { error = true; KR_CORE_ASSERT(sz_io == sizeof(KarmaGuiIO), "Mismatched struct layout!"); }
+    if (sz_style != sizeof(KarmaGuiStyle)) { error = true; KR_CORE_ASSERT(sz_style == sizeof(KarmaGuiStyle), "Mismatched struct layout!"); }
+    if (sz_vec2 != sizeof(KGVec2)) { error = true; KR_CORE_ASSERT(sz_vec2 == sizeof(KGVec2), "Mismatched struct layout!"); }
+    if (sz_vec4 != sizeof(KGVec4)) { error = true; KR_CORE_ASSERT(sz_vec4 == sizeof(KGVec4), "Mismatched struct layout!"); }
+    if (sz_vert != sizeof(KGDrawVert)) { error = true; KR_CORE_ASSERT(sz_vert == sizeof(KGDrawVert), "Mismatched struct layout!"); }
+    if (sz_idx != sizeof(KGDrawIdx)) { error = true; KR_CORE_ASSERT(sz_idx == sizeof(KGDrawIdx), "Mismatched struct layout!"); }
     return !error;
 }
 
@@ -8390,24 +8402,24 @@ bool KarmaGui::DebugCheckVersionAndDataLayout(const char* version, size_t sz_io,
 //    BeginGroup() + SomeItem("foobar") + SetCursorScreenPos(GetCursorScreenPos()) + EndGroup()
 //  The previous logic made SetCursorScreenPos(GetCursorScreenPos()) have a side-effect! It would erroneously incorporate ItemSpacing.y after the item into content size, making the group taller!
 //  While this code is a little twisted, no-one would expect SetXXX(GetXXX()) to have a side-effect. Using vertical alignment patterns could trigger this issue.
-void KarmaGui::ErrorCheckUsingSetCursorPosToExtendParentBoundaries()
+void Karma::KarmaGuiInternal::ErrorCheckUsingSetCursorPosToExtendParentBoundaries()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
-    KR_CORE_ASSERT(window->DC.IsSetPos);
+    KR_CORE_ASSERT(window->DC.IsSetPos, "");
     window->DC.IsSetPos = false;
 #ifdef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
     if (window->DC.CursorPos.x <= window->DC.CursorMaxPos.x && window->DC.CursorPos.y <= window->DC.CursorMaxPos.y)
         return;
     if (window->SkipItems)
         return;
-    KR_CORE_ASSERT(0 && "Code uses SetCursorPos()/SetCursorScreenPos() to extend window/parent boundaries. Please submit an item e.g. Dummy() to validate extent.");
+    KR_CORE_ASSERT(0, "Code uses SetCursorPos()/SetCursorScreenPos() to extend window/parent boundaries. Please submit an item e.g. Dummy() to validate extent.");
 #else
     window->DC.CursorMaxPos = KGMax(window->DC.CursorMaxPos, window->DC.CursorPos);
 #endif
 }
 
-static void KarmaGui::ErrorCheckNewFrameSanityChecks()
+void Karma::KarmaGuiInternal::ErrorCheckNewFrameSanityChecks()
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -8417,28 +8429,34 @@ static void KarmaGui::ErrorCheckNewFrameSanityChecks()
     //  This is a common C/C++ idiom to allow multiple statements macros to be used in control flow blocks.)
     // #define KR_CORE_ASSERT(EXPR)   if (SomeCode(EXPR)) SomeMoreCode();                    // Wrong!
     // #define KR_CORE_ASSERT(EXPR)   do { if (SomeCode(EXPR)) SomeMoreCode(); } while (0)   // Correct!
-    if (true) KR_CORE_ASSERT(1); else KR_CORE_ASSERT(0);
+    if (true)
+    {
+		KR_CORE_ASSERT(1, "");
+    }else
+    {
+		KR_CORE_ASSERT(0, "");
+    }
 
     // Check user data
     // (We pass an error message in the assert expression to make it visible to programmers who are not using a debugger, as most assert handlers display their argument)
-    KR_CORE_ASSERT(g.Initialized);
-    KR_CORE_ASSERT((g.IO.DeltaTime > 0.0f || g.FrameCount == 0)              && "Need a positive DeltaTime!");
-    KR_CORE_ASSERT((g.FrameCount == 0 || g.FrameCountEnded == g.FrameCount)  && "Forgot to call Render() or EndFrame() at the end of the previous frame?");
-    KR_CORE_ASSERT(g.IO.DisplaySize.x >= 0.0f && g.IO.DisplaySize.y >= 0.0f  && "Invalid DisplaySize value!");
-    KR_CORE_ASSERT(g.IO.Fonts->IsBuilt()                                     && "Font Atlas not built! Make sure you called ImGui_ImplXXXX_NewFrame() function for renderer backend, which should call io.Fonts->GetTexDataAsRGBA32() / GetTexDataAsAlpha8()");
-    KR_CORE_ASSERT(g.Style.CurveTessellationTol > 0.0f                       && "Invalid style setting!");
-    KR_CORE_ASSERT(g.Style.CircleTessellationMaxError > 0.0f                 && "Invalid style setting!");
-    KR_CORE_ASSERT(g.Style.Alpha >= 0.0f && g.Style.Alpha <= 1.0f            && "Invalid style setting!"); // Allows us to avoid a few clamps in color computations
-    KR_CORE_ASSERT(g.Style.WindowMinSize.x >= 1.0f && g.Style.WindowMinSize.y >= 1.0f && "Invalid style setting.");
-    KR_CORE_ASSERT(g.Style.WindowMenuButtonPosition == KGGuiDir_None || g.Style.WindowMenuButtonPosition == KGGuiDir_Left || g.Style.WindowMenuButtonPosition == KGGuiDir_Right);
-    KR_CORE_ASSERT(g.Style.ColorButtonPosition == KGGuiDir_Left || g.Style.ColorButtonPosition == KGGuiDir_Right);
+    KR_CORE_ASSERT(g.Initialized, "");
+    KR_CORE_ASSERT((g.IO.DeltaTime > 0.0f || g.FrameCount == 0)            , "Need a positive DeltaTime!");
+    KR_CORE_ASSERT((g.FrameCount == 0 || g.FrameCountEnded == g.FrameCount), "Forgot to call Render() or EndFrame() at the end of the previous frame?");
+    KR_CORE_ASSERT(g.IO.DisplaySize.x >= 0.0f && g.IO.DisplaySize.y >= 0.0f, "Invalid DisplaySize value!");
+    KR_CORE_ASSERT(g.IO.Fonts->IsBuilt()                                   , "Font Atlas not built! Make sure you called ImGui_ImplXXXX_NewFrame() function for renderer backend, which should call io.Fonts->GetTexDataAsRGBA32() / GetTexDataAsAlpha8()");
+    KR_CORE_ASSERT(g.Style.CurveTessellationTol > 0.0f                     , "Invalid style setting!");
+    KR_CORE_ASSERT(g.Style.CircleTessellationMaxError > 0.0f               , "Invalid style setting!");
+    KR_CORE_ASSERT(g.Style.Alpha >= 0.0f && g.Style.Alpha <= 1.0f          , "Invalid style setting!"); // Allows us to avoid a few clamps in color computations
+    KR_CORE_ASSERT(g.Style.WindowMinSize.x >= 1.0f && g.Style.WindowMinSize.y >= 1.0f, "Invalid style setting.");
+    KR_CORE_ASSERT(g.Style.WindowMenuButtonPosition == KGGuiDir_None || g.Style.WindowMenuButtonPosition == KGGuiDir_Left || g.Style.WindowMenuButtonPosition == KGGuiDir_Right, "");
+    KR_CORE_ASSERT(g.Style.ColorButtonPosition == KGGuiDir_Left || g.Style.ColorButtonPosition == KGGuiDir_Right, "");
 #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
     for (int n = KGGuiKey_NamedKey_BEGIN; n < KGGuiKey_COUNT; n++)
-        KR_CORE_ASSERT(g.IO.KeyMap[n] >= -1 && g.IO.KeyMap[n] < KGGuiKey_LegacyNativeKey_END && "io.KeyMap[] contains an out of bound value (need to be 0..511, or -1 for unmapped key)");
+        KR_CORE_ASSERT(g.IO.KeyMap[n] >= -1 && g.IO.KeyMap[n] < KGGuiKey_LegacyNativeKey_END, "io.KeyMap[] contains an out of bound value (need to be 0..511, or -1 for unmapped key)");
 
     // Check: required key mapping (we intentionally do NOT check all keys to not pressure user into setting up everything, but Space is required and was only added in 1.60 WIP)
     if ((g.IO.ConfigFlags & KGGuiConfigFlags_NavEnableKeyboard) && g.IO.BackendUsingLegacyKeyArrays == 1)
-        KR_CORE_ASSERT(g.IO.KeyMap[KGGuiKey_Space] != -1 && "KGGuiKey_Space is not mapped, required for keyboard navigation.");
+        KR_CORE_ASSERT(g.IO.KeyMap[KGGuiKey_Space] != -1, "KGGuiKey_Space is not mapped, required for keyboard navigation.");
 #endif
 
     // Check: the io.ConfigWindowsResizeFromEdges option requires backend to honor mouse cursor changes and set the KGGuiBackendFlags_HasMouseCursors flag accordingly.
@@ -8447,26 +8465,30 @@ static void KarmaGui::ErrorCheckNewFrameSanityChecks()
 
     // Perform simple check: error if Docking or Viewport are enabled _exactly_ on frame 1 (instead of frame 0 or later), which is a common error leading to loss of .ini data.
     if (g.FrameCount == 1 && (g.IO.ConfigFlags & KGGuiConfigFlags_DockingEnable) && (g.ConfigFlagsLastFrame & KGGuiConfigFlags_DockingEnable) == 0)
-        KR_CORE_ASSERT(0 && "Please set DockingEnable before the first call to NewFrame()! Otherwise you will lose your .ini settings!");
+    {
+        KR_CORE_ASSERT(0, "Please set DockingEnable before the first call to NewFrame()! Otherwise you will lose your .ini settings!");
+    }
     if (g.FrameCount == 1 && (g.IO.ConfigFlags & KGGuiConfigFlags_ViewportsEnable) && (g.ConfigFlagsLastFrame & KGGuiConfigFlags_ViewportsEnable) == 0)
-        KR_CORE_ASSERT(0 && "Please set ViewportsEnable before the first call to NewFrame()! Otherwise you will lose your .ini settings!");
+    {
+        KR_CORE_ASSERT(0, "Please set ViewportsEnable before the first call to NewFrame()! Otherwise you will lose your .ini settings!");
+    }
 
     // Perform simple checks: multi-viewport and platform windows support
     if (g.IO.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
     {
         if ((g.IO.BackendFlags & KGGuiBackendFlags_PlatformHasViewports) && (g.IO.BackendFlags & KGGuiBackendFlags_RendererHasViewports))
         {
-            KR_CORE_ASSERT((g.FrameCount == 0 || g.FrameCount == g.FrameCountPlatformEnded) && "Forgot to call UpdatePlatformWindows() in main loop after EndFrame()? Check examples/ applications for reference.");
-            KR_CORE_ASSERT(g.PlatformIO.Platform_CreateWindow  != NULL && "Platform init didn't install handlers?");
-            KR_CORE_ASSERT(g.PlatformIO.Platform_DestroyWindow != NULL && "Platform init didn't install handlers?");
-            KR_CORE_ASSERT(g.PlatformIO.Platform_GetWindowPos  != NULL && "Platform init didn't install handlers?");
-            KR_CORE_ASSERT(g.PlatformIO.Platform_SetWindowPos  != NULL && "Platform init didn't install handlers?");
-            KR_CORE_ASSERT(g.PlatformIO.Platform_GetWindowSize != NULL && "Platform init didn't install handlers?");
-            KR_CORE_ASSERT(g.PlatformIO.Platform_SetWindowSize != NULL && "Platform init didn't install handlers?");
-            KR_CORE_ASSERT(g.PlatformIO.Monitors.Size > 0 && "Platform init didn't setup Monitors list?");
-            KR_CORE_ASSERT((g.Viewports[0]->PlatformUserData != NULL || g.Viewports[0]->PlatformHandle != NULL) && "Platform init didn't setup main viewport.");
+            KR_CORE_ASSERT((g.FrameCount == 0 || g.FrameCount == g.FrameCountPlatformEnded), "Forgot to call UpdatePlatformWindows() in main loop after EndFrame()? Check examples/ applications for reference.");
+            KR_CORE_ASSERT(g.PlatformIO.Platform_CreateWindow  != NULL, "Platform init didn't install handlers?");
+            KR_CORE_ASSERT(g.PlatformIO.Platform_DestroyWindow != NULL, "Platform init didn't install handlers?");
+            KR_CORE_ASSERT(g.PlatformIO.Platform_GetWindowPos  != NULL, "Platform init didn't install handlers?");
+            KR_CORE_ASSERT(g.PlatformIO.Platform_SetWindowPos  != NULL, "Platform init didn't install handlers?");
+            KR_CORE_ASSERT(g.PlatformIO.Platform_GetWindowSize != NULL, "Platform init didn't install handlers?");
+            KR_CORE_ASSERT(g.PlatformIO.Platform_SetWindowSize != NULL, "Platform init didn't install handlers?");
+            KR_CORE_ASSERT(g.PlatformIO.Monitors.Size > 0, "Platform init didn't setup Monitors list?");
+            KR_CORE_ASSERT((g.Viewports[0]->PlatformUserData != NULL || g.Viewports[0]->PlatformHandle != NULL), "Platform init didn't setup main viewport.");
             if (g.IO.ConfigDockingTransparentPayload && (g.IO.ConfigFlags & KGGuiConfigFlags_DockingEnable))
-                KR_CORE_ASSERT(g.PlatformIO.Platform_SetWindowAlpha != NULL && "Platform_SetWindowAlpha handler is required to use io.ConfigDockingTransparent!");
+                KR_CORE_ASSERT(g.PlatformIO.Platform_SetWindowAlpha != NULL, "Platform_SetWindowAlpha handler is required to use io.ConfigDockingTransparent!");
         }
         else
         {
@@ -8479,14 +8501,14 @@ static void KarmaGui::ErrorCheckNewFrameSanityChecks()
         {
             KarmaGuiPlatformMonitor& mon = g.PlatformIO.Monitors[monitor_n];
             KG_UNUSED(mon);
-            KR_CORE_ASSERT(mon.MainSize.x > 0.0f && mon.MainSize.y > 0.0f && "Monitor main bounds not setup properly.");
-            KR_CORE_ASSERT(KGRect(mon.MainPos, mon.MainPos + mon.MainSize).Contains(KGRect(mon.WorkPos, mon.WorkPos + mon.WorkSize)) && "Monitor work bounds not setup properly. If you don't have work area information, just copy MainPos/MainSize into them.");
-            KR_CORE_ASSERT(mon.DpiScale != 0.0f);
+            KR_CORE_ASSERT(mon.MainSize.x > 0.0f && mon.MainSize.y > 0.0f, "Monitor main bounds not setup properly.");
+            KR_CORE_ASSERT(KGRect(mon.MainPos, mon.MainPos + mon.MainSize).Contains(KGRect(mon.WorkPos, mon.WorkPos + mon.WorkSize)), "Monitor work bounds not setup properly. If you don't have work area information, just copy MainPos/MainSize into them.");
+            KR_CORE_ASSERT(mon.DpiScale != 0.0f, "");
         }
     }
 }
 
-static void KarmaGui::ErrorCheckEndFrameSanityChecks()
+void Karma::KarmaGuiInternal::ErrorCheckEndFrameSanityChecks()
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -8497,7 +8519,7 @@ static void KarmaGui::ErrorCheckEndFrameSanityChecks()
     // We silently accommodate for this case by ignoring the case where all io.KeyXXX modifiers were released (aka key_mod_flags == 0),
     // while still correctly asserting on mid-frame key press events.
     const KarmaGuiKeyChord key_mods = GetMergedModsFromKeys();
-    KR_CORE_ASSERT((key_mods == 0 || g.IO.KeyMods == key_mods) && "Mismatching io.KeyCtrl/io.KeyShift/io.KeyAlt/io.KeySuper vs io.KeyMods");
+    KR_CORE_ASSERT((key_mods == 0 || g.IO.KeyMods == key_mods), "Mismatching io.KeyCtrl/io.KeyShift/io.KeyAlt/io.KeySuper vs io.KeyMods");
     KG_UNUSED(key_mods);
 
     // [EXPERIMENTAL] Recover from errors: You may call this yourself before EndFrame().
@@ -8509,17 +8531,17 @@ static void KarmaGui::ErrorCheckEndFrameSanityChecks()
     {
         if (g.CurrentWindowStack.Size > 1)
         {
-            KG_ASSERT_USER_ERROR(g.CurrentWindowStack.Size == 1, "Mismatched Begin/BeginChild vs End/EndChild calls: did you forget to call End/EndChild?");
+            KR_CORE_ASSERT(g.CurrentWindowStack.Size == 1, "Mismatched Begin/BeginChild vs End/EndChild calls: did you forget to call End/EndChild?");
             while (g.CurrentWindowStack.Size > 1)
-                End();
+                KarmaGui::End();
         }
         else
         {
-            KG_ASSERT_USER_ERROR(g.CurrentWindowStack.Size == 1, "Mismatched Begin/BeginChild vs End/EndChild calls: did you call End/EndChild too much?");
+            KR_CORE_ASSERT(g.CurrentWindowStack.Size == 1, "Mismatched Begin/BeginChild vs End/EndChild calls: did you call End/EndChild too much?");
         }
     }
 
-    KG_ASSERT_USER_ERROR(g.GroupStack.Size == 0, "Missing EndGroup call!");
+    KR_CORE_ASSERT(g.GroupStack.Size == 0, "Missing EndGroup call!");
 }
 
 // Experimental recovery from incorrect usage of BeginXXX/EndXXX/PushXXX/PopXXX calls.
@@ -8527,7 +8549,7 @@ static void KarmaGui::ErrorCheckEndFrameSanityChecks()
 // This is generally flawed as we are not necessarily End/Popping things in the right order.
 // FIXME: Can't recover from inside BeginTabItem/EndTabItem yet.
 // FIXME: Can't recover from interleaved BeginTabBar/Begin
-void    KarmaGui::ErrorCheckEndFrameRecover(KGGuiErrorLogCallback log_callback, void* user_data)
+void Karma::KarmaGuiInternal::ErrorCheckEndFrameRecover(KGGuiErrorLogCallback log_callback, void* user_data)
 {
     // PVS-Studio V1044 is "Loop break conditions do not depend on the number of iterations"
     KarmaGuiContext& g = *GKarmaGui;
@@ -8537,74 +8559,74 @@ void    KarmaGui::ErrorCheckEndFrameRecover(KGGuiErrorLogCallback log_callback, 
         KGGuiWindow* window = g.CurrentWindow;
         if (g.CurrentWindowStack.Size == 1)
         {
-            KR_CORE_ASSERT(window->IsFallbackWindow);
+            KR_CORE_ASSERT(window->IsFallbackWindow, "");
             break;
         }
         if (window->Flags & KGGuiWindowFlags_ChildWindow)
         {
             if (log_callback) log_callback(user_data, "Recovered from missing EndChild() for '%s'", window->Name);
-            EndChild();
+            KarmaGui::EndChild();
         }
         else
         {
             if (log_callback) log_callback(user_data, "Recovered from missing End() for '%s'", window->Name);
-            End();
+            KarmaGui::End();
         }
     }
 }
 
 // Must be called before End()/EndChild()
-void    KarmaGui::ErrorCheckEndWindowRecover(KGGuiErrorLogCallback log_callback, void* user_data)
+void Karma::KarmaGuiInternal::ErrorCheckEndWindowRecover(KGGuiErrorLogCallback log_callback, void* user_data)
 {
     KarmaGuiContext& g = *GKarmaGui;
     while (g.CurrentTable && (g.CurrentTable->OuterWindow == g.CurrentWindow || g.CurrentTable->InnerWindow == g.CurrentWindow))
     {
         if (log_callback) log_callback(user_data, "Recovered from missing EndTable() in '%s'", g.CurrentTable->OuterWindow->Name);
-        EndTable();
+        KarmaGui::EndTable();
     }
 
     KGGuiWindow* window = g.CurrentWindow;
     KGGuiStackSizes* stack_sizes = &g.CurrentWindowStack.back().StackSizesOnBegin;
-    KR_CORE_ASSERT(window != NULL);
+    KR_CORE_ASSERT(window != NULL, "");
     while (g.CurrentTabBar != NULL) //-V1044
     {
         if (log_callback) log_callback(user_data, "Recovered from missing EndTabBar() in '%s'", window->Name);
-        EndTabBar();
+        KarmaGui::EndTabBar();
     }
     while (window->DC.TreeDepth > 0)
     {
         if (log_callback) log_callback(user_data, "Recovered from missing TreePop() in '%s'", window->Name);
-        TreePop();
+        KarmaGui::TreePop();
     }
     while (g.GroupStack.Size > stack_sizes->SizeOfGroupStack) //-V1044
     {
         if (log_callback) log_callback(user_data, "Recovered from missing EndGroup() in '%s'", window->Name);
-        EndGroup();
+        KarmaGui::EndGroup();
     }
     while (window->IDStack.Size > 1)
     {
         if (log_callback) log_callback(user_data, "Recovered from missing PopID() in '%s'", window->Name);
-        PopID();
+        KarmaGui::PopID();
     }
     while (g.DisabledStackSize > stack_sizes->SizeOfDisabledStack) //-V1044
     {
         if (log_callback) log_callback(user_data, "Recovered from missing EndDisabled() in '%s'", window->Name);
-        EndDisabled();
+        KarmaGui::EndDisabled();
     }
     while (g.ColorStack.Size > stack_sizes->SizeOfColorStack)
     {
-        if (log_callback) log_callback(user_data, "Recovered from missing PopStyleColor() in '%s' for KGGuiCol_%s", window->Name, GetStyleColorName(g.ColorStack.back().Col));
-        PopStyleColor();
+        if (log_callback) log_callback(user_data, "Recovered from missing PopStyleColor() in '%s' for KGGuiCol_%s", window->Name, KarmaGui::GetStyleColorName(g.ColorStack.back().Col));
+        KarmaGui::PopStyleColor();
     }
     while (g.ItemFlagsStack.Size > stack_sizes->SizeOfItemFlagsStack) //-V1044
     {
         if (log_callback) log_callback(user_data, "Recovered from missing PopItemFlag() in '%s'", window->Name);
-        PopItemFlag();
+       PopItemFlag();
     }
     while (g.StyleVarStack.Size > stack_sizes->SizeOfStyleVarStack) //-V1044
     {
         if (log_callback) log_callback(user_data, "Recovered from missing PopStyleVar() in '%s'", window->Name);
-        PopStyleVar();
+        KarmaGui::PopStyleVar();
     }
     while (g.FocusScopeStack.Size > stack_sizes->SizeOfFocusScopeStack + 1) //-V1044
     {
@@ -8638,18 +8660,18 @@ void KGGuiStackSizes::CompareWithCurrentState()
 
     // Window stacks
     // NOT checking: DC.ItemWidth, DC.TextWrapPos (per window) to allow user to conveniently push once and not pop (they are cleared on Begin)
-    KR_CORE_ASSERT(SizeOfIDStack         == window->IDStack.Size     && "PushID/PopID or TreeNode/TreePop Mismatch!");
+    KR_CORE_ASSERT(SizeOfIDStack         == window->IDStack.Size, "PushID/PopID or TreeNode/TreePop Mismatch!");
 
     // Global stacks
     // For color, style and font stacks there is an incentive to use Push/Begin/Pop/.../End patterns, so we relax our checks a little to allow them.
-    KR_CORE_ASSERT(SizeOfGroupStack      == g.GroupStack.Size        && "BeginGroup/EndGroup Mismatch!");
-    KR_CORE_ASSERT(SizeOfBeginPopupStack == g.BeginPopupStack.Size   && "BeginPopup/EndPopup or BeginMenu/EndMenu Mismatch!");
-    KR_CORE_ASSERT(SizeOfDisabledStack   == g.DisabledStackSize      && "BeginDisabled/EndDisabled Mismatch!");
-    KR_CORE_ASSERT(SizeOfItemFlagsStack  >= g.ItemFlagsStack.Size    && "PushItemFlag/PopItemFlag Mismatch!");
-    KR_CORE_ASSERT(SizeOfColorStack      >= g.ColorStack.Size        && "PushStyleColor/PopStyleColor Mismatch!");
-    KR_CORE_ASSERT(SizeOfStyleVarStack   >= g.StyleVarStack.Size     && "PushStyleVar/PopStyleVar Mismatch!");
-    KR_CORE_ASSERT(SizeOfFontStack       >= g.FontStack.Size         && "PushFont/PopFont Mismatch!");
-    KR_CORE_ASSERT(SizeOfFocusScopeStack == g.FocusScopeStack.Size   && "PushFocusScope/PopFocusScope Mismatch!");
+    KR_CORE_ASSERT(SizeOfGroupStack      == g.GroupStack.Size     , "BeginGroup/EndGroup Mismatch!");
+    KR_CORE_ASSERT(SizeOfBeginPopupStack == g.BeginPopupStack.Size, "BeginPopup/EndPopup or BeginMenu/EndMenu Mismatch!");
+    KR_CORE_ASSERT(SizeOfDisabledStack   == g.DisabledStackSize   , "BeginDisabled/EndDisabled Mismatch!");
+    KR_CORE_ASSERT(SizeOfItemFlagsStack  >= g.ItemFlagsStack.Size , "PushItemFlag/PopItemFlag Mismatch!");
+    KR_CORE_ASSERT(SizeOfColorStack      >= g.ColorStack.Size     , "PushStyleColor/PopStyleColor Mismatch!");
+    KR_CORE_ASSERT(SizeOfStyleVarStack   >= g.StyleVarStack.Size  , "PushStyleVar/PopStyleVar Mismatch!");
+    KR_CORE_ASSERT(SizeOfFontStack       >= g.FontStack.Size      , "PushFont/PopFont Mismatch!");
+    KR_CORE_ASSERT(SizeOfFocusScopeStack == g.FocusScopeStack.Size, "PushFocusScope/PopFocusScope Mismatch!");
 }
 
 
@@ -8688,7 +8710,7 @@ void KGGuiStackSizes::CompareWithCurrentState()
 // Advance cursor given item size for layout.
 // Register minimum needed size so it can extend the bounding box used for auto-fit calculation.
 // See comments in ItemAdd() about how/why the size provided to ItemSize() vs ItemAdd() may often different.
-void KarmaGui::ItemSize(const KGVec2& size, float text_baseline_y)
+void Karma::KarmaGuiInternal::ItemSize(const KGVec2& size, float text_baseline_y)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -8721,13 +8743,13 @@ void KarmaGui::ItemSize(const KGVec2& size, float text_baseline_y)
 
     // Horizontal layout mode
     if (window->DC.LayoutType == KGGuiLayoutType_Horizontal)
-        SameLine();
+        KarmaGui::SameLine();
 }
 
 // Declare item bounding box for clipping and interaction.
 // Note that the size can be different than the one provided to ItemSize(). Typically, widgets that spread over available surface
 // declare their minimum size requirement to ItemSize() and provide a larger region to ItemAdd() which is used drawing/interaction.
-bool KarmaGui::ItemAdd(const KGRect& bb, KGGuiID id, const KGRect* nav_bb_arg, KGGuiItemFlags extra_flags)
+bool Karma::KarmaGuiInternal::ItemAdd(const KGRect& bb, KGGuiID id, const KGRect* nav_bb_arg, KGGuiItemFlags extra_flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -8766,7 +8788,7 @@ bool KarmaGui::ItemAdd(const KGRect& bb, KGGuiID id, const KGRect* nav_bb_arg, K
         // [DEBUG] People keep stumbling on this problem and using "" as identifier in the root of a window instead of "##something".
         // Empty identifier are valid and useful in a small amount of cases, but 99.9% of the time you want to use "##something".
         // READ THE FAQ: https://dearimgui.org/faq
-        KR_CORE_ASSERT(id != window->ID && "Cannot have an empty ID at the root of a window. If you need an empty label, use ## and read the FAQ about how the ID Stack works!");
+        KR_CORE_ASSERT(id != window->ID, "Cannot have an empty ID at the root of a window. If you need an empty label, use ## and read the FAQ about how the ID Stack works!");
     }
     g.NextItemData.Flags = KGGuiNextItemDataFlags_None;
 
@@ -8796,7 +8818,7 @@ bool KarmaGui::ItemAdd(const KGRect& bb, KGGuiID id, const KGRect* nav_bb_arg, K
     // We need to calculate this now to take account of the current clipping rectangle (as items like Selectable may change them)
     if (is_rect_visible)
         g.LastItemData.StatusFlags |= KGGuiItemStatusFlags_Visible;
-    if (IsMouseHoveringRect(bb.Min, bb.Max))
+    if (KarmaGui::IsMouseHoveringRect(bb.Min, bb.Max))
         g.LastItemData.StatusFlags |= KGGuiItemStatusFlags_HoveredRect;
     return true;
 }
@@ -8806,7 +8828,7 @@ bool KarmaGui::ItemAdd(const KGRect& bb, KGGuiID id, const KGRect* nav_bb_arg, K
 //      offset_from_start_x != 0 : align to specified x position (relative to window/group left)
 //      spacing_w < 0            : use default spacing if pos_x == 0, no spacing if pos_x != 0
 //      spacing_w >= 0           : enforce spacing amount
-void KarmaGui::SameLine(float offset_from_start_x, float spacing_w)
+void Karma::KarmaGui::SameLine(float offset_from_start_x, float spacing_w)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -8832,18 +8854,18 @@ void KarmaGui::SameLine(float offset_from_start_x, float spacing_w)
     window->DC.IsSameLine = true;
 }
 
-KGVec2 KarmaGui::GetCursorScreenPos()
+KGVec2 Karma::KarmaGui::GetCursorScreenPos()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->DC.CursorPos;
 }
 
 // 2022/08/05: Setting cursor position also extend boundaries (via modifying CursorMaxPos) used to compute window size, group size etc.
 // I believe this was is a judicious choice but it's probably being relied upon (it has been the case since 1.31 and 1.50)
 // It would be sane if we requested user to use SetCursorPos() + Dummy(KGVec2(0,0)) to extend CursorMaxPos...
-void KarmaGui::SetCursorScreenPos(const KGVec2& pos)
+void Karma::KarmaGui::SetCursorScreenPos(const KGVec2& pos)
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DC.CursorPos = pos;
     //window->DC.CursorMaxPos = KGMax(window->DC.CursorMaxPos, window->DC.CursorPos);
     window->DC.IsSetPos = true;
@@ -8851,72 +8873,72 @@ void KarmaGui::SetCursorScreenPos(const KGVec2& pos)
 
 // User generally sees positions in window coordinates. Internally we store CursorPos in absolute screen coordinates because it is more convenient.
 // Conversion happens as we pass the value to user, but it makes our naming convention confusing because GetCursorPos() == (DC.CursorPos - window.Pos). May want to rename 'DC.CursorPos'.
-KGVec2 KarmaGui::GetCursorPos()
+KGVec2 Karma::KarmaGui::GetCursorPos()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->DC.CursorPos - window->Pos + window->Scroll;
 }
 
-float KarmaGui::GetCursorPosX()
+float Karma::KarmaGui::GetCursorPosX()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->DC.CursorPos.x - window->Pos.x + window->Scroll.x;
 }
 
-float KarmaGui::GetCursorPosY()
+float Karma::KarmaGui::GetCursorPosY()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->DC.CursorPos.y - window->Pos.y + window->Scroll.y;
 }
 
-void KarmaGui::SetCursorPos(const KGVec2& local_pos)
+void Karma::KarmaGui::SetCursorPos(const KGVec2& local_pos)
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DC.CursorPos = window->Pos - window->Scroll + local_pos;
     //window->DC.CursorMaxPos = KGMax(window->DC.CursorMaxPos, window->DC.CursorPos);
     window->DC.IsSetPos = true;
 }
 
-void KarmaGui::SetCursorPosX(float x)
+void Karma::KarmaGui::SetCursorPosX(float x)
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DC.CursorPos.x = window->Pos.x - window->Scroll.x + x;
     //window->DC.CursorMaxPos.x = KGMax(window->DC.CursorMaxPos.x, window->DC.CursorPos.x);
     window->DC.IsSetPos = true;
 }
 
-void KarmaGui::SetCursorPosY(float y)
+void Karma::KarmaGui::SetCursorPosY(float y)
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DC.CursorPos.y = window->Pos.y - window->Scroll.y + y;
     //window->DC.CursorMaxPos.y = KGMax(window->DC.CursorMaxPos.y, window->DC.CursorPos.y);
     window->DC.IsSetPos = true;
 }
 
-KGVec2 KarmaGui::GetCursorStartPos()
+KGVec2 Karma::KarmaGui::GetCursorStartPos()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->DC.CursorStartPos - window->Pos;
 }
 
-void KarmaGui::Indent(float indent_w)
+void Karma::KarmaGui::Indent(float indent_w)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DC.Indent.x += (indent_w != 0.0f) ? indent_w : g.Style.IndentSpacing;
     window->DC.CursorPos.x = window->Pos.x + window->DC.Indent.x + window->DC.ColumnsOffset.x;
 }
 
-void KarmaGui::Unindent(float indent_w)
+void Karma::KarmaGui::Unindent(float indent_w)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DC.Indent.x -= (indent_w != 0.0f) ? indent_w : g.Style.IndentSpacing;
     window->DC.CursorPos.x = window->Pos.x + window->DC.Indent.x + window->DC.ColumnsOffset.x;
 }
 
 // Affect large frame+labels widgets only.
-void KarmaGui::SetNextItemWidth(float item_width)
+void Karma::KarmaGui::SetNextItemWidth(float item_width)
 {
     KarmaGuiContext& g = *GKarmaGui;
     g.NextItemData.Flags |= KGGuiNextItemDataFlags_HasWidth;
@@ -8924,7 +8946,7 @@ void KarmaGui::SetNextItemWidth(float item_width)
 }
 
 // FIXME: Remove the == 0.0f behavior?
-void KarmaGui::PushItemWidth(float item_width)
+void Karma::KarmaGui::PushItemWidth(float item_width)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -8933,7 +8955,7 @@ void KarmaGui::PushItemWidth(float item_width)
     g.NextItemData.Flags &= ~KGGuiNextItemDataFlags_HasWidth;
 }
 
-void KarmaGui::PushMultiItemsWidths(int components, float w_full)
+void Karma::KarmaGuiInternal::PushMultiItemsWidths(int components, float w_full)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -8948,16 +8970,16 @@ void KarmaGui::PushMultiItemsWidths(int components, float w_full)
     g.NextItemData.Flags &= ~KGGuiNextItemDataFlags_HasWidth;
 }
 
-void KarmaGui::PopItemWidth()
+void Karma::KarmaGui::PopItemWidth()
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     window->DC.ItemWidth = window->DC.ItemWidthStack.back();
     window->DC.ItemWidthStack.pop_back();
 }
 
 // Calculate default item width given value passed to PushItemWidth() or SetNextItemWidth().
 // The SetNextItemWidth() data is generally cleared/consumed by ItemAdd() or NextItemData.ClearFlags()
-float KarmaGui::CalcItemWidth()
+float Karma::KarmaGui::CalcItemWidth()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -8968,7 +8990,7 @@ float KarmaGui::CalcItemWidth()
         w = window->DC.ItemWidth;
     if (w < 0.0f)
     {
-        float region_max_x = GetContentRegionMaxAbs().x;
+        float region_max_x = KarmaGuiInternal::GetContentRegionMaxAbs().x;
         w = KGMax(1.0f, region_max_x - window->DC.CursorPos.x + w);
     }
     w = KG_FLOOR(w);
@@ -8979,7 +9001,7 @@ float KarmaGui::CalcItemWidth()
 // Those two functions CalcItemWidth vs CalcItemSize are awkwardly named because they are not fully symmetrical.
 // Note that only CalcItemWidth() is publicly exposed.
 // The 4.0f here may be changed to match CalcItemWidth() and/or BeginChild() (right now we have a mismatch which is harmless but undesirable)
-KGVec2 KarmaGui::CalcItemSize(KGVec2 size, float default_w, float default_h)
+KGVec2 Karma::KarmaGuiInternal::CalcItemSize(KGVec2 size, float default_w, float default_h)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -9001,25 +9023,25 @@ KGVec2 KarmaGui::CalcItemSize(KGVec2 size, float default_w, float default_h)
     return size;
 }
 
-float KarmaGui::GetTextLineHeight()
+float Karma::KarmaGui::GetTextLineHeight()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.FontSize;
 }
 
-float KarmaGui::GetTextLineHeightWithSpacing()
+float Karma::KarmaGui::GetTextLineHeightWithSpacing()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.FontSize + g.Style.ItemSpacing.y;
 }
 
-float KarmaGui::GetFrameHeight()
+float Karma::KarmaGui::GetFrameHeight()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.FontSize + g.Style.FramePadding.y * 2.0f;
 }
 
-float KarmaGui::GetFrameHeightWithSpacing()
+float Karma::KarmaGui::GetFrameHeightWithSpacing()
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.FontSize + g.Style.FramePadding.y * 2.0f + g.Style.ItemSpacing.y;
@@ -9028,7 +9050,7 @@ float KarmaGui::GetFrameHeightWithSpacing()
 // FIXME: All the Contents Region function are messy or misleading. WE WILL AIM TO OBSOLETE ALL OF THEM WITH A NEW "WORK RECT" API. Thanks for your patience!
 
 // FIXME: This is in window space (not screen space!).
-KGVec2 KarmaGui::GetContentRegionMax()
+KGVec2 Karma::KarmaGui::GetContentRegionMax()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -9039,7 +9061,7 @@ KGVec2 KarmaGui::GetContentRegionMax()
 }
 
 // [Internal] Absolute coordinate. Saner. This is not exposed until we finishing refactoring work rect features.
-KGVec2 KarmaGui::GetContentRegionMaxAbs()
+KGVec2 Karma::KarmaGuiInternal::GetContentRegionMaxAbs()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -9049,20 +9071,20 @@ KGVec2 KarmaGui::GetContentRegionMaxAbs()
     return mx;
 }
 
-KGVec2 KarmaGui::GetContentRegionAvail()
+KGVec2 Karma::KarmaGui::GetContentRegionAvail()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
-    return GetContentRegionMaxAbs() - window->DC.CursorPos;
+    return KarmaGuiInternal::GetContentRegionMaxAbs() - window->DC.CursorPos;
 }
 
 // In window space (not screen space!)
-KGVec2 KarmaGui::GetWindowContentRegionMin()
+KGVec2 Karma::KarmaGui::GetWindowContentRegionMin()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ContentRegionRect.Min - window->Pos;
 }
 
-KGVec2 KarmaGui::GetWindowContentRegionMax()
+KGVec2 Karma::KarmaGui::GetWindowContentRegionMax()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ContentRegionRect.Max - window->Pos;
@@ -9071,7 +9093,7 @@ KGVec2 KarmaGui::GetWindowContentRegionMax()
 // Lock horizontal starting position + capture group bounding box into one "item" (so you can use IsItemHovered() or layout primitives such as SameLine() on whole group, etc.)
 // Groups are currently a mishmash of functionalities which should perhaps be clarified and separated.
 // FIXME-OPT: Could we safely early out on ->SkipItems?
-void KarmaGui::BeginGroup()
+void Karma::KarmaGui::BeginGroup()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -9098,17 +9120,17 @@ void KarmaGui::BeginGroup()
         g.LogLinePosY = -FLT_MAX; // To enforce a carriage return
 }
 
-void KarmaGui::EndGroup()
+void Karma::KarmaGui::EndGroup()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
-    KR_CORE_ASSERT(g.GroupStack.Size > 0); // Mismatched BeginGroup()/EndGroup() calls
+    KR_CORE_ASSERT(g.GroupStack.Size > 0, ""); // Mismatched BeginGroup()/EndGroup() calls
 
     KGGuiGroupData& group_data = g.GroupStack.back();
-    KR_CORE_ASSERT(group_data.WindowID == window->ID); // EndGroup() in wrong window?
+    KR_CORE_ASSERT(group_data.WindowID == window->ID, ""); // EndGroup() in wrong window?
 
     if (window->DC.IsSetPos)
-        ErrorCheckUsingSetCursorPosToExtendParentBoundaries();
+        KarmaGuiInternal::ErrorCheckUsingSetCursorPosToExtendParentBoundaries();
 
     KGRect group_bb(group_data.BackupCursorPos, KGMax(window->DC.CursorMaxPos, group_data.BackupCursorPos));
 
@@ -9128,8 +9150,8 @@ void KarmaGui::EndGroup()
     }
 
     window->DC.CurrLineTextBaseOffset = KGMax(window->DC.PrevLineTextBaseOffset, group_data.BackupCurrLineTextBaseOffset);      // FIXME: Incorrect, we should grab the base offset from the *first line* of the group but it is hard to obtain now.
-    ItemSize(group_bb.GetSize());
-    ItemAdd(group_bb, 0, NULL, KGGuiItemFlags_NoTabStop);
+    KarmaGuiInternal::ItemSize(group_bb.GetSize());
+    KarmaGuiInternal::ItemAdd(group_bb, 0, NULL, KGGuiItemFlags_NoTabStop);
 
     // If the current ActiveId was declared within the boundary of our group, we copy it to LastItemId so IsItemActive(), IsItemDeactivated() etc. will be functional on the entire group.
     // It would be neater if we replaced window.DC.LastItemId by e.g. 'bool LastItemIsActive', but would put a little more burden on individual widgets.
@@ -9204,20 +9226,20 @@ static KGVec2 CalcNextScrollFromScrollTargetAndClamp(KGGuiWindow* window)
     return scroll;
 }
 
-void KarmaGui::ScrollToItem(KGGuiScrollFlags flags)
+void Karma::KarmaGuiInternal::ScrollToItem(KGGuiScrollFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     ScrollToRectEx(window, g.LastItemData.NavRect, flags);
 }
 
-void KarmaGui::ScrollToRect(KGGuiWindow* window, const KGRect& item_rect, KGGuiScrollFlags flags)
+void Karma::KarmaGuiInternal::ScrollToRect(KGGuiWindow* window, const KGRect& item_rect, KGGuiScrollFlags flags)
 {
     ScrollToRectEx(window, item_rect, flags);
 }
 
 // Scroll to keep newly navigated item fully into view
-KGVec2 KarmaGui::ScrollToRectEx(KGGuiWindow* window, const KGRect& item_rect, KGGuiScrollFlags flags)
+KGVec2 Karma::KarmaGuiInternal::ScrollToRectEx(KGGuiWindow* window, const KGRect& item_rect, KGGuiScrollFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGRect scroll_rect(window->InnerRect.Min - KGVec2(1, 1), window->InnerRect.Max + KGVec2(1, 1));
@@ -9227,8 +9249,8 @@ KGVec2 KarmaGui::ScrollToRectEx(KGGuiWindow* window, const KGRect& item_rect, KG
     //GetForegroundDrawList(window)->AddRect(scroll_rect.Min, scroll_rect.Max, KG_COL32_WHITE); // [DEBUG]
 
     // Check that only one behavior is selected per axis
-    KR_CORE_ASSERT((flags & KGGuiScrollFlags_MaskX_) == 0 || KGIsPowerOfTwo(flags & KGGuiScrollFlags_MaskX_));
-    KR_CORE_ASSERT((flags & KGGuiScrollFlags_MaskY_) == 0 || KGIsPowerOfTwo(flags & KGGuiScrollFlags_MaskY_));
+    KR_CORE_ASSERT((flags & KGGuiScrollFlags_MaskX_) == 0 || KGIsPowerOfTwo(flags & KGGuiScrollFlags_MaskX_), "");
+    KR_CORE_ASSERT((flags & KGGuiScrollFlags_MaskY_) == 0 || KGIsPowerOfTwo(flags & KGGuiScrollFlags_MaskY_), "");
 
     // Defaults
     KGGuiScrollFlags in_flags = flags;
@@ -9289,54 +9311,54 @@ KGVec2 KarmaGui::ScrollToRectEx(KGGuiWindow* window, const KGRect& item_rect, KG
     return delta_scroll;
 }
 
-float KarmaGui::GetScrollX()
+float Karma::KarmaGui::GetScrollX()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->Scroll.x;
 }
 
-float KarmaGui::GetScrollY()
+float Karma::KarmaGui::GetScrollY()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->Scroll.y;
 }
 
-float KarmaGui::GetScrollMaxX()
+float Karma::KarmaGui::GetScrollMaxX()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ScrollMax.x;
 }
 
-float KarmaGui::GetScrollMaxY()
+float Karma::KarmaGui::GetScrollMaxY()
 {
     KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->ScrollMax.y;
 }
 
-void KarmaGui::SetScrollX(KGGuiWindow* window, float scroll_x)
+void Karma::KarmaGuiInternal::SetScrollX(KGGuiWindow* window, float scroll_x)
 {
     window->ScrollTarget.x = scroll_x;
     window->ScrollTargetCenterRatio.x = 0.0f;
     window->ScrollTargetEdgeSnapDist.x = 0.0f;
 }
 
-void KarmaGui::SetScrollY(KGGuiWindow* window, float scroll_y)
+void Karma::KarmaGuiInternal::SetScrollY(KGGuiWindow* window, float scroll_y)
 {
     window->ScrollTarget.y = scroll_y;
     window->ScrollTargetCenterRatio.y = 0.0f;
     window->ScrollTargetEdgeSnapDist.y = 0.0f;
 }
 
-void KarmaGui::SetScrollX(float scroll_x)
+void Karma::KarmaGui::SetScrollX(float scroll_x)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    SetScrollX(g.CurrentWindow, scroll_x);
+    KarmaGuiInternal::SetScrollX(g.CurrentWindow, scroll_x);
 }
 
-void KarmaGui::SetScrollY(float scroll_y)
+void Karma::KarmaGui::SetScrollY(float scroll_y)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    SetScrollY(g.CurrentWindow, scroll_y);
+    KarmaGuiInternal::SetScrollY(g.CurrentWindow, scroll_y);
 }
 
 // Note that a local position will vary depending on initial scroll value,
@@ -9349,55 +9371,55 @@ void KarmaGui::SetScrollY(float scroll_y)
 //  - SetScrollFromPosY(0.0f) == SetScrollY(0.0f + scroll.y) == has no effect!
 //  - SetScrollFromPosY(-scroll.y) == SetScrollY(-scroll.y + scroll.y) == SetScrollY(0.0f) == reset scroll. Of course writing SetScrollY(0.0f) directly then makes more sense
 // We store a target position so centering and clamping can occur on the next frame when we are guaranteed to have a known window size
-void KarmaGui::SetScrollFromPosX(KGGuiWindow* window, float local_x, float center_x_ratio)
+void Karma::KarmaGuiInternal::SetScrollFromPosX(KGGuiWindow* window, float local_x, float center_x_ratio)
 {
-    KR_CORE_ASSERT(center_x_ratio >= 0.0f && center_x_ratio <= 1.0f);
+    KR_CORE_ASSERT(center_x_ratio >= 0.0f && center_x_ratio <= 1.0f, "");
     window->ScrollTarget.x = KG_FLOOR(local_x - window->DecoOuterSizeX1 - window->DecoInnerSizeX1 + window->Scroll.x); // Convert local position to scroll offset
     window->ScrollTargetCenterRatio.x = center_x_ratio;
     window->ScrollTargetEdgeSnapDist.x = 0.0f;
 }
 
-void KarmaGui::SetScrollFromPosY(KGGuiWindow* window, float local_y, float center_y_ratio)
+void Karma::KarmaGuiInternal::SetScrollFromPosY(KGGuiWindow* window, float local_y, float center_y_ratio)
 {
-    KR_CORE_ASSERT(center_y_ratio >= 0.0f && center_y_ratio <= 1.0f);
+    KR_CORE_ASSERT(center_y_ratio >= 0.0f && center_y_ratio <= 1.0f, "");
     window->ScrollTarget.y = KG_FLOOR(local_y - window->DecoOuterSizeY1 - window->DecoInnerSizeY1 + window->Scroll.y); // Convert local position to scroll offset
     window->ScrollTargetCenterRatio.y = center_y_ratio;
     window->ScrollTargetEdgeSnapDist.y = 0.0f;
 }
 
-void KarmaGui::SetScrollFromPosX(float local_x, float center_x_ratio)
+void Karma::KarmaGui::SetScrollFromPosX(float local_x, float center_x_ratio)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    SetScrollFromPosX(g.CurrentWindow, local_x, center_x_ratio);
+    KarmaGuiInternal::SetScrollFromPosX(g.CurrentWindow, local_x, center_x_ratio);
 }
 
-void KarmaGui::SetScrollFromPosY(float local_y, float center_y_ratio)
+void Karma::KarmaGui::SetScrollFromPosY(float local_y, float center_y_ratio)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    SetScrollFromPosY(g.CurrentWindow, local_y, center_y_ratio);
+    KarmaGuiInternal::SetScrollFromPosY(g.CurrentWindow, local_y, center_y_ratio);
 }
 
 // center_x_ratio: 0.0f left of last item, 0.5f horizontal center of last item, 1.0f right of last item.
-void KarmaGui::SetScrollHereX(float center_x_ratio)
+void Karma::KarmaGui::SetScrollHereX(float center_x_ratio)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     float spacing_x = KGMax(window->WindowPadding.x, g.Style.ItemSpacing.x);
     float target_pos_x = KGLerp(g.LastItemData.Rect.Min.x - spacing_x, g.LastItemData.Rect.Max.x + spacing_x, center_x_ratio);
-    SetScrollFromPosX(window, target_pos_x - window->Pos.x, center_x_ratio); // Convert from absolute to local pos
+    KarmaGuiInternal::SetScrollFromPosX(window, target_pos_x - window->Pos.x, center_x_ratio); // Convert from absolute to local pos
 
     // Tweak: snap on edges when aiming at an item very close to the edge
     window->ScrollTargetEdgeSnapDist.x = KGMax(0.0f, window->WindowPadding.x - spacing_x);
 }
 
 // center_y_ratio: 0.0f top of last item, 0.5f vertical center of last item, 1.0f bottom of last item.
-void KarmaGui::SetScrollHereY(float center_y_ratio)
+void Karma::KarmaGui::SetScrollHereY(float center_y_ratio)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     float spacing_y = KGMax(window->WindowPadding.y, g.Style.ItemSpacing.y);
     float target_pos_y = KGLerp(window->DC.CursorPosPrevLine.y - spacing_y, window->DC.CursorPosPrevLine.y + window->DC.PrevLineSize.y + spacing_y, center_y_ratio);
-    SetScrollFromPosY(window, target_pos_y - window->Pos.y, center_y_ratio); // Convert from absolute to local pos
+    KarmaGuiInternal::SetScrollFromPosY(window, target_pos_y - window->Pos.y, center_y_ratio); // Convert from absolute to local pos
 
     // Tweak: snap on edges when aiming at an item very close to the edge
     window->ScrollTargetEdgeSnapDist.y = KGMax(0.0f, window->WindowPadding.y - spacing_y);
@@ -9407,12 +9429,12 @@ void KarmaGui::SetScrollHereY(float center_y_ratio)
 // [SECTION] TOOLTIPS
 //-----------------------------------------------------------------------------
 
-void KarmaGui::BeginTooltip()
+void Karma::KarmaGui::BeginTooltip()
 {
-    BeginTooltipEx(KGGuiTooltipFlags_None, KGGuiWindowFlags_None);
+    KarmaGuiInternal::BeginTooltipEx(KGGuiTooltipFlags_None, KGGuiWindowFlags_None);
 }
 
-void KarmaGui::BeginTooltipEx(KGGuiTooltipFlags tooltip_flags, KarmaGuiWindowFlags extra_window_flags)
+void Karma::KarmaGuiInternal::BeginTooltipEx(KGGuiTooltipFlags tooltip_flags, KarmaGuiWindowFlags extra_window_flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
 
@@ -9423,8 +9445,8 @@ void KarmaGui::BeginTooltipEx(KGGuiTooltipFlags tooltip_flags, KarmaGuiWindowFla
         // Whatever we do we want to call SetNextWindowPos() to enforce a tooltip position and disable clipping the tooltip without our display area, like regular tooltip do.
         //KGVec2 tooltip_pos = g.IO.MousePos - g.ActiveIdClickOffset - g.Style.WindowPadding;
         KGVec2 tooltip_pos = g.IO.MousePos + KGVec2(16 * g.Style.MouseCursorScale, 8 * g.Style.MouseCursorScale);
-        SetNextWindowPos(tooltip_pos);
-        SetNextWindowBgAlpha(g.Style.Colors[KGGuiCol_PopupBg].w * 0.60f);
+        KarmaGui::SetNextWindowPos(tooltip_pos);
+        KarmaGui::SetNextWindowBgAlpha(g.Style.Colors[KGGuiCol_PopupBg].w * 0.60f);
         //PushStyleVar(KGGuiStyleVar_Alpha, g.Style.Alpha * 0.60f); // This would be nice but e.g ColorButton with checkboard has issue with transparent colors :(
         tooltip_flags |= KGGuiTooltipFlags_OverridePreviousTooltip;
     }
@@ -9441,23 +9463,23 @@ void KarmaGui::BeginTooltipEx(KGGuiTooltipFlags tooltip_flags, KarmaGuiWindowFla
                 KGFormatString(window_name, KG_ARRAYSIZE(window_name), "##Tooltip_%02d", ++g.TooltipOverrideCount);
             }
     KarmaGuiWindowFlags flags = KGGuiWindowFlags_Tooltip | KGGuiWindowFlags_NoInputs | KGGuiWindowFlags_NoTitleBar | KGGuiWindowFlags_NoMove | KGGuiWindowFlags_NoResize | KGGuiWindowFlags_NoSavedSettings | KGGuiWindowFlags_AlwaysAutoResize | KGGuiWindowFlags_NoDocking;
-    Begin(window_name, NULL, flags | extra_window_flags);
+    KarmaGui::Begin(window_name, NULL, flags | extra_window_flags);
 }
 
-void KarmaGui::EndTooltip()
+void Karma::KarmaGui::EndTooltip()
 {
-    KR_CORE_ASSERT(GetCurrentWindowRead()->Flags & KGGuiWindowFlags_Tooltip);   // Mismatched BeginTooltip()/EndTooltip() calls
+    KR_CORE_ASSERT(KarmaGuiInternal::GetCurrentWindowRead()->Flags & KGGuiWindowFlags_Tooltip, "");   // Mismatched BeginTooltip()/EndTooltip() calls
     End();
 }
 
-void KarmaGui::SetTooltipV(const char* fmt, va_list args)
+void Karma::KarmaGui::SetTooltipV(const char* fmt, va_list args)
 {
-    BeginTooltipEx(KGGuiTooltipFlags_OverridePreviousTooltip, KGGuiWindowFlags_None);
+    KarmaGuiInternal::BeginTooltipEx(KGGuiTooltipFlags_OverridePreviousTooltip, KGGuiWindowFlags_None);
     TextV(fmt, args);
     EndTooltip();
 }
 
-void KarmaGui::SetTooltip(const char* fmt, ...)
+void Karma::KarmaGui::SetTooltip(const char* fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -9470,14 +9492,14 @@ void KarmaGui::SetTooltip(const char* fmt, ...)
 //-----------------------------------------------------------------------------
 
 // Supported flags: KGGuiPopupFlags_AnyPopupId, KGGuiPopupFlags_AnyPopupLevel
-bool KarmaGui::IsPopupOpen(KGGuiID id, KarmaGuiPopupFlags popup_flags)
+bool Karma::KarmaGuiInternal::IsPopupOpen(KGGuiID id, KarmaGuiPopupFlags popup_flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (popup_flags & KGGuiPopupFlags_AnyPopupId)
     {
         // Return true if any popup is open at the current BeginPopup() level of the popup stack
         // This may be used to e.g. test for another popups already opened to handle popups priorities at the same level.
-        KR_CORE_ASSERT(id == 0);
+        KR_CORE_ASSERT(id == 0, "");
         if (popup_flags & KGGuiPopupFlags_AnyPopupLevel)
             return g.OpenPopupStack.Size > 0;
         else
@@ -9501,16 +9523,18 @@ bool KarmaGui::IsPopupOpen(KGGuiID id, KarmaGuiPopupFlags popup_flags)
     }
 }
 
-bool KarmaGui::IsPopupOpen(const char* str_id, KarmaGuiPopupFlags popup_flags)
+bool Karma::KarmaGui::IsPopupOpen(const char* str_id, KarmaGuiPopupFlags popup_flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiID id = (popup_flags & KGGuiPopupFlags_AnyPopupId) ? 0 : g.CurrentWindow->GetID(str_id);
     if ((popup_flags & KGGuiPopupFlags_AnyPopupLevel) && id != 0)
-        KR_CORE_ASSERT(0 && "Cannot use IsPopupOpen() with a string id and KGGuiPopupFlags_AnyPopupLevel."); // But non-string version is legal and used internally
-    return IsPopupOpen(id, popup_flags);
+    {
+        KR_CORE_ASSERT(0, "Cannot use IsPopupOpen() with a string id and KGGuiPopupFlags_AnyPopupLevel."); // But non-string version is legal and used internally
+    }
+    return KarmaGuiInternal::IsPopupOpen(id, popup_flags);
 }
 
-KGGuiWindow* KarmaGui::GetTopMostPopupModal()
+KGGuiWindow* Karma::KarmaGuiInternal::GetTopMostPopupModal()
 {
     KarmaGuiContext& g = *GKarmaGui;
     for (int n = g.OpenPopupStack.Size - 1; n >= 0; n--)
@@ -9520,7 +9544,7 @@ KGGuiWindow* KarmaGui::GetTopMostPopupModal()
     return NULL;
 }
 
-KGGuiWindow* KarmaGui::GetTopMostAndVisiblePopupModal()
+KGGuiWindow* Karma::KarmaGuiInternal::GetTopMostAndVisiblePopupModal()
 {
     KarmaGuiContext& g = *GKarmaGui;
     for (int n = g.OpenPopupStack.Size - 1; n >= 0; n--)
@@ -9530,24 +9554,24 @@ KGGuiWindow* KarmaGui::GetTopMostAndVisiblePopupModal()
     return NULL;
 }
 
-void KarmaGui::OpenPopup(const char* str_id, KarmaGuiPopupFlags popup_flags)
+void Karma::KarmaGui::OpenPopup(const char* str_id, KarmaGuiPopupFlags popup_flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiID id = g.CurrentWindow->GetID(str_id);
-    KARMAGUI_DEBUG_LOG_POPUP("[popup] OpenPopup(\"%s\" -> 0x%08X\n", str_id, id);
-    OpenPopupEx(id, popup_flags);
+    KR_CORE_INFO("[popup] OpenPopup(\"{0}\" -> {1}", str_id, id);
+    KarmaGuiInternal::OpenPopupEx(id, popup_flags);
 }
 
-void KarmaGui::OpenPopup(KGGuiID id, KarmaGuiPopupFlags popup_flags)
+void Karma::KarmaGui::OpenPopup(KGGuiID id, KarmaGuiPopupFlags popup_flags)
 {
-    OpenPopupEx(id, popup_flags);
+    KarmaGuiInternal::OpenPopupEx(id, popup_flags);
 }
 
 // Mark popup as open (toggle toward open state).
 // Popups are closed when user click outside, or activate a pressable item, or CloseCurrentPopup() is called within a BeginPopup()/EndPopup() block.
 // Popup identifiers are relative to the current ID-stack (so OpenPopup and BeginPopup needs to be at the same level).
 // One open popup per level of the popup hierarchy (NB: when assigning we reset the Window member of ImGuiPopupRef to NULL)
-void KarmaGui::OpenPopupEx(KGGuiID id, KarmaGuiPopupFlags popup_flags)
+void Karma::KarmaGuiInternal::OpenPopupEx(KGGuiID id, KarmaGuiPopupFlags popup_flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* parent_window = g.CurrentWindow;
@@ -9564,9 +9588,9 @@ void KarmaGui::OpenPopupEx(KGGuiID id, KarmaGuiPopupFlags popup_flags)
     popup_ref.OpenFrameCount = g.FrameCount;
     popup_ref.OpenParentId = parent_window->IDStack.back();
     popup_ref.OpenPopupPos = NavCalcPreferredRefPos();
-    popup_ref.OpenMousePos = IsMousePosValid(&g.IO.MousePos) ? g.IO.MousePos : popup_ref.OpenPopupPos;
+    popup_ref.OpenMousePos = KarmaGui::IsMousePosValid(&g.IO.MousePos) ? g.IO.MousePos : popup_ref.OpenPopupPos;
 
-    KARMAGUI_DEBUG_LOG_POPUP("[popup] OpenPopupEx(0x%08X)\n", id);
+    KR_CORE_INFO("[popup] OpenPopupEx({0})", id);
     if (g.OpenPopupStack.Size < current_stack_size + 1)
     {
         g.OpenPopupStack.push_back(popup_ref);
@@ -9596,7 +9620,7 @@ void KarmaGui::OpenPopupEx(KGGuiID id, KarmaGuiPopupFlags popup_flags)
 
 // When popups are stacked, clicking on a lower level popups puts focus back to it and close popups above it.
 // This function closes any popups that are over 'ref_window'.
-void KarmaGui::ClosePopupsOverWindow(KGGuiWindow* ref_window, bool restore_focus_to_window_under_popup)
+void Karma::KarmaGuiInternal::ClosePopupsOverWindow(KGGuiWindow* ref_window, bool restore_focus_to_window_under_popup)
 {
     KarmaGuiContext& g = *GKarmaGui;
     if (g.OpenPopupStack.Size == 0)
@@ -9612,7 +9636,7 @@ void KarmaGui::ClosePopupsOverWindow(KGGuiWindow* ref_window, bool restore_focus
             KGGuiPopupData& popup = g.OpenPopupStack[popup_count_to_keep];
             if (!popup.Window)
                 continue;
-            KR_CORE_ASSERT((popup.Window->Flags & KGGuiWindowFlags_Popup) != 0);
+            KR_CORE_ASSERT((popup.Window->Flags & KGGuiWindowFlags_Popup) != 0, "");
             if (popup.Window->Flags & KGGuiWindowFlags_ChildWindow)
                 continue;
 
@@ -9636,7 +9660,7 @@ void KarmaGui::ClosePopupsOverWindow(KGGuiWindow* ref_window, bool restore_focus
     }
     if (popup_count_to_keep < g.OpenPopupStack.Size) // This test is not required but it allows to set a convenient breakpoint on the statement below
     {
-        KARMAGUI_DEBUG_LOG_POPUP("[popup] ClosePopupsOverWindow(\"%s\")\n", ref_window ? ref_window->Name : "<NULL>");
+        KR_CORE_INFO("[popup] ClosePopupsOverWindow(\"{0}\")", ref_window ? ref_window->Name : "<NULL>");
         ClosePopupToLevel(popup_count_to_keep, restore_focus_to_window_under_popup);
     }
 }

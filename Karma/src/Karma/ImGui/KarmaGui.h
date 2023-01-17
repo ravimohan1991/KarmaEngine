@@ -867,6 +867,9 @@ namespace Karma
 		static KarmaGuiViewport*    FindViewportByID(KGGuiID id);                                   // this is a helper for backends.
 		static KarmaGuiViewport*    FindViewportByPlatformHandle(void* platform_handle);            // this is a helper for backends. the type platform_handle is decided by the backend (e.g. HWND, MyWindow*, GLFWwindow* etc.)
 		static KarmaGuiKey     GetKeyIndex(KarmaGuiKey key);  // map KGGuiKey_* values into legacy native key index. == io.KeyMap[key]
+	private:
+		// Those names a provided for debugging purpose and are not meant to be saved persistently not compared.
+		static const char* const GKeyNames[];
 	};
 
 }// Namespace Karma

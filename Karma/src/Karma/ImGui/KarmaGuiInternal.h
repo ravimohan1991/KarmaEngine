@@ -86,6 +86,8 @@ struct KGGuiWindow;                 // Storage for one window
 struct KGGuiWindowTempData;         // Temporary storage for one window (that's the data which in theory we could ditch at the end of the frame, in practice we currently keep it for each window)
 struct KGGuiWindowSettings;         // Storage for a window .ini settings (we keep one of those even if the actual window wasn't instanced during this session)
 
+KarmaGuiContext*   GKarmaGui;
+
 // Enumerations
 // Use your programming IDE "Go to definition" facility on the names of the center columns to find the actual flags/enum lists.
 enum KGGuiLocKey : int;                 // -> enum KGGuiLocKey              // Enum: a localization entry for translation.
@@ -158,12 +160,6 @@ namespace KGStb
 // Static Asserts
 #define KG_STATIC_ASSERT(_COND)         KR_CORE_ASSERT(_COND, "")
 
-// Error handling
-// Down the line in some frameworks/languages we would like to have a way to redirect those to the programmer and recover from more faults.
-#ifndef KG_ASSERT_USER_ERROR
-#define KG_ASSERT_USER_ERROR(_EXP,_MSG) KR_CORE_ASSERT((_EXP), _MSG)   // Recoverable User Error
-#endif
-
 // Misc Macros
 #define KG_PI                           3.14159265358979323846f
 #ifdef KR_CORE_WINDOWS
@@ -179,14 +175,6 @@ namespace KGStb
 #define KG_F32_TO_INT8_SAT(_VAL)        ((int)(KGSaturate(_VAL) * 255.0f + 0.5f))               // Saturated, always output 0..255
 #define KG_FLOOR(_VAL)                  ((float)(int)(_VAL))                                    // KGFloor() is not inlined in MSVC debug builds
 #define KG_ROUND(_VAL)                  ((float)(int)((_VAL) + 0.5f))                           //
-
-// Enforce cdecl calling convention for functions called by the standard library, in case compilation settings changed the default to e.g. __vectorcall
-// May encounter weired scenario when, in the future, Karma is being compiled on MSVC in Mac
-#ifdef KR_CORE_WINDOWS
-#define KARMAGUI_CDECL __cdecl
-#else
-#define KARMAGUI_CDECL
-#endif
 
 // Warnings
 #if defined(_MSC_VER) && !defined(__clang__)
@@ -226,7 +214,7 @@ namespace KGStb
 
 // Helpers: Sorting
 #ifndef KGQsort
-static inline void      KGQsort(void* base, size_t count, size_t size_of_element, int(KARMAGUI_CDECL *compare_func)(void const*, void const*)) { if (count > 1) qsort(base, count, size_of_element, compare_func); }
+static inline void      KGQsort(void* base, size_t count, size_t size_of_element, int(*compare_func)(void const*, void const*)) { if (count > 1) qsort(base, count, size_of_element, compare_func); }
 #endif
 
 // Helpers: Color Blending
