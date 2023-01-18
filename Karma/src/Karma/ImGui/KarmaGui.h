@@ -696,6 +696,7 @@ namespace Karma
 		static void          LogButtons();                                                       // helper to display buttons for logging to tty/file/clipboard
 		static void          LogText(const char* fmt, ...) KG_FMTARGS(1);                        // pass text data straight to log (without being displayed)
 		static void          LogTextV(const char* fmt, va_list args) KG_FMTLIST(1);
+		static void LogTextV(KarmaGuiContext& g, const char* fmt, va_list args);
 
 		// Drag and Drop
 		// - On source items, call BeginDragDropSource(), if it returns true also call SetDragDropPayload() + EndDragDropSource().
