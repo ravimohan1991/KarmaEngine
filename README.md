@@ -70,3 +70,5 @@ References
 * [Travis Vroman](https://www.youtube.com/user/barzahd512)
 * [ThinMatrix](https://www.youtube.com/watch?v=f3Cr8Yx3GGA)
 
+### Resources and Misc
+* [deoxygen integration](https://github.com/satu0king/Github-Documentation-With-Doxygen)
