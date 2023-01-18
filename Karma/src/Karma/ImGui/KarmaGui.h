@@ -696,6 +696,7 @@ namespace Karma
 		static void          LogButtons();                                                       // helper to display buttons for logging to tty/file/clipboard
 		static void          LogText(const char* fmt, ...) KG_FMTARGS(1);                        // pass text data straight to log (without being displayed)
 		static void          LogTextV(const char* fmt, va_list args) KG_FMTLIST(1);
+		static void LogTextV(KarmaGuiContext& g, const char* fmt, va_list args);
 
 		// Drag and Drop
 		// - On source items, call BeginDragDropSource(), if it returns true also call SetDragDropPayload() + EndDragDropSource().
@@ -867,6 +868,9 @@ namespace Karma
 		static KarmaGuiViewport*    FindViewportByID(KGGuiID id);                                   // this is a helper for backends.
 		static KarmaGuiViewport*    FindViewportByPlatformHandle(void* platform_handle);            // this is a helper for backends. the type platform_handle is decided by the backend (e.g. HWND, MyWindow*, GLFWwindow* etc.)
 		static KarmaGuiKey     GetKeyIndex(KarmaGuiKey key);  // map KGGuiKey_* values into legacy native key index. == io.KeyMap[key]
+	private:
+		// Those names a provided for debugging purpose and are not meant to be saved persistently not compared.
+		static const char* const GKeyNames[];
 	};
 
 }// Namespace Karma
