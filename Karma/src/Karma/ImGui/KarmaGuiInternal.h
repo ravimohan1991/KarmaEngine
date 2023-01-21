@@ -213,9 +213,9 @@ namespace KGStb
  KGGuiID       KGHashStr(const char* data, size_t data_size = 0, KGU32 seed = 0);
 
 // Helpers: Sorting
-#ifndef KGQsort
+//#ifndef KGQsort
 static inline void      KGQsort(void* base, size_t count, size_t size_of_element, int(*compare_func)(void const*, void const*)) { if (count > 1) qsort(base, count, size_of_element, compare_func); }
-#endif
+//#endif
 
 // Helpers: Color Blending
  KGU32         KGAlphaBlendColors(KGU32 col_a, KGU32 col_b);
@@ -3098,6 +3098,8 @@ namespace Karma
 		static void          DockContextNewFrameUpdateDocking(KarmaGuiContext* ctx);
 		static void          DockContextEndFrame(KarmaGuiContext* ctx);
 		static KGGuiID       DockContextGenNodeID(KarmaGuiContext* ctx);
+		static KGGuiDockNode*  DockContextAddNode(KarmaGuiContext* ctx, KGGuiID id);
+		static void          DockContextRemoveNode(KarmaGuiContext* ctx, KGGuiDockNode* node, bool merge_sibling_into_parent_node);
 		static void          DockContextQueueDock(KarmaGuiContext* ctx, KGGuiWindow* target, KGGuiDockNode* target_node, KGGuiWindow* payload, KarmaGuiDir split_dir, float split_ratio, bool split_outer);
 		static void          DockContextQueueUndockWindow(KarmaGuiContext* ctx, KGGuiWindow* window);
 		static void          DockContextQueueUndockNode(KarmaGuiContext* ctx, KGGuiDockNode* node);

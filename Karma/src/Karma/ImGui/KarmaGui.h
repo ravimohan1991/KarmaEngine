@@ -1727,13 +1727,13 @@ enum KGGuiCond_
 // Defining a custom placement new() with a custom parameter allows us to bypass including <new> which on some platforms complains when user has disabled exceptions.
 //-----------------------------------------------------------------------------
 
-struct ImNewWrapper {};
-inline void* operator new(size_t, ImNewWrapper, void* ptr) { return ptr; }
-inline void  operator delete(void*, ImNewWrapper, void*)   {} // This is only required so we can use the symmetrical new()
+struct KGNewWrapper {};
+inline void* operator new(size_t, KGNewWrapper, void* ptr) { return ptr; }
+inline void  operator delete(void*, KGNewWrapper, void*)   {} // This is only required so we can use the symmetrical new()
 #define KG_ALLOC(_SIZE)                     Karma::KarmaGui::MemAlloc(_SIZE)
 #define KG_FREE(_PTR)                       Karma::KarmaGui::MemFree(_PTR)
-#define KG_PLACEMENT_NEW(_PTR)              new(ImNewWrapper(), _PTR)
-#define KG_NEW(_TYPE)                       new(ImNewWrapper(), Karma::KarmaGui::MemAlloc(sizeof(_TYPE))) _TYPE
+#define KG_PLACEMENT_NEW(_PTR)              new(KGNewWrapper(), _PTR)
+#define KG_NEW(_TYPE)                       new(KGNewWrapper(), Karma::KarmaGui::MemAlloc(sizeof(_TYPE))) _TYPE
 template<typename T> void KG_DELETE(T* p)   { if (p) { p->~T(); Karma::KarmaGui::MemFree(p); } }
 
 //-----------------------------------------------------------------------------
