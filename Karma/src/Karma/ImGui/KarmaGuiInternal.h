@@ -2891,7 +2891,7 @@ namespace Karma
 		static void          Initialize();
 		static void          Shutdown();    // Since 1.60 this is a _private_ function. You can call DestroyContext() to destroy the context created by CreateContext().
 
-		static // NewFrame
+		// NewFrame
 		static void          UpdateInputEvents(bool trickle_fast_inputs);
 		static void          UpdateHoveredWindowAndCaptureFlags();
 		static void          StartMouseMovingWindow(KGGuiWindow* window);

@@ -1,7 +1,13 @@
 #pragma once
 
+#ifdef _MSC_VER
+#define KG_FMTARGS(FMT)
+#define KG_FMTLIST(FMT)
+#else
 #define KG_FMTARGS(FMT)             __attribute__((format(printf, FMT, FMT+1)))
 #define KG_FMTLIST(FMT)             __attribute__((format(printf, FMT, 0)))
+#endif
+
 #define KG_ARRAYSIZE(_ARR)          ((int)(sizeof(_ARR) / sizeof(*(_ARR))))     // Size of a static C-style array. Don't use on pointers!
 #define KG_UNUSED(_VAR)             ((void)(_VAR))
 #define KG_OFFSETOF(_TYPE,_MEMBER)  offsetof(_TYPE, _MEMBER)                    // Offset of _MEMBER within _TYPE. Standardized as offsetof() in C++11
