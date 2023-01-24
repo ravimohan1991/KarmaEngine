@@ -1,6 +1,5 @@
-
+// Dear ImGui is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
 /*
-
 Index of this file:
 
 // [SECTION] Header mess
@@ -3385,14 +3384,17 @@ struct KGFontBuilderIO
 #ifdef KGGUI_ENABLE_STB_TRUETYPE
  const KGFontBuilderIO* ImFontAtlasGetBuilderForStbTruetype();
 #endif
- void      ImFontAtlasBuildInit(KGFontAtlas* atlas);
- void      ImFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* font_config, float ascent, float descent);
- void      ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opaque);
- void      ImFontAtlasBuildFinish(KGFontAtlas* atlas);
- void      ImFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned char in_marker_pixel_value);
- void      ImFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned int in_marker_pixel_value);
- void      ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], float in_multiply_factor);
- void      ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride);
+namespace Karma
+{
+static void      ImFontAtlasBuildInit(KGFontAtlas* atlas);
+static void      ImFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* font_config, float ascent, float descent);
+static void      ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opaque);
+static void      ImFontAtlasBuildFinish(KGFontAtlas* atlas);
+static void      ImFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned char in_marker_pixel_value);
+static void      ImFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned int in_marker_pixel_value);
+static void      ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], float in_multiply_factor);
+static void      ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride);
+}
 
 //-----------------------------------------------------------------------------
 // [SECTION] Test Engine specific hooks (imgui_test_engine)

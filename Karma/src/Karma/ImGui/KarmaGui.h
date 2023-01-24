@@ -1,11 +1,12 @@
+// Dear ImGui is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
 #pragma once
 
-#ifdef _MSC_VER
-#define KG_FMTARGS(FMT)
-#define KG_FMTLIST(FMT)
-#else
+#if(defined(__clang__) || defined(__GNUC__))
 #define KG_FMTARGS(FMT)             __attribute__((format(printf, FMT, FMT+1)))
 #define KG_FMTLIST(FMT)             __attribute__((format(printf, FMT, 0)))
+#else
+#define KG_FMTARGS(FMT)
+#define KG_FMTLIST(FMT)
 #endif
 
 #define KG_ARRAYSIZE(_ARR)          ((int)(sizeof(_ARR) / sizeof(*(_ARR))))     // Size of a static C-style array. Don't use on pointers!
@@ -2468,10 +2469,10 @@ struct KARMA_API KGDrawListSplitter
     inline KGDrawListSplitter()  { memset(this, 0, sizeof(*this)); }
     inline ~KGDrawListSplitter() { ClearFreeMemory(); }
     inline void                 Clear() { _Current = 0; _Count = 1; } // Do not clear Channels[] so our allocations are reused next frame
-    static void              ClearFreeMemory();
-    static void              Split(KGDrawList* draw_list, int count);
-    static void              Merge(KGDrawList* draw_list);
-    static void              SetCurrentChannel(KGDrawList* draw_list, int channel_idx);
+	void              ClearFreeMemory();
+    void              Split(KGDrawList* draw_list, int count);
+    void              Merge(KGDrawList* draw_list);
+    void              SetCurrentChannel(KGDrawList* draw_list, int channel_idx);
 };
 
 // Flags for KGDrawList functions
@@ -2539,11 +2540,11 @@ struct KARMA_API KGDrawList
     KGDrawList(KGDrawListSharedData* shared_data) { memset(this, 0, sizeof(*this)); _Data = shared_data; }
 
     ~KGDrawList() { _ClearFreeMemory(); }
-    static void  PushClipRect(const KGVec2& clip_rect_min, const KGVec2& clip_rect_max, bool intersect_with_current_clip_rect = false);  // Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
-    static void  PushClipRectFullScreen();
-    static void  PopClipRect();
-    static void  PushTextureID(KGTextureID texture_id);
-    static void  PopTextureID();
+	void  PushClipRect(const KGVec2& clip_rect_min, const KGVec2& clip_rect_max, bool intersect_with_current_clip_rect = false);  // Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
+    void  PushClipRectFullScreen();
+    void  PopClipRect();
+    void  PushTextureID(KGTextureID texture_id);
+    void  PopTextureID();
     inline KGVec2   GetClipRectMin() const { const KGVec4& cr = _ClipRectStack.back(); return KGVec2(cr.x, cr.y); }
     inline KGVec2   GetClipRectMax() const { const KGVec4& cr = _ClipRectStack.back(); return KGVec2(cr.z, cr.w); }
 
@@ -2554,35 +2555,35 @@ struct KARMA_API KGDrawList
     //   In older versions (until Dear ImGui 1.77) the AddCircle functions defaulted to num_segments == 12.
     //   In future versions we will use textures to provide cheaper and higher-quality circles.
     //   Use AddNgon() and AddNgonFilled() functions if you need to guarantee a specific number of sides.
-    static void  AddLine(const KGVec2& p1, const KGVec2& p2, KGU32 col, float thickness = 1.0f);
-    static void  AddRect(const KGVec2& p_min, const KGVec2& p_max, KGU32 col, float rounding = 0.0f, KGDrawFlags flags = 0, float thickness = 1.0f);   // a: upper-left, b: lower-right (== upper-left + size)
-    static void  AddRectFilled(const KGVec2& p_min, const KGVec2& p_max, KGU32 col, float rounding = 0.0f, KGDrawFlags flags = 0);                     // a: upper-left, b: lower-right (== upper-left + size)
-    static void  AddRectFilledMultiColor(const KGVec2& p_min, const KGVec2& p_max, KGU32 col_upr_left, KGU32 col_upr_right, KGU32 col_bot_right, KGU32 col_bot_left);
-    static void  AddQuad(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col, float thickness = 1.0f);
-    static void  AddQuadFilled(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col);
-    static void  AddTriangle(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col, float thickness = 1.0f);
-    static void  AddTriangleFilled(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col);
-    static void  AddCircle(const KGVec2& center, float radius, KGU32 col, int num_segments = 0, float thickness = 1.0f);
-    static void  AddCircleFilled(const KGVec2& center, float radius, KGU32 col, int num_segments = 0);
-    static void  AddNgon(const KGVec2& center, float radius, KGU32 col, int num_segments, float thickness = 1.0f);
-    static void  AddNgonFilled(const KGVec2& center, float radius, KGU32 col, int num_segments);
-    static void  AddText(const KGVec2& pos, KGU32 col, const char* text_begin, const char* text_end = NULL);
-    static void  AddText(const KGFont* font, float font_size, const KGVec2& pos, KGU32 col, const char* text_begin, const char* text_end = NULL, float wrap_width = 0.0f, const KGVec4* cpu_fine_clip_rect = NULL);
-    static void  AddPolyline(const KGVec2* points, int num_points, KGU32 col, KGDrawFlags flags, float thickness);
-    static void  AddConvexPolyFilled(const KGVec2* points, int num_points, KGU32 col);
-    static void  AddBezierCubic(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col, float thickness, int num_segments = 0); // Cubic Bezier (4 control points)
-    static void  AddBezierQuadratic(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col, float thickness, int num_segments = 0);               // Quadratic Bezier (3 control points)
+    void  AddLine(const KGVec2& p1, const KGVec2& p2, KGU32 col, float thickness = 1.0f);
+    void  AddRect(const KGVec2& p_min, const KGVec2& p_max, KGU32 col, float rounding = 0.0f, KGDrawFlags flags = 0, float thickness = 1.0f);   // a: upper-left, b: lower-right (== upper-left + size)
+    void  AddRectFilled(const KGVec2& p_min, const KGVec2& p_max, KGU32 col, float rounding = 0.0f, KGDrawFlags flags = 0);                     // a: upper-left, b: lower-right (== upper-left + size)
+    void  AddRectFilledMultiColor(const KGVec2& p_min, const KGVec2& p_max, KGU32 col_upr_left, KGU32 col_upr_right, KGU32 col_bot_right, KGU32 col_bot_left);
+    void  AddQuad(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col, float thickness = 1.0f);
+    void  AddQuadFilled(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col);
+    void  AddTriangle(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col, float thickness = 1.0f);
+    void  AddTriangleFilled(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col);
+    void  AddCircle(const KGVec2& center, float radius, KGU32 col, int num_segments = 0, float thickness = 1.0f);
+    void  AddCircleFilled(const KGVec2& center, float radius, KGU32 col, int num_segments = 0);
+    void  AddNgon(const KGVec2& center, float radius, KGU32 col, int num_segments, float thickness = 1.0f);
+    void  AddNgonFilled(const KGVec2& center, float radius, KGU32 col, int num_segments);
+    void  AddText(const KGVec2& pos, KGU32 col, const char* text_begin, const char* text_end = NULL);
+    void  AddText(const KGFont* font, float font_size, const KGVec2& pos, KGU32 col, const char* text_begin, const char* text_end = NULL, float wrap_width = 0.0f, const KGVec4* cpu_fine_clip_rect = NULL);
+    void  AddPolyline(const KGVec2* points, int num_points, KGU32 col, KGDrawFlags flags, float thickness);
+    void  AddConvexPolyFilled(const KGVec2* points, int num_points, KGU32 col);
+    void  AddBezierCubic(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, KGU32 col, float thickness, int num_segments = 0); // Cubic Bezier (4 control points)
+    void  AddBezierQuadratic(const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, KGU32 col, float thickness, int num_segments = 0);               // Quadratic Bezier (3 control points)
 
     // Image primitives
     // - Read FAQ to understand what KGTextureID is.
     // - "p_min" and "p_max" represent the upper-left and lower-right corners of the rectangle.
     // - "uv_min" and "uv_max" represent the normalized texture coordinates to use for those corners. Using (0,0)->(1,1) texture coordinates will generally display the entire texture.
-    static void  AddImage(KGTextureID user_texture_id, const KGVec2& p_min, const KGVec2& p_max, const KGVec2& uv_min = KGVec2(0, 0), const KGVec2& uv_max = KGVec2(1, 1), KGU32 col = KG_COL32_WHITE);
-    static void  AddImageQuad(KGTextureID user_texture_id, const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& uv1 = KGVec2(0, 0), const KGVec2& uv2 = KGVec2(1, 0), const KGVec2& uv3 = KGVec2(1, 1), const KGVec2& uv4 = KGVec2(0, 1), KGU32 col = KG_COL32_WHITE);
-    static void  AddImageRounded(KGTextureID user_texture_id, const KGVec2& p_min, const KGVec2& p_max, const KGVec2& uv_min, const KGVec2& uv_max, KGU32 col, float rounding, KGDrawFlags flags = 0);
+    void  AddImage(KGTextureID user_texture_id, const KGVec2& p_min, const KGVec2& p_max, const KGVec2& uv_min = KGVec2(0, 0), const KGVec2& uv_max = KGVec2(1, 1), KGU32 col = KG_COL32_WHITE);
+    void  AddImageQuad(KGTextureID user_texture_id, const KGVec2& p1, const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, const KGVec2& uv1 = KGVec2(0, 0), const KGVec2& uv2 = KGVec2(1, 0), const KGVec2& uv3 = KGVec2(1, 1), const KGVec2& uv4 = KGVec2(0, 1), KGU32 col = KG_COL32_WHITE);
+	void  AddImageRounded(KGTextureID user_texture_id, const KGVec2& p_min, const KGVec2& p_max, const KGVec2& uv_min, const KGVec2& uv_max, KGU32 col, float rounding, KGDrawFlags flags = 0);
 
     // Add custom background color to a window
-    static void SetWindowBackgroundColor(KGVec4 bgColor);
+    void SetWindowBackgroundColor(KGVec4 bgColor);
 
     // Stateful path API, add points then finish with PathFillConvex() or PathStroke()
     // - Filled shapes must always use clockwise winding order. The anti-aliasing fringe depends on it. Counter-clockwise shapes will have "inward" anti-aliasing.
@@ -2591,16 +2592,16 @@ struct KARMA_API KGDrawList
     inline    void  PathLineToMergeDuplicate(const KGVec2& pos)                 { if (_Path.Size == 0 || memcmp(&_Path.Data[_Path.Size - 1], &pos, 8) != 0) _Path.push_back(pos); }
     inline    void  PathFillConvex(KGU32 col)                                   { AddConvexPolyFilled(_Path.Data, _Path.Size, col); _Path.Size = 0; }
     inline    void  PathStroke(KGU32 col, KGDrawFlags flags = 0, float thickness = 1.0f) { AddPolyline(_Path.Data, _Path.Size, col, flags, thickness); _Path.Size = 0; }
-    static void  PathArcTo(const KGVec2& center, float radius, float a_min, float a_max, int num_segments = 0);
-    static void  PathArcToFast(const KGVec2& center, float radius, int a_min_of_12, int a_max_of_12);                // Use precomputed angles for a 12 steps circle
-    static void  PathBezierCubicCurveTo(const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, int num_segments = 0); // Cubic Bezier (4 control points)
-    static void  PathBezierQuadraticCurveTo(const KGVec2& p2, const KGVec2& p3, int num_segments = 0);               // Quadratic Bezier (3 control points)
-    static void  PathRect(const KGVec2& rect_min, const KGVec2& rect_max, float rounding = 0.0f, KGDrawFlags flags = 0);
+    void  PathArcTo(const KGVec2& center, float radius, float a_min, float a_max, int num_segments = 0);
+    void  PathArcToFast(const KGVec2& center, float radius, int a_min_of_12, int a_max_of_12);                // Use precomputed angles for a 12 steps circle
+    void  PathBezierCubicCurveTo(const KGVec2& p2, const KGVec2& p3, const KGVec2& p4, int num_segments = 0); // Cubic Bezier (4 control points)
+    void  PathBezierQuadraticCurveTo(const KGVec2& p2, const KGVec2& p3, int num_segments = 0);               // Quadratic Bezier (3 control points)
+	void  PathRect(const KGVec2& rect_min, const KGVec2& rect_max, float rounding = 0.0f, KGDrawFlags flags = 0);
 
     // Advanced
-    static void  AddCallback(KGDrawCallback callback, void* callback_data);  // Your rendering function must check for 'UserCallback' in KGDrawCmd and call the function instead of rendering triangles.
-    static void  AddDrawCmd();                                               // This is useful if you need to forcefully create a new draw call (to allow for dependent rendering / blending). Otherwise primitives are merged into the same draw-call as much as possible
-    static KGDrawList* CloneOutput();                                  // Create a clone of the CmdBuffer/IdxBuffer/VtxBuffer.
+    void  AddCallback(KGDrawCallback callback, void* callback_data);  // Your rendering function must check for 'UserCallback' in KGDrawCmd and call the function instead of rendering triangles.
+	void AddDrawCmd();                                               // This is useful if you need to forcefully create a new draw call (to allow for dependent rendering / blending). Otherwise primitives are merged into the same draw-call as much as possible
+	KGDrawList* CloneOutput() const;                                  // Create a clone of the CmdBuffer/IdxBuffer/VtxBuffer.
 
     // Advanced: Channels
     // - Use to split render into layers. By switching channels to can render out-of-order (e.g. submit FG primitives before BG primitives)
@@ -2615,26 +2616,26 @@ struct KARMA_API KGDrawList
     // Advanced: Primitives allocations
     // - We render triangles (three vertices)
     // - All primitives needs to be reserved via PrimReserve() beforehand.
-    static void  PrimReserve(int idx_count, int vtx_count);
-    static void  PrimUnreserve(int idx_count, int vtx_count);
-    static void  PrimRect(const KGVec2& a, const KGVec2& b, KGU32 col);      // Axis aligned rectangle (composed of two triangles)
-    static void  PrimRectUV(const KGVec2& a, const KGVec2& b, const KGVec2& uv_a, const KGVec2& uv_b, KGU32 col);
-    static void  PrimQuadUV(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& d, const KGVec2& uv_a, const KGVec2& uv_b, const KGVec2& uv_c, const KGVec2& uv_d, KGU32 col);
+    void  PrimReserve(int idx_count, int vtx_count);
+    void  PrimUnreserve(int idx_count, int vtx_count);
+    void  PrimRect(const KGVec2& a, const KGVec2& b, KGU32 col);      // Axis aligned rectangle (composed of two triangles)
+    void  PrimRectUV(const KGVec2& a, const KGVec2& b, const KGVec2& uv_a, const KGVec2& uv_b, KGU32 col);
+    void  PrimQuadUV(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& d, const KGVec2& uv_a, const KGVec2& uv_b, const KGVec2& uv_c, const KGVec2& uv_d, KGU32 col);
     inline    void  PrimWriteVtx(const KGVec2& pos, const KGVec2& uv, KGU32 col)    { _VtxWritePtr->pos = pos; _VtxWritePtr->uv = uv; _VtxWritePtr->col = col; _VtxWritePtr++; _VtxCurrentIdx++; }
     inline    void  PrimWriteIdx(KGDrawIdx idx)                                     { *_IdxWritePtr = idx; _IdxWritePtr++; }
     inline    void  PrimVtx(const KGVec2& pos, const KGVec2& uv, KGU32 col)         { PrimWriteIdx((KGDrawIdx)_VtxCurrentIdx); PrimWriteVtx(pos, uv, col); } // Write vertex with unique index
 
     // [Internal helpers]
-    static void  _ResetForNewFrame();
-    static void  _ClearFreeMemory();
-    static void  _PopUnusedDrawCmd();
-    static void  _TryMergeDrawCmds();
-    static void  _OnChangedClipRect();
-    static void  _OnChangedTextureID();
-    static void  _OnChangedVtxOffset();
-    static int   _CalcCircleAutoSegmentCount(float radius);
-    static void  _PathArcToFastEx(const KGVec2& center, float radius, int a_min_sample, int a_max_sample, int a_step);
-    static void  _PathArcToN(const KGVec2& center, float radius, float a_min, float a_max, int num_segments);
+    void  _ResetForNewFrame();
+    void  _ClearFreeMemory();
+    void  _PopUnusedDrawCmd();
+    void  _TryMergeDrawCmds();
+    void  _OnChangedClipRect();
+    void  _OnChangedTextureID();
+    void  _OnChangedVtxOffset();
+    int   _CalcCircleAutoSegmentCount(float radius) const;
+    void  _PathArcToFastEx(const KGVec2& center, float radius, int a_min_sample, int a_max_sample, int a_step);
+    void  _PathArcToN(const KGVec2& center, float radius, float a_min, float a_max, int num_segments);
 };
 
 // All draw data to render a KarmaGui frame
@@ -2655,8 +2656,8 @@ struct KARMA_API KGDrawData
     // Functions
     KGDrawData()    { Clear(); }
     void Clear()    { memset(this, 0, sizeof(*this)); }     // The KGDrawList are owned by KarmaGuiContext!
-    static void  DeIndexAllBuffers();                    // Helper to convert all buffers from indexed to non-indexed, in case you cannot render indexed. Note: this is slow and most likely a waste of resources. Always prefer indexed rendering!
-    static void  ScaleClipRects(const KGVec2& fb_scale); // Helper to scale the ClipRect field of each KGDrawCmd. Use if your final output buffer is at a different scale than Dear ImGui expects, or if there is a difference between your window resolution and framebuffer resolution.
+	void  DeIndexAllBuffers();                    // Helper to convert all buffers from indexed to non-indexed, in case you cannot render indexed. Note: this is slow and most likely a waste of resources. Always prefer indexed rendering!
+	void  ScaleClipRects(const KGVec2& fb_scale); // Helper to scale the ClipRect field of each KGDrawCmd. Use if your final output buffer is at a different scale than Dear ImGui expects, or if there is a difference between your window resolution and framebuffer resolution.
 };
 
 //----------------------------------------------------------------------------------------------------------------
@@ -2711,11 +2712,11 @@ struct KARMA_API KGFontGlyphRangesBuilder
     KGFontGlyphRangesBuilder()              { Clear(); }
     inline void     Clear()                 { int size_in_bytes = (KG_UNICODE_CODEPOINT_MAX + 1) / 8; UsedChars.resize(size_in_bytes / (int)sizeof(KGU32)); memset(UsedChars.Data, 0, (size_t)size_in_bytes); }
     inline bool     GetBit(size_t n) const  { int off = (int)(n >> 5); KGU32 mask = 1u << (n & 31); return (UsedChars[off] & mask) != 0; }  // Get bit n in the array
-    inline void     SetBit(size_t n)        { int off = (int)(n >> 5); KGU32 mask = 1u << (n & 31); UsedChars[off] |= mask; }               // Set bit n in the array
-    inline void     AddChar(KGWchar c)      { SetBit(c); }                      // Add character
-    static void  AddText(const char* text, const char* text_end = NULL);     // Add string (each character of the UTF-8 string are added)
-    static void  AddRanges(const KGWchar* ranges);                           // Add ranges, e.g. builder.AddRanges(KGFontAtlas::GetGlyphRangesDefault()) to force add all of ASCII/Latin+Ext
-    static void  BuildRanges(KGVector<KGWchar>* out_ranges);                 // Output new ranges
+	inline void     SetBit(size_t n)        { int off = (int)(n >> 5); KGU32 mask = 1u << (n & 31); UsedChars[off] |= mask; }               // Set bit n in the array
+	inline void     AddChar(KGWchar c)      { SetBit(c); }                      // Add character
+	void  AddText(const char* text, const char* text_end = NULL);     // Add string (each character of the UTF-8 string are added)
+	void  AddRanges(const KGWchar* ranges);                           // Add ranges, e.g. builder.AddRanges(KGFontAtlas::GetGlyphRangesDefault()) to force add all of ASCII/Latin+Ext
+	void  BuildRanges(KGVector<KGWchar>* out_ranges);                 // Output new ranges
 };
 
 // See KGFontAtlas::AddCustomRectXXX functions.
@@ -2761,25 +2762,25 @@ struct KARMA_API KGFontAtlas
 {
     KGFontAtlas();
     ~KGFontAtlas();
-    static KGFont*           AddFont(const KGFontConfig* font_cfg);
-    static KGFont*           AddFontDefault(const KGFontConfig* font_cfg = NULL);
-    static KGFont*           AddFontFromFileTTF(const char* filename, float size_pixels, const KGFontConfig* font_cfg = NULL, const KGWchar* glyph_ranges = NULL);
-    static KGFont*           AddFontFromMemoryTTF(void* font_data, int font_size, float size_pixels, const KGFontConfig* font_cfg = NULL, const KGWchar* glyph_ranges = NULL); // Note: Transfer ownership of 'ttf_data' to KGFontAtlas! Will be deleted after destruction of the atlas. Set font_cfg->FontDataOwnedByAtlas=false to keep ownership of your data and it won't be freed.
-    static KGFont*           AddFontFromMemoryCompressedTTF(const void* compressed_font_data, int compressed_font_size, float size_pixels, const KGFontConfig* font_cfg = NULL, const KGWchar* glyph_ranges = NULL); // 'compressed_font_data' still owned by caller. Compress with binary_to_compressed_c.cpp.
-    static KGFont*           AddFontFromMemoryCompressedBase85TTF(const char* compressed_font_data_base85, float size_pixels, const KGFontConfig* font_cfg = NULL, const KGWchar* glyph_ranges = NULL);              // 'compressed_font_data_base85' still owned by caller. Compress with binary_to_compressed_c.cpp with -base85 parameter.
-    static void              ClearInputData();           // Clear input data (all KGFontConfig structures including sizes, TTF data, glyph ranges, etc.) = all the data used to build the texture and fonts.
-    static void              ClearTexData();             // Clear output texture data (CPU side). Saves RAM once the texture has been copied to graphics memory.
-    static void              ClearFonts();               // Clear output font data (glyphs storage, UV coordinates).
-    static void              Clear();                    // Clear all input and output.
+    KGFont*           AddFont(const KGFontConfig* font_cfg);
+    KGFont*           AddFontDefault(const KGFontConfig* font_cfg = NULL);
+    KGFont*           AddFontFromFileTTF(const char* filename, float size_pixels, const KGFontConfig* font_cfg = NULL, const KGWchar* glyph_ranges = NULL);
+    KGFont*           AddFontFromMemoryTTF(void* font_data, int font_size, float size_pixels, const KGFontConfig* font_cfg = NULL, const KGWchar* glyph_ranges = NULL); // Note: Transfer ownership of 'ttf_data' to KGFontAtlas! Will be deleted after destruction of the atlas. Set font_cfg->FontDataOwnedByAtlas=false to keep ownership of your data and it won't be freed.
+    KGFont*           AddFontFromMemoryCompressedTTF(const void* compressed_font_data, int compressed_font_size, float size_pixels, const KGFontConfig* font_cfg = NULL, const KGWchar* glyph_ranges = NULL); // 'compressed_font_data' still owned by caller. Compress with binary_to_compressed_c.cpp.
+    KGFont*           AddFontFromMemoryCompressedBase85TTF(const char* compressed_font_data_base85, float size_pixels, const KGFontConfig* font_cfg = NULL, const KGWchar* glyph_ranges = NULL);              // 'compressed_font_data_base85' still owned by caller. Compress with binary_to_compressed_c.cpp with -base85 parameter.
+	void              ClearInputData();           // Clear input data (all KGFontConfig structures including sizes, TTF data, glyph ranges, etc.) = all the data used to build the texture and fonts.
+	void              ClearTexData();             // Clear output texture data (CPU side). Saves RAM once the texture has been copied to graphics memory.
+	void              ClearFonts();               // Clear output font data (glyphs storage, UV coordinates).
+    void              Clear();                    // Clear all input and output.
 
     // Build atlas, retrieve pixel data.
     // User is in charge of copying the pixels into graphics memory (e.g. create a texture with your engine). Then store your texture handle with SetTexID().
     // The pitch is always = Width * BytesPerPixels (1 or 4)
     // Building in RGBA32 format is provided for convenience and compatibility, but note that unless you manually manipulate or copy color data into
     // the texture (e.g. when using the AddCustomRect*** api), then the RGB pixels emitted will always be white (~75% of memory/bandwidth waste.
-    static bool              Build();                    // Build pixels data. This is called automatically for you by the GetTexData*** functions.
-    static void              GetTexDataAsAlpha8(unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel = NULL);  // 1 byte per-pixel
-    static void              GetTexDataAsRGBA32(unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel = NULL);  // 4 bytes-per-pixel
+    bool              Build();                    // Build pixels data. This is called automatically for you by the GetTexData*** functions.
+    void              GetTexDataAsAlpha8(unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel = NULL);  // 1 byte per-pixel
+    void              GetTexDataAsRGBA32(unsigned char** out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel = NULL);  // 4 bytes-per-pixel
     bool                        IsBuilt() const             { return Fonts.Size > 0 && TexReady; } // Bit ambiguous: used to detect when user didn't build texture but effectively we should check TexID != 0 except that would be backend dependent...
     void                        SetTexID(KGTextureID id)    { TexID = id; }
 
@@ -2811,13 +2812,13 @@ struct KARMA_API KGFontAtlas
     //   so you can render e.g. custom colorful icons and use them as regular glyphs.
     // - Read docs/FONTS.md for more details about using colorful icons.
     // - Note: this API may be redesigned later in order to support multi-monitor varying DPI settings.
-    static int               AddCustomRectRegular(int width, int height);
-    static int               AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int height, float advance_x, const KGVec2& offset = KGVec2(0, 0));
+	int               AddCustomRectRegular(int width, int height);
+    int               AddCustomRectFontGlyph(KGFont* font, KGWchar id, int width, int height, float advance_x, const KGVec2& offset = KGVec2(0, 0));
     KGFontAtlasCustomRect*      GetCustomRectByIndex(int index) { KR_CORE_ASSERT(index >= 0, ""); return &CustomRects[index]; }
 
     // [Internal]
-    static void              CalcCustomRectUV(const KGFontAtlasCustomRect* rect, KGVec2* out_uv_min, KGVec2* out_uv_max);
-    static bool              GetMouseCursorTexData(KarmaGuiMouseCursor cursor, KGVec2* out_offset, KGVec2* out_size, KGVec2 out_uv_border[2], KGVec2 out_uv_fill[2]);
+    void              CalcCustomRectUV(const KGFontAtlasCustomRect* rect, KGVec2* out_uv_min, KGVec2* out_uv_max) const;
+    bool              GetMouseCursorTexData(KarmaGuiMouseCursor cursor, KGVec2* out_offset, KGVec2* out_size, KGVec2 out_uv_border[2], KGVec2 out_uv_fill[2]);
 
     //-------------------------------------------
     // Members
@@ -2888,27 +2889,27 @@ struct KARMA_API KGFont
     // Methods
     KGFont();
     ~KGFont();
-    static const KGFontGlyph*FindGlyph(KGWchar c);
-    static const KGFontGlyph*FindGlyphNoFallback(KGWchar c);
+	const KGFontGlyph*FindGlyph(KGWchar c) const;
+	const KGFontGlyph*FindGlyphNoFallback(KGWchar c) const;
     float                       GetCharAdvance(KGWchar c) const     { return ((int)c < IndexAdvanceX.Size) ? IndexAdvanceX[(int)c] : FallbackAdvanceX; }
     bool                        IsLoaded() const                    { return ContainerAtlas != NULL; }
     const char*                 GetDebugName() const                { return ConfigData ? ConfigData->Name : "<unknown>"; }
 
     // 'max_width' stops rendering after a certain width (could be turned into a 2d size). FLT_MAX to disable.
     // 'wrap_width' enable automatic word-wrapping across multiple lines to fit into given width. 0.0f to disable.
-    static KGVec2            CalcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end = NULL, const char** remaining = NULL); // utf8
-    static const char*       CalcWordWrapPositionA(float scale, const char* text, const char* text_end, float wrap_width);
-    static void              RenderChar(KGDrawList* draw_list, float size, const KGVec2& pos, KGU32 col, KGWchar c);
-    static void              RenderText(KGDrawList* draw_list, float size, const KGVec2& pos, KGU32 col, const KGVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width = 0.0f, bool cpu_fine_clip = false);
+	KGVec2            CalcTextSizeA(float size, float max_width, float wrap_width, const char* text_begin, const char* text_end = NULL, const char** remaining = NULL) const; // utf8
+	const char*       CalcWordWrapPositionA(float scale, const char* text, const char* text_end, float wrap_width) const;
+	void              RenderChar(KGDrawList* draw_list, float size, const KGVec2& pos, KGU32 col, KGWchar c) const;
+	void              RenderText(KGDrawList* draw_list, float size, const KGVec2& pos, KGU32 col, const KGVec4& clip_rect, const char* text_begin, const char* text_end, float wrap_width = 0.0f, bool cpu_fine_clip = false) const;
 
     // [Internal] Don't use!
-    static void              BuildLookupTable();
-    static void              ClearOutputData();
-    static void              GrowIndex(int new_size);
-    static void              AddGlyph(const KGFontConfig* src_cfg, KGWchar c, float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float advance_x);
-    static void              AddRemapChar(KGWchar dst, KGWchar src, bool overwrite_dst = true); // Makes 'dst' character/glyph points to 'src' character/glyph. Currently needs to be called AFTER fonts have been built.
-    static void              SetGlyphVisible(KGWchar c, bool visible);
-    static bool              IsGlyphRangeUnused(unsigned int c_begin, unsigned int c_last);
+	void              BuildLookupTable();
+	void              ClearOutputData();
+	void              GrowIndex(int new_size);
+	void              AddGlyph(const KGFontConfig* src_cfg, KGWchar c, float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1, float advance_x);
+	void              AddRemapChar(KGWchar dst, KGWchar src, bool overwrite_dst = true); // Makes 'dst' character/glyph points to 'src' character/glyph. Currently needs to be called AFTER fonts have been built.
+	void              SetGlyphVisible(KGWchar c, bool visible);
+	bool              IsGlyphRangeUnused(unsigned int c_begin, unsigned int c_last);
 };
 
 //-----------------------------------------------------------------------------
