@@ -3298,12 +3298,12 @@ namespace Karma
 		// Template functions are instantiated in imgui_widgets.cpp for a finite number of types.
 		// To use them externally (for custom widget) you may need an "extern template" statement in your code in order to link to existing instances and silence Clang warnings (see #2036).
 		// e.g. " extern template  float RoundScalarWithFormatT<float, float>(const char* format, KarmaGuiDataType data_type, float v); "
-		template<typename T, typename SIGNED_T, typename FLOAT_T>    float ScaleRatioFromValueT(KarmaGuiDataType data_type, T v, T v_min, T v_max, bool is_logarithmic, float logarithmic_zero_epsilon, float zero_deadzone_size);
-		template<typename T, typename SIGNED_T, typename FLOAT_T>    T     ScaleValueFromRatioT(KarmaGuiDataType data_type, float t, T v_min, T v_max, bool is_logarithmic, float logarithmic_zero_epsilon, float zero_deadzone_size);
-		template<typename T, typename SIGNED_T, typename FLOAT_T>    bool  DragBehaviorT(KarmaGuiDataType data_type, T* v, float v_speed, T v_min, T v_max, const char* format, KarmaGuiSliderFlags flags);
-		template<typename T, typename SIGNED_T, typename FLOAT_T>    bool  SliderBehaviorT(const KGRect& bb, KGGuiID id, KarmaGuiDataType data_type, T* v, T v_min, T v_max, const char* format, KarmaGuiSliderFlags flags, KGRect* out_grab_bb);
-		template<typename T>                                         T     RoundScalarWithFormatT(const char* format, KarmaGuiDataType data_type, T v);
-		template<typename T>                                         bool  CheckboxFlagsT(const char* label, T* flags, T flags_value);
+		template<typename T, typename SIGNED_T, typename FLOAT_T>    static float ScaleRatioFromValueT(KarmaGuiDataType data_type, T v, T v_min, T v_max, bool is_logarithmic, float logarithmic_zero_epsilon, float zero_deadzone_size);
+		template<typename T, typename SIGNED_T, typename FLOAT_T>    T     static ScaleValueFromRatioT(KarmaGuiDataType data_type, float t, T v_min, T v_max, bool is_logarithmic, float logarithmic_zero_epsilon, float zero_deadzone_size);
+		template<typename T, typename SIGNED_T, typename FLOAT_T>    static bool  DragBehaviorT(KarmaGuiDataType data_type, T* v, float v_speed, T v_min, T v_max, const char* format, KarmaGuiSliderFlags flags);
+		template<typename T, typename SIGNED_T, typename FLOAT_T>    bool  static SliderBehaviorT(const KGRect& bb, KGGuiID id, KarmaGuiDataType data_type, T* v, T v_min, T v_max, const char* format, KarmaGuiSliderFlags flags, KGRect* out_grab_bb);
+		template<typename T>                                         T    static RoundScalarWithFormatT(const char* format, KarmaGuiDataType data_type, T v);
+		template<typename T>                                         static bool  CheckboxFlagsT(const char* label, T* flags, T flags_value);
 
 		// Data type helpers
 		static const KGGuiDataTypeInfo*  DataTypeGetInfo(KarmaGuiDataType data_type);
