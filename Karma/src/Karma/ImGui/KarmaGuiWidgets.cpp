@@ -3627,10 +3627,42 @@ static KGVec2 InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWchar* text_b
 // Wrapper for stb_textedit.h to edit text (our wrapper is for: statically sized buffer, single-line, wchar characters. InputText converts between UTF-8 and wchar)
 namespace KGStb
 {
+
+// We don't use an enum so we can build even with conflicting symbols (if another user of stb_textedit.h leak their STB_TEXTEDIT_K_* symbols)
+#define STB_TEXTEDIT_K_LEFT         0x200000 // keyboard input to move cursor left
+#define STB_TEXTEDIT_K_RIGHT        0x200001 // keyboard input to move cursor right
+#define STB_TEXTEDIT_K_UP           0x200002 // keyboard input to move cursor up
+#define STB_TEXTEDIT_K_DOWN         0x200003 // keyboard input to move cursor down
+#define STB_TEXTEDIT_K_LINESTART    0x200004 // keyboard input to move cursor to start of line
+#define STB_TEXTEDIT_K_LINEEND      0x200005 // keyboard input to move cursor to end of line
+#define STB_TEXTEDIT_K_TEXTSTART    0x200006 // keyboard input to move cursor to start of text
+#define STB_TEXTEDIT_K_TEXTEND      0x200007 // keyboard input to move cursor to end of text
+#define STB_TEXTEDIT_K_DELETE       0x200008 // keyboard input to delete selection or character under cursor
+#define STB_TEXTEDIT_K_BACKSPACE    0x200009 // keyboard input to delete selection or character left of cursor
+#define STB_TEXTEDIT_K_UNDO         0x20000A // keyboard input to perform undo
+#define STB_TEXTEDIT_K_REDO         0x20000B // keyboard input to perform redo
+#define STB_TEXTEDIT_K_WORDLEFT     0x20000C // keyboard input to move cursor left one word
+#define STB_TEXTEDIT_K_WORDRIGHT    0x20000D // keyboard input to move cursor right one word
+#define STB_TEXTEDIT_K_PGUP         0x20000E // keyboard input to move cursor up a page
+#define STB_TEXTEDIT_K_PGDOWN       0x20000F // keyboard input to move cursor down a page
+#define STB_TEXTEDIT_K_SHIFT        0x400000
+
+#ifndef STB_TEXTEDIT_KEYTYPE
+#define STB_TEXTEDIT_KEYTYPE int
+#endif
+
+#define STB_TEXTEDIT_IMPLEMENTATION
+#include "KarmaSTBTextEdit.h"
+
+
 static int     STB_TEXTEDIT_STRINGLEN(const KGGuiInputTextState* obj)                             { return obj->CurLenW; }
 static KGWchar STB_TEXTEDIT_GETCHAR(const KGGuiInputTextState* obj, int idx)                      { return obj->TextW[idx]; }
 static float   STB_TEXTEDIT_GETWIDTH(KGGuiInputTextState* obj, int line_start_idx, int char_idx)  { KGWchar c = obj->TextW[line_start_idx + char_idx]; if (c == '\n') return STB_TEXTEDIT_GETWIDTH_NEWLINE; KarmaGuiContext& g = *obj->Ctx; return g.Font->GetCharAdvance(c) * (g.FontSize / g.Font->FontSize); }
 static int     STB_TEXTEDIT_KEYTOTEXT(int key)                                                    { return key >= 0x200000 ? 0 : key; }
+static void stb_textedit_key(STB_TEXTEDIT_STRING *str, STB_TexteditState *state, STB_TEXTEDIT_KEYTYPE key);
+static STB_TEXTEDIT_CHARTYPE *stb_text_createundo(StbUndoState *state, int pos, int insert_len, int delete_len);
+static void stb_textedit_initialize_state(STB_TexteditState *state, int is_single_line);
+static void stb_textedit_click(STB_TEXTEDIT_STRING *str, STB_TexteditState *state, float x, float y);
 static KGWchar STB_TEXTEDIT_NEWLINE = '\n';
 static void    STB_TEXTEDIT_LAYOUTROW(StbTexteditRow* r, KGGuiInputTextState* obj, int line_start_idx)
 {
@@ -3704,28 +3736,6 @@ static bool STB_TEXTEDIT_INSERTCHARS(KGGuiInputTextState* obj, int pos, const KG
 	return true;
 }
 
-// We don't use an enum so we can build even with conflicting symbols (if another user of stb_textedit.h leak their STB_TEXTEDIT_K_* symbols)
-#define STB_TEXTEDIT_K_LEFT         0x200000 // keyboard input to move cursor left
-#define STB_TEXTEDIT_K_RIGHT        0x200001 // keyboard input to move cursor right
-#define STB_TEXTEDIT_K_UP           0x200002 // keyboard input to move cursor up
-#define STB_TEXTEDIT_K_DOWN         0x200003 // keyboard input to move cursor down
-#define STB_TEXTEDIT_K_LINESTART    0x200004 // keyboard input to move cursor to start of line
-#define STB_TEXTEDIT_K_LINEEND      0x200005 // keyboard input to move cursor to end of line
-#define STB_TEXTEDIT_K_TEXTSTART    0x200006 // keyboard input to move cursor to start of text
-#define STB_TEXTEDIT_K_TEXTEND      0x200007 // keyboard input to move cursor to end of text
-#define STB_TEXTEDIT_K_DELETE       0x200008 // keyboard input to delete selection or character under cursor
-#define STB_TEXTEDIT_K_BACKSPACE    0x200009 // keyboard input to delete selection or character left of cursor
-#define STB_TEXTEDIT_K_UNDO         0x20000A // keyboard input to perform undo
-#define STB_TEXTEDIT_K_REDO         0x20000B // keyboard input to perform redo
-#define STB_TEXTEDIT_K_WORDLEFT     0x20000C // keyboard input to move cursor left one word
-#define STB_TEXTEDIT_K_WORDRIGHT    0x20000D // keyboard input to move cursor right one word
-#define STB_TEXTEDIT_K_PGUP         0x20000E // keyboard input to move cursor up a page
-#define STB_TEXTEDIT_K_PGDOWN       0x20000F // keyboard input to move cursor down a page
-#define STB_TEXTEDIT_K_SHIFT        0x400000
-
-#define STB_TEXTEDIT_IMPLEMENTATION
-#include "KarmaSTBTextEdit.h"
-
 static void stb_text_makeundo_replace(STB_TEXTEDIT_STRING *str, ::KGStb::STB_TexteditState *state, int where, int old_length, int new_length);
 // stb_textedit internally allows for a single undo record to do addition and deletion, but somehow, calling
 // the stb_textedit_paste() function creates two separate records, so we perform it manually. (FIXME: Report to nothings/stb?)
@@ -3746,7 +3756,6 @@ static void stb_textedit_replace(KGGuiInputTextState* str, ::KGStb::STB_Textedit
 }
 
 } // namespace KGStb
-
 
 void KGGuiInputTextState::OnKeyPressed(int key)
 {
@@ -3793,8 +3802,8 @@ void KarmaGuiInputTextCallbackData::InsertChars(int pos, const char* new_text, c
 		// Contrary to STB_TEXTEDIT_INSERTCHARS() this is working in the UTF8 buffer, hence the mildly similar code (until we remove the U16 buffer altogether!)
 		KarmaGuiContext& g = *GKarmaGui;
 		KGGuiInputTextState* edit_state = &g.InputTextState;
-		KR_CORE_ASSERT(edit_state->ID != 0 && g.ActiveId == edit_state->ID);
-		KR_CORE_ASSERT(Buf == edit_state->TextA.Data);
+		KR_CORE_ASSERT(edit_state->ID != 0 && g.ActiveId == edit_state->ID, "");
+		KR_CORE_ASSERT(Buf == edit_state->TextA.Data, "");
 		int new_buf_size = BufTextLen + KGClamp(new_text_len * 4, 32, KGMax(256, new_text_len)) + 1;
 		edit_state->TextA.reserve(new_buf_size + 1);
 		Buf = edit_state->TextA.Data;
@@ -3816,7 +3825,7 @@ void KarmaGuiInputTextCallbackData::InsertChars(int pos, const char* new_text, c
 // Return false to discard a character.
 static bool InputTextFilterCharacter(unsigned int* p_char, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data, KGGuiInputSource input_source)
 {
-	KR_CORE_ASSERT(input_source == KGGuiInputSource_Keyboard || input_source == KGGuiInputSource_Clipboard);
+	KR_CORE_ASSERT(input_source == KGGuiInputSource_Keyboard || input_source == KGGuiInputSource_Clipboard, "");
 	unsigned int c = *p_char;
 
 	// Filter non-printable (NB: isprint is unreliable! see #2467)
@@ -3954,15 +3963,15 @@ static void InputTextReconcileUndoStateAfterUserCallback(KGGuiInputTextState* st
 // - If you want to use KarmaGui::InputText() with std::string, see misc/cpp/imgui_stdlib.h
 // (FIXME: Rather confusing and messy function, among the worse part of our codebase, expecting to rewrite a V2 at some point.. Partly because we are
 //  doing UTF8 > U16 > UTF8 conversions on the go to easily interface with stb_textedit. Ideally should stay in UTF-8 all the time. See https://github.com/nothings/stb/issues/188)
-bool KarmaGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_size, const KGVec2& size_arg, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* callback_user_data)
+bool Karma::KarmaGuiInternal::InputTextEx(const char* label, const char* hint, char* buf, int buf_size, const KGVec2& size_arg, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* callback_user_data)
 {
 	KGGuiWindow* window = GetCurrentWindow();
 	if (window->SkipItems)
 		return false;
 
-	KR_CORE_ASSERT(buf != NULL && buf_size >= 0);
-	KR_CORE_ASSERT(!((flags & KGGuiInputTextFlags_CallbackHistory) && (flags & KGGuiInputTextFlags_Multiline)));        // Can't use both together (they both use up/down keys)
-	KR_CORE_ASSERT(!((flags & KGGuiInputTextFlags_CallbackCompletion) && (flags & KGGuiInputTextFlags_AllowTabInput))); // Can't use both together (they both use tab key)
+	KR_CORE_ASSERT(buf != NULL && buf_size >= 0, "");
+	KR_CORE_ASSERT(!((flags & KGGuiInputTextFlags_CallbackHistory) && (flags & KGGuiInputTextFlags_Multiline)), "");        // Can't use both together (they both use up/down keys)
+	KR_CORE_ASSERT(!((flags & KGGuiInputTextFlags_CallbackCompletion) && (flags & KGGuiInputTextFlags_AllowTabInput)), ""); // Can't use both together (they both use tab key)
 
 	KarmaGuiContext& g = *GKarmaGui;
 	KarmaGuiIO& io = g.IO;
@@ -3975,13 +3984,15 @@ bool KarmaGui::InputTextEx(const char* label, const char* hint, char* buf, int b
 	const bool is_undoable = (flags & KGGuiInputTextFlags_NoUndoRedo) == 0;
 	const bool is_resizable = (flags & KGGuiInputTextFlags_CallbackResize) != 0;
 	if (is_resizable)
-		KR_CORE_ASSERT(callback != NULL); // Must provide a callback if you set the KGGuiInputTextFlags_CallbackResize flag!
+	{
+		KR_CORE_ASSERT(callback != NULL, ""); // Must provide a callback if you set the KGGuiInputTextFlags_CallbackResize flag!
+	}
 
 	if (is_multiline) // Open group before calling GetID() because groups tracks id created within their scope (including the scrollbar)
-		BeginGroup();
+		Karma::KarmaGui::BeginGroup();
 	const KGGuiID id = window->GetID(label);
-	const KGVec2 label_size = CalcTextSize(label, NULL, true);
-	const KGVec2 frame_size = CalcItemSize(size_arg, CalcItemWidth(), (is_multiline ? g.FontSize * 8.0f : label_size.y) + style.FramePadding.y * 2.0f); // Arbitrary default of 8 lines high for multi-line
+	const KGVec2 label_size = KarmaGui::CalcTextSize(label, NULL, true);
+	const KGVec2 frame_size = CalcItemSize(size_arg, KarmaGui::CalcItemWidth(), (is_multiline ? g.FontSize * 8.0f : label_size.y) + style.FramePadding.y * 2.0f); // Arbitrary default of 8 lines high for multi-line
 	const KGVec2 total_size = KGVec2(frame_size.x + (label_size.x > 0.0f ? style.ItemInnerSpacing.x + label_size.x : 0.0f), frame_size.y);
 
 	const KGRect frame_bb(window->DC.CursorPos, window->DC.CursorPos + frame_size);
@@ -3997,7 +4008,7 @@ bool KarmaGui::InputTextEx(const char* label, const char* hint, char* buf, int b
 		ItemSize(total_bb, style.FramePadding.y);
 		if (!ItemAdd(total_bb, id, &frame_bb, KGGuiItemFlags_Inputable))
 		{
-			EndGroup();
+			KarmaGui::EndGroup();
 			return false;
 		}
 		item_status_flags = g.LastItemData.StatusFlags;
@@ -4006,17 +4017,17 @@ bool KarmaGui::InputTextEx(const char* label, const char* hint, char* buf, int b
 
 		// We reproduce the contents of BeginChildFrame() in order to provide 'label' so our window internal data are easier to read/debug.
 		// FIXME-NAV: Pressing NavActivate will trigger general child activation right before triggering our own below. Harmless but bizarre.
-		PushStyleColor(KGGuiCol_ChildBg, style.Colors[KGGuiCol_FrameBg]);
-		PushStyleVar(KGGuiStyleVar_ChildRounding, style.FrameRounding);
-		PushStyleVar(KGGuiStyleVar_ChildBorderSize, style.FrameBorderSize);
-		PushStyleVar(KGGuiStyleVar_WindowPadding, KGVec2(0, 0)); // Ensure no clip rect so mouse hover can reach FramePadding edges
+		KarmaGui::PushStyleColor(KGGuiCol_ChildBg, style.Colors[KGGuiCol_FrameBg]);
+		KarmaGui::PushStyleVar(KGGuiStyleVar_ChildRounding, style.FrameRounding);
+		KarmaGui::PushStyleVar(KGGuiStyleVar_ChildBorderSize, style.FrameBorderSize);
+		KarmaGui::PushStyleVar(KGGuiStyleVar_WindowPadding, KGVec2(0, 0)); // Ensure no clip rect so mouse hover can reach FramePadding edges
 		bool child_visible = BeginChildEx(label, id, frame_bb.GetSize(), true, KGGuiWindowFlags_NoMove);
-		PopStyleVar(3);
-		PopStyleColor();
+		KarmaGui::PopStyleVar(3);
+		KarmaGui::PopStyleColor();
 		if (!child_visible)
 		{
-			EndChild();
-			EndGroup();
+			KarmaGui::EndChild();
+			KarmaGui::EndGroup();
 			return false;
 		}
 		draw_window = g.CurrentWindow; // Child window
@@ -4109,7 +4120,7 @@ bool KarmaGui::InputTextEx(const char* label, const char* hint, char* buf, int b
 
 	if (g.ActiveId != id && init_make_active)
 	{
-		KR_CORE_ASSERT(state && state->ID == id);
+		KR_CORE_ASSERT(state && state->ID == id, "");
 		SetActiveID(id, window);
 		SetFocusID(id, window);
 		FocusWindow(window);
@@ -4175,15 +4186,15 @@ bool KarmaGui::InputTextEx(const char* label, const char* hint, char* buf, int b
 		password_font->ContainerAtlas = g.Font->ContainerAtlas;
 		password_font->FallbackGlyph = glyph;
 		password_font->FallbackAdvanceX = glyph->AdvanceX;
-		KR_CORE_ASSERT(password_font->Glyphs.empty() && password_font->IndexAdvanceX.empty() && password_font->IndexLookup.empty());
-		PushFont(password_font);
+		KR_CORE_ASSERT(password_font->Glyphs.empty() && password_font->IndexAdvanceX.empty() && password_font->IndexLookup.empty(), "");
+		KarmaGui::PushFont(password_font);
 	}
 
 	// Process mouse inputs and character inputs
 	int backup_current_text_length = 0;
 	if (g.ActiveId == id)
 	{
-		KR_CORE_ASSERT(state != NULL);
+		KR_CORE_ASSERT(state != NULL, "");
 		backup_current_text_length = state->CurLenA;
 		state->Edited = false;
 		state->BufCapacityA = buf_size;
