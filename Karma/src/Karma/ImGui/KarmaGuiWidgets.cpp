@@ -32,7 +32,6 @@ Index of this file:
 #include "KarmaGui.h"
 #include "KarmaGuiInternal.h"
 
-#include "KarmaSTBTextEdit.h"
 #ifndef KARMAGUI_DEFINE_MATH_OPERATORS
 #define KARMAGUI_DEFINE_MATH_OPERATORS
 #endif
@@ -151,7 +150,7 @@ static KGVec2           InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWch
 
 namespace  Karma
 {
-void Karma::KarmaGuiInternal::TextEx(const char* text, const char* text_end, KGGuiTextFlags flags)
+void KarmaGuiInternal::TextEx(const char* text, const char* text_end, KGGuiTextFlags flags)
 {
 	KGGuiWindow* window = GetCurrentWindow();
 	if (window->SkipItems)
@@ -259,12 +258,12 @@ void Karma::KarmaGuiInternal::TextEx(const char* text, const char* text_end, KGG
 	}
 }
 
-void Karma::KarmaGui::TextUnformatted(const char* text, const char* text_end)
+void KarmaGui::TextUnformatted(const char* text, const char* text_end)
 {
 	KarmaGuiInternal::TextEx(text, text_end, KGGuiTextFlags_NoWidthForLargeClippedText);
 }
 
-void Karma::KarmaGui::Text(const char* fmt, ...)
+void KarmaGui::Text(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
@@ -272,7 +271,7 @@ void Karma::KarmaGui::Text(const char* fmt, ...)
 	va_end(args);
 }
 
-void Karma::KarmaGui::TextV(const char* fmt, va_list args)
+void KarmaGui::TextV(const char* fmt, va_list args)
 {
 	KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
 	if (window->SkipItems)
@@ -284,7 +283,7 @@ void Karma::KarmaGui::TextV(const char* fmt, va_list args)
 	KarmaGuiInternal::TextEx(text, text_end, KGGuiTextFlags_NoWidthForLargeClippedText);
 }
 
-void Karma::KarmaGui::TextColored(const KGVec4& col, const char* fmt, ...)
+void KarmaGui::TextColored(const KGVec4& col, const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
@@ -292,7 +291,7 @@ void Karma::KarmaGui::TextColored(const KGVec4& col, const char* fmt, ...)
 	va_end(args);
 }
 
-void Karma::KarmaGui::TextColoredV(const KGVec4& col, const char* fmt, va_list args)
+void KarmaGui::TextColoredV(const KGVec4& col, const char* fmt, va_list args)
 {
 	PushStyleColor(KGGuiCol_Text, col);
 	if (fmt[0] == '%' && fmt[1] == 's' && fmt[2] == 0)
@@ -302,7 +301,7 @@ void Karma::KarmaGui::TextColoredV(const KGVec4& col, const char* fmt, va_list a
 	PopStyleColor();
 }
 
-void Karma::KarmaGui::TextDisabled(const char* fmt, ...)
+void KarmaGui::TextDisabled(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
@@ -3623,9 +3622,10 @@ static KGVec2 InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWchar* text_b
 
 	return text_size;
 }
+}
 
 // Wrapper for stb_textedit.h to edit text (our wrapper is for: statically sized buffer, single-line, wchar characters. InputText converts between UTF-8 and wchar)
-namespace Karma
+namespace KGStb
 {
 static int     STB_TEXTEDIT_STRINGLEN(const KGGuiInputTextState* obj)                             { return obj->CurLenW; }
 static KGWchar STB_TEXTEDIT_GETCHAR(const KGGuiInputTextState* obj, int idx)                      { return obj->TextW[idx]; }
@@ -3636,7 +3636,7 @@ static void    STB_TEXTEDIT_LAYOUTROW(StbTexteditRow* r, KGGuiInputTextState* ob
 {
 	const KGWchar* text = obj->TextW.Data;
 	const KGWchar* text_remaining = NULL;
-	const KGVec2 size = InputTextCalcTextSizeW(obj->Ctx, text + line_start_idx, text + obj->CurLenW, &text_remaining, NULL, true);
+	const KGVec2 size = Karma::InputTextCalcTextSizeW(obj->Ctx, text + line_start_idx, text + obj->CurLenW, &text_remaining, NULL, true);
 	r->x0 = 0.0f;
 	r->x1 = size.x;
 	r->baseline_y_delta = size.y;
@@ -3724,7 +3724,8 @@ static bool STB_TEXTEDIT_INSERTCHARS(KGGuiInputTextState* obj, int pos, const KG
 #define STB_TEXTEDIT_K_SHIFT        0x400000
 
 #define STB_TEXTEDIT_IMPLEMENTATION
-//#include "imstb_textedit.h"
+#include "KarmaSTBTextEdit.h"
+
 static void stb_text_makeundo_replace(STB_TEXTEDIT_STRING *str, ::KGStb::STB_TexteditState *state, int where, int old_length, int new_length);
 // stb_textedit internally allows for a single undo record to do addition and deletion, but somehow, calling
 // the stb_textedit_paste() function creates two separate records, so we perform it manually. (FIXME: Report to nothings/stb?)
@@ -3745,7 +3746,7 @@ static void stb_textedit_replace(KGGuiInputTextState* str, ::KGStb::STB_Textedit
 }
 
 } // namespace KGStb
-}
+
 
 void KGGuiInputTextState::OnKeyPressed(int key)
 {
@@ -3764,7 +3765,7 @@ KarmaGuiInputTextCallbackData::KarmaGuiInputTextCallbackData()
 // FIXME: The existence of this rarely exercised code path is a bit of a nuisance.
 void KarmaGuiInputTextCallbackData::DeleteChars(int pos, int bytes_count)
 {
-	KR_CORE_ASSERT(pos + bytes_count <= BufTextLen);
+	KR_CORE_ASSERT(pos + bytes_count <= BufTextLen, "");
 	char* dst = Buf + pos;
 	const char* src = Buf + pos + bytes_count;
 	while (char c = *src++)

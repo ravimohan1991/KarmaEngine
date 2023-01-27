@@ -2100,8 +2100,8 @@ struct KARMA_API KarmaGuiInputTextCallbackData
     // Helper functions for text manipulation.
     // Use those function to benefit from the CallbackResize behaviors. Calling those function reset the selection.
     KarmaGuiInputTextCallbackData();
-    static void      DeleteChars(int pos, int bytes_count);
-    static void      InsertChars(int pos, const char* text, const char* text_end = NULL);
+    void      DeleteChars(int pos, int bytes_count);
+    void      InsertChars(int pos, const char* text, const char* text_end = NULL);
     void                SelectAll()             { SelectionStart = 0; SelectionEnd = BufTextLen; }
     void                ClearSelection()        { SelectionStart = SelectionEnd = BufTextLen; }
     bool                HasSelection() const    { return SelectionStart != SelectionEnd; }
