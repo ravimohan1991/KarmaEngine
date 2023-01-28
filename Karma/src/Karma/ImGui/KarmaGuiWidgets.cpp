@@ -1198,12 +1198,12 @@ bool KarmaGuiInternal::CheckboxFlagsT(const char* label, T* flags, T flags_value
 
 bool KarmaGui::CheckboxFlags(const char* label, int* flags, int flags_value)
 {
-	return CheckboxFlags(label, flags, flags_value);
+	return KarmaGuiInternal::CheckboxFlagsT(label, flags, flags_value);
 }
 
 bool KarmaGui::CheckboxFlags(const char* label, unsigned int* flags, unsigned int flags_value)
 {
-	return CheckboxFlags(label, flags, flags_value);
+	return KarmaGuiInternal::CheckboxFlagsT(label, flags, flags_value);
 }
 
 bool KarmaGuiInternal::CheckboxFlags(const char* label, KGS64* flags, KGS64 flags_value)
@@ -3651,9 +3651,6 @@ namespace KGStb
 #define STB_TEXTEDIT_KEYTYPE int
 #endif
 
-#define STB_TEXTEDIT_IMPLEMENTATION
-#include "KarmaSTBTextEdit.h"
-
 
 static int     STB_TEXTEDIT_STRINGLEN(const KGGuiInputTextState* obj)                             { return obj->CurLenW; }
 static KGWchar STB_TEXTEDIT_GETCHAR(const KGGuiInputTextState* obj, int idx)                      { return obj->TextW[idx]; }
@@ -3668,7 +3665,6 @@ static void stb_textedit_clamp(STB_TEXTEDIT_STRING *str, STB_TexteditState *stat
 static void stb_textedit_drag(STB_TEXTEDIT_STRING *str, STB_TexteditState *state, float x, float y);
 static int stb_textedit_paste_internal(STB_TEXTEDIT_STRING *str, STB_TexteditState *state, STB_TEXTEDIT_CHARTYPE *text, int len);
 static int stb_textedit_paste(STB_TEXTEDIT_STRING *str, STB_TexteditState *state, STB_TEXTEDIT_CHARTYPE const *ctext, int len);
-
 
 static KGWchar STB_TEXTEDIT_NEWLINE = '\n';
 static void    STB_TEXTEDIT_LAYOUTROW(StbTexteditRow* r, KGGuiInputTextState* obj, int line_start_idx)
@@ -3742,6 +3738,9 @@ static bool STB_TEXTEDIT_INSERTCHARS(KGGuiInputTextState* obj, int pos, const KG
 
 	return true;
 }
+
+#define STB_TEXTEDIT_IMPLEMENTATION
+#include "KarmaSTBTextEdit.h"
 
 static void stb_text_makeundo_replace(STB_TEXTEDIT_STRING *str, ::KGStb::STB_TexteditState *state, int where, int old_length, int new_length);
 // stb_textedit internally allows for a single undo record to do addition and deletion, but somehow, calling
@@ -3830,7 +3829,7 @@ void KarmaGuiInputTextCallbackData::InsertChars(int pos, const char* new_text, c
 }
 
 // Return false to discard a character.
-static bool InputTextFilterCharacter(unsigned int* p_char, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data, KGGuiInputSource input_source)
+static bool Karma::InputTextFilterCharacter(unsigned int* p_char, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data, KGGuiInputSource input_source)
 {
 	KR_CORE_ASSERT(input_source == KGGuiInputSource_Keyboard || input_source == KGGuiInputSource_Clipboard, "");
 	unsigned int c = *p_char;

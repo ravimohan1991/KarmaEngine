@@ -390,6 +390,8 @@ typedef struct
 #define STB_TEXTEDIT_memmove memmove
 #endif
 
+#include "Karma/Core.h"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1167,8 +1169,8 @@ static void stb_textedit_discard_redo(StbUndoState *state)
       size_t move_size = (size_t)((STB_TEXTEDIT_UNDOSTATECOUNT - state->redo_point - 1) * sizeof(state->undo_rec[0]));
       const char* buf_begin = (char*)state->undo_rec; (void)buf_begin;
       const char* buf_end   = (char*)state->undo_rec + sizeof(state->undo_rec); (void)buf_end;
-      IM_ASSERT(((char*)(state->undo_rec + state->redo_point)) >= buf_begin);
-      IM_ASSERT(((char*)(state->undo_rec + state->redo_point + 1) + move_size) <= buf_end);
+      KR_CORE_ASSERT(((char*)(state->undo_rec + state->redo_point)) >= buf_begin, "");
+      KR_CORE_ASSERT(((char*)(state->undo_rec + state->redo_point + 1) + move_size) <= buf_end, "");
       STB_TEXTEDIT_memmove(state->undo_rec + state->redo_point+1, state->undo_rec + state->redo_point, move_size);
 
       // now move redo_point to point to the new one
