@@ -1203,6 +1203,10 @@ namespace Karma
 
 		// Setup backend capabilities flags
 		ImGui_KarmaImplVulkan_Data* backendData = new ImGui_KarmaImplVulkan_Data();
+
+		// Since it seems like initialized struct, in MSVC, leads to problems in pushing back, we are doing this.
+		backendData->BufferMemoryAlignment = 256;
+
 		io.BackendRendererUserData = (void*)backendData;
 		io.BackendRendererName = "Vulkan_Got_Back";
 		io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.

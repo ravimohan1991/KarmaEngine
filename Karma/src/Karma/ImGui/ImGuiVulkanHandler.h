@@ -209,12 +209,15 @@ namespace Karma
 
 		// Render buffers for main window
 		ImGui_KarmaImplVulkanH_WindowRenderBuffers MainWindowRenderBuffers;
-
+		
+		// heh, not working with initializers in MSVC. Need a blog post!
+		
+		/*
 		ImGui_KarmaImplVulkan_Data()
 		{
 			memset((void*)this, 0, sizeof(*this));
 			BufferMemoryAlignment = 256;
-		}
+		}*/
 	};
 
 	class KARMA_API ImGuiVulkanHandler

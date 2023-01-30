@@ -124,7 +124,7 @@ namespace Karma
 			}
 
 			ImGui::SameLine(0.0f, 5.0f);
-			ImGui::Text("%s", m_CurrentDirectory.c_str());
+			ImGui::Text("%s", m_CurrentDirectory.string().c_str());
 		}
 
 		// Vertical padding
