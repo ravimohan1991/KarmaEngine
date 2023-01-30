@@ -1,4 +1,4 @@
-// dear imgui, v1.89.2 WIP
+// Dear KarmaGui is Copyright (c) 2014-2023 Omar Cornut. This code is practically KarmaGui in Karma context!!
 // (tables and columns code)
 
 /*
@@ -188,13 +188,12 @@ Index of this file:
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "imgui.h"
-#ifndef IMGUI_DISABLE
+#include "KarmaGui.h"
 
 #ifndef KARMAGUI_DEFINE_MATH_OPERATORS
 #define KARMAGUI_DEFINE_MATH_OPERATORS
 #endif
-#include "imgui_internal.h"
+#include "KarmaGuiInternal.h"
 
 // System includes
 #if defined(_MSC_VER) && _MSC_VER <= 1500 // MSVC 2008 or earlier
@@ -260,6 +259,8 @@ static const float TABLE_BORDER_SIZE                     = 1.0f;    // FIXME-TAB
 static const float TABLE_RESIZE_SEPARATOR_HALF_THICKNESS = 4.0f;    // Extend outside inner borders.
 static const float TABLE_RESIZE_SEPARATOR_FEEDBACK_TIMER = 0.06f;   // Delay/timer before making the hover feedback (color+cursor) visible because tables/columns tends to be more cramped.
 
+namespace Karma
+{
 // Helper
 inline KarmaGuiTableFlags TableFixFlags(KarmaGuiTableFlags flags, KGGuiWindow* outer_window)
 {
@@ -294,20 +295,20 @@ inline KarmaGuiTableFlags TableFixFlags(KarmaGuiTableFlags flags, KGGuiWindow* o
     return flags;
 }
 
-KGGuiTable* ImGui::TableFindByID(KGGuiID id)
+KGGuiTable* KarmaGuiInternal::TableFindByID(KGGuiID id)
 {
     KarmaGuiContext& g = *GKarmaGui;
     return g.Tables.GetByKey(id);
 }
 
 // Read about "TABLE SIZING" at the top of this file.
-bool    ImGui::BeginTable(const char* str_id, int columns_count, KarmaGuiTableFlags flags, const KGVec2& outer_size, float inner_width)
+bool    KarmaGui::BeginTable(const char* str_id, int columns_count, KarmaGuiTableFlags flags, const KGVec2& outer_size, float inner_width)
 {
     KGGuiID id = GetID(str_id);
-    return BeginTableEx(str_id, id, columns_count, flags, outer_size, inner_width);
+    return KarmaGuiInternal::BeginTableEx(str_id, id, columns_count, flags, outer_size, inner_width);
 }
 
-bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, KarmaGuiTableFlags flags, const KGVec2& outer_size, float inner_width)
+bool    KarmaGuiInternal::BeginTableEx(const char* name, KGGuiID id, int columns_count, KarmaGuiTableFlags flags, const KGVec2& outer_size, float inner_width)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* outer_window = GetCurrentWindow();
@@ -315,13 +316,13 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
         return false;
 
     // Sanity checks
-    KR_CORE_ASSERT(columns_count > 0 && columns_count <= KARMAGUI_TABLE_MAX_COLUMNS && "Only 1..64 columns allowed!");
+    KR_CORE_ASSERT(columns_count > 0 && columns_count <= KARMAGUI_TABLE_MAX_COLUMNS, "Only 1..64 columns allowed!");
     if (flags & KGGuiTableFlags_ScrollX)
-        KR_CORE_ASSERT(inner_width >= 0.0f);
+        KR_CORE_ASSERT(inner_width >= 0.0f, "");
 
     // If an outer size is specified ahead we will be able to early out when not visible. Exact clipping rules may evolve.
     const bool use_child_window = (flags & (KGGuiTableFlags_ScrollX | KGGuiTableFlags_ScrollY)) != 0;
-    const KGVec2 avail_size = GetContentRegionAvail();
+    const KGVec2 avail_size = KarmaGui::GetContentRegionAvail();
     KGVec2 actual_outer_size = CalcItemSize(outer_size, KGMax(avail_size.x, 1.0f), use_child_window ? KGMax(avail_size.y, 1.0f) : 0.0f);
     KGRect outer_rect(outer_window->DC.CursorPos, outer_window->DC.CursorPos + actual_outer_size);
     if (use_child_window && IsClippedEx(outer_rect, 0))
@@ -336,7 +337,7 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
     const KGGuiID instance_id = id + instance_no;
     const KarmaGuiTableFlags table_last_flags = table->Flags;
     if (instance_no > 0)
-        KR_CORE_ASSERT(table->ColumnsCount == columns_count && "BeginTable(): Cannot change columns count mid-frame while preserving same ID");
+        KR_CORE_ASSERT(table->ColumnsCount == columns_count, "BeginTable(): Cannot change columns count mid-frame while preserving same ID");
 
     // Acquire temporary buffers
     const int table_idx = g.Tables.GetIndex(table);
@@ -381,11 +382,11 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
             override_content_size.x = inner_width;
 
         if (override_content_size.x != FLT_MAX || override_content_size.y != FLT_MAX)
-            SetNextWindowContentSize(KGVec2(override_content_size.x != FLT_MAX ? override_content_size.x : 0.0f, override_content_size.y != FLT_MAX ? override_content_size.y : 0.0f));
+            KarmaGui::SetNextWindowContentSize(KGVec2(override_content_size.x != FLT_MAX ? override_content_size.x : 0.0f, override_content_size.y != FLT_MAX ? override_content_size.y : 0.0f));
 
         // Reset scroll if we are reactivating it
         if ((table_last_flags & (KGGuiTableFlags_ScrollX | KGGuiTableFlags_ScrollY)) == 0)
-            SetNextWindowScroll(KGVec2(0.0f, 0.0f));
+            KarmaGui::SetNextWindowScroll(KGVec2(0.0f, 0.0f));
 
         // Create scrolling region (without border and zero window padding)
         KarmaGuiWindowFlags child_flags = (flags & KGGuiTableFlags_ScrollX) ? KGGuiWindowFlags_HorizontalScrollbar : KGGuiWindowFlags_None;
@@ -394,7 +395,7 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
         table->WorkRect = table->InnerWindow->WorkRect;
         table->OuterRect = table->InnerWindow->Rect();
         table->InnerRect = table->InnerWindow->InnerRect;
-        KR_CORE_ASSERT(table->InnerWindow->WindowPadding.x == 0.0f && table->InnerWindow->WindowPadding.y == 0.0f && table->InnerWindow->WindowBorderSize == 0.0f);
+        KR_CORE_ASSERT(table->InnerWindow->WindowPadding.x == 0.0f && table->InnerWindow->WindowPadding.y == 0.0f && table->InnerWindow->WindowBorderSize == 0.0f, "");
 
         // When using multiple instances, ensure they have the same amount of horizontal decorations (aka vertical scrollbar) so stretched columns can be aligned)
         if (instance_no == 0)
@@ -465,8 +466,8 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
     table->DeclColumnsCount = 0;
 
     // Using opaque colors facilitate overlapping elements of the grid
-    table->BorderColorStrong = GetColorU32(KGGuiCol_TableBorderStrong);
-    table->BorderColorLight = GetColorU32(KGGuiCol_TableBorderLight);
+    table->BorderColorStrong = KarmaGui::GetColorU32(KGGuiCol_TableBorderStrong);
+    table->BorderColorLight = KarmaGui::GetColorU32(KGGuiCol_TableBorderLight);
 
     // Make table current
     g.CurrentTable = table;
@@ -578,7 +579,7 @@ bool    ImGui::BeginTableEx(const char* name, KGGuiID id, int columns_count, Kar
 // + 2 * active_channels_count (for KGDrawCmd and KGDrawIdx buffers inside channels)
 // Where active_channels_count is variable but often == columns_count or columns_count + 1, see TableSetupDrawChannels() for details.
 // Unused channels don't perform their +2 allocations.
-void ImGui::TableBeginInitMemory(KGGuiTable* table, int columns_count)
+void KarmaGuiInternal::TableBeginInitMemory(KGGuiTable* table, int columns_count)
 {
     // Allocate single buffer for our arrays
     KGSpanAllocator<3> span_allocator;
@@ -594,7 +595,7 @@ void ImGui::TableBeginInitMemory(KGGuiTable* table, int columns_count)
 }
 
 // Apply queued resizing/reordering/hiding requests
-void ImGui::TableBeginApplyRequests(KGGuiTable* table)
+void KarmaGuiInternal::TableBeginApplyRequests(KGGuiTable* table)
 {
     // Handle resizing request
     // (We process this at the first TableBegin of the frame)
@@ -630,8 +631,8 @@ void ImGui::TableBeginApplyRequests(KGGuiTable* table)
             //    ... C [D] E  --->  ... [D] E  C   (Column name/index)
             //    ... 2  3  4        ...  2  3  4   (Display order)
             const int reorder_dir = table->ReorderColumnDir;
-            KR_CORE_ASSERT(reorder_dir == -1 || reorder_dir == +1);
-            KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Reorderable);
+            KR_CORE_ASSERT(reorder_dir == -1 || reorder_dir == +1, "");
+            KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Reorderable, "");
             KGGuiTableColumn* src_column = &table->Columns[table->ReorderColumn];
             KGGuiTableColumn* dst_column = &table->Columns[(reorder_dir == -1) ? src_column->PrevEnabledColumn : src_column->NextEnabledColumn];
             KG_UNUSED(dst_column);
@@ -640,7 +641,7 @@ void ImGui::TableBeginApplyRequests(KGGuiTable* table)
             src_column->DisplayOrder = (KGGuiTableColumnIdx)dst_order;
             for (int order_n = src_order + reorder_dir; order_n != dst_order + reorder_dir; order_n += reorder_dir)
                 table->Columns[table->DisplayOrderToIndex[order_n]].DisplayOrder -= (KGGuiTableColumnIdx)reorder_dir;
-            KR_CORE_ASSERT(dst_column->DisplayOrder == dst_order - reorder_dir);
+            KR_CORE_ASSERT(dst_column->DisplayOrder == dst_order - reorder_dir, "");
 
             // Display order is stored in both columns->IndexDisplayOrder and table->DisplayOrder[],
             // rebuild the later from the former.
@@ -677,7 +678,7 @@ static void TableSetupColumnFlags(KGGuiTable* table, KGGuiTableColumn* column, K
     }
     else
     {
-        KR_CORE_ASSERT(KGIsPowerOfTwo(flags & KGGuiTableColumnFlags_WidthMask_)); // Check that only 1 of each set is used.
+        KR_CORE_ASSERT(KGIsPowerOfTwo(flags & KGGuiTableColumnFlags_WidthMask_), ""); // Check that only 1 of each set is used.
     }
 
     // Resize
@@ -713,7 +714,7 @@ static void TableSetupColumnFlags(KGGuiTable* table, KGGuiTableColumn* column, K
         column->SortDirectionsAvailList = (KGU8)list;
         column->SortDirectionsAvailMask = (KGU8)mask;
         column->SortDirectionsAvailCount = (KGU8)count;
-        ImGui::TableFixColumnSortDirection(table, column);
+        KarmaGuiInternal::TableFixColumnSortDirection(table, column);
     }
 }
 
@@ -721,10 +722,10 @@ static void TableSetupColumnFlags(KGGuiTable* table, KGGuiTableColumn* column, K
 // Runs on the first call to TableNextRow(), to give a chance for TableSetupColumn() to be called first.
 // FIXME-TABLE: Our width (and therefore our WorkRect) will be minimal in the first frame for _WidthAuto columns.
 // Increase feedback side-effect with widgets relying on WorkRect.Max.x... Maybe provide a default distribution for _WidthAuto columns?
-void ImGui::TableUpdateLayout(KGGuiTable* table)
+void KarmaGuiInternal::TableUpdateLayout(KGGuiTable* table)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(table->IsLayoutLocked == false);
+    KR_CORE_ASSERT(table->IsLayoutLocked == false, "");
 
     const KarmaGuiTableFlags table_sizing_policy = (table->Flags & KGGuiTableFlags_SizingMask_);
     table->IsDefaultDisplayOrder = true;
@@ -798,7 +799,7 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
         table->EnabledMaskByIndex |= (KGU64)1 << column_n;
         table->EnabledMaskByDisplayOrder |= (KGU64)1 << column->DisplayOrder;
         prev_visible_column_idx = column_n;
-        KR_CORE_ASSERT(column->IndexWithinEnabledSet <= column->DisplayOrder);
+        KR_CORE_ASSERT(column->IndexWithinEnabledSet <= column->DisplayOrder, "");
 
         // Calculate ideal/auto column width (that's the width required for all contents to be visible without clipping)
         // Combine width from regular rows + width from headers unless requested not to.
@@ -828,7 +829,7 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
     if ((table->Flags & KGGuiTableFlags_Sortable) && table->SortSpecsCount == 0 && !(table->Flags & KGGuiTableFlags_SortTristate))
         table->IsSortSpecsDirty = true;
     table->RightMostEnabledColumn = (KGGuiTableColumnIdx)prev_visible_column_idx;
-    KR_CORE_ASSERT(table->LeftMostEnabledColumn >= 0 && table->RightMostEnabledColumn >= 0);
+    KR_CORE_ASSERT(table->LeftMostEnabledColumn >= 0 && table->RightMostEnabledColumn >= 0, "");
 
     // [Part 2] Disable child window clipping while fitting columns. This is not strictly necessary but makes it possible
     // to avoid the column fitting having to wait until the first visible frame of the child container (may or not be a good thing).
@@ -1047,7 +1048,7 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
         // Mark column as SkipItems (ignoring all items/layout)
         column->IsSkipItems = !column->IsEnabled || table->HostSkipItems;
         if (column->IsSkipItems)
-            KR_CORE_ASSERT(!is_visible);
+            KR_CORE_ASSERT(!is_visible, "");
 
         // Update status flags
         column->Flags |= KGGuiTableColumnFlags_IsEnabled;
@@ -1125,7 +1126,7 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
     if (TableBeginContextMenuPopup(table))
     {
         TableDrawContextMenu(table);
-        EndPopup();
+        KarmaGui::EndPopup();
     }
 
     // [Part 13] Sanitize and build sort specs before we have a change to use them for display.
@@ -1152,10 +1153,10 @@ void ImGui::TableUpdateLayout(KGGuiTable* table)
 // - Set table->HoveredColumnBorder with a short delay/timer to reduce feedback noise
 // - Submit ahead of table contents and header, use KGGuiButtonFlags_AllowItemOverlap to prioritize widgets
 //   overlapping the same area.
-void ImGui::TableUpdateBorders(KGGuiTable* table)
+void KarmaGuiInternal::TableUpdateBorders(KGGuiTable* table)
 {
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Resizable);
+    KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Resizable, "");
 
     // At this point OuterRect height may be zero or under actual final height, so we rely on temporal coherency and
     // use the final height from last frame. Because this is only affecting _interaction_ with columns, it is not
@@ -1192,7 +1193,7 @@ void ImGui::TableUpdateBorders(KGGuiTable* table)
 
         bool hovered = false, held = false;
         bool pressed = ButtonBehavior(hit_rect, column_id, &hovered, &held, KGGuiButtonFlags_FlattenChildren | KGGuiButtonFlags_AllowItemOverlap | KGGuiButtonFlags_PressedOnClick | KGGuiButtonFlags_PressedOnDoubleClick | KGGuiButtonFlags_NoNavFocus);
-        if (pressed && IsMouseDoubleClicked(0))
+        if (pressed && KarmaGui::IsMouseDoubleClicked(0))
         {
             TableSetColumnWidthAutoSingle(table, column_n);
             ClearActiveID();
@@ -1208,16 +1209,16 @@ void ImGui::TableUpdateBorders(KGGuiTable* table)
         if ((hovered && g.HoveredIdTimer > TABLE_RESIZE_SEPARATOR_FEEDBACK_TIMER) || held)
         {
             table->HoveredColumnBorder = (KGGuiTableColumnIdx)column_n;
-            SetMouseCursor(KGGuiMouseCursor_ResizeEW);
+            KarmaGui::SetMouseCursor(KGGuiMouseCursor_ResizeEW);
         }
     }
 }
 
-void    ImGui::EndTable()
+void    KarmaGui::EndTable()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
-    KR_CORE_ASSERT(table != NULL && "Only call EndTable() if BeginTable() returns true!");
+    KR_CORE_ASSERT(table != NULL, "Only call EndTable() if BeginTable() returns true!");
 
     // This assert would be very useful to catch a common error... unfortunately it would probably trigger in some
     // cases, and for consistency user may sometimes output empty tables (and still benefit from e.g. outer border)
@@ -1226,30 +1227,30 @@ void    ImGui::EndTable()
     // If the user never got to call TableNextRow() or TableNextColumn(), we call layout ourselves to ensure all our
     // code paths are consistent (instead of just hoping that TableBegin/TableEnd will work), get borders drawn, etc.
     if (!table->IsLayoutLocked)
-        TableUpdateLayout(table);
+        KarmaGuiInternal::TableUpdateLayout(table);
 
     const KarmaGuiTableFlags flags = table->Flags;
     KGGuiWindow* inner_window = table->InnerWindow;
     KGGuiWindow* outer_window = table->OuterWindow;
     KGGuiTableTempData* temp_data = table->TempData;
-    KR_CORE_ASSERT(inner_window == g.CurrentWindow);
-    KR_CORE_ASSERT(outer_window == inner_window || outer_window == inner_window->ParentWindow);
+    KR_CORE_ASSERT(inner_window == g.CurrentWindow, "");
+    KR_CORE_ASSERT(outer_window == inner_window || outer_window == inner_window->ParentWindow, "");
 
     if (table->IsInsideRow)
-        TableEndRow(table);
+        KarmaGuiInternal::TableEndRow(table);
 
     // Context menu in columns body
     if (flags & KGGuiTableFlags_ContextMenuInBody)
         if (table->HoveredColumnBody != -1 && !IsAnyItemHovered() && IsMouseReleased(KGGuiMouseButton_Right))
-            TableOpenContextMenu((int)table->HoveredColumnBody);
+            KarmaGuiInternal::TableOpenContextMenu((int)table->HoveredColumnBody);
 
     // Finalize table height
-    KGGuiTableInstanceData* table_instance = TableGetInstanceData(table, table->InstanceCurrent);
+    KGGuiTableInstanceData* table_instance = KarmaGuiInternal::TableGetInstanceData(table, table->InstanceCurrent);
     inner_window->DC.PrevLineSize = temp_data->HostBackupPrevLineSize;
     inner_window->DC.CurrLineSize = temp_data->HostBackupCurrLineSize;
     inner_window->DC.CursorMaxPos = temp_data->HostBackupCursorMaxPos;
     const float inner_content_max_y = table->RowPosY2;
-    KR_CORE_ASSERT(table->RowPosY2 == inner_window->DC.CursorPos.y);
+    KR_CORE_ASSERT(table->RowPosY2 == inner_window->DC.CursorPos.y, "");
     if (inner_window != outer_window)
         inner_window->DC.CursorMaxPos.y = inner_content_max_y;
     else if (!(flags & KGGuiTableFlags_NoHostExtendY))
@@ -1278,7 +1279,7 @@ void    ImGui::EndTable()
 
     // Draw borders
     if ((flags & KGGuiTableFlags_Borders) != 0)
-        TableDrawBorders(table);
+        KarmaGuiInternal::TableDrawBorders(table);
 
 #if 0
     // Strip out dummy channel draw calls
@@ -1297,7 +1298,7 @@ void    ImGui::EndTable()
     KGDrawListSplitter* splitter = table->DrawSplitter;
     splitter->SetCurrentChannel(inner_window->DrawList, 0);
     if ((table->Flags & KGGuiTableFlags_NoClip) == 0)
-        TableMergeDrawChannels(table);
+        KarmaGuiInternal::TableMergeDrawChannels(table);
     splitter->Merge(inner_window->DrawList);
 
     // Update ColumnsAutoFitWidth to get us ahead for host using our size to auto-resize without waiting for next BeginTable()
@@ -1308,7 +1309,7 @@ void    ImGui::EndTable()
         if (table->EnabledMaskByIndex & ((KGU64)1 << column_n))
         {
             KGGuiTableColumn* column = &table->Columns[column_n];
-            float column_width_request = ((column->Flags & KGGuiTableColumnFlags_WidthFixed) && !(column->Flags & KGGuiTableColumnFlags_NoResize)) ? column->WidthRequest : TableGetColumnWidthAuto(table, column);
+            float column_width_request = ((column->Flags & KGGuiTableColumnFlags_WidthFixed) && !(column->Flags & KGGuiTableColumnFlags_NoResize)) ? column->WidthRequest : KarmaGuiInternal::TableGetColumnWidthAuto(table, column);
             if (column->Flags & KGGuiTableColumnFlags_WidthFixed)
                 auto_fit_width_for_fixed += column_width_request;
             else
@@ -1330,9 +1331,9 @@ void    ImGui::EndTable()
         const float neighbor_width_to_keep_visible = table->MinColumnWidth + table->CellPaddingX * 2.0f;
         KGGuiTableColumn* column = &table->Columns[table->LastResizedColumn];
         if (column->MaxX < table->InnerClipRect.Min.x)
-            SetScrollFromPosX(inner_window, column->MaxX - inner_window->Pos.x - neighbor_width_to_keep_visible, 1.0f);
+            KarmaGuiInternal::SetScrollFromPosX(inner_window, column->MaxX - inner_window->Pos.x - neighbor_width_to_keep_visible, 1.0f);
         else if (column->MaxX > table->InnerClipRect.Max.x)
-            SetScrollFromPosX(inner_window, column->MaxX - inner_window->Pos.x + neighbor_width_to_keep_visible, 1.0f);
+            KarmaGuiInternal::SetScrollFromPosX(inner_window, column->MaxX - inner_window->Pos.x + neighbor_width_to_keep_visible, 1.0f);
     }
 
     // Apply resizing/dragging at the end of the frame
@@ -1345,8 +1346,8 @@ void    ImGui::EndTable()
     }
 
     // Pop from id stack
-    KG_ASSERT_USER_ERROR(inner_window->IDStack.back() == table->ID + table->InstanceCurrent, "Mismatching PushID/PopID!");
-    KG_ASSERT_USER_ERROR(outer_window->DC.ItemWidthStack.Size >= temp_data->HostBackupItemWidthStackSize, "Too many PopItemWidth!");
+    KR_CORE_ASSERT(inner_window->IDStack.back() == table->ID + table->InstanceCurrent, "Mismatching PushID/PopID!");
+    KR_CORE_ASSERT(outer_window->DC.ItemWidthStack.Size >= temp_data->HostBackupItemWidthStackSize, "Too many PopItemWidth!");
     PopID();
 
     // Restore window data that we modified
@@ -1368,8 +1369,8 @@ void    ImGui::EndTable()
     }
     else
     {
-        ItemSize(table->OuterRect.GetSize());
-        ItemAdd(table->OuterRect, 0);
+        KarmaGuiInternal::ItemSize(table->OuterRect.GetSize());
+        KarmaGuiInternal::ItemAdd(table->OuterRect, 0);
     }
 
     // Override declared contents width/height to enable auto-resize while not needlessly adding a scrollbar
@@ -1377,7 +1378,7 @@ void    ImGui::EndTable()
     {
         // FIXME-TABLE: Could we remove this section?
         // ColumnsAutoFitWidth may be one frame ahead here since for Fixed+NoResize is calculated from latest contents
-        KR_CORE_ASSERT((table->Flags & KGGuiTableFlags_ScrollX) == 0);
+        KR_CORE_ASSERT((table->Flags & KGGuiTableFlags_ScrollX) == 0, "");
         outer_window->DC.CursorMaxPos.x = KGMax(backup_outer_max_pos.x, table->OuterRect.Min.x + table->ColumnsAutoFitWidth);
     }
     else if (temp_data->UserOuterSize.x <= 0.0f)
@@ -1404,12 +1405,12 @@ void    ImGui::EndTable()
 
     // Save settings
     if (table->IsSettingsDirty)
-        TableSaveSettings(table);
+        KarmaGuiInternal::TableSaveSettings(table);
     table->IsInitializing = false;
 
     // Clear or restore current table, if any
-    KR_CORE_ASSERT(g.CurrentWindow == outer_window && g.CurrentTable == table);
-    KR_CORE_ASSERT(g.TablesTempDataStacked > 0);
+    KR_CORE_ASSERT(g.CurrentWindow == outer_window && g.CurrentTable == table, "");
+    KR_CORE_ASSERT(g.TablesTempDataStacked > 0, "");
     temp_data = (--g.TablesTempDataStacked > 0) ? &g.TablesTempData[g.TablesTempDataStacked - 1] : NULL;
     g.CurrentTable = temp_data ? g.Tables.GetByIndex(temp_data->TableIndex) : NULL;
     if (g.CurrentTable)
@@ -1422,16 +1423,16 @@ void    ImGui::EndTable()
 
 // See "COLUMN SIZING POLICIES" comments at the top of this file
 // If (init_width_or_weight <= 0.0f) it is ignored
-void ImGui::TableSetupColumn(const char* label, KarmaGuiTableColumnFlags flags, float init_width_or_weight, KGGuiID user_id)
+void KarmaGui::TableSetupColumn(const char* label, KarmaGuiTableColumnFlags flags, float init_width_or_weight, KGGuiID user_id)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
-    KR_CORE_ASSERT(table != NULL && "Need to call TableSetupColumn() after BeginTable()!");
-    KR_CORE_ASSERT(table->IsLayoutLocked == false && "Need to call call TableSetupColumn() before first row!");
-    KR_CORE_ASSERT((flags & KGGuiTableColumnFlags_StatusMask_) == 0 && "Illegal to pass StatusMask values to TableSetupColumn()");
+    KR_CORE_ASSERT(table != NULL, "Need to call TableSetupColumn() after BeginTable()!");
+    KR_CORE_ASSERT(table->IsLayoutLocked == false, "Need to call call TableSetupColumn() before first row!");
+    KR_CORE_ASSERT((flags & KGGuiTableColumnFlags_StatusMask_) == 0, "Illegal to pass StatusMask values to TableSetupColumn()");
     if (table->DeclColumnsCount >= table->ColumnsCount)
     {
-        KG_ASSERT_USER_ERROR(table->DeclColumnsCount < table->ColumnsCount, "Called TableSetupColumn() too many times!");
+        KR_CORE_ASSERT(table->DeclColumnsCount < table->ColumnsCount, "Called TableSetupColumn() too many times!");
         return;
     }
 
@@ -1441,7 +1442,7 @@ void ImGui::TableSetupColumn(const char* label, KarmaGuiTableColumnFlags flags, 
     // Assert when passing a width or weight if policy is entirely left to default, to avoid storing width into weight and vice-versa.
     // Give a grace to users of KGGuiTableFlags_ScrollX.
     if (table->IsDefaultSizingPolicy && (flags & KGGuiTableColumnFlags_WidthMask_) == 0 && (flags & KGGuiTableFlags_ScrollX) == 0)
-        KR_CORE_ASSERT(init_width_or_weight <= 0.0f && "Can only specify width/weight if sizing policy is set explicitly in either Table or Column.");
+        KR_CORE_ASSERT(init_width_or_weight <= 0.0f, "Can only specify width/weight if sizing policy is set explicitly in either Table or Column.");
 
     // When passing a width automatically enforce WidthFixed policy
     // (whereas TableSetupColumnFlags would default to WidthAuto if table is not Resizable)
@@ -1490,14 +1491,14 @@ void ImGui::TableSetupColumn(const char* label, KarmaGuiTableColumnFlags flags, 
 }
 
 // [Public]
-void ImGui::TableSetupScrollFreeze(int columns, int rows)
+void KarmaGui::TableSetupScrollFreeze(int columns, int rows)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
-    KR_CORE_ASSERT(table != NULL && "Need to call TableSetupColumn() after BeginTable()!");
-    KR_CORE_ASSERT(table->IsLayoutLocked == false && "Need to call TableSetupColumn() before first row!");
-    KR_CORE_ASSERT(columns >= 0 && columns < KARMAGUI_TABLE_MAX_COLUMNS);
-    KR_CORE_ASSERT(rows >= 0 && rows < 128); // Arbitrary limit
+    KR_CORE_ASSERT(table != NULL, "Need to call TableSetupColumn() after BeginTable()!");
+    KR_CORE_ASSERT(table->IsLayoutLocked == false, "Need to call TableSetupColumn() before first row!");
+    KR_CORE_ASSERT(columns >= 0, columns < KARMAGUI_TABLE_MAX_COLUMNS);
+    KR_CORE_ASSERT(rows >= 0 && rows < 128, ""); // Arbitrary limit
 
     table->FreezeColumnsRequest = (table->Flags & KGGuiTableFlags_ScrollX) ? (KGGuiTableColumnIdx)KGMin(columns, table->ColumnsCount) : 0;
     table->FreezeColumnsCount = (table->InnerWindow->Scroll.x != 0.0f) ? table->FreezeColumnsRequest : 0;
@@ -1532,14 +1533,14 @@ void ImGui::TableSetupScrollFreeze(int columns, int rows)
 // - TableSetBgColor()
 //-----------------------------------------------------------------------------
 
-int ImGui::TableGetColumnCount()
+int KarmaGui::TableGetColumnCount()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
     return table ? table->ColumnsCount : 0;
 }
 
-const char* ImGui::TableGetColumnName(int column_n)
+const char* KarmaGui::TableGetColumnName(int column_n)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
@@ -1547,10 +1548,10 @@ const char* ImGui::TableGetColumnName(int column_n)
         return NULL;
     if (column_n < 0)
         column_n = table->CurrentColumn;
-    return TableGetColumnName(table, column_n);
+    return KarmaGuiInternal::TableGetColumnName(table, column_n);
 }
 
-const char* ImGui::TableGetColumnName(const KGGuiTable* table, int column_n)
+const char* KarmaGuiInternal::TableGetColumnName(const KGGuiTable* table, int column_n)
 {
     if (table->IsLayoutLocked == false && column_n >= table->DeclColumnsCount)
         return ""; // NameOffset is invalid at this point
@@ -1566,23 +1567,23 @@ const char* ImGui::TableGetColumnName(const KGGuiTable* table, int column_n)
 // - Request will be applied during next layout, which happens on the first call to TableNextRow() after BeginTable().
 // - For the getter you can test (TableGetColumnFlags() & KGGuiTableColumnFlags_IsEnabled) != 0.
 // - Alternative: the KGGuiTableColumnFlags_Disabled is an overriding/master disable flag which will also hide the column from context menu.
-void ImGui::TableSetColumnEnabled(int column_n, bool enabled)
+void KarmaGui::TableSetColumnEnabled(int column_n, bool enabled)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
-    KR_CORE_ASSERT(table != NULL);
+    KR_CORE_ASSERT(table != NULL, "");
     if (!table)
         return;
-    KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Hideable); // See comments above
+    KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Hideable, ""); // See comments above
     if (column_n < 0)
         column_n = table->CurrentColumn;
-    KR_CORE_ASSERT(column_n >= 0 && column_n < table->ColumnsCount);
+    KR_CORE_ASSERT(column_n >= 0 && column_n < table->ColumnsCount, "");
     KGGuiTableColumn* column = &table->Columns[column_n];
     column->IsUserEnabledNextFrame = enabled;
 }
 
 // We allow querying for an extra column in order to poll the IsHovered state of the right-most section
-KarmaGuiTableColumnFlags ImGui::TableGetColumnFlags(int column_n)
+KarmaGuiTableColumnFlags KarmaGui::TableGetColumnFlags(int column_n)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
@@ -1601,7 +1602,7 @@ KarmaGuiTableColumnFlags ImGui::TableGetColumnFlags(int column_n)
 // - Important: if KGGuiTableFlags_PadOuterX is set but KGGuiTableFlags_PadInnerX is not set, the outer-most left and right
 //   columns report a small offset so their CellBgRect can extend up to the outer border.
 //   FIXME: But the rendering code in TableEndRow() nullifies that with clamping required for scrolling.
-KGRect ImGui::TableGetCellBgRect(const KGGuiTable* table, int column_n)
+KGRect KarmaGuiInternal::TableGetCellBgRect(const KGGuiTable* table, int column_n)
 {
     const KGGuiTableColumn* column = &table->Columns[column_n];
     float x1 = column->MinX;
@@ -1616,15 +1617,15 @@ KGRect ImGui::TableGetCellBgRect(const KGGuiTable* table, int column_n)
 }
 
 // Return the resizing ID for the right-side of the given column.
-KGGuiID ImGui::TableGetColumnResizeID(const KGGuiTable* table, int column_n, int instance_no)
+KGGuiID KarmaGuiInternal::TableGetColumnResizeID(const KGGuiTable* table, int column_n, int instance_no)
 {
-    KR_CORE_ASSERT(column_n >= 0 && column_n < table->ColumnsCount);
+    KR_CORE_ASSERT(column_n >= 0 && column_n < table->ColumnsCount, "");
     KGGuiID id = table->ID + 1 + (instance_no * table->ColumnsCount) + column_n;
     return id;
 }
 
 // Return -1 when table is not hovered. return columns_count if the unused space at the right of visible columns is hovered.
-int ImGui::TableGetHoveredColumn()
+int KarmaGuiInternal::TableGetHoveredColumn()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
@@ -1633,11 +1634,11 @@ int ImGui::TableGetHoveredColumn()
     return (int)table->HoveredColumnBody;
 }
 
-void ImGui::TableSetBgColor(KarmaGuiTableBgTarget target, KGU32 color, int column_n)
+void KarmaGui::TableSetBgColor(KarmaGuiTableBgTarget target, KGU32 color, int column_n)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
-    KR_CORE_ASSERT(target != KGGuiTableBgTarget_None);
+    KR_CORE_ASSERT(target != KGGuiTableBgTarget_None, "");
 
     if (color == KG_COL32_DISABLE)
         color = 0;
@@ -1665,13 +1666,13 @@ void ImGui::TableSetBgColor(KarmaGuiTableBgTarget target, KGU32 color, int colum
     {
         if (table->RowPosY1 > table->InnerClipRect.Max.y) // Discard
             return;
-        KR_CORE_ASSERT(column_n == -1);
+        KR_CORE_ASSERT(column_n == -1, "");
         int bg_idx = (target == KGGuiTableBgTarget_RowBg1) ? 1 : 0;
         table->RowBgColor[bg_idx] = color;
         break;
     }
     default:
-        KR_CORE_ASSERT(0);
+        KR_CORE_ASSERT(0, "");
     }
 }
 
@@ -1685,7 +1686,7 @@ void ImGui::TableSetBgColor(KarmaGuiTableBgTarget target, KGU32 color, int colum
 //-------------------------------------------------------------------------
 
 // [Public] Note: for row coloring we use ->RowBgColorCounter which is the same value without counting header rows
-int ImGui::TableGetRowIndex()
+int KarmaGui::TableGetRowIndex()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
@@ -1695,20 +1696,20 @@ int ImGui::TableGetRowIndex()
 }
 
 // [Public] Starts into the first cell of a new row
-void ImGui::TableNextRow(KarmaGuiTableRowFlags row_flags, float row_min_height)
+void KarmaGui::TableNextRow(KarmaGuiTableRowFlags row_flags, float row_min_height)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
 
     if (!table->IsLayoutLocked)
-        TableUpdateLayout(table);
+        KarmaGuiInternal::TableUpdateLayout(table);
     if (table->IsInsideRow)
-        TableEndRow(table);
+        KarmaGuiInternal::TableEndRow(table);
 
     table->LastRowFlags = table->RowFlags;
     table->RowFlags = row_flags;
     table->RowMinHeight = row_min_height;
-    TableBeginRow(table);
+    KarmaGuiInternal::TableBeginRow(table);
 
     // We honor min_row_height requested by user, but cannot guarantee per-row maximum height,
     // because that would essentially require a unique clipping rectangle per-cell.
@@ -1720,10 +1721,10 @@ void ImGui::TableNextRow(KarmaGuiTableRowFlags row_flags, float row_min_height)
 }
 
 // [Internal] Called by TableNextRow()
-void ImGui::TableBeginRow(KGGuiTable* table)
+void KarmaGuiInternal::TableBeginRow(KGGuiTable* table)
 {
     KGGuiWindow* window = table->InnerWindow;
-    KR_CORE_ASSERT(!table->IsInsideRow);
+    KR_CORE_ASSERT(!table->IsInsideRow, "");
 
     // New row
     table->CurrentRow++;
@@ -1748,19 +1749,19 @@ void ImGui::TableBeginRow(KGGuiTable* table)
     // Making the header BG color non-transparent will allow us to overlay it multiple times when handling smooth dragging.
     if (table->RowFlags & KGGuiTableRowFlags_Headers)
     {
-        TableSetBgColor(KGGuiTableBgTarget_RowBg0, GetColorU32(KGGuiCol_TableHeaderBg));
+        KarmaGui::TableSetBgColor(KGGuiTableBgTarget_RowBg0, KarmaGui::GetColorU32(KGGuiCol_TableHeaderBg));
         if (table->CurrentRow == 0)
             table->IsUsingHeaders = true;
     }
 }
 
 // [Internal] Called by TableNextRow()
-void ImGui::TableEndRow(KGGuiTable* table)
+void KarmaGuiInternal::TableEndRow(KGGuiTable* table)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
-    KR_CORE_ASSERT(window == table->InnerWindow);
-    KR_CORE_ASSERT(table->IsInsideRow);
+    KR_CORE_ASSERT(window == table->InnerWindow, "");
+    KR_CORE_ASSERT(table->IsInsideRow, "");
 
     if (table->CurrentColumn != -1)
         TableEndCell(table);
@@ -1790,7 +1791,7 @@ void ImGui::TableEndRow(KGGuiTable* table)
         if (table->RowBgColor[0] != KG_COL32_DISABLE)
             bg_col0 = table->RowBgColor[0];
         else if (table->Flags & KGGuiTableFlags_RowBg)
-            bg_col0 = GetColorU32((table->RowBgColorCounter & 1) ? KGGuiCol_TableRowBgAlt : KGGuiCol_TableRowBg);
+            bg_col0 = KarmaGui::GetColorU32((table->RowBgColorCounter & 1) ? KGGuiCol_TableRowBgAlt : KGGuiCol_TableRowBg);
         if (table->RowBgColor[1] != KG_COL32_DISABLE)
             bg_col1 = table->RowBgColor[1];
 
@@ -1858,7 +1859,7 @@ void ImGui::TableEndRow(KGGuiTable* table)
             table->Columns[column_n].NavLayerCurrent = KGGuiNavLayer_Main;
     if (unfreeze_rows_actual)
     {
-        KR_CORE_ASSERT(table->IsUnfrozenRows == false);
+        KR_CORE_ASSERT(table->IsUnfrozenRows == false, "");
         const float y0 = KGMax(table->RowPosY2 + 1, window->InnerClipRect.Min.y);
         table->IsUnfrozenRows = true;
         TableGetInstanceData(table, table->InstanceCurrent)->LastFrozenHeight = y0 - table->OuterRect.Min.y;
@@ -1867,7 +1868,7 @@ void ImGui::TableEndRow(KGGuiTable* table)
         table->BgClipRect.Min.y = table->Bg2ClipRectForDrawCmd.Min.y = KGMin(y0, window->InnerClipRect.Max.y);
         table->BgClipRect.Max.y = table->Bg2ClipRectForDrawCmd.Max.y = window->InnerClipRect.Max.y;
         table->Bg2DrawChannelCurrent = table->Bg2DrawChannelUnfrozen;
-        KR_CORE_ASSERT(table->Bg2ClipRectForDrawCmd.Min.y <= table->Bg2ClipRectForDrawCmd.Max.y);
+        KR_CORE_ASSERT(table->Bg2ClipRectForDrawCmd.Min.y <= table->Bg2ClipRectForDrawCmd.Max.y, "");
 
         float row_height = table->RowPosY2 - table->RowPosY1;
         table->RowPosY2 = window->DC.CursorPos.y = table->WorkRect.Min.y + table->RowPosY2 - table->OuterRect.Min.y;
@@ -1899,7 +1900,7 @@ void ImGui::TableEndRow(KGGuiTable* table)
 // - TableEndCell() [Internal]
 //-------------------------------------------------------------------------
 
-int ImGui::TableGetColumnIndex()
+int KarmaGui::TableGetColumnIndex()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
@@ -1909,7 +1910,7 @@ int ImGui::TableGetColumnIndex()
 }
 
 // [Public] Append into a specific column
-bool ImGui::TableSetColumnIndex(int column_n)
+bool KarmaGui::TableSetColumnIndex(int column_n)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
@@ -1919,9 +1920,9 @@ bool ImGui::TableSetColumnIndex(int column_n)
     if (table->CurrentColumn != column_n)
     {
         if (table->CurrentColumn != -1)
-            TableEndCell(table);
-        KR_CORE_ASSERT(column_n >= 0 && table->ColumnsCount);
-        TableBeginCell(table, column_n);
+            KarmaGuiInternal::TableEndCell(table);
+        KR_CORE_ASSERT(column_n >= 0 && table->ColumnsCount, "");
+        KarmaGuiInternal::TableBeginCell(table, column_n);
     }
 
     // Return whether the column is visible. User may choose to skip submitting items based on this return value,
@@ -1930,7 +1931,7 @@ bool ImGui::TableSetColumnIndex(int column_n)
 }
 
 // [Public] Append into the next column, wrap and create a new row when already on last column
-bool ImGui::TableNextColumn()
+bool KarmaGui::TableNextColumn()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
@@ -1940,13 +1941,13 @@ bool ImGui::TableNextColumn()
     if (table->IsInsideRow && table->CurrentColumn + 1 < table->ColumnsCount)
     {
         if (table->CurrentColumn != -1)
-            TableEndCell(table);
-        TableBeginCell(table, table->CurrentColumn + 1);
+            KarmaGuiInternal::TableEndCell(table);
+        KarmaGuiInternal::TableBeginCell(table, table->CurrentColumn + 1);
     }
     else
     {
         TableNextRow();
-        TableBeginCell(table, 0);
+        KarmaGuiInternal::TableBeginCell(table, 0);
     }
 
     // Return whether the column is visible. User may choose to skip submitting items based on this return value,
@@ -1959,7 +1960,7 @@ bool ImGui::TableNextColumn()
 // [Internal] Called by TableSetColumnIndex()/TableNextColumn()
 // This is called very frequently, so we need to be mindful of unnecessary overhead.
 // FIXME-TABLE FIXME-OPT: Could probably shortcut some things for non-active or clipped columns.
-void ImGui::TableBeginCell(KGGuiTable* table, int column_n)
+void KarmaGuiInternal::TableBeginCell(KGGuiTable* table, int column_n)
 {
     KGGuiTableColumn* column = &table->Columns[column_n];
     KGGuiWindow* window = table->InnerWindow;
@@ -2017,7 +2018,7 @@ void ImGui::TableBeginCell(KGGuiTable* table, int column_n)
 }
 
 // [Internal] Called by TableNextRow()/TableSetColumnIndex()/TableNextColumn()
-void ImGui::TableEndCell(KGGuiTable* table)
+void KarmaGuiInternal::TableEndCell(KGGuiTable* table)
 {
     KGGuiTableColumn* column = &table->Columns[table->CurrentColumn];
     KGGuiWindow* window = table->InnerWindow;
@@ -2052,7 +2053,7 @@ void ImGui::TableEndCell(KGGuiTable* table)
 //-------------------------------------------------------------------------
 
 // Maximum column content width given current layout. Use column->MinX so this value on a per-column basis.
-float ImGui::TableGetMaxColumnWidth(const KGGuiTable* table, int column_n)
+float KarmaGuiInternal::TableGetMaxColumnWidth(const KGGuiTable* table, int column_n)
 {
     const KGGuiTableColumn* column = &table->Columns[column_n];
     float max_width = FLT_MAX;
@@ -2084,7 +2085,7 @@ float ImGui::TableGetMaxColumnWidth(const KGGuiTable* table, int column_n)
 }
 
 // Note this is meant to be stored in column->WidthAuto, please generally use the WidthAuto field
-float ImGui::TableGetColumnWidthAuto(KGGuiTable* table, KGGuiTableColumn* column)
+float KarmaGuiInternal::TableGetColumnWidthAuto(KGGuiTable* table, KGGuiTableColumn* column)
 {
     const float content_width_body = KGMax(column->ContentMaxXFrozen, column->ContentMaxXUnfrozen) - column->WorkMinX;
     const float content_width_headers = column->ContentMaxXHeadersIdeal - column->WorkMinX;
@@ -2101,18 +2102,18 @@ float ImGui::TableGetColumnWidthAuto(KGGuiTable* table, KGGuiTableColumn* column
 }
 
 // 'width' = inner column width, without padding
-void ImGui::TableSetColumnWidth(int column_n, float width)
+void KarmaGuiInternal::TableSetColumnWidth(int column_n, float width)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
-    KR_CORE_ASSERT(table != NULL && table->IsLayoutLocked == false);
-    KR_CORE_ASSERT(column_n >= 0 && column_n < table->ColumnsCount);
+    KR_CORE_ASSERT(table != NULL && table->IsLayoutLocked == false, "");
+    KR_CORE_ASSERT(column_n >= 0 && column_n < table->ColumnsCount, "");
     KGGuiTableColumn* column_0 = &table->Columns[column_n];
     float column_0_width = width;
 
     // Apply constraints early
     // Compare both requested and actual given width to avoid overwriting requested width when column is stuck (minimum size, bounded)
-    KR_CORE_ASSERT(table->MinColumnWidth > 0.0f);
+    KR_CORE_ASSERT(table->MinColumnWidth > 0.0f, "");
     const float min_width = table->MinColumnWidth;
     const float max_width = KGMax(min_width, TableGetMaxColumnWidth(table, column_n));
     column_0_width = KGClamp(column_0_width, min_width, max_width);
@@ -2174,7 +2175,7 @@ void ImGui::TableSetColumnWidth(int column_n, float width)
     // (old_a + old_b == new_a + new_b) --> (new_a == old_a + old_b - new_b)
     float column_1_width = KGMax(column_1->WidthRequest - (column_0_width - column_0->WidthRequest), min_width);
     column_0_width = column_0->WidthRequest + column_1->WidthRequest - column_1_width;
-    KR_CORE_ASSERT(column_0_width > 0.0f && column_1_width > 0.0f);
+    KR_CORE_ASSERT(column_0_width > 0.0f && column_1_width > 0.0f, "");
     column_0->WidthRequest = column_0_width;
     column_1->WidthRequest = column_1_width;
     if ((column_0->Flags | column_1->Flags) & KGGuiTableColumnFlags_WidthStretch)
@@ -2184,7 +2185,7 @@ void ImGui::TableSetColumnWidth(int column_n, float width)
 
 // Disable clipping then auto-fit, will take 2 frames
 // (we don't take a shortcut for unclipped columns to reduce inconsistencies when e.g. resizing multiple columns)
-void ImGui::TableSetColumnWidthAutoSingle(KGGuiTable* table, int column_n)
+void KarmaGuiInternal::TableSetColumnWidthAutoSingle(KGGuiTable* table, int column_n)
 {
     // Single auto width uses auto-fit
     KGGuiTableColumn* column = &table->Columns[column_n];
@@ -2194,7 +2195,7 @@ void ImGui::TableSetColumnWidthAutoSingle(KGGuiTable* table, int column_n)
     table->AutoFitSingleColumn = (KGGuiTableColumnIdx)column_n;
 }
 
-void ImGui::TableSetColumnWidthAutoAll(KGGuiTable* table)
+void KarmaGuiInternal::TableSetColumnWidthAutoAll(KGGuiTable* table)
 {
     for (int column_n = 0; column_n < table->ColumnsCount; column_n++)
     {
@@ -2206,9 +2207,9 @@ void ImGui::TableSetColumnWidthAutoAll(KGGuiTable* table)
     }
 }
 
-void ImGui::TableUpdateColumnsWeightFromWidth(KGGuiTable* table)
+void KarmaGuiInternal::TableUpdateColumnsWeightFromWidth(KGGuiTable* table)
 {
-    KR_CORE_ASSERT(table->LeftMostStretchedColumn != -1 && table->RightMostStretchedColumn != -1);
+    KR_CORE_ASSERT(table->LeftMostStretchedColumn != -1 && table->RightMostStretchedColumn != -1, "");
 
     // Measure existing quantity
     float visible_weight = 0.0f;
@@ -2218,11 +2219,11 @@ void ImGui::TableUpdateColumnsWeightFromWidth(KGGuiTable* table)
         KGGuiTableColumn* column = &table->Columns[column_n];
         if (!column->IsEnabled || !(column->Flags & KGGuiTableColumnFlags_WidthStretch))
             continue;
-        KR_CORE_ASSERT(column->StretchWeight > 0.0f);
+        KR_CORE_ASSERT(column->StretchWeight > 0.0f, "");
         visible_weight += column->StretchWeight;
         visible_width += column->WidthRequest;
     }
-    KR_CORE_ASSERT(visible_weight > 0.0f && visible_width > 0.0f);
+    KR_CORE_ASSERT(visible_weight > 0.0f && visible_width > 0.0f, "");
 
     // Apply new weights
     for (int column_n = 0; column_n < table->ColumnsCount; column_n++)
@@ -2231,7 +2232,7 @@ void ImGui::TableUpdateColumnsWeightFromWidth(KGGuiTable* table)
         if (!column->IsEnabled || !(column->Flags & KGGuiTableColumnFlags_WidthStretch))
             continue;
         column->StretchWeight = (column->WidthRequest / visible_width) * visible_weight;
-        KR_CORE_ASSERT(column->StretchWeight > 0.0f);
+        KR_CORE_ASSERT(column->StretchWeight > 0.0f, "");
     }
 }
 
@@ -2247,7 +2248,7 @@ void ImGui::TableUpdateColumnsWeightFromWidth(KGGuiTable* table)
 
 // Bg2 is used by Selectable (and possibly other widgets) to render to the background.
 // Unlike our Bg0/1 channel which we uses for RowBg/CellBg/Borders and where we guarantee all shapes to be CPU-clipped, the Bg2 channel being widgets-facing will rely on regular ClipRect.
-void ImGui::TablePushBackgroundChannel()
+void KarmaGuiInternal::TablePushBackgroundChannel()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -2259,7 +2260,7 @@ void ImGui::TablePushBackgroundChannel()
     table->DrawSplitter->SetCurrentChannel(window->DrawList, table->Bg2DrawChannelCurrent);
 }
 
-void ImGui::TablePopBackgroundChannel()
+void KarmaGuiInternal::TablePopBackgroundChannel()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -2287,7 +2288,7 @@ void ImGui::TablePopBackgroundChannel()
 // - FreezeRows                   --> 2+D+N*2 (unless scrolling value is zero)
 // - FreezeRows || FreezeColunns  --> 3+D+N*2 (unless scrolling value is zero)
 // Where D is 1 if any column is clipped or hidden (dummy channel) otherwise 0.
-void ImGui::TableSetupDrawChannels(KGGuiTable* table)
+void KarmaGuiInternal::TableSetupDrawChannels(KGGuiTable* table)
 {
     const int freeze_row_multiplier = (table->FreezeRowsCount > 0) ? 2 : 1;
     const int channels_for_row = (table->Flags & KGGuiTableFlags_NoClip) ? 1 : table->ColumnsEnabledCount;
@@ -2323,7 +2324,7 @@ void ImGui::TableSetupDrawChannels(KGGuiTable* table)
     table->BgClipRect = table->InnerClipRect;
     table->Bg0ClipRectForDrawCmd = table->OuterWindow->ClipRect;
     table->Bg2ClipRectForDrawCmd = table->HostClipRect;
-    KR_CORE_ASSERT(table->BgClipRect.Min.y <= table->BgClipRect.Max.y);
+    KR_CORE_ASSERT(table->BgClipRect.Min.y <= table->BgClipRect.Max.y, "");
 }
 
 // This function reorder draw channels based on matching clip rectangle, to facilitate merging them. Called by EndTable().
@@ -2355,13 +2356,13 @@ void ImGui::TableSetupDrawChannels(KGGuiTable* table)
 // Columns for which the draw channel(s) haven't been merged with other will use their own KGDrawCmd.
 //
 // This function is particularly tricky to understand.. take a breath.
-void ImGui::TableMergeDrawChannels(KGGuiTable* table)
+void KarmaGuiInternal::TableMergeDrawChannels(KGGuiTable* table)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGDrawListSplitter* splitter = table->DrawSplitter;
     const bool has_freeze_v = (table->FreezeRowsCount > 0);
     const bool has_freeze_h = (table->FreezeColumnsCount > 0);
-    KR_CORE_ASSERT(splitter->_Current == 0);
+    KR_CORE_ASSERT(splitter->_Current == 0, "");
 
     // Track which groups we are going to attempt to merge, and which channels goes into each group.
     struct MergeGroup
@@ -2410,7 +2411,7 @@ void ImGui::TableMergeDrawChannels(KGGuiTable* table)
             }
 
             const int merge_group_n = (has_freeze_h && column_n < table->FreezeColumnsCount ? 0 : 1) + (has_freeze_v && merge_group_sub_n == 0 ? 0 : 2);
-            KR_CORE_ASSERT(channel_no < KARMAGUI_TABLE_MAX_DRAW_CHANNELS);
+            KR_CORE_ASSERT(channel_no < KARMAGUI_TABLE_MAX_DRAW_CHANNELS, "");
             MergeGroup* merge_group = &merge_groups[merge_group_n];
             if (merge_group->ChannelsCount == 0)
                 merge_group->ClipRect = KGRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -2453,7 +2454,7 @@ void ImGui::TableMergeDrawChannels(KGGuiTable* table)
         KGBitArray<KARMAGUI_TABLE_MAX_DRAW_CHANNELS> remaining_mask;                       // We need 132-bit of storage
         remaining_mask.SetBitRange(LEADING_DRAW_CHANNELS, splitter->_Count);
         remaining_mask.ClearBit(table->Bg2DrawChannelUnfrozen);
-        KR_CORE_ASSERT(has_freeze_v == false || table->Bg2DrawChannelUnfrozen != TABLE_DRAW_CHANNEL_BG2_FROZEN);
+        KR_CORE_ASSERT(has_freeze_v == false || table->Bg2DrawChannelUnfrozen != TABLE_DRAW_CHANNEL_BG2_FROZEN, "");
         int remaining_count = splitter->_Count - (has_freeze_v ? LEADING_DRAW_CHANNELS + 1 : LEADING_DRAW_CHANNELS);
         //KGRect host_rect = (table->InnerWindow == table->OuterWindow) ? table->InnerClipRect : table->HostClipRect;
         KGRect host_rect = table->HostClipRect;
@@ -2496,7 +2497,7 @@ void ImGui::TableMergeDrawChannels(KGGuiTable* table)
                     merge_channels_count--;
 
                     KGDrawChannel* channel = &splitter->_Channels[n];
-                    KR_CORE_ASSERT(channel->_CmdBuffer.Size == 1 && merge_clip_rect.Contains(KGRect(channel->_CmdBuffer[0].ClipRect)));
+                    KR_CORE_ASSERT(channel->_CmdBuffer.Size == 1 && merge_clip_rect.Contains(KGRect(channel->_CmdBuffer[0].ClipRect)), "");
                     channel->_CmdBuffer[0].ClipRect = merge_clip_rect.ToVec4();
                     memcpy(dst_tmp++, channel, sizeof(KGDrawChannel));
                 }
@@ -2516,13 +2517,13 @@ void ImGui::TableMergeDrawChannels(KGGuiTable* table)
             memcpy(dst_tmp++, channel, sizeof(KGDrawChannel));
             remaining_count--;
         }
-        KR_CORE_ASSERT(dst_tmp == g.DrawChannelsTempMergeBuffer.Data + g.DrawChannelsTempMergeBuffer.Size);
+        KR_CORE_ASSERT(dst_tmp == g.DrawChannelsTempMergeBuffer.Data + g.DrawChannelsTempMergeBuffer.Size, "");
         memcpy(splitter->_Channels.Data + LEADING_DRAW_CHANNELS, g.DrawChannelsTempMergeBuffer.Data, (splitter->_Count - LEADING_DRAW_CHANNELS) * sizeof(KGDrawChannel));
     }
 }
 
 // FIXME-TABLE: This is a mess, need to redesign how we render borders (as some are also done in TableEndRow)
-void ImGui::TableDrawBorders(KGGuiTable* table)
+void KarmaGuiInternal::TableDrawBorders(KGGuiTable* table)
 {
     KGGuiWindow* inner_window = table->InnerWindow;
     if (!table->OuterWindow->ClipRect.Overlaps(table->OuterRect))
@@ -2568,7 +2569,7 @@ void ImGui::TableDrawBorders(KGGuiTable* table)
             if (is_hovered || is_resized || is_frozen_separator)
             {
                 draw_y2 = draw_y2_body;
-                col = is_resized ? GetColorU32(KGGuiCol_SeparatorActive) : is_hovered ? GetColorU32(KGGuiCol_SeparatorHovered) : table->BorderColorStrong;
+                col = is_resized ? KarmaGui::GetColorU32(KGGuiCol_SeparatorActive) : is_hovered ? KarmaGui::GetColorU32(KGGuiCol_SeparatorHovered) : table->BorderColorStrong;
             }
             else
             {
@@ -2633,32 +2634,32 @@ void ImGui::TableDrawBorders(KGGuiTable* table)
 // You can sort your data again when 'SpecsChanged == true'. It will be true with sorting specs have changed since
 // last call, or the first time.
 // Lifetime: don't hold on this pointer over multiple frames or past any subsequent call to BeginTable()!
-KarmaGuiTableSortSpecs* ImGui::TableGetSortSpecs()
+KarmaGuiTableSortSpecs* KarmaGui::TableGetSortSpecs()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
-    KR_CORE_ASSERT(table != NULL);
+    KR_CORE_ASSERT(table != NULL, "");
 
     if (!(table->Flags & KGGuiTableFlags_Sortable))
         return NULL;
 
     // Require layout (in case TableHeadersRow() hasn't been called) as it may alter IsSortSpecsDirty in some paths.
     if (!table->IsLayoutLocked)
-        TableUpdateLayout(table);
+        KarmaGuiInternal::TableUpdateLayout(table);
 
-    TableSortSpecsBuild(table);
+    KarmaGuiInternal::TableSortSpecsBuild(table);
 
     return &table->SortSpecs;
 }
 
 static inline KarmaGuiSortDirection TableGetColumnAvailSortDirection(KGGuiTableColumn* column, int n)
 {
-    KR_CORE_ASSERT(n < column->SortDirectionsAvailCount);
+    KR_CORE_ASSERT(n < column->SortDirectionsAvailCount, "");
     return (column->SortDirectionsAvailList >> (n << 1)) & 0x03;
 }
 
 // Fix sort direction if currently set on a value which is unavailable (e.g. activating NoSortAscending/NoSortDescending)
-void ImGui::TableFixColumnSortDirection(KGGuiTable* table, KGGuiTableColumn* column)
+void KarmaGuiInternal::TableFixColumnSortDirection(KGGuiTable* table, KGGuiTableColumn* column)
 {
     if (column->SortOrder == -1 || (column->SortDirectionsAvailMask & (1 << column->SortDirection)) != 0)
         return;
@@ -2669,22 +2670,22 @@ void ImGui::TableFixColumnSortDirection(KGGuiTable* table, KGGuiTableColumn* col
 // Calculate next sort direction that would be set after clicking the column
 // - If the PreferSortDescending flag is set, we will default to a Descending direction on the first click.
 // - Note that the PreferSortAscending flag is never checked, it is essentially the default and therefore a no-op.
-KG_STATIC_ASSERT(KGGuiSortDirection_None == 0 && KGGuiSortDirection_Ascending == 1 && KGGuiSortDirection_Descending == 2);
-KarmaGuiSortDirection ImGui::TableGetColumnNextSortDirection(KGGuiTableColumn* column)
+//KR_CORE_ASSERT(KGGuiSortDirection_None == 0 && KGGuiSortDirection_Ascending == 1 && KGGuiSortDirection_Descending == 2, "");
+KarmaGuiSortDirection KarmaGuiInternal::TableGetColumnNextSortDirection(KGGuiTableColumn* column)
 {
-    KR_CORE_ASSERT(column->SortDirectionsAvailCount > 0);
+    KR_CORE_ASSERT(column->SortDirectionsAvailCount > 0, "");
     if (column->SortOrder == -1)
         return TableGetColumnAvailSortDirection(column, 0);
     for (int n = 0; n < 3; n++)
         if (column->SortDirection == TableGetColumnAvailSortDirection(column, n))
             return TableGetColumnAvailSortDirection(column, (n + 1) % column->SortDirectionsAvailCount);
-    KR_CORE_ASSERT(0);
+    KR_CORE_ASSERT(0, "");
     return KGGuiSortDirection_None;
 }
 
 // Note that the NoSortAscending/NoSortDescending flags are processed in TableSortSpecsSanitize(), and they may change/revert
 // the value of SortDirection. We could technically also do it here but it would be unnecessary and duplicate code.
-void ImGui::TableSetColumnSortDirection(int column_n, KarmaGuiSortDirection sort_direction, bool append_to_sort_specs)
+void KarmaGuiInternal::TableSetColumnSortDirection(int column_n, KarmaGuiSortDirection sort_direction, bool append_to_sort_specs)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
@@ -2692,7 +2693,7 @@ void ImGui::TableSetColumnSortDirection(int column_n, KarmaGuiSortDirection sort
     if (!(table->Flags & KGGuiTableFlags_SortMulti))
         append_to_sort_specs = false;
     if (!(table->Flags & KGGuiTableFlags_SortTristate))
-        KR_CORE_ASSERT(sort_direction != KGGuiSortDirection_None);
+        KR_CORE_ASSERT(sort_direction != KGGuiSortDirection_None, "");
 
     KGGuiTableColumnIdx sort_order_max = 0;
     if (append_to_sort_specs)
@@ -2717,9 +2718,9 @@ void ImGui::TableSetColumnSortDirection(int column_n, KarmaGuiSortDirection sort
     table->IsSortSpecsDirty = true;
 }
 
-void ImGui::TableSortSpecsSanitize(KGGuiTable* table)
+void KarmaGuiInternal::TableSortSpecsSanitize(KGGuiTable* table)
 {
-    KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Sortable);
+    KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Sortable, "");
 
     // Clear SortOrder from hidden column and verify that there's no gap or duplicate.
     int sort_order_count = 0;
@@ -2733,7 +2734,7 @@ void ImGui::TableSortSpecsSanitize(KGGuiTable* table)
             continue;
         sort_order_count++;
         sort_order_mask |= ((KGU64)1 << column->SortOrder);
-        KR_CORE_ASSERT(sort_order_count < (int)sizeof(sort_order_mask) * 8);
+        KR_CORE_ASSERT(sort_order_count < (int)sizeof(sort_order_mask) * 8, "");
     }
 
     const bool need_fix_linearize = ((KGU64)1 << sort_order_count) != (sort_order_mask + 1);
@@ -2750,7 +2751,7 @@ void ImGui::TableSortSpecsSanitize(KGGuiTable* table)
                 if ((fixed_mask & ((KGU64)1 << (KGU64)column_n)) == 0 && table->Columns[column_n].SortOrder != -1)
                     if (column_with_smallest_sort_order == -1 || table->Columns[column_n].SortOrder < table->Columns[column_with_smallest_sort_order].SortOrder)
                         column_with_smallest_sort_order = column_n;
-            KR_CORE_ASSERT(column_with_smallest_sort_order != -1);
+            KR_CORE_ASSERT(column_with_smallest_sort_order != -1, "");
             fixed_mask |= ((KGU64)1 << column_with_smallest_sort_order);
             table->Columns[column_with_smallest_sort_order].SortOrder = (KGGuiTableColumnIdx)sort_n;
 
@@ -2783,7 +2784,7 @@ void ImGui::TableSortSpecsSanitize(KGGuiTable* table)
     table->SortSpecsCount = (KGGuiTableColumnIdx)sort_order_count;
 }
 
-void ImGui::TableSortSpecsBuild(KGGuiTable* table)
+void KarmaGuiInternal::TableSortSpecsBuild(KGGuiTable* table)
 {
     bool dirty = table->IsSortSpecsDirty;
     if (dirty)
@@ -2802,7 +2803,7 @@ void ImGui::TableSortSpecsBuild(KGGuiTable* table)
             KGGuiTableColumn* column = &table->Columns[column_n];
             if (column->SortOrder == -1)
                 continue;
-            KR_CORE_ASSERT(column->SortOrder < table->SortSpecsCount);
+            KR_CORE_ASSERT(column->SortOrder < table->SortSpecsCount, "");
             KarmaGuiTableColumnSortSpecs* sort_spec = &sort_specs[column->SortOrder];
             sort_spec->ColumnUserID = column->UserID;
             sort_spec->ColumnIndex = (KGGuiTableColumnIdx)column_n;
@@ -2822,21 +2823,21 @@ void ImGui::TableSortSpecsBuild(KGGuiTable* table)
 // - TableHeader()
 //-------------------------------------------------------------------------
 
-float ImGui::TableGetHeaderRowHeight()
+float KarmaGuiInternal::TableGetHeaderRowHeight()
 {
     // Caring for a minor edge case:
     // Calculate row height, for the unlikely case that some labels may be taller than others.
     // If we didn't do that, uneven header height would highlight but smaller one before the tallest wouldn't catch input for all height.
     // In your custom header row you may omit this all together and just call TableNextRow() without a height...
-    float row_height = GetTextLineHeight();
-    int columns_count = TableGetColumnCount();
+    float row_height = KarmaGui::GetTextLineHeight();
+    int columns_count = KarmaGui::TableGetColumnCount();
     for (int column_n = 0; column_n < columns_count; column_n++)
     {
-        KarmaGuiTableColumnFlags flags = TableGetColumnFlags(column_n);
+        KarmaGuiTableColumnFlags flags = KarmaGui::TableGetColumnFlags(column_n);
         if ((flags & KGGuiTableColumnFlags_IsEnabled) && !(flags & KGGuiTableColumnFlags_NoHeaderLabel))
-            row_height = KGMax(row_height, CalcTextSize(TableGetColumnName(column_n)).y);
+            row_height = KGMax(row_height, KarmaGui::CalcTextSize(KarmaGui::TableGetColumnName(column_n)).y);
     }
-    row_height += GetStyle().CellPadding.y * 2.0f;
+    row_height += KarmaGui::GetStyle().CellPadding.y * 2.0f;
     return row_height;
 }
 
@@ -2846,19 +2847,19 @@ float ImGui::TableGetHeaderRowHeight()
 // See 'Demo->Tables->Custom headers' for a demonstration of implementing a custom version of this.
 // This code is constructed to not make much use of internal functions, as it is intended to be a template to copy.
 // FIXME-TABLE: TableOpenContextMenu() and TableGetHeaderRowHeight() are not public.
-void ImGui::TableHeadersRow()
+void KarmaGui::TableHeadersRow()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
-    KR_CORE_ASSERT(table != NULL && "Need to call TableHeadersRow() after BeginTable()!");
+    KR_CORE_ASSERT(table != NULL, "Need to call TableHeadersRow() after BeginTable()!");
 
     // Layout if not already done (this is automatically done by TableNextRow, we do it here solely to facilitate stepping in debugger as it is frequent to step in TableUpdateLayout)
     if (!table->IsLayoutLocked)
-        TableUpdateLayout(table);
+        KarmaGuiInternal::TableUpdateLayout(table);
 
     // Open row
     const float row_y1 = GetCursorScreenPos().y;
-    const float row_height = TableGetHeaderRowHeight();
+    const float row_height = KarmaGuiInternal::TableGetHeaderRowHeight();
     TableNextRow(KGGuiTableRowFlags_Headers, row_height);
     if (table->HostSkipItems) // Merely an optimization, you may skip in your own code.
         return;
@@ -2879,16 +2880,16 @@ void ImGui::TableHeadersRow()
     }
 
     // Allow opening popup from the right-most section after the last column.
-    KGVec2 mouse_pos = ImGui::GetMousePos();
-    if (IsMouseReleased(1) && TableGetHoveredColumn() == columns_count)
+    KGVec2 mouse_pos = KarmaGui::GetMousePos();
+    if (IsMouseReleased(1) && KarmaGuiInternal::TableGetHoveredColumn() == columns_count)
         if (mouse_pos.y >= row_y1 && mouse_pos.y < row_y1 + row_height)
-            TableOpenContextMenu(-1); // Will open a non-column-specific popup.
+            KarmaGuiInternal::TableOpenContextMenu(-1); // Will open a non-column-specific popup.
 }
 
 // Emit a column header (text + optional sort order)
 // We cpu-clip text here so that all columns headers can be merged into a same draw call.
 // Note that because of how we cpu-clip and display sorting indicators, you _cannot_ use SameLine() after a TableHeader()
-void ImGui::TableHeader(const char* label)
+void KarmaGui::TableHeader(const char* label)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -2896,21 +2897,21 @@ void ImGui::TableHeader(const char* label)
         return;
 
     KGGuiTable* table = g.CurrentTable;
-    KR_CORE_ASSERT(table != NULL && "Need to call TableHeader() after BeginTable()!");
-    KR_CORE_ASSERT(table->CurrentColumn != -1);
+    KR_CORE_ASSERT(table != NULL, "Need to call TableHeader() after BeginTable()!");
+    KR_CORE_ASSERT(table->CurrentColumn != -1, "");
     const int column_n = table->CurrentColumn;
     KGGuiTableColumn* column = &table->Columns[column_n];
 
     // Label
     if (label == NULL)
         label = "";
-    const char* label_end = FindRenderedTextEnd(label);
+    const char* label_end = KarmaGuiInternal::FindRenderedTextEnd(label);
     KGVec2 label_size = CalcTextSize(label, label_end, true);
     KGVec2 label_pos = window->DC.CursorPos;
 
     // If we already got a row height, there's use that.
     // FIXME-TABLE: Padding problem if the correct outer-padding CellBgRect strays off our ClipRect?
-    KGRect cell_r = TableGetCellBgRect(table, column_n);
+    KGRect cell_r = KarmaGuiInternal::TableGetCellBgRect(table, column_n);
     float label_height = KGMax(label_size.y, table->RowMinHeight - table->CellPaddingY * 2.0f);
 
     // Calculate ideal size for sort order arrow
@@ -2937,8 +2938,8 @@ void ImGui::TableHeader(const char* label)
     const bool selected = (table->IsContextPopupOpen && table->ContextPopupColumn == column_n && table->InstanceInteracted == table->InstanceCurrent);
     KGGuiID id = window->GetID(label);
     KGRect bb(cell_r.Min.x, cell_r.Min.y, cell_r.Max.x, KGMax(cell_r.Max.y, cell_r.Min.y + label_height + g.Style.CellPadding.y * 2.0f));
-    ItemSize(KGVec2(0.0f, label_height)); // Don't declare unclipped width, it'll be fed ContentMaxPosHeadersIdeal
-    if (!ItemAdd(bb, id))
+    KarmaGuiInternal::ItemSize(KGVec2(0.0f, label_height)); // Don't declare unclipped width, it'll be fed ContentMaxPosHeadersIdeal
+    if (!KarmaGuiInternal::ItemAdd(bb, id))
         return;
 
     //GetForegroundDrawList()->AddRect(cell_r.Min, cell_r.Max, KG_COL32(255, 0, 0, 255)); // [DEBUG]
@@ -2946,7 +2947,7 @@ void ImGui::TableHeader(const char* label)
 
     // Using AllowItemOverlap mode because we cover the whole cell, and we want user to be able to submit subsequent items.
     bool hovered, held;
-    bool pressed = ButtonBehavior(bb, id, &hovered, &held, KGGuiButtonFlags_AllowItemOverlap);
+    bool pressed = KarmaGuiInternal::ButtonBehavior(bb, id, &hovered, &held, KGGuiButtonFlags_AllowItemOverlap);
     if (g.ActiveId != id)
         SetItemAllowOverlap();
     if (held || hovered || selected)
@@ -2961,7 +2962,7 @@ void ImGui::TableHeader(const char* label)
         if ((table->RowFlags & KGGuiTableRowFlags_Headers) == 0)
             TableSetBgColor(KGGuiTableBgTarget_CellBg, GetColorU32(KGGuiCol_TableHeaderBg), table->CurrentColumn);
     }
-    RenderNavHighlight(bb, id, KGGuiNavHighlightFlags_TypeThin | KGGuiNavHighlightFlags_NoRounding);
+    KarmaGuiInternal::RenderNavHighlight(bb, id, KGGuiNavHighlightFlags_TypeThin | KGGuiNavHighlightFlags_NoRounding);
     if (held)
         table->HeldHeaderColumn = (KGGuiTableColumnIdx)column_n;
     window->DC.CursorPos.y -= g.Style.ItemSpacing.y * 0.5f;
@@ -2998,25 +2999,25 @@ void ImGui::TableHeader(const char* label)
             if (column->SortOrder > 0)
             {
                 PushStyleColor(KGGuiCol_Text, GetColorU32(KGGuiCol_Text, 0.70f));
-                RenderText(KGVec2(x + g.Style.ItemInnerSpacing.x, y), sort_order_suf);
+                KarmaGuiInternal::RenderText(KGVec2(x + g.Style.ItemInnerSpacing.x, y), sort_order_suf);
                 PopStyleColor();
                 x += w_sort_text;
             }
-            RenderArrow(window->DrawList, KGVec2(x, y), GetColorU32(KGGuiCol_Text), column->SortDirection == KGGuiSortDirection_Ascending ? KGGuiDir_Up : KGGuiDir_Down, ARROW_SCALE);
+            KarmaGuiInternal::RenderArrow(window->DrawList, KGVec2(x, y), GetColorU32(KGGuiCol_Text), column->SortDirection == KGGuiSortDirection_Ascending ? KGGuiDir_Up : KGGuiDir_Down, ARROW_SCALE);
         }
 
         // Handle clicking on column header to adjust Sort Order
         if (pressed && table->ReorderColumn != column_n)
         {
-            KarmaGuiSortDirection sort_direction = TableGetColumnNextSortDirection(column);
-            TableSetColumnSortDirection(column_n, sort_direction, g.IO.KeyShift);
+            KarmaGuiSortDirection sort_direction = KarmaGuiInternal::TableGetColumnNextSortDirection(column);
+            KarmaGuiInternal::TableSetColumnSortDirection(column_n, sort_direction, g.IO.KeyShift);
         }
     }
 
     // Render clipped label. Clipping here ensure that in the majority of situations, all our header cells will
     // be merged into a single draw call.
     //window->DrawList->AddCircleFilled(KGVec2(ellipsis_max, label_pos.y), 40, KG_COL32_WHITE);
-    RenderTextEllipsis(window->DrawList, label_pos, KGVec2(ellipsis_max, label_pos.y + label_height + g.Style.FramePadding.y), ellipsis_max, ellipsis_max, label, label_end, &label_size);
+    KarmaGuiInternal::RenderTextEllipsis(window->DrawList, label_pos, KGVec2(ellipsis_max, label_pos.y + label_height + g.Style.FramePadding.y), ellipsis_max, ellipsis_max, label, label_end, &label_size);
 
     const bool text_clipped = label_size.x > (ellipsis_max - label_pos.x);
     if (text_clipped && hovered && g.ActiveId == 0 && IsItemHovered(KGGuiHoveredFlags_DelayNormal))
@@ -3024,7 +3025,7 @@ void ImGui::TableHeader(const char* label)
 
     // We don't use BeginPopupContextItem() because we want the popup to stay up even after the column is hidden
     if (IsMouseReleased(1) && IsItemHovered())
-        TableOpenContextMenu(column_n);
+        KarmaGuiInternal::TableOpenContextMenu(column_n);
 }
 
 //-------------------------------------------------------------------------
@@ -3035,7 +3036,7 @@ void ImGui::TableHeader(const char* label)
 //-------------------------------------------------------------------------
 
 // Use -1 to open menu not specific to a given column.
-void ImGui::TableOpenContextMenu(int column_n)
+void KarmaGuiInternal::TableOpenContextMenu(int column_n)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
@@ -3043,7 +3044,7 @@ void ImGui::TableOpenContextMenu(int column_n)
         column_n = table->CurrentColumn;
     if (column_n == table->ColumnsCount)                // To facilitate using with TableGetHoveredColumn()
         column_n = -1;
-    KR_CORE_ASSERT(column_n >= -1 && column_n < table->ColumnsCount);
+    KR_CORE_ASSERT(column_n >= -1 && column_n < table->ColumnsCount, "");
     if (table->Flags & (KGGuiTableFlags_Resizable | KGGuiTableFlags_Reorderable | KGGuiTableFlags_Hideable))
     {
         table->IsContextPopupOpen = true;
@@ -3054,7 +3055,7 @@ void ImGui::TableOpenContextMenu(int column_n)
     }
 }
 
-bool ImGui::TableBeginContextMenuPopup(KGGuiTable* table)
+bool KarmaGuiInternal::TableBeginContextMenuPopup(KGGuiTable* table)
 {
     if (!table->IsContextPopupOpen || table->InstanceCurrent != table->InstanceInteracted)
         return false;
@@ -3067,7 +3068,7 @@ bool ImGui::TableBeginContextMenuPopup(KGGuiTable* table)
 
 // Output context menu into current window (generally a popup)
 // FIXME-TABLE: Ideally this should be writable by the user. Full programmatic access to that data?
-void ImGui::TableDrawContextMenu(KGGuiTable* table)
+void KarmaGuiInternal::TableDrawContextMenu(KGGuiTable* table)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -3084,7 +3085,7 @@ void ImGui::TableDrawContextMenu(KGGuiTable* table)
         if (column != NULL)
         {
             const bool can_resize = !(column->Flags & KGGuiTableColumnFlags_NoResize) && column->IsEnabled;
-            if (MenuItem(LocalizeGetMsg(ImGuiLocKey_TableSizeOne), NULL, false, can_resize)) // "###SizeOne"
+            if (KarmaGui::MenuItem(LocalizeGetMsg(ImGuiLocKey_TableSizeOne), NULL, false, can_resize)) // "###SizeOne"
                 TableSetColumnWidthAutoSingle(table, column_n);
         }
 
@@ -3093,7 +3094,7 @@ void ImGui::TableDrawContextMenu(KGGuiTable* table)
             size_all_desc = LocalizeGetMsg(ImGuiLocKey_TableSizeAllFit);        // "###SizeAll" All fixed
         else
             size_all_desc = LocalizeGetMsg(ImGuiLocKey_TableSizeAllDefault);    // "###SizeAll" All stretch or mixed
-        if (MenuItem(size_all_desc, NULL))
+        if (KarmaGui::MenuItem(size_all_desc, NULL))
             TableSetColumnWidthAutoAll(table);
         want_separator = true;
     }
@@ -3101,7 +3102,7 @@ void ImGui::TableDrawContextMenu(KGGuiTable* table)
     // Ordering
     if (table->Flags & KGGuiTableFlags_Reorderable)
     {
-        if (MenuItem(LocalizeGetMsg(ImGuiLocKey_TableResetOrder), NULL, false, !table->IsDefaultDisplayOrder))
+        if (KarmaGui::MenuItem(LocalizeGetMsg(ImGuiLocKey_TableResetOrder), NULL, false, !table->IsDefaultDisplayOrder))
             table->IsResetDisplayOrderRequest = true;
         want_separator = true;
     }
@@ -3131,7 +3132,7 @@ void ImGui::TableDrawContextMenu(KGGuiTable* table)
     if (table->Flags & KGGuiTableFlags_Hideable)
     {
         if (want_separator)
-            Separator();
+            KarmaGui::Separator();
         want_separator = true;
 
         PushItemFlag(KGGuiItemFlags_SelectableDontClosePopup, true);
@@ -3149,7 +3150,7 @@ void ImGui::TableDrawContextMenu(KGGuiTable* table)
             bool menu_item_active = (other_column->Flags & KGGuiTableColumnFlags_NoHide) ? false : true;
             if (other_column->IsUserEnabled && table->ColumnsEnabledCount <= 1)
                 menu_item_active = false;
-            if (MenuItem(name, NULL, other_column->IsUserEnabled, menu_item_active))
+            if (KarmaGui::MenuItem(name, NULL, other_column->IsUserEnabled, menu_item_active))
                 other_column->IsUserEnabledNextFrame = !other_column->IsUserEnabled;
         }
         PopItemFlag();
@@ -3200,7 +3201,7 @@ static size_t TableSettingsCalcChunkSize(int columns_count)
     return sizeof(KGGuiTableSettings) + (size_t)columns_count * sizeof(KGGuiTableColumnSettings);
 }
 
-KGGuiTableSettings* ImGui::TableSettingsCreate(KGGuiID id, int columns_count)
+KGGuiTableSettings* KarmaGuiInternal::TableSettingsCreate(KGGuiID id, int columns_count)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiTableSettings* settings = g.SettingsTables.alloc_chunk(TableSettingsCalcChunkSize(columns_count));
@@ -3209,7 +3210,7 @@ KGGuiTableSettings* ImGui::TableSettingsCreate(KGGuiID id, int columns_count)
 }
 
 // Find existing settings
-KGGuiTableSettings* ImGui::TableSettingsFindByID(KGGuiID id)
+KGGuiTableSettings* KarmaGuiInternal::TableSettingsFindByID(KGGuiID id)
 {
     // FIXME-OPT: Might want to store a lookup map for this?
     KarmaGuiContext& g = *GKarmaGui;
@@ -3220,13 +3221,13 @@ KGGuiTableSettings* ImGui::TableSettingsFindByID(KGGuiID id)
 }
 
 // Get settings for a given table, NULL if none
-KGGuiTableSettings* ImGui::TableGetBoundSettings(KGGuiTable* table)
+KGGuiTableSettings* KarmaGuiInternal::TableGetBoundSettings(KGGuiTable* table)
 {
     if (table->SettingsOffset != -1)
     {
         KarmaGuiContext& g = *GKarmaGui;
         KGGuiTableSettings* settings = g.SettingsTables.ptr_from_offset(table->SettingsOffset);
-        KR_CORE_ASSERT(settings->ID == table->ID);
+        KR_CORE_ASSERT(settings->ID == table->ID, "");
         if (settings->ColumnsCountMax >= table->ColumnsCount)
             return settings; // OK
         settings->ID = 0; // Invalidate storage, we won't fit because of a count change
@@ -3235,7 +3236,7 @@ KGGuiTableSettings* ImGui::TableGetBoundSettings(KGGuiTable* table)
 }
 
 // Restore initial state of table (with or without saved settings)
-void ImGui::TableResetSettings(KGGuiTable* table)
+void KarmaGuiInternal::TableResetSettings(KGGuiTable* table)
 {
     table->IsInitializing = table->IsSettingsDirty = true;
     table->IsResetAllRequest = false;
@@ -3243,7 +3244,7 @@ void ImGui::TableResetSettings(KGGuiTable* table)
     table->SettingsLoadedFlags = KGGuiTableFlags_None;      // Mark as nothing loaded so our initialized data becomes authoritative
 }
 
-void ImGui::TableSaveSettings(KGGuiTable* table)
+void KarmaGuiInternal::TableSaveSettings(KGGuiTable* table)
 {
     table->IsSettingsDirty = false;
     if (table->Flags & KGGuiTableFlags_NoSavedSettings)
@@ -3260,8 +3261,8 @@ void ImGui::TableSaveSettings(KGGuiTable* table)
     settings->ColumnsCount = (KGGuiTableColumnIdx)table->ColumnsCount;
 
     // Serialize KGGuiTable/KGGuiTableColumn into KGGuiTableSettings/KGGuiTableColumnSettings
-    KR_CORE_ASSERT(settings->ID == table->ID);
-    KR_CORE_ASSERT(settings->ColumnsCount == table->ColumnsCount && settings->ColumnsCountMax >= settings->ColumnsCount);
+    KR_CORE_ASSERT(settings->ID == table->ID, "");
+    KR_CORE_ASSERT(settings->ColumnsCount == table->ColumnsCount && settings->ColumnsCountMax >= settings->ColumnsCount, "");
     KGGuiTableColumn* column = table->Columns.Data;
     KGGuiTableColumnSettings* column_settings = settings->GetColumnSettings();
 
@@ -3298,7 +3299,7 @@ void ImGui::TableSaveSettings(KGGuiTable* table)
     MarkIniSettingsDirty();
 }
 
-void ImGui::TableLoadSettings(KGGuiTable* table)
+void KarmaGuiInternal::TableLoadSettings(KGGuiTable* table)
 {
     KarmaGuiContext& g = *GKarmaGui;
     table->IsSettingsRequestLoad = false;
@@ -3391,7 +3392,7 @@ static void* TableSettingsHandler_ReadOpen(KarmaGuiContext*, KGGuiSettingsHandle
     if (sscanf(name, "0x%08X,%d", &id, &columns_count) < 2)
         return NULL;
 
-    if (KGGuiTableSettings* settings = ImGui::TableSettingsFindByID(id))
+    if (KGGuiTableSettings* settings = KarmaGuiInternal::TableSettingsFindByID(id))
     {
         if (settings->ColumnsCountMax >= columns_count)
         {
@@ -3400,7 +3401,7 @@ static void* TableSettingsHandler_ReadOpen(KarmaGuiContext*, KGGuiSettingsHandle
         }
         settings->ID = 0; // Invalidate storage, we won't fit because of a count change
     }
-    return ImGui::TableSettingsCreate(id, columns_count);
+    return KarmaGuiInternal::TableSettingsCreate(id, columns_count);
 }
 
 static void TableSettingsHandler_ReadLine(KarmaGuiContext*, KGGuiSettingsHandler*, void* entry, const char* line)
@@ -3470,7 +3471,7 @@ static void TableSettingsHandler_WriteAll(KarmaGuiContext* ctx, KGGuiSettingsHan
     }
 }
 
-void ImGui::TableSettingsAddSettingsHandler()
+void KarmaGuiInternal::TableSettingsAddSettingsHandler()
 {
     KGGuiSettingsHandler ini_handler;
     ini_handler.TypeName = "Table";
@@ -3492,7 +3493,7 @@ void ImGui::TableSettingsAddSettingsHandler()
 //-------------------------------------------------------------------------
 
 // Remove Table (currently only used by TestEngine)
-void ImGui::TableRemove(KGGuiTable* table)
+void KarmaGuiInternal::TableRemove(KGGuiTable* table)
 {
     //IMGUI_DEBUG_PRINT("TableRemove() id=0x%08X\n", table->ID);
     KarmaGuiContext& g = *GKarmaGui;
@@ -3504,11 +3505,11 @@ void ImGui::TableRemove(KGGuiTable* table)
 }
 
 // Free up/compact internal Table buffers for when it gets unused
-void ImGui::TableGcCompactTransientBuffers(KGGuiTable* table)
+void KarmaGuiInternal::TableGcCompactTransientBuffers(KGGuiTable* table)
 {
     //IMGUI_DEBUG_PRINT("TableGcCompactTransientBuffers() id=0x%08X\n", table->ID);
     KarmaGuiContext& g = *GKarmaGui;
-    KR_CORE_ASSERT(table->MemoryCompacted == false);
+    KR_CORE_ASSERT(table->MemoryCompacted == false, "");
     table->SortSpecs.Specs = NULL;
     table->SortSpecsMulti.clear();
     table->IsSortSpecsDirty = true; // FIXME: shouldn't have to leak into user performing a sort
@@ -3519,14 +3520,14 @@ void ImGui::TableGcCompactTransientBuffers(KGGuiTable* table)
     g.TablesLastTimeActive[g.Tables.GetIndex(table)] = -1.0f;
 }
 
-void ImGui::TableGcCompactTransientBuffers(KGGuiTableTempData* temp_data)
+void KarmaGuiInternal::TableGcCompactTransientBuffers(KGGuiTableTempData* temp_data)
 {
     temp_data->DrawSplitter.ClearFreeMemory();
     temp_data->LastTimeActive = -1.0f;
 }
 
 // Compact and remove unused settings data (currently only used by TestEngine)
-void ImGui::TableGcCompactSettings()
+void KarmaGuiInternal::TableGcCompactSettings()
 {
     KarmaGuiContext& g = *GKarmaGui;
     int required_memory = 0;
@@ -3562,30 +3563,30 @@ static const char* DebugNodeTableGetSizingPolicyDesc(KarmaGuiTableFlags sizing_p
     return "N/A";
 }
 
-void ImGui::DebugNodeTable(KGGuiTable* table)
+void KarmaGuiInternal::DebugNodeTable(KGGuiTable* table)
 {
     char buf[512];
     char* p = buf;
     const char* buf_end = buf + KG_ARRAYSIZE(buf);
-    const bool is_active = (table->LastFrameActive >= ImGui::GetFrameCount() - 2); // Note that fully clipped early out scrolling tables will appear as inactive here.
+    const bool is_active = (table->LastFrameActive >= KarmaGui::GetFrameCount() - 2); // Note that fully clipped early out scrolling tables will appear as inactive here.
     KGFormatString(p, buf_end - p, "Table 0x%08X (%d columns, in '%s')%s", table->ID, table->ColumnsCount, table->OuterWindow->Name, is_active ? "" : " *Inactive*");
-    if (!is_active) { PushStyleColor(KGGuiCol_Text, GetStyleColorVec4(KGGuiCol_TextDisabled)); }
-    bool open = TreeNode(table, "%s", buf);
-    if (!is_active) { PopStyleColor(); }
-    if (IsItemHovered())
-        GetForegroundDrawList()->AddRect(table->OuterRect.Min, table->OuterRect.Max, KG_COL32(255, 255, 0, 255));
-    if (IsItemVisible() && table->HoveredColumnBody != -1)
-        GetForegroundDrawList()->AddRect(GetItemRectMin(), GetItemRectMax(), KG_COL32(255, 255, 0, 255));
+    if (!is_active) { KarmaGui::PushStyleColor(KGGuiCol_Text, KarmaGui::GetStyleColorVec4(KGGuiCol_TextDisabled)); }
+    bool open = KarmaGui::TreeNode(table, "%s", buf);
+    if (!is_active) { KarmaGui::PopStyleColor(); }
+    if (KarmaGui::IsItemHovered())
+        KarmaGui::GetForegroundDrawList()->AddRect(table->OuterRect.Min, table->OuterRect.Max, KG_COL32(255, 255, 0, 255));
+    if (KarmaGui::IsItemVisible() && table->HoveredColumnBody != -1)
+        KarmaGui::GetForegroundDrawList()->AddRect(KarmaGui::GetItemRectMin(), KarmaGui::GetItemRectMax(), KG_COL32(255, 255, 0, 255));
     if (!open)
         return;
     if (table->InstanceCurrent > 0)
-        ImGui::Text("** %d instances of same table! Some data below will refer to last instance.", table->InstanceCurrent + 1);
-    bool clear_settings = SmallButton("Clear settings");
-    BulletText("OuterRect: Pos: (%.1f,%.1f) Size: (%.1f,%.1f) Sizing: '%s'", table->OuterRect.Min.x, table->OuterRect.Min.y, table->OuterRect.GetWidth(), table->OuterRect.GetHeight(), DebugNodeTableGetSizingPolicyDesc(table->Flags));
-    BulletText("ColumnsGivenWidth: %.1f, ColumnsAutoFitWidth: %.1f, InnerWidth: %.1f%s", table->ColumnsGivenWidth, table->ColumnsAutoFitWidth, table->InnerWidth, table->InnerWidth == 0.0f ? " (auto)" : "");
-    BulletText("CellPaddingX: %.1f, CellSpacingX: %.1f/%.1f, OuterPaddingX: %.1f", table->CellPaddingX, table->CellSpacingX1, table->CellSpacingX2, table->OuterPaddingX);
-    BulletText("HoveredColumnBody: %d, HoveredColumnBorder: %d", table->HoveredColumnBody, table->HoveredColumnBorder);
-    BulletText("ResizedColumn: %d, ReorderColumn: %d, HeldHeaderColumn: %d", table->ResizedColumn, table->ReorderColumn, table->HeldHeaderColumn);
+        KarmaGui::Text("** %d instances of same table! Some data below will refer to last instance.", table->InstanceCurrent + 1);
+    bool clear_settings = KarmaGui::SmallButton("Clear settings");
+    KarmaGui::BulletText("OuterRect: Pos: (%.1f,%.1f) Size: (%.1f,%.1f) Sizing: '%s'", table->OuterRect.Min.x, table->OuterRect.Min.y, table->OuterRect.GetWidth(), table->OuterRect.GetHeight(), DebugNodeTableGetSizingPolicyDesc(table->Flags));
+    KarmaGui::BulletText("ColumnsGivenWidth: %.1f, ColumnsAutoFitWidth: %.1f, InnerWidth: %.1f%s", table->ColumnsGivenWidth, table->ColumnsAutoFitWidth, table->InnerWidth, table->InnerWidth == 0.0f ? " (auto)" : "");
+    KarmaGui::BulletText("CellPaddingX: %.1f, CellSpacingX: %.1f/%.1f, OuterPaddingX: %.1f", table->CellPaddingX, table->CellSpacingX1, table->CellSpacingX2, table->OuterPaddingX);
+    KarmaGui::BulletText("HoveredColumnBody: %d, HoveredColumnBorder: %d", table->HoveredColumnBody, table->HoveredColumnBorder);
+    KarmaGui::BulletText("ResizedColumn: %d, ReorderColumn: %d, HeldHeaderColumn: %d", table->ResizedColumn, table->ReorderColumn, table->HeldHeaderColumn);
     //BulletText("BgDrawChannels: %d/%d", 0, table->BgDrawChannelUnfrozen);
     float sum_weights = 0.0f;
     for (int n = 0; n < table->ColumnsCount; n++)
@@ -3611,43 +3612,43 @@ void ImGui::DebugNodeTable(KGGuiTable* table)
             (column->Flags & KGGuiTableColumnFlags_WidthStretch) ? "WidthStretch " : "",
             (column->Flags & KGGuiTableColumnFlags_WidthFixed) ? "WidthFixed " : "",
             (column->Flags & KGGuiTableColumnFlags_NoResize) ? "NoResize " : "");
-        Bullet();
-        Selectable(buf);
-        if (IsItemHovered())
+        KarmaGui::Bullet();
+        KarmaGui::Selectable(buf);
+        if (KarmaGui::IsItemHovered())
         {
             KGRect r(column->MinX, table->OuterRect.Min.y, column->MaxX, table->OuterRect.Max.y);
-            GetForegroundDrawList()->AddRect(r.Min, r.Max, KG_COL32(255, 255, 0, 255));
+            KarmaGui::GetForegroundDrawList()->AddRect(r.Min, r.Max, KG_COL32(255, 255, 0, 255));
         }
     }
     if (KGGuiTableSettings* settings = TableGetBoundSettings(table))
         DebugNodeTableSettings(settings);
     if (clear_settings)
         table->IsResetAllRequest = true;
-    TreePop();
+    KarmaGui::TreePop();
 }
 
-void ImGui::DebugNodeTableSettings(KGGuiTableSettings* settings)
+void KarmaGuiInternal::DebugNodeTableSettings(KGGuiTableSettings* settings)
 {
-    if (!TreeNode((void*)(intptr_t)settings->ID, "Settings 0x%08X (%d columns)", settings->ID, settings->ColumnsCount))
+    if (!KarmaGui::TreeNode((void*)(intptr_t)settings->ID, "Settings 0x%08X (%d columns)", settings->ID, settings->ColumnsCount))
         return;
-    BulletText("SaveFlags: 0x%08X", settings->SaveFlags);
-    BulletText("ColumnsCount: %d (max %d)", settings->ColumnsCount, settings->ColumnsCountMax);
+    KarmaGui::BulletText("SaveFlags: 0x%08X", settings->SaveFlags);
+    KarmaGui::BulletText("ColumnsCount: %d (max %d)", settings->ColumnsCount, settings->ColumnsCountMax);
     for (int n = 0; n < settings->ColumnsCount; n++)
     {
         KGGuiTableColumnSettings* column_settings = &settings->GetColumnSettings()[n];
         KarmaGuiSortDirection sort_dir = (column_settings->SortOrder != -1) ? (KarmaGuiSortDirection)column_settings->SortDirection : KGGuiSortDirection_None;
-        BulletText("Column %d Order %d SortOrder %d %s Vis %d %s %7.3f UserID 0x%08X",
+        KarmaGui::BulletText("Column %d Order %d SortOrder %d %s Vis %d %s %7.3f UserID 0x%08X",
             n, column_settings->DisplayOrder, column_settings->SortOrder,
             (sort_dir == KGGuiSortDirection_Ascending) ? "Asc" : (sort_dir == KGGuiSortDirection_Descending) ? "Des" : "---",
             column_settings->IsEnabled, column_settings->IsStretch ? "Weight" : "Width ", column_settings->WidthOrWeight, column_settings->UserID);
     }
-    TreePop();
+    KarmaGui::TreePop();
 }
 
 #else // #ifndef KARMAGUI_DISABLE_DEBUG_TOOLS
 
-void ImGui::DebugNodeTable(KGGuiTable*) {}
-void ImGui::DebugNodeTableSettings(KGGuiTableSettings*) {}
+void KarmaGui::DebugNodeTable(KGGuiTable*) {}
+void KarmaGui::DebugNodeTableSettings(KGGuiTableSettings*) {}
 
 #endif
 
@@ -3680,7 +3681,7 @@ void ImGui::DebugNodeTableSettings(KGGuiTableSettings*) {}
 // they would meddle many times with the underlying KGDrawCmd.
 // Instead, we do a preemptive overwrite of clipping rectangle _without_ altering the command-buffer and let
 // the subsequent single call to SetCurrentChannel() does it things once.
-void ImGui::SetWindowClipRectBeforeSetChannel(KGGuiWindow* window, const KGRect& clip_rect)
+void KarmaGuiInternal::SetWindowClipRectBeforeSetChannel(KGGuiWindow* window, const KGRect& clip_rect)
 {
     KGVec4 clip_rect_vec4 = clip_rect.ToVec4();
     window->ClipRect = clip_rect;
@@ -3688,24 +3689,24 @@ void ImGui::SetWindowClipRectBeforeSetChannel(KGGuiWindow* window, const KGRect&
     window->DrawList->_ClipRectStack.Data[window->DrawList->_ClipRectStack.Size - 1] = clip_rect_vec4;
 }
 
-int ImGui::GetColumnIndex()
+int KarmaGui::GetColumnIndex()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->DC.CurrentColumns ? window->DC.CurrentColumns->Current : 0;
 }
 
-int ImGui::GetColumnsCount()
+int KarmaGui::GetColumnsCount()
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     return window->DC.CurrentColumns ? window->DC.CurrentColumns->Count : 1;
 }
 
-float ImGui::GetColumnOffsetFromNorm(const KGGuiOldColumns* columns, float offset_norm)
+float KarmaGuiInternal::GetColumnOffsetFromNorm(const KGGuiOldColumns* columns, float offset_norm)
 {
     return offset_norm * (columns->OffMaxX - columns->OffMinX);
 }
 
-float ImGui::GetColumnNormFromOffset(const KGGuiOldColumns* columns, float offset)
+float KarmaGuiInternal::GetColumnNormFromOffset(const KGGuiOldColumns* columns, float offset)
 {
     return offset / (columns->OffMaxX - columns->OffMinX);
 }
@@ -3718,27 +3719,27 @@ static float GetDraggedColumnOffset(KGGuiOldColumns* columns, int column_index)
     // window creates a feedback loop because we store normalized positions. So while dragging we enforce absolute positioning.
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
-    KR_CORE_ASSERT(column_index > 0); // We are not supposed to drag column 0.
-    KR_CORE_ASSERT(g.ActiveId == columns->ID + KGGuiID(column_index));
+    KR_CORE_ASSERT(column_index > 0, ""); // We are not supposed to drag column 0.
+    KR_CORE_ASSERT(g.ActiveId == columns->ID + KGGuiID(column_index), "");
 
     float x = g.IO.MousePos.x - g.ActiveIdClickOffset.x + COLUMNS_HIT_RECT_HALF_WIDTH - window->Pos.x;
-    x = KGMax(x, ImGui::GetColumnOffset(column_index - 1) + g.Style.ColumnsMinSpacing);
+    x = KGMax(x, KarmaGui::GetColumnOffset(column_index - 1) + g.Style.ColumnsMinSpacing);
     if ((columns->Flags & KGGuiOldColumnFlags_NoPreserveWidths))
-        x = KGMin(x, ImGui::GetColumnOffset(column_index + 1) - g.Style.ColumnsMinSpacing);
+        x = KGMin(x, KarmaGui::GetColumnOffset(column_index + 1) - g.Style.ColumnsMinSpacing);
 
     return x;
 }
 
-float ImGui::GetColumnOffset(int column_index)
+float KarmaGui::GetColumnOffset(int column_index)
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     KGGuiOldColumns* columns = window->DC.CurrentColumns;
     if (columns == NULL)
         return 0.0f;
 
     if (column_index < 0)
         column_index = columns->Current;
-    KR_CORE_ASSERT(column_index < columns->Columns.Size);
+    KR_CORE_ASSERT(column_index < columns->Columns.Size, "");
 
     const float t = columns->Columns[column_index].OffsetNorm;
     const float x_offset = KGLerp(columns->OffMinX, columns->OffMaxX, t);
@@ -3755,10 +3756,10 @@ static float GetColumnWidthEx(KGGuiOldColumns* columns, int column_index, bool b
         offset_norm = columns->Columns[column_index + 1].OffsetNormBeforeResize - columns->Columns[column_index].OffsetNormBeforeResize;
     else
         offset_norm = columns->Columns[column_index + 1].OffsetNorm - columns->Columns[column_index].OffsetNorm;
-    return ImGui::GetColumnOffsetFromNorm(columns, offset_norm);
+    return KarmaGuiInternal::GetColumnOffsetFromNorm(columns, offset_norm);
 }
 
-float ImGui::GetColumnWidth(int column_index)
+float KarmaGui::GetColumnWidth(int column_index)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
@@ -3768,43 +3769,43 @@ float ImGui::GetColumnWidth(int column_index)
 
     if (column_index < 0)
         column_index = columns->Current;
-    return GetColumnOffsetFromNorm(columns, columns->Columns[column_index + 1].OffsetNorm - columns->Columns[column_index].OffsetNorm);
+    return KarmaGuiInternal::GetColumnOffsetFromNorm(columns, columns->Columns[column_index + 1].OffsetNorm - columns->Columns[column_index].OffsetNorm);
 }
 
-void ImGui::SetColumnOffset(int column_index, float offset)
+void KarmaGui::SetColumnOffset(int column_index, float offset)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     KGGuiOldColumns* columns = window->DC.CurrentColumns;
-    KR_CORE_ASSERT(columns != NULL);
+    KR_CORE_ASSERT(columns != NULL, "");
 
     if (column_index < 0)
         column_index = columns->Current;
-    KR_CORE_ASSERT(column_index < columns->Columns.Size);
+    KR_CORE_ASSERT(column_index < columns->Columns.Size, "");
 
     const bool preserve_width = !(columns->Flags & KGGuiOldColumnFlags_NoPreserveWidths) && (column_index < columns->Count - 1);
     const float width = preserve_width ? GetColumnWidthEx(columns, column_index, columns->IsBeingResized) : 0.0f;
 
     if (!(columns->Flags & KGGuiOldColumnFlags_NoForceWithinWindow))
         offset = KGMin(offset, columns->OffMaxX - g.Style.ColumnsMinSpacing * (columns->Count - column_index));
-    columns->Columns[column_index].OffsetNorm = GetColumnNormFromOffset(columns, offset - columns->OffMinX);
+    columns->Columns[column_index].OffsetNorm = KarmaGuiInternal::GetColumnNormFromOffset(columns, offset - columns->OffMinX);
 
     if (preserve_width)
         SetColumnOffset(column_index + 1, offset + KGMax(g.Style.ColumnsMinSpacing, width));
 }
 
-void ImGui::SetColumnWidth(int column_index, float width)
+void KarmaGui::SetColumnWidth(int column_index, float width)
 {
-    KGGuiWindow* window = GetCurrentWindowRead();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindowRead();
     KGGuiOldColumns* columns = window->DC.CurrentColumns;
-    KR_CORE_ASSERT(columns != NULL);
+    KR_CORE_ASSERT(columns != NULL, "");
 
     if (column_index < 0)
         column_index = columns->Current;
     SetColumnOffset(column_index + 1, GetColumnOffset(column_index) + width);
 }
 
-void ImGui::PushColumnClipRect(int column_index)
+void KarmaGuiInternal::PushColumnClipRect(int column_index)
 {
     KGGuiWindow* window = GetCurrentWindowRead();
     KGGuiOldColumns* columns = window->DC.CurrentColumns;
@@ -3812,11 +3813,11 @@ void ImGui::PushColumnClipRect(int column_index)
         column_index = columns->Current;
 
     KGGuiOldColumnData* column = &columns->Columns[column_index];
-    PushClipRect(column->ClipRect.Min, column->ClipRect.Max, false);
+    KarmaGui::PushClipRect(column->ClipRect.Min, column->ClipRect.Max, false);
 }
 
 // Get into the columns background draw command (which is generally the same draw command as before we called BeginColumns)
-void ImGui::PushColumnsBackground()
+void KarmaGuiInternal::PushColumnsBackground()
 {
     KGGuiWindow* window = GetCurrentWindowRead();
     KGGuiOldColumns* columns = window->DC.CurrentColumns;
@@ -3829,7 +3830,7 @@ void ImGui::PushColumnsBackground()
     columns->Splitter.SetCurrentChannel(window->DrawList, 0);
 }
 
-void ImGui::PopColumnsBackground()
+void KarmaGuiInternal::PopColumnsBackground()
 {
     KGGuiWindow* window = GetCurrentWindowRead();
     KGGuiOldColumns* columns = window->DC.CurrentColumns;
@@ -3841,7 +3842,7 @@ void ImGui::PopColumnsBackground()
     columns->Splitter.SetCurrentChannel(window->DrawList, columns->Current + 1);
 }
 
-KGGuiOldColumns* ImGui::FindOrCreateColumns(KGGuiWindow* window, KGGuiID id)
+KGGuiOldColumns* KarmaGuiInternal::FindOrCreateColumns(KGGuiWindow* window, KGGuiID id)
 {
     // We have few columns per window so for now we don't need bother much with turning this into a faster lookup.
     for (int n = 0; n < window->ColumnsStorage.Size; n++)
@@ -3854,31 +3855,31 @@ KGGuiOldColumns* ImGui::FindOrCreateColumns(KGGuiWindow* window, KGGuiID id)
     return columns;
 }
 
-KGGuiID ImGui::GetColumnsID(const char* str_id, int columns_count)
+KGGuiID KarmaGuiInternal::GetColumnsID(const char* str_id, int columns_count)
 {
     KGGuiWindow* window = GetCurrentWindow();
 
     // Differentiate column ID with an arbitrary prefix for cases where users name their columns set the same as another widget.
     // In addition, when an identifier isn't explicitly provided we include the number of columns in the hash to make it uniquer.
-    PushID(0x11223347 + (str_id ? 0 : columns_count));
+    KarmaGui::PushID(0x11223347 + (str_id ? 0 : columns_count));
     KGGuiID id = window->GetID(str_id ? str_id : "columns");
-    PopID();
+    KarmaGui::PopID();
 
     return id;
 }
 
-void ImGui::BeginColumns(const char* str_id, int columns_count, KGGuiOldColumnFlags flags)
+void KarmaGuiInternal::BeginColumns(const char* str_id, int columns_count, KGGuiOldColumnFlags flags)
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = GetCurrentWindow();
 
-    KR_CORE_ASSERT(columns_count >= 1);
-    KR_CORE_ASSERT(window->DC.CurrentColumns == NULL);   // Nested columns are currently not supported
+    KR_CORE_ASSERT(columns_count >= 1, "");
+    KR_CORE_ASSERT(window->DC.CurrentColumns == NULL, "");   // Nested columns are currently not supported
 
     // Acquire storage for the columns set
     KGGuiID id = GetColumnsID(str_id, columns_count);
     KGGuiOldColumns* columns = FindOrCreateColumns(window, id);
-    KR_CORE_ASSERT(columns->ID == id);
+    KR_CORE_ASSERT(columns->ID == id, "");
     columns->Current = 0;
     columns->Count = columns_count;
     columns->Flags = flags;
@@ -3921,8 +3922,8 @@ void ImGui::BeginColumns(const char* str_id, int columns_count, KGGuiOldColumnFl
     {
         // Compute clipping rectangle
         KGGuiOldColumnData* column = &columns->Columns[n];
-        float clip_x1 = KG_ROUND(window->Pos.x + GetColumnOffset(n));
-        float clip_x2 = KG_ROUND(window->Pos.x + GetColumnOffset(n + 1) - 1.0f);
+        float clip_x1 = KG_ROUND(window->Pos.x + KarmaGui::GetColumnOffset(n));
+        float clip_x2 = KG_ROUND(window->Pos.x + KarmaGui::GetColumnOffset(n + 1) - 1.0f);
         column->ClipRect = KGRect(clip_x1, -FLT_MAX, clip_x2, +FLT_MAX);
         column->ClipRect.ClipWithFull(window->ClipRect);
     }
@@ -3935,18 +3936,18 @@ void ImGui::BeginColumns(const char* str_id, int columns_count, KGGuiOldColumnFl
     }
 
     // We don't generally store Indent.x inside ColumnsOffset because it may be manipulated by the user.
-    float offset_0 = GetColumnOffset(columns->Current);
-    float offset_1 = GetColumnOffset(columns->Current + 1);
+    float offset_0 = KarmaGui::GetColumnOffset(columns->Current);
+    float offset_1 = KarmaGui::GetColumnOffset(columns->Current + 1);
     float width = offset_1 - offset_0;
-    PushItemWidth(width * 0.65f);
+    KarmaGui::PushItemWidth(width * 0.65f);
     window->DC.ColumnsOffset.x = KGMax(column_padding - window->WindowPadding.x, 0.0f);
     window->DC.CursorPos.x = KG_FLOOR(window->Pos.x + window->DC.Indent.x + window->DC.ColumnsOffset.x);
     window->WorkRect.Max.x = window->Pos.x + offset_1 - column_padding;
 }
 
-void ImGui::NextColumn()
+void KarmaGui::NextColumn()
 {
-    KGGuiWindow* window = GetCurrentWindow();
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
     if (window->SkipItems || window->DC.CurrentColumns == NULL)
         return;
 
@@ -3956,7 +3957,7 @@ void ImGui::NextColumn()
     if (columns->Count == 1)
     {
         window->DC.CursorPos.x = KG_FLOOR(window->Pos.x + window->DC.Indent.x + window->DC.ColumnsOffset.x);
-        KR_CORE_ASSERT(columns->Current == 0);
+        KR_CORE_ASSERT(columns->Current == 0, "");
         return;
     }
 
@@ -3969,7 +3970,7 @@ void ImGui::NextColumn()
     // Optimization: avoid PopClipRect() + SetCurrentChannel() + PushClipRect()
     // (which would needlessly attempt to update commands in the wrong channel, then pop or overwrite them),
     KGGuiOldColumnData* column = &columns->Columns[columns->Current];
-    SetWindowClipRectBeforeSetChannel(window, column->ClipRect);
+    KarmaGuiInternal::SetWindowClipRectBeforeSetChannel(window, column->ClipRect);
     columns->Splitter.SetCurrentChannel(window->DrawList, columns->Current + 1);
 
     const float column_padding = g.Style.ItemSpacing.x;
@@ -4000,17 +4001,17 @@ void ImGui::NextColumn()
     window->WorkRect.Max.x = window->Pos.x + offset_1 - column_padding;
 }
 
-void ImGui::EndColumns()
+void KarmaGuiInternal::EndColumns()
 {
     KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = GetCurrentWindow();
     KGGuiOldColumns* columns = window->DC.CurrentColumns;
-    KR_CORE_ASSERT(columns != NULL);
+    KR_CORE_ASSERT(columns != NULL, "");
 
-    PopItemWidth();
+    KarmaGui::PopItemWidth();
     if (columns->Count > 1)
     {
-        PopClipRect();
+        KarmaGui::PopClipRect();
         columns->Splitter.Merge(window->DrawList);
     }
 
@@ -4032,7 +4033,7 @@ void ImGui::EndColumns()
         for (int n = 1; n < columns->Count; n++)
         {
             KGGuiOldColumnData* column = &columns->Columns[n];
-            float x = window->Pos.x + GetColumnOffset(n);
+            float x = window->Pos.x + KarmaGui::GetColumnOffset(n);
             const KGGuiID column_id = columns->ID + KGGuiID(n);
             const float column_hit_hw = COLUMNS_HIT_RECT_HALF_WIDTH;
             const KGRect column_hit_rect(KGVec2(x - column_hit_hw, y1), KGVec2(x + column_hit_hw, y2));
@@ -4050,7 +4051,7 @@ void ImGui::EndColumns()
             }
 
             // Draw column
-            const KGU32 col = GetColorU32(held ? KGGuiCol_SeparatorActive : hovered ? KGGuiCol_SeparatorHovered : KGGuiCol_Separator);
+            const KGU32 col = KarmaGui::GetColorU32(held ? KGGuiCol_SeparatorActive : hovered ? KGGuiCol_SeparatorHovered : KGGuiCol_Separator);
             const float xi = KG_FLOOR(x);
             window->DrawList->AddLine(KGVec2(xi, y1 + 1.0f), KGVec2(xi, y2), col);
         }
@@ -4063,7 +4064,7 @@ void ImGui::EndColumns()
                     columns->Columns[n].OffsetNormBeforeResize = columns->Columns[n].OffsetNorm;
             columns->IsBeingResized = is_being_resized = true;
             float x = GetDraggedColumnOffset(columns, dragging_column);
-            SetColumnOffset(dragging_column, x);
+            KarmaGui::SetColumnOffset(dragging_column, x);
         }
     }
     columns->IsBeingResized = is_being_resized;
@@ -4075,10 +4076,10 @@ void ImGui::EndColumns()
     window->DC.CursorPos.x = KG_FLOOR(window->Pos.x + window->DC.Indent.x + window->DC.ColumnsOffset.x);
 }
 
-void ImGui::Columns(int columns_count, const char* id, bool border)
+void KarmaGui::Columns(int columns_count, const char* id, bool border)
 {
-    KGGuiWindow* window = GetCurrentWindow();
-    KR_CORE_ASSERT(columns_count >= 1);
+    KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
+    KR_CORE_ASSERT(columns_count >= 1, "");
 
     KGGuiOldColumnFlags flags = (border ? 0 : KGGuiOldColumnFlags_NoBorder);
     //flags |= KGGuiOldColumnFlags_NoPreserveWidths; // NB: Legacy behavior
@@ -4087,12 +4088,11 @@ void ImGui::Columns(int columns_count, const char* id, bool border)
         return;
 
     if (columns != NULL)
-        EndColumns();
+        KarmaGuiInternal::EndColumns();
 
     if (columns_count != 1)
-        BeginColumns(id, columns_count, flags);
+        KarmaGuiInternal::BeginColumns(id, columns_count, flags);
 }
 
 //-------------------------------------------------------------------------
-
-#endif // #ifndef IMGUI_DISABLE
+}

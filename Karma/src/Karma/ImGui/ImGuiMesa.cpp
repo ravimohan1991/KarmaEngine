@@ -172,7 +172,7 @@ namespace Karma
 				}
 				else if(directoryEntry.is_regular_file() && (path.filename().extension() == ".obj"))
 				{
-					openSceneCallback(path);
+					openSceneCallback(path.string());
 				}
 			}
 
