@@ -259,6 +259,11 @@ static const float TABLE_BORDER_SIZE                     = 1.0f;    // FIXME-TAB
 static const float TABLE_RESIZE_SEPARATOR_HALF_THICKNESS = 4.0f;    // Extend outside inner borders.
 static const float TABLE_RESIZE_SEPARATOR_FEEDBACK_TIMER = 0.06f;   // Delay/timer before making the hover feedback (color+cursor) visible because tables/columns tends to be more cramped.
 
+//#ifndef GKarmaGui
+extern  KarmaGuiContext* GKarmaGui;  // Current implicit context pointer
+//#endif
+
+
 namespace Karma
 {
 // Helper

@@ -1,10 +1,6 @@
 // Let me see how far I can push before removing ImGui's defines and smoothly mingle with Karma
 // Dear ImGui is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
 
-#if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include "KarmaGui.h"
 #include "KarmaGuiInternal.h"
 
@@ -39,6 +35,10 @@
 #endif
 #endif
 
+#if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 // [Apple] OS specific includes
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
@@ -69,7 +69,7 @@ static void    FreeWrapper(void* ptr, void* user_data)        { KG_UNUSED(user_d
 
 namespace Karma
 {
-	KarmaGuiContext*   KarmaGuiInternal::GKarmaGui = nullptr;
+	KarmaGuiContext*   GKarmaGui = nullptr;
 	KarmaGuiMemAllocFunc    KarmaGuiInternal::GImAllocatorAllocFunc = MallocWrapper;
 	KarmaGuiMemFreeFunc     KarmaGuiInternal::GImAllocatorFreeFunc = FreeWrapper;
 	void*                KarmaGuiInternal::GImAllocatorUserData = NULL;
@@ -239,7 +239,7 @@ KarmaGuiIO::KarmaGuiIO()
 // FIXME: Should in theory be called "AddCharacterEvent()" to be consistent with new API
 void KarmaGuiIO::AddInputCharacter(unsigned int c)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
     if (c == 0 || !AppAcceptingEvents)
         return;
@@ -331,7 +331,7 @@ void KarmaGuiIO::ClearInputKeys()
 
 static KGGuiInputEvent* FindLatestInputEvent(KGGuiInputEventType type, int arg = -1)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     for (int n = g.InputEventsQueue.Size - 1; n >= 0; n--)
     {
         KGGuiInputEvent* e = &g.InputEventsQueue[n];
@@ -355,7 +355,7 @@ void KarmaGuiIO::AddKeyAnalogEvent(KarmaGuiKey key, bool down, float analog_valu
     //if (e->Down) { KARMAGUI_DEBUG_LOG_IO("AddKeyEvent() Key='%s' %d, NativeKeycode = %d, NativeScancode = %d\n", KarmaGui::GetKeyName(e->Key), e->Down, e->NativeKeycode, e->NativeScancode); }
     if (key == KGGuiKey_None || !AppAcceptingEvents)
         return;
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
     KR_CORE_ASSERT(Karma::KarmaGuiInternal::IsNamedKeyOrModKey(key), ""); // Backend needs to pass a valid KGGuiKey_ constant. 0..511 values are legacy native key codes which are not accepted by this API.
     KR_CORE_ASSERT(!Karma::KarmaGuiInternal::IsAliasKey(key), ""); // Backend cannot submit KGGuiKey_MouseXXX values they are automatically inferred from AddMouseXXX() events.
@@ -433,7 +433,7 @@ void KarmaGuiIO::SetAppAcceptingEvents(bool accepting_events)
 // Queue a mouse move event
 void KarmaGuiIO::AddMousePosEvent(float x, float y)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
     if (!AppAcceptingEvents)
         return;
@@ -457,7 +457,7 @@ void KarmaGuiIO::AddMousePosEvent(float x, float y)
 
 void KarmaGuiIO::AddMouseButtonEvent(int mouse_button, bool down)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
     KR_CORE_ASSERT(mouse_button >= 0 && mouse_button < KGGuiMouseButton_COUNT, "");
     if (!AppAcceptingEvents)
@@ -480,7 +480,7 @@ void KarmaGuiIO::AddMouseButtonEvent(int mouse_button, bool down)
 // Queue a mouse wheel event (most mouse/API will only have a Y component)
 void KarmaGuiIO::AddMouseWheelEvent(float wheel_x, float wheel_y)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
 
     // Filter duplicate (unlike most events, wheel values are relative and easy to filter)
@@ -497,7 +497,7 @@ void KarmaGuiIO::AddMouseWheelEvent(float wheel_x, float wheel_y)
 
 void KarmaGuiIO::AddMouseViewportEvent(KGGuiID viewport_id)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
     KR_CORE_ASSERT(g.IO.BackendFlags & KGGuiBackendFlags_HasMouseHoveredViewport, "");
     if (!AppAcceptingEvents)
@@ -518,7 +518,7 @@ void KarmaGuiIO::AddMouseViewportEvent(KGGuiID viewport_id)
 
 void KarmaGuiIO::AddFocusEvent(bool focused)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KR_CORE_ASSERT(&g.IO == this, "Can only add events to current context.");
 
     // Filter duplicate
@@ -833,7 +833,7 @@ int KGFormatStringV(char* buf, size_t buf_size, const char* fmt, va_list args)
 
 void KGFormatStringToTempBuffer(const char** out_buf, const char** out_buf_end, const char* fmt, ...)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     va_list args;
     va_start(args, fmt);
     int buf_len = KGFormatStringV(g.TempBuffer.Data, g.TempBuffer.Size, fmt, args);
@@ -844,7 +844,7 @@ void KGFormatStringToTempBuffer(const char** out_buf, const char** out_buf_end, 
 
 void KGFormatStringToTempBufferV(const char** out_buf, const char** out_buf_end, const char* fmt, va_list args)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     int buf_len = KGFormatStringV(g.TempBuffer.Data, g.TempBuffer.Size, fmt, args);
     *out_buf = g.TempBuffer.Data;
     if (out_buf_end) { *out_buf_end = g.TempBuffer.Data + buf_len; }
@@ -1598,7 +1598,7 @@ void KGGuiTextIndex::append(const char* base, int old_size, int new_size)
 // The problem we have is that without a Begin/End scheme for rows using the clipper is ambiguous.
 static bool GetSkipItemForListClipping()
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     return (g.CurrentTable ? g.CurrentTable->HostSkipItems : g.CurrentWindow->SkipItems);
 }
 
@@ -1632,7 +1632,7 @@ static void ImGuiListClipper_SeekCursorAndSetupPrevLine(float pos_y, float line_
     // Set cursor position and a few other things so that SetScrollHereY() and Columns() can work when seeking cursor.
     // FIXME: It is problematic that we have to do that here, because custom/equivalent end-user code would stumble on the same issue.
     // The clipper should probably have a final step to display the last item in a regular manner, maybe with an opt-out flag for data sets which may have costly seek?
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     float off_y = pos_y - window->DC.CursorPos.y;
     window->DC.CursorPos.y = pos_y;
@@ -1674,7 +1674,7 @@ KarmaGuiListClipper::~KarmaGuiListClipper()
 
 void KarmaGuiListClipper::Begin(int items_count, float items_height)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     KR_CORE_INFO("Clipper: Begin(%d,%.2f) in '%s'\n", items_count, items_height, window->Name);
 
@@ -1699,7 +1699,7 @@ void KarmaGuiListClipper::Begin(int items_count, float items_height)
 
 void KarmaGuiListClipper::End()
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     if (KGGuiListClipperData* data = (KGGuiListClipperData*)TempData)
     {
         // In theory here we should assert that we are already at the right position, but it seems saner to just seek at the end and not assert/crash the user.
@@ -1731,7 +1731,7 @@ void KarmaGuiListClipper::ForceDisplayRangeByIndices(int item_min, int item_max)
 
 static bool ImGuiListClipper_StepInternal(KarmaGuiListClipper* clipper)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     KGGuiListClipperData* data = (KGGuiListClipperData*)clipper->TempData;
     KR_CORE_ASSERT(data != NULL, "Called KarmaGuiListClipper::Step() too many times, or before KarmaGuiListClipper::Begin() ?");
@@ -1856,7 +1856,7 @@ static bool ImGuiListClipper_StepInternal(KarmaGuiListClipper* clipper)
 
 bool KarmaGuiListClipper::Step()
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     bool need_items_height = (ItemsHeight <= 0.0f);
     bool ret = ImGuiListClipper_StepInternal(this);
     if (ret && (DisplayStart == DisplayEnd))
@@ -1883,13 +1883,13 @@ bool KarmaGuiListClipper::Step()
 
 KarmaGuiStyle& Karma::KarmaGui::GetStyle()
 {
-    KR_CORE_ASSERT(Karma::KarmaGuiInternal::GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
-    return Karma::KarmaGuiInternal::GKarmaGui->Style;
+    KR_CORE_ASSERT(Karma::GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
+    return Karma::GKarmaGui->Style;
 }
 
 KGU32 Karma::KarmaGui::GetColorU32(KarmaGuiCol idx, float alpha_mul)
 {
-    KarmaGuiStyle& style = Karma::KarmaGuiInternal::GKarmaGui->Style;
+    KarmaGuiStyle& style = Karma::GKarmaGui->Style;
     KGVec4 c = style.Colors[idx];
     c.w *= style.Alpha * alpha_mul;
     return ColorConvertFloat4ToU32(c);
@@ -1897,7 +1897,7 @@ KGU32 Karma::KarmaGui::GetColorU32(KarmaGuiCol idx, float alpha_mul)
 
 KGU32 Karma::KarmaGui::GetColorU32(const KGVec4& col)
 {
-    KarmaGuiStyle& style = Karma::KarmaGuiInternal::GKarmaGui->Style;
+    KarmaGuiStyle& style = Karma::GKarmaGui->Style;
     KGVec4 c = col;
     c.w *= style.Alpha;
     return ColorConvertFloat4ToU32(c);
@@ -1905,13 +1905,13 @@ KGU32 Karma::KarmaGui::GetColorU32(const KGVec4& col)
 
 const KGVec4& Karma::KarmaGui::GetStyleColorVec4(KarmaGuiCol idx)
 {
-    KarmaGuiStyle& style = Karma::KarmaGuiInternal::GKarmaGui->Style;
+    KarmaGuiStyle& style = Karma::GKarmaGui->Style;
     return style.Colors[idx];
 }
 
 KGU32 Karma::KarmaGui::GetColorU32(KGU32 col)
 {
-    KarmaGuiStyle& style = Karma::KarmaGuiInternal::GKarmaGui->Style;
+    KarmaGuiStyle& style = Karma::GKarmaGui->Style;
     if (style.Alpha >= 1.0f)
         return col;
     KGU32 a = (col & KG_COL32_A_MASK) >> KG_COL32_A_SHIFT;
@@ -1922,7 +1922,7 @@ KGU32 Karma::KarmaGui::GetColorU32(KGU32 col)
 // FIXME: This may incur a round-trip (if the end user got their data from a float4) but eventually we aim to store the in-flight colors as KGU32
 void Karma::KarmaGui::PushStyleColor(KarmaGuiCol idx, KGU32 col)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KGGuiColorMod backup;
     backup.Col = idx;
     backup.BackupValue = g.Style.Colors[idx];
@@ -1932,7 +1932,7 @@ void Karma::KarmaGui::PushStyleColor(KarmaGuiCol idx, KGU32 col)
 
 void Karma::KarmaGui::PushStyleColor(KarmaGuiCol idx, const KGVec4& col)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KGGuiColorMod backup;
     backup.Col = idx;
     backup.BackupValue = g.Style.Colors[idx];
@@ -1942,7 +1942,7 @@ void Karma::KarmaGui::PushStyleColor(KarmaGuiCol idx, const KGVec4& col)
 
 void Karma::KarmaGui::PopStyleColor(int count)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     if (g.ColorStack.Size < count)
     {
         KR_CORE_ASSERT(g.ColorStack.Size > count, "Calling PopStyleColor() too many times: stack underflow.");
@@ -2011,7 +2011,7 @@ void Karma::KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, float val)
     const ImGuiStyleVarInfo* var_info = GetStyleVarInfo(idx);
     if (var_info->Type == KGGuiDataType_Float && var_info->Count == 1)
     {
-        KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+        KarmaGuiContext& g = *Karma::GKarmaGui;
         float* pvar = (float*)var_info->GetVarPtr(&g.Style);
         g.StyleVarStack.push_back(KGGuiStyleMod(idx, *pvar));
         *pvar = val;
@@ -2025,7 +2025,7 @@ void Karma::KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, const KGVec2& val)
     const ImGuiStyleVarInfo* var_info = GetStyleVarInfo(idx);
     if (var_info->Type == KGGuiDataType_Float && var_info->Count == 2)
     {
-        KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+        KarmaGuiContext& g = *Karma::GKarmaGui;
         KGVec2* pvar = (KGVec2*)var_info->GetVarPtr(&g.Style);
         g.StyleVarStack.push_back(KGGuiStyleMod(idx, *pvar));
         *pvar = val;
@@ -2036,7 +2036,7 @@ void Karma::KarmaGui::PushStyleVar(KarmaGuiStyleVar idx, const KGVec2& val)
 
 void Karma::KarmaGui::PopStyleVar(int count)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     if (g.StyleVarStack.Size < count)
     {
         KR_CORE_ASSERT(g.StyleVarStack.Size > count, "Calling PopStyleVar() too many times: stack underflow.");
@@ -2402,16 +2402,12 @@ void Karma::KarmaGuiInternal::RenderMouseCursor(KGVec2 base_pos, float base_scal
 // Note that we still point to some static data and members (such as GFontAtlas), so the state instance you end up using will point to the static data within its module
 KarmaGuiContext* Karma::KarmaGui::GetCurrentContext()
 {
-    return KarmaGuiInternal::GKarmaGui;
+    return GKarmaGui;
 }
 
 void Karma::KarmaGui::SetCurrentContext(KarmaGuiContext* ctx)
 {
-#ifdef IMGUI_SET_CURRENT_CONTEXT_FUNC
-    IMGUI_SET_CURRENT_CONTEXT_FUNC(ctx); // For custom thread-based hackery you may want to have control over this.
-#else
-	KarmaGuiInternal::GKarmaGui = ctx;
-#endif
+	GKarmaGui = ctx;
 }
 
 void Karma::KarmaGui::SetAllocatorFunctions(KarmaGuiMemAllocFunc alloc_func, KarmaGuiMemFreeFunc free_func, void* user_data)
@@ -2466,7 +2462,7 @@ static const KGGuiLocEntry GLocalizationEntriesEnUS[] =
 
 void Karma::KarmaGuiInternal::Initialize()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(!g.Initialized && !g.SettingsLoaded, "");
 
     // Add .ini handle for KGGuiWindow and KGGuiTable types
@@ -2665,7 +2661,7 @@ KGGuiID KGGuiWindow::GetID(const char* str, const char* str_end)
 {
     KGGuiID seed = IDStack.back();
     KGGuiID id = KGHashStr(str, str_end ? (str_end - str) : 0, seed);
-	KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
     if (g.DebugHookIdInfo == id)
 		Karma::KarmaGuiInternal::DebugHookIdInfo(id, KGGuiDataType_String, str, str_end);
     return id;
@@ -2675,7 +2671,7 @@ KGGuiID KGGuiWindow::GetID(const void* ptr)
 {
     KGGuiID seed = IDStack.back();
     KGGuiID id = KGHashData(&ptr, sizeof(void*), seed);
-	KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
     if (g.DebugHookIdInfo == id)
 		Karma::KarmaGuiInternal::DebugHookIdInfo(id, KGGuiDataType_Pointer, ptr, NULL);
     return id;
@@ -2685,7 +2681,7 @@ KGGuiID KGGuiWindow::GetID(int n)
 {
     KGGuiID seed = IDStack.back();
     KGGuiID id = KGHashData(&n, sizeof(n), seed);
-	KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
     if (g.DebugHookIdInfo == id)
 		Karma::KarmaGuiInternal::DebugHookIdInfo(id, KGGuiDataType_S32, (void*)(intptr_t)n, NULL);
     return id;
@@ -2702,7 +2698,7 @@ KGGuiID KGGuiWindow::GetIDFromRectangle(const KGRect& r_abs)
 
 static void SetCurrentWindow(KGGuiWindow* window)
 {
-	KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
     g.CurrentWindow = window;
     g.CurrentTable = window && window->DC.CurrentTableIdx != -1 ? g.Tables.GetByIndex(window->DC.CurrentTableIdx) : NULL;
     if (window)
@@ -2840,7 +2836,7 @@ static inline bool IsWindowContentHoverable(KGGuiWindow* window, KarmaGuiHovered
 {
     // An active popup disable hovering on other windows (apart from its own children)
     // FIXME-OPT: This could be cached/stored within the window.
-	KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
     if (g.NavWindow)
         if (KGGuiWindow* focused_root_window = g.NavWindow->RootWindowDockTree)
             if (focused_root_window->WasActive && focused_root_window != window->RootWindowDockTree)
@@ -2872,7 +2868,7 @@ static inline bool IsWindowContentHoverable(KGGuiWindow* window, KarmaGuiHovered
 // - this should work even for non-interactive items that have no ID, so we cannot use LastItemId
 bool Karma::KarmaGui::IsItemHovered(KarmaGuiHoveredFlags flags)
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     if (g.NavDisableMouseHover && !g.NavDisableHighlight && !(flags & KGGuiHoveredFlags_NoNavOverride))
     {
@@ -3053,7 +3049,7 @@ float Karma::KarmaGuiInternal::CalcWrapWidthForPos(const KGVec2& pos, float wrap
 // May need to hook up with Karma
 void* Karma::KarmaGui::MemAlloc(size_t size)
 {
-	if (KarmaGuiContext* ctx = KarmaGuiInternal::GKarmaGui)
+	if (KarmaGuiContext* ctx = GKarmaGui)
         ctx->IO.MetricsActiveAllocations++;
 	return (*KarmaGuiInternal::GImAllocatorAllocFunc)(size, KarmaGuiInternal::GImAllocatorUserData);
 }
@@ -3062,58 +3058,58 @@ void* Karma::KarmaGui::MemAlloc(size_t size)
 void Karma::KarmaGui::MemFree(void* ptr)
 {
     if (ptr)
-		if (KarmaGuiContext* ctx = KarmaGuiInternal::GKarmaGui)
+		if (KarmaGuiContext* ctx = GKarmaGui)
             ctx->IO.MetricsActiveAllocations--;
 	return (*KarmaGuiInternal::GImAllocatorFreeFunc)(ptr, KarmaGuiInternal::GImAllocatorUserData);
 }
 
 const char* Karma::KarmaGui::GetClipboardText()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     return g.IO.GetClipboardTextFn ? g.IO.GetClipboardTextFn(g.IO.ClipboardUserData) : "";
 }
 
 void Karma::KarmaGui::SetClipboardText(const char* text)
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     if (g.IO.SetClipboardTextFn)
         g.IO.SetClipboardTextFn(g.IO.ClipboardUserData, text);
 }
 
 KarmaGuiIO& Karma::KarmaGui::GetIO()
 {
-	KR_CORE_ASSERT(KarmaGuiInternal::GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
-	return KarmaGuiInternal::GKarmaGui->IO;
+	KR_CORE_ASSERT(GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
+	return GKarmaGui->IO;
 }
 
 KarmaGuiPlatformIO& Karma::KarmaGui::GetPlatformIO()
 {
-	KR_CORE_ASSERT(KarmaGuiInternal::GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() or KarmaGui::SetCurrentContext()?");
-	return KarmaGuiInternal::GKarmaGui->PlatformIO;
+	KR_CORE_ASSERT(GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() or KarmaGui::SetCurrentContext()?");
+	return GKarmaGui->PlatformIO;
 }
 
 // Pass this to your backend rendering function! Valid after Render() and until the next call to NewFrame()
 KGDrawData* Karma::KarmaGui::GetDrawData()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiViewportP* viewport = g.Viewports[0];
     return viewport->DrawDataP.Valid ? &viewport->DrawDataP : NULL;
 }
 
 double Karma::KarmaGui::GetTime()
 {
-	return KarmaGuiInternal::GKarmaGui->Time;
+	return GKarmaGui->Time;
 }
 
 int Karma::KarmaGui::GetFrameCount()
 {
-	return KarmaGuiInternal::GKarmaGui->FrameCount;
+	return GKarmaGui->FrameCount;
 }
 
 static KGDrawList* GetViewportDrawList(KGGuiViewportP* viewport, size_t drawlist_no, const char* drawlist_name)
 {
     // Create the draw list on demand, because they are not frequently used for all viewports
-	KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
     KR_CORE_ASSERT(drawlist_no < KG_ARRAYSIZE(viewport->DrawLists), "");
     KGDrawList* draw_list = viewport->DrawLists[drawlist_no];
     if (draw_list == NULL)
@@ -3141,7 +3137,7 @@ KGDrawList* Karma::KarmaGui::GetBackgroundDrawList(KarmaGuiViewport* viewport)
 
 KGDrawList* Karma::KarmaGui::GetBackgroundDrawList()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     return GetBackgroundDrawList(g.CurrentWindow->Viewport);
 }
 
@@ -3152,13 +3148,13 @@ KGDrawList* Karma::KarmaGui::GetForegroundDrawList(KarmaGuiViewport* viewport)
 
 KGDrawList* Karma::KarmaGui::GetForegroundDrawList()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     return GetForegroundDrawList(g.CurrentWindow->Viewport);
 }
 
 KGDrawListSharedData* Karma::KarmaGui::GetDrawListSharedData()
 {
-	return &KarmaGuiInternal::GKarmaGui->DrawListSharedData;
+	return &GKarmaGui->DrawListSharedData;
 }
 
 void Karma::KarmaGuiInternal::StartMouseMovingWindow(KGGuiWindow* window)
@@ -3438,8 +3434,8 @@ void Karma::KarmaGuiInternal::UpdateHoveredWindowAndCaptureFlags()
 
 void Karma::KarmaGui::NewFrame()
 {
-    KR_CORE_ASSERT(KarmaGuiInternal::GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KR_CORE_ASSERT(GKarmaGui != NULL, "No current context. Did you call KarmaGui::CreateContext() and KarmaGui::SetCurrentContext() ?");
+    KarmaGuiContext& g = *GKarmaGui;
 
     // Remove pending delete hooks before frame start.
     // This deferred removal avoid issues of removal while iterating the hook vector
@@ -3771,7 +3767,7 @@ static void AddDrawListToDrawData(KGVector<KGDrawList*>* out_list, KGDrawList* d
 
 static void AddWindowToDrawData(KGGuiWindow* window, int layer)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KGGuiViewportP* viewport = window->Viewport;
     g.IO.MetricsRenderWindows++;
     if (window->Flags & KGGuiWindowFlags_DockNodeHost)
@@ -3986,7 +3982,7 @@ void Karma::KarmaGuiInternal::RenderDimmedBackgrounds()
 // This is normally called by Render(). You may want to call it directly if you want to avoid calling Render() but the gain will be very minimal.
 void Karma::KarmaGui::EndFrame()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(g.Initialized, "");
 
     // Don't process EndFrame() multiple times.
@@ -4079,7 +4075,7 @@ void Karma::KarmaGui::EndFrame()
 // it is the role of the ImGui_ImplXXXX_RenderDrawData() function provided by the renderer backend)
 void Karma::KarmaGui::Render()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(g.Initialized, "");
 
     if (g.FrameCountEnded != g.FrameCount)
@@ -4146,7 +4142,7 @@ void Karma::KarmaGui::Render()
 // CalcTextSize("") should return KGVec2(0.0f, g.FontSize)
 KGVec2 Karma::KarmaGui::CalcTextSize(const char* text, const char* text_end, bool hide_text_after_double_hash, float wrap_width)
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
 
     const char* text_display_end;
     if (hide_text_after_double_hash)
@@ -4176,7 +4172,7 @@ KGVec2 Karma::KarmaGui::CalcTextSize(const char* text, const char* text_end, boo
 // called, aka before the next Begin(). Moving window isn't affected.
 static void FindHoveredWindow()
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
 
     // Special handling for the window being moved: Ignore the mouse viewport check (because it may reset/lose its viewport during the undocking frame)
     KGGuiViewportP* moving_window_viewport = g.MovingWindow ? g.MovingWindow->Viewport : NULL;
@@ -4239,7 +4235,7 @@ static void FindHoveredWindow()
 
 bool Karma::KarmaGui::IsItemActive()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     if (g.ActiveId)
         return g.ActiveId == g.LastItemData.ID;
     return false;
@@ -4247,7 +4243,7 @@ bool Karma::KarmaGui::IsItemActive()
 
 bool Karma::KarmaGui::IsItemActivated()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     if (g.ActiveId)
         if (g.ActiveId == g.LastItemData.ID && g.ActiveIdPreviousFrame != g.LastItemData.ID)
             return true;
@@ -4256,7 +4252,7 @@ bool Karma::KarmaGui::IsItemActivated()
 
 bool Karma::KarmaGui::IsItemDeactivated()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     if (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_HasDeactivated)
         return (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_Deactivated) != 0;
     return (g.ActiveIdPreviousFrame == g.LastItemData.ID && g.ActiveIdPreviousFrame != 0 && g.ActiveId != g.LastItemData.ID);
@@ -4264,14 +4260,14 @@ bool Karma::KarmaGui::IsItemDeactivated()
 
 bool Karma::KarmaGui::IsItemDeactivatedAfterEdit()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return IsItemDeactivated() && (g.ActiveIdPreviousFrameHasBeenEditedBefore || (g.ActiveId == 0 && g.ActiveIdHasBeenEditedBefore));
 }
 
 // == GetItemID() == GetFocusID()
 bool Karma::KarmaGui::IsItemFocused()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     if (g.NavId != g.LastItemData.ID || g.NavId == 0)
         return false;
 
@@ -4293,7 +4289,7 @@ bool Karma::KarmaGui::IsItemClicked(KarmaGuiMouseButton mouse_button)
 
 bool Karma::KarmaGui::IsItemToggledOpen()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_ToggledOpen) ? true : false;
 }
 
@@ -4305,31 +4301,31 @@ bool Karma::KarmaGuiInternal::IsItemToggledSelection()
 
 bool Karma::KarmaGui::IsAnyItemHovered()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return g.HoveredId != 0 || g.HoveredIdPreviousFrame != 0;
 }
 
 bool Karma::KarmaGui::IsAnyItemActive()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return g.ActiveId != 0;
 }
 
 bool Karma::KarmaGui::IsAnyItemFocused()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return g.NavId != 0 && !g.NavDisableHighlight;
 }
 
 bool Karma::KarmaGui::IsItemVisible()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_Visible) != 0;
 }
 
 bool Karma::KarmaGui::IsItemEdited()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return (g.LastItemData.StatusFlags & KGGuiItemStatusFlags_Edited) != 0;
 }
 
@@ -4337,7 +4333,7 @@ bool Karma::KarmaGui::IsItemEdited()
 // FIXME: Although this is exposed, its interaction and ideal idiom with using KGGuiButtonFlags_AllowItemOverlap flag are extremely confusing, need rework.
 void Karma::KarmaGui::SetItemAllowOverlap()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     KGGuiID id = g.LastItemData.ID;
     if (g.HoveredId == id)
         g.HoveredIdAllowOverlap = true;
@@ -4357,25 +4353,25 @@ void Karma::KarmaGuiInternal::SetActiveIdUsingAllKeyboardKeys()
 
 KGGuiID Karma::KarmaGui::GetItemID()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return g.LastItemData.ID;
 }
 
 KGVec2 Karma::KarmaGui::GetItemRectMin()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return g.LastItemData.Rect.Min;
 }
 
 KGVec2 Karma::KarmaGui::GetItemRectMax()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return g.LastItemData.Rect.Max;
 }
 
 KGVec2 Karma::KarmaGui::GetItemRectSize()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     return g.LastItemData.Rect.GetSize();
 }
 
@@ -4444,7 +4440,7 @@ bool Karma::KarmaGui::BeginChild(KGGuiID id, const KGVec2& size_arg, bool border
 
 void Karma::KarmaGui::EndChild()
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
 
     KR_CORE_ASSERT(g.WithinEndChild == false, "");
@@ -4491,7 +4487,7 @@ void Karma::KarmaGui::EndChild()
 // Helper to create a child window / scrolling region that looks like a normal widget frame.
 bool Karma::KarmaGui::BeginChildFrame(KGGuiID id, const KGVec2& size, KarmaGuiWindowFlags extra_flags)
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
     PushStyleColor(KGGuiCol_ChildBg, style.Colors[KGGuiCol_FrameBg]);
     PushStyleVar(KGGuiStyleVar_ChildRounding, style.FrameRounding);
@@ -4518,7 +4514,7 @@ static void SetWindowConditionAllowFlags(KGGuiWindow* window, KarmaGuiCond flags
 
 KGGuiWindow* Karma::KarmaGuiInternal::FindWindowByID(KGGuiID id)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     return (KGGuiWindow*)g.WindowsById.GetVoidPtr(id);
 }
 
@@ -4547,7 +4543,7 @@ static void ApplyWindowSettings(KGGuiWindow* window, KGGuiWindowSettings* settin
 
 static void UpdateWindowInFocusOrderList(KGGuiWindow* window, bool just_created, KarmaGuiWindowFlags new_flags)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
 
     const bool new_is_explicit_child = (new_flags & KGGuiWindowFlags_ChildWindow) != 0 && ((new_flags & KGGuiWindowFlags_Popup) == 0 || (new_flags & KGGuiWindowFlags_ChildMenu) != 0);
     const bool child_flag_changed = new_is_explicit_child != window->IsExplicitChild;
@@ -4570,7 +4566,7 @@ static void UpdateWindowInFocusOrderList(KGGuiWindow* window, bool just_created,
 
 static KGGuiWindow* CreateNewWindow(const char* name, KarmaGuiWindowFlags flags)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     //KARMAGUI_DEBUG_LOG("CreateNewWindow '%s', flags = 0x%08X\n", name, flags);
 
     // Create window the first time
@@ -4628,7 +4624,7 @@ static KGGuiWindow* GetWindowForTitleAndMenuHeight(KGGuiWindow* window)
 
 static KGVec2 CalcWindowSizeAfterConstraint(KGGuiWindow* window, const KGVec2& size_desired)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KGVec2 new_size = size_desired;
     if (g.NextWindowData.Flags & KGGuiNextWindowDataFlags_HasSizeConstraint)
     {
@@ -4683,7 +4679,7 @@ static void CalcWindowContentSizes(KGGuiWindow* window, KGVec2* content_size_cur
 
 static KGVec2 CalcWindowAutoFitSize(KGGuiWindow* window, const KGVec2& size_contents)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KarmaGuiStyle& style = g.Style;
     const float decoration_w_without_scrollbars = window->DecoOuterSizeX1 + window->DecoOuterSizeX2 - window->ScrollbarSizes.x;
     const float decoration_h_without_scrollbars = window->DecoOuterSizeY1 + window->DecoOuterSizeY2 - window->ScrollbarSizes.y;
@@ -4825,7 +4821,7 @@ KGGuiID Karma::KarmaGuiInternal::GetWindowResizeBorderID(KGGuiWindow* window, Ka
 // Return true when using auto-fit (double-click on resize grip)
 bool Karma::KarmaGuiInternal::UpdateWindowManualResize(KGGuiWindow* window, const KGVec2& size_auto_fit, int* border_held, int resize_grip_count, KGU32 resize_grip_col[4], const KGRect& visibility_rect)
 {
-    KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *GKarmaGui;
     KarmaGuiWindowFlags flags = window->Flags;
 
     if ((flags & KGGuiWindowFlags_NoResize) || (flags & KGGuiWindowFlags_AlwaysAutoResize) || window->AutoFitFramesX > 0 || window->AutoFitFramesY > 0)
@@ -4975,7 +4971,7 @@ bool Karma::KarmaGuiInternal::UpdateWindowManualResize(KGGuiWindow* window, cons
 
 static inline void ClampWindowPos(KGGuiWindow* window, const KGRect& visibility_rect)
 {
-    KarmaGuiContext& g = *Karma::KarmaGuiInternal::GKarmaGui;
+    KarmaGuiContext& g = *Karma::GKarmaGui;
     KGVec2 size_for_clamping = window->Size;
     if (g.IO.ConfigWindowsMoveFromTitleBarOnly && (!(window->Flags & KGGuiWindowFlags_NoTitleBar) || window->DockNodeAsHost))
         size_for_clamping.y = Karma::KarmaGui::GetFrameHeight(); // Not using window->TitleBarHeight() as DockNodeAsHost will report 0.0f here.
@@ -5306,7 +5302,7 @@ KGGuiWindow* Karma::KarmaGuiInternal::FindBlockingModal(KGGuiWindow* window)
 // - Passing 'bool* p_open' displays a Close button on the upper-right corner of the window, the pointed value will be set to false when the button is pressed.
 bool Karma::KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags flags)
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     const KarmaGuiStyle& style = g.Style;
     KR_CORE_ASSERT(name != NULL && name[0] != '\0', "");     // Window name required
     KR_CORE_ASSERT(g.WithinFrameScope, "");                  // Forgot to call KarmaGui::NewFrame()
@@ -6162,7 +6158,7 @@ bool Karma::KarmaGui::Begin(const char* name, bool* p_open, KarmaGuiWindowFlags 
 
 void Karma::KarmaGui::End()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
 
     // Error checking: verify that user hasn't called End() too many times!
@@ -6392,7 +6388,7 @@ void Karma::KarmaGuiInternal::SetCurrentFont(KGFont* font)
 
 void Karma::KarmaGui::PushFont(KGFont* font)
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     if (!font)
         font = KarmaGuiInternal::GetDefaultFont();
     KarmaGuiInternal::SetCurrentFont(font);
@@ -6402,7 +6398,7 @@ void Karma::KarmaGui::PushFont(KGFont* font)
 
 void Karma::KarmaGui::PopFont()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     g.CurrentWindow->DrawList->PopTextureID();
     g.FontStack.pop_back();
     KarmaGuiInternal::SetCurrentFont(g.FontStack.empty() ? KarmaGuiInternal::GetDefaultFont() : g.FontStack.back());
@@ -6437,7 +6433,7 @@ void Karma::KarmaGuiInternal::PopItemFlag()
 // - Optimized shortcuts instead of PushStyleVar() + PushItemFlag()
 void Karma::KarmaGui::BeginDisabled(bool disabled)
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     bool was_disabled = (g.CurrentItemFlags & KGGuiItemFlags_Disabled) != 0;
     if (!was_disabled && disabled)
     {
@@ -6598,7 +6594,7 @@ bool Karma::KarmaGui::IsWindowHovered(KarmaGuiHoveredFlags flags)
 
 bool Karma::KarmaGui::IsWindowFocused(KarmaGuiFocusedFlags flags)
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* ref_window = g.NavWindow;
     KGGuiWindow* cur_window = g.CurrentWindow;
 
@@ -6621,13 +6617,13 @@ bool Karma::KarmaGui::IsWindowFocused(KarmaGuiFocusedFlags flags)
 
 KGGuiID Karma::KarmaGui::GetWindowDockID()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     return g.CurrentWindow->DockId;
 }
 
 bool Karma::KarmaGui::IsWindowDocked()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     return g.CurrentWindow->DockIsActive;
 }
 
@@ -6641,19 +6637,19 @@ bool Karma::KarmaGuiInternal::IsWindowNavFocusable(KGGuiWindow* window)
 
 float Karma::KarmaGui::GetWindowWidth()
 {
-	KGGuiWindow* window = KarmaGuiInternal::GKarmaGui->CurrentWindow;
+	KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->Size.x;
 }
 
 float Karma::KarmaGui::GetWindowHeight()
 {
-	KGGuiWindow* window = KarmaGuiInternal::GKarmaGui->CurrentWindow;
+	KGGuiWindow* window = GKarmaGui->CurrentWindow;
     return window->Size.y;
 }
 
 KGVec2 Karma::KarmaGui::GetWindowPos()
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* window = g.CurrentWindow;
     return window->Pos;
 }
@@ -6817,7 +6813,7 @@ void Karma::KarmaGui::SetNextWindowSize(const KGVec2& size, KarmaGuiCond cond)
 
 void Karma::KarmaGui::SetNextWindowSizeConstraints(const KGVec2& size_min, const KGVec2& size_max, KarmaGuiSizeCallback custom_callback, void* custom_callback_user_data)
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasSizeConstraint;
     g.NextWindowData.SizeConstraintRect = KGRect(size_min, size_max);
     g.NextWindowData.SizeCallback = custom_callback;
@@ -6828,14 +6824,14 @@ void Karma::KarmaGui::SetNextWindowSizeConstraints(const KGVec2& size_min, const
 // SetNextWindowContentSize(KGVec2(100,100) + KGGuiWindowFlags_AlwaysAutoResize will always allow submitting a 100x100 item.
 void Karma::KarmaGui::SetNextWindowContentSize(const KGVec2& size)
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasContentSize;
     g.NextWindowData.ContentSizeVal = KGFloor(size);
 }
 
 void Karma::KarmaGui::SetNextWindowScroll(const KGVec2& scroll)
 {
-	KarmaGuiContext& g = *KarmaGuiInternal::GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     g.NextWindowData.Flags |= KGGuiNextWindowDataFlags_HasScroll;
     g.NextWindowData.ScrollVal = scroll;
 }

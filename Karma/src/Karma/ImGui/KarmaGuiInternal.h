@@ -85,7 +85,7 @@ struct KGGuiWindow;                 // Storage for one window
 struct KGGuiWindowTempData;         // Temporary storage for one window (that's the data which in theory we could ditch at the end of the frame, in practice we currently keep it for each window)
 struct KGGuiWindowSettings;         // Storage for a window .ini settings (we keep one of those even if the actual window wasn't instanced during this session)
 
-KarmaGuiContext*   GKarmaGui;
+//KarmaGuiContext*   GKarmaGui;
 
 // Enumerations
 // Use your programming IDE "Go to definition" facility on the names of the center columns to find the actual flags/enum lists.
@@ -116,7 +116,7 @@ typedef void (*KGGuiErrorLogCallback)(void* user_data, const char* fmt, ...);
 //-----------------------------------------------------------------------------
 
 #ifndef GKarmaGui
-//extern  KarmaGuiContext* GKarmaGui;  // Current implicit context pointer
+  extern  KarmaGuiContext* GKarmaGui;  // Current implicit context pointer
 #endif
 
 //-------------------------------------------------------------------------
@@ -2761,7 +2761,7 @@ namespace Karma
 	class  KARMA_API KarmaGuiInternal
 	{
 	public:
-		static KarmaGuiContext*   GKarmaGui;
+		//static KarmaGuiContext*   GKarmaGui;
 		static KarmaGuiMemAllocFunc    GImAllocatorAllocFunc ;
 		static KarmaGuiMemFreeFunc     GImAllocatorFreeFunc;
 		static void*                GImAllocatorUserData;
