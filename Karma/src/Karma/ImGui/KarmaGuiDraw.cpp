@@ -81,6 +81,7 @@ Index of this file:
 //#define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION
 //#define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION
 
+extern  KarmaGuiContext* GKarmaGui;
 
 //-----------------------------------------------------------------------------
 // [SECTION] Style functions

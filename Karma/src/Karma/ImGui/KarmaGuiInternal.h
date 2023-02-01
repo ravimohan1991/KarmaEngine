@@ -115,9 +115,9 @@ typedef void (*KGGuiErrorLogCallback)(void* user_data, const char* fmt, ...);
 // See implementation of this variable in imgui.cpp for comments and details.
 //-----------------------------------------------------------------------------
 
-#ifndef GKarmaGui
+//#ifndef GKarmaGui
   extern  KarmaGuiContext* GKarmaGui;  // Current implicit context pointer
-#endif
+//#endif
 
 //-------------------------------------------------------------------------
 // [SECTION] STB libraries includes
@@ -2394,10 +2394,10 @@ public:
 
     // We don't use g.FontSize because the window may be != g.CurrentWindow.
     KGRect      Rect() const            { return KGRect(Pos.x, Pos.y, Pos.x + Size.x, Pos.y + Size.y); }
-    float       CalcFontSize() const    { KarmaGuiContext& g = *GKarmaGui; float scale = g.FontBaseSize * FontWindowScale * FontDpiScale; if (ParentWindow) scale *= ParentWindow->FontWindowScale; return scale; }
-    float       TitleBarHeight() const  { KarmaGuiContext& g = *GKarmaGui; return (Flags & KGGuiWindowFlags_NoTitleBar) ? 0.0f : CalcFontSize() + g.Style.FramePadding.y * 2.0f; }
+	float       CalcFontSize() const;
+	float       TitleBarHeight() const;
     KGRect      TitleBarRect() const    { return KGRect(Pos, KGVec2(Pos.x + SizeFull.x, Pos.y + TitleBarHeight())); }
-    float       MenuBarHeight() const   { KarmaGuiContext& g = *GKarmaGui; return (Flags & KGGuiWindowFlags_MenuBar) ? DC.MenuBarOffset.y + CalcFontSize() + g.Style.FramePadding.y * 2.0f : 0.0f; }
+	float       MenuBarHeight() const;
     KGRect      MenuBarRect() const     { float y1 = Pos.y + TitleBarHeight(); return KGRect(Pos.x, y1, Pos.x + SizeFull.x, y1 + MenuBarHeight()); }
 };
 
@@ -2854,8 +2854,8 @@ namespace Karma
 		// If this ever crash because g.CurrentWindow is NULL it means that either
 		// - ImGui::NewFrame() has never been called, which is illegal.
 		// - You are calling ImGui functions after ImGui::EndFrame()/ImGui::Render() and before the next ImGui::NewFrame(), which is also illegal.
-		static inline    KGGuiWindow*  GetCurrentWindowRead()      { KarmaGuiContext& g = *GKarmaGui; return g.CurrentWindow; }
-		static inline    KGGuiWindow*  GetCurrentWindow()          { KarmaGuiContext& g = *GKarmaGui; g.CurrentWindow->WriteAccessed = true; return g.CurrentWindow; }
+		static  KGGuiWindow*  GetCurrentWindowRead();
+		static KGGuiWindow*  GetCurrentWindow();
 		static KGGuiWindow*  FindWindowByID(KGGuiID id);
 		static KGGuiWindow*  FindWindowByName(const char* name);
 		static void          UpdateWindowParentAndRootLinks(KGGuiWindow* window, KarmaGuiWindowFlags flags, KGGuiWindow* parent_window);
@@ -2883,7 +2883,7 @@ namespace Karma
 
 		// Fonts, drawing
 		static void          SetCurrentFont(KGFont* font);
-		static inline KGFont*          GetDefaultFont() { KarmaGuiContext& g = *GKarmaGui; return g.IO.FontDefault ? g.IO.FontDefault : g.IO.Fonts->Fonts[0]; }
+		static KGFont*       GetDefaultFont();
 		static inline KGDrawList*      GetForegroundDrawList(KGGuiWindow* window) { return KarmaGui::GetForegroundDrawList(window->Viewport); }
 
 		// Init
@@ -2925,7 +2925,7 @@ namespace Karma
 
 		// Localization
 		static void          LocalizeRegisterEntries(const KGGuiLocEntry* entries, int count);
-		static inline const char*      LocalizeGetMsg(KGGuiLocKey key) { KarmaGuiContext& g = *GKarmaGui; const char* msg = g.LocalizationTable[key]; return msg ? msg : "*Missing Text*"; }
+		static const char*      LocalizeGetMsg(KGGuiLocKey key);
 
 		// Scrolling
 		static void          SetScrollX(KGGuiWindow* window, float scroll_x);
@@ -3025,18 +3025,8 @@ namespace Karma
 		static inline bool             IsGamepadKey(KarmaGuiKey key)                                  { return key >= KGGuiKey_Gamepad_BEGIN && key < KGGuiKey_Gamepad_END; }
 		static inline bool             IsMouseKey(KarmaGuiKey key)                                    { return key >= KGGuiKey_Mouse_BEGIN && key < KGGuiKey_Mouse_END; }
 		static inline bool             IsAliasKey(KarmaGuiKey key)                                    { return key >= KGGuiKey_Aliases_BEGIN && key < KGGuiKey_Aliases_END; }
-		static inline KarmaGuiKeyChord    ConvertShortcutMod(KarmaGuiKeyChord key_chord)                 { KarmaGuiContext& g = *GKarmaGui; KR_CORE_ASSERT(key_chord & KGGuiMod_Shortcut, "");return (key_chord & ~KGGuiMod_Shortcut) | (g.IO.ConfigMacOSXBehaviors ? KGGuiMod_Super : KGGuiMod_Ctrl); }
-		static inline KarmaGuiKey         ConvertSingleModFlagToKey(KarmaGuiKey key)
-		{
-			KarmaGuiContext& g = *GKarmaGui;
-			if (key == KGGuiMod_Ctrl) return KGGuiKey_ReservedForModCtrl;
-			if (key == KGGuiMod_Shift) return KGGuiKey_ReservedForModShift;
-			if (key == KGGuiMod_Alt) return KGGuiKey_ReservedForModAlt;
-			if (key == KGGuiMod_Super) return KGGuiKey_ReservedForModSuper;
-			if (key == KGGuiMod_Shortcut) return (g.IO.ConfigMacOSXBehaviors ? KGGuiKey_ReservedForModSuper : KGGuiKey_ReservedForModCtrl);
-			return key;
-		}
-
+		static KarmaGuiKeyChord    ConvertShortcutMod(KarmaGuiKeyChord key_chord);
+		static KarmaGuiKey         ConvertSingleModFlagToKey(KarmaGuiKey key);
 		static KarmaGuiKeyData* GetKeyData(KarmaGuiKey key);
 		static void          GetKeyChordName(KarmaGuiKeyChord key_chord, char* out_buf, int out_buf_size);
 		static inline KarmaGuiKey         MouseButtonToKey(KarmaGuiMouseButton button)                   { KR_CORE_ASSERT(button >= 0 && button < KGGuiMouseButton_COUNT, ""); return (KarmaGuiKey)(KGGuiKey_MouseLeft + button); }
@@ -3046,7 +3036,7 @@ namespace Karma
 		static int           CalcTypematicRepeatAmount(float t0, float t1, float repeat_delay, float repeat_rate);
 		static void          GetTypematicRepeatRate(KarmaGuiInputFlags flags, float* repeat_delay, float* repeat_rate);
 		static void          SetActiveIdUsingAllKeyboardKeys();
-		static inline bool             IsActiveIdUsingNavDir(KarmaGuiDir dir)                         { KarmaGuiContext& g = *GKarmaGui; return (g.ActiveIdUsingNavDirMask & (1 << dir)) != 0; }
+		static inline bool             IsActiveIdUsingNavDir(KarmaGuiDir dir);
 
 		// [EXPERIMENTAL] Low-Level: Key/Input Ownership
 		// - The idea is that instead of "eating" a given input, we can link to an owner id.
@@ -3063,7 +3053,7 @@ namespace Karma
 		static void              SetKeyOwner(KarmaGuiKey key, KGGuiID owner_id, KarmaGuiInputFlags flags = 0);
 		static void              SetItemKeyOwner(KarmaGuiKey key, KarmaGuiInputFlags flags = 0);           // Set key owner to last item if it is hovered or active. Equivalent to 'if (IsItemHovered() || IsItemActive()) { SetKeyOwner(key, GetItemID());'.
 		static bool              TestKeyOwner(KarmaGuiKey key, KGGuiID owner_id);                       // Test that key is either not owned, either owned by 'owner_id'
-		static inline KGGuiKeyOwnerData*   GetKeyOwnerData(KarmaGuiKey key)     { if (key & KGGuiMod_Mask_) key = ConvertSingleModFlagToKey(key); KR_CORE_ASSERT(IsNamedKey(key), ""); return &GKarmaGui->KeysOwnerData[key - KGGuiKey_NamedKey_BEGIN]; }
+		static KGGuiKeyOwnerData*   GetKeyOwnerData(KarmaGuiKey key);
 
 		// [EXPERIMENTAL] High-Level: Input Access functions w/ support for Key/Input Ownership
 		// - Important: legacy IsKeyPressed(KarmaGuiKey, bool repeat=true) _DEFAULTS_ to repeat, new IsKeyPressed() requires _EXPLICIT_ KGGuiInputFlags_Repeat flag.
@@ -3317,9 +3307,8 @@ namespace Karma
 		static bool          InputTextEx(const char* label, const char* hint, char* buf, int buf_size, const KGVec2& size_arg, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback = NULL, void* user_data = NULL);
 		static bool          TempInputText(const KGRect& bb, KGGuiID id, const char* label, char* buf, int buf_size, KarmaGuiInputTextFlags flags);
 		static bool          TempInputScalar(const KGRect& bb, KGGuiID id, const char* label, KarmaGuiDataType data_type, void* p_data, const char* format, const void* p_clamp_min = NULL, const void* p_clamp_max = NULL);
-		static inline bool             TempInputIsActive(KGGuiID id)       { KarmaGuiContext& g = *GKarmaGui; return (g.ActiveId == id && g.TempInputId == id); }
-		static inline KGGuiInputTextState* GetInputTextState(KGGuiID id)   { KarmaGuiContext& g = *GKarmaGui; return (id != 0 && g.InputTextState.ID == id) ? &g.InputTextState : NULL; } // Get input text state if active
-
+		static bool          TempInputIsActive(KGGuiID id);
+		static KGGuiInputTextState* GetInputTextState(KGGuiID id);
 		// Color
 		static void          ColorTooltip(const char* text, const float* col, KarmaGuiColorEditFlags flags);
 		static void          ColorEditOptionsPopup(const float* col, KarmaGuiColorEditFlags flags);
@@ -3345,7 +3334,7 @@ namespace Karma
 		static void          DebugLocateItemOnHover(KGGuiID target_id);              // Only call on reaction to a mouse Hover: because only 1 at the same time!
 		static void          DebugLocateItemResolveWithLastItem();
 		static inline void             DebugDrawItemRect(KGU32 col = KG_COL32(255,0,0,255))    { KarmaGuiContext& g = *GKarmaGui; KGGuiWindow* window = g.CurrentWindow; GetForegroundDrawList(window)->AddRect(g.LastItemData.Rect.Min, g.LastItemData.Rect.Max, col); }
-		static inline void             DebugStartItemPicker()                                  { KarmaGuiContext& g = *GKarmaGui; g.DebugItemPickerActive = true; }
+		static void             DebugStartItemPicker();
 		static void          ShowFontAtlas(KGFontAtlas* atlas);
 		static void          DebugHookIdInfo(KGGuiID id, KarmaGuiDataType data_type, const void* data_id, const void* data_id_end);
 		static void          DebugNodeColumns(KGGuiOldColumns* columns);

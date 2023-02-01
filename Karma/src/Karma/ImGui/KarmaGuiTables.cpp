@@ -259,13 +259,9 @@ static const float TABLE_BORDER_SIZE                     = 1.0f;    // FIXME-TAB
 static const float TABLE_RESIZE_SEPARATOR_HALF_THICKNESS = 4.0f;    // Extend outside inner borders.
 static const float TABLE_RESIZE_SEPARATOR_FEEDBACK_TIMER = 0.06f;   // Delay/timer before making the hover feedback (color+cursor) visible because tables/columns tends to be more cramped.
 
-//#ifndef GKarmaGui
-extern  KarmaGuiContext* GKarmaGui;  // Current implicit context pointer
-//#endif
-
-
 namespace Karma
 {
+extern  KarmaGuiContext* GKarmaGui; // Current implicit context pointer
 // Helper
 inline KarmaGuiTableFlags TableFixFlags(KarmaGuiTableFlags flags, KGGuiWindow* outer_window)
 {
@@ -302,7 +298,7 @@ inline KarmaGuiTableFlags TableFixFlags(KarmaGuiTableFlags flags, KGGuiWindow* o
 
 KGGuiTable* KarmaGuiInternal::TableFindByID(KGGuiID id)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     return g.Tables.GetByKey(id);
 }
 
@@ -315,7 +311,7 @@ bool    KarmaGui::BeginTable(const char* str_id, int columns_count, KarmaGuiTabl
 
 bool    KarmaGuiInternal::BeginTableEx(const char* name, KGGuiID id, int columns_count, KarmaGuiTableFlags flags, const KGVec2& outer_size, float inner_width)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiWindow* outer_window = GetCurrentWindow();
     if (outer_window->SkipItems) // Consistent with other tables + beneficial side effect that assert on miscalling EndTable() will be more visible.
         return false;
@@ -323,7 +319,9 @@ bool    KarmaGuiInternal::BeginTableEx(const char* name, KGGuiID id, int columns
     // Sanity checks
     KR_CORE_ASSERT(columns_count > 0 && columns_count <= KARMAGUI_TABLE_MAX_COLUMNS, "Only 1..64 columns allowed!");
     if (flags & KGGuiTableFlags_ScrollX)
-        KR_CORE_ASSERT(inner_width >= 0.0f, "");
+	{
+		KR_CORE_ASSERT(inner_width >= 0.0f, "");
+	}
 
     // If an outer size is specified ahead we will be able to early out when not visible. Exact clipping rules may evolve.
     const bool use_child_window = (flags & (KGGuiTableFlags_ScrollX | KGGuiTableFlags_ScrollY)) != 0;
@@ -342,7 +340,9 @@ bool    KarmaGuiInternal::BeginTableEx(const char* name, KGGuiID id, int columns
     const KGGuiID instance_id = id + instance_no;
     const KarmaGuiTableFlags table_last_flags = table->Flags;
     if (instance_no > 0)
-        KR_CORE_ASSERT(table->ColumnsCount == columns_count, "BeginTable(): Cannot change columns count mid-frame while preserving same ID");
+	{
+		KR_CORE_ASSERT(table->ColumnsCount == columns_count, "BeginTable(): Cannot change columns count mid-frame while preserving same ID");
+	}
 
     // Acquire temporary buffers
     const int table_idx = g.Tables.GetIndex(table);
@@ -729,7 +729,7 @@ static void TableSetupColumnFlags(KGGuiTable* table, KGGuiTableColumn* column, K
 // Increase feedback side-effect with widgets relying on WorkRect.Max.x... Maybe provide a default distribution for _WidthAuto columns?
 void KarmaGuiInternal::TableUpdateLayout(KGGuiTable* table)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(table->IsLayoutLocked == false, "");
 
     const KarmaGuiTableFlags table_sizing_policy = (table->Flags & KGGuiTableFlags_SizingMask_);
@@ -1053,7 +1053,9 @@ void KarmaGuiInternal::TableUpdateLayout(KGGuiTable* table)
         // Mark column as SkipItems (ignoring all items/layout)
         column->IsSkipItems = !column->IsEnabled || table->HostSkipItems;
         if (column->IsSkipItems)
-            KR_CORE_ASSERT(!is_visible, "");
+		{
+			KR_CORE_ASSERT(!is_visible, "");
+		}
 
         // Update status flags
         column->Flags |= KGGuiTableColumnFlags_IsEnabled;
@@ -1160,7 +1162,7 @@ void KarmaGuiInternal::TableUpdateLayout(KGGuiTable* table)
 //   overlapping the same area.
 void KarmaGuiInternal::TableUpdateBorders(KGGuiTable* table)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KR_CORE_ASSERT(table->Flags & KGGuiTableFlags_Resizable, "");
 
     // At this point OuterRect height may be zero or under actual final height, so we rely on temporal coherency and
@@ -1221,7 +1223,7 @@ void KarmaGuiInternal::TableUpdateBorders(KGGuiTable* table)
 
 void    KarmaGui::EndTable()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
     KR_CORE_ASSERT(table != NULL, "Only call EndTable() if BeginTable() returns true!");
 
@@ -1430,7 +1432,7 @@ void    KarmaGui::EndTable()
 // If (init_width_or_weight <= 0.0f) it is ignored
 void KarmaGui::TableSetupColumn(const char* label, KarmaGuiTableColumnFlags flags, float init_width_or_weight, KGGuiID user_id)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
     KR_CORE_ASSERT(table != NULL, "Need to call TableSetupColumn() after BeginTable()!");
     KR_CORE_ASSERT(table->IsLayoutLocked == false, "Need to call call TableSetupColumn() before first row!");
@@ -1447,7 +1449,9 @@ void KarmaGui::TableSetupColumn(const char* label, KarmaGuiTableColumnFlags flag
     // Assert when passing a width or weight if policy is entirely left to default, to avoid storing width into weight and vice-versa.
     // Give a grace to users of KGGuiTableFlags_ScrollX.
     if (table->IsDefaultSizingPolicy && (flags & KGGuiTableColumnFlags_WidthMask_) == 0 && (flags & KGGuiTableFlags_ScrollX) == 0)
-        KR_CORE_ASSERT(init_width_or_weight <= 0.0f, "Can only specify width/weight if sizing policy is set explicitly in either Table or Column.");
+	{
+		KR_CORE_ASSERT(init_width_or_weight <= 0.0f, "Can only specify width/weight if sizing policy is set explicitly in either Table or Column.");
+	}
 
     // When passing a width automatically enforce WidthFixed policy
     // (whereas TableSetupColumnFlags would default to WidthAuto if table is not Resizable)
@@ -1498,7 +1502,7 @@ void KarmaGui::TableSetupColumn(const char* label, KarmaGuiTableColumnFlags flag
 // [Public]
 void KarmaGui::TableSetupScrollFreeze(int columns, int rows)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
     KR_CORE_ASSERT(table != NULL, "Need to call TableSetupColumn() after BeginTable()!");
     KR_CORE_ASSERT(table->IsLayoutLocked == false, "Need to call TableSetupColumn() before first row!");
@@ -1540,14 +1544,14 @@ void KarmaGui::TableSetupScrollFreeze(int columns, int rows)
 
 int KarmaGui::TableGetColumnCount()
 {
-    KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
     return table ? table->ColumnsCount : 0;
 }
 
 const char* KarmaGui::TableGetColumnName(int column_n)
 {
-    KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *GKarmaGui;
     KGGuiTable* table = g.CurrentTable;
     if (!table)
         return NULL;
@@ -2698,7 +2702,9 @@ void KarmaGuiInternal::TableSetColumnSortDirection(int column_n, KarmaGuiSortDir
     if (!(table->Flags & KGGuiTableFlags_SortMulti))
         append_to_sort_specs = false;
     if (!(table->Flags & KGGuiTableFlags_SortTristate))
-        KR_CORE_ASSERT(sort_direction != KGGuiSortDirection_None, "");
+	{
+		KR_CORE_ASSERT(sort_direction != KGGuiSortDirection_None, "");
+	}
 
     KGGuiTableColumnIdx sort_order_max = 0;
     if (append_to_sort_specs)

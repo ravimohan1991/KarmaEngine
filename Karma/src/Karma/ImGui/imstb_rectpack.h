@@ -205,8 +205,6 @@ struct stbrp_context
 //
 //     IMPLEMENTATION SECTION
 //
-
-#ifdef STB_RECT_PACK_IMPLEMENTATION
 #ifndef STBRP_SORT
 #include <stdlib.h>
 #define STBRP_SORT qsort
@@ -582,7 +580,6 @@ STBRP_DEF int stbrp_pack_rects(stbrp_context *context, stbrp_rect *rects, int nu
    // return the all_rects_packed status
    return all_rects_packed;
 }
-#endif
 
 /*
 ------------------------------------------------------------------------------

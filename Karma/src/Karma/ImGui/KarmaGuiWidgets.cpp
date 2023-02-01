@@ -127,6 +127,11 @@ namespace Karma
 static bool             InputTextFilterCharacter(unsigned int* p_char, KarmaGuiInputTextFlags flags, KarmaGuiInputTextCallback callback, void* user_data, KGGuiInputSource input_source);
 static int              InputTextCalcTextLenAndLineCount(const char* text_begin, const char** out_text_end);
 static KGVec2           InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWchar* text_begin, const KGWchar* text_end, const KGWchar** remaining = NULL, KGVec2* out_offset = NULL, bool stop_on_new_line = false);
+const char*   KGParseFormatFindStart(const char* format);
+const char*   KGParseFormatFindEnd(const char* format);
+int           KGParseFormatPrecision(const char* format, int default_value);
+void          KGParseFormatSanitizeForPrinting(const char* fmt_in, char* fmt_out, size_t fmt_out_size);
+const char*   KGParseFormatSanitizeForScanning(const char* fmt_in, char* fmt_out, size_t fmt_out_size);
 }
 
 //-------------------------------------------------------------------------
@@ -150,6 +155,7 @@ static KGVec2           InputTextCalcTextSizeW(KarmaGuiContext* ctx, const KGWch
 
 namespace  Karma
 {
+extern KarmaGuiContext* GKarmaGui; // Current implicit context pointer
 void KarmaGuiInternal::TextEx(const char* text, const char* text_end, KGGuiTextFlags flags)
 {
 	KGGuiWindow* window = GetCurrentWindow();
@@ -2324,6 +2330,12 @@ bool KarmaGuiInternal::DragBehavior(KGGuiID id, KarmaGuiDataType data_type, void
 	return false;
 }
 
+bool KarmaGuiInternal::TempInputIsActive(KGGuiID id)
+{
+	KarmaGuiContext& g = *GKarmaGui;
+	return (g.ActiveId == id && g.TempInputId == id);
+}
+
 // Note: p_data, p_min and p_max are _pointers_ to a memory address holding the data. For a Drag widget, p_min and p_max are optional.
 // Read code of e.g. DragFloat(), DragInt() etc. or examples in 'Demo->Widgets->Data Types' to understand how to use this function directly.
 bool KarmaGui::DragScalar(const char* label, KarmaGuiDataType data_type, void* p_data, float v_speed, const void* p_min, const void* p_max, const char* format, KarmaGuiSliderFlags flags)
@@ -3806,7 +3818,7 @@ void KarmaGuiInputTextCallbackData::InsertChars(int pos, const char* new_text, c
 			return;
 
 		// Contrary to STB_TEXTEDIT_INSERTCHARS() this is working in the UTF8 buffer, hence the mildly similar code (until we remove the U16 buffer altogether!)
-		KarmaGuiContext& g = *GKarmaGui;
+		KarmaGuiContext& g = *Karma::GKarmaGui;
 		KGGuiInputTextState* edit_state = &g.InputTextState;
 		KR_CORE_ASSERT(edit_state->ID != 0 && g.ActiveId == edit_state->ID, "");
 		KR_CORE_ASSERT(Buf == edit_state->TextA.Data, "");
@@ -3931,7 +3943,7 @@ static bool Karma::InputTextFilterCharacter(unsigned int* p_char, KarmaGuiInputT
 // FIXME: Ideally we should transition toward (1) making InsertChars()/DeleteChars() update undo-stack (2) discourage (and keep reconcile) or obsolete (and remove reconcile) accessing buffer directly.
 static void InputTextReconcileUndoStateAfterUserCallback(KGGuiInputTextState* state, const char* new_buf_a, int new_length_a)
 {
-	KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
 	const KGWchar* old_buf = state->TextW.Data;
 	const int old_length = state->CurLenW;
 	const int new_length = KGTextCountCharsFromUtf8(new_buf_a, new_buf_a + new_length_a);
@@ -4886,6 +4898,12 @@ bool Karma::KarmaGuiInternal::InputTextEx(const char* label, const char* hint, c
 		return value_changed;
 }
 
+KGGuiInputTextState* Karma::KarmaGuiInternal::GetInputTextState(KGGuiID id)
+{
+	KarmaGuiContext& g = *GKarmaGui;
+	return (id != 0 && g.InputTextState.ID == id) ? &g.InputTextState : NULL;
+} // Get input text state if active
+
 void Karma::KarmaGuiInternal::DebugNodeInputTextState(KGGuiInputTextState* state)
 {
 #ifndef KARMAGUI_DISABLE_DEBUG_TOOLS
@@ -4951,7 +4969,7 @@ static void ColorEditRestoreHS(const float* col, float* H, float* S, float* V)
 	// g.ColorEditLastColor is stored as KGU32 RGB value: this essentially gives us color equality check with reduced precision.
 	// Tiny external color changes would not be detected and this check would still pass. This is OK, since we only restore hue/saturation _only_ if they are undefined,
 	// therefore this change flipping hue/saturation from undefined to a very tiny value would still be represented in color picker.
-	KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
 	if (g.ColorEditLastColor != Karma::KarmaGui::ColorConvertFloat4ToU32(KGVec4(col[0], col[1], col[2], 0)))
 		return;
 
@@ -6984,7 +7002,7 @@ void Karma::KarmaGui::EndMainMenuBar()
 
 static bool IsRootOfOpenMenuSet()
 {
-	KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
 	KGGuiWindow* window = g.CurrentWindow;
 	if ((g.OpenPopupStack.Size <= g.BeginPopupStack.Size) || (window->Flags & KGGuiWindowFlags_ChildMenu))
 		return false;
@@ -7388,13 +7406,13 @@ static int TabItemComparerByBeginOrder(const void* lhs, const void* rhs)
 
 static KGGuiTabBar* GetTabBarFromTabBarRef(const KGGuiPtrOrIndex& ref)
 {
-	KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
 	return ref.Ptr ? (KGGuiTabBar*)ref.Ptr : g.TabBars.GetByIndex(ref.Index);
 }
 
 static KGGuiPtrOrIndex GetTabBarRefFromTabBar(KGGuiTabBar* tab_bar)
 {
-	KarmaGuiContext& g = *GKarmaGui;
+	KarmaGuiContext& g = *Karma::GKarmaGui;
 	if (g.TabBars.Contains(tab_bar))
 		return KGGuiPtrOrIndex(g.TabBars.GetIndex(tab_bar));
 	return KGGuiPtrOrIndex(tab_bar);

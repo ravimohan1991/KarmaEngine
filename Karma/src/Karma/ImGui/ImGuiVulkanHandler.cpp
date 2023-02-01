@@ -1113,7 +1113,7 @@ namespace Karma
 			if (elem->TextureMemory)
 			{
 				vkFreeMemory(vulkanInfo->Device, elem->TextureMemory, vulkanInfo->Allocator);
-				elem->TextureMemory;
+				elem->TextureMemory = VK_NULL_HANDLE;
 			}
 			if (elem->TextureSampler)
 			{
