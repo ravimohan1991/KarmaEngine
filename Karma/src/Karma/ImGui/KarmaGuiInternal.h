@@ -1393,7 +1393,7 @@ struct KGGuiOldColumns
 #define DOCKING_HOST_DRAW_CHANNEL_BG 0  // Dock host: background fill
 #define DOCKING_HOST_DRAW_CHANNEL_FG 1  // Dock host: decorations and contents
 
-#ifdef KARMAGUI_HAS_DOCK
+//#ifdef KARMAGUI_HAS_DOCK
 
 // Extend KGGuiDockNodeFlags_
 enum KGGuiDockNodeFlagsPrivate_
@@ -1528,7 +1528,7 @@ struct KGGuiDockContext
     KGGuiDockContext()              { memset(this, 0, sizeof(*this)); }
 };
 
-#endif // #ifdef KARMAGUI_HAS_DOCK
+//#endif // #ifdef KARMAGUI_HAS_DOCK
 
 //-----------------------------------------------------------------------------
 // [SECTION] Viewport support
@@ -1726,7 +1726,6 @@ struct KGGuiContextHook
 //-----------------------------------------------------------------------------
 // [SECTION] KarmaGuiContext (main Dear ImGui context)
 //-----------------------------------------------------------------------------
-
 struct  KarmaGuiContext
 {
     bool                    Initialized;
@@ -3375,14 +3374,14 @@ struct KGFontBuilderIO
 #endif
 namespace Karma
 {
-static void      ImFontAtlasBuildInit(KGFontAtlas* atlas);
-static void      ImFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* font_config, float ascent, float descent);
-static void      ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opaque);
-static void      ImFontAtlasBuildFinish(KGFontAtlas* atlas);
-static void      ImFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned char in_marker_pixel_value);
-static void      ImFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned int in_marker_pixel_value);
-static void      ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], float in_multiply_factor);
-static void      ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride);
+static void      KGFontAtlasBuildInit(KGFontAtlas* atlas);
+static void      KGFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* font_config, float ascent, float descent);
+static void      KGFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opaque);
+static void      KGFontAtlasBuildFinish(KGFontAtlas* atlas);
+static void      KGFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned char in_marker_pixel_value);
+static void      KGFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned int in_marker_pixel_value);
+static void      KGFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], float in_multiply_factor);
+static void      KGFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride);
 }
 
 //-----------------------------------------------------------------------------

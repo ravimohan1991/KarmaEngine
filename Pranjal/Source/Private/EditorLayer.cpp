@@ -80,28 +80,28 @@ namespace Karma
 
 	void EditorLayer::ImGuiRender(float deltaTime)
 	{
-		ImGuiID dockspaceID;
+		KGGuiID dockspaceID;
 		// 1. Show the big demo window. For debug purpose!!
 		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
+		//KarmaGui::ShowDemoWindow(&show);
 
 		// 2. A UI canvas, if I may, for the main window!!
 		{
-			static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-			ImGuiWindowFlags windowFlags = ImGuiDockNodeFlags_None;
+			static KarmaGuiDockNodeFlags dockspaceFlags = KGGuiDockNodeFlags_None;
+			KarmaGuiWindowFlags windowFlags = KGGuiDockNodeFlags_None;
 
-			const ImGuiViewport* viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(viewport->WorkPos);
-			ImGui::SetNextWindowSize(viewport->WorkSize);
-			ImGui::SetNextWindowViewport(viewport->ID);
+			const KarmaGuiViewport* viewport = KarmaGui::GetMainViewport();
+			KarmaGui::SetNextWindowPos(viewport->WorkPos);
+			KarmaGui::SetNextWindowSize(viewport->WorkSize);
+			KarmaGui::SetNextWindowViewport(viewport->ID);
 
 			// No clue
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			KarmaGui::PushStyleVar(KGGuiStyleVar_WindowRounding, 0.0f);
+			KarmaGui::PushStyleVar(KGGuiStyleVar_WindowBorderSize, 0.0f);
 
-			windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+			windowFlags |= KGGuiWindowFlags_NoTitleBar | KGGuiWindowFlags_NoCollapse | KGGuiWindowFlags_NoResize | KGGuiWindowFlags_NoMove;
 
-			windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+			windowFlags |= KGGuiWindowFlags_NoBringToFrontOnFocus | KGGuiWindowFlags_NoNavFocus;
 
 			// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
 			// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
@@ -109,16 +109,16 @@ namespace Karma
 			// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
 			// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 			// hmm
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			KarmaGui::PushStyleVar(KGGuiStyleVar_WindowPadding, KGVec2(0.0f, 0.0f));
 
-			ImGui::Begin("KarmaSafetyDockSpace", nullptr, windowFlags);
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar(2);
+			KarmaGui::Begin("KarmaSafetyDockSpace", nullptr, windowFlags);
+			KarmaGui::PopStyleVar();
+			KarmaGui::PopStyleVar(2);
 
-			dockspaceID = ImGui::GetID("KarmaSafetyDockSpace");
-			ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
+			dockspaceID = KarmaGui::GetID("KarmaSafetyDockSpace");
+			KarmaGui::DockSpace(dockspaceID, KGVec2(0.0f, 0.0f), dockspaceFlags);
 
-			ImGui::End();
+			KarmaGui::End();
 		}
 
 		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset

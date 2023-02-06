@@ -6,6 +6,8 @@
 #include "Karma/Layer.h"
 #include "Karma/Log.h"
 #include "Karma/ImGui/ImGuiLayer.h"
+#include "Karma/ImGui/KarmaGui.h"
+#include "Karma/ImGui/KarmaGuiInternal.h"
 
 #include "Karma/Renderer/Shader.h"
 #include "Karma/Renderer/VertexArray.h"

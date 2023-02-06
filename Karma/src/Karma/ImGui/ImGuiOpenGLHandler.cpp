@@ -1,4 +1,4 @@
-#include "imgui.h"
+//#include "imgui.h"
 #include "ImGuiOpenGLHandler.h"
 
 #include <stdio.h>
@@ -19,13 +19,13 @@ namespace Karma
 	// Static Functions
 	bool ImGuiOpenGLHandler::ImGui_ImplOpenGL3_Init(const char* glsl_version)
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		IM_ASSERT(io.BackendRendererUserData == NULL && "Already initialized a renderer backend!");
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		KR_CORE_ASSERT(io.BackendRendererUserData == NULL, "Already initialized a renderer backend!");
 
 		// We have already initialized glad in OpenGLContext::Init()
 
 		// Setup backend capabilities flags
-		ImGui_ImplOpenGL3_Data* bd = IM_NEW(ImGui_ImplOpenGL3_Data)();
+		ImGui_ImplOpenGL3_Data* bd = KG_NEW(ImGui_ImplOpenGL3_Data)();
 		io.BackendRendererUserData = (void*)bd;
 		io.BackendRendererName = "OpenGL_Got_Back";
 
@@ -81,7 +81,7 @@ namespace Karma
 #endif
 		}
 
-		IM_ASSERT((int)strlen(glsl_version) + 2 < IM_ARRAYSIZE(bd->GlslVersionString));
+		KR_CORE_ASSERT((int)strlen(glsl_version) + 2 < KG_ARRAYSIZE(bd->GlslVersionString), "");
 
 		strcpy(bd->GlslVersionString, glsl_version);
 		strcat(bd->GlslVersionString, "\n");
@@ -108,7 +108,7 @@ namespace Karma
 		}
 #endif
 
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		if (io.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
 		{
 			ImGui_ImplOpenGL3_InitPlatformInterface();
 		}
@@ -119,20 +119,20 @@ namespace Karma
 	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_Shutdown()
 	{
 		ImGui_ImplOpenGL3_Data* bd = ImGui_ImplOpenGL3_GetBackendData();
-		IM_ASSERT(bd != NULL && "No renderer backend to shutdown, or already shutdown?");
-		ImGuiIO& io = ImGui::GetIO();
+		KR_CORE_ASSERT(bd != NULL, "No renderer backend to shutdown, or already shutdown?");
+		KarmaGuiIO& io = KarmaGui::GetIO();
 
 		ImGui_ImplOpenGL3_ShutdownPlatformInterface();
 		ImGui_ImplOpenGL3_DestroyDeviceObjects();
 		io.BackendRendererName = NULL;
 		io.BackendRendererUserData = NULL;
-		IM_DELETE(bd);
+		KG_DELETE(bd);
 	}
 
 	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_NewFrame()
 	{
 		ImGui_ImplOpenGL3_Data* bd = ImGui_ImplOpenGL3_GetBackendData();
-		IM_ASSERT(bd != NULL && "Did you call ImGui_ImplOpenGL3_Init()?");
+		KR_CORE_ASSERT(bd != NULL, "Did you call ImGui_ImplOpenGL3_Init()?");
 
 		if (!bd->ShaderHandle)
 		{
@@ -140,7 +140,7 @@ namespace Karma
 		}
 	}
 
-	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_SetupRenderState(ImDrawData* draw_data, int fb_width, int fb_height, GLuint vertex_array_object)
+	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_SetupRenderState(KGDrawData* draw_data, int fb_width, int fb_height, GLuint vertex_array_object)
 	{
 		ImGui_ImplOpenGL3_Data* bd = ImGui_ImplOpenGL3_GetBackendData();
 
@@ -208,15 +208,15 @@ namespace Karma
 		glEnableVertexAttribArray(bd->AttribLocationVtxPos);
 		glEnableVertexAttribArray(bd->AttribLocationVtxUV);
 		glEnableVertexAttribArray(bd->AttribLocationVtxColor);
-		glVertexAttribPointer(bd->AttribLocationVtxPos, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)IM_OFFSETOF(ImDrawVert, pos));
-		glVertexAttribPointer(bd->AttribLocationVtxUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)IM_OFFSETOF(ImDrawVert, uv));
-		glVertexAttribPointer(bd->AttribLocationVtxColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)IM_OFFSETOF(ImDrawVert, col));
+		glVertexAttribPointer(bd->AttribLocationVtxPos, 2, GL_FLOAT, GL_FALSE, sizeof(KGDrawVert), (GLvoid*)KG_OFFSETOF(KGDrawVert, pos));
+		glVertexAttribPointer(bd->AttribLocationVtxUV, 2, GL_FLOAT, GL_FALSE, sizeof(KGDrawVert), (GLvoid*)KG_OFFSETOF(KGDrawVert, uv));
+		glVertexAttribPointer(bd->AttribLocationVtxColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(KGDrawVert), (GLvoid*)KG_OFFSETOF(KGDrawVert, col));
 	}
 
 	// OpenGL3 Render function.
 	// Note that this implementation is little overcomplicated because we are saving/setting up/restoring every OpenGL state explicitly.
 	// This is in order to be able to run within an OpenGL engine that doesn't do so.
-	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data)
+	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_RenderDrawData(KGDrawData* draw_data)
 	{
 		// Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
 		int fb_width = (int)(draw_data->DisplaySize.x * draw_data->FramebufferScale.x);
@@ -280,20 +280,20 @@ namespace Karma
 		ImGuiOpenGLHandler::ImGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
 
 		// Will project scissor/clipping rectangles into framebuffer space
-		ImVec2 clip_off = draw_data->DisplayPos;         // (0,0) unless using multi-viewports
-		ImVec2 clip_scale = draw_data->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
+		KGVec2 clip_off = draw_data->DisplayPos;         // (0,0) unless using multi-viewports
+		KGVec2 clip_scale = draw_data->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
 
 		// Render command lists
 		for (int n = 0; n < draw_data->CmdListsCount; n++)
 		{
-			const ImDrawList* cmd_list = draw_data->CmdLists[n];
+			const KGDrawList* cmd_list = draw_data->CmdLists[n];
 
 			// Upload vertex/index buffers
 			// - On Intel windows drivers we got reports that regular glBufferData() led to accumulating leaks when using 	multi-viewports, so we started using orphaning + glBufferSubData(). (See 	https://github.com/ocornut/imgui/issues/4468)
 			// - On NVIDIA drivers we got reports that using orphaning + glBufferSubData() led to glitches when using 	multi-viewports.
 			// - OpenGL drivers are in a very sorry state in 2022, for now we are switching code path based on vendors.
-			const GLsizeiptr vtx_buffer_size = (GLsizeiptr)cmd_list->VtxBuffer.Size * (int)sizeof(ImDrawVert);
-			const GLsizeiptr idx_buffer_size = (GLsizeiptr)cmd_list->IdxBuffer.Size * (int)sizeof(ImDrawIdx);
+			const GLsizeiptr vtx_buffer_size = (GLsizeiptr)cmd_list->VtxBuffer.Size * (int)sizeof(KGDrawVert);
+			const GLsizeiptr idx_buffer_size = (GLsizeiptr)cmd_list->IdxBuffer.Size * (int)sizeof(KGDrawIdx);
 			if (bd->UseBufferSubData)
 			{
 				if (bd->VertexBufferSize < vtx_buffer_size)
@@ -317,12 +317,12 @@ namespace Karma
 
 			for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
 			{
-				const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
+				const KGDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
 				if (pcmd->UserCallback != NULL)
 				{
 					// User callback, registered via ImDrawList::AddCallback()
 					// (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to 	reset render state.)
-					if (pcmd->UserCallback == ImDrawCallback_ResetRenderState)
+					if (pcmd->UserCallback == KGDrawCallback_ResetRenderState)
 						ImGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
 					else
 						pcmd->UserCallback(cmd_list, pcmd);
@@ -330,8 +330,8 @@ namespace Karma
 				else
 				{
 					// Project scissor/clipping rectangles into framebuffer space
-					ImVec2 clip_min((pcmd->ClipRect.x - clip_off.x) * clip_scale.x, (pcmd->ClipRect.y - clip_off.y) * clip_scale.y);
-					ImVec2 clip_max((pcmd->ClipRect.z - clip_off.x) * clip_scale.x, (pcmd->ClipRect.w - clip_off.y) * clip_scale.y);
+					KGVec2 clip_min((pcmd->ClipRect.x - clip_off.x) * clip_scale.x, (pcmd->ClipRect.y - clip_off.y) * clip_scale.y);
+					KGVec2 clip_max((pcmd->ClipRect.z - clip_off.x) * clip_scale.x, (pcmd->ClipRect.w - clip_off.y) * clip_scale.y);
 					if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
 						continue;
 
@@ -345,7 +345,7 @@ namespace Karma
 						glDrawElementsBaseVertex(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)(pcmd->IdxOffset * sizeof(ImDrawIdx)), (GLint)pcmd->VtxOffset);
 					else
 #endif
-						glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)(pcmd->IdxOffset * sizeof(ImDrawIdx)));
+						glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(KGDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)(pcmd->IdxOffset * sizeof(KGDrawIdx)));
 				}
 			}
 		}
@@ -394,7 +394,7 @@ namespace Karma
 
 	bool ImGuiOpenGLHandler::ImGui_ImplOpenGL3_CreateFontsTexture()
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		ImGui_ImplOpenGL3_Data* bd = ImGui_ImplOpenGL3_GetBackendData();
 
 		// Build texture atlas
@@ -423,11 +423,11 @@ namespace Karma
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
 		// Store our identifier
-		io.Fonts->SetTexID((ImTextureID)(intptr_t)bd->FontTexture);
+		io.Fonts->SetTexID((KGTextureID)(intptr_t)bd->FontTexture);
 
 		for (auto& decal : bd->mesaDecalDataList)
 		{
-			decal.DecalID = (ImTextureID)(intptr_t)decal.DecalRef;
+			decal.DecalID = (KGTextureID)(intptr_t)decal.DecalRef;
 		}
 
 		// Restore state
@@ -439,7 +439,7 @@ namespace Karma
 	// We gonna destroy decals texture on the ride!
 	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_DestroyFontsTexture()
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		ImGui_ImplOpenGL3_Data* bd = ImGui_ImplOpenGL3_GetBackendData();
 		if (bd->FontTexture)
 		{
@@ -466,7 +466,7 @@ namespace Karma
 			fprintf(stderr, "ERROR: ImGui_ImplOpenGL3_CreateDeviceObjects: failed to compile %s! With GLSL: %s\n", desc, bd->GlslVersionString);
 		if (log_length > 1)
 		{
-			ImVector<char> buf;
+			KGVector<char> buf;
 			buf.resize((int)(log_length + 1));
 			glGetShaderInfoLog(handle, log_length, NULL, (GLchar*)buf.begin());
 			fprintf(stderr, "%s\n", buf.begin());
@@ -485,7 +485,7 @@ namespace Karma
 			fprintf(stderr, "ERROR: ImGui_ImplOpenGL3_CreateDeviceObjects: failed to link %s! With GLSL %s\n", desc, bd->GlslVersionString);
 		if (log_length > 1)
 		{
-			ImVector<char> buf;
+			KGVector<char> buf;
 			buf.resize((int)(log_length + 1));
 			glGetProgramInfoLog(handle, log_length, NULL, (GLchar*)buf.begin());
 			fprintf(stderr, "%s\n", buf.begin());
@@ -697,11 +697,11 @@ namespace Karma
 	// If you are new to dear imgui or creating a new binding for dear imgui, it is recommended that you completely ignore this 	section first..
 	//--------------------------------------------------------------------------------------------------------
 
-	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_RenderWindow(ImGuiViewport* viewport, void*)
+	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_RenderWindow(KarmaGuiViewport* viewport, void*)
 	{
-		if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
+		if (!(viewport->Flags & KGGuiViewportFlags_NoRendererClear))
 		{
-			ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+			KGVec4 clear_color = KGVec4(0.0f, 0.0f, 0.0f, 1.0f);
 			glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
@@ -710,12 +710,12 @@ namespace Karma
 
 	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_InitPlatformInterface()
 	{
-		ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+		KarmaGuiPlatformIO& platform_io = KarmaGui::GetPlatformIO();
 		platform_io.Renderer_RenderWindow = ImGui_ImplOpenGL3_RenderWindow;
 	}
 
 	void ImGuiOpenGLHandler::ImGui_ImplOpenGL3_ShutdownPlatformInterface()
 	{
-		ImGui::DestroyPlatformWindows();
+		KarmaGui::DestroyPlatformWindows();
 	}
 }

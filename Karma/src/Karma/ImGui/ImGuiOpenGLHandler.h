@@ -2,7 +2,7 @@
 // https://github.com/ravimohan1991/imgui/blob/07334fa9c67e6c7c827cc76c2ac4de419a1658c1/backends/imgui_impl_opengl3.h
 
 #pragma once
-#include "imgui.h"      // IMGUI_IMPL_API
+#include "KarmaGui.h"      // IMGUI_IMPL_API
 
 #define IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 
@@ -25,7 +25,7 @@ namespace Karma
 	struct MesaDecalData
 	{
 		GLuint DecalRef;
-		ImTextureID DecalID;
+		KGTextureID DecalID;
 		int width, height;
 	};
 
@@ -82,18 +82,18 @@ namespace Karma
 		static bool ImGui_ImplOpenGL3_Init(const char* glsl_version = NULL);
 		static void ImGui_ImplOpenGL3_Shutdown();
 		static void ImGui_ImplOpenGL3_NewFrame();
-		static void ImGui_ImplOpenGL3_RenderDrawData(ImDrawData* draw_data);
+		static void ImGui_ImplOpenGL3_RenderDrawData(KGDrawData* draw_data);
 		// Backend data stored in io.BackendRendererUserData to allow support for multiple Dear ImGui contexts
 		// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple windows) instead of multiple Dear ImGui contexts.
 		inline static ImGui_ImplOpenGL3_Data* ImGui_ImplOpenGL3_GetBackendData()
 		{
-			return ImGui::GetCurrentContext() ? (ImGui_ImplOpenGL3_Data*)ImGui::GetIO().BackendRendererUserData : NULL;
+			return KarmaGui::GetCurrentContext() ? (ImGui_ImplOpenGL3_Data*)KarmaGui::GetIO().BackendRendererUserData : NULL;
 		}
 
-		static void ImGui_ImplOpenGL3_SetupRenderState(ImDrawData* draw_data, int fb_width, int fb_height, GLuint vertex_array_object);
+		static void ImGui_ImplOpenGL3_SetupRenderState(KGDrawData* draw_data, int fb_width, int fb_height, GLuint vertex_array_object);
 		static bool CheckShader(GLuint handle, const char* desc);
 		static bool CheckProgram(GLuint handle, const char* desc);
-		static void ImGui_ImplOpenGL3_RenderWindow(ImGuiViewport* viewport, void*);
+		static void ImGui_ImplOpenGL3_RenderWindow(KarmaGuiViewport* viewport, void*);
 		static void ImGui_ImplOpenGL3_InitPlatformInterface();
 		static void ImGui_ImplOpenGL3_ShutdownPlatformInterface();
 

@@ -3,7 +3,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 #include "Karma/Application.h"
-#include "backends/imgui_impl_glfw.h"
+#include "imgui_impl_glfw.h"
 #include "Vulkan/VulkanHolder.h"
 #include "Renderer/RendererAPI.h"
 #include "Renderer/RenderCommand.h"
@@ -13,6 +13,8 @@
 
 // Emedded font
 #include "Karma/ImGui/Roboto-Regular.h"
+
+//#include "imgui_impl_glfw.cpp"// Unity type build, experimental
 
 namespace Karma
 {
@@ -64,24 +66,24 @@ namespace Karma
 	void ImGuiLayer::OnAttach()
 	{
 		// Setup Dear ImGui context
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
+		// IMGUI_CHECKVERSION();
+		KarmaGui::CreateContext();
 
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		(void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;	// Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;		// Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;		// Enable Multi-Viewport / Platform Windows
+		io.ConfigFlags |= KGGuiConfigFlags_NavEnableKeyboard;	// Enable Keyboard Controls
+		io.ConfigFlags |= KGGuiConfigFlags_DockingEnable;		// Enable Docking
+		io.ConfigFlags |= KGGuiConfigFlags_ViewportsEnable;		// Enable Multi-Viewport / Platform Windows
 
 		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
+		KarmaGui::StyleColorsDark();
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-		ImGuiStyle& style = ImGui::GetStyle();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		KarmaGuiStyle& style = KarmaGui::GetStyle();
+		if (io.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
 		{
 			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+			style.Colors[KGGuiCol_WindowBg].w = 1.0f;
 		}
 
 		// Setting Dear ImGui ini file
@@ -93,9 +95,9 @@ namespace Karma
 		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
 		{
 			// Exposing Karma's Vulkan components to Dear ImGui
-			ImGui_ImplGlfw_InitForVulkan(window, true);
+			KarmaGui_ImplGlfw_InitForVulkan(window, true);
 
-			ImGui_KarmaImplVulkan_InitInfo initInfo = {};
+			KarmaGui_ImplVulkan_InitInfo initInfo = {};
 			// An inter-class communication
 			initInfo.Instance = VulkanHolder::GetVulkanContext()->GetInstance();
 			initInfo.PhysicalDevice = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
@@ -111,16 +113,16 @@ namespace Karma
 			initInfo.DescriptorPool = m_ImGuiDescriptorPool;
 			initInfo.RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
 
-			ImGuiVulkanHandler::ImGui_KarmaImplVulkan_Init(&initInfo);
+			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(&initInfo);
 
 			// Fresh start with newly instantiated Vulkan data
 			// Since VulkanContext has already instantiated fresh swapchain and commandbuffers, we send that false
-			ImGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
+			KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
 
 			// Load default font
-			ImFontConfig fontConfig;
+			KGFontConfig fontConfig;
 			fontConfig.FontDataOwnedByAtlas = false;
-			ImFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
+			KGFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
 			io.FontDefault = robotoFont;
 
 			// Upload Fonts
@@ -140,23 +142,23 @@ namespace Karma
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin recording(?) command buffer!");
 
 				// Load Fonts
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateFontsTexture(commandBuffer);
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateFontsTexture(commandBuffer);
 
 				// Load Images
 
 				//	1. The wall
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/The_Source_Wall.jpg", "The Source");
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/The_Source_Wall.jpg", "The Source");
 				
 				// 2. 3D Exhibitor large image (primitive theme)
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/Measures.png", "Primitive Background");
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/Measures.png", "Primitive Background");
 
 				// 3. Icons Packa
 
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/File.png", "File icon");
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/Folder.png", "Folder icon");
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/OpenFolder.png", "Opened Folder incon");
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/LeftArrow.png", "Left Arrow icon");
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/RightArrow.png"); 
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/File.png", "File icon");
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/Folder.png", "Folder icon");
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/OpenFolder.png", "Opened Folder incon");
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/LeftArrow.png", "Left Arrow icon");
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/RightArrow.png");
 
 				VkSubmitInfo endInfo = {};
 				endInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -171,18 +173,18 @@ namespace Karma
 				result = vkDeviceWaitIdle(initInfo.Device);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait!");
 
-				ImGuiVulkanHandler::ImGui_KarmaImplVulkan_DestroyFontUploadObjects();
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyFontUploadObjects();
 			}
 		}
 		else if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
 		{
-			ImGui_ImplGlfw_InitForOpenGL(window, true);
+			KarmaGui_ImplGlfw_InitForOpenGL(window, true);
 			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_Init("#version 410");
 
 			// Load default font
-			ImFontConfig fontConfig;
+			KGFontConfig fontConfig;
 			fontConfig.FontDataOwnedByAtlas = false;
-			ImFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
+			KGFont* robotoFont = io.Fonts->AddFontFromMemoryTTF((void*)g_RobotoRegular, sizeof(g_RobotoRegular), 20.0f, &fontConfig);
 			io.FontDefault = robotoFont;
 
 			// Load images
@@ -230,8 +232,8 @@ namespace Karma
 			break;
 		case RendererAPI::API::OpenGL:
 			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_Shutdown();
-			ImGui_ImplGlfw_Shutdown();
-			ImGui::DestroyContext();
+			KarmaGui_ImplGlfw_Shutdown();
+			KarmaGui::DestroyContext();
 			break;
 		case RendererAPI::API::None:
 			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
@@ -271,13 +273,13 @@ namespace Karma
 
 				vulkanAPI->RecreateCommandBuffersAndSwapChain();
 
-				ImGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, false);
+				KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, false);
 				m_SwapChainRebuild = false;
 			}
 		}
 
-		ImGuiVulkanHandler::ImGui_KarmaImplVulkan_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
+		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_NewFrame();
+		KarmaGui_ImplGlfw_NewFrame();
 	}
 
 	// The ImGuiLayer sequence begins
@@ -290,7 +292,7 @@ namespace Karma
 			break;
 		case RendererAPI::API::OpenGL:
 			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
+			KarmaGui_ImplGlfw_NewFrame();
 			break;
 		case RendererAPI::API::None:
 			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
@@ -299,7 +301,7 @@ namespace Karma
 			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
 				break;
 		}
-		ImGui::NewFrame();
+		KarmaGui::NewFrame();
 	}
 
 	void ImGuiLayer::ImGuiRender(float deltaTime)
@@ -308,12 +310,12 @@ namespace Karma
 
 	void ImGuiLayer::End()
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		Application& app = Application::Get();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+		io.DisplaySize = KGVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 
 		// Rendering
-		ImGui::Render();
+		KarmaGui::Render();
 		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
 
 		switch (RendererAPI::GetAPI())
@@ -329,12 +331,12 @@ namespace Karma
 			glm::vec4 clearColor = RenderCommand::GetClearColor();
 			glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
 			glClear(GL_COLOR_BUFFER_BIT);
-			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_RenderDrawData(KarmaGui::GetDrawData());
+			if (io.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
 			{
 				GLFWwindow* backup_current_context = glfwGetCurrentContext();
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
+				KarmaGui::UpdatePlatformWindows();
+				KarmaGui::RenderPlatformWindowsDefault();
 				glfwMakeContextCurrent(backup_current_context);
 			}
 		}
@@ -352,8 +354,8 @@ namespace Karma
 	void ImGuiLayer::GiveLoopEndControlToVulkan()
 	{
 		// Rendering
-		ImGui::Render();
-		ImDrawData* mainDrawData = ImGui::GetDrawData();
+		KarmaGui::Render();
+		KGDrawData* mainDrawData = KarmaGui::GetDrawData();
 		const bool mainIsMinimized = (mainDrawData->DisplaySize.x <= 0.0f || mainDrawData->DisplaySize.y <= 0.0f);
 
 		glm::vec4 clearColor = RenderCommand::GetClearColor();
@@ -368,19 +370,19 @@ namespace Karma
 
 		// Update and Render additional Platform Windows
 		// Outside MainWindow context
-		ImGuiIO& io = ImGui::GetIO();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		if (io.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
 		{
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
+			KarmaGui::UpdatePlatformWindows();
+			KarmaGui::RenderPlatformWindowsDefault();
 		}
 
 		// Present Main Platform Window
 		if (!mainIsMinimized)
 			FramePresent(&m_VulkanWindowData);
 
-		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
-		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		vkDeviceWaitIdle(vulkanInfo->Device);
 
@@ -390,15 +392,15 @@ namespace Karma
 		}
 	}
 
-	// Helper taken from https://github.com/TheCherno/Walnut/blob/cc26ee1cc875db50884fe244e0a3195dd730a1ef/Walnut/src/Walnut/Application.cpp#L270 who probably took help from official example https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/examples/example_glfw_vulkan/main.cpp#L261, with chiefly naming modifications and entire restructuring of ImGuiVulkanHandler::ImGui_KarmaImplVulkan_RenderDrawData.
-	void ImGuiLayer::FrameRender(ImGui_KarmaImplVulkanH_Window* windowData, ImDrawData* drawData)
+	// Helper taken from https://github.com/TheCherno/Walnut/blob/cc26ee1cc875db50884fe244e0a3195dd730a1ef/Walnut/src/Walnut/Application.cpp#L270 who probably took help from official example https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/examples/example_glfw_vulkan/main.cpp#L261, with chiefly naming modifications and entire restructuring of KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData.
+	void ImGuiLayer::FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData)
 	{
-		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
-		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		// Pointer to the per frame data for instance fence, semaphores, and commandbuffer
 		// Remember windowData->SemaphoreIndex is m_CurrentFrame equivalent of VulkanRendererAPI
-		ImGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
+		KarmaGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		VkResult result;
 
 		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
@@ -411,7 +413,7 @@ namespace Karma
 		result = vkAcquireNextImageKHR(vulkanInfo->Device, windowData->Swapchain, UINT64_MAX, imageAcquiredSemaphore, VK_NULL_HANDLE, &windowData->ImageFrameIndex);
 
 		// Pointer to the container of CommandPool, swapchainImages und views
-		ImGui_KarmaImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
+		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
 
 		// May be try to free resources here
 		//ImGuiVulkanHandler::ImGui_KarmaImplVulkan_ClearUndFreeResources(drawData, windowData->ImageFrameIndex);
@@ -455,7 +457,7 @@ namespace Karma
 
 		{
 			// Record dear imgui primitives into command buffer
-			ImGuiVulkanHandler::ImGui_KarmaImplVulkan_RenderDrawData(drawData, frameOnFlightData->CommandBuffer, VK_NULL_HANDLE, windowData->SemaphoreIndex);
+			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData(drawData, frameOnFlightData->CommandBuffer, VK_NULL_HANDLE, windowData->SemaphoreIndex);
 		}
 
 		vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
@@ -484,7 +486,7 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 	}
 
-	void ImGuiLayer::FramePresent(ImGui_KarmaImplVulkanH_Window* windowData)
+	void ImGuiLayer::FramePresent(KarmaGui_ImplVulkanH_Window* windowData)
 	{
 		if (m_SwapChainRebuild)
 		{
@@ -501,8 +503,8 @@ namespace Karma
 		info.pSwapchains = &windowData->Swapchain;
 		info.pImageIndices = &windowData->ImageFrameIndex;
 
-		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
-		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		VkResult result = vkQueuePresentKHR(vulkanInfo->Queue, &info);
 
@@ -519,8 +521,8 @@ namespace Karma
 
 	void ImGuiLayer::GracefulVulkanShutDown()
 	{
-		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
-		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		VkResult result = vkDeviceWaitIdle(vulkanInfo->Device);
 
@@ -528,19 +530,19 @@ namespace Karma
 
 		CleanUpVulkanAndWindowData();
 
-		ImGuiVulkanHandler::ImGui_KarmaImplVulkan_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Shutdown();
+		KarmaGui_ImplGlfw_Shutdown();
+		KarmaGui::DestroyContext();
 	}
 
 	void ImGuiLayer::CleanUpVulkanAndWindowData()
 	{
 		// Clean up Window
 		//ImGuiVulkanHandler::ClearVulkanWindowData(&m_VulkanWindowData, true);
-		ImGuiVulkanHandler::ImGui_KarmaImplVulkan_DestroyWindow(&m_VulkanWindowData);
+		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(&m_VulkanWindowData);
 
-		ImGui_KarmaImplVulkan_Data* backendData = ImGuiVulkanHandler::ImGui_KarmaImplVulkan_GetBackendData();
-		ImGui_KarmaImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		// Clean up Vulkan's pool component instantiated earlier here
 		vkDestroyDescriptorPool(vulkanInfo->Device, m_ImGuiDescriptorPool, VK_NULL_HANDLE);
@@ -566,7 +568,7 @@ namespace Karma
 
 	bool ImGuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.MouseDown[e.GetMouseButton()] = true;
 
 		return false;
@@ -574,7 +576,7 @@ namespace Karma
 
 	bool ImGuiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.MouseDown[e.GetMouseButton()] = false;
 
 		return false;
@@ -582,15 +584,15 @@ namespace Karma
 
 	bool ImGuiLayer::OnMouseMovedEvent(MouseMovedEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.MousePos = ImVec2(e.GetX(), e.GetY());
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		io.MousePos = KGVec2(e.GetX(), e.GetY());
 
 		return false;
 	}
 
 	bool ImGuiLayer::OnMouseScrollEvent(MouseScrolledEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.MouseWheelH += e.GetXOffset();
 		io.MouseWheel += e.GetYOffset();
 
@@ -599,7 +601,7 @@ namespace Karma
 
 	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.KeysDown[e.GetKeyCode()] = true;
 
 		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
@@ -612,7 +614,7 @@ namespace Karma
 
 	bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.KeysDown[e.GetKeyCode()] = false;
 
 		return false;
@@ -620,7 +622,7 @@ namespace Karma
 
 	bool ImGuiLayer::OnKeyTypedEvent(KeyTypedEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 		int keycode = e.GetKeyCode();
 		if (keycode > 0 && keycode < 0x10000)
 		{
@@ -632,9 +634,9 @@ namespace Karma
 
 	bool ImGuiLayer::OnWindowResizeEvent(WindowResizeEvent& e)
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2(float(e.GetWidth()), float(e.GetHeight()));
-		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		io.DisplaySize = KGVec2(float(e.GetWidth()), float(e.GetHeight()));
+		io.DisplayFramebufferScale = KGVec2(1.0f, 1.0f);
 
 		return false;
 	}

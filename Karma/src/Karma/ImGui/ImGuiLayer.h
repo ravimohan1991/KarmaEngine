@@ -7,7 +7,7 @@
 #include "Events/MouseEvent.h"
 #include "Events/ApplicationEvent.h"
 #include "Window.h"
-#include "ImGuiVulkanHandler.h"
+#include "KarmaGuiVulkanHandler.h"
 #include "ImGuiOpenGLHandler.h"
 #include "Scene.h"
 
@@ -33,8 +33,8 @@ namespace Karma
 		// Vulkan relevant functions
 		void CreateDescriptorPool();
 		void GiveLoopBeginControlToVulkan();
-		void FrameRender(ImGui_KarmaImplVulkanH_Window* windowData, ImDrawData* drawData);
-		void FramePresent(ImGui_KarmaImplVulkanH_Window* windowData);
+		void FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData);
+		void FramePresent(KarmaGui_ImplVulkanH_Window* windowData);
 		void GiveLoopEndControlToVulkan();
 		void GracefulVulkanShutDown();
 		void CleanUpVulkanAndWindowData();
@@ -60,6 +60,6 @@ namespace Karma
 		bool m_SwapChainRebuild = true;
 
 		// Seems like main window Vulkan data associated to m_AssociatedWindow
-		ImGui_KarmaImplVulkanH_Window m_VulkanWindowData;
+		KarmaGui_ImplVulkanH_Window m_VulkanWindowData;
 	};
 }

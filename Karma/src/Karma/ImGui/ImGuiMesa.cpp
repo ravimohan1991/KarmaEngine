@@ -10,12 +10,11 @@
   */
 
 #include "ImGuiMesa.h"
-#include "imgui.h"
 #include "Karma/Application.h"
 #include "Karma/Renderer/RendererAPI.h"
 
 // Experimental
-#include "ImGuiVulkanHandler.h"
+#include "KarmaGuiVulkanHandler.h"
 #include "ImGuiOpenGLHandler.h"
 
 namespace Karma
@@ -27,7 +26,18 @@ namespace Karma
 
 	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
 
-	void ImGuiMesa::RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
+	ImGuiDockPreviewData::ImGuiDockPreviewData() : FutureNode(0)
+	{
+		IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false; 
+		SplitNode = NULL; SplitDir = KGGuiDir_None; SplitRatio = 0.f; 
+		
+		for (int n = 0; n < KG_ARRAYSIZE(DropRectsDraw); n++)
+		{
+			DropRectsDraw[n] = KGRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX);
+		}
+	}
+
+	void ImGuiMesa::RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
 	{
 		// The MM (Main Menu) menu bar
 		DrawKarmaMainMenuBarMesa();
@@ -38,34 +48,34 @@ namespace Karma
 			static float fValue = 0.0f;
 			static int counter = 0;
 
-			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and appeninto it
+			KarmaGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and appeninto it
 
-			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			ImGui::Checkbox("Demo Window", &show);                  // Edit bools storing our window open/close state
-			ImGui::Checkbox("Another Window", &show);
+			KarmaGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+			KarmaGui::Checkbox("Demo Window", &show);                  // Edit bools storing our window open/close state
+			KarmaGui::Checkbox("Another Window", &show);
 
-			ImGui::SliderFloat("float", &fValue, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+			KarmaGui::SliderFloat("float", &fValue, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 			//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a colo
 
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets returtrue when edited/activated)
+			if (KarmaGui::Button("Button"))                            // Buttons return true when clicked (most widgets returtrue when edited/activated)
 				counter++;
-			ImGui::SameLine();
+			KarmaGui::SameLine();
 
-			ImGui::Text("counter = %d", counter);
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			KarmaGui::Text("counter = %d", counter);
+			KarmaGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / KarmaGui::GetIO().Framerate, KarmaGui::GetIO().Framerate);
 
-			ImGuiDockNode* node = nullptr;
-			ImGuiWindow* window = nullptr;//ImGui::FindDockSpaceByID(mainMesaDockID);
-			ImGuiWindow* payloadWindow = nullptr;//ImGui::FindWindowByName("Karma: Log");
+			KGGuiDockNode* node = nullptr;
+			KGGuiWindow* window = nullptr;//ImGui::FindDockSpaceByID(mainMesaDockID);
+			KGGuiWindow* payloadWindow = nullptr;//ImGui::FindWindowByName("Karma: Log");
 
 			int boxNumber = -5;
 			node = nullptr;//ImGui::FindAppropriateNode(window, payloadWindow, boxNumber);
 
-			ImGui::Text("Node ID = %d at position x = %f, y = %f on docking box %d", node != nullptr ? node->ID : 0, ImGui::GetMousePos().x, ImGui::GetMousePos().y, boxNumber);
+			KarmaGui::Text("Node ID = %d at position x = %f, y = %f on docking box %d", node != nullptr ? node->ID : 0, KarmaGui::GetMousePos().x, KarmaGui::GetMousePos().y, boxNumber);
 
 			if (payloadWindow)
-				ImGui::Text("Karma: Log window is of dimension width = %f und height = %f", payloadWindow->Size.x, payloadWindow->Size.y);
-			ImGui::End();
+				KarmaGui::Text("Karma: Log window is of dimension width = %f und height = %f", payloadWindow->Size.x, payloadWindow->Size.y);
+			KarmaGui::End();
 		}
 
 		// 3. Lougging. Sorry about the spelling, but I want to make the pronounciation match with that of that
@@ -90,13 +100,13 @@ namespace Karma
 		}
 	}
 
-	ImGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node)
+	KGGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(KGGuiDockNode* node)
 	{
 		if (node->IsLeafNode())
 			return node;
-		if (ImGuiDockNode* leaf_node = DockNodeTreeFindFallbackLeafNode(node->ChildNodes[0]))
+		if (KGGuiDockNode* leaf_node = DockNodeTreeFindFallbackLeafNode(node->ChildNodes[0]))
 			return leaf_node;
-		if (ImGuiDockNode* leaf_node = DockNodeTreeFindFallbackLeafNode(node->ChildNodes[1]))
+		if (KGGuiDockNode* leaf_node = DockNodeTreeFindFallbackLeafNode(node->ChildNodes[1]))
 			return leaf_node;
 		return NULL;
 	}
@@ -113,28 +123,29 @@ namespace Karma
 
 	void ImGuiMesa::DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback)
 	{
-		ImGui::Begin("Content Browser");
+		KarmaGui::Begin("Content Browser");
 
 		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
 		{
 			//static uint32_t buttonPositionY = ImGui::GetCurrentWindow()->DC.CursorPos.y;
-			if (ImGui::Button("<-"))
+			if (KarmaGui::Button("<-"))
 			{
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
 			}
 
-			ImGui::SameLine(0.0f, 5.0f);
-			ImGui::Text("%s", m_CurrentDirectory.string().c_str());
+			KarmaGui::SameLine(0.0f, 5.0f);
+			KarmaGui::Text("%s", m_CurrentDirectory.string().c_str());
 		}
 
 		// Vertical padding
-		ImGui::GetCurrentWindow()->DC.CursorPos.y += 20;
+		// Hmm, using KarmaGuiInternal is ok?
+		KarmaGuiInternal::GetCurrentWindow()->DC.CursorPos.y += 20;
 
 		static float padding = 16.0f;
 		static float thumbnailSize = 80.0f;
 
 		float cellSize = thumbnailSize + padding;
-		float panelWidth = ImGui::GetContentRegionAvail().x;
+		float panelWidth = KarmaGui::GetContentRegionAvail().x;
 
 		int columnCount = (int)(panelWidth / cellSize);
 
@@ -143,28 +154,27 @@ namespace Karma
 			columnCount = 1;
 		}
 
-		ImGui::Columns(columnCount, 0, false);
+		KarmaGui::Columns(columnCount, 0, false);
 
-		ImGuiIO& io = ImGui::GetIO();
-		ImGui_KarmaImplVulkan_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_KarmaImplVulkan_Data*)io.BackendRendererUserData : nullptr;
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGui::GetCurrentContext() ? (KarmaGui_ImplVulkan_Data*)io.BackendRendererUserData : nullptr;
 
 		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
 			const auto& path = directoryEntry.path();
 			std::string filenameString = path.filename().string();
 
-			ImGui::PushID(filenameString.c_str());
+			KarmaGui::PushID(filenameString.c_str());
 			uint32_t iconNumber = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
 
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+			KarmaGui::PushStyleColor(KGGuiCol_Button, KGVec4(0, 0, 0, 0));
 
-			ImGui_KarmaImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(iconNumber);
+			KarmaGui_ImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(iconNumber);
+			KarmaGui::ImageButton("Content Browser", (KGTextureID)mesaDecalElement->TextureDescriptorSet, {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 
-			ImGui::ImageButton((ImTextureID)mesaDecalElement->TextureDescriptorSet, { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+			KarmaGui::PopStyleColor();
 
-			ImGui::PopStyleColor();
-
-			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+			if (KarmaGui::IsItemHovered() && KarmaGui::IsMouseDoubleClicked(KGGuiMouseButton_Left))
 			{
 				if (directoryEntry.is_directory())
 				{
@@ -176,72 +186,72 @@ namespace Karma
 				}
 			}
 
-			ImGui::TextWrapped("%s", filenameString.c_str());
-			ImGui::NextColumn();
+			KarmaGui::TextWrapped("%s", filenameString.c_str());
+			KarmaGui::NextColumn();
 
-			ImGui::PopID();
+			KarmaGui::PopID();
 		}
 
-		ImGui::Columns(1);
+		KarmaGui::Columns(1);
 
-		ImGui::End();
+		KarmaGui::End();
 	}
 
 	void ImGuiMesa::Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene)
 	{
-		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+		KarmaGui::SetNextWindowSize(KGVec2(400, 400), KGGuiCond_FirstUseEver);
 
-		ImVec4 bgColor;
+		KGVec4 bgColor;
 		bgColor.x = 1.0f;
 		bgColor.y = 1.0f;
 		bgColor.z = 1.0f;
 		bgColor.w = 1.0f;
 
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetColorU32(bgColor));
+		KarmaGui::PushStyleColor(KGGuiCol_WindowBg, KarmaGui::GetColorU32(bgColor));
 
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar;
+		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoScrollWithMouse | KGGuiWindowFlags_NoScrollbar;
 
-		ImGui::Begin("3D Exhibitor", nullptr, windowFlags);
+		KarmaGui::Begin("3D Exhibitor", nullptr, windowFlags);
 
-		ImGuiWindow* window = ImGui::FindWindowByName("3D Exhibitor");
+		KGGuiWindow* window = KarmaGuiInternal::FindWindowByName("3D Exhibitor");
 
-		m_ViewportFocused = ImGui::IsWindowFocused();
-		m_ViewportHovered = ImGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * ImGui::GetIO().DisplayFramebufferScale.y > ImGui::GetMousePos().y);
+		m_ViewportFocused = KarmaGui::IsWindowFocused();
+		m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
 
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 
-		ImTextureID aboutImageTextureID = 0;
+		KGTextureID aboutImageTextureID = 0;
 
 		uint32_t width = 0;
 		uint32_t height = 0;
 
 		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
 		{
-			ImGui_KarmaImplVulkan_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_KarmaImplVulkan_Data*)io.BackendRendererUserData : nullptr;
-			ImGui_KarmaImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(1);
-			aboutImageTextureID = (ImTextureID)mesaDecalElement->TextureDescriptorSet;
+			KarmaGui_ImplVulkan_Data* backendData = KarmaGui::GetCurrentContext() ? (KarmaGui_ImplVulkan_Data*)io.BackendRendererUserData : nullptr;
+			KarmaGui_ImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(1);
+			aboutImageTextureID = (KGTextureID)mesaDecalElement->TextureDescriptorSet;
 			width = mesaDecalElement->width;
 			height = mesaDecalElement->height;
 		}
 
 		//ImGui::GetCurrentWindow()->DrawList->SetWindowBackgroundColor(bgColor);
 
-		ImDrawCallback sceneCallBack = [](const ImDrawList* parentList, const ImDrawCmd* drawCommand)
+		KGDrawCallback sceneCallBack = [](const KGDrawList* parentList, const KGDrawCmd* drawCommand)
 		{
 			//KR_CORE_INFO("Scene Callback");
 		};
 
-		ImGuiWindow* theWindow = ImGui::GetCurrentWindow();
+		KGGuiWindow* theWindow = KarmaGuiInternal::GetCurrentWindow();
 		scene->SetRenderWindow(theWindow);
 
 		{
-			ImVec2 position = ImGui::GetCursorScreenPos();
+			KGVec2 position = KarmaGui::GetCursorScreenPos();
 
-			ImVec2 uvMin = ImVec2(0.0f, 0.0f);                 // Top-left
-			ImVec2 uvMax = ImVec2(1.0f, 1.0f);                 // Lower-right
-			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
-			ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
-			ImGui::Image(aboutImageTextureID, ImVec2(theWindow->Size.x, theWindow->Size.y), uvMin, uvMax, tint_col, border_col);
+			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
+			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
+			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
+			KGVec4 border_col = KGVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
+			KarmaGui::Image(aboutImageTextureID, KGVec2(theWindow->Size.x, theWindow->Size.y), uvMin, uvMax, tint_col, border_col);
 		}
 
 		if(theWindow->Size.x != m_3DExhibitor.widthCache || theWindow->Size.y != m_3DExhibitor.heightCache)
@@ -270,27 +280,21 @@ namespace Karma
 			scene->SetWindowToRenderWithinResize(false);
 		}
 
-		//ImVec2 view = ImGui::GetContentRegionAvail();
+		KarmaGuiInternal::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
 
-		//KR_CORE_INFO("view.x: {0}, view.y: {1}, sizefull.x: {2}, sizefull.y: {3}, size.x: {4}, size.y: {5}",
-					// view.x, view.y, theWindow->SizeFull.x, theWindow->SizeFull.y, theWindow->Size.x, theWindow->Size.y);
-
-		ImGui::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
-
-		ImGui::End();
-		ImGui::PopStyleColor();
+		KarmaGui::End();
+		KarmaGui::PopStyleColor();
 	}
 
 	void ImGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
 	{
-		ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
-		ImGui::Begin("Scene Hierarchy");
-
-		ImGui::Text("Some Stuff 1");
-		ImGui::Text("Some stuff 2");
-		ImGui::Text("lumbdaa");
-
-		ImGui::End();
+		KarmaGui::SetNextWindowSize(KGVec2(500, 400), KGGuiCond_FirstUseEver);
+		
+		KarmaGui::Begin("Scene Hierarchy");
+		KarmaGui::Text("Some Stuff 1");
+		KarmaGui::Text("Some stuff 2");
+		KarmaGui::Text("lumbdaa");
+		KarmaGui::End();
 	}
 
 	// MM bar mesa
@@ -298,19 +302,19 @@ namespace Karma
 	{
 		static bool showKarmaAbout = false;
 
-		if (ImGui::BeginMainMenuBar())
+		if (KarmaGui::BeginMainMenuBar())
 		{
-			if (ImGui::BeginMenu("File"))
+			if (KarmaGui::BeginMenu("File"))
 			{
 				DrawMainMenuFileListMesa();
-				ImGui::EndMenu();
+				KarmaGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Details"))
+			if (KarmaGui::BeginMenu("Details"))
 			{
-				if (ImGui::MenuItem("About", nullptr, &showKarmaAbout));
-				ImGui::EndMenu();
+				if (KarmaGui::MenuItem("About", nullptr, &showKarmaAbout));
+				KarmaGui::EndMenu();
 			}
-			ImGui::EndMainMenuBar();
+			KarmaGui::EndMainMenuBar();
 		}
 
 		if (showKarmaAbout)
@@ -332,43 +336,43 @@ namespace Karma
 
 	// Log mesa
 	// The lougging window with basic filtering.
-	void ImGuiMesa::DrawKarmaLogMesa(ImGuiID mainMesaDockID)
+	void ImGuiMesa::DrawKarmaLogMesa(KGGuiID mainMesaDockID)
 	{
 		static KarmaLogMesa log;
 
-		ImVec2 windowSize = ImVec2(680, 420);
+		KGVec2 windowSize = KGVec2(680, 420);
 
-		ImGuiCond conditions = ImGuiCond_Once;//ImGuiCond_FirstUseEver;
+		KarmaGuiCond conditions = KGGuiCond_Once;//ImGuiCond_FirstUseEver;
 
 		// So here goes the reverse engineering
 		// 1. imgui.ini is looked. If not found, then window->SizeFull is set to windowSize else
 		// 2. well I failed, partially. Ini to the rescue
 		// 3. maybe I will find it later, and NOT the cherno later. Ok maybe cherno later because ini is the way to go.
-		ImGui::SetNextWindowSize(windowSize, conditions);
+		KarmaGui::SetNextWindowSize(windowSize, conditions);
 
 		// Disable user resize,
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoResize;
+		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoResize;
 
-		ImGui::Begin("Karma: Log", nullptr, windowFlags);
+		KarmaGui::Begin("Karma: Log", nullptr, windowFlags);
 
-		ImGuiWindow* payloadWindow = ImGui::GetCurrentWindow();
+		KGGuiWindow* payloadWindow = KarmaGuiInternal::GetCurrentWindow();
 
-		if (ImGui::SmallButton("[Debug] Add 5 entries"))
+		if (KarmaGui::SmallButton("[Debug] Add 5 entries"))
 		{
 			static int counter = 0;
 			const char* categories[3] = { "info", "warn", "error" };
 			const char* words[] = { "Bumfuzzled", "Cattywampus", "Snickersnee", "Abibliophobia", "Absquatulate", "Nincompoop", 	"Pauciloquent" };
 			for (int n = 0; n < 5; n++)
 			{
-				const char* category = categories[counter % IM_ARRAYSIZE(categories)];
-				const char* word = words[counter % IM_ARRAYSIZE(words)];
+				const char* category = categories[counter % KG_ARRAYSIZE(categories)];
+				const char* word = words[counter % KG_ARRAYSIZE(words)];
 				log.AddLog("[%05d] [%s] Hello, current time is %.1f, here's a word: '%s'\n",
-					ImGui::GetFrameCount(), category, ImGui::GetTime(), word);
+					KarmaGui::GetFrameCount(), category, KarmaGui::GetTime(), word);
 				counter++;
 			}
 		}
 
-		ImGui::End();
+		KarmaGui::End();
 
 		// Actually call in the regular Log helper (which will Begin() into the same window as we just did)
 		log.Draw("Karma: Log");
@@ -389,16 +393,16 @@ namespace Karma
 	// Menu mesa
 	void ImGuiMesa::DrawMainMenuFileListMesa()
 	{
-		if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-		if (ImGui::BeginMenu("Open Recent"))
+		if (KarmaGui::MenuItem("Open", "Ctrl+O")) {}
+		if (KarmaGui::BeginMenu("Open Recent"))
 		{
 			// write code with some memorized history
-			ImGui::EndMenu();
+			KarmaGui::EndMenu();
 		}
 
-		ImGui::Separator();
+		KarmaGui::Separator();
 
-		if (ImGui::MenuItem("Quit", "Alt+F4"))
+		if (KarmaGui::MenuItem("Quit", "Alt+F4"))
 		{
 			Application::Get().CloseApplication();
 		}
@@ -407,9 +411,9 @@ namespace Karma
 	// About mesa
 	void ImGuiMesa::ShowAboutKarmaMesa(bool* pbOpen)
 	{
-		if (!ImGui::Begin("Karma Engine", pbOpen, ImGuiWindowFlags_AlwaysAutoResize))
+		if (!KarmaGui::Begin("Karma Engine", pbOpen, KGGuiWindowFlags_AlwaysAutoResize))
 		{
-			ImGui::End();
+			KarmaGui::End();
 			return;
 		}
 
@@ -420,59 +424,59 @@ namespace Karma
 
 		// Precomputation based on text, for gauging the image dimensions
 		const char* tagLine = "Nothing is impossible once you have the Source Code (and know how to use it)!";
-		ImVec2 tagLineDimensions = ImGui::CalcTextSize(tagLine, nullptr, false, 0.0f);
+		KGVec2 tagLineDimensions = KarmaGui::CalcTextSize(tagLine, nullptr, false, 0.0f);
 
 		const char* authorName = "The_Cowboy";
-		ImVec2 authorNameDimensions = ImGui::CalcTextSize(authorName, nullptr, false, 0.0f);
+		KGVec2 authorNameDimensions = KarmaGui::CalcTextSize(authorName, nullptr, false, 0.0f);
 
 		//-----------------------------------------------------------------------------------------------------------//
 
 		// Vulkan experiment
 		// Need to think how OpenGL shall handle this
 		// Of course nothing should be changed frontend, ie here. Something must be done at backend.
-		ImGuiIO& io = ImGui::GetIO();
+		KarmaGuiIO& io = KarmaGui::GetIO();
 
-		ImTextureID aboutImageTextureID = 0;
+		KGTextureID aboutImageTextureID = 0;
 
 		uint32_t width = 0;
 		uint32_t height = 0;
 
 		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
 		{
-			ImGui_KarmaImplVulkan_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_KarmaImplVulkan_Data*)io.BackendRendererUserData : nullptr;
-			ImGui_KarmaImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(0);
-			aboutImageTextureID = (ImTextureID)mesaDecalElement->TextureDescriptorSet;
+			KarmaGui_ImplVulkan_Data* backendData = KarmaGui::GetCurrentContext() ? (KarmaGui_ImplVulkan_Data*)io.BackendRendererUserData : nullptr;
+			KarmaGui_ImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(0);
+			aboutImageTextureID = (KGTextureID)mesaDecalElement->TextureDescriptorSet;
 			width = mesaDecalElement->width;
 			height = mesaDecalElement->height;
 		}
 
 		if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
 		{
-			ImGui_ImplOpenGL3_Data* backendData = ImGui::GetCurrentContext() ? (ImGui_ImplOpenGL3_Data*)io.BackendRendererUserData : nullptr;
+			ImGui_ImplOpenGL3_Data* backendData = KarmaGui::GetCurrentContext() ? (ImGui_ImplOpenGL3_Data*)io.BackendRendererUserData : nullptr;
 			MesaDecalData mDData = backendData->mesaDecalDataList.at(0);
 
-			aboutImageTextureID = (ImTextureID)mDData.DecalID;
+			aboutImageTextureID = (KGTextureID)mDData.DecalID;
 
 			width = mDData.width;
 			height = mDData.height;
 		}
 
 		{
-			ImVec2 position = ImGui::GetCursorScreenPos();
+			KGVec2 position = KarmaGui::GetCursorScreenPos();
 
-			ImVec2 uvMin = ImVec2(0.0f, 0.0f);                 // Top-left
-			ImVec2 uvMax = ImVec2(1.0f, 1.0f);                 // Lower-right
-			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
-			ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
-			ImGui::Image(aboutImageTextureID, ImVec2(width, height), uvMin, uvMax, tint_col, border_col);
+			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
+			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
+			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
+			KGVec4 border_col = KGVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
+			KarmaGui::Image(aboutImageTextureID, KGVec2(width, height), uvMin, uvMax, tint_col, border_col);
 		}
 
 		//-----------------------------------------------------------------------------------------------------------//
 
-		ImGui::Text("%s", tagLine);
-		ImGui::Text(" "); ImGui::SameLine(tagLineDimensions.x - authorNameDimensions.x); ImGui::Text("%s", authorName);
+		KarmaGui::Text("%s", tagLine);
+		KarmaGui::Text(" "); KarmaGui::SameLine(tagLineDimensions.x - authorNameDimensions.x); KarmaGui::Text("%s", authorName);
 
-		ImGui::Separator();
+		KarmaGui::Separator();
 
 		//-----------------------------------------------------------------------------------------------------------//
 
@@ -482,168 +486,168 @@ namespace Karma
 		const char* licenseLine_4 = "lincences has been undertaken, it is a work in progress with the hope of";
 		const char* licenseLine_5 = "eliminating the concept of software licensing itself.";
 
-		ImGui::Text("%s", licenseLine_1);
-		ImGui::Text("%s", licenseLine_2);
-		ImGui::Text("%s", licenseLine_3);
-		ImGui::Text("%s", licenseLine_4);
-		ImGui::Text("%s", licenseLine_5);
+		KarmaGui::Text("%s", licenseLine_1);
+		KarmaGui::Text("%s", licenseLine_2);
+		KarmaGui::Text("%s", licenseLine_3);
+		KarmaGui::Text("%s", licenseLine_4);
+		KarmaGui::Text("%s", licenseLine_5);
 
-		ImGui::Separator();
+		KarmaGui::Separator();
 
 		//-----------------------------------------------------------------------------------------------------------//
 
 		static bool showPhysicalRigInformation = false;
-		ImGui::Checkbox("Config/Build Information", &showPhysicalRigInformation);
+		KarmaGui::Checkbox("Config/Build Information", &showPhysicalRigInformation);
 		if (showPhysicalRigInformation)
 		{
-			ImGuiIO& io = ImGui::GetIO();
-			ImGuiStyle& style = ImGui::GetStyle();
+			KarmaGuiIO& io = KarmaGui::GetIO();
+			KarmaGuiStyle& style = KarmaGui::GetStyle();
 
-			bool copy_to_clipboard = ImGui::Button("Copy to clipboard");
+			bool copy_to_clipboard = KarmaGui::Button("Copy to clipboard");
 		}
 
-		ImGui::Separator();
+		KarmaGui::Separator();
 
 		//-----------------------------------------------------------------------------------------------------------//
 
-		ImGui::Text("Credits und Acknowledgements");
-		ImGui::Text("Cherno");
-		ImGui::Text("Travis V Roman");
-		ImGui::Text("GitHub");
-		ImGui::Text("Companion Libraries Authors");
-		ImGui::Text("Sumo India");
+		KarmaGui::Text("Credits und Acknowledgements");
+		KarmaGui::Text("Cherno");
+		KarmaGui::Text("Travis V Roman");
+		KarmaGui::Text("GitHub");
+		KarmaGui::Text("Companion Libraries Authors");
+		KarmaGui::Text("Sumo India");
 
-		ImGui::Separator();
+		KarmaGui::Separator();
 
 		//-----------------------------------------------------------------------------------------------------------//
 
 		// Finally the Turing Machine's electronics information presentation!
 		static bool bShowTuringElectronics = false;
-		ImGui::Checkbox("Turing Machine Information", &bShowTuringElectronics);
+		KarmaGui::Checkbox("Turing Machine Information", &bShowTuringElectronics);
 		if (bShowTuringElectronics)
 		{
-			ImGuiIO& io = ImGui::GetIO();
-			ImGuiStyle& style = ImGui::GetStyle();
+			KarmaGuiIO& io = KarmaGui::GetIO();
+			KarmaGuiStyle& style = KarmaGui::GetStyle();
 
-			bool bCopyToClipboard = ImGui::Button("Copy to clipboard");
-			ImVec2 childSize = ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 18);
-			ImGui::BeginChildFrame(ImGui::GetID("cfg_infos"), childSize, ImGuiWindowFlags_NoMove);
+			bool bCopyToClipboard = KarmaGui::Button("Copy to clipboard");
+			KGVec2 childSize = KGVec2(0, KarmaGui::GetTextLineHeightWithSpacing() * 18);
+			KarmaGui::BeginChildFrame(KarmaGui::GetID("cfg_infos"), childSize, KGGuiWindowFlags_NoMove);
 
 			if (bCopyToClipboard)
 			{
-				ImGui::LogToClipboard();
-				ImGui::LogText("```\n"); // Back quotes will make text appears without formatting when pasting on GitHub
+				KarmaGui::LogToClipboard();
+				KarmaGui::LogText("```\n"); // Back quotes will make text appears without formatting when pasting on GitHub
 			}
 
-			ImGui::Text("Machine BIOS (v%s)", electronicsItems.biosVersion.c_str());
-			ImGui::Separator();
+			KarmaGui::Text("Machine BIOS (v%s)", electronicsItems.biosVersion.c_str());
+			KarmaGui::Separator();
 
-			ImGui::Text("Vendor: %s", electronicsItems.biosVendorName.c_str());
-			ImGui::Text("Supplied On: %s", electronicsItems.biosReleaseDate.c_str());
-			ImGui::Text("ROM Size: %s", electronicsItems.biosROMSize.c_str());
-			ImGui::Text("Current Language: %s", electronicsItems.biosCurrentSetLanguage.c_str());
-			ImGui::Text("Supported Languages:");
-			ImGui::Indent();
-			ImGui::Text("%s", electronicsItems.biosRestOfTheSupportedLanguages.c_str());
-			ImGui::Unindent();
-			ImGui::Text("BIOS Characteristics:");
-			ImGui::Indent();
-			ImGui::Text("%s", electronicsItems.biosCharacteristics.c_str());
-			ImGui::Unindent();
-			ImGui::Separator();
+			KarmaGui::Text("Vendor: %s", electronicsItems.biosVendorName.c_str());
+			KarmaGui::Text("Supplied On: %s", electronicsItems.biosReleaseDate.c_str());
+			KarmaGui::Text("ROM Size: %s", electronicsItems.biosROMSize.c_str());
+			KarmaGui::Text("Current Language: %s", electronicsItems.biosCurrentSetLanguage.c_str());
+			KarmaGui::Text("Supported Languages:");
+			KarmaGui::Indent();
+			KarmaGui::Text("%s", electronicsItems.biosRestOfTheSupportedLanguages.c_str());
+			KarmaGui::Unindent();
+			KarmaGui::Text("BIOS Characteristics:");
+			KarmaGui::Indent();
+			KarmaGui::Text("%s", electronicsItems.biosCharacteristics.c_str());
+			KarmaGui::Unindent();
+			KarmaGui::Separator();
 
-			ImGui::Text("Machine System Memory (RAM and all that)");
-			ImGui::Separator();
+			KarmaGui::Text("Machine System Memory (RAM and all that)");
+			KarmaGui::Separator();
 
-			ImGui::Text("Supporting Area: %s", electronicsItems.supportingArea.c_str());
-			ImGui::Text("Estimated Capacity: %s", electronicsItems.estimatedCapacity.c_str());
-			ImGui::Text("Total such devices (est): %d", electronicsItems.numberOfMemoryDevices);
-			ImGui::Text("Physical devices present:");
+			KarmaGui::Text("Supporting Area: %s", electronicsItems.supportingArea.c_str());
+			KarmaGui::Text("Estimated Capacity: %s", electronicsItems.estimatedCapacity.c_str());
+			KarmaGui::Text("Total such devices (est): %d", electronicsItems.numberOfMemoryDevices);
+			KarmaGui::Text("Physical devices present:");
 
 			for (uint32_t counter = 0; counter < electronicsItems.ramSoftSlots.size(); counter++)
 			{
-				ImGui::Text("RAM %d", counter + 1);
-				ImGui::Text("Manufacturer: %s", electronicsItems.ramInformation[counter].manufacturer.c_str());
+				KarmaGui::Text("RAM %d", counter + 1);
+				KarmaGui::Text("Manufacturer: %s", electronicsItems.ramInformation[counter].manufacturer.c_str());
 
-				ImGui::Text("Identification Parameters");
+				KarmaGui::Text("Identification Parameters");
 
-				ImGui::Indent();
-				ImGui::Text("Ram Type: %s", electronicsItems.ramInformation[counter].ramType.c_str());
-				ImGui::Text("Part Number: %s", electronicsItems.ramInformation[counter].partNumber.c_str());
-				ImGui::Text("Serial Number: %s", electronicsItems.ramInformation[counter].serialNumber.c_str());
-				ImGui::Text("(Bank | Device) Locator: %s | %s", electronicsItems.ramInformation[counter].bankLocator.c_str(),
+				KarmaGui::Indent();
+				KarmaGui::Text("Ram Type: %s", electronicsItems.ramInformation[counter].ramType.c_str());
+				KarmaGui::Text("Part Number: %s", electronicsItems.ramInformation[counter].partNumber.c_str());
+				KarmaGui::Text("Serial Number: %s", electronicsItems.ramInformation[counter].serialNumber.c_str());
+				KarmaGui::Text("(Bank | Device) Locator: %s | %s", electronicsItems.ramInformation[counter].bankLocator.c_str(),
 					electronicsItems.ramInformation[counter].locator.c_str());
-				ImGui::Text("Asset Tag: %s", electronicsItems.ramInformation[counter].assetTag.c_str());
-				ImGui::Unindent();
+				KarmaGui::Text("Asset Tag: %s", electronicsItems.ramInformation[counter].assetTag.c_str());
+				KarmaGui::Unindent();
 
-				ImGui::Text("Ram Conditions");
-				ImGui::Indent();
-				ImGui::Text("Size: %s", electronicsItems.ramInformation[counter].ramSize.c_str());
-				ImGui::Text("Operating Voltage: %s", electronicsItems.ramInformation[counter].operatingVoltage.c_str());
-				ImGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.ramInformation[counter].configuredMemorySpeed.c_str(),
+				KarmaGui::Text("Ram Conditions");
+				KarmaGui::Indent();
+				KarmaGui::Text("Size: %s", electronicsItems.ramInformation[counter].ramSize.c_str());
+				KarmaGui::Text("Operating Voltage: %s", electronicsItems.ramInformation[counter].operatingVoltage.c_str());
+				KarmaGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.ramInformation[counter].configuredMemorySpeed.c_str(),
 					electronicsItems.ramInformation[counter].memorySpeed.c_str());
-				ImGui::Text("Form Factor: %s", electronicsItems.ramInformation[counter].formFactor.c_str());
-				ImGui::Unindent();
+				KarmaGui::Text("Form Factor: %s", electronicsItems.ramInformation[counter].formFactor.c_str());
+				KarmaGui::Unindent();
 			}
 
-			ImGui::Text("RAM Logistics");
-			ImGui::Indent();
-			ImGui::Text("Total Ram Size: %d %s", electronicsItems.totalRamSize, electronicsItems.ramSizeDimensions.c_str());
-			ImGui::Unindent();
+			KarmaGui::Text("RAM Logistics");
+			KarmaGui::Indent();
+			KarmaGui::Text("Total Ram Size: %d %s", electronicsItems.totalRamSize, electronicsItems.ramSizeDimensions.c_str());
+			KarmaGui::Unindent();
 
-			ImGui::Separator();
+			KarmaGui::Separator();
 
-			ImGui::Text("Central Processor Unit");
-			ImGui::Separator();
+			KarmaGui::Text("Central Processor Unit");
+			KarmaGui::Separator();
 
-			ImGui::Text("Manufacturer: %s", electronicsItems.cpuManufacturer.c_str());
-			ImGui::Text("Processor Family: %s", electronicsItems.cpuProcessingfamily.c_str());
-			ImGui::Text("Version: %s", electronicsItems.cpuVersion.c_str());
-			ImGui::Text("CPU Conditions");
-			ImGui::Indent();
-			ImGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.cpuCurrentSpeed.c_str(), electronicsItems.cpuMaximumSpeed.c_str());
-			ImGui::Text("External Clock: %s", electronicsItems.cpuExternalClock.c_str());
-			ImGui::Text("Cores (Current | Maximum): %s | %s", electronicsItems.cpuEnabledCoresCount.c_str(), electronicsItems.cpuCorescount.c_str());
-			ImGui::Text("Threads Count: %s", electronicsItems.cpuThreadCount.c_str());
-			ImGui::Text("Operating Voltage: %s", electronicsItems.cpuOperatingVoltage.c_str());
-			ImGui::Unindent();
-			ImGui::Text("CPU Tags or Numbers");
-			ImGui::Indent();
-			ImGui::Text("Signature: %s", electronicsItems.cpuSignature.c_str());
-			ImGui::Text("ID: %s", electronicsItems.cpuid.c_str());
-			ImGui::Text("Part Number: %s", electronicsItems.cpuPartNumber.c_str());
-			ImGui::Text("Serial Number: %s", electronicsItems.cpuSerialNumber.c_str());
-			ImGui::Text("Asset Tag: %s", electronicsItems.cpuAssettag.c_str());
-			ImGui::Unindent();
-			ImGui::Text("CPU Characteristics");
-			ImGui::Indent();
-			ImGui::Text("%s", electronicsItems.cpuTheCharacterstics.c_str());
-			ImGui::Unindent();
-			ImGui::Text("Flags:");
-			ImGui::Indent();
-			ImGui::Text("%s", electronicsItems.cpuFlags.c_str());
-			ImGui::Unindent();
+			KarmaGui::Text("Manufacturer: %s", electronicsItems.cpuManufacturer.c_str());
+			KarmaGui::Text("Processor Family: %s", electronicsItems.cpuProcessingfamily.c_str());
+			KarmaGui::Text("Version: %s", electronicsItems.cpuVersion.c_str());
+			KarmaGui::Text("CPU Conditions");
+			KarmaGui::Indent();
+			KarmaGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.cpuCurrentSpeed.c_str(), electronicsItems.cpuMaximumSpeed.c_str());
+			KarmaGui::Text("External Clock: %s", electronicsItems.cpuExternalClock.c_str());
+			KarmaGui::Text("Cores (Current | Maximum): %s | %s", electronicsItems.cpuEnabledCoresCount.c_str(), electronicsItems.cpuCorescount.c_str());
+			KarmaGui::Text("Threads Count: %s", electronicsItems.cpuThreadCount.c_str());
+			KarmaGui::Text("Operating Voltage: %s", electronicsItems.cpuOperatingVoltage.c_str());
+			KarmaGui::Unindent();
+			KarmaGui::Text("CPU Tags or Numbers");
+			KarmaGui::Indent();
+			KarmaGui::Text("Signature: %s", electronicsItems.cpuSignature.c_str());
+			KarmaGui::Text("ID: %s", electronicsItems.cpuid.c_str());
+			KarmaGui::Text("Part Number: %s", electronicsItems.cpuPartNumber.c_str());
+			KarmaGui::Text("Serial Number: %s", electronicsItems.cpuSerialNumber.c_str());
+			KarmaGui::Text("Asset Tag: %s", electronicsItems.cpuAssettag.c_str());
+			KarmaGui::Unindent();
+			KarmaGui::Text("CPU Characteristics");
+			KarmaGui::Indent();
+			KarmaGui::Text("%s", electronicsItems.cpuTheCharacterstics.c_str());
+			KarmaGui::Unindent();
+			KarmaGui::Text("Flags:");
+			KarmaGui::Indent();
+			KarmaGui::Text("%s", electronicsItems.cpuFlags.c_str());
+			KarmaGui::Unindent();
 
-			ImGui::Separator();
+			KarmaGui::Separator();
 
-			ImGui::Text("Graphics Processing Unit");
-			ImGui::Separator();
+			KarmaGui::Text("Graphics Processing Unit");
+			KarmaGui::Separator();
 
-			ImGui::Text("Manufacturer: %s", electronicsItems.gpuVendor.c_str());
-			ImGui::Text("Model: %s", electronicsItems.gpuModelIdentification.c_str());
-			ImGui::Text("VRam: %s", electronicsItems.gpuVMemory.c_str());
+			KarmaGui::Text("Manufacturer: %s", electronicsItems.gpuVendor.c_str());
+			KarmaGui::Text("Model: %s", electronicsItems.gpuModelIdentification.c_str());
+			KarmaGui::Text("VRam: %s", electronicsItems.gpuVMemory.c_str());
 
-			ImGui::Separator();
+			KarmaGui::Separator();
 
 			if (bCopyToClipboard)
 			{
-				ImGui::LogText("\n```\n");
-				ImGui::LogFinish();
+				KarmaGui::LogText("\n```\n");
+				KarmaGui::LogFinish();
 			}
-			ImGui::EndChildFrame();
+			KarmaGui::EndChildFrame();
 		}
 
-		ImGui::End();
+		KarmaGui::End();
 	}
 
 	// Strings are copied in this not-so-cheap function. Hence the check!!
@@ -777,7 +781,7 @@ namespace Karma
 	// [SECTION] MISC HELPERS/UTILITIES (String, Format, Hash functions)
 	//-----------------------------------------------------------------------------
 
-	int ImGuiMesa::ImStrlenW(const ImWchar* str)
+	int ImGuiMesa::ImStrlenW(const KGWchar* str)
 	{
 		//return (int)wcslen((const wchar_t*)str);  // FIXME-OPT: Could use this when wchar_t are 16-bit
 		int n = 0;

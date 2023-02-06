@@ -2166,7 +2166,7 @@ bool KGFontAtlas::GetMouseCursorTexData(KarmaGuiMouseCursor cursor_type, KGVec2*
 	return true;
 }
 
-bool    KGFontAtlas::Build()
+bool KGFontAtlas::Build()
 {
 	KR_CORE_ASSERT(!Locked, "Cannot modify a locked KGFontAtlas between NewFrame() and EndFrame/Render()!");
 
@@ -2193,7 +2193,15 @@ bool    KGFontAtlas::Build()
 	return builder_io->FontBuilder_Build(this);
 }
 
-void    ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], float in_brighten_factor)
+/*
+const KGFontBuilderIO* ImFontAtlasGetBuilderForStbTruetype()
+{
+	static KGFontBuilderIO io;
+	io.FontBuilder_Build = KarmaFontAtlasBuildWithStbTruetype;
+	return &io;
+}*/
+
+void Karma::KGFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], float in_brighten_factor)
 {
 	for (unsigned int i = 0; i < 256; i++)
 	{
@@ -2202,7 +2210,7 @@ void    ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_table[256], fl
 	}
 }
 
-void    ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride)
+void Karma::KGFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride)
 {
 	KR_CORE_ASSERT(w <= stride, "");
 	unsigned char* data = pixels + x + y * stride;
@@ -2211,11 +2219,9 @@ void    ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsig
 			*data = table[*data];
 }
 
-#ifdef KGGUI_ENABLE_STB_TRUETYPE
-// Temporary data for one source font (multiple source fonts can be merged into one destination KGFont)
-// (C++03 doesn't allow instancing KGVector<> with function-local types so we declare the type here.)
-/*
-struct ImFontBuildSrcData
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "imstb_truetype.h"
+struct KGFontBuildSrcData
 {
 	stbtt_fontinfo      FontInfo;
 	stbtt_pack_range    PackRange;          // Hold the list of codepoints to pack (essentially points to Codepoints.Data)
@@ -2230,7 +2236,7 @@ struct ImFontBuildSrcData
 };
 
 // Temporary data for one destination KGFont* (multiple source fonts can be merged into one destination KGFont)
-struct ImFontBuildDstData
+struct KGFontBuildDstData
 {
 	int                 SrcCount;           // Number of source fonts targeting this destination font.
 	int                 GlyphsHighest;
@@ -2240,7 +2246,7 @@ struct ImFontBuildDstData
 
 static void UnpackBitVectorToFlatIndexList(const KGBitVector* in, KGVector<int>* out)
 {
-	KR_CORE_ASSERT(sizeof(in->Storage.Data[0]) == sizeof(int));
+	KR_CORE_ASSERT(sizeof(in->Storage.Data[0]) == sizeof(int), "");
 	const KGU32* it_begin = in->Storage.begin();
 	const KGU32* it_end = in->Storage.end();
 	for (const KGU32* it = it_begin; it < it_end; it++)
@@ -2250,11 +2256,11 @@ static void UnpackBitVectorToFlatIndexList(const KGBitVector* in, KGVector<int>*
 					out->push_back((int)(((it - it_begin) << 5) + bit_n));
 }
 
-static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
+static bool KGFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 {
-	KR_CORE_ASSERT(atlas->ConfigData.Size > 0);
+	KR_CORE_ASSERT(atlas->ConfigData.Size > 0, "");
 
-	ImFontAtlasBuildInit(atlas);
+	Karma::KGFontAtlasBuildInit(atlas);
 
 	// Clear atlas
 	atlas->TexID = (KGTextureID)NULL;
@@ -2264,8 +2270,8 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 	atlas->ClearTexData();
 
 	// Temporary storage for building
-	KGVector<ImFontBuildSrcData> src_tmp_array;
-	KGVector<ImFontBuildDstData> dst_tmp_array;
+	KGVector<KGFontBuildSrcData> src_tmp_array;
+	KGVector<KGFontBuildDstData> dst_tmp_array;
 	src_tmp_array.resize(atlas->ConfigData.Size);
 	dst_tmp_array.resize(atlas->Fonts.Size);
 	memset(src_tmp_array.Data, 0, (size_t)src_tmp_array.size_in_bytes());
@@ -2274,9 +2280,9 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 	// 1. Initialize font loading structure, check font data validity
 	for (int src_i = 0; src_i < atlas->ConfigData.Size; src_i++)
 	{
-		ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
+		KGFontBuildSrcData& src_tmp = src_tmp_array[src_i];
 		KGFontConfig& cfg = atlas->ConfigData[src_i];
-		KR_CORE_ASSERT(cfg.DstFont && (!cfg.DstFont->IsLoaded() || cfg.DstFont->ContainerAtlas == atlas));
+		KR_CORE_ASSERT(cfg.DstFont && (!cfg.DstFont->IsLoaded() || cfg.DstFont->ContainerAtlas == atlas), "");
 
 		// Find index from cfg.DstFont (we allow the user to set cfg.DstFont. Also it makes casual debugging nicer than when storing indices)
 		src_tmp.DstIndex = -1;
@@ -2285,17 +2291,17 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 				src_tmp.DstIndex = output_i;
 		if (src_tmp.DstIndex == -1)
 		{
-			KR_CORE_ASSERT(src_tmp.DstIndex != -1); // cfg.DstFont not pointing within atlas->Fonts[] array?
+			KR_CORE_ASSERT(src_tmp.DstIndex != -1, ""); // cfg.DstFont not pointing within atlas->Fonts[] array?
 			return false;
 		}
 		// Initialize helper structure for font loading and verify that the TTF/OTF data is correct
 		const int font_offset = stbtt_GetFontOffsetForIndex((unsigned char*)cfg.FontData, cfg.FontNo);
-		KR_CORE_ASSERT(font_offset >= 0 && "FontData is incorrect, or FontNo cannot be found.");
+		KR_CORE_ASSERT(font_offset >= 0 && "FontData is incorrect, or FontNo cannot be found.", "");
 		if (!stbtt_InitFont(&src_tmp.FontInfo, (unsigned char*)cfg.FontData, font_offset))
 			return false;
 
 		// Measure highest codepoints
-		ImFontBuildDstData& dst_tmp = dst_tmp_array[src_tmp.DstIndex];
+		KGFontBuildDstData& dst_tmp = dst_tmp_array[src_tmp.DstIndex];
 		src_tmp.SrcRanges = cfg.GlyphRanges ? cfg.GlyphRanges : atlas->GetGlyphRangesDefault();
 		for (const KGWchar* src_range = src_tmp.SrcRanges; src_range[0] && src_range[1]; src_range += 2)
 			src_tmp.GlyphsHighest = KGMax(src_tmp.GlyphsHighest, (int)src_range[1]);
@@ -2307,8 +2313,8 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 	int total_glyphs_count = 0;
 	for (int src_i = 0; src_i < src_tmp_array.Size; src_i++)
 	{
-		ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
-		ImFontBuildDstData& dst_tmp = dst_tmp_array[src_tmp.DstIndex];
+		KGFontBuildSrcData& src_tmp = src_tmp_array[src_i];
+		KGFontBuildDstData& dst_tmp = dst_tmp_array[src_tmp.DstIndex];
 		src_tmp.GlyphsSet.Create(src_tmp.GlyphsHighest + 1);
 		if (dst_tmp.GlyphsSet.Storage.empty())
 			dst_tmp.GlyphsSet.Create(dst_tmp.GlyphsHighest + 1);
@@ -2333,11 +2339,11 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 	// 3. Unpack our bit map into a flat list (we now have all the Unicode points that we know are requested _and_ available _and_ not overlapping another)
 	for (int src_i = 0; src_i < src_tmp_array.Size; src_i++)
 	{
-		ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
+		KGFontBuildSrcData& src_tmp = src_tmp_array[src_i];
 		src_tmp.GlyphsList.reserve(src_tmp.GlyphsCount);
 		UnpackBitVectorToFlatIndexList(&src_tmp.GlyphsSet, &src_tmp.GlyphsList);
 		src_tmp.GlyphsSet.Clear();
-		KR_CORE_ASSERT(src_tmp.GlyphsList.Size == src_tmp.GlyphsCount);
+		KR_CORE_ASSERT(src_tmp.GlyphsList.Size == src_tmp.GlyphsCount, "");
 	}
 	for (int dst_i = 0; dst_i < dst_tmp_array.Size; dst_i++)
 		dst_tmp_array[dst_i].GlyphsSet.Clear();
@@ -2358,7 +2364,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 	int buf_packedchars_out_n = 0;
 	for (int src_i = 0; src_i < src_tmp_array.Size; src_i++)
 	{
-		ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
+		KGFontBuildSrcData& src_tmp = src_tmp_array[src_i];
 		if (src_tmp.GlyphsCount == 0)
 			continue;
 
@@ -2384,7 +2390,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 		{
 			int x0, y0, x1, y1;
 			const int glyph_index_in_font = stbtt_FindGlyphIndex(&src_tmp.FontInfo, src_tmp.GlyphsList[glyph_i]);
-			KR_CORE_ASSERT(glyph_index_in_font != 0);
+			KR_CORE_ASSERT(glyph_index_in_font != 0, "");
 			stbtt_GetGlyphBitmapBoxSubpixel(&src_tmp.FontInfo, glyph_index_in_font, scale * cfg.OversampleH, scale * cfg.OversampleV, 0, 0, &x0, &y0, &x1, &y1);
 			src_tmp.Rects[glyph_i].w = (stbrp_coord)(x1 - x0 + padding + cfg.OversampleH - 1);
 			src_tmp.Rects[glyph_i].h = (stbrp_coord)(y1 - y0 + padding + cfg.OversampleV - 1);
@@ -2407,12 +2413,12 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 	const int TEX_HEIGHT_MAX = 1024 * 32;
 	stbtt_pack_context spc = {};
 	stbtt_PackBegin(&spc, NULL, atlas->TexWidth, TEX_HEIGHT_MAX, 0, atlas->TexGlyphPadding, NULL);
-	ImFontAtlasBuildPackCustomRects(atlas, spc.pack_info);
+	Karma::KGFontAtlasBuildPackCustomRects(atlas, spc.pack_info);
 
 	// 6. Pack each source font. No rendering yet, we are working with rectangles in an infinitely tall texture at this point.
 	for (int src_i = 0; src_i < src_tmp_array.Size; src_i++)
 	{
-		ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
+		KGFontBuildSrcData& src_tmp = src_tmp_array[src_i];
 		if (src_tmp.GlyphsCount == 0)
 			continue;
 
@@ -2437,7 +2443,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 	for (int src_i = 0; src_i < src_tmp_array.Size; src_i++)
 	{
 		KGFontConfig& cfg = atlas->ConfigData[src_i];
-		ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
+		KGFontBuildSrcData& src_tmp = src_tmp_array[src_i];
 		if (src_tmp.GlyphsCount == 0)
 			continue;
 
@@ -2447,11 +2453,11 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 		if (cfg.RasterizerMultiply != 1.0f)
 		{
 			unsigned char multiply_table[256];
-			ImFontAtlasBuildMultiplyCalcLookupTable(multiply_table, cfg.RasterizerMultiply);
+			Karma::KGFontAtlasBuildMultiplyCalcLookupTable(multiply_table, cfg.RasterizerMultiply);
 			stbrp_rect* r = &src_tmp.Rects[0];
 			for (int glyph_i = 0; glyph_i < src_tmp.GlyphsCount; glyph_i++, r++)
 				if (r->was_packed)
-					ImFontAtlasBuildMultiplyRectAlpha8(multiply_table, atlas->TexPixelsAlpha8, r->x, r->y, r->w, r->h, atlas->TexWidth * 1);
+					Karma::KGFontAtlasBuildMultiplyRectAlpha8(multiply_table, atlas->TexPixelsAlpha8, r->x, r->y, r->w, r->h, atlas->TexWidth * 1);
 		}
 		src_tmp.Rects = NULL;
 	}
@@ -2463,7 +2469,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 	// 9. Setup KGFont and glyphs for runtime
 	for (int src_i = 0; src_i < src_tmp_array.Size; src_i++)
 	{
-		ImFontBuildSrcData& src_tmp = src_tmp_array[src_i];
+		KGFontBuildSrcData& src_tmp = src_tmp_array[src_i];
 		if (src_tmp.GlyphsCount == 0)
 			continue;
 
@@ -2479,7 +2485,7 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 
 		const float ascent = KGFloor(unscaled_ascent * font_scale + ((unscaled_ascent > 0.0f) ? +1 : -1));
 		const float descent = KGFloor(unscaled_descent * font_scale + ((unscaled_descent > 0.0f) ? +1 : -1));
-		ImFontAtlasBuildSetupFont(atlas, dst_font, &cfg, ascent, descent);
+		Karma::KGFontAtlasBuildSetupFont(atlas, dst_font, &cfg, ascent, descent);
 		const float font_off_x = cfg.GlyphOffset.x;
 		const float font_off_y = cfg.GlyphOffset.y + KG_ROUND(dst_font->Ascent);
 
@@ -2498,20 +2504,18 @@ static bool ImFontAtlasBuildWithStbTruetype(KGFontAtlas* atlas)
 	// Cleanup
 	src_tmp_array.clear_destruct();
 
-	ImFontAtlasBuildFinish(atlas);
+	Karma::KGFontAtlasBuildFinish(atlas);
 	return true;
 }
 
 const KGFontBuilderIO* ImFontAtlasGetBuilderForStbTruetype()
 {
 	static KGFontBuilderIO io;
-	io.FontBuilder_Build = ImFontAtlasBuildWithStbTruetype;
+	io.FontBuilder_Build = KGFontAtlasBuildWithStbTruetype;
 	return &io;
 }
 
-#endif */// KGGUI_ENABLE_STB_TRUETYPE
-
-void ImFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* font_config, float ascent, float descent)
+void Karma::KGFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* font_config, float ascent, float descent)
 {
 	if (!font_config->MergeMode)
 	{
@@ -2526,7 +2530,7 @@ void ImFontAtlasBuildSetupFont(KGFontAtlas* atlas, KGFont* font, KGFontConfig* f
 	font->ConfigDataCount++;
 }
 
-void ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opaque)
+void Karma::KGFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opaque)
 {
 	stbrp_context* pack_context = (stbrp_context*)stbrp_context_opaque;
 	KR_CORE_ASSERT(pack_context != NULL, "");
@@ -2553,7 +2557,7 @@ void ImFontAtlasBuildPackCustomRects(KGFontAtlas* atlas, void* stbrp_context_opa
 		}
 }
 
-void ImFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned char in_marker_pixel_value)
+void Karma::KGFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned char in_marker_pixel_value)
 {
 	KR_CORE_ASSERT(x >= 0 && x + w <= atlas->TexWidth, "");
 	KR_CORE_ASSERT(y >= 0 && y + h <= atlas->TexHeight, "");
@@ -2563,7 +2567,7 @@ void ImFontAtlasBuildRender8bppRectFromString(KGFontAtlas* atlas, int x, int y, 
 			out_pixel[off_x] = (in_str[off_x] == in_marker_char) ? in_marker_pixel_value : 0x00;
 }
 
-void ImFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned int in_marker_pixel_value)
+void Karma::KGFontAtlasBuildRender32bppRectFromString(KGFontAtlas* atlas, int x, int y, int w, int h, const char* in_str, char in_marker_char, unsigned int in_marker_pixel_value)
 {
 	KR_CORE_ASSERT(x >= 0 && x + w <= atlas->TexWidth, "");
 	KR_CORE_ASSERT(y >= 0 && y + h <= atlas->TexHeight, "");
@@ -2587,13 +2591,13 @@ static void ImFontAtlasBuildRenderDefaultTexData(KGFontAtlas* atlas)
 		const int x_for_black = r->X + FONT_ATLAS_DEFAULT_TEX_DATA_W + 1;
 		if (atlas->TexPixelsAlpha8 != NULL)
 		{
-			ImFontAtlasBuildRender8bppRectFromString(atlas, x_for_white, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, '.', 0xFF);
-			ImFontAtlasBuildRender8bppRectFromString(atlas, x_for_black, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, 'X', 0xFF);
+			Karma::KGFontAtlasBuildRender8bppRectFromString(atlas, x_for_white, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, '.', 0xFF);
+			Karma::KGFontAtlasBuildRender8bppRectFromString(atlas, x_for_black, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, 'X', 0xFF);
 		}
 		else
 		{
-			ImFontAtlasBuildRender32bppRectFromString(atlas, x_for_white, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, '.', KG_COL32_WHITE);
-			ImFontAtlasBuildRender32bppRectFromString(atlas, x_for_black, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, 'X', KG_COL32_WHITE);
+			Karma::KGFontAtlasBuildRender32bppRectFromString(atlas, x_for_white, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, '.', KG_COL32_WHITE);
+			Karma::KGFontAtlasBuildRender32bppRectFromString(atlas, x_for_black, r->Y, FONT_ATLAS_DEFAULT_TEX_DATA_W, FONT_ATLAS_DEFAULT_TEX_DATA_H, FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS, 'X', KG_COL32_WHITE);
 		}
 	}
 	else
@@ -2665,7 +2669,7 @@ static void ImFontAtlasBuildRenderLinesTexData(KGFontAtlas* atlas)
 }
 
 // Note: this is called / shared by both the stb_truetype and the FreeType builder
-void ImFontAtlasBuildInit(KGFontAtlas* atlas)
+void Karma::KGFontAtlasBuildInit(KGFontAtlas* atlas)
 {
 	// Register texture region for mouse cursors or standard white pixels
 	if (atlas->PackIdMouseCursors < 0)
@@ -2686,7 +2690,7 @@ void ImFontAtlasBuildInit(KGFontAtlas* atlas)
 }
 
 // This is called/shared by both the stb_truetype and the FreeType builder.
-void ImFontAtlasBuildFinish(KGFontAtlas* atlas)
+void Karma::KGFontAtlasBuildFinish(KGFontAtlas* atlas)
 {
 	// Render into our custom data blocks
 	KR_CORE_ASSERT(atlas->TexPixelsAlpha8 != NULL || atlas->TexPixelsRGBA32 != NULL, "");
@@ -4103,4 +4107,4 @@ static const char* GetDefaultCompressedFontDataTTFBase85()
 	return proggy_clean_ttf_compressed_data_base85;
 }
 
-#endif // #ifndef IMGUI_DISABLE
+//#endif // #ifndef IMGUI_DISABLE

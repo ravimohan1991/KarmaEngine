@@ -2,14 +2,19 @@
 
 #include "krpch.h"
 
-#include "imgui.h"
-#include "imgui_internal.h"
+#include "KarmaGui.h"
+#include "KarmaGuiInternal.h"
+
+//#include "imgui.h"
+//#include "imgui_internal.h"
 
 #include "Renderer/Scene.h"
 
 extern "C" {
 #include "dmidecode.h"
 }
+
+struct KGGuiDockNode;
 
 namespace Karma
 {
@@ -20,9 +25,9 @@ namespace Karma
 
 	struct KarmaLogMesa
 	{
-		ImGuiTextBuffer     TextBuffer;
-		ImGuiTextFilter     TextFilter;
-		ImVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
+		KarmaGuiTextBuffer     TextBuffer;
+		KarmaGuiTextFilter     TextFilter;
+		KGVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
 		bool                AutoScroll;  // Keep scrolling if already at the bottom.
 
 		KarmaLogMesa()
@@ -38,7 +43,7 @@ namespace Karma
 			LineOffsets.push_back(0);
 		}
 
-		void AddLog(const char* fmt, ...) IM_FMTARGS(2) // <- what in the name of WYSIWYG is this?
+		void AddLog(const char* fmt, ...) /*KG_FMTARGS(2) */// <- what in the name of WYSIWYG is this?
 		{
 			int cacheSize = TextBuffer.size();
 			va_list args;
@@ -57,35 +62,35 @@ namespace Karma
 
 		void Draw(const char* title, bool* pOpen = nullptr)
 		{
-			if (!ImGui::Begin(title, pOpen))
+			if (!KarmaGui::Begin(title, pOpen))
 			{
-				ImGui::End();
+				KarmaGui::End();
 				return;
 			}
 
 			// Options menu
-			if (ImGui::BeginPopup("Options"))
+			if (KarmaGui::BeginPopup("Options"))
 			{
-				ImGui::Checkbox("Auto-scroll", &AutoScroll);
-				ImGui::EndPopup();
+				KarmaGui::Checkbox("Auto-scroll", &AutoScroll);
+				KarmaGui::EndPopup();
 			}
 
 			// Main window
-			if (ImGui::Button("Options"))
+			if (KarmaGui::Button("Options"))
 			{
-				ImGui::OpenPopup("Options");
+				KarmaGui::OpenPopup("Options");
 			}
 
-			ImGui::SameLine();
-			bool clear = ImGui::Button("Clear");
-			ImGui::SameLine();
-			bool copy = ImGui::Button("Copy");
-			ImGui::SameLine();
+			KarmaGui::SameLine();
+			bool clear = KarmaGui::Button("Clear");
+			KarmaGui::SameLine();
+			bool copy = KarmaGui::Button("Copy");
+			KarmaGui::SameLine();
 
 			TextFilter.Draw("Filter", -100.0f);
 
-			ImGui::Separator();
-			ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+			KarmaGui::Separator();
+			KarmaGui::BeginChild("scrolling", KGVec2(0, 0), false, KGGuiWindowFlags_HorizontalScrollbar);
 
 			if (clear)
 			{
@@ -93,10 +98,10 @@ namespace Karma
 			}
 			if (copy)
 			{
-				ImGui::LogToClipboard();
+				KarmaGui::LogToClipboard();
 			}
 
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+			KarmaGui::PushStyleVar(KGGuiStyleVar_ItemSpacing, KGVec2(0, 0));
 
 			const char* buAlpha = TextBuffer.begin();
 			const char* buOmega = TextBuffer.end();
@@ -113,7 +118,7 @@ namespace Karma
 					const char* lineEnd = (lineNumber + 1 < LineOffsets.Size) ? (buAlpha + LineOffsets[lineNumber + 1] - 1) : buOmega;
 					if (TextFilter.PassFilter(lineStart, lineEnd))
 					{
-						ImGui::TextUnformatted(lineStart, lineEnd);
+						KarmaGui::TextUnformatted(lineStart, lineEnd);
 					}
 				}
 			}
@@ -132,7 +137,7 @@ namespace Karma
 				// When using the filter (in the block of code above) we don't have random access into the data to display
 				// anymore, which is why we don't use the clipper. Storing or skimming through the search result would make
 				// it possible (and would be recommended if you want to search through tens of thousands of entries).
-				ImGuiListClipper clipper;
+				KarmaGuiListClipper clipper;
 				clipper.Begin(LineOffsets.Size);
 
 				while (clipper.Step())
@@ -141,36 +146,36 @@ namespace Karma
 					{
 						const char* lineStart = buAlpha + LineOffsets[lineNumber];
 						const char* lineEnd = (lineNumber + 1 < LineOffsets.Size) ? (buAlpha + LineOffsets[lineNumber + 1] - 1) : buOmega;
-						ImGui::TextUnformatted(lineStart, lineEnd);
+						KarmaGui::TextUnformatted(lineStart, lineEnd);
 					}
 				}
 				clipper.End();
 			}
-			ImGui::PopStyleVar();
+			KarmaGui::PopStyleVar();
 
-			if (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+			if (AutoScroll && KarmaGui::GetScrollY() >= KarmaGui::GetScrollMaxY())
 			{
-				ImGui::SetScrollHereY(1.0f);
+				KarmaGui::SetScrollHereY(1.0f);
 			}
 
-			ImGui::EndChild();
-			ImGui::End();
+			KarmaGui::EndChild();
+			KarmaGui::End();
 		}
 	};
 
 	struct ImGuiDockPreviewData
 	{
-		ImGuiDockNode   FutureNode;
+		KGGuiDockNode   FutureNode;
 		bool            IsDropAllowed;
 		bool            IsCenterAvailable;
 		bool            IsSidesAvailable;           // Hold your breath, grammar freaks..
 		bool            IsSplitDirExplicit;         // Set when hovered the drop rect (vs. implicit SplitDir==None when hovered the window)
-		ImGuiDockNode* SplitNode;
-		ImGuiDir        SplitDir;
+		KGGuiDockNode* SplitNode;
+		KarmaGuiDir        SplitDir;
 		float           SplitRatio;
-		ImRect          DropRectsDraw[ImGuiDir_COUNT + 1];  // May be slightly different from hit-testing drop rects used in DockNodeCalcDropRects()
+		KGRect          DropRectsDraw[KGGuiDir_COUNT + 1];  // May be slightly different from hit-testing drop rects used in DockNodeCalcDropRects()
 
-		ImGuiDockPreviewData() : FutureNode(0) { IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false; SplitNode = NULL; SplitDir = ImGuiDir_None; SplitRatio = 0.f; for (int n = 0; n < IM_ARRAYSIZE(DropRectsDraw); n++) DropRectsDraw[n] = ImRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX); }
+		ImGuiDockPreviewData();
 	};
 
 	struct KARMA_API KarmaTuringMachineElectronics
@@ -294,10 +299,10 @@ namespace Karma
 	{
 	public:
 		// Showtime!
-		static void RevealMainFrame(ImGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks);
+		static void RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks);
 		static void DrawKarmaMainMenuBarMesa();
 		static void DrawMainMenuFileListMesa();
-		static void DrawKarmaLogMesa(ImGuiID mainMesaDockID);
+		static void DrawKarmaLogMesa(KGGuiID mainMesaDockID);
 		static void DrawKarmaSceneHierarchyPanelMesa();
 		static void Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene);
 		static void DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback);
@@ -308,7 +313,7 @@ namespace Karma
 		// Shiva the Mesa and rest
 		static void MesaShutDownRoutine();
 
-		static ImGuiDockNode* DockNodeTreeFindFallbackLeafNode(ImGuiDockNode* node);
+		static KGGuiDockNode* DockNodeTreeFindFallbackLeafNode(KGGuiDockNode* node);
 
 		// Getters
 		static KarmaTuringMachineElectronics& GetGatheredElectronicsInformationForModification() { return electronicsItems; }
@@ -318,7 +323,7 @@ namespace Karma
 		static void SetElectronicsRamInformationToNull();
 
 		// Helpers
-		static int ImStrlenW(const ImWchar* str);
+		static int ImStrlenW(const KGWchar* str);
 		static void QueryForTuringMachineElectronics();
 		static uint32_t ChernUint32FromString(const std::string& ramString);
 		static std::string ChernDimensionsFromString(const std::string& ramString);
