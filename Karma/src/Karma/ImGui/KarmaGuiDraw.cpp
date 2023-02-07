@@ -89,192 +89,192 @@ extern  KarmaGuiContext* GKarmaGui;
 
 namespace Karma
 {
-void KarmaGui::StyleColorsDark(KarmaGuiStyle* dst)
-{
-	KarmaGuiStyle* style = dst ? dst : &KarmaGui::GetStyle();
-	KGVec4* colors = style->Colors;
+	void KarmaGui::StyleColorsDark(KarmaGuiStyle* dst)
+	{
+		KarmaGuiStyle* style = dst ? dst : &KarmaGui::GetStyle();
+		KGVec4* colors = style->Colors;
 
-	colors[KGGuiCol_Text]                   = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[KGGuiCol_TextDisabled]           = KGVec4(0.50f, 0.50f, 0.50f, 1.00f);
-	colors[KGGuiCol_WindowBg]               = KGVec4(0.06f, 0.06f, 0.06f, 0.94f);
-	colors[KGGuiCol_ChildBg]                = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[KGGuiCol_PopupBg]                = KGVec4(0.08f, 0.08f, 0.08f, 0.94f);
-	colors[KGGuiCol_Border]                 = KGVec4(0.43f, 0.43f, 0.50f, 0.50f);
-	colors[KGGuiCol_BorderShadow]           = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[KGGuiCol_FrameBg]                = KGVec4(0.16f, 0.29f, 0.48f, 0.54f);
-	colors[KGGuiCol_FrameBgHovered]         = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
-	colors[KGGuiCol_FrameBgActive]          = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
-	colors[KGGuiCol_TitleBg]                = KGVec4(0.04f, 0.04f, 0.04f, 1.00f);
-	colors[KGGuiCol_TitleBgActive]          = KGVec4(0.16f, 0.29f, 0.48f, 1.00f);
-	colors[KGGuiCol_TitleBgCollapsed]       = KGVec4(0.00f, 0.00f, 0.00f, 0.51f);
-	colors[KGGuiCol_MenuBarBg]              = KGVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[KGGuiCol_ScrollbarBg]            = KGVec4(0.02f, 0.02f, 0.02f, 0.53f);
-	colors[KGGuiCol_ScrollbarGrab]          = KGVec4(0.31f, 0.31f, 0.31f, 1.00f);
-	colors[KGGuiCol_ScrollbarGrabHovered]   = KGVec4(0.41f, 0.41f, 0.41f, 1.00f);
-	colors[KGGuiCol_ScrollbarGrabActive]    = KGVec4(0.51f, 0.51f, 0.51f, 1.00f);
-	colors[KGGuiCol_CheckMark]              = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
-	colors[KGGuiCol_SliderGrab]             = KGVec4(0.24f, 0.52f, 0.88f, 1.00f);
-	colors[KGGuiCol_SliderGrabActive]       = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
-	colors[KGGuiCol_Button]                 = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
-	colors[KGGuiCol_ButtonHovered]          = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
-	colors[KGGuiCol_ButtonActive]           = KGVec4(0.06f, 0.53f, 0.98f, 1.00f);
-	colors[KGGuiCol_Header]                 = KGVec4(0.26f, 0.59f, 0.98f, 0.31f);
-	colors[KGGuiCol_HeaderHovered]          = KGVec4(0.26f, 0.59f, 0.98f, 0.80f);
-	colors[KGGuiCol_HeaderActive]           = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
-	colors[KGGuiCol_Separator]              = colors[KGGuiCol_Border];
-	colors[KGGuiCol_SeparatorHovered]       = KGVec4(0.10f, 0.40f, 0.75f, 0.78f);
-	colors[KGGuiCol_SeparatorActive]        = KGVec4(0.10f, 0.40f, 0.75f, 1.00f);
-	colors[KGGuiCol_ResizeGrip]             = KGVec4(0.26f, 0.59f, 0.98f, 0.20f);
-	colors[KGGuiCol_ResizeGripHovered]      = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
-	colors[KGGuiCol_ResizeGripActive]       = KGVec4(0.26f, 0.59f, 0.98f, 0.95f);
-	colors[KGGuiCol_Tab]                    = KGLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.80f);
-	colors[KGGuiCol_TabHovered]             = colors[KGGuiCol_HeaderHovered];
-	colors[KGGuiCol_TabActive]              = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
-	colors[KGGuiCol_TabUnfocused]           = KGLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
-	colors[KGGuiCol_TabUnfocusedActive]     = KGLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
-	colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_HeaderActive] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
-	colors[KGGuiCol_DockingEmptyBg]         = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
-	colors[KGGuiCol_PlotLines]              = KGVec4(0.61f, 0.61f, 0.61f, 1.00f);
-	colors[KGGuiCol_PlotLinesHovered]       = KGVec4(1.00f, 0.43f, 0.35f, 1.00f);
-	colors[KGGuiCol_PlotHistogram]          = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
-	colors[KGGuiCol_PlotHistogramHovered]   = KGVec4(1.00f, 0.60f, 0.00f, 1.00f);
-	colors[KGGuiCol_TableHeaderBg]          = KGVec4(0.19f, 0.19f, 0.20f, 1.00f);
-	colors[KGGuiCol_TableBorderStrong]      = KGVec4(0.31f, 0.31f, 0.35f, 1.00f);   // Prefer using Alpha=1.0 here
-	colors[KGGuiCol_TableBorderLight]       = KGVec4(0.23f, 0.23f, 0.25f, 1.00f);   // Prefer using Alpha=1.0 here
-	colors[KGGuiCol_TableRowBg]             = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[KGGuiCol_TableRowBgAlt]          = KGVec4(1.00f, 1.00f, 1.00f, 0.06f);
-	colors[KGGuiCol_TextSelectedBg]         = KGVec4(0.26f, 0.59f, 0.98f, 0.35f);
-	colors[KGGuiCol_DragDropTarget]         = KGVec4(1.00f, 1.00f, 0.00f, 0.90f);
-	colors[KGGuiCol_NavHighlight]           = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
-	colors[KGGuiCol_NavWindowingHighlight]  = KGVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[KGGuiCol_NavWindowingDimBg]      = KGVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[KGGuiCol_ModalWindowDimBg]       = KGVec4(0.80f, 0.80f, 0.80f, 0.35f);
-}
+		colors[KGGuiCol_Text] = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
+		colors[KGGuiCol_TextDisabled] = KGVec4(0.50f, 0.50f, 0.50f, 1.00f);
+		colors[KGGuiCol_WindowBg] = KGVec4(0.06f, 0.06f, 0.06f, 0.94f);
+		colors[KGGuiCol_ChildBg] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_PopupBg] = KGVec4(0.08f, 0.08f, 0.08f, 0.94f);
+		colors[KGGuiCol_Border] = KGVec4(0.43f, 0.43f, 0.50f, 0.50f);
+		colors[KGGuiCol_BorderShadow] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_FrameBg] = KGVec4(0.16f, 0.29f, 0.48f, 0.54f);
+		colors[KGGuiCol_FrameBgHovered] = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
+		colors[KGGuiCol_FrameBgActive] = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
+		colors[KGGuiCol_TitleBg] = KGVec4(0.04f, 0.04f, 0.04f, 1.00f);
+		colors[KGGuiCol_TitleBgActive] = KGVec4(0.16f, 0.29f, 0.48f, 1.00f);
+		colors[KGGuiCol_TitleBgCollapsed] = KGVec4(0.00f, 0.00f, 0.00f, 0.51f);
+		colors[KGGuiCol_MenuBarBg] = KGVec4(0.14f, 0.14f, 0.14f, 1.00f);
+		colors[KGGuiCol_ScrollbarBg] = KGVec4(0.02f, 0.02f, 0.02f, 0.53f);
+		colors[KGGuiCol_ScrollbarGrab] = KGVec4(0.31f, 0.31f, 0.31f, 1.00f);
+		colors[KGGuiCol_ScrollbarGrabHovered] = KGVec4(0.41f, 0.41f, 0.41f, 1.00f);
+		colors[KGGuiCol_ScrollbarGrabActive] = KGVec4(0.51f, 0.51f, 0.51f, 1.00f);
+		colors[KGGuiCol_CheckMark] = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[KGGuiCol_SliderGrab] = KGVec4(0.24f, 0.52f, 0.88f, 1.00f);
+		colors[KGGuiCol_SliderGrabActive] = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[KGGuiCol_Button] = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
+		colors[KGGuiCol_ButtonHovered] = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[KGGuiCol_ButtonActive] = KGVec4(0.06f, 0.53f, 0.98f, 1.00f);
+		colors[KGGuiCol_Header] = KGVec4(0.26f, 0.59f, 0.98f, 0.31f);
+		colors[KGGuiCol_HeaderHovered] = KGVec4(0.26f, 0.59f, 0.98f, 0.80f);
+		colors[KGGuiCol_HeaderActive] = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[KGGuiCol_Separator] = colors[KGGuiCol_Border];
+		colors[KGGuiCol_SeparatorHovered] = KGVec4(0.10f, 0.40f, 0.75f, 0.78f);
+		colors[KGGuiCol_SeparatorActive] = KGVec4(0.10f, 0.40f, 0.75f, 1.00f);
+		colors[KGGuiCol_ResizeGrip] = KGVec4(0.26f, 0.59f, 0.98f, 0.20f);
+		colors[KGGuiCol_ResizeGripHovered] = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
+		colors[KGGuiCol_ResizeGripActive] = KGVec4(0.26f, 0.59f, 0.98f, 0.95f);
+		colors[KGGuiCol_Tab] = KGLerp(colors[KGGuiCol_Header], colors[KGGuiCol_TitleBgActive], 0.80f);
+		colors[KGGuiCol_TabHovered] = colors[KGGuiCol_HeaderHovered];
+		colors[KGGuiCol_TabActive] = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
+		colors[KGGuiCol_TabUnfocused] = KGLerp(colors[KGGuiCol_Tab], colors[KGGuiCol_TitleBg], 0.80f);
+		colors[KGGuiCol_TabUnfocusedActive] = KGLerp(colors[KGGuiCol_TabActive], colors[KGGuiCol_TitleBg], 0.40f);
+		colors[KGGuiCol_DockingPreview] = colors[KGGuiCol_HeaderActive] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
+		colors[KGGuiCol_DockingEmptyBg] = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
+		colors[KGGuiCol_PlotLines] = KGVec4(0.61f, 0.61f, 0.61f, 1.00f);
+		colors[KGGuiCol_PlotLinesHovered] = KGVec4(1.00f, 0.43f, 0.35f, 1.00f);
+		colors[KGGuiCol_PlotHistogram] = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+		colors[KGGuiCol_PlotHistogramHovered] = KGVec4(1.00f, 0.60f, 0.00f, 1.00f);
+		colors[KGGuiCol_TableHeaderBg] = KGVec4(0.19f, 0.19f, 0.20f, 1.00f);
+		colors[KGGuiCol_TableBorderStrong] = KGVec4(0.31f, 0.31f, 0.35f, 1.00f);   // Prefer using Alpha=1.0 here
+		colors[KGGuiCol_TableBorderLight] = KGVec4(0.23f, 0.23f, 0.25f, 1.00f);   // Prefer using Alpha=1.0 here
+		colors[KGGuiCol_TableRowBg] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_TableRowBgAlt] = KGVec4(1.00f, 1.00f, 1.00f, 0.06f);
+		colors[KGGuiCol_TextSelectedBg] = KGVec4(0.26f, 0.59f, 0.98f, 0.35f);
+		colors[KGGuiCol_DragDropTarget] = KGVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		colors[KGGuiCol_NavHighlight] = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[KGGuiCol_NavWindowingHighlight] = KGVec4(1.00f, 1.00f, 1.00f, 0.70f);
+		colors[KGGuiCol_NavWindowingDimBg] = KGVec4(0.80f, 0.80f, 0.80f, 0.20f);
+		colors[KGGuiCol_ModalWindowDimBg] = KGVec4(0.80f, 0.80f, 0.80f, 0.35f);
+	}
 
-void KarmaGui::StyleColorsClassic(KarmaGuiStyle* dst)
-{
-	KarmaGuiStyle* style = dst ? dst : &KarmaGui::GetStyle();
-	KGVec4* colors = style->Colors;
+	void KarmaGui::StyleColorsClassic(KarmaGuiStyle* dst)
+	{
+		KarmaGuiStyle* style = dst ? dst : &KarmaGui::GetStyle();
+		KGVec4* colors = style->Colors;
 
-	colors[KGGuiCol_Text]                   = KGVec4(0.90f, 0.90f, 0.90f, 1.00f);
-	colors[KGGuiCol_TextDisabled]           = KGVec4(0.60f, 0.60f, 0.60f, 1.00f);
-	colors[KGGuiCol_WindowBg]               = KGVec4(0.00f, 0.00f, 0.00f, 0.85f);
-	colors[KGGuiCol_ChildBg]                = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[KGGuiCol_PopupBg]                = KGVec4(0.11f, 0.11f, 0.14f, 0.92f);
-	colors[KGGuiCol_Border]                 = KGVec4(0.50f, 0.50f, 0.50f, 0.50f);
-	colors[KGGuiCol_BorderShadow]           = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[KGGuiCol_FrameBg]                = KGVec4(0.43f, 0.43f, 0.43f, 0.39f);
-	colors[KGGuiCol_FrameBgHovered]         = KGVec4(0.47f, 0.47f, 0.69f, 0.40f);
-	colors[KGGuiCol_FrameBgActive]          = KGVec4(0.42f, 0.41f, 0.64f, 0.69f);
-	colors[KGGuiCol_TitleBg]                = KGVec4(0.27f, 0.27f, 0.54f, 0.83f);
-	colors[KGGuiCol_TitleBgActive]          = KGVec4(0.32f, 0.32f, 0.63f, 0.87f);
-	colors[KGGuiCol_TitleBgCollapsed]       = KGVec4(0.40f, 0.40f, 0.80f, 0.20f);
-	colors[KGGuiCol_MenuBarBg]              = KGVec4(0.40f, 0.40f, 0.55f, 0.80f);
-	colors[KGGuiCol_ScrollbarBg]            = KGVec4(0.20f, 0.25f, 0.30f, 0.60f);
-	colors[KGGuiCol_ScrollbarGrab]          = KGVec4(0.40f, 0.40f, 0.80f, 0.30f);
-	colors[KGGuiCol_ScrollbarGrabHovered]   = KGVec4(0.40f, 0.40f, 0.80f, 0.40f);
-	colors[KGGuiCol_ScrollbarGrabActive]    = KGVec4(0.41f, 0.39f, 0.80f, 0.60f);
-	colors[KGGuiCol_CheckMark]              = KGVec4(0.90f, 0.90f, 0.90f, 0.50f);
-	colors[KGGuiCol_SliderGrab]             = KGVec4(1.00f, 1.00f, 1.00f, 0.30f);
-	colors[KGGuiCol_SliderGrabActive]       = KGVec4(0.41f, 0.39f, 0.80f, 0.60f);
-	colors[KGGuiCol_Button]                 = KGVec4(0.35f, 0.40f, 0.61f, 0.62f);
-	colors[KGGuiCol_ButtonHovered]          = KGVec4(0.40f, 0.48f, 0.71f, 0.79f);
-	colors[KGGuiCol_ButtonActive]           = KGVec4(0.46f, 0.54f, 0.80f, 1.00f);
-	colors[KGGuiCol_Header]                 = KGVec4(0.40f, 0.40f, 0.90f, 0.45f);
-	colors[KGGuiCol_HeaderHovered]          = KGVec4(0.45f, 0.45f, 0.90f, 0.80f);
-	colors[KGGuiCol_HeaderActive]           = KGVec4(0.53f, 0.53f, 0.87f, 0.80f);
-	colors[KGGuiCol_Separator]              = KGVec4(0.50f, 0.50f, 0.50f, 0.60f);
-	colors[KGGuiCol_SeparatorHovered]       = KGVec4(0.60f, 0.60f, 0.70f, 1.00f);
-	colors[KGGuiCol_SeparatorActive]        = KGVec4(0.70f, 0.70f, 0.90f, 1.00f);
-	colors[KGGuiCol_ResizeGrip]             = KGVec4(1.00f, 1.00f, 1.00f, 0.10f);
-	colors[KGGuiCol_ResizeGripHovered]      = KGVec4(0.78f, 0.82f, 1.00f, 0.60f);
-	colors[KGGuiCol_ResizeGripActive]       = KGVec4(0.78f, 0.82f, 1.00f, 0.90f);
-	colors[KGGuiCol_Tab]                    = KGLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.80f);
-	colors[KGGuiCol_TabHovered]             = colors[KGGuiCol_HeaderHovered];
-	colors[KGGuiCol_TabActive]              = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
-	colors[KGGuiCol_TabUnfocused]           = KGLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
-	colors[KGGuiCol_TabUnfocusedActive]     = KGLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
-	colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_Header] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
-	colors[KGGuiCol_DockingEmptyBg]         = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
-	colors[KGGuiCol_PlotLines]              = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[KGGuiCol_PlotLinesHovered]       = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
-	colors[KGGuiCol_PlotHistogram]          = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
-	colors[KGGuiCol_PlotHistogramHovered]   = KGVec4(1.00f, 0.60f, 0.00f, 1.00f);
-	colors[KGGuiCol_TableHeaderBg]          = KGVec4(0.27f, 0.27f, 0.38f, 1.00f);
-	colors[KGGuiCol_TableBorderStrong]      = KGVec4(0.31f, 0.31f, 0.45f, 1.00f);   // Prefer using Alpha=1.0 here
-	colors[KGGuiCol_TableBorderLight]       = KGVec4(0.26f, 0.26f, 0.28f, 1.00f);   // Prefer using Alpha=1.0 here
-	colors[KGGuiCol_TableRowBg]             = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[KGGuiCol_TableRowBgAlt]          = KGVec4(1.00f, 1.00f, 1.00f, 0.07f);
-	colors[KGGuiCol_TextSelectedBg]         = KGVec4(0.00f, 0.00f, 1.00f, 0.35f);
-	colors[KGGuiCol_DragDropTarget]         = KGVec4(1.00f, 1.00f, 0.00f, 0.90f);
-	colors[KGGuiCol_NavHighlight]           = colors[KGGuiCol_HeaderHovered];
-	colors[KGGuiCol_NavWindowingHighlight]  = KGVec4(1.00f, 1.00f, 1.00f, 0.70f);
-	colors[KGGuiCol_NavWindowingDimBg]      = KGVec4(0.80f, 0.80f, 0.80f, 0.20f);
-	colors[KGGuiCol_ModalWindowDimBg]       = KGVec4(0.20f, 0.20f, 0.20f, 0.35f);
-}
+		colors[KGGuiCol_Text] = KGVec4(0.90f, 0.90f, 0.90f, 1.00f);
+		colors[KGGuiCol_TextDisabled] = KGVec4(0.60f, 0.60f, 0.60f, 1.00f);
+		colors[KGGuiCol_WindowBg] = KGVec4(0.00f, 0.00f, 0.00f, 0.85f);
+		colors[KGGuiCol_ChildBg] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_PopupBg] = KGVec4(0.11f, 0.11f, 0.14f, 0.92f);
+		colors[KGGuiCol_Border] = KGVec4(0.50f, 0.50f, 0.50f, 0.50f);
+		colors[KGGuiCol_BorderShadow] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_FrameBg] = KGVec4(0.43f, 0.43f, 0.43f, 0.39f);
+		colors[KGGuiCol_FrameBgHovered] = KGVec4(0.47f, 0.47f, 0.69f, 0.40f);
+		colors[KGGuiCol_FrameBgActive] = KGVec4(0.42f, 0.41f, 0.64f, 0.69f);
+		colors[KGGuiCol_TitleBg] = KGVec4(0.27f, 0.27f, 0.54f, 0.83f);
+		colors[KGGuiCol_TitleBgActive] = KGVec4(0.32f, 0.32f, 0.63f, 0.87f);
+		colors[KGGuiCol_TitleBgCollapsed] = KGVec4(0.40f, 0.40f, 0.80f, 0.20f);
+		colors[KGGuiCol_MenuBarBg] = KGVec4(0.40f, 0.40f, 0.55f, 0.80f);
+		colors[KGGuiCol_ScrollbarBg] = KGVec4(0.20f, 0.25f, 0.30f, 0.60f);
+		colors[KGGuiCol_ScrollbarGrab] = KGVec4(0.40f, 0.40f, 0.80f, 0.30f);
+		colors[KGGuiCol_ScrollbarGrabHovered] = KGVec4(0.40f, 0.40f, 0.80f, 0.40f);
+		colors[KGGuiCol_ScrollbarGrabActive] = KGVec4(0.41f, 0.39f, 0.80f, 0.60f);
+		colors[KGGuiCol_CheckMark] = KGVec4(0.90f, 0.90f, 0.90f, 0.50f);
+		colors[KGGuiCol_SliderGrab] = KGVec4(1.00f, 1.00f, 1.00f, 0.30f);
+		colors[KGGuiCol_SliderGrabActive] = KGVec4(0.41f, 0.39f, 0.80f, 0.60f);
+		colors[KGGuiCol_Button] = KGVec4(0.35f, 0.40f, 0.61f, 0.62f);
+		colors[KGGuiCol_ButtonHovered] = KGVec4(0.40f, 0.48f, 0.71f, 0.79f);
+		colors[KGGuiCol_ButtonActive] = KGVec4(0.46f, 0.54f, 0.80f, 1.00f);
+		colors[KGGuiCol_Header] = KGVec4(0.40f, 0.40f, 0.90f, 0.45f);
+		colors[KGGuiCol_HeaderHovered] = KGVec4(0.45f, 0.45f, 0.90f, 0.80f);
+		colors[KGGuiCol_HeaderActive] = KGVec4(0.53f, 0.53f, 0.87f, 0.80f);
+		colors[KGGuiCol_Separator] = KGVec4(0.50f, 0.50f, 0.50f, 0.60f);
+		colors[KGGuiCol_SeparatorHovered] = KGVec4(0.60f, 0.60f, 0.70f, 1.00f);
+		colors[KGGuiCol_SeparatorActive] = KGVec4(0.70f, 0.70f, 0.90f, 1.00f);
+		colors[KGGuiCol_ResizeGrip] = KGVec4(1.00f, 1.00f, 1.00f, 0.10f);
+		colors[KGGuiCol_ResizeGripHovered] = KGVec4(0.78f, 0.82f, 1.00f, 0.60f);
+		colors[KGGuiCol_ResizeGripActive] = KGVec4(0.78f, 0.82f, 1.00f, 0.90f);
+		colors[KGGuiCol_Tab] = KGLerp(colors[KGGuiCol_Header], colors[KGGuiCol_TitleBgActive], 0.80f);
+		colors[KGGuiCol_TabHovered] = colors[KGGuiCol_HeaderHovered];
+		colors[KGGuiCol_TabActive] = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
+		colors[KGGuiCol_TabUnfocused] = KGLerp(colors[KGGuiCol_Tab], colors[KGGuiCol_TitleBg], 0.80f);
+		colors[KGGuiCol_TabUnfocusedActive] = KGLerp(colors[KGGuiCol_TabActive], colors[KGGuiCol_TitleBg], 0.40f);
+		colors[KGGuiCol_DockingPreview] = colors[KGGuiCol_Header] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
+		colors[KGGuiCol_DockingEmptyBg] = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
+		colors[KGGuiCol_PlotLines] = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
+		colors[KGGuiCol_PlotLinesHovered] = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+		colors[KGGuiCol_PlotHistogram] = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+		colors[KGGuiCol_PlotHistogramHovered] = KGVec4(1.00f, 0.60f, 0.00f, 1.00f);
+		colors[KGGuiCol_TableHeaderBg] = KGVec4(0.27f, 0.27f, 0.38f, 1.00f);
+		colors[KGGuiCol_TableBorderStrong] = KGVec4(0.31f, 0.31f, 0.45f, 1.00f);   // Prefer using Alpha=1.0 here
+		colors[KGGuiCol_TableBorderLight] = KGVec4(0.26f, 0.26f, 0.28f, 1.00f);   // Prefer using Alpha=1.0 here
+		colors[KGGuiCol_TableRowBg] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_TableRowBgAlt] = KGVec4(1.00f, 1.00f, 1.00f, 0.07f);
+		colors[KGGuiCol_TextSelectedBg] = KGVec4(0.00f, 0.00f, 1.00f, 0.35f);
+		colors[KGGuiCol_DragDropTarget] = KGVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		colors[KGGuiCol_NavHighlight] = colors[KGGuiCol_HeaderHovered];
+		colors[KGGuiCol_NavWindowingHighlight] = KGVec4(1.00f, 1.00f, 1.00f, 0.70f);
+		colors[KGGuiCol_NavWindowingDimBg] = KGVec4(0.80f, 0.80f, 0.80f, 0.20f);
+		colors[KGGuiCol_ModalWindowDimBg] = KGVec4(0.20f, 0.20f, 0.20f, 0.35f);
+	}
 
-// Those light colors are better suited with a thicker font than the default one + FrameBorder
-void KarmaGui::StyleColorsLight(KarmaGuiStyle* dst)
-{
-	KarmaGuiStyle* style = dst ? dst : &KarmaGui::GetStyle();
-	KGVec4* colors = style->Colors;
+	// Those light colors are better suited with a thicker font than the default one + FrameBorder
+	void KarmaGui::StyleColorsLight(KarmaGuiStyle* dst)
+	{
+		KarmaGuiStyle* style = dst ? dst : &KarmaGui::GetStyle();
+		KGVec4* colors = style->Colors;
 
-	colors[KGGuiCol_Text]                   = KGVec4(0.00f, 0.00f, 0.00f, 1.00f);
-	colors[KGGuiCol_TextDisabled]           = KGVec4(0.60f, 0.60f, 0.60f, 1.00f);
-	colors[KGGuiCol_WindowBg]               = KGVec4(0.94f, 0.94f, 0.94f, 1.00f);
-	colors[KGGuiCol_ChildBg]                = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[KGGuiCol_PopupBg]                = KGVec4(1.00f, 1.00f, 1.00f, 0.98f);
-	colors[KGGuiCol_Border]                 = KGVec4(0.00f, 0.00f, 0.00f, 0.30f);
-	colors[KGGuiCol_BorderShadow]           = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[KGGuiCol_FrameBg]                = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
-	colors[KGGuiCol_FrameBgHovered]         = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
-	colors[KGGuiCol_FrameBgActive]          = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
-	colors[KGGuiCol_TitleBg]                = KGVec4(0.96f, 0.96f, 0.96f, 1.00f);
-	colors[KGGuiCol_TitleBgActive]          = KGVec4(0.82f, 0.82f, 0.82f, 1.00f);
-	colors[KGGuiCol_TitleBgCollapsed]       = KGVec4(1.00f, 1.00f, 1.00f, 0.51f);
-	colors[KGGuiCol_MenuBarBg]              = KGVec4(0.86f, 0.86f, 0.86f, 1.00f);
-	colors[KGGuiCol_ScrollbarBg]            = KGVec4(0.98f, 0.98f, 0.98f, 0.53f);
-	colors[KGGuiCol_ScrollbarGrab]          = KGVec4(0.69f, 0.69f, 0.69f, 0.80f);
-	colors[KGGuiCol_ScrollbarGrabHovered]   = KGVec4(0.49f, 0.49f, 0.49f, 0.80f);
-	colors[KGGuiCol_ScrollbarGrabActive]    = KGVec4(0.49f, 0.49f, 0.49f, 1.00f);
-	colors[KGGuiCol_CheckMark]              = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
-	colors[KGGuiCol_SliderGrab]             = KGVec4(0.26f, 0.59f, 0.98f, 0.78f);
-	colors[KGGuiCol_SliderGrabActive]       = KGVec4(0.46f, 0.54f, 0.80f, 0.60f);
-	colors[KGGuiCol_Button]                 = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
-	colors[KGGuiCol_ButtonHovered]          = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
-	colors[KGGuiCol_ButtonActive]           = KGVec4(0.06f, 0.53f, 0.98f, 1.00f);
-	colors[KGGuiCol_Header]                 = KGVec4(0.26f, 0.59f, 0.98f, 0.31f);
-	colors[KGGuiCol_HeaderHovered]          = KGVec4(0.26f, 0.59f, 0.98f, 0.80f);
-	colors[KGGuiCol_HeaderActive]           = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
-	colors[KGGuiCol_Separator]              = KGVec4(0.39f, 0.39f, 0.39f, 0.62f);
-	colors[KGGuiCol_SeparatorHovered]       = KGVec4(0.14f, 0.44f, 0.80f, 0.78f);
-	colors[KGGuiCol_SeparatorActive]        = KGVec4(0.14f, 0.44f, 0.80f, 1.00f);
-	colors[KGGuiCol_ResizeGrip]             = KGVec4(0.35f, 0.35f, 0.35f, 0.17f);
-	colors[KGGuiCol_ResizeGripHovered]      = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
-	colors[KGGuiCol_ResizeGripActive]       = KGVec4(0.26f, 0.59f, 0.98f, 0.95f);
-	colors[KGGuiCol_Tab]                    = KGLerp(colors[KGGuiCol_Header],       colors[KGGuiCol_TitleBgActive], 0.90f);
-	colors[KGGuiCol_TabHovered]             = colors[KGGuiCol_HeaderHovered];
-	colors[KGGuiCol_TabActive]              = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
-	colors[KGGuiCol_TabUnfocused]           = KGLerp(colors[KGGuiCol_Tab],          colors[KGGuiCol_TitleBg], 0.80f);
-	colors[KGGuiCol_TabUnfocusedActive]     = KGLerp(colors[KGGuiCol_TabActive],    colors[KGGuiCol_TitleBg], 0.40f);
-	colors[KGGuiCol_DockingPreview]         = colors[KGGuiCol_Header] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
-	colors[KGGuiCol_DockingEmptyBg]         = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
-	colors[KGGuiCol_PlotLines]              = KGVec4(0.39f, 0.39f, 0.39f, 1.00f);
-	colors[KGGuiCol_PlotLinesHovered]       = KGVec4(1.00f, 0.43f, 0.35f, 1.00f);
-	colors[KGGuiCol_PlotHistogram]          = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
-	colors[KGGuiCol_PlotHistogramHovered]   = KGVec4(1.00f, 0.45f, 0.00f, 1.00f);
-	colors[KGGuiCol_TableHeaderBg]          = KGVec4(0.78f, 0.87f, 0.98f, 1.00f);
-	colors[KGGuiCol_TableBorderStrong]      = KGVec4(0.57f, 0.57f, 0.64f, 1.00f);   // Prefer using Alpha=1.0 here
-	colors[KGGuiCol_TableBorderLight]       = KGVec4(0.68f, 0.68f, 0.74f, 1.00f);   // Prefer using Alpha=1.0 here
-	colors[KGGuiCol_TableRowBg]             = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
-	colors[KGGuiCol_TableRowBgAlt]          = KGVec4(0.30f, 0.30f, 0.30f, 0.09f);
-	colors[KGGuiCol_TextSelectedBg]         = KGVec4(0.26f, 0.59f, 0.98f, 0.35f);
-	colors[KGGuiCol_DragDropTarget]         = KGVec4(0.26f, 0.59f, 0.98f, 0.95f);
-	colors[KGGuiCol_NavHighlight]           = colors[KGGuiCol_HeaderHovered];
-	colors[KGGuiCol_NavWindowingHighlight]  = KGVec4(0.70f, 0.70f, 0.70f, 0.70f);
-	colors[KGGuiCol_NavWindowingDimBg]      = KGVec4(0.20f, 0.20f, 0.20f, 0.20f);
-	colors[KGGuiCol_ModalWindowDimBg]       = KGVec4(0.20f, 0.20f, 0.20f, 0.35f);
-}
+		colors[KGGuiCol_Text] = KGVec4(0.00f, 0.00f, 0.00f, 1.00f);
+		colors[KGGuiCol_TextDisabled] = KGVec4(0.60f, 0.60f, 0.60f, 1.00f);
+		colors[KGGuiCol_WindowBg] = KGVec4(0.94f, 0.94f, 0.94f, 1.00f);
+		colors[KGGuiCol_ChildBg] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_PopupBg] = KGVec4(1.00f, 1.00f, 1.00f, 0.98f);
+		colors[KGGuiCol_Border] = KGVec4(0.00f, 0.00f, 0.00f, 0.30f);
+		colors[KGGuiCol_BorderShadow] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_FrameBg] = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
+		colors[KGGuiCol_FrameBgHovered] = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
+		colors[KGGuiCol_FrameBgActive] = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
+		colors[KGGuiCol_TitleBg] = KGVec4(0.96f, 0.96f, 0.96f, 1.00f);
+		colors[KGGuiCol_TitleBgActive] = KGVec4(0.82f, 0.82f, 0.82f, 1.00f);
+		colors[KGGuiCol_TitleBgCollapsed] = KGVec4(1.00f, 1.00f, 1.00f, 0.51f);
+		colors[KGGuiCol_MenuBarBg] = KGVec4(0.86f, 0.86f, 0.86f, 1.00f);
+		colors[KGGuiCol_ScrollbarBg] = KGVec4(0.98f, 0.98f, 0.98f, 0.53f);
+		colors[KGGuiCol_ScrollbarGrab] = KGVec4(0.69f, 0.69f, 0.69f, 0.80f);
+		colors[KGGuiCol_ScrollbarGrabHovered] = KGVec4(0.49f, 0.49f, 0.49f, 0.80f);
+		colors[KGGuiCol_ScrollbarGrabActive] = KGVec4(0.49f, 0.49f, 0.49f, 1.00f);
+		colors[KGGuiCol_CheckMark] = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[KGGuiCol_SliderGrab] = KGVec4(0.26f, 0.59f, 0.98f, 0.78f);
+		colors[KGGuiCol_SliderGrabActive] = KGVec4(0.46f, 0.54f, 0.80f, 0.60f);
+		colors[KGGuiCol_Button] = KGVec4(0.26f, 0.59f, 0.98f, 0.40f);
+		colors[KGGuiCol_ButtonHovered] = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[KGGuiCol_ButtonActive] = KGVec4(0.06f, 0.53f, 0.98f, 1.00f);
+		colors[KGGuiCol_Header] = KGVec4(0.26f, 0.59f, 0.98f, 0.31f);
+		colors[KGGuiCol_HeaderHovered] = KGVec4(0.26f, 0.59f, 0.98f, 0.80f);
+		colors[KGGuiCol_HeaderActive] = KGVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[KGGuiCol_Separator] = KGVec4(0.39f, 0.39f, 0.39f, 0.62f);
+		colors[KGGuiCol_SeparatorHovered] = KGVec4(0.14f, 0.44f, 0.80f, 0.78f);
+		colors[KGGuiCol_SeparatorActive] = KGVec4(0.14f, 0.44f, 0.80f, 1.00f);
+		colors[KGGuiCol_ResizeGrip] = KGVec4(0.35f, 0.35f, 0.35f, 0.17f);
+		colors[KGGuiCol_ResizeGripHovered] = KGVec4(0.26f, 0.59f, 0.98f, 0.67f);
+		colors[KGGuiCol_ResizeGripActive] = KGVec4(0.26f, 0.59f, 0.98f, 0.95f);
+		colors[KGGuiCol_Tab] = KGLerp(colors[KGGuiCol_Header], colors[KGGuiCol_TitleBgActive], 0.90f);
+		colors[KGGuiCol_TabHovered] = colors[KGGuiCol_HeaderHovered];
+		colors[KGGuiCol_TabActive] = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
+		colors[KGGuiCol_TabUnfocused] = KGLerp(colors[KGGuiCol_Tab], colors[KGGuiCol_TitleBg], 0.80f);
+		colors[KGGuiCol_TabUnfocusedActive] = KGLerp(colors[KGGuiCol_TabActive], colors[KGGuiCol_TitleBg], 0.40f);
+		colors[KGGuiCol_DockingPreview] = colors[KGGuiCol_Header] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
+		colors[KGGuiCol_DockingEmptyBg] = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
+		colors[KGGuiCol_PlotLines] = KGVec4(0.39f, 0.39f, 0.39f, 1.00f);
+		colors[KGGuiCol_PlotLinesHovered] = KGVec4(1.00f, 0.43f, 0.35f, 1.00f);
+		colors[KGGuiCol_PlotHistogram] = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+		colors[KGGuiCol_PlotHistogramHovered] = KGVec4(1.00f, 0.45f, 0.00f, 1.00f);
+		colors[KGGuiCol_TableHeaderBg] = KGVec4(0.78f, 0.87f, 0.98f, 1.00f);
+		colors[KGGuiCol_TableBorderStrong] = KGVec4(0.57f, 0.57f, 0.64f, 1.00f);   // Prefer using Alpha=1.0 here
+		colors[KGGuiCol_TableBorderLight] = KGVec4(0.68f, 0.68f, 0.74f, 1.00f);   // Prefer using Alpha=1.0 here
+		colors[KGGuiCol_TableRowBg] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_TableRowBgAlt] = KGVec4(0.30f, 0.30f, 0.30f, 0.09f);
+		colors[KGGuiCol_TextSelectedBg] = KGVec4(0.26f, 0.59f, 0.98f, 0.35f);
+		colors[KGGuiCol_DragDropTarget] = KGVec4(0.26f, 0.59f, 0.98f, 0.95f);
+		colors[KGGuiCol_NavHighlight] = colors[KGGuiCol_HeaderHovered];
+		colors[KGGuiCol_NavWindowingHighlight] = KGVec4(0.70f, 0.70f, 0.70f, 0.70f);
+		colors[KGGuiCol_NavWindowingDimBg] = KGVec4(0.20f, 0.20f, 0.20f, 0.20f);
+		colors[KGGuiCol_ModalWindowDimBg] = KGVec4(0.20f, 0.20f, 0.20f, 0.35f);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -582,8 +582,8 @@ void KGDrawList::PrimRect(const KGVec2& a, const KGVec2& c, KGU32 col)
 {
 	KGVec2 b(c.x, a.y), d(a.x, c.y), uv(_Data->TexUvWhitePixel);
 	KGDrawIdx idx = (KGDrawIdx)_VtxCurrentIdx;
-	_IdxWritePtr[0] = idx; _IdxWritePtr[1] = (KGDrawIdx)(idx+1); _IdxWritePtr[2] = (KGDrawIdx)(idx+2);
-	_IdxWritePtr[3] = idx; _IdxWritePtr[4] = (KGDrawIdx)(idx+2); _IdxWritePtr[5] = (KGDrawIdx)(idx+3);
+	_IdxWritePtr[0] = idx; _IdxWritePtr[1] = (KGDrawIdx)(idx + 1); _IdxWritePtr[2] = (KGDrawIdx)(idx + 2);
+	_IdxWritePtr[3] = idx; _IdxWritePtr[4] = (KGDrawIdx)(idx + 2); _IdxWritePtr[5] = (KGDrawIdx)(idx + 3);
 	_VtxWritePtr[0].pos = a; _VtxWritePtr[0].uv = uv; _VtxWritePtr[0].col = col;
 	_VtxWritePtr[1].pos = b; _VtxWritePtr[1].uv = uv; _VtxWritePtr[1].col = col;
 	_VtxWritePtr[2].pos = c; _VtxWritePtr[2].uv = uv; _VtxWritePtr[2].col = col;
@@ -597,8 +597,8 @@ void KGDrawList::PrimRectUV(const KGVec2& a, const KGVec2& c, const KGVec2& uv_a
 {
 	KGVec2 b(c.x, a.y), d(a.x, c.y), uv_b(uv_c.x, uv_a.y), uv_d(uv_a.x, uv_c.y);
 	KGDrawIdx idx = (KGDrawIdx)_VtxCurrentIdx;
-	_IdxWritePtr[0] = idx; _IdxWritePtr[1] = (KGDrawIdx)(idx+1); _IdxWritePtr[2] = (KGDrawIdx)(idx+2);
-	_IdxWritePtr[3] = idx; _IdxWritePtr[4] = (KGDrawIdx)(idx+2); _IdxWritePtr[5] = (KGDrawIdx)(idx+3);
+	_IdxWritePtr[0] = idx; _IdxWritePtr[1] = (KGDrawIdx)(idx + 1); _IdxWritePtr[2] = (KGDrawIdx)(idx + 2);
+	_IdxWritePtr[3] = idx; _IdxWritePtr[4] = (KGDrawIdx)(idx + 2); _IdxWritePtr[5] = (KGDrawIdx)(idx + 3);
 	_VtxWritePtr[0].pos = a; _VtxWritePtr[0].uv = uv_a; _VtxWritePtr[0].col = col;
 	_VtxWritePtr[1].pos = b; _VtxWritePtr[1].uv = uv_b; _VtxWritePtr[1].col = col;
 	_VtxWritePtr[2].pos = c; _VtxWritePtr[2].uv = uv_c; _VtxWritePtr[2].col = col;
@@ -611,8 +611,8 @@ void KGDrawList::PrimRectUV(const KGVec2& a, const KGVec2& c, const KGVec2& uv_a
 void KGDrawList::PrimQuadUV(const KGVec2& a, const KGVec2& b, const KGVec2& c, const KGVec2& d, const KGVec2& uv_a, const KGVec2& uv_b, const KGVec2& uv_c, const KGVec2& uv_d, KGU32 col)
 {
 	KGDrawIdx idx = (KGDrawIdx)_VtxCurrentIdx;
-	_IdxWritePtr[0] = idx; _IdxWritePtr[1] = (KGDrawIdx)(idx+1); _IdxWritePtr[2] = (KGDrawIdx)(idx+2);
-	_IdxWritePtr[3] = idx; _IdxWritePtr[4] = (KGDrawIdx)(idx+2); _IdxWritePtr[5] = (KGDrawIdx)(idx+3);
+	_IdxWritePtr[0] = idx; _IdxWritePtr[1] = (KGDrawIdx)(idx + 1); _IdxWritePtr[2] = (KGDrawIdx)(idx + 2);
+	_IdxWritePtr[3] = idx; _IdxWritePtr[4] = (KGDrawIdx)(idx + 2); _IdxWritePtr[5] = (KGDrawIdx)(idx + 3);
 	_VtxWritePtr[0].pos = a; _VtxWritePtr[0].uv = uv_a; _VtxWritePtr[0].col = col;
 	_VtxWritePtr[1].pos = b; _VtxWritePtr[1].uv = uv_b; _VtxWritePtr[1].col = col;
 	_VtxWritePtr[2].pos = c; _VtxWritePtr[2].uv = uv_c; _VtxWritePtr[2].col = col;
@@ -701,8 +701,8 @@ void KGDrawList::AddPolyline(const KGVec2* points, const int points_count, KGU32
 			{
 				temp_points[0] = points[0] + temp_normals[0] * half_draw_size;
 				temp_points[1] = points[0] - temp_normals[0] * half_draw_size;
-				temp_points[(points_count-1)*2+0] = points[points_count-1] + temp_normals[points_count-1] * half_draw_size;
-				temp_points[(points_count-1)*2+1] = points[points_count-1] - temp_normals[points_count-1] * half_draw_size;
+				temp_points[(points_count - 1) * 2 + 0] = points[points_count - 1] + temp_normals[points_count - 1] * half_draw_size;
+				temp_points[(points_count - 1) * 2 + 1] = points[points_count - 1] - temp_normals[points_count - 1] * half_draw_size;
 			}
 
 			// Generate the indices to form a number of triangles for each line segment, and the vertices for the line edges
@@ -831,10 +831,10 @@ void KGDrawList::AddPolyline(const KGVec2* points, const int points_count, KGU32
 				out_vtx[3].y = points[i2].y - dm_out_y;
 
 				// Add indexes
-				_IdxWritePtr[0]  = (KGDrawIdx)(idx2 + 1); _IdxWritePtr[1]  = (KGDrawIdx)(idx1 + 1); _IdxWritePtr[2]  = (KGDrawIdx)(idx1 + 2);
-				_IdxWritePtr[3]  = (KGDrawIdx)(idx1 + 2); _IdxWritePtr[4]  = (KGDrawIdx)(idx2 + 2); _IdxWritePtr[5]  = (KGDrawIdx)(idx2 + 1);
-				_IdxWritePtr[6]  = (KGDrawIdx)(idx2 + 1); _IdxWritePtr[7]  = (KGDrawIdx)(idx1 + 1); _IdxWritePtr[8]  = (KGDrawIdx)(idx1 + 0);
-				_IdxWritePtr[9]  = (KGDrawIdx)(idx1 + 0); _IdxWritePtr[10] = (KGDrawIdx)(idx2 + 0); _IdxWritePtr[11] = (KGDrawIdx)(idx2 + 1);
+				_IdxWritePtr[0] = (KGDrawIdx)(idx2 + 1); _IdxWritePtr[1] = (KGDrawIdx)(idx1 + 1); _IdxWritePtr[2] = (KGDrawIdx)(idx1 + 2);
+				_IdxWritePtr[3] = (KGDrawIdx)(idx1 + 2); _IdxWritePtr[4] = (KGDrawIdx)(idx2 + 2); _IdxWritePtr[5] = (KGDrawIdx)(idx2 + 1);
+				_IdxWritePtr[6] = (KGDrawIdx)(idx2 + 1); _IdxWritePtr[7] = (KGDrawIdx)(idx1 + 1); _IdxWritePtr[8] = (KGDrawIdx)(idx1 + 0);
+				_IdxWritePtr[9] = (KGDrawIdx)(idx1 + 0); _IdxWritePtr[10] = (KGDrawIdx)(idx2 + 0); _IdxWritePtr[11] = (KGDrawIdx)(idx2 + 1);
 				_IdxWritePtr[12] = (KGDrawIdx)(idx2 + 2); _IdxWritePtr[13] = (KGDrawIdx)(idx1 + 2); _IdxWritePtr[14] = (KGDrawIdx)(idx1 + 3);
 				_IdxWritePtr[15] = (KGDrawIdx)(idx1 + 3); _IdxWritePtr[16] = (KGDrawIdx)(idx2 + 3); _IdxWritePtr[17] = (KGDrawIdx)(idx2 + 2);
 				_IdxWritePtr += 18;
@@ -901,7 +901,7 @@ void KGDrawList::AddConvexPolyFilled(const KGVec2* points, const int points_coun
 		// Anti-aliased Fill
 		const float AA_SIZE = _FringeScale;
 		const KGU32 col_trans = col & ~KG_COL32_A_MASK;
-		const int idx_count = (points_count - 2)*3 + points_count * 6;
+		const int idx_count = (points_count - 2) * 3 + points_count * 6;
 		const int vtx_count = (points_count * 2);
 		PrimReserve(idx_count, vtx_count);
 
@@ -954,7 +954,7 @@ void KGDrawList::AddConvexPolyFilled(const KGVec2* points, const int points_coun
 	else
 	{
 		// Non Anti-aliased Fill
-		const int idx_count = (points_count - 2)*3;
+		const int idx_count = (points_count - 2) * 3;
 		const int vtx_count = points_count;
 		PrimReserve(idx_count, vtx_count);
 		for (int i = 0; i < vtx_count; i++)
@@ -993,7 +993,7 @@ void KGDrawList::_PathArcToFastEx(const KGVec2& center, float radius, int a_min_
 	bool extra_max_sample = false;
 	if (a_step > 1)
 	{
-		samples            = sample_range / a_step + 1;
+		samples = sample_range / a_step + 1;
 		const int overstep = sample_range % a_step;
 
 		if (overstep > 0)
@@ -1253,8 +1253,8 @@ static inline KGDrawFlags FixRectCornerFlags(KGDrawFlags flags)
 void KGDrawList::PathRect(const KGVec2& a, const KGVec2& b, float rounding, KGDrawFlags flags)
 {
 	flags = FixRectCornerFlags(flags);
-	rounding = KGMin(rounding, KGFabs(b.x - a.x) * ( ((flags & KGDrawFlags_RoundCornersTop)  == KGDrawFlags_RoundCornersTop)  || ((flags & KGDrawFlags_RoundCornersBottom) == KGDrawFlags_RoundCornersBottom) ? 0.5f : 1.0f ) - 1.0f);
-	rounding = KGMin(rounding, KGFabs(b.y - a.y) * ( ((flags & KGDrawFlags_RoundCornersLeft) == KGDrawFlags_RoundCornersLeft) || ((flags & KGDrawFlags_RoundCornersRight)  == KGDrawFlags_RoundCornersRight)  ? 0.5f : 1.0f ) - 1.0f);
+	rounding = KGMin(rounding, KGFabs(b.x - a.x) * (((flags & KGDrawFlags_RoundCornersTop) == KGDrawFlags_RoundCornersTop) || ((flags & KGDrawFlags_RoundCornersBottom) == KGDrawFlags_RoundCornersBottom) ? 0.5f : 1.0f) - 1.0f);
+	rounding = KGMin(rounding, KGFabs(b.y - a.y) * (((flags & KGDrawFlags_RoundCornersLeft) == KGDrawFlags_RoundCornersLeft) || ((flags & KGDrawFlags_RoundCornersRight) == KGDrawFlags_RoundCornersRight) ? 0.5f : 1.0f) - 1.0f);
 
 	if (rounding < 0.5f || (flags & KGDrawFlags_RoundCornersMask_) == KGDrawFlags_RoundCornersNone)
 	{
@@ -1265,10 +1265,10 @@ void KGDrawList::PathRect(const KGVec2& a, const KGVec2& b, float rounding, KGDr
 	}
 	else
 	{
-		const float rounding_tl = (flags & KGDrawFlags_RoundCornersTopLeft)     ? rounding : 0.0f;
-		const float rounding_tr = (flags & KGDrawFlags_RoundCornersTopRight)    ? rounding : 0.0f;
+		const float rounding_tl = (flags & KGDrawFlags_RoundCornersTopLeft) ? rounding : 0.0f;
+		const float rounding_tr = (flags & KGDrawFlags_RoundCornersTopRight) ? rounding : 0.0f;
 		const float rounding_br = (flags & KGDrawFlags_RoundCornersBottomRight) ? rounding : 0.0f;
-		const float rounding_bl = (flags & KGDrawFlags_RoundCornersBottomLeft)  ? rounding : 0.0f;
+		const float rounding_bl = (flags & KGDrawFlags_RoundCornersBottomLeft) ? rounding : 0.0f;
 		PathArcToFast(KGVec2(a.x + rounding_tl, a.y + rounding_tl), rounding_tl, 6, 9);
 		PathArcToFast(KGVec2(b.x - rounding_tr, a.y + rounding_tr), rounding_tr, 9, 12);
 		PathArcToFast(KGVec2(b.x - rounding_br, b.y - rounding_br), rounding_br, 0, 3);
@@ -1572,7 +1572,6 @@ void KGDrawList::SetWindowBackgroundColor(KGVec4 bgColor)
 
 	window->bUseCustomBgColor = true;
 	window->BgColor = Karma::KarmaGui::GetColorU32(bgColor);
-
 }
 
 //-----------------------------------------------------------------------------
@@ -1793,8 +1792,8 @@ void Karma::KarmaGuiInternal::ShadeVertsLinearUV(KGDrawList* draw_list, int vert
 	const KGVec2 size = b - a;
 	const KGVec2 uv_size = uv_b - uv_a;
 	const KGVec2 scale = KGVec2(
-								size.x != 0.0f ? (uv_size.x / size.x) : 0.0f,
-								size.y != 0.0f ? (uv_size.y / size.y) : 0.0f);
+		size.x != 0.0f ? (uv_size.x / size.x) : 0.0f,
+		size.y != 0.0f ? (uv_size.y / size.y) : 0.0f);
 
 	KGDrawVert* vert_start = draw_list->VtxBuffer.Data + vert_start_idx;
 	KGDrawVert* vert_end = draw_list->VtxBuffer.Data + vert_end_idx;
@@ -1870,15 +1869,15 @@ static const char FONT_ATLAS_DEFAULT_TEX_DATA_PIXELS[FONT_ATLAS_DEFAULT_TEX_DATA
 static const KGVec2 FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[KGGuiMouseCursor_COUNT][3] =
 {
 	// Pos ........ Size ......... Offset ......
-	{ KGVec2( 0,3), KGVec2(12,19), KGVec2( 0, 0) }, // KGGuiMouseCursor_Arrow
-	{ KGVec2(13,0), KGVec2( 7,16), KGVec2( 1, 8) }, // KGGuiMouseCursor_TextInput
+	{ KGVec2(0,3), KGVec2(12,19), KGVec2(0, 0) }, // KGGuiMouseCursor_Arrow
+	{ KGVec2(13,0), KGVec2(7,16), KGVec2(1, 8) }, // KGGuiMouseCursor_TextInput
 	{ KGVec2(31,0), KGVec2(23,23), KGVec2(11,11) }, // KGGuiMouseCursor_ResizeAll
-	{ KGVec2(21,0), KGVec2( 9,23), KGVec2( 4,11) }, // KGGuiMouseCursor_ResizeNS
+	{ KGVec2(21,0), KGVec2(9,23), KGVec2(4,11) }, // KGGuiMouseCursor_ResizeNS
 	{ KGVec2(55,18),KGVec2(23, 9), KGVec2(11, 4) }, // KGGuiMouseCursor_ResizeEW
-	{ KGVec2(73,0), KGVec2(17,17), KGVec2( 8, 8) }, // KGGuiMouseCursor_ResizeNESW
-	{ KGVec2(55,0), KGVec2(17,17), KGVec2( 8, 8) }, // KGGuiMouseCursor_ResizeNWSE
-	{ KGVec2(91,0), KGVec2(17,22), KGVec2( 5, 0) }, // KGGuiMouseCursor_Hand
-	{ KGVec2(109,0),KGVec2(13,15), KGVec2( 6, 7) }, // KGGuiMouseCursor_NotAllowed
+	{ KGVec2(73,0), KGVec2(17,17), KGVec2(8, 8) }, // KGGuiMouseCursor_ResizeNESW
+	{ KGVec2(55,0), KGVec2(17,17), KGVec2(8, 8) }, // KGGuiMouseCursor_ResizeNWSE
+	{ KGVec2(91,0), KGVec2(17,22), KGVec2(5, 0) }, // KGGuiMouseCursor_Hand
+	{ KGVec2(109,0),KGVec2(13,15), KGVec2(6, 7) }, // KGGuiMouseCursor_NotAllowed
 };
 
 KGFontAtlas::KGFontAtlas()
@@ -2015,8 +2014,8 @@ KGFont* KGFontAtlas::AddFont(const KGFontConfig* font_cfg)
 // Default font TTF is compressed with stb_compress then base85 encoded (see misc/fonts/binary_to_compressed_c.cpp for encoder)
 static unsigned int stb_decompress_length(const unsigned char* input);
 static unsigned int stb_decompress(unsigned char* output, const unsigned char* input, unsigned int length);
-static const char*  GetDefaultCompressedFontDataTTFBase85();
-static unsigned int Decode85Byte(char c)                                    { return c >= '\\' ? c-36 : c-35; }
+static const char* GetDefaultCompressedFontDataTTFBase85();
+static unsigned int Decode85Byte(char c) { return c >= '\\' ? c - 36 : c - 35; }
 static void         Decode85(const unsigned char* src, unsigned char* dst)
 {
 	while (*src)
@@ -2158,10 +2157,10 @@ bool KGFontAtlas::GetMouseCursorTexData(KarmaGuiMouseCursor cursor_type, KGVec2*
 	KGVec2 size = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][1];
 	*out_size = size;
 	*out_offset = FONT_ATLAS_DEFAULT_TEX_CURSOR_DATA[cursor_type][2];
-	out_uv_border[0] = (pos) * TexUvScale;
+	out_uv_border[0] = (pos)*TexUvScale;
 	out_uv_border[1] = (pos + size) * TexUvScale;
 	pos.x += FONT_ATLAS_DEFAULT_TEX_DATA_W + 1;
-	out_uv_fill[0] = (pos) * TexUvScale;
+	out_uv_fill[0] = (pos)*TexUvScale;
 	out_uv_fill[1] = (pos + size) * TexUvScale;
 	return true;
 }
@@ -2225,9 +2224,9 @@ struct KGFontBuildSrcData
 {
 	stbtt_fontinfo      FontInfo;
 	stbtt_pack_range    PackRange;          // Hold the list of codepoints to pack (essentially points to Codepoints.Data)
-	stbrp_rect*         Rects;              // Rectangle to pack. We first fill in their size and the packer will give us their position.
-	stbtt_packedchar*   PackedChars;        // Output glyphs
-	const KGWchar*      SrcRanges;          // Ranges as requested by user (user is allowed to request too much, e.g. 0x0020..0xFFFF)
+	stbrp_rect* Rects;              // Rectangle to pack. We first fill in their size and the packer will give us their position.
+	stbtt_packedchar* PackedChars;        // Output glyphs
+	const KGWchar* SrcRanges;          // Ranges as requested by user (user is allowed to request too much, e.g. 0x0020..0xFFFF)
 	int                 DstIndex;           // Index into atlas->Fonts[] and dst_tmp_array[]
 	int                 GlyphsHighest;      // Highest requested codepoint
 	int                 GlyphsCount;        // Glyph count (excluding missing glyphs and glyphs already set by an earlier source font)
@@ -2720,7 +2719,7 @@ void Karma::KGFontAtlasBuildFinish(KGFontAtlas* atlas)
 }
 
 // Retrieve list of range (2 int per range, values are inclusive)
-const KGWchar*   KGFontAtlas::GetGlyphRangesDefault()
+const KGWchar* KGFontAtlas::GetGlyphRangesDefault()
 {
 	static const KGWchar ranges[] =
 	{
@@ -2730,7 +2729,7 @@ const KGWchar*   KGFontAtlas::GetGlyphRangesDefault()
 	return &ranges[0];
 }
 
-const KGWchar*   KGFontAtlas::GetGlyphRangesGreek()
+const KGWchar* KGFontAtlas::GetGlyphRangesGreek()
 {
 	static const KGWchar ranges[] =
 	{
@@ -2741,7 +2740,7 @@ const KGWchar*   KGFontAtlas::GetGlyphRangesGreek()
 	return &ranges[0];
 }
 
-const KGWchar*  KGFontAtlas::GetGlyphRangesKorean()
+const KGWchar* KGFontAtlas::GetGlyphRangesKorean()
 {
 	static const KGWchar ranges[] =
 	{
@@ -2754,7 +2753,7 @@ const KGWchar*  KGFontAtlas::GetGlyphRangesKorean()
 	return &ranges[0];
 }
 
-const KGWchar*  KGFontAtlas::GetGlyphRangesChineseFull()
+const KGWchar* KGFontAtlas::GetGlyphRangesChineseFull()
 {
 	static const KGWchar ranges[] =
 	{
@@ -2784,7 +2783,7 @@ static void UnpackAccumulativeOffsetsIntoRanges(int base_codepoint, const short*
 // [SECTION] KGFontAtlas glyph ranges helpers
 //-------------------------------------------------------------------------
 
-const KGWchar*  KGFontAtlas::GetGlyphRangesChineseSimplifiedCommon()
+const KGWchar* KGFontAtlas::GetGlyphRangesChineseSimplifiedCommon()
 {
 	// Store 2500 regularly used characters for Simplified Chinese.
 	// Sourced from https://zh.wiktionary.org/wiki/%E9%99%84%E5%BD%95:%E7%8E%B0%E4%BB%A3%E6%B1%89%E8%AF%AD%E5%B8%B8%E7%94%A8%E5%AD%97%E8%A1%A8
@@ -2852,7 +2851,7 @@ const KGWchar*  KGFontAtlas::GetGlyphRangesChineseSimplifiedCommon()
 	return &full_ranges[0];
 }
 
-const KGWchar*  KGFontAtlas::GetGlyphRangesJapanese()
+const KGWchar* KGFontAtlas::GetGlyphRangesJapanese()
 {
 	// 2999 ideograms code points for Japanese
 	// - 2136 Joyo (meaning "for regular use" or "for common use") Kanji code points
@@ -2933,7 +2932,7 @@ const KGWchar*  KGFontAtlas::GetGlyphRangesJapanese()
 		0xFF00, 0xFFEF, // Half-width characters
 		0xFFFD, 0xFFFD  // Invalid
 	};
-	static KGWchar full_ranges[KG_ARRAYSIZE(base_ranges) + KG_ARRAYSIZE(accumulative_offsets_from_0x4E00)*2 + 1] = { 0 };
+	static KGWchar full_ranges[KG_ARRAYSIZE(base_ranges) + KG_ARRAYSIZE(accumulative_offsets_from_0x4E00) * 2 + 1] = { 0 };
 	if (!full_ranges[0])
 	{
 		memcpy(full_ranges, base_ranges, sizeof(base_ranges));
@@ -2942,7 +2941,7 @@ const KGWchar*  KGFontAtlas::GetGlyphRangesJapanese()
 	return &full_ranges[0];
 }
 
-const KGWchar*  KGFontAtlas::GetGlyphRangesCyrillic()
+const KGWchar* KGFontAtlas::GetGlyphRangesCyrillic()
 {
 	static const KGWchar ranges[] =
 	{
@@ -2955,7 +2954,7 @@ const KGWchar*  KGFontAtlas::GetGlyphRangesCyrillic()
 	return &ranges[0];
 }
 
-const KGWchar*  KGFontAtlas::GetGlyphRangesThai()
+const KGWchar* KGFontAtlas::GetGlyphRangesThai()
 {
 	static const KGWchar ranges[] =
 	{
@@ -2967,7 +2966,7 @@ const KGWchar*  KGFontAtlas::GetGlyphRangesThai()
 	return &ranges[0];
 }
 
-const KGWchar*  KGFontAtlas::GetGlyphRangesVietnamese()
+const KGWchar* KGFontAtlas::GetGlyphRangesVietnamese()
 {
 	static const KGWchar ranges[] =
 	{
@@ -3633,8 +3632,8 @@ void KGFont::RenderText(KGDrawList* draw_list, float size, const KGVec2& pos, KG
 
 				// We are NOT calling PrimRectUV() here because non-inlined causes too much overhead in a debug builds. Inlined here:
 				{
-					idx_write[0] = (KGDrawIdx)(vtx_current_idx); idx_write[1] = (KGDrawIdx)(vtx_current_idx+1); idx_write[2] = (KGDrawIdx)(vtx_current_idx+2);
-					idx_write[3] = (KGDrawIdx)(vtx_current_idx); idx_write[4] = (KGDrawIdx)(vtx_current_idx+2); idx_write[5] = (KGDrawIdx)(vtx_current_idx+3);
+					idx_write[0] = (KGDrawIdx)(vtx_current_idx); idx_write[1] = (KGDrawIdx)(vtx_current_idx + 1); idx_write[2] = (KGDrawIdx)(vtx_current_idx + 2);
+					idx_write[3] = (KGDrawIdx)(vtx_current_idx); idx_write[4] = (KGDrawIdx)(vtx_current_idx + 2); idx_write[5] = (KGDrawIdx)(vtx_current_idx + 3);
 					vtx_write[0].pos.x = x1; vtx_write[0].pos.y = y1; vtx_write[0].col = glyph_col; vtx_write[0].uv.x = u1; vtx_write[0].uv.y = v1;
 					vtx_write[1].pos.x = x2; vtx_write[1].pos.y = y1; vtx_write[1].col = glyph_col; vtx_write[1].uv.x = u2; vtx_write[1].uv.y = v1;
 					vtx_write[2].pos.x = x2; vtx_write[2].pos.y = y2; vtx_write[2].col = glyph_col; vtx_write[2].uv.x = u2; vtx_write[2].uv.y = v2;
@@ -3683,24 +3682,24 @@ void Karma::KarmaGuiInternal::RenderArrow(KGDrawList* draw_list, KGVec2 pos, KGU
 	KGVec2 a, b, c;
 	switch (dir)
 	{
-		case KGGuiDir_Up:
-		case KGGuiDir_Down:
-			if (dir == KGGuiDir_Up) r = -r;
-			a = KGVec2(+0.000f, +0.750f) * r;
-			b = KGVec2(-0.866f, -0.750f) * r;
-			c = KGVec2(+0.866f, -0.750f) * r;
-			break;
-		case KGGuiDir_Left:
-		case KGGuiDir_Right:
-			if (dir == KGGuiDir_Left) r = -r;
-			a = KGVec2(+0.750f, +0.000f) * r;
-			b = KGVec2(-0.750f, +0.866f) * r;
-			c = KGVec2(-0.750f, -0.866f) * r;
-			break;
-		case KGGuiDir_None:
-		case KGGuiDir_COUNT:
-			KR_CORE_ASSERT(0, "");
-			break;
+	case KGGuiDir_Up:
+	case KGGuiDir_Down:
+		if (dir == KGGuiDir_Up) r = -r;
+		a = KGVec2(+0.000f, +0.750f) * r;
+		b = KGVec2(-0.866f, -0.750f) * r;
+		c = KGVec2(+0.866f, -0.750f) * r;
+		break;
+	case KGGuiDir_Left:
+	case KGGuiDir_Right:
+		if (dir == KGGuiDir_Left) r = -r;
+		a = KGVec2(+0.750f, +0.000f) * r;
+		b = KGVec2(-0.750f, +0.866f) * r;
+		c = KGVec2(-0.750f, -0.866f) * r;
+		break;
+	case KGGuiDir_None:
+	case KGGuiDir_COUNT:
+		KR_CORE_ASSERT(0, "");
+		break;
 	}
 	draw_list->AddTriangleFilled(center + a, center + b, center + c, col);
 }
@@ -3730,11 +3729,11 @@ void Karma::KarmaGuiInternal::RenderArrowPointingAt(KGDrawList* draw_list, KGVec
 {
 	switch (direction)
 	{
-		case KGGuiDir_Left:  draw_list->AddTriangleFilled(KGVec2(pos.x + half_sz.x, pos.y - half_sz.y), KGVec2(pos.x + half_sz.x, pos.y + half_sz.y), pos, col); return;
-		case KGGuiDir_Right: draw_list->AddTriangleFilled(KGVec2(pos.x - half_sz.x, pos.y + half_sz.y), KGVec2(pos.x - half_sz.x, pos.y - half_sz.y), pos, col); return;
-		case KGGuiDir_Up:    draw_list->AddTriangleFilled(KGVec2(pos.x + half_sz.x, pos.y + half_sz.y), KGVec2(pos.x - half_sz.x, pos.y + half_sz.y), pos, col); return;
-		case KGGuiDir_Down:  draw_list->AddTriangleFilled(KGVec2(pos.x - half_sz.x, pos.y - half_sz.y), KGVec2(pos.x + half_sz.x, pos.y - half_sz.y), pos, col); return;
-		case KGGuiDir_None: case KGGuiDir_COUNT: break; // Fix warnings
+	case KGGuiDir_Left:  draw_list->AddTriangleFilled(KGVec2(pos.x + half_sz.x, pos.y - half_sz.y), KGVec2(pos.x + half_sz.x, pos.y + half_sz.y), pos, col); return;
+	case KGGuiDir_Right: draw_list->AddTriangleFilled(KGVec2(pos.x - half_sz.x, pos.y + half_sz.y), KGVec2(pos.x - half_sz.x, pos.y - half_sz.y), pos, col); return;
+	case KGGuiDir_Up:    draw_list->AddTriangleFilled(KGVec2(pos.x + half_sz.x, pos.y + half_sz.y), KGVec2(pos.x - half_sz.x, pos.y + half_sz.y), pos, col); return;
+	case KGGuiDir_Down:  draw_list->AddTriangleFilled(KGVec2(pos.x - half_sz.x, pos.y - half_sz.y), KGVec2(pos.x + half_sz.x, pos.y - half_sz.y), pos, col); return;
+	case KGGuiDir_None: case KGGuiDir_COUNT: break; // Fix warnings
 	}
 }
 
@@ -3821,9 +3820,9 @@ void Karma::KarmaGuiInternal::RenderRectFilledWithHole(KGDrawList* draw_list, co
 	const bool fill_R = (inner.Max.x < outer.Max.x);
 	const bool fill_U = (inner.Min.y > outer.Min.y);
 	const bool fill_D = (inner.Max.y < outer.Max.y);
-	if (fill_L) draw_list->AddRectFilled(KGVec2(outer.Min.x, inner.Min.y), KGVec2(inner.Min.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopLeft)    | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomLeft));
-	if (fill_R) draw_list->AddRectFilled(KGVec2(inner.Max.x, inner.Min.y), KGVec2(outer.Max.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopRight)   | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomRight));
-	if (fill_U) draw_list->AddRectFilled(KGVec2(inner.Min.x, outer.Min.y), KGVec2(inner.Max.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_L ? 0 : KGDrawFlags_RoundCornersTopLeft)    | (fill_R ? 0 : KGDrawFlags_RoundCornersTopRight));
+	if (fill_L) draw_list->AddRectFilled(KGVec2(outer.Min.x, inner.Min.y), KGVec2(inner.Min.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopLeft) | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomLeft));
+	if (fill_R) draw_list->AddRectFilled(KGVec2(inner.Max.x, inner.Min.y), KGVec2(outer.Max.x, inner.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_U ? 0 : KGDrawFlags_RoundCornersTopRight) | (fill_D ? 0 : KGDrawFlags_RoundCornersBottomRight));
+	if (fill_U) draw_list->AddRectFilled(KGVec2(inner.Min.x, outer.Min.y), KGVec2(inner.Max.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_L ? 0 : KGDrawFlags_RoundCornersTopLeft) | (fill_R ? 0 : KGDrawFlags_RoundCornersTopRight));
 	if (fill_D) draw_list->AddRectFilled(KGVec2(inner.Min.x, inner.Max.y), KGVec2(inner.Max.x, outer.Max.y), col, rounding, KGDrawFlags_RoundCornersNone | (fill_L ? 0 : KGDrawFlags_RoundCornersBottomLeft) | (fill_R ? 0 : KGDrawFlags_RoundCornersBottomRight));
 	if (fill_L && fill_U) draw_list->AddRectFilled(KGVec2(outer.Min.x, outer.Min.y), KGVec2(inner.Min.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersTopLeft);
 	if (fill_R && fill_U) draw_list->AddRectFilled(KGVec2(inner.Max.x, outer.Min.y), KGVec2(outer.Max.x, inner.Min.y), col, rounding, KGDrawFlags_RoundCornersTopRight);
@@ -3838,8 +3837,8 @@ KGDrawFlags Karma::KarmaGuiInternal::CalcRoundingFlagsForRectInRect(const KGRect
 	bool round_t = r_in.Min.y <= r_outer.Min.y + threshold;
 	bool round_b = r_in.Max.y >= r_outer.Max.y - threshold;
 	return KGDrawFlags_RoundCornersNone
-	| ((round_t && round_l) ? KGDrawFlags_RoundCornersTopLeft : 0) | ((round_t && round_r) ? KGDrawFlags_RoundCornersTopRight : 0)
-	| ((round_b && round_l) ? KGDrawFlags_RoundCornersBottomLeft : 0) | ((round_b && round_r) ? KGDrawFlags_RoundCornersBottomRight : 0);
+		| ((round_t && round_l) ? KGDrawFlags_RoundCornersTopLeft : 0) | ((round_t && round_r) ? KGDrawFlags_RoundCornersTopRight : 0)
+		| ((round_b && round_l) ? KGDrawFlags_RoundCornersBottomLeft : 0) | ((round_b && round_r) ? KGDrawFlags_RoundCornersBottomRight : 0);
 }
 
 // Helper for ColorPicker4()
@@ -3892,28 +3891,28 @@ void Karma::KarmaGuiInternal::RenderColorRectWithAlphaCheckerboard(KGDrawList* d
 // Decompression from stb.h (public domain) by Sean Barrett https://github.com/nothings/stb/blob/master/stb.h
 //-----------------------------------------------------------------------------
 
-static unsigned int stb_decompress_length(const unsigned char *input)
+static unsigned int stb_decompress_length(const unsigned char* input)
 {
 	return (input[8] << 24) + (input[9] << 16) + (input[10] << 8) + input[11];
 }
 
-static unsigned char *stb__barrier_out_e, *stb__barrier_out_b;
-static const unsigned char *stb__barrier_in_b;
-static unsigned char *stb__dout;
-static void stb__match(const unsigned char *data, unsigned int length)
+static unsigned char* stb__barrier_out_e, * stb__barrier_out_b;
+static const unsigned char* stb__barrier_in_b;
+static unsigned char* stb__dout;
+static void stb__match(const unsigned char* data, unsigned int length)
 {
 	// INVERSE of memmove... write each byte before copying the next...
 	KR_CORE_ASSERT(stb__dout + length <= stb__barrier_out_e, "");
 	if (stb__dout + length > stb__barrier_out_e) { stb__dout += length; return; }
-	if (data < stb__barrier_out_b) { stb__dout = stb__barrier_out_e+1; return; }
+	if (data < stb__barrier_out_b) { stb__dout = stb__barrier_out_e + 1; return; }
 	while (length--) *stb__dout++ = *data++;
 }
 
-static void stb__lit(const unsigned char *data, unsigned int length)
+static void stb__lit(const unsigned char* data, unsigned int length)
 {
 	KR_CORE_ASSERT(stb__dout + length <= stb__barrier_out_e, "");
 	if (stb__dout + length > stb__barrier_out_e) { stb__dout += length; return; }
-	if (data < stb__barrier_in_b) { stb__dout = stb__barrier_out_e+1; return; }
+	if (data < stb__barrier_in_b) { stb__dout = stb__barrier_out_e + 1; return; }
 	memcpy(stb__dout, data, length);
 	stb__dout += length;
 }
@@ -3922,24 +3921,25 @@ static void stb__lit(const unsigned char *data, unsigned int length)
 #define stb__in3(x)   ((i[x] << 16) + stb__in2((x)+1))
 #define stb__in4(x)   ((i[x] << 24) + stb__in3((x)+1))
 
-static const unsigned char *stb_decompress_token(const unsigned char *i)
+static const unsigned char* stb_decompress_token(const unsigned char* i)
 {
 	if (*i >= 0x20) { // use fewer if's for cases that expand small
-		if (*i >= 0x80)       stb__match(stb__dout-i[1]-1, i[0] - 0x80 + 1), i += 2;
-		else if (*i >= 0x40)  stb__match(stb__dout-(stb__in2(0) - 0x4000 + 1), i[2]+1), i += 3;
-		else /* *i >= 0x20 */ stb__lit(i+1, i[0] - 0x20 + 1), i += 1 + (i[0] - 0x20 + 1);
-	} else { // more ifs for cases that expand large, since overhead is amortized
-		if (*i >= 0x18)       stb__match(stb__dout-(stb__in3(0) - 0x180000 + 1), i[3]+1), i += 4;
-		else if (*i >= 0x10)  stb__match(stb__dout-(stb__in3(0) - 0x100000 + 1), stb__in2(3)+1), i += 5;
-		else if (*i >= 0x08)  stb__lit(i+2, stb__in2(0) - 0x0800 + 1), i += 2 + (stb__in2(0) - 0x0800 + 1);
-		else if (*i == 0x07)  stb__lit(i+3, stb__in2(1) + 1), i += 3 + (stb__in2(1) + 1);
-		else if (*i == 0x06)  stb__match(stb__dout-(stb__in3(1)+1), i[4]+1), i += 5;
-		else if (*i == 0x04)  stb__match(stb__dout-(stb__in3(1)+1), stb__in2(4)+1), i += 6;
+		if (*i >= 0x80)       stb__match(stb__dout - i[1] - 1, i[0] - 0x80 + 1), i += 2;
+		else if (*i >= 0x40)  stb__match(stb__dout - (stb__in2(0) - 0x4000 + 1), i[2] + 1), i += 3;
+		else /* *i >= 0x20 */ stb__lit(i + 1, i[0] - 0x20 + 1), i += 1 + (i[0] - 0x20 + 1);
+	}
+	else { // more ifs for cases that expand large, since overhead is amortized
+		if (*i >= 0x18)       stb__match(stb__dout - (stb__in3(0) - 0x180000 + 1), i[3] + 1), i += 4;
+		else if (*i >= 0x10)  stb__match(stb__dout - (stb__in3(0) - 0x100000 + 1), stb__in2(3) + 1), i += 5;
+		else if (*i >= 0x08)  stb__lit(i + 2, stb__in2(0) - 0x0800 + 1), i += 2 + (stb__in2(0) - 0x0800 + 1);
+		else if (*i == 0x07)  stb__lit(i + 3, stb__in2(1) + 1), i += 3 + (stb__in2(1) + 1);
+		else if (*i == 0x06)  stb__match(stb__dout - (stb__in3(1) + 1), i[4] + 1), i += 5;
+		else if (*i == 0x04)  stb__match(stb__dout - (stb__in3(1) + 1), stb__in2(4) + 1), i += 6;
 	}
 	return i;
 }
 
-static unsigned int stb_adler32(unsigned int adler32, unsigned char *buffer, unsigned int buflen)
+static unsigned int stb_adler32(unsigned int adler32, unsigned char* buffer, unsigned int buflen)
 {
 	const unsigned long ADLER_MOD = 65521;
 	unsigned long s1 = adler32 & 0xffff, s2 = adler32 >> 16;
@@ -3947,7 +3947,7 @@ static unsigned int stb_adler32(unsigned int adler32, unsigned char *buffer, uns
 
 	unsigned long i;
 	while (buflen) {
-		for (i=0; i + 7 < blocklen; i += 8) {
+		for (i = 0; i + 7 < blocklen; i += 8) {
 			s1 += buffer[0], s2 += s1;
 			s1 += buffer[1], s2 += s1;
 			s1 += buffer[2], s2 += s1;
@@ -3970,7 +3970,7 @@ static unsigned int stb_adler32(unsigned int adler32, unsigned char *buffer, uns
 	return (unsigned int)(s2 << 16) + (unsigned int)s1;
 }
 
-static unsigned int stb_decompress(unsigned char *output, const unsigned char *i, unsigned int /*length*/)
+static unsigned int stb_decompress(unsigned char* output, const unsigned char* i, unsigned int /*length*/)
 {
 	if (stb__in4(0) != 0x57bC0000) return 0;
 	if (stb__in4(4) != 0)          return 0; // error! stream is > 4GB
@@ -3982,16 +3982,17 @@ static unsigned int stb_decompress(unsigned char *output, const unsigned char *i
 
 	stb__dout = output;
 	for (;;) {
-		const unsigned char *old_i = i;
+		const unsigned char* old_i = i;
 		i = stb_decompress_token(i);
 		if (i == old_i) {
 			if (*i == 0x05 && i[1] == 0xfa) {
 				KR_CORE_ASSERT(stb__dout == output + olen, "");
 				if (stb__dout != output + olen) return 0;
-				if (stb_adler32(1, output, olen) != (unsigned int) stb__in4(2))
+				if (stb_adler32(1, output, olen) != (unsigned int)stb__in4(2))
 					return 0;
 				return olen;
-			} else {
+			}
+			else {
 				KR_CORE_ASSERT(0, ""); /* NOTREACHED */
 				return 0;
 			}
