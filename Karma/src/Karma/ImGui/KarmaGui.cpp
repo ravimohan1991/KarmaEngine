@@ -7829,6 +7829,7 @@ void Karma::KarmaGuiInternal::UpdateKeyboardInputs()
     KarmaGuiIO& io = g.IO;
 
     // Import legacy keys or verify they are not used
+    /*
 #ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
     if (io.BackendUsingLegacyKeyArrays == 0)
     {
@@ -7895,7 +7896,7 @@ void Karma::KarmaGuiInternal::UpdateKeyboardInputs()
         #undef NAV_MAP_KEY
     }
 #endif
-#endif
+#endif*/
 
     // Update aliases
     for (int n = 0; n < KGGuiMouseButton_COUNT; n++)
