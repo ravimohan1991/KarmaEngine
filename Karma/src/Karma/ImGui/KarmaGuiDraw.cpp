@@ -22,10 +22,6 @@ Index of this file:
 
 */
 
-#if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include "KarmaGui.h"
 
 #ifndef KARMAGUI_DEFINE_MATH_OPERATORS
@@ -149,6 +145,68 @@ namespace Karma
 		colors[KGGuiCol_NavWindowingHighlight] = KGVec4(1.00f, 1.00f, 1.00f, 0.70f);
 		colors[KGGuiCol_NavWindowingDimBg] = KGVec4(0.80f, 0.80f, 0.80f, 0.20f);
 		colors[KGGuiCol_ModalWindowDimBg] = KGVec4(0.80f, 0.80f, 0.80f, 0.35f);
+	}
+
+	void KarmaGui::StyleColorsKarma(KarmaGuiStyle* dst)
+	{
+		KarmaGuiStyle* style = dst ? dst : &KarmaGui::GetStyle();
+		KGVec4* colors = style->Colors;
+
+		colors[KGGuiCol_Text] = KGVec4(0.90f, 0.90f, 0.90f, 1.00f);
+		colors[KGGuiCol_TextDisabled] = KGVec4(0.60f, 0.60f, 0.60f, 1.00f);
+		colors[KGGuiCol_WindowBg] = KGVec4(0.07451f, 0.07451f, 0.25490f, 1.00f);
+		colors[KGGuiCol_ChildBg] = KGVec4(0.07451f, 0.07451f, 0.25490f, 1.00f);
+		colors[KGGuiCol_PopupBg] = KGVec4(0.11373f, 0.10588f, 0.60392f, 0.90f);
+		colors[KGGuiCol_Border] = KGVec4(0.00f, 0.00f, 0.00f, 1.00f);
+		colors[KGGuiCol_BorderShadow] = KGVec4(0.02353f, 0.01961f, 0.19608f, 0.00f);
+		colors[KGGuiCol_FrameBg] = KGVec4(0.11373f, 0.10588f, 0.60392f, 0.39f);
+		colors[KGGuiCol_FrameBgHovered] = KGVec4(0.00392f, 0.02745f, 0.08235f, 0.40f);
+		colors[KGGuiCol_FrameBgActive] = KGVec4(0.42f, 0.41f, 0.64f, 0.69f);
+		colors[KGGuiCol_TitleBg] = KGVec4(0.27f, 0.27f, 0.54f, 0.83f);
+		colors[KGGuiCol_TitleBgActive] = KGVec4(0.15294f, 0.05490f, 0.52549f, 0.87f);
+		colors[KGGuiCol_TitleBgCollapsed] = KGVec4(0.40f, 0.40f, 0.80f, 0.20f);
+		colors[KGGuiCol_MenuBarBg] = KGVec4(0.40f, 0.40f, 0.55f, 0.80f);
+		colors[KGGuiCol_ScrollbarBg] = KGVec4(0.20f, 0.25f, 0.30f, 0.60f);
+		colors[KGGuiCol_ScrollbarGrab] = KGVec4(0.40f, 0.40f, 0.80f, 0.30f);
+		colors[KGGuiCol_ScrollbarGrabHovered] = KGVec4(0.40f, 0.40f, 0.80f, 0.40f);
+		colors[KGGuiCol_ScrollbarGrabActive] = KGVec4(0.41f, 0.39f, 0.80f, 0.60f);
+		colors[KGGuiCol_CheckMark] = KGVec4(0.90f, 0.90f, 0.90f, 0.50f);
+		colors[KGGuiCol_SliderGrab] = KGVec4(1.00f, 1.00f, 1.00f, 0.30f);
+		colors[KGGuiCol_SliderGrabActive] = KGVec4(0.41f, 0.39f, 0.80f, 0.60f);
+		colors[KGGuiCol_Button] = KGVec4(0.35f, 0.40f, 0.61f, 0.62f);
+		colors[KGGuiCol_ButtonHovered] = KGVec4(0.40f, 0.48f, 0.71f, 0.79f);
+		colors[KGGuiCol_ButtonActive] = KGVec4(0.46f, 0.54f, 0.80f, 1.00f);
+		colors[KGGuiCol_Header] = KGVec4(0.40f, 0.40f, 0.90f, 0.45f);
+		colors[KGGuiCol_HeaderHovered] = KGVec4(0.45f, 0.45f, 0.90f, 0.80f);
+		colors[KGGuiCol_HeaderActive] = KGVec4(0.53f, 0.53f, 0.87f, 0.80f);
+		colors[KGGuiCol_Separator] = KGVec4(0.50f, 0.50f, 0.50f, 0.60f);
+		colors[KGGuiCol_SeparatorHovered] = KGVec4(0.60f, 0.60f, 0.70f, 1.00f);
+		colors[KGGuiCol_SeparatorActive] = KGVec4(0.70f, 0.70f, 0.90f, 1.00f);
+		colors[KGGuiCol_ResizeGrip] = KGVec4(1.00f, 1.00f, 1.00f, 0.10f);
+		colors[KGGuiCol_ResizeGripHovered] = KGVec4(0.78f, 0.82f, 1.00f, 0.60f);
+		colors[KGGuiCol_ResizeGripActive] = KGVec4(0.78f, 0.82f, 1.00f, 0.90f);
+		colors[KGGuiCol_Tab] = KGLerp(colors[KGGuiCol_Header], colors[KGGuiCol_TitleBgActive], 0.80f);
+		colors[KGGuiCol_TabHovered] = colors[KGGuiCol_HeaderHovered];
+		colors[KGGuiCol_TabActive] = KGLerp(colors[KGGuiCol_HeaderActive], colors[KGGuiCol_TitleBgActive], 0.60f);
+		colors[KGGuiCol_TabUnfocused] = KGLerp(colors[KGGuiCol_Tab], colors[KGGuiCol_TitleBg], 0.80f);
+		colors[KGGuiCol_TabUnfocusedActive] = KGLerp(colors[KGGuiCol_TabActive], colors[KGGuiCol_TitleBg], 0.40f);
+		colors[KGGuiCol_DockingPreview] = colors[KGGuiCol_Header] * KGVec4(1.0f, 1.0f, 1.0f, 0.7f);
+		colors[KGGuiCol_DockingEmptyBg] = KGVec4(0.20f, 0.20f, 0.20f, 1.00f);
+		colors[KGGuiCol_PlotLines] = KGVec4(1.00f, 1.00f, 1.00f, 1.00f);
+		colors[KGGuiCol_PlotLinesHovered] = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+		colors[KGGuiCol_PlotHistogram] = KGVec4(0.90f, 0.70f, 0.00f, 1.00f);
+		colors[KGGuiCol_PlotHistogramHovered] = KGVec4(1.00f, 0.60f, 0.00f, 1.00f);
+		colors[KGGuiCol_TableHeaderBg] = KGVec4(0.27f, 0.27f, 0.38f, 1.00f);
+		colors[KGGuiCol_TableBorderStrong] = KGVec4(0.31f, 0.31f, 0.45f, 1.00f);   // Prefer using Alpha=1.0 here
+		colors[KGGuiCol_TableBorderLight] = KGVec4(0.26f, 0.26f, 0.28f, 1.00f);   // Prefer using Alpha=1.0 here
+		colors[KGGuiCol_TableRowBg] = KGVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[KGGuiCol_TableRowBgAlt] = KGVec4(1.00f, 1.00f, 1.00f, 0.07f);
+		colors[KGGuiCol_TextSelectedBg] = KGVec4(0.00f, 0.00f, 1.00f, 0.35f);
+		colors[KGGuiCol_DragDropTarget] = KGVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		colors[KGGuiCol_NavHighlight] = colors[KGGuiCol_HeaderHovered];
+		colors[KGGuiCol_NavWindowingHighlight] = KGVec4(1.00f, 1.00f, 1.00f, 0.70f);
+		colors[KGGuiCol_NavWindowingDimBg] = KGVec4(0.80f, 0.80f, 0.80f, 0.20f);
+		colors[KGGuiCol_ModalWindowDimBg] = KGVec4(0.20f, 0.20f, 0.20f, 0.35f);
 	}
 
 	void KarmaGui::StyleColorsClassic(KarmaGuiStyle* dst)

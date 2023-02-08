@@ -23,6 +23,11 @@ namespace Karma
 	std::string ImGuiMesa::notAvailableText = "Kasturi Trishna (The MuskThirst)";
 	bool ImGuiMesa::m_ViewportFocused = false;
 	bool ImGuiMesa::m_ViewportHovered = false;
+	KarmaLogMesa ImGuiMesa::m_KarmaLog;
+	KarmaGuiTextBuffer     KarmaLogMesa::TextBuffer;
+	KarmaGuiTextFilter     KarmaLogMesa::TextFilter;
+	KGVector<int>       KarmaLogMesa::LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
+	bool                KarmaLogMesa::AutoScroll;  // Keep scrolling if already at the bottom.
 
 	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
 
@@ -338,7 +343,7 @@ namespace Karma
 	// The lougging window with basic filtering.
 	void ImGuiMesa::DrawKarmaLogMesa(KGGuiID mainMesaDockID)
 	{
-		static KarmaLogMesa log;
+		//static KarmaLogMesa log;
 
 		KGVec2 windowSize = KGVec2(680, 420);
 
@@ -366,7 +371,7 @@ namespace Karma
 			{
 				const char* category = categories[counter % KG_ARRAYSIZE(categories)];
 				const char* word = words[counter % KG_ARRAYSIZE(words)];
-				log.AddLog("[%05d] [%s] Hello, current time is %.1f, here's a word: '%s'\n",
+				m_KarmaLog.AddLog("[%05d] [%s] Hello, current time is %.1f, here's a word: '%s'\n",
 					KarmaGui::GetFrameCount(), category, KarmaGui::GetTime(), word);
 				counter++;
 			}
@@ -375,7 +380,7 @@ namespace Karma
 		KarmaGui::End();
 
 		// Actually call in the regular Log helper (which will Begin() into the same window as we just did)
-		log.Draw("Karma: Log");
+		m_KarmaLog.Draw("Karma: Log");
 
 		/*
 		if(payloadWindow != nullptr && !payloadWindow->bIsCodeDocked)

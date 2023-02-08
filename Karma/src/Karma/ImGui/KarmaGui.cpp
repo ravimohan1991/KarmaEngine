@@ -35,10 +35,6 @@
 #endif
 #endif
 
-#if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 // [Apple] OS specific includes
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
@@ -1677,7 +1673,7 @@ void KarmaGuiListClipper::Begin(int items_count, float items_height)
 {
 	KarmaGuiContext& g = *Karma::GKarmaGui;
 	KGGuiWindow* window = g.CurrentWindow;
-	KR_CORE_INFO("Clipper: Begin(%d,%.2f) in '%s'\n", items_count, items_height, window->Name);
+	//KR_CORE_INFO("Clipper: Begin(%d,%.2f) in '%s'\n", items_count, items_height, window->Name);
 
 	if (KGGuiTable* table = g.CurrentTable)
 		if (table->IsInsideRow)
@@ -1704,7 +1700,7 @@ void KarmaGuiListClipper::End()
 	if (KGGuiListClipperData* data = (KGGuiListClipperData*)TempData)
 	{
 		// In theory here we should assert that we are already at the right position, but it seems saner to just seek at the end and not assert/crash the user.
-		KR_CORE_INFO("Clipper: End() in '%s'\n", g.CurrentWindow->Name);
+		// KR_CORE_INFO("Clipper: End() in '%s'\n", g.CurrentWindow->Name);
 		if (ItemsCount >= 0 && ItemsCount < INT_MAX && DisplayStart >= 0)
 			ImGuiListClipper_SeekCursorForItem(this, ItemsCount);
 
@@ -1862,17 +1858,17 @@ bool KarmaGuiListClipper::Step()
 	bool ret = ImGuiListClipper_StepInternal(this);
 	if (ret && (DisplayStart == DisplayEnd))
 		ret = false;
-	if (g.CurrentTable && g.CurrentTable->IsUnfrozenRows == false)
-		KR_CORE_INFO("Clipper: Step(): inside frozen table row.");
-	if (need_items_height && ItemsHeight > 0.0f)
-		KR_CORE_INFO("Clipper: Step(): computed ItemsHeight: %.2f.", ItemsHeight);
+	if (g.CurrentTable && g.CurrentTable->IsUnfrozenRows == false);
+		//KR_CORE_INFO("Clipper: Step(): inside frozen table row.");
+	if (need_items_height && ItemsHeight > 0.0f);
+		//KR_CORE_INFO("Clipper: Step(): computed ItemsHeight: %.2f.", ItemsHeight);
 	if (ret)
 	{
-		KR_CORE_INFO("Clipper: Step(): display %d to %d.", DisplayStart, DisplayEnd);
+		//KR_CORE_INFO("Clipper: Step(): display %d to %d.", DisplayStart, DisplayEnd);
 	}
 	else
 	{
-		KR_CORE_INFO("Clipper: Step(): End.");
+		//KR_CORE_INFO("Clipper: Step(): End.");
 		End();
 	}
 	return ret;

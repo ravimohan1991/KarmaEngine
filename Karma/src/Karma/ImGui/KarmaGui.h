@@ -194,7 +194,8 @@ namespace Karma
 		// Styles
 		static void          StyleColorsDark(KarmaGuiStyle* dst = NULL);    // new, recommended style (default)
 		static void          StyleColorsLight(KarmaGuiStyle* dst = NULL);   // best used with borders and a custom, thicker font
-		static void          StyleColorsClassic(KarmaGuiStyle* dst = NULL); // classic imgui style
+		static void          StyleColorsClassic(KarmaGuiStyle* dst = NULL); // classic karmagui style
+		static void          StyleColorsKarma(KarmaGuiStyle* dst = NULL);   // Karma's style 
 
 		// Windows
 		// - Begin() = push window to the stack and start appending to it. End() = pop window from the stack.

@@ -154,6 +154,7 @@ if(WIN32)
 	if(MSVC)
 	    # For faster multithreaded compilation
         #add_definitions(/MP)
+        add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 	endif()
 elseif(UNIX AND NOT APPLE)
     add_compile_definitions(KR_LINUX_PLATFORM)

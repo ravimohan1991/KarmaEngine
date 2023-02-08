@@ -75,8 +75,8 @@ namespace Karma
 		io.ConfigFlags |= KGGuiConfigFlags_DockingEnable;		// Enable Docking
 		io.ConfigFlags |= KGGuiConfigFlags_ViewportsEnable;		// Enable Multi-Viewport / Platform Windows
 
-		// Setup Dear ImGui style
-		KarmaGui::StyleColorsDark();
+		// Setup KarmaGui color style
+		KarmaGui::StyleColorsKarma();
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		KarmaGuiStyle& style = KarmaGui::GetStyle();
@@ -87,7 +87,7 @@ namespace Karma
 		}
 
 		// Setting Dear ImGui ini file
-		io.IniFilename = "../Resources/Misc/DearImGuiEditor.ini";//"yeehaw!";
+		io.IniFilename = "../Resources/Misc/KarmaGuiEditor.ini";//"yeehaw!";
 
 		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
 

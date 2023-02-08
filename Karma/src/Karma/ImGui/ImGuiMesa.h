@@ -25,10 +25,10 @@ namespace Karma
 
 	struct KarmaLogMesa
 	{
-		KarmaGuiTextBuffer     TextBuffer;
-		KarmaGuiTextFilter     TextFilter;
-		KGVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
-		bool                AutoScroll;  // Keep scrolling if already at the bottom.
+		static KarmaGuiTextBuffer     TextBuffer;
+		static KarmaGuiTextFilter     TextFilter;
+		static KGVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
+		static bool                AutoScroll;  // Keep scrolling if already at the bottom.
 
 		KarmaLogMesa()
 		{
@@ -36,14 +36,14 @@ namespace Karma
 			Clear();
 		}
 
-		void Clear()
+		static void Clear()
 		{
 			TextBuffer.clear();
 			LineOffsets.clear();
 			LineOffsets.push_back(0);
 		}
 
-		void AddLog(const char* fmt, ...) /*KG_FMTARGS(2) */// <- what in the name of WYSIWYG is this?
+		static void AddLog(const char* fmt, ...) /*KG_FMTARGS(2) */// <- what in the name of WYSIWYG is this?
 		{
 			int cacheSize = TextBuffer.size();
 			va_list args;
@@ -60,7 +60,7 @@ namespace Karma
 			}
 		}
 
-		void Draw(const char* title, bool* pOpen = nullptr)
+		static void Draw(const char* title, bool* pOpen = nullptr)
 		{
 			if (!KarmaGui::Begin(title, pOpen))
 			{
@@ -330,6 +330,7 @@ namespace Karma
 
 	public:
 		static std::string notAvailableText;
+		static KarmaLogMesa m_KarmaLog;
 
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;
