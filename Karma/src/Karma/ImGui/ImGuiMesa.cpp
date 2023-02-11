@@ -12,6 +12,7 @@
 #include "ImGuiMesa.h"
 #include "Karma/Application.h"
 #include "Karma/Renderer/RendererAPI.h"
+#include "spdlog/sinks/callback_sink.h"
 
 // Experimental
 #include "KarmaGuiVulkanHandler.h"
@@ -28,6 +29,8 @@ namespace Karma
 	KarmaGuiTextFilter     KarmaLogMesa::TextFilter;
 	KGVector<int>       KarmaLogMesa::LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
 	bool                KarmaLogMesa::AutoScroll;  // Keep scrolling if already at the bottom.
+	std::shared_ptr<spdlog::logger> s_MesaCoreLogger = nullptr;
+	std::shared_ptr<spdlog::logger> s_MesaClientLogger = nullptr;
 
 	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
 
@@ -375,6 +378,21 @@ namespace Karma
 					KarmaGui::GetFrameCount(), category, KarmaGui::GetTime(), word);
 				counter++;
 			}
+		}
+
+		if(s_MesaCoreLogger == nullptr)
+		{
+			s_MesaCoreLogger = spdlog::get("KARMA");
+			auto callback_sink = std::make_shared<spdlog::sinks::callback_sink_mt>([](const spdlog::details::log_msg &msg)
+			{
+				ImGuiMesa::m_KarmaLog.AddLog(msg.payload.data());
+			});
+			callback_sink->set_level(spdlog::level::trace);
+			s_MesaCoreLogger->add_sink(callback_sink);
+		}
+		if(s_MesaClientLogger == nullptr)
+		{
+			s_MesaClientLogger = spdlog::get("APPLICATION");
 		}
 
 		KarmaGui::End();

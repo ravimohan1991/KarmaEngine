@@ -5,16 +5,12 @@
 #include "KarmaGui.h"
 #include "KarmaGuiInternal.h"
 
-//#include "imgui.h"
-//#include "imgui_internal.h"
 
 #include "Renderer/Scene.h"
 
 extern "C" {
 #include "dmidecode.h"
 }
-
-struct KGGuiDockNode;
 
 namespace Karma
 {
@@ -29,6 +25,8 @@ namespace Karma
 		static KarmaGuiTextFilter     TextFilter;
 		static KGVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
 		static bool                AutoScroll;  // Keep scrolling if already at the bottom.
+		static std::shared_ptr<spdlog::logger> s_MesaCoreLogger;
+		static std::shared_ptr<spdlog::logger> s_MesaClientLogger;
 
 		KarmaLogMesa()
 		{
@@ -339,9 +337,9 @@ namespace Karma
 		// Content browser
 		static std::filesystem::path m_CurrentDirectory;
 
-			// Need agnostic naming scheme
-			static uint32_t m_DirectoryIcon;
-			static uint32_t m_FileIcon;
+		// Need agnostic naming scheme
+		static uint32_t m_DirectoryIcon;
+		static uint32_t m_FileIcon;
 
 	public:
 		static bool m_ViewportFocused;

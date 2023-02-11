@@ -47,8 +47,8 @@ namespace Karma
 					EventDispatcher dispatcher(eve);
 					dispatcher.Dispatch<ControllerDeviceConnectedEvent>([](ControllerDeviceConnectedEvent event) -> bool
 					{
-					KR_CORE_INFO("Event: {0}", event.ToString().c_str());
-					return true;
+						KR_CORE_INFO("Event: {0}", event.ToString().c_str());
+						return true;
 					});
 				}
 

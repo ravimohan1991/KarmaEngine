@@ -8171,7 +8171,18 @@ static const char* GetInputSourceName(KGGuiInputSource source)
 static void DebugPrintInputEvent(const char* prefix, const KGGuiInputEvent* e)
 {
 	KarmaGuiContext& g = *Karma::GKarmaGui;
-	if (e->Type == KGGuiInputEventType_MousePos) { if (e->MousePos.PosX == -FLT_MAX && e->MousePos.PosY == -FLT_MAX) KR_CORE_INFO("{0}: MousePos (-FLT_MAX, -FLT_MAX)\n", prefix); else KR_CORE_INFO("{0}: MousePos ({1}, {2})", prefix, e->MousePos.PosX, e->MousePos.PosY); return; }
+	if (e->Type == KGGuiInputEventType_MousePos)
+	{
+		if (e->MousePos.PosX == -FLT_MAX && e->MousePos.PosY == -FLT_MAX)
+		{
+			KR_CORE_INFO("{0}: MousePos (-FLT_MAX, -FLT_MAX)\n", prefix);
+		}
+		else
+		{
+			KR_CORE_INFO("{0}: MousePos ({1}, {2})", prefix, e->MousePos.PosX, e->MousePos.PosY);
+		}
+		return;
+	}
 	if (e->Type == KGGuiInputEventType_MouseButton) { KR_CORE_INFO("{0}: MouseButton {1} {2}", prefix, e->MouseButton.Button, e->MouseButton.Down ? "Down" : "Up"); return; }
 	if (e->Type == KGGuiInputEventType_MouseWheel) { KR_CORE_INFO("{0}: MouseWheel (%.3f, %.3f)", prefix, e->MouseWheel.WheelX, e->MouseWheel.WheelY); return; }
 	if (e->Type == KGGuiInputEventType_MouseViewport) { KR_CORE_INFO("{0}: MouseViewport (0x%08X)", prefix, e->MouseViewport.HoveredViewportID); return; }
@@ -14069,9 +14080,13 @@ void Karma::DockContextProcessDock(KarmaGuiContext* ctx, KGGuiDockRequest* req)
 	KGGuiWindow* target_window = req->DockTargetWindow;
 	KGGuiDockNode* node = req->DockTargetNode;
 	if (payload_window)
+	{
 		KR_CORE_INFO("[docking] DockContextProcessDock node {0} target '{1}' dock window '{2}', split_dir {3}", node ? node->ID : 0, target_window ? target_window->Name : "NULL", payload_window->Name, req->DockSplitDir);
+	}
 	else
+	{
 		KR_CORE_INFO("[docking] DockContextProcessDock node {0}, split_dir {1}", node ? node->ID : 0, req->DockSplitDir);
+	}
 
 	// Decide which Tab will be selected at the end of the operation
 	KGGuiID next_selected_id = 0;
@@ -15302,7 +15317,9 @@ void Karma::DockNodeUpdateTabBar(KGGuiDockNode* node, KGGuiWindow* host_window)
 	{
 		KR_CORE_INFO("[docking] In node {0}: %d new appearing tabs:{1}", node->ID, tab_bar->Tabs.Size - tabs_unsorted_start, (tab_bar->Tabs.Size > tabs_unsorted_start + 1) ? " (will sort)" : "");
 		for (int tab_n = tabs_unsorted_start; tab_n < tab_bar->Tabs.Size; tab_n++)
+		{
 			KR_CORE_INFO("[docking] - Tab '{0}' Order {1}", tab_bar->Tabs[tab_n].Window->Name, tab_bar->Tabs[tab_n].Window->DockOrder);
+		}
 		if (tab_bar->Tabs.Size > tabs_unsorted_start + 1)
 			KGQsort(tab_bar->Tabs.Data + tabs_unsorted_start, tab_bar->Tabs.Size - tabs_unsorted_start, sizeof(KGGuiTabItem), TabItemComparerByDockOrder);
 	}
@@ -16292,7 +16309,9 @@ KGGuiID Karma::KarmaGui::DockSpace(KGGuiID id, const KGVec2& size_arg, KarmaGuiD
 		node->SetLocalFlags(KGGuiDockNodeFlags_CentralNode);
 	}
 	if (window_class && window_class->ClassId != node->WindowClass.ClassId)
+	{
 		KR_CORE_INFO("[docking] DockSpace: dockspace node {0}: setup WindowClass {1} -> {2}", id, node->WindowClass.ClassId, window_class->ClassId);
+	}
 	node->SharedFlags = flags;
 	node->WindowClass = window_class ? *window_class : KarmaGuiWindowClass();
 
