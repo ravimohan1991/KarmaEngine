@@ -164,27 +164,29 @@ namespace Karma
 
 	void EditorLayer::InputPolling(float deltaTime)
 	{
-		// Camera controls
-		if (Input::IsKeyPressed(GLFW_KEY_A))
+		if(ImGuiMesa::m_ViewportFocused)
 		{
-			m_EditorCamera->MoveSideways(-cameraTranslationSpeed * deltaTime);
-		}
+			// Camera controls
+			if (Input::IsKeyPressed(GLFW_KEY_A))
+			{
+				m_EditorCamera->MoveSideways(-cameraTranslationSpeed * deltaTime);
+			}
 
-		if (Input::IsKeyPressed(GLFW_KEY_D))
-		{
-			m_EditorCamera->MoveSideways(cameraTranslationSpeed * deltaTime);
-		}
+			if (Input::IsKeyPressed(GLFW_KEY_D))
+			{
+				m_EditorCamera->MoveSideways(cameraTranslationSpeed * deltaTime);
+			}
 
-		if (Input::IsKeyPressed(GLFW_KEY_W))
-		{
-			m_EditorCamera->MoveForward(cameraTranslationSpeed * deltaTime);
-		}
+			if (Input::IsKeyPressed(GLFW_KEY_W))
+			{
+				m_EditorCamera->MoveForward(cameraTranslationSpeed * deltaTime);
+			}
 
-		if (Input::IsKeyPressed(GLFW_KEY_S))
-		{
-			m_EditorCamera->MoveForward(-cameraTranslationSpeed * deltaTime);
+			if (Input::IsKeyPressed(GLFW_KEY_S))
+			{
+				m_EditorCamera->MoveForward(-cameraTranslationSpeed * deltaTime);
+			}
 		}
-
 		static uint32_t testControllerID = 0;
 
 		// Controller context begins

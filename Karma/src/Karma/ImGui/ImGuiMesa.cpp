@@ -347,39 +347,15 @@ namespace Karma
 	// The lougging window with basic filtering.
 	void ImGuiMesa::DrawKarmaLogMesa(KGGuiID mainMesaDockID)
 	{
-		//static KarmaLogMesa log;
-
 		KGVec2 windowSize = KGVec2(680, 420);
 
-		KarmaGuiCond conditions = KGGuiCond_Once;//ImGuiCond_FirstUseEver;
-
-		// So here goes the reverse engineering
-		// 1. imgui.ini is looked. If not found, then window->SizeFull is set to windowSize else
-		// 2. well I failed, partially. Ini to the rescue
-		// 3. maybe I will find it later, and NOT the cherno later. Ok maybe cherno later because ini is the way to go.
+		KarmaGuiCond conditions = KGGuiCond_Once;
 		KarmaGui::SetNextWindowSize(windowSize, conditions);
 
 		// Disable user resize,
 		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoResize;
 
 		KarmaGui::Begin("Karma: Log", nullptr, windowFlags);
-
-		KGGuiWindow* payloadWindow = KarmaGuiInternal::GetCurrentWindow();
-
-		if (KarmaGui::SmallButton("[Debug] Add 5 entries"))
-		{
-			static int counter = 0;
-			const char* categories[3] = { "info", "warn", "error" };
-			const char* words[] = { "Bumfuzzled", "Cattywampus", "Snickersnee", "Abibliophobia", "Absquatulate", "Nincompoop", 	"Pauciloquent" };
-			for (int n = 0; n < 5; n++)
-			{
-				const char* category = categories[counter % KG_ARRAYSIZE(categories)];
-				const char* word = words[counter % KG_ARRAYSIZE(words)];
-				m_KarmaLog.AddLog("[%05d] [%s] Hello, current time is %.1f, here's a word: '%s'\n",
-					KarmaGui::GetFrameCount(), category, KarmaGui::GetTime(), word);
-				counter++;
-			}
-		}
 
 		if(s_MesaLogFormatter == nullptr)
 		{
@@ -410,18 +386,6 @@ namespace Karma
 
 		// Actually call in the regular Log helper (which will Begin() into the same window as we just did)
 		m_KarmaLog.Draw("Karma: Log");
-
-		/*
-		if(payloadWindow != nullptr && !payloadWindow->bIsCodeDocked)
-		{
-			payloadWindow->Size = windowSize;
-			ImGui::QueueDockingRequest(mainMesaDockID, payloadWindow, 3);
-			//payloadWindow->SizeFull = payloadWindow->Size = windowSize;
-			payloadWindow->bIsCodeDocked = true;
-			payloadWindow->bAutoFit = true;
-		}
-		//payloadWindow->Size = windowSize;
-		*/
 	}
 
 	// Menu mesa
