@@ -27,6 +27,7 @@ namespace Karma
 		static bool                AutoScroll;  // Keep scrolling if already at the bottom.
 		static std::shared_ptr<spdlog::logger> s_MesaCoreLogger;
 		static std::shared_ptr<spdlog::logger> s_MesaClientLogger;
+		static std::shared_ptr<spdlog::pattern_formatter> s_MesaLogFormatter;
 
 		KarmaLogMesa()
 		{

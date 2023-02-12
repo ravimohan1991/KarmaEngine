@@ -31,6 +31,7 @@ namespace Karma
 	bool                KarmaLogMesa::AutoScroll;  // Keep scrolling if already at the bottom.
 	std::shared_ptr<spdlog::logger> s_MesaCoreLogger = nullptr;
 	std::shared_ptr<spdlog::logger> s_MesaClientLogger = nullptr;
+	std::shared_ptr<spdlog::pattern_formatter> s_MesaLogFormatter = nullptr;
 
 	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
 
@@ -380,16 +381,26 @@ namespace Karma
 			}
 		}
 
+		if(s_MesaLogFormatter == nullptr)
+		{
+			s_MesaLogFormatter.reset(new spdlog::pattern_formatter());
+		}
+
 		if(s_MesaCoreLogger == nullptr)
 		{
 			s_MesaCoreLogger = spdlog::get("KARMA");
-			auto callback_sink = std::make_shared<spdlog::sinks::callback_sink_mt>([](const spdlog::details::log_msg &msg)
+			auto callbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>([](const spdlog::details::log_msg &msg)
 			{
-				ImGuiMesa::m_KarmaLog.AddLog(msg.payload.data());
+				spdlog::memory_buf_t logToDisplay;
+				s_MesaLogFormatter->format(msg, logToDisplay);
+
+				ImGuiMesa::m_KarmaLog.AddLog(logToDisplay.data());
 			});
-			callback_sink->set_level(spdlog::level::trace);
-			s_MesaCoreLogger->add_sink(callback_sink);
+
+			callbackSink->set_level(spdlog::level::trace);
+			s_MesaCoreLogger->add_sink(callbackSink);
 		}
+
 		if(s_MesaClientLogger == nullptr)
 		{
 			s_MesaClientLogger = spdlog::get("APPLICATION");
