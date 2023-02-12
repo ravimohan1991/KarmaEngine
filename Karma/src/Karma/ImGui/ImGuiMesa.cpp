@@ -394,7 +394,7 @@ namespace Karma
 				spdlog::memory_buf_t logToDisplay;
 				s_MesaLogFormatter->format(msg, logToDisplay);
 
-				ImGuiMesa::m_KarmaLog.AddLog(logToDisplay.data());
+				ImGuiMesa::m_KarmaLog.AddLog(fmt::to_string(logToDisplay).c_str());
 			});
 
 			callbackSink->set_level(spdlog::level::trace);
