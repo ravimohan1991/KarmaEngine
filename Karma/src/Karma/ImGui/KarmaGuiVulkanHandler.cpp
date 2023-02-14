@@ -355,7 +355,8 @@ namespace Karma
 					// (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
 					if (drawCommand->UserCallback == KGDrawCallback_ResetRenderState)
 					{
-						KarmaGui_ImplVulkan_SetupRenderState(drawData, pipeline, commandBuffer, renderBuffer, width, height);
+						//KarmaGui_ImplVulkan_SetupRenderState(drawData, pipeline, commandBuffer, renderBuffer, width, height);
+						//KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer, drawData);
 					}
 					else
 					{

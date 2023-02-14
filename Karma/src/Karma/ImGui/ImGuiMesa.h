@@ -331,6 +331,8 @@ namespace Karma
 		static std::string notAvailableText;
 		static KarmaLogMesa m_KarmaLog;
 
+		static bool m_EditorInitialized;
+
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;
 		static WindowManipulationGaugeData m_3DExhibitor;

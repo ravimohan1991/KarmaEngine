@@ -61,6 +61,7 @@ namespace Karma
 		meshToLoad.reset(new Mesh(objFileName));
 
 		m_ModelVertexArray->SetMesh(meshToLoad);
+		KR_INFO("Successfully loaded scene");
 	}
 
 	void EditorLayer::OnAttach()

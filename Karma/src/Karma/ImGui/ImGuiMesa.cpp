@@ -32,6 +32,7 @@ namespace Karma
 	std::shared_ptr<spdlog::logger> s_MesaCoreLogger = nullptr;
 	std::shared_ptr<spdlog::logger> s_MesaClientLogger = nullptr;
 	std::shared_ptr<spdlog::pattern_formatter> s_MesaLogFormatter = nullptr;
+	bool ImGuiMesa::m_EditorInitialized = false;
 
 	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
 
@@ -106,6 +107,15 @@ namespace Karma
 		// 6. The content browser
 		{
 			DrawContentBrowser(editorCallbacks.openSceneCallback);
+		}
+
+		// Display ready log message and do one time initialization stuff
+		{
+			if(!m_EditorInitialized)
+			{
+				KR_INFO("Pranjal is prepared for work.");
+				m_EditorInitialized = true;
+			}
 		}
 	}
 
@@ -191,7 +201,9 @@ namespace Karma
 				}
 				else if(directoryEntry.is_regular_file() && (path.filename().extension() == ".obj"))
 				{
+					KR_INFO("Opening a scene from {0}", path.string().c_str());
 					openSceneCallback(path.string());
+					KarmaGuiInternal::GetCurrentWindow()->DrawList->AddCallback(KGDrawCallback_ResetRenderState, nullptr);
 				}
 			}
 
@@ -380,6 +392,16 @@ namespace Karma
 		if(s_MesaClientLogger == nullptr)
 		{
 			s_MesaClientLogger = spdlog::get("APPLICATION");
+			auto callbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>([](const spdlog::details::log_msg &msg)
+			{
+				spdlog::memory_buf_t logToDisplay;
+				s_MesaLogFormatter->format(msg, logToDisplay);
+
+				ImGuiMesa::m_KarmaLog.AddLog(fmt::to_string(logToDisplay).c_str());
+			});
+
+			callbackSink->set_level(spdlog::level::trace);
+			s_MesaClientLogger->add_sink(callbackSink);
 		}
 
 		KarmaGui::End();
