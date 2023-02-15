@@ -27,8 +27,8 @@ namespace Karma
 		m_LayerStack = new LayerStack();
 
 		// Graphics API Vulkan or OpenGL should have been completely initialized by here
-		m_ImGuiLayer = new ImGuiLayer(m_Window);
-		PushOverlay(m_ImGuiLayer);
+		m_KarmaGuiLayer = new KarmaGuiLayer(m_Window);
+		PushOverlay(m_KarmaGuiLayer);
 	}
 
 	Application::~Application()
@@ -76,14 +76,14 @@ namespace Karma
 			}
 
 			// ImGui rendering sequence cue trickling through stack
-			m_ImGuiLayer->Begin();
+			m_KarmaGuiLayer->Begin();
 
 			for (auto layer : *m_LayerStack)
 			{
 				layer->ImGuiRender(deltaTime);
 			}
 
-			m_ImGuiLayer->End();
+			m_KarmaGuiLayer->End();
 
 			m_Window->OnUpdate();
 		}

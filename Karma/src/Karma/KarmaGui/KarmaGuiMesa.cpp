@@ -9,22 +9,22 @@
   Also see https://en.wikipedia.org/wiki/Indian_Mesa, since I am Indian! And I still love my country!!
   */
 
-#include "ImGuiMesa.h"
+#include "KarmaGuiMesa.h"
 #include "Karma/Application.h"
 #include "Karma/Renderer/RendererAPI.h"
 #include "spdlog/sinks/callback_sink.h"
 
 // Experimental
 #include "KarmaGuiVulkanHandler.h"
-#include "ImGuiOpenGLHandler.h"
+#include "KarmaGuiOpenGLHandler.h"
 
 namespace Karma
 {
-	KarmaTuringMachineElectronics ImGuiMesa::electronicsItems;
-	std::string ImGuiMesa::notAvailableText = "Kasturi Trishna (The MuskThirst)";
-	bool ImGuiMesa::m_ViewportFocused = false;
-	bool ImGuiMesa::m_ViewportHovered = false;
-	KarmaLogMesa ImGuiMesa::m_KarmaLog;
+	KarmaTuringMachineElectronics KarmaGuiMesa::electronicsItems;
+	std::string KarmaGuiMesa::notAvailableText = "Kasturi Trishna (The MuskThirst)";
+	bool KarmaGuiMesa::m_ViewportFocused = false;
+	bool KarmaGuiMesa::m_ViewportHovered = false;
+	KarmaLogMesa KarmaGuiMesa::m_KarmaLog;
 	KarmaGuiTextBuffer     KarmaLogMesa::TextBuffer;
 	KarmaGuiTextFilter     KarmaLogMesa::TextFilter;
 	KGVector<int>       KarmaLogMesa::LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
@@ -32,12 +32,12 @@ namespace Karma
 	std::shared_ptr<spdlog::logger> s_MesaCoreLogger = nullptr;
 	std::shared_ptr<spdlog::logger> s_MesaClientLogger = nullptr;
 	std::shared_ptr<spdlog::pattern_formatter> s_MesaLogFormatter = nullptr;
-	bool ImGuiMesa::m_EditorInitialized = false;
-	bool ImGuiMesa::m_RefreshRenderingResources = false;
+	bool KarmaGuiMesa::m_EditorInitialized = false;
+	bool KarmaGuiMesa::m_RefreshRenderingResources = false;
 
-	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
+	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
 
-	ImGuiDockPreviewData::ImGuiDockPreviewData() : FutureNode(0)
+	KarmaGuiDockPreviewData::KarmaGuiDockPreviewData() : FutureNode(0)
 	{
 		IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false; 
 		SplitNode = NULL; SplitDir = KGGuiDir_None; SplitRatio = 0.f; 
@@ -48,7 +48,7 @@ namespace Karma
 		}
 	}
 
-	void ImGuiMesa::RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
+	void KarmaGuiMesa::RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
 	{
 		// The MM (Main Menu) menu bar
 		DrawKarmaMainMenuBarMesa();
@@ -120,7 +120,7 @@ namespace Karma
 		}
 	}
 
-	KGGuiDockNode* ImGuiMesa::DockNodeTreeFindFallbackLeafNode(KGGuiDockNode* node)
+	KGGuiDockNode* KarmaGuiMesa::DockNodeTreeFindFallbackLeafNode(KGGuiDockNode* node)
 	{
 		if (node->IsLeafNode())
 			return node;
@@ -137,11 +137,11 @@ namespace Karma
 
 	// Once we have projects, change this
 	extern const std::filesystem::path g_AssetPath = "assets";
-	std::filesystem::path ImGuiMesa::m_CurrentDirectory = std::filesystem::current_path();
-	uint32_t ImGuiMesa::m_DirectoryIcon = 3;
-	uint32_t ImGuiMesa::m_FileIcon = 2;
+	std::filesystem::path KarmaGuiMesa::m_CurrentDirectory = std::filesystem::current_path();
+	uint32_t KarmaGuiMesa::m_DirectoryIcon = 3;
+	uint32_t KarmaGuiMesa::m_FileIcon = 2;
 
-	void ImGuiMesa::DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback)
+	void KarmaGuiMesa::DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback)
 	{
 		KarmaGui::Begin("Content Browser");
 
@@ -220,7 +220,7 @@ namespace Karma
 		KarmaGui::End();
 	}
 
-	void ImGuiMesa::Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene)
+	void KarmaGuiMesa::Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene)
 	{
 		KarmaGui::SetNextWindowSize(KGVec2(400, 400), KGGuiCond_FirstUseEver);
 
@@ -315,7 +315,7 @@ namespace Karma
 		KarmaGui::PopStyleColor();
 	}
 
-	void ImGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
+	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
 	{
 		KarmaGui::SetNextWindowSize(KGVec2(500, 400), KGGuiCond_FirstUseEver);
 		
@@ -327,7 +327,7 @@ namespace Karma
 	}
 
 	// MM bar mesa
-	void ImGuiMesa::DrawKarmaMainMenuBarMesa()
+	void KarmaGuiMesa::DrawKarmaMainMenuBarMesa()
 	{
 		static bool showKarmaAbout = false;
 
@@ -356,7 +356,7 @@ namespace Karma
 			if (electronicsItems.bHasQueried)
 			{
 				reset_electronics_structures();
-				ImGuiMesa::SetElectronicsRamInformationToNull();
+				KarmaGuiMesa::SetElectronicsRamInformationToNull();
 				electronicsItems.ramSoftSlots.clear();
 				electronicsItems.bHasQueried = false;
 			}
@@ -365,7 +365,7 @@ namespace Karma
 
 	// Log mesa
 	// The lougging window with basic filtering.
-	void ImGuiMesa::DrawKarmaLogMesa(KGGuiID mainMesaDockID)
+	void KarmaGuiMesa::DrawKarmaLogMesa(KGGuiID mainMesaDockID)
 	{
 		KGVec2 windowSize = KGVec2(680, 420);
 
@@ -390,7 +390,7 @@ namespace Karma
 				spdlog::memory_buf_t logToDisplay;
 				s_MesaLogFormatter->format(msg, logToDisplay);
 
-				ImGuiMesa::m_KarmaLog.AddLog(fmt::to_string(logToDisplay).c_str());
+				KarmaGuiMesa::m_KarmaLog.AddLog(fmt::to_string(logToDisplay).c_str());
 			});
 
 			callbackSink->set_level(spdlog::level::trace);
@@ -405,7 +405,7 @@ namespace Karma
 				spdlog::memory_buf_t logToDisplay;
 				s_MesaLogFormatter->format(msg, logToDisplay);
 
-				ImGuiMesa::m_KarmaLog.AddLog(fmt::to_string(logToDisplay).c_str());
+				KarmaGuiMesa::m_KarmaLog.AddLog(fmt::to_string(logToDisplay).c_str());
 			});
 
 			callbackSink->set_level(spdlog::level::trace);
@@ -419,7 +419,7 @@ namespace Karma
 	}
 
 	// Menu mesa
-	void ImGuiMesa::DrawMainMenuFileListMesa()
+	void KarmaGuiMesa::DrawMainMenuFileListMesa()
 	{
 		if (KarmaGui::MenuItem("Open", "Ctrl+O")) {}
 		if (KarmaGui::BeginMenu("Open Recent"))
@@ -437,7 +437,7 @@ namespace Karma
 	}
 
 	// About mesa
-	void ImGuiMesa::ShowAboutKarmaMesa(bool* pbOpen)
+	void KarmaGuiMesa::ShowAboutKarmaMesa(bool* pbOpen)
 	{
 		if (!KarmaGui::Begin("Karma Engine", pbOpen, KGGuiWindowFlags_AlwaysAutoResize))
 		{
@@ -480,7 +480,7 @@ namespace Karma
 
 		if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
 		{
-			ImGui_ImplOpenGL3_Data* backendData = KarmaGui::GetCurrentContext() ? (ImGui_ImplOpenGL3_Data*)io.BackendRendererUserData : nullptr;
+			KarmaGui_ImplOpenGL3_Data* backendData = KarmaGui::GetCurrentContext() ? (KarmaGui_ImplOpenGL3_Data*)io.BackendRendererUserData : nullptr;
 			MesaDecalData mDData = backendData->mesaDecalDataList.at(0);
 
 			aboutImageTextureID = (KGTextureID)mDData.DecalID;
@@ -682,7 +682,7 @@ namespace Karma
 	// First copying is done within BiosReader for apporpriate seperation into structures. Prevents multiple queries
 	// at the cost of bulk (pun intended!).
 	// Next copying is done here, in the routine.
-	void ImGuiMesa::QueryForTuringMachineElectronics()
+	void KarmaGuiMesa::QueryForTuringMachineElectronics()
 	{
 		if (electronicsItems.bHasQueried)
 		{
@@ -809,7 +809,7 @@ namespace Karma
 	// [SECTION] MISC HELPERS/UTILITIES (String, Format, Hash functions)
 	//-----------------------------------------------------------------------------
 
-	int ImGuiMesa::ImStrlenW(const KGWchar* str)
+	int KarmaGuiMesa::ImStrlenW(const KGWchar* str)
 	{
 		//return (int)wcslen((const wchar_t*)str);  // FIXME-OPT: Could use this when wchar_t are 16-bit
 		int n = 0;
@@ -817,7 +817,7 @@ namespace Karma
 		return n;
 	}
 
-	uint32_t ImGuiMesa::ChernUint32FromString(const std::string& ramString)
+	uint32_t KarmaGuiMesa::ChernUint32FromString(const std::string& ramString)
 	{
 		std::string digitString;
 		//bool ctype = std::isdigit(ramString[0]);
@@ -839,7 +839,7 @@ namespace Karma
 		return value;
 	}
 
-	std::string ImGuiMesa::ChernDimensionsFromString(const std::string& ramString)
+	std::string KarmaGuiMesa::ChernDimensionsFromString(const std::string& ramString)
 	{
 		std::string dimensionString;
 
@@ -854,7 +854,7 @@ namespace Karma
 		return dimensionString;
 	}
 
-	void ImGuiMesa::SetElectronicsRamInformationToNull()
+	void KarmaGuiMesa::SetElectronicsRamInformationToNull()
 	{
 		if (electronicsItems.ramInformation != nullptr)
 		{
@@ -868,15 +868,15 @@ namespace Karma
 		uint32_t ramSizeFound = 0;
 
 		// Assumption dimension of memory is GB only
-		for (uint32_t counter = 0; counter < ImGuiMesa::GetGatheredElectronicsInformation().ramSoftSlots.size(); counter++)
+		for (uint32_t counter = 0; counter < KarmaGuiMesa::GetGatheredElectronicsInformation().ramSoftSlots.size(); counter++)
 		{
-			ramSizeFound += ImGuiMesa::ChernUint32FromString(ImGuiMesa::GetGatheredElectronicsInformation().ramInformation[counter].ramSize);
+			ramSizeFound += KarmaGuiMesa::ChernUint32FromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[counter].ramSize);
 		}
 
-		ImGuiMesa::GetGatheredElectronicsInformationForModification().totalRamSize = ramSizeFound;
+		KarmaGuiMesa::GetGatheredElectronicsInformationForModification().totalRamSize = ramSizeFound;
 
 		// Hoping for GB only dimension
-		ImGuiMesa::GetGatheredElectronicsInformationForModification().ramSizeDimensions = ImGuiMesa::ChernDimensionsFromString(ImGuiMesa::GetGatheredElectronicsInformation().ramInformation[0].ramSize);
+		KarmaGuiMesa::GetGatheredElectronicsInformationForModification().ramSizeDimensions = KarmaGuiMesa::ChernDimensionsFromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[0].ramSize);
 	}
 
 	void KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(random_access_memory* ramCluster)
@@ -887,7 +887,7 @@ namespace Karma
 			return;
 		}
 
-		KarmaTuringMachineElectronics selfRefrentialVariable = ImGuiMesa::GetGatheredElectronicsInformationForModification();
+		KarmaTuringMachineElectronics selfRefrentialVariable = KarmaGuiMesa::GetGatheredElectronicsInformationForModification();
 
 		uint32_t biosReportedNumber = selfRefrentialVariable.numberOfMemoryDevices;
 
@@ -897,26 +897,26 @@ namespace Karma
 
 			if (aMemoryBeingScanned != nullptr && IsPhysicalRamPresent(*aMemoryBeingScanned))
 			{
-				ImGuiMesa::GetGatheredElectronicsInformationForModification().ramSoftSlots.push_back(counter);
+				KarmaGuiMesa::GetGatheredElectronicsInformationForModification().ramSoftSlots.push_back(counter);
 			}
 		}
 	}
 
 	void KarmaTuringMachineElectronics::FillTheSystemRamStructure(SystemRAM& destinationStructure, random_access_memory& sourceStructure)
 	{
-		destinationStructure.assetTag = sourceStructure.assettag != nullptr ? sourceStructure.assettag : ImGuiMesa::notAvailableText;
-		destinationStructure.bankLocator = sourceStructure.banklocator != nullptr ? sourceStructure.banklocator : ImGuiMesa::notAvailableText;
-		destinationStructure.configuredMemorySpeed = sourceStructure.configuredmemoryspeed != nullptr ? sourceStructure.configuredmemoryspeed : ImGuiMesa::notAvailableText;
-		destinationStructure.memorySpeed = sourceStructure.memoryspeed != nullptr ? sourceStructure.memoryspeed : ImGuiMesa::notAvailableText;
-		destinationStructure.formFactor = sourceStructure.formfactor != nullptr ? sourceStructure.formfactor : ImGuiMesa::notAvailableText;
-		destinationStructure.locator = sourceStructure.locator != nullptr ? sourceStructure.locator : ImGuiMesa::notAvailableText;
-		destinationStructure.manufacturer = sourceStructure.manufacturer != nullptr ? sourceStructure.manufacturer : ImGuiMesa::notAvailableText;
-		destinationStructure.operatingVoltage = sourceStructure.operatingvoltage != nullptr ? sourceStructure.operatingvoltage : ImGuiMesa::notAvailableText;
-		destinationStructure.partNumber = sourceStructure.partnumber != nullptr ? sourceStructure.partnumber : ImGuiMesa::notAvailableText;
-		destinationStructure.ramSize = sourceStructure.ramsize != nullptr ? sourceStructure.ramsize : ImGuiMesa::notAvailableText;
-		destinationStructure.ramType = sourceStructure.ramtype != nullptr ? sourceStructure.ramtype : ImGuiMesa::notAvailableText;
+		destinationStructure.assetTag = sourceStructure.assettag != nullptr ? sourceStructure.assettag : KarmaGuiMesa::notAvailableText;
+		destinationStructure.bankLocator = sourceStructure.banklocator != nullptr ? sourceStructure.banklocator : KarmaGuiMesa::notAvailableText;
+		destinationStructure.configuredMemorySpeed = sourceStructure.configuredmemoryspeed != nullptr ? sourceStructure.configuredmemoryspeed : KarmaGuiMesa::notAvailableText;
+		destinationStructure.memorySpeed = sourceStructure.memoryspeed != nullptr ? sourceStructure.memoryspeed : KarmaGuiMesa::notAvailableText;
+		destinationStructure.formFactor = sourceStructure.formfactor != nullptr ? sourceStructure.formfactor : KarmaGuiMesa::notAvailableText;
+		destinationStructure.locator = sourceStructure.locator != nullptr ? sourceStructure.locator : KarmaGuiMesa::notAvailableText;
+		destinationStructure.manufacturer = sourceStructure.manufacturer != nullptr ? sourceStructure.manufacturer : KarmaGuiMesa::notAvailableText;
+		destinationStructure.operatingVoltage = sourceStructure.operatingvoltage != nullptr ? sourceStructure.operatingvoltage : KarmaGuiMesa::notAvailableText;
+		destinationStructure.partNumber = sourceStructure.partnumber != nullptr ? sourceStructure.partnumber : KarmaGuiMesa::notAvailableText;
+		destinationStructure.ramSize = sourceStructure.ramsize != nullptr ? sourceStructure.ramsize : KarmaGuiMesa::notAvailableText;
+		destinationStructure.ramType = sourceStructure.ramtype != nullptr ? sourceStructure.ramtype : KarmaGuiMesa::notAvailableText;
 		//destinationStructure.rank = sourceStructure.rank; Not a big fan of rank, reminds me of my JEE AIR 4729
-		destinationStructure.serialNumber = sourceStructure.serialnumber != nullptr ? sourceStructure.serialnumber : ImGuiMesa::notAvailableText;
+		destinationStructure.serialNumber = sourceStructure.serialnumber != nullptr ? sourceStructure.serialnumber : KarmaGuiMesa::notAvailableText;
 	}
 
 	bool KarmaTuringMachineElectronics::IsPhysicalRamPresent(const random_access_memory& ramScam)
@@ -936,12 +936,12 @@ namespace Karma
 	// [SECTION] Omega stuff!
 	//-----------------------------------------------------------------------------
 
-	void ImGuiMesa::MesaShutDownRoutine()
+	void KarmaGuiMesa::MesaShutDownRoutine()
 	{
 		if (electronicsItems.bHasQueried)
 		{
 			reset_electronics_structures();
-			ImGuiMesa::SetElectronicsRamInformationToNull();
+			KarmaGuiMesa::SetElectronicsRamInformationToNull();
 			electronicsItems.ramSoftSlots.clear();
 			electronicsItems.bHasQueried = false;
 		}

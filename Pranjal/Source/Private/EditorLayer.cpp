@@ -1,5 +1,5 @@
 #include "EditorLayer.h"
-#include "Karma/ImGui/ImGuiMesa.h"
+#include "Karma/KarmaGui/KarmaGuiMesa.h"
 
 #include "GLFW/glfw3.h"
 
@@ -127,7 +127,7 @@ namespace Karma
 			static CallbacksFromEditor editorCallbacks;
 			editorCallbacks.openSceneCallback = std::bind(&EditorLayer::OpenScene, this, std::placeholders::_1);
 
-			ImGuiMesa::RevealMainFrame(dockspaceID, m_EditorScene, editorCallbacks);
+			KarmaGuiMesa::RevealMainFrame(dockspaceID, m_EditorScene, editorCallbacks);
 		}
 	}
 
@@ -135,7 +135,7 @@ namespace Karma
 	{
 		if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_1)
 		{
-			if (ImGuiMesa::m_ViewportHovered)
+			if (KarmaGuiMesa::m_ViewportHovered)
 			{
 			}
 		}
@@ -165,7 +165,7 @@ namespace Karma
 
 	void EditorLayer::InputPolling(float deltaTime)
 	{
-		if(ImGuiMesa::m_ViewportFocused)
+		if(KarmaGuiMesa::m_ViewportFocused)
 		{
 			// Camera controls
 			if (Input::IsKeyPressed(GLFW_KEY_A))
@@ -207,7 +207,7 @@ namespace Karma
 		// Controller context ends
 
 
-		if (ImGuiMesa::m_ViewportHovered)
+		if (KarmaGuiMesa::m_ViewportHovered)
 		{
 			if (Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
 			{

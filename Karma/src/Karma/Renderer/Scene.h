@@ -5,9 +5,6 @@
 #include "Camera.h"
 #include "VertexArray.h"
 
-//#include "imgui.h"
-//#include "imgui_internal.h"
-
 namespace Karma
 {
 	class KARMA_API Scene

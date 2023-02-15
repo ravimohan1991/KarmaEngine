@@ -6,7 +6,7 @@
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/Events/ControllerDeviceEvent.h"
 #include "Karma/LayerStack.h"
-#include "Karma/ImGui/ImGuiLayer.h"
+#include "Karma/KarmaGui/KarmaGuiLayer.h"
 #include "Karma/Input.h"
 #include "Scene.h"
 
@@ -51,7 +51,7 @@ namespace Karma
 		Window* m_Window;
 		LayerStack* m_LayerStack;
 
-		ImGuiLayer* m_ImGuiLayer;
+		KarmaGuiLayer* m_KarmaGuiLayer;
 		bool m_Running = true;
 
 		static Application* s_Instance;

@@ -1,4 +1,4 @@
-#include "ImGuiLayer.h"
+#include "KarmaGuiLayer.h"
 #include "glad/glad.h"
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
@@ -8,17 +8,17 @@
 #include "Renderer/RendererAPI.h"
 #include "Renderer/RenderCommand.h"
 #include "glm/glm.hpp"
-#include "ImGui/ImGuiMesa.h"
+#include "KarmaGui/KarmaGuiMesa.h"
 #include "Renderer/Renderer.h"
 
 // Emedded font
-#include "Karma/ImGui/Roboto-Regular.h"
+#include "Karma/KarmaGui/Roboto-Regular.h"
 
 //#include "imgui_impl_glfw.cpp"// Unity type build, experimental
 
 namespace Karma
 {
-	ImGuiLayer::ImGuiLayer(Window* relevantWindow)
+	KarmaGuiLayer::KarmaGuiLayer(Window* relevantWindow)
 		: Layer("ImGuiLayer"), m_AssociatedWindow(relevantWindow)
 	{
 		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
@@ -31,7 +31,7 @@ namespace Karma
 		}
 	}
 
-	void ImGuiLayer::CreateDescriptorPool()
+	void KarmaGuiLayer::CreateDescriptorPool()
 	{
 		VkDescriptorPoolSize pool_sizes[] =
 		{
@@ -58,12 +58,12 @@ namespace Karma
 		VkResult result = vkCreateDescriptorPool(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), &poolInfo, nullptr, &m_ImGuiDescriptorPool);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool for ImGui");
 	}
-	ImGuiLayer::~ImGuiLayer()
+	KarmaGuiLayer::~KarmaGuiLayer()
 	{
-		ImGuiMesa::MesaShutDownRoutine();
+		KarmaGuiMesa::MesaShutDownRoutine();
 	}
 
-	void ImGuiLayer::OnAttach()
+	void KarmaGuiLayer::OnAttach()
 	{
 		// Setup Dear ImGui context
 		// IMGUI_CHECKVERSION();
@@ -179,7 +179,7 @@ namespace Karma
 		else if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
 		{
 			KarmaGui_ImplGlfw_InitForOpenGL(window, true);
-			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_Init("#version 410");
+			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_Init("#version 410");
 
 			// Load default font
 			KGFontConfig fontConfig;
@@ -212,7 +212,7 @@ namespace Karma
 			}
 			stbi_image_free(data);
 
-			ImGui_ImplOpenGL3_Data* bd = ImGuiOpenGLHandler::ImGui_ImplOpenGL3_GetBackendData();
+			KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_GetBackendData();
 
 			MesaDecalData mDData;
 			mDData.height = height;
@@ -223,7 +223,7 @@ namespace Karma
 		}
 	}
 
-	void ImGuiLayer::OnDetach()
+	void KarmaGuiLayer::OnDetach()
 	{
 		switch (RendererAPI::GetAPI())
 		{
@@ -231,7 +231,7 @@ namespace Karma
 			GracefulVulkanShutDown();
 			break;
 		case RendererAPI::API::OpenGL:
-			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_Shutdown();
+			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_Shutdown();
 			KarmaGui_ImplGlfw_Shutdown();
 			KarmaGui::DestroyContext();
 			break;
@@ -246,7 +246,7 @@ namespace Karma
 		KR_CORE_INFO("Shutting down ImGuiLayer");
 	}
 
-	void ImGuiLayer::GiveLoopBeginControlToVulkan()
+	void KarmaGuiLayer::GiveLoopBeginControlToVulkan()
 	{
 		// Resize swap chain?
 		if (m_SwapChainRebuild)
@@ -283,7 +283,7 @@ namespace Karma
 	}
 
 	// The ImGuiLayer sequence begins
-	void ImGuiLayer::Begin()
+	void KarmaGuiLayer::Begin()
 	{
 		switch (RendererAPI::GetAPI())
 		{
@@ -291,7 +291,7 @@ namespace Karma
 			GiveLoopBeginControlToVulkan();
 			break;
 		case RendererAPI::API::OpenGL:
-			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_NewFrame();
+			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_NewFrame();
 			KarmaGui_ImplGlfw_NewFrame();
 			break;
 		case RendererAPI::API::None:
@@ -304,11 +304,11 @@ namespace Karma
 		KarmaGui::NewFrame();
 	}
 
-	void ImGuiLayer::ImGuiRender(float deltaTime)
+	void KarmaGuiLayer::ImGuiRender(float deltaTime)
 	{
 	}
 
-	void ImGuiLayer::End()
+	void KarmaGuiLayer::End()
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		Application& app = Application::Get();
@@ -331,7 +331,7 @@ namespace Karma
 			glm::vec4 clearColor = RenderCommand::GetClearColor();
 			glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
 			glClear(GL_COLOR_BUFFER_BIT);
-			ImGuiOpenGLHandler::ImGui_ImplOpenGL3_RenderDrawData(KarmaGui::GetDrawData());
+			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_RenderDrawData(KarmaGui::GetDrawData());
 			if (io.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
 			{
 				GLFWwindow* backup_current_context = glfwGetCurrentContext();
@@ -351,7 +351,7 @@ namespace Karma
 	}
 	// The ImGuiLayer sequence ends
 
-	void ImGuiLayer::GiveLoopEndControlToVulkan()
+	void KarmaGuiLayer::GiveLoopEndControlToVulkan()
 	{
 		// Rendering
 		KarmaGui::Render();
@@ -393,7 +393,7 @@ namespace Karma
 	}
 
 	// Helper taken from https://github.com/TheCherno/Walnut/blob/cc26ee1cc875db50884fe244e0a3195dd730a1ef/Walnut/src/Walnut/Application.cpp#L270 who probably took help from official example https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/examples/example_glfw_vulkan/main.cpp#L261, with chiefly naming modifications and entire restructuring of KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData.
-	void ImGuiLayer::FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData)
+	void KarmaGuiLayer::FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
@@ -486,7 +486,7 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 	}
 
-	void ImGuiLayer::FramePresent(KarmaGui_ImplVulkanH_Window* windowData)
+	void KarmaGuiLayer::FramePresent(KarmaGui_ImplVulkanH_Window* windowData)
 	{
 		if (m_SwapChainRebuild)
 		{
@@ -519,7 +519,7 @@ namespace Karma
 		windowData->SemaphoreIndex = (windowData->SemaphoreIndex + 1) % windowData->MAX_FRAMES_IN_FLIGHT; // Now we can use the next set of semaphores
 	}
 
-	void ImGuiLayer::GracefulVulkanShutDown()
+	void KarmaGuiLayer::GracefulVulkanShutDown()
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
@@ -535,7 +535,7 @@ namespace Karma
 		KarmaGui::DestroyContext();
 	}
 
-	void ImGuiLayer::CleanUpVulkanAndWindowData()
+	void KarmaGuiLayer::CleanUpVulkanAndWindowData()
 	{
 		// Clean up Window
 		//ImGuiVulkanHandler::ClearVulkanWindowData(&m_VulkanWindowData, true);
@@ -548,25 +548,25 @@ namespace Karma
 		vkDestroyDescriptorPool(vulkanInfo->Device, m_ImGuiDescriptorPool, VK_NULL_HANDLE);
 	}
 
-	void ImGuiLayer::OnUpdate(float deltaTime)
+	void KarmaGuiLayer::OnUpdate(float deltaTime)
 	{
 		// Nothing to do
 	}
 
-	void ImGuiLayer::OnEvent(Event& event)
+	void KarmaGuiLayer::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<MouseButtonPressedEvent>(KR_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonPressedEvent));
-		dispatcher.Dispatch<MouseButtonReleasedEvent>(KR_BIND_EVENT_FN(ImGuiLayer::OnMouseButtonReleasedEvent));
-		dispatcher.Dispatch<MouseMovedEvent>(KR_BIND_EVENT_FN(ImGuiLayer::OnMouseMovedEvent));
-		dispatcher.Dispatch<MouseScrolledEvent>(KR_BIND_EVENT_FN(ImGuiLayer::OnMouseScrollEvent));
-		dispatcher.Dispatch<KeyPressedEvent>(KR_BIND_EVENT_FN(ImGuiLayer::OnKeyPressedEvent));
-		dispatcher.Dispatch<KeyReleasedEvent>(KR_BIND_EVENT_FN(ImGuiLayer::OnKeyReleasedEvent));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnMouseButtonPressedEvent));
+		dispatcher.Dispatch<MouseButtonReleasedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnMouseButtonReleasedEvent));
+		dispatcher.Dispatch<MouseMovedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnMouseMovedEvent));
+		dispatcher.Dispatch<MouseScrolledEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnMouseScrollEvent));
+		dispatcher.Dispatch<KeyPressedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnKeyPressedEvent));
+		dispatcher.Dispatch<KeyReleasedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnKeyReleasedEvent));
 		//dispatcher.Dispatch<KeyTypedEvent>(KR_BIND_EVENT_FN(ImGuiLayer::OnKeyTypedEvent));
-		dispatcher.Dispatch<WindowResizeEvent>(KR_BIND_EVENT_FN(ImGuiLayer::OnWindowResizeEvent));
+		dispatcher.Dispatch<WindowResizeEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnWindowResizeEvent));
 	}
 
-	bool ImGuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& e)
+	bool KarmaGuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& e)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.MouseDown[e.GetMouseButton()] = true;
@@ -574,7 +574,7 @@ namespace Karma
 		return false;
 	}
 
-	bool ImGuiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e)
+	bool KarmaGuiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.MouseDown[e.GetMouseButton()] = false;
@@ -582,7 +582,7 @@ namespace Karma
 		return false;
 	}
 
-	bool ImGuiLayer::OnMouseMovedEvent(MouseMovedEvent& e)
+	bool KarmaGuiLayer::OnMouseMovedEvent(MouseMovedEvent& e)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.MousePos = KGVec2(e.GetX(), e.GetY());
@@ -590,7 +590,7 @@ namespace Karma
 		return false;
 	}
 
-	bool ImGuiLayer::OnMouseScrollEvent(MouseScrolledEvent& e)
+	bool KarmaGuiLayer::OnMouseScrollEvent(MouseScrolledEvent& e)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.MouseWheelH += e.GetXOffset();
@@ -599,7 +599,7 @@ namespace Karma
 		return false;
 	}
 
-	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& e)
+	bool KarmaGuiLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.KeysDown[e.GetKeyCode()] = true;
@@ -612,7 +612,7 @@ namespace Karma
 		return false;
 	}
 
-	bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
+	bool KarmaGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.KeysDown[e.GetKeyCode()] = false;
@@ -620,7 +620,7 @@ namespace Karma
 		return false;
 	}
 
-	bool ImGuiLayer::OnKeyTypedEvent(KeyTypedEvent& e)
+	bool KarmaGuiLayer::OnKeyTypedEvent(KeyTypedEvent& e)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		int keycode = e.GetKeyCode();
@@ -632,7 +632,7 @@ namespace Karma
 		return false;
 	}
 
-	bool ImGuiLayer::OnWindowResizeEvent(WindowResizeEvent& e)
+	bool KarmaGuiLayer::OnWindowResizeEvent(WindowResizeEvent& e)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		io.DisplaySize = KGVec2(float(e.GetWidth()), float(e.GetHeight()));

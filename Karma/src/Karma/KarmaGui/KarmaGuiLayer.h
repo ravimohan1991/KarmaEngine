@@ -8,16 +8,16 @@
 #include "Events/ApplicationEvent.h"
 #include "Window.h"
 #include "KarmaGuiVulkanHandler.h"
-#include "ImGuiOpenGLHandler.h"
+#include "KarmaGuiOpenGLHandler.h"
 #include "Scene.h"
 
 namespace Karma
 {
-	class KARMA_API ImGuiLayer : public Layer
+	class KARMA_API KarmaGuiLayer : public Layer
 	{
 	public:
-		ImGuiLayer(Window* relevantWindow);
-		~ImGuiLayer();
+		KarmaGuiLayer(Window* relevantWindow);
+		~KarmaGuiLayer();
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;

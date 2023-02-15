@@ -5,7 +5,6 @@
 #include "KarmaGui.h"
 #include "KarmaGuiInternal.h"
 
-
 #include "Renderer/Scene.h"
 
 extern "C" {
@@ -162,7 +161,7 @@ namespace Karma
 		}
 	};
 
-	struct ImGuiDockPreviewData
+	struct KarmaGuiDockPreviewData
 	{
 		KGGuiDockNode   FutureNode;
 		bool            IsDropAllowed;
@@ -174,7 +173,7 @@ namespace Karma
 		float           SplitRatio;
 		KGRect          DropRectsDraw[KGGuiDir_COUNT + 1];  // May be slightly different from hit-testing drop rects used in DockNodeCalcDropRects()
 
-		ImGuiDockPreviewData();
+		KarmaGuiDockPreviewData();
 	};
 
 	struct KARMA_API KarmaTuringMachineElectronics
@@ -294,7 +293,7 @@ namespace Karma
 		float ioDisplayYCache;
 	};
 
-	class KARMA_API ImGuiMesa
+	class KARMA_API KarmaGuiMesa
 	{
 	public:
 		// Showtime!
