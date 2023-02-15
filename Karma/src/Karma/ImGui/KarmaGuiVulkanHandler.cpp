@@ -164,9 +164,9 @@ namespace Karma
 				KGGuiWindow* windowToRenderWithin = static_cast<KGGuiWindow*>(sceneToDraw->GetRenderingWindow());
 
 				vulkanVA->CreateExternalViewPort(windowToRenderWithin->Pos.x * drawData->FramebufferScale.x, (windowToRenderWithin->Pos.y + windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y , windowToRenderWithin->Size.x * drawData->FramebufferScale.x , (windowToRenderWithin->Size.y - windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y);
-
 				vulkanVA->CleanupPipeline();
 				vulkanVA->RecreateVulkanVA();
+				sceneToDraw->SetWindowToRenderWithinResize(false);
 			}
 		}
 
@@ -355,8 +355,7 @@ namespace Karma
 					// (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
 					if (drawCommand->UserCallback == KGDrawCallback_ResetRenderState)
 					{
-						//KarmaGui_ImplVulkan_SetupRenderState(drawData, pipeline, commandBuffer, renderBuffer, width, height);
-						//KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer, drawData);
+						//sceneToDraw->SetWindowToRenderWithinResize(true);
 					}
 					else
 					{

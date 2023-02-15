@@ -331,11 +331,11 @@ namespace Karma
 		static std::string notAvailableText;
 		static KarmaLogMesa m_KarmaLog;
 
-		static bool m_EditorInitialized;
-
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;
 		static WindowManipulationGaugeData m_3DExhibitor;
+		static bool m_EditorInitialized;
+		static bool m_RefreshRenderingResources;
 
 		// Content browser
 		static std::filesystem::path m_CurrentDirectory;

@@ -33,6 +33,7 @@ namespace Karma
 	std::shared_ptr<spdlog::logger> s_MesaClientLogger = nullptr;
 	std::shared_ptr<spdlog::pattern_formatter> s_MesaLogFormatter = nullptr;
 	bool ImGuiMesa::m_EditorInitialized = false;
+	bool ImGuiMesa::m_RefreshRenderingResources = false;
 
 	WindowManipulationGaugeData ImGuiMesa::m_3DExhibitor;
 
@@ -203,7 +204,8 @@ namespace Karma
 				{
 					KR_INFO("Opening a scene from {0}", path.string().c_str());
 					openSceneCallback(path.string());
-					KarmaGuiInternal::GetCurrentWindow()->DrawList->AddCallback(KGDrawCallback_ResetRenderState, nullptr);
+
+					m_RefreshRenderingResources = true;
 				}
 			}
 
@@ -302,6 +304,12 @@ namespace Karma
 		}
 
 		KarmaGuiInternal::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
+		
+		if (m_RefreshRenderingResources)
+		{
+			scene->SetWindowToRenderWithinResize(true);
+			m_RefreshRenderingResources = false;
+		}
 
 		KarmaGui::End();
 		KarmaGui::PopStyleColor();
