@@ -1,6 +1,6 @@
-//#include "imgui.h"
 #include "KarmaGuiOpenGLHandler.h"
-
+#include "Karma/KarmaUtilities.h"
+#include "glad/glad.h"
 #include <stdio.h>
 
 #if defined(_MSC_VER) && _MSC_VER <= 1500 // MSVC 2008 or earlier
@@ -11,8 +11,6 @@
 #if KR_MAC_PLATFORM
 #include <TargetConditionals.h>
 #endif
-
-#include "glad/glad.h"
 
 namespace Karma
 {
@@ -717,5 +715,41 @@ namespace Karma
 	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_ShutdownPlatformInterface()
 	{
 		KarmaGui::DestroyPlatformWindows();
+	}
+
+	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture(char const* fileName, const std::string& label)
+	{
+		unsigned int imageTexture;
+
+		glGenTextures(1, &imageTexture);
+		glBindTexture(GL_TEXTURE_2D, imageTexture);
+		// set the texture wrapping parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		// set texture filtering parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		// get filename and create opengl texture
+		int width, height, nrChannels;
+		unsigned char* data = KarmaUtilities::GetImagePixelData("../Resources/Textures/The_Source_Wall.jpg", &width, &height, &nrChannels, 0);
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		}
+		else
+		{
+			KR_CORE_ASSERT(data, "Failed to load textures image!");
+		}
+		stbi_image_free(data);
+
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_GetBackendData();
+
+		MesaDecalData mDData;
+		mDData.height = height;
+		mDData.width = width;
+		mDData.DecalRef = imageTexture;
+
+		bd->mesaDecalDataList.push_back(mDData);
 	}
 }

@@ -48,7 +48,7 @@ namespace Karma
 		GLsizeiptr      IndexBufferSize;
 		bool            HasClipOrigin;
 		bool            UseBufferSubData;
-		KarmaGui_ImplOpenGL3_Data() { memset((void*)this, 0, sizeof(*this)); }
+		//KarmaGui_ImplOpenGL3_Data() { memset((void*)this, 0, sizeof(*this)); }
 	};
 
 	// OpenGL vertex attribute state (for ES 1.0 and ES 2.0 only)
@@ -96,6 +96,7 @@ namespace Karma
 		static void KarmaGui_ImplOpenGL3_RenderWindow(KarmaGuiViewport* viewport, void*);
 		static void KarmaGui_ImplOpenGL3_InitPlatformInterface();
 		static void KarmaGui_ImplOpenGL3_ShutdownPlatformInterface();
+		static void KarmaGui_ImplOpenGL3_CreateTexture(char const* fileName, const std::string& label = "");
 
 		// (Optional) Called by Init/NewFrame/Shutdown
 		static bool KarmaGui_ImplOpenGL3_CreateFontsTexture();

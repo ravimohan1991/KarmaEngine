@@ -7,8 +7,8 @@
 #include "Events/MouseEvent.h"
 #include "Events/ApplicationEvent.h"
 #include "Window.h"
-#include "KarmaGuiVulkanHandler.h"
-#include "KarmaGuiOpenGLHandler.h"
+#include "Platform/Vulkan/KarmaGuiVulkanHandler.h"
+#include "Platform/OpenGL/KarmaGuiOpenGLHandler.h"
 #include "Scene.h"
 
 namespace Karma
@@ -55,11 +55,11 @@ namespace Karma
 		Window* m_AssociatedWindow;
 
 		// Vulkan specific members
-		VkDescriptorPool m_ImGuiDescriptorPool;
+		//VkDescriptorPool m_ImGuiDescriptorPool;
 
-		bool m_SwapChainRebuild = true;
+		//bool m_SwapChainRebuild = true;
 
 		// Seems like main window Vulkan data associated to m_AssociatedWindow
-		KarmaGui_ImplVulkanH_Window m_VulkanWindowData;
+		//KarmaGui_ImplVulkanH_Window m_VulkanWindowData;
 	};
 }

@@ -1,4 +1,4 @@
-// Dear ImGui is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
+// Dear ImGui (1.89.2) is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
 #pragma once
 
 #if(defined(__clang__) || defined(__GNUC__))

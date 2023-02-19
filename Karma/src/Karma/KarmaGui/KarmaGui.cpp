@@ -1,5 +1,5 @@
 // Let me see how far I can push before removing ImGui's defines and smoothly mingle with Karma
-// Dear ImGui is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
+// Dear ImGui (1.89.2) is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
 
 #include "KarmaGui.h"
 #include "KarmaGuiInternal.h"

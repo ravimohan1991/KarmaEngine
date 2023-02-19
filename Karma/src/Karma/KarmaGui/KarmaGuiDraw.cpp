@@ -1,4 +1,4 @@
-// Dear KarmaGui is Copyright (c) 2014-2023 Omar Cornut. This code is practically KarmaGui in Karma context!!
+// Dear ImGui (1.89.2) is Copyright (c) 2014-2023 Omar Cornut. This code is practically KarmaGui in Karma context!!
 // (drawing and font code)
 
 /*
