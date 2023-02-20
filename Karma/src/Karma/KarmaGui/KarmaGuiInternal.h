@@ -1433,7 +1433,7 @@ enum KGGuiDockNodeState
 };
 
 // sizeof() 156~192
-struct  KGGuiDockNode
+struct KGGuiDockNode
 {
 	KGGuiID                 ID;
 	KarmaGuiDockNodeFlags      SharedFlags;                // (Write) Flags shared by all nodes of a same dockspace hierarchy (inherited from the root node)
@@ -1721,7 +1721,7 @@ struct KGGuiContextHook
 //-----------------------------------------------------------------------------
 // [SECTION] KarmaGuiContext (main Dear ImGui context)
 //-----------------------------------------------------------------------------
-struct  KarmaGuiContext
+struct KarmaGuiContext
 {
 	bool                    Initialized;
 	bool                    FontAtlasOwnedByContext;            // IO.Fonts-> is owned by the KarmaGuiContext and will be destructed along with it.
@@ -3110,8 +3110,8 @@ namespace Karma
 		//   to call DockBuilderSetNodeSize() beforehand. If you don't, the resulting split sizes may not be reliable.
 		// - Call DockBuilderFinish() after you are done.
 		static void          DockBuilderDockWindow(const char* window_name, KGGuiID node_id);
-		static KGGuiDockNode* DockBuilderGetNode(KGGuiID node_id);
-		static inline KGGuiDockNode* DockBuilderGetCentralNode(KGGuiID node_id) { KGGuiDockNode* node = DockBuilderGetNode(node_id); if (!node) return NULL; return DockNodeGetRootNode(node)->CentralNode; }
+		//static KGGuiDockNode* DockBuilderGetNode(KGGuiID node_id);
+		//static inline KGGuiDockNode* DockBuilderGetCentralNode(KGGuiID node_id) { KGGuiDockNode* node = DockBuilderGetNode(node_id); if (!node) return NULL; return DockNodeGetRootNode(node)->CentralNode; }
 		static KGGuiID       DockBuilderAddNode(KGGuiID node_id = 0, KarmaGuiDockNodeFlags flags = 0);
 		static void          DockBuilderRemoveNode(KGGuiID node_id);                 // Remove node and all its child, undock all windows
 		static void          DockBuilderRemoveNodeDockedWindows(KGGuiID node_id, bool clear_settings_refs = true);

@@ -205,7 +205,6 @@ namespace Karma
 		VkBuffer                    UploadBuffer;
 
 		// Image data
-		// Try freeing the texture resources when no longer required
 		std::vector<KarmaGui_ImplVulkan_Image_TextureData*>         vulkanMesaDecalDataList;
 
 		// Render buffers for main window

@@ -46,7 +46,7 @@
 
 #define KARMAGUI_DEBUG_INI_SETTINGS    0   // Save additional comments in .ini file (particularly helps for Docking, but makes saving slower)
 
-extern  KarmaGuiContext* GKarmaGui;
+KarmaGuiContext* GKarmaGui;
 
 // When using CTRL+TAB (or Gamepad Square+L/R) we delay the visual a little in order to reduce visual noise doing a fast switch.
 static const float NAV_WINDOWING_HIGHLIGHT_DELAY = 0.20f;    // Time before the highlight and screen dimming starts fading in
@@ -1176,7 +1176,7 @@ int KGTextCountUtf8BytesFromStr(const KGWchar* in_text, const KGWchar* in_text_e
 // Note: The Convert functions are early design which are not consistent with other API.
 //-----------------------------------------------------------------------------
 
-KARMA_API KGU32 KGAlphaBlendColors(KGU32 col_a, KGU32 col_b)
+KGU32 KGAlphaBlendColors(KGU32 col_a, KGU32 col_b)
 {
 	float t = ((col_b >> KG_COL32_A_SHIFT) & 0xFF) / 255.f;
 	int r = KGLerp((int)(col_a >> KG_COL32_R_SHIFT) & 0xFF, (int)(col_b >> KG_COL32_R_SHIFT) & 0xFF, t);
