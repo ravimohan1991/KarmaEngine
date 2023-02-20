@@ -3,6 +3,7 @@
 #include "Renderer/RenderCommand.h"
 #include "KarmaUtilities.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
+#include "Karma/KarmaGui/KarmaGuiRenderer.h"
 
 // Visual Studio warnings
 /*#ifdef _MSC_VER
@@ -90,7 +91,7 @@ namespace Karma
 
 	uint32_t KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits)
 	{
-		KarmaGui_ImplVulkan_Data* bd = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGuiBackendRendererUserData* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* v = &bd->VulkanInitInfo;
 		VkPhysicalDeviceMemoryProperties prop;
 		vkGetPhysicalDeviceMemoryProperties(v->PhysicalDevice, &prop);
@@ -102,7 +103,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::CreateOrResizeBuffer(VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkDeviceSize& bufferSize, size_t newSize, VkBufferUsageFlagBits usage)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInitInfo = &backendData->VulkanInitInfo;
 
 		if (buffer != VK_NULL_HANDLE)
@@ -179,7 +180,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetupRenderState(KGDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, KarmaGui_ImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		// Bind pipeline:
 		{
@@ -239,7 +240,7 @@ namespace Karma
 			return;
 		}
 
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		if (pipeline == VK_NULL_HANDLE)
@@ -446,7 +447,7 @@ namespace Karma
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		KarmaGui_ImplVulkan_Image_TextureData* imageData = new KarmaGui_ImplVulkan_Image_TextureData();
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		imageData->TextureLable = lable;
@@ -599,7 +600,7 @@ namespace Karma
 		imageData->channels = (uint32_t)channels;
 		imageData->size = (uint32_t)uploadSize;
 
-		backendData->mesaDecalDataList.push_back(imageData);
+		backendData->vulkanMesaDecalDataList.push_back(imageData);
 
 		return true;
 	}
@@ -607,7 +608,7 @@ namespace Karma
 	bool KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateFontsTexture(VkCommandBuffer commandBuffer)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		unsigned char* pixels;
@@ -760,7 +761,7 @@ namespace Karma
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateShaderModules(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
 		// Create the shader modules
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();;
 		if (backendData->ShaderModuleVert == VK_NULL_HANDLE)
 		{
 			VkShaderModuleCreateInfo vertexInfo = {};
@@ -785,7 +786,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateFontSampler(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		if (backendData->FontSampler)
 		{
 			return;
@@ -810,7 +811,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDescriptorSetLayout(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		if (backendData->DescriptorSetLayout)
 		{
 			return;
@@ -834,7 +835,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipelineLayout(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		if (backendData->PipelineLayout)
 		{
 			return;
@@ -860,7 +861,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache 	pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_CreateShaderModules(device, allocator);
 
 		VkPipelineShaderStageCreateInfo stage[2] = {};
@@ -967,7 +968,7 @@ namespace Karma
 
 	bool KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects()
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 		VkResult result;
 
@@ -1030,7 +1031,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyFontUploadObjects()
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 		if (backendData->UploadBuffer)
 		{
@@ -1046,7 +1047,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyDeviceObjects()
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyAllViewportsRenderBuffers(vulkanInfo->Device, vulkanInfo->Allocator);
@@ -1098,7 +1099,7 @@ namespace Karma
 			backendData->Pipeline = VK_NULL_HANDLE;
 		}
 
-		for (auto& elem : backendData->mesaDecalDataList)
+		for (auto& elem : backendData->vulkanMesaDecalDataList)
 		{
 			if (elem->TextureView)
 			{
@@ -1246,7 +1247,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Shutdown()
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KR_CORE_ASSERT(backendData != nullptr, "No renderer backend to shutdown, or already shutdown?");
 
 		KarmaGuiIO& io = KarmaGui::GetIO();
@@ -1273,7 +1274,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_NewFrame()
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		KR_CORE_ASSERT(backendData != nullptr, "Did you call KarmaGui_ImplVulkan_Init()?");
 
@@ -1284,7 +1285,7 @@ namespace Karma
 	// FIXME: This is experimental in the sense that we are unsure how to best design/tackle this problem, please post to 	https://github.com/ocornut/imgui/pull/914 if you have suggestions.
 	VkDescriptorSet KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_AddTexture(VkSampler sampler, VkImageView imageView, VkImageLayout imageLayout)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		// Create Descriptor Set:
@@ -1324,7 +1325,7 @@ namespace Karma
 	{
 		// Still need to address bRecreateSwapChainAndCommandBuffers?
 
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		// Clear the structure with now redundant information
@@ -1478,7 +1479,7 @@ namespace Karma
 			return;
 		}
 
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		vkDeviceWaitIdle(vulkanInfo->Device);
@@ -1521,7 +1522,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		//vkDeviceWaitIdle(vulkanInfo->Device); // FIXME: We could wait on the Queue if we had the queue in windowData-> (otherwise VulkanH functions can't use globals)
@@ -1546,7 +1547,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateWindow(KarmaGuiViewport* viewport)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_ViewportData* viewportData = new KarmaGui_ImplVulkan_ViewportData();
 		viewport->RendererUserData = viewportData;
 		KarmaGui_ImplVulkanH_Window* windowData = &viewportData->Window;
@@ -1577,7 +1578,7 @@ namespace Karma
 	{
 		// The main viewport (owned by the application) will always have RendererUserData == NULL since we didn't create the data for it.
 		// See KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init and it seems not true
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		if (KarmaGui_ImplVulkan_ViewportData* viewportData = (KarmaGui_ImplVulkan_ViewportData*)viewport->RendererUserData)
 		{
 			KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
@@ -1594,7 +1595,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetWindowSize(KarmaGuiViewport* viewport, KGVec2 size)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_ViewportData* viewportData = (KarmaGui_ImplVulkan_ViewportData*)viewport->RendererUserData;
 		if (viewportData == nullptr) // This is NULL for the main viewport (which is left to the user/app to handle)
 		{
@@ -1608,7 +1609,7 @@ namespace Karma
 	// May need extra scrutiny especially when we decoupled imageIndex and FrameOnFlightIndex.
 	void KarmaGuiVulkanHandler::KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderWindow(KarmaGuiViewport* viewport, void*)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_ViewportData* viewportData = (KarmaGui_ImplVulkan_ViewportData*)viewport->RendererUserData;
 		KarmaGui_ImplVulkanH_Window* windowData = &viewportData->Window;
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
@@ -1694,7 +1695,7 @@ namespace Karma
 	// Need reconsideration because of the same decoupling
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_ViewportData* viewportData = (KarmaGui_ImplVulkan_ViewportData*)viewport->RendererUserData;
 		KarmaGui_ImplVulkanH_Window* windowData = &viewportData->Window;
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;

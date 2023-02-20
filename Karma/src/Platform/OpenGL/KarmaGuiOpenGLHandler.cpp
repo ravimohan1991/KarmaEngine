@@ -1,6 +1,7 @@
 #include "KarmaGuiOpenGLHandler.h"
 #include "Karma/KarmaUtilities.h"
 #include "glad/glad.h"
+#include "Karma/KarmaGui/KarmaGuiRenderer.h"
 #include <stdio.h>
 
 #if defined(_MSC_VER) && _MSC_VER <= 1500 // MSVC 2008 or earlier
@@ -116,7 +117,7 @@ namespace Karma
 
 	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_Shutdown()
 	{
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 		KR_CORE_ASSERT(bd != NULL, "No renderer backend to shutdown, or already shutdown?");
 		KarmaGuiIO& io = KarmaGui::GetIO();
 
@@ -129,7 +130,7 @@ namespace Karma
 
 	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_NewFrame()
 	{
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 		KR_CORE_ASSERT(bd != NULL, "Did you call ImGui_ImplOpenGL3_Init()?");
 
 		if (!bd->ShaderHandle)
@@ -140,7 +141,7 @@ namespace Karma
 
 	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(KGDrawData* draw_data, int fb_width, int fb_height, GLuint vertex_array_object)
 	{
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
 		glEnable(GL_BLEND);
@@ -225,7 +226,7 @@ namespace Karma
 			return;
 		}
 
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		// Backup GL state
 		GLenum last_active_texture; glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint*)&last_active_texture);
@@ -393,7 +394,7 @@ namespace Karma
 	bool KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateFontsTexture()
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		// Build texture atlas
 		unsigned char* pixels;
@@ -408,7 +409,7 @@ namespace Karma
 
 		glBindTexture(GL_TEXTURE_2D, bd->FontTexture);
 
-		for (auto& decal : bd->mesaDecalDataList)
+		for (auto& decal : bd->openglMesaDecalDataList)
 		{
 			glBindTexture(1, decal.DecalRef);
 		}
@@ -423,7 +424,7 @@ namespace Karma
 		// Store our identifier
 		io.Fonts->SetTexID((KGTextureID)(intptr_t)bd->FontTexture);
 
-		for (auto& decal : bd->mesaDecalDataList)
+		for (auto& decal : bd->openglMesaDecalDataList)
 		{
 			decal.DecalID = (KGTextureID)(intptr_t)decal.DecalRef;
 		}
@@ -438,7 +439,7 @@ namespace Karma
 	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_DestroyFontsTexture()
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 		if (bd->FontTexture)
 		{
 			glDeleteTextures(1, &bd->FontTexture);
@@ -446,7 +447,7 @@ namespace Karma
 			bd->FontTexture = 0;
 		}
 
-		for (auto& decal : bd->mesaDecalDataList)
+		for (auto& decal : bd->openglMesaDecalDataList)
 		{
 			glDeleteTextures(1, &decal.DecalRef);
 			decal.DecalID = 0;
@@ -456,7 +457,7 @@ namespace Karma
 	// If you get an error please report on github. You may try different GL context version or GLSL version. See GL<>GLSL 	version table at the top of this file.
 	bool KarmaGuiOpenGLHandler::CheckShader(GLuint handle, const char* desc)
 	{
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 		GLint status = 0, log_length = 0;
 		glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
 		glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &log_length);
@@ -475,7 +476,7 @@ namespace Karma
 	// If you get an error please report on GitHub. You may try different GL context version or GLSL version.
 	bool KarmaGuiOpenGLHandler::CheckProgram(GLuint handle, const char* desc)
 	{
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 		GLint status = 0, log_length = 0;
 		glGetProgramiv(handle, GL_LINK_STATUS, &status);
 		glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &log_length);
@@ -493,7 +494,7 @@ namespace Karma
 
 	bool KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateDeviceObjects()
 	{
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		// Backup GL state
 		GLint last_texture, last_array_buffer;
@@ -682,7 +683,7 @@ namespace Karma
 
 	void  KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_DestroyDeviceObjects()
 	{
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 		if (bd->VboHandle) { glDeleteBuffers(1, &bd->VboHandle); bd->VboHandle = 0; }
 		if (bd->ElementsHandle) { glDeleteBuffers(1, &bd->ElementsHandle); bd->ElementsHandle = 0; }
 		if (bd->ShaderHandle) { glDeleteProgram(bd->ShaderHandle); bd->ShaderHandle = 0; }
@@ -743,13 +744,13 @@ namespace Karma
 		}
 		stbi_image_free(data);
 
-		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_GetBackendData();
+		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		MesaDecalData mDData;
 		mDData.height = height;
 		mDData.width = width;
 		mDData.DecalRef = imageTexture;
 
-		bd->mesaDecalDataList.push_back(mDData);
+		bd->openglMesaDecalDataList.push_back(mDData);
 	}
 }

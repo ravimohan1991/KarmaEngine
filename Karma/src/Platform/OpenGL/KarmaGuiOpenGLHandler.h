@@ -36,7 +36,7 @@ namespace Karma
 		char            GlslVersionString[32];   // Specified by user or detected based on compile time GL settings.
 		GLuint          FontTexture;
 		// Images data
-		std::vector<MesaDecalData>  mesaDecalDataList;
+		std::vector<MesaDecalData>  openglMesaDecalDataList;
 		GLuint          ShaderHandle;
 		GLint           AttribLocationTex;       // Uniforms location
 		GLint           AttribLocationProjMtx;
@@ -83,12 +83,11 @@ namespace Karma
 		static void KarmaGui_ImplOpenGL3_Shutdown();
 		static void KarmaGui_ImplOpenGL3_NewFrame();
 		static void KarmaGui_ImplOpenGL3_RenderDrawData(KGDrawData* draw_data);
-		// Backend data stored in io.BackendRendererUserData to allow support for multiple Dear ImGui contexts
-		// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple windows) instead of multiple Dear ImGui contexts.
+		/*
 		inline static KarmaGui_ImplOpenGL3_Data* KarmaGui_ImplOpenGL3_GetBackendData()
 		{
 			return KarmaGui::GetCurrentContext() ? (KarmaGui_ImplOpenGL3_Data*)KarmaGui::GetIO().BackendRendererUserData : NULL;
-		}
+		}*/
 
 		static void KarmaGui_ImplOpenGL3_SetupRenderState(KGDrawData* draw_data, int fb_width, int fb_height, GLuint vertex_array_object);
 		static bool CheckShader(GLuint handle, const char* desc);

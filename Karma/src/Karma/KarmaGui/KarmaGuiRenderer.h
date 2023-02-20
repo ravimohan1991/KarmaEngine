@@ -8,6 +8,14 @@
 
 namespace Karma
 {
+	struct KarmaGuiBackendRendererUserData : public KarmaGui_ImplOpenGL3_Data, public KarmaGui_ImplVulkan_Data
+	{
+		KGTextureID GetTextureIDAtIndex(uint32_t index);
+		uint32_t GetTextureWidthAtIndex(uint32_t index);
+
+		uint32_t GetTextureHeightAtIndex(uint32_t index);
+	};
+
 	class KARMA_API KarmaGuiRenderer
 	{
 	public:
@@ -15,9 +23,10 @@ namespace Karma
 		static void OnKarmaGuiLayerDetach();
 		static void OnKarmaGuiLayerBegin();
 		static void OnKarmaGuiLayerEnd();
-		static void* GetBackendRendererUserData();
+		static KarmaGuiBackendRendererUserData* GetBackendRendererUserData();
 
 		// Vulkan specific functions
+		static void KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* initInfo);
 		static void CreateDescriptorPool();
 		static void GracefulVulkanShutDown();
 		static void CleanUpVulkanAndWindowData();

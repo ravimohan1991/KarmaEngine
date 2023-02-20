@@ -19248,11 +19248,3 @@ void KarmaGui::UpdateDebugToolStackQueries() {}
 #endif // #ifndef KARMAGUI_DISABLE_DEBUG_TOOLS
 
 //-----------------------------------------------------------------------------
-
-// Include imgui_user.inl at the end of imgui.cpp to access private data/functions that aren't exposed.
-// Prefer just including imgui_internal.h from your code rather than using this define. If a declaration is missing from imgui_internal.h add it or request it on the github.
-#ifdef IMGUI_INCLUDE_IMGUI_USER_INL
-#include "imgui_user.inl"
-#endif
-
-//-----------------------------------------------------------------------------

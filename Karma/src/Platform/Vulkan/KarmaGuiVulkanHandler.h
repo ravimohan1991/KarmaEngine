@@ -205,7 +205,8 @@ namespace Karma
 		VkBuffer                    UploadBuffer;
 
 		// Image data
-		std::vector<KarmaGui_ImplVulkan_Image_TextureData*>         mesaDecalDataList;
+		// Try freeing the texture resources when no longer required
+		std::vector<KarmaGui_ImplVulkan_Image_TextureData*>         vulkanMesaDecalDataList;
 
 		// Render buffers for main window
 		KarmaGui_ImplVulkanH_WindowRenderBuffers MainWindowRenderBuffers;
@@ -223,14 +224,11 @@ namespace Karma
 	class KARMA_API KarmaGuiVulkanHandler
 	{
 	public:
-		// Backend data stored in io.BackendRendererUserData to allow support for multiple Dear KarmaGui contexts
-		// It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear KarmaGui context + multiple windows) 	instead of multiple Dear KarmaGui contexts.
-		// FIXME: multi-context support is not tested and probably dysfunctional in this backend.
-		// Allow me to make an attempt, good programmer! ~ The_Cowboy
+		/*
 		inline static KarmaGui_ImplVulkan_Data* KarmaGui_ImplVulkan_GetBackendData()
 		{
 			return KarmaGui::GetCurrentContext() ? (KarmaGui_ImplVulkan_Data*)KarmaGui::GetIO().BackendRendererUserData : nullptr;
-		}
+		}*/
 		// GetIO should fetche the configuration settings and whatnot, which in this case is the struct KarmaGui_ImplVulkan_Data
 
 		static uint32_t KarmaGui_ImplVulkan_MemoryType(VkMemoryPropertyFlags properties, uint32_t type_bits);

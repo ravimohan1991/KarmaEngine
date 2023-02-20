@@ -13,10 +13,11 @@
 #include "Karma/Application.h"
 #include "Karma/Renderer/RendererAPI.h"
 #include "spdlog/sinks/callback_sink.h"
+#include "KarmaGuiRenderer.h"
 
 // Experimental
-#include "KarmaGuiVulkanHandler.h"
-#include "KarmaGuiOpenGLHandler.h"
+// #include "KarmaGuiVulkanHandler.h"
+// #include "KarmaGuiOpenGLHandler.h"
 
 namespace Karma
 {
@@ -177,7 +178,7 @@ namespace Karma
 		KarmaGui::Columns(columnCount, 0, false);
 
 		KarmaGuiIO& io = KarmaGui::GetIO();
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGui::GetCurrentContext() ? (KarmaGui_ImplVulkan_Data*)io.BackendRendererUserData : nullptr;
+		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
@@ -189,8 +190,7 @@ namespace Karma
 
 			KarmaGui::PushStyleColor(KGGuiCol_Button, KGVec4(0, 0, 0, 0));
 
-			KarmaGui_ImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(iconNumber);
-			KarmaGui::ImageButton("Content Browser", (KGTextureID)mesaDecalElement->TextureDescriptorSet, {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
+			KarmaGui::ImageButton("Content Browser", backendData->GetTextureIDAtIndex(iconNumber), {thumbnailSize, thumbnailSize}, {0, 1}, {1, 0});
 
 			KarmaGui::PopStyleColor();
 
@@ -248,14 +248,11 @@ namespace Karma
 		uint32_t width = 0;
 		uint32_t height = 0;
 
-		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
-		{
-			KarmaGui_ImplVulkan_Data* backendData = KarmaGui::GetCurrentContext() ? (KarmaGui_ImplVulkan_Data*)io.BackendRendererUserData : nullptr;
-			KarmaGui_ImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(1);
-			aboutImageTextureID = (KGTextureID)mesaDecalElement->TextureDescriptorSet;
-			width = mesaDecalElement->width;
-			height = mesaDecalElement->height;
-		}
+		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		aboutImageTextureID = backendData->GetTextureIDAtIndex(1);
+		width = backendData->GetTextureWidthAtIndex(1);
+		height = backendData->GetTextureHeightAtIndex(1);
+
 
 		//ImGui::GetCurrentWindow()->DrawList->SetWindowBackgroundColor(bgColor);
 
@@ -469,25 +466,10 @@ namespace Karma
 		uint32_t width = 0;
 		uint32_t height = 0;
 
-		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
-		{
-			KarmaGui_ImplVulkan_Data* backendData = KarmaGui::GetCurrentContext() ? (KarmaGui_ImplVulkan_Data*)io.BackendRendererUserData : nullptr;
-			KarmaGui_ImplVulkan_Image_TextureData* mesaDecalElement = backendData->mesaDecalDataList.at(0);
-			aboutImageTextureID = (KGTextureID)mesaDecalElement->TextureDescriptorSet;
-			width = mesaDecalElement->width;
-			height = mesaDecalElement->height;
-		}
-
-		if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
-		{
-			KarmaGui_ImplOpenGL3_Data* backendData = KarmaGui::GetCurrentContext() ? (KarmaGui_ImplOpenGL3_Data*)io.BackendRendererUserData : nullptr;
-			MesaDecalData mDData = backendData->mesaDecalDataList.at(0);
-
-			aboutImageTextureID = (KGTextureID)mDData.DecalID;
-
-			width = mDData.width;
-			height = mDData.height;
-		}
+		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		aboutImageTextureID = backendData->GetTextureIDAtIndex(0);
+		width = backendData->GetTextureWidthAtIndex(0);
+		height = backendData->GetTextureHeightAtIndex(0);
 
 		{
 			KGVec2 position = KarmaGui::GetCursorScreenPos();

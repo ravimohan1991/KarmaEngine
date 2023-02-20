@@ -42,7 +42,8 @@ namespace Karma
 			initInfo.RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
 
 			// Settingup backend in KarmaGui
-			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(&initInfo);
+			// KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(&initInfo);
+			KarmaGui_ImplVulkan_Init(&initInfo);
 
 			// Fresh start with newly instantiated Vulkan data
 			// Since VulkanContext has already instantiated fresh swapchain and commandbuffers, we send that false
@@ -192,6 +193,54 @@ namespace Karma
 		}
 	}
 
+	void KarmaGuiRenderer::KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* info)
+	{
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		KR_CORE_ASSERT(io.BackendRendererUserData == nullptr, "Already initialized a renderer backend!");
+
+		// Setup backend capabilities flags
+		KarmaGuiBackendRendererUserData* backendData = new KarmaGuiBackendRendererUserData();
+
+		// Since it seems like initialized struct, in MSVC, leads to problems in pushing back, we are doing this.
+		backendData->BufferMemoryAlignment = 256;
+
+		io.BackendRendererUserData = (void*)backendData;
+		io.BackendRendererName = "Vulkan_Got_Back";
+		io.BackendFlags |= KGGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
+
+		// Maybe chore for toofani mood!
+		// io.BackendFlags |= KarmaGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
+
+		KR_CORE_ASSERT(info->Instance != VK_NULL_HANDLE, "No instance found");
+		KR_CORE_ASSERT(info->PhysicalDevice != VK_NULL_HANDLE, "No physical device found");
+		KR_CORE_ASSERT(info->Device != VK_NULL_HANDLE, "No device found");
+		KR_CORE_ASSERT(info->Queue != VK_NULL_HANDLE, "No queue assigned");
+		KR_CORE_ASSERT(info->DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
+		KR_CORE_ASSERT(info->MinImageCount <= 2, "Minimum image count exceeding limit");
+		KR_CORE_ASSERT(info->ImageCount >= info->MinImageCount, "Not enough pitch for ImageCount");
+		KR_CORE_ASSERT(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
+
+		backendData->VulkanInitInfo = *info;
+		//backendData->VulkanInitInfo.Device = info->Device;
+
+		backendData->RenderPass = info->RenderPass;
+		backendData->Subpass = info->Subpass;
+
+		// Font, descriptor, and pipeline
+		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
+
+		// Our render function expect RendererUserData to be storing the window render buffer we need (for the main viewport we won't use ->Window)
+		KarmaGuiViewport* mainViewport = KarmaGui::GetMainViewport();
+
+		mainViewport->RendererUserData = new KarmaGui_ImplVulkan_ViewportData();
+
+		if (io.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
+		{
+			// Setting up Dear ImGUI's window operations (create, resize, and all that)
+			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_InitPlatformInterface();
+		}
+	}
+
 	void KarmaGuiRenderer::GiveLoopBeginControlToVulkan()
 	{
 		// Resize swap chain?
@@ -258,7 +307,7 @@ namespace Karma
 		if (!mainIsMinimized)
 			FramePresent(&m_VulkanWindowData);
 
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		vkDeviceWaitIdle(vulkanInfo->Device);
@@ -290,15 +339,15 @@ namespace Karma
 		}
 	}
 
-	void* KarmaGuiRenderer::GetBackendRendererUserData()
+	KarmaGuiBackendRendererUserData* KarmaGuiRenderer::GetBackendRendererUserData()
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
-		return io.BackendRendererUserData;
+		return (KarmaGuiBackendRendererUserData*)io.BackendRendererUserData;
 	}
 
 	void KarmaGuiRenderer::GracefulVulkanShutDown()
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		VkResult result = vkDeviceWaitIdle(vulkanInfo->Device);
@@ -318,7 +367,7 @@ namespace Karma
 		//ImGuiVulkanHandler::ClearVulkanWindowData(&m_VulkanWindowData, true);
 		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(&m_VulkanWindowData);
 
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		// Clean up Vulkan's pool component instantiated earlier here
@@ -350,13 +399,13 @@ namespace Karma
 		poolInfo.pPoolSizes = pool_sizes;
 
 		VkResult result = vkCreateDescriptorPool(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), &poolInfo, nullptr, &m_KarmaGuiDescriptorPool);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool for ImGui");
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool for KarmaGui");
 	}
 
 	// Helper taken from https://github.com/TheCherno/Walnut/blob/cc26ee1cc875db50884fe244e0a3195dd730a1ef/Walnut/src/Walnut/Application.cpp#L270 who probably took help from official example https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/examples/example_glfw_vulkan/main.cpp#L261, with chiefly naming modifications and entire restructuring of KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData.
 	void KarmaGuiRenderer::FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		// Pointer to the per frame data for instance fence, semaphores, and commandbuffer
@@ -464,7 +513,7 @@ namespace Karma
 		info.pSwapchains = &windowData->Swapchain;
 		info.pImageIndices = &windowData->ImageFrameIndex;
 
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_GetBackendData();
+		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		VkResult result = vkQueuePresentKHR(vulkanInfo->Queue, &info);
@@ -478,5 +527,41 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 
 		windowData->SemaphoreIndex = (windowData->SemaphoreIndex + 1) % windowData->MAX_FRAMES_IN_FLIGHT; // Now we can use the next set of semaphores
+	}
+
+	KGTextureID KarmaGuiBackendRendererUserData::GetTextureIDAtIndex(uint32_t index)
+	{
+		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		{
+			return vulkanMesaDecalDataList.at(index)->TextureDescriptorSet;
+		}
+		else if(RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
+		{
+			return openglMesaDecalDataList.at(index).DecalID;
+		}
+	}
+
+	uint32_t KarmaGuiBackendRendererUserData::GetTextureWidthAtIndex(uint32_t index)
+	{
+		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		{
+			return vulkanMesaDecalDataList.at(index)->width;
+		}
+		else if(RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
+		{
+			return openglMesaDecalDataList.at(index).width;
+		}
+	}
+
+	uint32_t KarmaGuiBackendRendererUserData::GetTextureHeightAtIndex(uint32_t index)
+	{
+		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		{
+			return vulkanMesaDecalDataList.at(index)->height;
+		}
+		else if(RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
+		{
+			return openglMesaDecalDataList.at(index).height;
+		}
 	}
 }
