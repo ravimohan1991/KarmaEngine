@@ -3,6 +3,7 @@
 
 #pragma once
 #include "KarmaGui.h"      // IMGUI_IMPL_API
+#include "Karma/Renderer/Scene.h"
 
 #define IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 
@@ -18,6 +19,7 @@ typedef unsigned int GLuint;
 typedef int GLint;
 
 typedef khronos_ssize_t GLsizeiptr;
+
 
 namespace Karma
 {
@@ -90,6 +92,7 @@ namespace Karma
 		}*/
 
 		static void KarmaGui_ImplOpenGL3_SetupRenderState(KGDrawData* draw_data, int fb_width, int fb_height, GLuint vertex_array_object);
+		static void KarmaGui_ImpOpenGL3_SetupRenderStateFor3DRendering(Scene* sceneToDraw, KGDrawData* drawData);
 		static bool CheckShader(GLuint handle, const char* desc);
 		static bool CheckProgram(GLuint handle, const char* desc);
 		static void KarmaGui_ImplOpenGL3_RenderWindow(KarmaGuiViewport* viewport, void*);

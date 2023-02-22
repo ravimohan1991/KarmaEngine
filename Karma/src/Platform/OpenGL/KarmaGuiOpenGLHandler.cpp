@@ -2,6 +2,7 @@
 #include "Karma/KarmaUtilities.h"
 #include "glad/glad.h"
 #include "Karma/KarmaGui/KarmaGuiRenderer.h"
+#include "Platform/OpenGL/OpenGLVertexArray.h"
 #include <stdio.h>
 
 #if defined(_MSC_VER) && _MSC_VER <= 1500 // MSVC 2008 or earlier
@@ -139,12 +140,37 @@ namespace Karma
 		}
 	}
 
+	void KarmaGuiOpenGLHandler::KarmaGui_ImpOpenGL3_SetupRenderStateFor3DRendering(Scene* sceneToDraw, KGDrawData* drawData)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendEquation(GL_FUNC_ADD);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_STENCIL_TEST);
+		glEnable(GL_SCISSOR_TEST);
+
+		// Setup viewport:
+		{
+			if (sceneToDraw->GetWindowToRenderWithinResizeStatus())
+			{
+				KGGuiWindow* windowToRenderWithin = static_cast<KGGuiWindow*>(sceneToDraw->GetRenderingWindow());
+
+				glViewport(windowToRenderWithin->Pos.x * drawData->FramebufferScale.x, (windowToRenderWithin->Pos.y + windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y, (GLsizei) windowToRenderWithin->Size.x * drawData->FramebufferScale.x, (GLsizei) (windowToRenderWithin->Size.y - windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y);
+				sceneToDraw->SetWindowToRenderWithinResize(false);
+			}
+		}
+	
+	}
+
 	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(KGDrawData* draw_data, int fb_width, int fb_height, GLuint vertex_array_object)
 	{
 		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		// Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
 		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBlendEquation(GL_FUNC_ADD);
 		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_CULL_FACE);
@@ -282,6 +308,8 @@ namespace Karma
 		KGVec2 clip_off = draw_data->DisplayPos;         // (0,0) unless using multi-viewports
 		KGVec2 clip_scale = draw_data->FramebufferScale; // (1,1) unless using retina display which are often (2,2)
 
+		Scene* sceneToDraw = nullptr;
+
 		// Render command lists
 		for (int n = 0; n < draw_data->CmdListsCount; n++)
 		{
@@ -317,14 +345,33 @@ namespace Karma
 			for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
 			{
 				const KGDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
-				if (pcmd->UserCallback != NULL)
+				if (pcmd->UserCallback != nullptr)
 				{
-					// User callback, registered via ImDrawList::AddCallback()
+					// User callback, registered via KarmaDrawList::AddCallback()
 					// (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to 	reset render state.)
 					if (pcmd->UserCallback == KGDrawCallback_ResetRenderState)
+					{
 						KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
+					}
 					else
+					{
 						pcmd->UserCallback(cmd_list, pcmd);
+						sceneToDraw = static_cast<Scene*>(pcmd->UserCallbackData);
+						if (sceneToDraw)
+						{
+							KarmaGui_ImpOpenGL3_SetupRenderStateFor3DRendering(sceneToDraw, draw_data);
+
+							std::shared_ptr<OpenGLVertexArray> openGLVA = static_pointer_cast<OpenGLVertexArray>(sceneToDraw->GetRenderableVertexArray());
+
+							openGLVA->UpdateProcessAndSetReadyForSubmission();
+							openGLVA->Bind();
+							openGLVA->GetVertexBuffers().at(0)->Bind();
+							openGLVA->GetIndexBuffer()->Bind();
+
+							glDrawElements(GL_TRIANGLES, openGLVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+						}
+					}
+					KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
 				}
 				else
 				{
@@ -732,11 +779,12 @@ namespace Karma
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		// get filename and create opengl texture
+		// https://stackoverflow.com/questions/23150123/loading-png-with-stb-image-for-opengl-texture-gives-wrong-colors
 		int width, height, nrChannels;
-		unsigned char* data = KarmaUtilities::GetImagePixelData("../Resources/Textures/The_Source_Wall.jpg", &width, &height, &nrChannels, 0);
+		unsigned char* data = KarmaUtilities::GetImagePixelData(fileName, &width, &height, &nrChannels, STBI_rgb_alpha);
 		if (data)
 		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		}
 		else
 		{

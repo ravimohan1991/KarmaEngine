@@ -243,13 +243,13 @@ namespace Karma
 
 		KarmaGuiIO& io = KarmaGui::GetIO();
 
-		KGTextureID aboutImageTextureID = 0;
+		KGTextureID backgroundImageTextureID = 0;
 
 		uint32_t width = 0;
 		uint32_t height = 0;
 
 		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
-		aboutImageTextureID = backendData->GetTextureIDAtIndex(1);
+		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
 		width = backendData->GetTextureWidthAtIndex(1);
 		height = backendData->GetTextureHeightAtIndex(1);
 
@@ -265,13 +265,11 @@ namespace Karma
 		scene->SetRenderWindow(theWindow);
 
 		{
-			KGVec2 position = KarmaGui::GetCursorScreenPos();
-
 			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
 			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
 			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
 			KGVec4 border_col = KGVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
-			KarmaGui::Image(aboutImageTextureID, KGVec2(theWindow->Size.x, theWindow->Size.y), uvMin, uvMax, tint_col, border_col);
+			KarmaGui::Image(backgroundImageTextureID, KGVec2(theWindow->Size.x, theWindow->Size.y), uvMin, uvMax, tint_col, border_col);
 		}
 
 		if(theWindow->Size.x != m_3DExhibitor.widthCache || theWindow->Size.y != m_3DExhibitor.heightCache)
