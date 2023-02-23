@@ -5,6 +5,9 @@
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 #include <stdio.h>
 
+// Experimental
+#include "Platform/OpenGL/OpenGLBuffer.h"
+
 #if defined(_MSC_VER) && _MSC_VER <= 1500 // MSVC 2008 or earlier
 #include <stddef.h>     // intptr_t
 #else
@@ -177,11 +180,11 @@ namespace Karma
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_STENCIL_TEST);
 		glEnable(GL_SCISSOR_TEST);
-#ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_PRIMITIVE_RESTART
+#ifdef KGGUI_IMPL_OPENGL_MAY_HAVE_PRIMITIVE_RESTART
 		if (bd->GlVersion >= 310)
 			glDisable(GL_PRIMITIVE_RESTART);
 #endif
-#ifdef IMGUI_IMPL_HAS_POLYGON_MODE
+#ifdef KGGUI_IMPL_HAS_POLYGON_MODE
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 #endif
 
@@ -190,14 +193,18 @@ namespace Karma
 		bool clip_origin_lower_left = true;
 		if (bd->HasClipOrigin)
 		{
-			GLenum current_clip_origin = 0; glGetIntegerv(GL_CLIP_ORIGIN, (GLint*)&current_clip_origin);
+			GLenum current_clip_origin = 0;
+			glGetIntegerv(GL_CLIP_ORIGIN, (GLint*)&current_clip_origin);
+
 			if (current_clip_origin == GL_UPPER_LEFT)
+			{
 				clip_origin_lower_left = false;
+			}
 		}
 #endif
 
 		// Setup viewport, orthographic projection matrix
-		// Our visible imgui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize 	(bottom right). DisplayPos is (0,0) for single viewport apps.
+		// Our visible KarmaGui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize 	(bottom right). DisplayPos is (0,0) for single viewport apps.
 		glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
 		float L = draw_data->DisplayPos.x;
 		float R = draw_data->DisplayPos.x + draw_data->DisplaySize.x;
@@ -217,17 +224,17 @@ namespace Karma
 		glUniform1i(bd->AttribLocationTex, 0);
 		glUniformMatrix4fv(bd->AttribLocationProjMtx, 1, GL_FALSE, &ortho_projection[0][0]);
 
-#ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_BIND_SAMPLER
+#ifdef KGGUI_IMPL_OPENGL_MAY_HAVE_BIND_SAMPLER
 		if (bd->GlVersion >= 330)
 			glBindSampler(0, 0); // We use combined texture/sampler state. Applications using GL 3.3 may set that otherwise.
 #endif
 
 		(void)vertex_array_object;
-#ifdef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+#ifdef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 		glBindVertexArray(vertex_array_object);
 #endif
 
-		// Bind vertex/index buffers and setup attributes for ImDrawVert
+		// Bind vertex/index buffers and setup attributes for KGDrawVert
 		glBindBuffer(GL_ARRAY_BUFFER, bd->VboHandle);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bd->ElementsHandle);
 		glEnableVertexAttribArray(bd->AttribLocationVtxPos);
@@ -255,27 +262,33 @@ namespace Karma
 		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		// Backup GL state
-		GLenum last_active_texture; glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint*)&last_active_texture);
+		GLenum last_active_texture;
+		glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint*)&last_active_texture);
 		glActiveTexture(GL_TEXTURE0);
-		GLuint last_program; glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&last_program);
-		GLuint last_texture; glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint*)&last_texture);
+		GLuint last_program; 
+		glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&last_program);
+		GLuint last_texture; 
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint*)&last_texture);
 
 #ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_BIND_SAMPLER
 		GLuint last_sampler; if (bd->GlVersion >= 330) { glGetIntegerv(GL_SAMPLER_BINDING, (GLint*)&last_sampler); }
 		else { last_sampler = 0; }
 #endif
-		GLuint last_array_buffer; glGetIntegerv(GL_ARRAY_BUFFER_BINDING, (GLint*)&last_array_buffer);
-#ifndef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+		GLuint last_array_buffer;
+		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, (GLint*)&last_array_buffer);
+
+#ifndef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 		// This is part of VAO on OpenGL 3.0+ and OpenGL ES 3.0+.
 		GLint last_element_array_buffer; glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &last_element_array_buffer);
 		ImGui_ImplOpenGL3_VtxAttribState last_vtx_attrib_state_pos; 	last_vtx_attrib_state_pos.GetState(bd->AttribLocationVtxPos);
 		ImGui_ImplOpenGL3_VtxAttribState last_vtx_attrib_state_uv; last_vtx_attrib_state_uv.GetState(bd->AttribLocationVtxUV);
 		ImGui_ImplOpenGL3_VtxAttribState last_vtx_attrib_state_color; 	last_vtx_attrib_state_color.GetState(bd->AttribLocationVtxColor);
 #endif
-#ifdef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
-		GLuint last_vertex_array_object; glGetIntegerv(GL_VERTEX_ARRAY_BINDING, (GLint*)&last_vertex_array_object);
+#ifdef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+		GLuint last_vertex_array_object;
+		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, (GLint*)&last_vertex_array_object);
 #endif
-#ifdef IMGUI_IMPL_HAS_POLYGON_MODE
+#ifdef KGGUI_IMPL_HAS_POLYGON_MODE
 		GLint last_polygon_mode[2]; glGetIntegerv(GL_POLYGON_MODE, last_polygon_mode);
 #endif
 		GLint last_viewport[4]; glGetIntegerv(GL_VIEWPORT, last_viewport);
@@ -291,15 +304,15 @@ namespace Karma
 		GLboolean last_enable_depth_test = glIsEnabled(GL_DEPTH_TEST);
 		GLboolean last_enable_stencil_test = glIsEnabled(GL_STENCIL_TEST);
 		GLboolean last_enable_scissor_test = glIsEnabled(GL_SCISSOR_TEST);
-#ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_PRIMITIVE_RESTART
+#ifdef KGGUI_IMPL_OPENGL_MAY_HAVE_PRIMITIVE_RESTART
 		GLboolean last_enable_primitive_restart = (bd->GlVersion >= 310) ? glIsEnabled(GL_PRIMITIVE_RESTART) : GL_FALSE;
 #endif
 
 		// Setup desired GL state
-		// Recreate the VAO every time (this is to easily allow multiple GL contexts to be rendered to. VAO are not shared among 	GL contexts)
-		// The renderer would actually work without any VAO bound, but then our VertexAttrib calls would overwrite the default 	one currently bound.
+		// Recreate the VAO every time (this is to easily allow multiple GL contexts to be rendered to. VAO are not shared among GL contexts)
+		// The renderer would actually work without any VAO bound, but then our VertexAttrib calls would overwrite the default one currently bound.
 		GLuint vertex_array_object = 0;
-#ifdef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+#ifdef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 		glGenVertexArrays(1, &vertex_array_object);
 #endif
 		KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
@@ -316,8 +329,8 @@ namespace Karma
 			const KGDrawList* cmd_list = draw_data->CmdLists[n];
 
 			// Upload vertex/index buffers
-			// - On Intel windows drivers we got reports that regular glBufferData() led to accumulating leaks when using 	multi-viewports, so we started using orphaning + glBufferSubData(). (See 	https://github.com/ocornut/imgui/issues/4468)
-			// - On NVIDIA drivers we got reports that using orphaning + glBufferSubData() led to glitches when using 	multi-viewports.
+			// - On Intel windows drivers we got reports that regular glBufferData() led to accumulating leaks when using multi-viewports, so we started using orphaning + glBufferSubData(). (See 	https://github.com/ocornut/imgui/issues/4468)
+			// - On NVIDIA drivers we got reports that using orphaning + glBufferSubData() led to glitches when using multi-viewports.
 			// - OpenGL drivers are in a very sorry state in 2022, for now we are switching code path based on vendors.
 			const GLsizeiptr vtx_buffer_size = (GLsizeiptr)cmd_list->VtxBuffer.Size * (int)sizeof(KGDrawVert);
 			const GLsizeiptr idx_buffer_size = (GLsizeiptr)cmd_list->IdxBuffer.Size * (int)sizeof(KGDrawIdx);
@@ -359,19 +372,26 @@ namespace Karma
 						sceneToDraw = static_cast<Scene*>(pcmd->UserCallbackData);
 						if (sceneToDraw)
 						{
-							KarmaGui_ImpOpenGL3_SetupRenderStateFor3DRendering(sceneToDraw, draw_data);
+							//KarmaGui_ImpOpenGL3_SetupRenderStateFor3DRendering(sceneToDraw, draw_data);
+							//KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
 
 							std::shared_ptr<OpenGLVertexArray> openGLVA = static_pointer_cast<OpenGLVertexArray>(sceneToDraw->GetRenderableVertexArray());
 
 							openGLVA->UpdateProcessAndSetReadyForSubmission();
 							openGLVA->Bind();
-							openGLVA->GetVertexBuffers().at(0)->Bind();
-							openGLVA->GetIndexBuffer()->Bind();
 
+							//openGLVA->GetMaterial()->GetShader("CylinderShader")->Bind("texSampler");
+
+							//glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->GetTexID());
+							//openGLVA->GetMaterial()->GetTexture(0)->b
+
+							// A very experimental hack
+							OpenGLImageBuffer::BindTexture();
 							glDrawElements(GL_TRIANGLES, openGLVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 						}
+						//KarmaGui_ImpOpenGL3_SetupRenderStateFor3DRendering(sceneToDraw, draw_data);
+						KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
 					}
-					KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
 				}
 				else
 				{
@@ -397,7 +417,7 @@ namespace Karma
 		}
 
 		// Destroy the temporary VAO
-#ifdef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+#ifdef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 		glDeleteVertexArrays(1, &vertex_array_object);
 #endif
 
@@ -409,11 +429,11 @@ namespace Karma
 			glBindSampler(0, last_sampler);
 #endif
 		glActiveTexture(last_active_texture);
-#ifdef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+#ifdef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 		glBindVertexArray(last_vertex_array_object);
 #endif
 		glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
-#ifndef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+#ifndef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, last_element_array_buffer);
 		last_vtx_attrib_state_pos.SetState(bd->AttribLocationVtxPos);
 		last_vtx_attrib_state_uv.SetState(bd->AttribLocationVtxUV);
@@ -548,7 +568,7 @@ namespace Karma
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
 		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &last_array_buffer);
 
-#ifdef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+#ifdef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 		GLint last_vertex_array;
 		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &last_vertex_array);
 #endif
@@ -721,7 +741,7 @@ namespace Karma
 		// Restore modified GL state
 		glBindTexture(GL_TEXTURE_2D, last_texture);
 		glBindBuffer(GL_ARRAY_BUFFER, last_array_buffer);
-#ifdef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+#ifdef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 		glBindVertexArray(last_vertex_array);
 #endif
 

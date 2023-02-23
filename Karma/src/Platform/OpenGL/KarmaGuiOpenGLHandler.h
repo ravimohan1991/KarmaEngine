@@ -5,7 +5,7 @@
 #include "KarmaGui.h"      // IMGUI_IMPL_API
 #include "Karma/Renderer/Scene.h"
 
-#define IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+#define KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 
 //#include "glad/glad.h"
 
@@ -54,7 +54,7 @@ namespace Karma
 	};
 
 	// OpenGL vertex attribute state (for ES 1.0 and ES 2.0 only)
-#ifndef IMGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
+#ifndef KGGUI_IMPL_OPENGL_USE_VERTEX_ARRAY
 	struct ImGui_ImplOpenGL3_VtxAttribState
 	{
 		GLint   Enabled, Size, Type, Normalized, Stride;

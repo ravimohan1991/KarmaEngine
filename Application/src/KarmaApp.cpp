@@ -40,27 +40,26 @@ public:
 
 	virtual void OnUpdate(float deltaTime) override
 	{
-		/*
 		KarmaAppInputPolling(deltaTime);
 		Karma::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 
 		Karma::RenderCommand::Clear();
 
-		Karma::Renderer::BeginScene(*m_Camera);
+		Karma::Renderer::BeginScene(m_Scene);
 
 		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
 		m_SquareVA->UpdateProcessAndSetReadyForSubmission();
 		m_SquareVA->Bind();
 
-		Karma::Renderer::Submit(m_SquareVA);
+		Karma::Renderer::Submit(m_Scene);
 
-		Karma::Renderer::EndScene();*/
+		Karma::Renderer::EndScene();
 	}
 
 	virtual void ImGuiRender(float deltaTime) override
 	{
 		
-		KarmaAppInputPolling(deltaTime);
+		//KarmaAppInputPolling(deltaTime);
 		//Karma::RenderCommand::SetClearColor(m_Scene->GetClearColor());
 
 		//Karma::RenderCommand::Clear();
