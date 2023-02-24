@@ -144,15 +144,20 @@ namespace Karma
 
 	void KarmaGuiMesa::DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback)
 	{
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+
 		KarmaGui::Begin("Content Browser");
 
 		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
 		{
 			//static uint32_t buttonPositionY = ImGui::GetCurrentWindow()->DC.CursorPos.y;
-			if (KarmaGui::Button("<-"))
+			KarmaGui::PushStyleColor(KGGuiCol_Button, KGVec4(0, 0, 0, 0));
+			if (KarmaGui::ImageButton("Up Button", backendData->GetTextureIDAtIndex(5), {20.0f, 20.0f}))
 			{
 				m_CurrentDirectory = m_CurrentDirectory.parent_path();
 			}
+			KarmaGui::PopStyleColor();
 
 			KarmaGui::SameLine(0.0f, 5.0f);
 			KarmaGui::Text("%s", m_CurrentDirectory.string().c_str());
@@ -176,9 +181,6 @@ namespace Karma
 		}
 
 		KarmaGui::Columns(columnCount, 0, false);
-
-		KarmaGuiIO& io = KarmaGui::GetIO();
-		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
