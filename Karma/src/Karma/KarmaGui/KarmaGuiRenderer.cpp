@@ -107,19 +107,7 @@ namespace Karma
 			io.FontDefault = robotoFont;
 
 			// Load images
-			/*
-			//	1. The wall
-			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/The_Source_Wall.jpg", "The Source");
-
-			// 2. 3D Exhibitor large image (primitive theme)
-			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/Measures.png", "Primitive Background");
-
-			// 3. Icons Packa
-			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/File.png", "File icon");
-			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/Folder.png", "Folder icon");
-			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/OpenFolder.png", "Opened Folder incon");
-			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/LeftArrow.png", "Left Arrow icon");
-			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/RightArrow.png");*/
+			// No images to load yet
 		}
 	}
 
