@@ -1,6 +1,7 @@
 #include "EditorLayer.h"
-#include "Karma/KarmaGui/KarmaGuiMesa.h"
-
+#include "KarmaGuiMesa.h"
+#include "Karma/KarmaGui/KarmaGuiRenderer.h"
+// Experimental
 #include "GLFW/glfw3.h"
 
 namespace Karma
@@ -53,6 +54,11 @@ namespace Karma
 		m_EditorScene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 	}
 
+	EditorLayer::~EditorLayer()
+	{
+		KarmaGuiMesa::MesaShutDownRoutine();
+	}
+
 	void EditorLayer::OpenScene(const std::string& objFileName)
 	{
 		std::shared_ptr<Mesh> meshToLoad;
@@ -66,7 +72,19 @@ namespace Karma
 
 	void EditorLayer::OnAttach()
 	{
+		// Load Images
+		//	1. The wall
+		KarmaGuiRenderer::AddImageTexture("../Resources/Textures/The_Source_Wall.jpg", "The Source");
 
+		// 2. 3D Exhibitor large image (primitive theme)
+		KarmaGuiRenderer::AddImageTexture("../Resources/Textures/Measures.png", "Primitive Background");
+
+		// 3. Icons Packa
+		KarmaGuiRenderer::AddImageTexture("../Resources/Textures/EditorIcons/File.png", "File icon");
+		KarmaGuiRenderer::AddImageTexture("../Resources/Textures/EditorIcons/Folder.png", "Folder icon");
+		KarmaGuiRenderer::AddImageTexture("../Resources/Textures/EditorIcons/OpenFolder.png", "Opened Folder incon");
+		KarmaGuiRenderer::AddImageTexture("../Resources/Textures/EditorIcons/UpArrow.png", "Up Arrow icon");
+		KarmaGuiRenderer::AddImageTexture("../Resources/Textures/EditorIcons/RightArrow.png", "Right Attow icon");
 	}
 
 	void EditorLayer::OnDetach()

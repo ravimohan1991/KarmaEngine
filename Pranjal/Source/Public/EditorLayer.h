@@ -11,6 +11,7 @@ namespace Karma
 	{
 	public:
 		EditorLayer();
+		~EditorLayer();
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;

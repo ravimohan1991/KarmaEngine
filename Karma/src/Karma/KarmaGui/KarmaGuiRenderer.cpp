@@ -75,19 +75,7 @@ namespace Karma
 				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateFontsTexture(commandBuffer);
 
 				// Load Images
-
-				//	1. The wall
-				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/The_Source_Wall.jpg", "The Source");
-
-				// 2. 3D Exhibitor large image (primitive theme)
-				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/Measures.png", "Primitive Background");
-
-				// 3. Icons Packa
-				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/File.png", "File icon");
-				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/Folder.png", "Folder icon");
-				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/OpenFolder.png", "Opened Folder incon");
-				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/UpArrow.png", "Up Arrow icon");
-				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, "../Resources/Textures/EditorIcons/RightArrow.png");
+				// No images to load yet
 
 				VkSubmitInfo endInfo = {};
 				endInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -119,7 +107,7 @@ namespace Karma
 			io.FontDefault = robotoFont;
 
 			// Load images
-
+			/*
 			//	1. The wall
 			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/The_Source_Wall.jpg", "The Source");
 
@@ -131,7 +119,59 @@ namespace Karma
 			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/Folder.png", "Folder icon");
 			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/OpenFolder.png", "Opened Folder incon");
 			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/LeftArrow.png", "Left Arrow icon");
-			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/RightArrow.png");
+			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture("../Resources/Textures/EditorIcons/RightArrow.png");*/
+		}
+	}
+
+	void KarmaGuiRenderer::AddImageTexture(char const* fileName, const std::string& label)
+	{
+		switch(RendererAPI::GetAPI())
+		{
+			case RendererAPI::API::Vulkan:
+			{
+				KarmaGuiIO& io = KarmaGui::GetIO();
+				KarmaGuiBackendRendererUserData* backendData = (KarmaGuiBackendRendererUserData*) io.BackendRendererUserData;
+
+				// Use any command queue
+				VkCommandPool commandPool = m_VulkanWindowData.CommandPool;
+				VkCommandBuffer commandBuffer = m_VulkanWindowData.FramesOnFlight[m_VulkanWindowData.SemaphoreIndex].CommandBuffer;
+
+				VkResult result = vkResetCommandPool(backendData->VulkanInitInfo.Device, commandPool, 0);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset command pool!");
+
+				VkCommandBufferBeginInfo beginInfo = {};
+				beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+				beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+				result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin recording(?) command buffer!");
+
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateTexture(commandBuffer, fileName, label);
+
+				VkSubmitInfo endInfo = {};
+				endInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+				endInfo.commandBufferCount = 1;
+				endInfo.pCommandBuffers = &commandBuffer;
+				result = vkEndCommandBuffer(commandBuffer);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end recording(?) command buffer!");
+
+				result = vkQueueSubmit(backendData->VulkanInitInfo.Queue, 1, &endInfo, VK_NULL_HANDLE);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit command buffer!");
+
+				result = vkDeviceWaitIdle(backendData->VulkanInitInfo.Device);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait!");
+			}
+			break;
+			case RendererAPI::API::OpenGL:
+			{
+				KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture(fileName, label);
+			}
+			break;
+			case RendererAPI::API::None:
+					KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				break;
+			default:
+					KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
+				break;
 		}
 	}
 
@@ -140,18 +180,18 @@ namespace Karma
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::Vulkan:
-			GiveLoopBeginControlToVulkan();
+				GiveLoopBeginControlToVulkan();
 			break;
 		case RendererAPI::API::OpenGL:
-			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_NewFrame();
-			KarmaGui_ImplGlfw_NewFrame();
+				KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_NewFrame();
+				KarmaGui_ImplGlfw_NewFrame();
 			break;
 		case RendererAPI::API::None:
-			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 			break;
 		default:
-			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
-				break;
+				KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
+			break;
 		}
 	}
 

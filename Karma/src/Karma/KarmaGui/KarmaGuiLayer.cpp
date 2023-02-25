@@ -1,19 +1,10 @@
 #include "KarmaGuiLayer.h"
 #include "glad/glad.h"
-#define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 #include "Karma/Application.h"
-//#include "imgui_impl_glfw.h"
-//#include "Vulkan/VulkanHolder.h"
-//#include "Renderer/RendererAPI.h"
-//#include "Renderer/RenderCommand.h"
 #include "glm/glm.hpp"
-#include "KarmaGui/KarmaGuiMesa.h"
 #include "Renderer/Renderer.h"
 #include "KarmaGuiRenderer.h"
-
-// Emedded font
-//#include "Karma/KarmaGui/Roboto-Regular.h"
 
 namespace Karma
 {
@@ -33,7 +24,6 @@ namespace Karma
 
 	KarmaGuiLayer::~KarmaGuiLayer()
 	{
-		KarmaGuiMesa::MesaShutDownRoutine();
 	}
 
 	void KarmaGuiLayer::OnAttach()

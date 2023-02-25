@@ -24,6 +24,7 @@ namespace Karma
 		static void OnKarmaGuiLayerBegin();
 		static void OnKarmaGuiLayerEnd();
 		static KarmaGuiBackendRendererUserData* GetBackendRendererUserData();
+		static void AddImageTexture(char const* fileName, const std::string& label);
 
 		// Vulkan specific functions
 		static void KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* initInfo);
