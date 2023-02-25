@@ -1,9 +1,7 @@
 #pragma once
 
-#include "krpch.h"
-
 #include "Karma.h"
-
+#include "Karma/EntryPoint.h"
 
 namespace Karma
 {
@@ -36,6 +34,5 @@ namespace Karma
 
 		float cameraTranslationSpeed = 1.0f;
 		float cameraRotationSpeed = 80.0f;
-		
 	};
 }

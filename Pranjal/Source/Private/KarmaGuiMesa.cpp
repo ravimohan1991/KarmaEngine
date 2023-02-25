@@ -13,11 +13,6 @@
 #include "Karma/Application.h"
 #include "Karma/Renderer/RendererAPI.h"
 #include "spdlog/sinks/callback_sink.h"
-#include "KarmaGuiRenderer.h"
-
-// Experimental
-// #include "KarmaGuiVulkanHandler.h"
-// #include "KarmaGuiOpenGLHandler.h"
 
 namespace Karma
 {
@@ -381,7 +376,7 @@ namespace Karma
 
 		if(s_MesaCoreLogger == nullptr)
 		{
-			s_MesaCoreLogger = spdlog::get("KARMA");
+			s_MesaCoreLogger = Log::GetCoreLogger();
 			auto callbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>([](const spdlog::details::log_msg &msg)
 			{
 				spdlog::memory_buf_t logToDisplay;
@@ -391,12 +386,16 @@ namespace Karma
 			});
 
 			callbackSink->set_level(spdlog::level::trace);
-			s_MesaCoreLogger->add_sink(callbackSink);
+
+			if (s_MesaCoreLogger)
+			{
+				s_MesaCoreLogger->add_sink(callbackSink);
+			}
 		}
 
 		if(s_MesaClientLogger == nullptr)
 		{
-			s_MesaClientLogger = spdlog::get("APPLICATION");
+			s_MesaClientLogger = Log::GetClientLogger();
 			auto callbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>([](const spdlog::details::log_msg &msg)
 			{
 				spdlog::memory_buf_t logToDisplay;
@@ -406,7 +405,11 @@ namespace Karma
 			});
 
 			callbackSink->set_level(spdlog::level::trace);
-			s_MesaClientLogger->add_sink(callbackSink);
+			
+			if (s_MesaClientLogger)
+			{
+				s_MesaClientLogger->add_sink(callbackSink);
+			}
 		}
 
 		KarmaGui::End();
@@ -456,9 +459,6 @@ namespace Karma
 
 		//-----------------------------------------------------------------------------------------------------------//
 
-		// Vulkan experiment
-		// Need to think how OpenGL shall handle this
-		// Of course nothing should be changed frontend, ie here. Something must be done at backend.
 		KarmaGuiIO& io = KarmaGui::GetIO();
 
 		KGTextureID aboutImageTextureID = 0;

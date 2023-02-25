@@ -1,11 +1,6 @@
 #pragma once
 
-#include "krpch.h"
-
-#include "KarmaGui.h"
-#include "KarmaGuiInternal.h"
-
-#include "Renderer/Scene.h"
+#include "Karma.h"
 
 extern "C" {
 #include "dmidecode.h"
@@ -176,7 +171,7 @@ namespace Karma
 		KarmaGuiDockPreviewData();
 	};
 
-	struct KARMA_API KarmaTuringMachineElectronics
+	struct KarmaTuringMachineElectronics
 	{
 		bool bHasQueried;
 
@@ -293,7 +288,7 @@ namespace Karma
 		float ioDisplayYCache;
 	};
 
-	class KARMA_API KarmaGuiMesa
+	class KarmaGuiMesa
 	{
 	public:
 		// Showtime!

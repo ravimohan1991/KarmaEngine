@@ -578,6 +578,8 @@ namespace Karma
 		{
 			return openglMesaDecalDataList.at(index).DecalID;
 		}
+
+		return nullptr;
 	}
 
 	uint32_t KarmaGuiBackendRendererUserData::GetTextureWidthAtIndex(uint32_t index)
@@ -590,6 +592,8 @@ namespace Karma
 		{
 			return openglMesaDecalDataList.at(index).width;
 		}
+
+		return 0;
 	}
 
 	uint32_t KarmaGuiBackendRendererUserData::GetTextureHeightAtIndex(uint32_t index)
@@ -602,5 +606,7 @@ namespace Karma
 		{
 			return openglMesaDecalDataList.at(index).height;
 		}
+
+		return 0;
 	}
 }

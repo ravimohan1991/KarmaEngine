@@ -1,6 +1,5 @@
 #include "EditorLayer.h"
 #include "KarmaGuiMesa.h"
-#include "Karma/KarmaGui/KarmaGuiRenderer.h"
 // Experimental
 #include "GLFW/glfw3.h"
 

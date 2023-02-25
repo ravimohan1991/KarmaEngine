@@ -1433,7 +1433,7 @@ enum KGGuiDockNodeState
 };
 
 // sizeof() 156~192
-struct KGGuiDockNode
+struct KARMA_API KGGuiDockNode
 {
 	KGGuiID                 ID;
 	KarmaGuiDockNodeFlags      SharedFlags;                // (Write) Flags shared by all nodes of a same dockspace hierarchy (inherited from the root node)
@@ -2251,7 +2251,7 @@ struct  KGGuiWindowTempData
 };
 
 // Storage for one window
-struct  KGGuiWindow
+struct KARMA_API KGGuiWindow
 {
 	char* Name;                               // Window name, owned by the window.
 	KGGuiID                 ID;                                 // == KGHashStr(Name)

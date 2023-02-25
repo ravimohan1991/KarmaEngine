@@ -8,7 +8,7 @@
 
 namespace Karma
 {
-	struct KarmaGuiBackendRendererUserData : public KarmaGui_ImplOpenGL3_Data, public KarmaGui_ImplVulkan_Data
+	struct KARMA_API KarmaGuiBackendRendererUserData : public KarmaGui_ImplOpenGL3_Data, public KarmaGui_ImplVulkan_Data
 	{
 		KGTextureID GetTextureIDAtIndex(uint32_t index);
 		uint32_t GetTextureWidthAtIndex(uint32_t index);
