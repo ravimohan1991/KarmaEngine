@@ -2,9 +2,11 @@
 
 #include "krpch.h"
 
+#include "UObjectBase.h"
+
 namespace Karma
 {
-	class KARMA_API UObject
+	class KARMA_API UObject : public UObjectBase
 	{
 	public:
 		static const TCHAR* StaticConfigName()

@@ -59,3 +59,14 @@
 #endif
 
 #define KR_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
+// Need to write Platform.h and WindowsPlatform.h specialization for these Unreal type of defines
+#define FUNCTION_NON_NULL_RETURN_START _Ret_notnull_				/* Indicate that the function never returns nullptr. */
+
+/* Wrap a function signature in these to indicate that the function never returns nullptr */
+#ifndef FUNCTION_NON_NULL_RETURN_START
+#define FUNCTION_NON_NULL_RETURN_START
+#endif
+#ifndef FUNCTION_NON_NULL_RETURN_END
+#define FUNCTION_NON_NULL_RETURN_END
+#endif
