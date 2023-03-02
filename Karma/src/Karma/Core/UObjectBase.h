@@ -77,7 +77,8 @@ namespace Karma
 		template<typename T>
 		T* GetTypedOuter() const
 		{
-			return (T*)GetTypedOuter(T::StaticClass());
+			static T someObject;
+			return (T*)GetTypedOuter(T::StaticClass(&someObject));
 		}
 
 	public:

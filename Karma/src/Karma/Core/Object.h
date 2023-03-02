@@ -27,9 +27,9 @@ namespace Karma
 		virtual void FinishDestroy();
 
 		/** Return a one line description of an object for viewing in the thumbnail view of the generic browser */
-		virtual const std::string& GetDesc() { return ""; }
+		virtual const std::string& GetDesc() { static std::string someString = "";  return someString; }
 
 	public:
-		static UClass* StaticClass();
+		static UClass* StaticClass(UObject* someObject);
 	};
 }

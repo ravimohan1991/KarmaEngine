@@ -7,9 +7,11 @@ namespace Karma
 	{
 	}
 
-	UClass* UObject::StaticClass()
+	UClass* UObject::StaticClass(UObject* someObject)
 	{
-		UClass StaticClassClass("UClass");
-		return &StaticClassClass;
+		static UClass StaticUClass;
+
+		StaticUClass.SetPName(typeid(*someObject).name());// heh, wanna see how this works
+		return &StaticUClass;
 	}
 }

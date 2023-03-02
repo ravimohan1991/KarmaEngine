@@ -66,6 +66,7 @@ namespace Karma
 	{
 	public:
 		/** Constructor */
+		UClass();
 		UClass(const std::string& name);
 
 		/** The required type for the outer of instances of this class */
@@ -77,5 +78,9 @@ namespace Karma
 	public:
 		// UObject interface.
 		virtual const std::string& GetDesc() override;
+
+	public:
+		void SetPName(const std::string& name);
+		const std::string& GetPName() const { return m_NamePrivate; }
 	};
 }

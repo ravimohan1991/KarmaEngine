@@ -2,6 +2,10 @@
 
 namespace Karma
 {
+	UClass::UClass()
+	{
+	}
+
 	UClass::UClass(const std::string& name) : m_NamePrivate(name)
 	{
 	}
@@ -11,9 +15,15 @@ namespace Karma
 		return nullptr;// for now
 	}
 
+	void UClass::SetPName(const std::string& name)
+	{
+		m_NamePrivate = name;
+	}
+
 	const std::string& UField::GetAuthoredName() const
 	{
-		return "NoName";
+		static std::string someString = "NoName";
+		return someString;
 	}
 
 	const std::string& UClass::GetDesc()
