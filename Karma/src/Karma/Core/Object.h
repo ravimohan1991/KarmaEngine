@@ -6,8 +6,13 @@
 
 namespace Karma
 {
+	class UClass;
+
 	class KARMA_API UObject : public UObjectBase
 	{
+	private:
+		UClass* m_StaticClass;
+
 	public:
 		static const TCHAR* StaticConfigName()
 		{
@@ -20,5 +25,11 @@ namespace Karma
 		 * @warning Because properties are destroyed here, Super::FinishDestroy() should always be called at the end of your child class's FinishDestroy() method, rather than at the beginning.
 		 */
 		virtual void FinishDestroy();
+
+		/** Return a one line description of an object for viewing in the thumbnail view of the generic browser */
+		virtual const std::string& GetDesc() { return ""; }
+
+	public:
+		static UClass* StaticClass();
 	};
 }
