@@ -31,5 +31,12 @@ namespace Karma
 
 	public:
 		static UClass* StaticClass(UObject* someObject);
+
+		template<typename classType>
+		static UClass* StaticClass()
+		{
+			classType someClass;
+			return StaticClass(&someClass);
+		}
 	};
 }

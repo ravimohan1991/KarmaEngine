@@ -5,9 +5,19 @@
 namespace Karma
 {
 	class UObject;
+	class AActor;
+	class UClass;
+	//enum EObjectFlags;
+	//enum class EInternalObjectFlags;
 
-	// 32-bit signed integer <- find or write appropriate class for such
+	extern std::vector<UObject> GUObjectStore;
+
+#define	INVALID_OBJECT	(UObject*)-1
+
+	// 32-bit signed integer <- find or write appropriate class for such type
 	typedef signed int	 		int32;
+
+	enum { INDEX_NONE = -1 };
 
 	/**
 	 * Flags describing an object instance
@@ -63,7 +73,7 @@ namespace Karma
 
 		RF_PendingKill /*UE_DEPRECATED(5.0, "RF_PendingKill should not be used directly. Make sure references to objects are released using one of the existing engine callbacks or use weak object pointers.")*/ = 0x20000000,	///< Objects that are pending destruction (invalid for gameplay but valid objects). This flag is mirrored in EInternalObjectFlags as PendingKill for performance
 		RF_Garbage /*UE_DEPRECATED(5.0, "RF_Garbage should not be used directly. Use MarkAsGarbage and ClearGarbage instead.")*/ = 0x40000000,	///< Garbage from logical point of view and should not be referenced. This flag is mirrored in EInternalObjectFlags as Garbage for performance
-		RF_AllocatedInSharedPage = 0x80000000,	///< Allocated from a ref-counted page shared with other UObjects
+		RF_AllocatedInSharedPage = 0x80000000	///< Allocated from a ref-counted page shared with other UObjects
 	};
 
 	/**
@@ -103,7 +113,7 @@ namespace Karma
 	struct FStaticConstructObjectParameters
 	{
 		/** The class of the object to create */
-		//const UClass* Class;
+		const UClass* m_Class;
 
 		/** The object to create this object within (the Outer property for the new object will be set to the value specified here). */
 		UObject* m_Outer;
@@ -163,25 +173,25 @@ KARMA_API UObject* StaticConstructObject_Internal(const FStaticConstructObjectPa
  * Create a new instance of an object or replace an existing object.  If both an Outer and Name are specified, and there is an object already in memory with the same Class, Outer, and Name, the
  * existing object will be destructed, and the new object will be created in its place.
  *
+ * @param	Class		the class of the object to create
  * @param	InOuter		the object to create this object within (the Outer property for the new object will be set to the value specified here).
  * @param	Name		the name to give the new object. If no value (NAME_None) is specified, the object will be given a unique name in the form of ClassName_#.
  * @param	SetFlags	the ObjectFlags to assign to the new object. some flags can affect the behavior of constructing the object.
  * @param InternalSetFlags	the InternalObjectFlags to assign to the new object. some flags can affect the behavior of constructing the object.
  * 
  * Rest shall be made available when reflection code is enabled
- * @param	Class		the class of the object to create
  * @param bCanReuseSubobjects	if set to true, SAO will not attempt to destroy a subobject if it already exists in memory.
  * @param bOutReusedSubobject	flag indicating if the object is a subobject that has already been created (in which case further initialization is not necessary).
  * @param ExternalPackage	External Package assigned to the allocated object, if any
  * @return	a pointer to a fully initialized object of the specified class.
  */
-KARMA_API UObject* StaticAllocateObject(UObject* InOuter, const std::string& name, EObjectFlags SetFlags, EInternalObjectFlags InternalSetFlags = EInternalObjectFlags::None);
+KARMA_API UObject* StaticAllocateObject(const UClass* Class, UObject* InOuter, const std::string& name, EObjectFlags SetFlags = EObjectFlags::RF_NoFlags, EInternalObjectFlags InternalSetFlags = EInternalObjectFlags::None);
 
 
 /**
  * Convenience template for constructing a gameplay object
  *
- * @param	Outer		the outer for the new object.  If not specified, object will be created in the transient package.
+ * @param	Outer		the outer for the new object.  If not specified, object will be created in the transient package. For AActors, Outer is the ULevel
  * @param	Class		the class of object to construct
  * @param	Name		the name for the new object.  If not specified, the object will be given a transient name via MakeUniqueObjectName
  * @param	Flags		the object flags to apply to the new object
@@ -192,26 +202,44 @@ KARMA_API UObject* StaticAllocateObject(UObject* InOuter, const std::string& nam
  *
  * @return	a pointer of type T to a new object of the specified class
  */
-	template< class T >
-	FUNCTION_NON_NULL_RETURN_START
-		T* NewObject(UObject* Outer,/* const UClass* Class,*/ std::string name = "No_Name", EObjectFlags Flags = RF_NoFlags, UObject* Template = nullptr, bool bCopyTransientsFromClassDefaults = false/*, FObjectInstancingGraph* InInstanceGraph = nullptr, UPackage* ExternalPackage = nullptr*/)
-		FUNCTION_NON_NULL_RETURN_END
+template< class T >
+FUNCTION_NON_NULL_RETURN_START
+T* NewObject(UObject* Outer, const UClass* Class, std::string name = "No_Name", EObjectFlags Flags = RF_NoFlags, UObject* Template = nullptr, bool bCopyTransientsFromClassDefaults = false/*, FObjectInstancingGraph* InInstanceGraph = nullptr, UPackage* ExternalPackage = nullptr*/)
+FUNCTION_NON_NULL_RETURN_END
+{
+	if (name == "")
 	{
-		if (name == "")
-		{
-			KR_CORE_ASSERT(false, "NewObject with empty name can't be used to create default subobjects");
-			//FObjectInitializer::AssertIfInConstructor(Outer, TEXT("NewObject with empty name can't be used to create default subobjects (inside of UObject derived class constructor) as it produces inconsistent object names. Use ObjectInitializer.CreateDefaultSubobject<> instead."));
-		}
-
-		FStaticConstructObjectParameters Params;
-		//Params.Outer = Outer;
-		Params.m_Name = name;
-		Params.m_SetFlags = Flags;
-		Params.m_Template = Template;
-		Params.m_bCopyTransientsFromClassDefaults = bCopyTransientsFromClassDefaults;
-		//Params.InstanceGraph = InInstanceGraph;
-		//Params.ExternalPackage = ExternalPackage;
-
-		return static_cast<T*>(StaticConstructObject_Internal(Params));
+		KR_CORE_ASSERT(false, "NewObject with empty name can't be used to create default subobjects");
+		//FObjectInitializer::AssertIfInConstructor(Outer, TEXT("NewObject with empty name can't be used to create default subobjects (inside of UObject derived class constructor) as it produces inconsistent object names. Use ObjectInitializer.CreateDefaultSubobject<> instead."));
 	}
+
+	FStaticConstructObjectParameters Params;
+	Params.m_Outer = Outer;
+	Params.m_Name = name;
+	Params.m_SetFlags = Flags;
+	Params.m_Template = Template;
+	Params.m_bCopyTransientsFromClassDefaults = bCopyTransientsFromClassDefaults;
+	//Params.InstanceGraph = InInstanceGraph;
+	//Params.ExternalPackage = ExternalPackage;
+
+	return static_cast<T*>(StaticConstructObject_Internal(Params));
+}
+
+/**
+ * A routine to find if the object is instantiated already. May need to modify in accordance with thread safety in future
+ * UE name StaticFindObjectFastInternal
+ * 
+ * @param	ObjectClass			the class of object to construct 
+ * @param	ObjectPackage		the outer where the object is supposed to be found
+ * @param	ObjectName			the name for the object to be found
+ * @param	bExactClass			class match check
+ * @param	bAnyPackage			If there is no package (no InObjectPackage specified, and InName's package is "") and the caller specified any_package, then 
+ *								accept it, regardless of its package.Or, if the object is a top-level package then accept it immediately
+ * @param	ExcludeFlags		Don't return objects that have any of these exclusive flags set
+ * @param	ExclusiveInternalFlags			Include (or not) pending kill objects
+ * @param	ExternalPackage					Assign an external Package to the created object if non-null
+ *
+ * @return	a pointer of type UObject if found, else nulptr
+ */
+KARMA_API UObject* StaticFindObjectFastInternal(const UClass* ObjectClass, const UObject* ObjectPackage, const std::string& ObjectName, bool bExactClass = false, EObjectFlags ExcludeFlags = RF_NoFlags, EInternalObjectFlags ExclusiveInternalFlags = EInternalObjectFlags::None);
 }

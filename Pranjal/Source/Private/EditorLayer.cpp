@@ -2,6 +2,8 @@
 #include "KarmaGuiMesa.h"
 // Experimental
 #include "GLFW/glfw3.h"
+#include "Core/Object.h"
+#include "Core/Class.h"
 
 namespace Karma
 {
@@ -235,6 +237,11 @@ namespace Karma
 			{
 				m_EditorCamera->LeftMouseButtonReleased();
 			}
+		}
+
+		if (Input::IsKeyPressed(GLFW_KEY_G))
+		{
+			KR_CORE_INFO("someUObject name is {0}", UObject::StaticClass<UClass>()->GetPName());
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_SPACE))

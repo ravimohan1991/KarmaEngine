@@ -8,11 +8,19 @@
 
 #include "krpch.h"
 
+#include "Core/UObjectGlobals.h"
+
 namespace Karma
 {
-	enum EObjectFlags;
+	//enum EObjectFlags;
 	class UObject;
 	class UClass;
+	//enum class EInternalObjectFlags;
+
+	extern std::vector<UObject> GUObjectStore;
+
+/** Mask for all object flags */
+#define RF_AllFlags				(EObjectFlags)0xffffffff	///< All flags, used mainly for error checking
 
 	/**
 	 * Low level implementation of UObject, should not be used directly in game code
@@ -20,13 +28,28 @@ namespace Karma
 	 */
 	class KARMA_API UObjectBase
 	{
+	protected:
+		UObjectBase();
+
+	public:
+		/**
+		 * Constructor used by StaticAllocateObject
+		 * @param	InClass				non NULL, this gives the class of the new object, if known at this time
+		 * @param	InFlags				RF_Flags to assign
+		 * @param	InOuter				outer for this object
+		 * @param	InName				name of the new object
+		 * @param	InObjectArchetype	archetype to assign
+		 */
+
+		UObjectBase(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName);
+
 	private:
 
 		/** Flags used to track and report various object states. This needs to be 8 byte aligned on 32-bit
 			platforms to reduce memory waste */
 		EObjectFlags					m_ObjectFlags;
 
-		/** Index into GObjectArray...very private. */
+		/** Index into GUObjectStore...very private. */
 		int32_t							m_InternalIndex;
 
 		/** Object this object resides in. */
@@ -37,6 +60,15 @@ namespace Karma
 
 		/** Name of this object */
 		std::string							m_NamePrivate;
+
+	private:
+		/**
+		 * Add a newly created object to the name hash tables and the object array
+		 *
+		 * @param name					name to assign to this uobject
+		 * @param inSetInternalFlags	Internal object flags to be set on the object once it's been added to the array
+		 */
+		void AddObject(const std::string& name, EInternalObjectFlags inSetInternalFlags);
 
 	public:
 		/**
@@ -81,6 +113,12 @@ namespace Karma
 			return (T*)GetTypedOuter(T::StaticClass(&someObject));
 		}
 
+		/**
+		 * Checks to see if the object appears to be valid
+		 * @return true if this appears to be a valid object
+		 */
+		bool IsValidLowLevel() const;
+
 	public:
 		/** Returns true if this object is of the specified type. */
 		template <typename OtherClassType>
@@ -108,6 +146,34 @@ namespace Karma
 		FORCEINLINE UClass* GetClass() const
 		{
 			return m_ClassPrivate;
+		}
+
+		/*-------------------
+				Flags
+		-------------------*/
+
+		/**
+		* Retrieve the object flags directly
+		*
+		* @return Flags for this object
+		**/
+		FORCEINLINE EObjectFlags GetFlags() const
+		{
+			KR_CORE_ASSERT((m_ObjectFlags & ~RF_AllFlags) == 0, "{0} flagged as RF_ALLFlags", GetName());
+			return m_ObjectFlags;
+		}
+
+
+		/**
+		 * Used to safely check whether any of the passed in flags are set.
+		 *
+		 * @param FlagsToCheck	Object flags to check for.
+		 * @return				true if any of the passed in flags are set, false otherwise  (including no flags passed in).
+		 */
+		FORCEINLINE bool HasAnyFlags(EObjectFlags FlagsToCheck) const
+		{
+			KR_CORE_ASSERT(!(FlagsToCheck & (RF_MarkAsNative | RF_MarkAsRootSet)) || FlagsToCheck == RF_AllFlags, "Illegal flags being used"); // These flags can't be used outside of constructors / internal code
+			return (GetFlags() & FlagsToCheck) != 0;
 		}
 
 		/*-------------------

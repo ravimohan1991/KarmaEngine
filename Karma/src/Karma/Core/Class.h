@@ -54,9 +54,23 @@ namespace Karma
 			return m_SuperStruct;
 		}
 
+		/** Total size of all UProperties, the allocated structure may be larger due to alignment */
+		FORCEINLINE int32 GetPropertiesSize() const
+		{
+			return m_PropertiesSize;
+		}
+
 	private:
 		/** Struct this inherits from, may be null */
 		UStruct* m_SuperStruct;
+
+	public:
+		/** Total size of all UProperties, the allocated structure may be larger due to alignment */
+		int32 m_PropertiesSize;
+
+		/** Alignment of structure in memory, structure will be at least this large */
+		// Public?
+		int32 m_MinAlignment;
 	};
 
 	/**
@@ -82,5 +96,60 @@ namespace Karma
 	public:
 		void SetPName(const std::string& name);
 		const std::string& GetPName() const { return m_NamePrivate; }
+
+		/**
+		 * Get the default object from the class
+		 * @param	bCreateIfNeeded if true (default) then the CDO is created if it is null
+		 * @return		the CDO for this class
+		 */
+		UObject* GetDefaultObject(bool bCreateIfNeeded = true) const
+		{
+			if (ClassDefaultObject == nullptr && bCreateIfNeeded)
+			{
+				// some UE macro
+				const_cast<UClass*>(this)->CreateDefaultObject();
+			}
+
+			return ClassDefaultObject;
+		}
+
+		/**
+		 * Get the default object from the class and cast to a particular type
+		 * @return		the CDO for this class
+		 */
+		template<class T>
+		T* GetDefaultObject() const
+		{
+			UObject* Ret = GetDefaultObject();
+			KR_CORE_ASSERT(Ret->IsA(UObject::StaticClass<T>()), "Class {0} is not subclass of UObject");
+			return (T*)Ret;
+		}
+
+		/** Returns parent class, the parent of a Class is always another class */
+		UClass* GetSuperClass() const
+		{
+			return (UClass*)GetSuperStruct();
+		}
+
+		/** Alignment of structure in memory, structure will be at least this large */
+		FORCEINLINE int32_t GetMinAlignment() const
+		{
+			return m_MinAlignment;
+		}
+
+	protected:
+		/**
+		 * Get the default object from the class, creating it if missing, if requested or under a few other circumstances
+		 * @return		the CDO for this class
+		 **/
+		virtual UObject* CreateDefaultObject();
+
+	public:
+		/** The class default object; used for delta serialization and object initialization */
+		UObject* ClassDefaultObject;
+
+	private:
+		/** Used to check if the class layout is currently changing and therefore is not ready for a CDO to be created */
+		bool m_bLayoutChanging;
 	};
 }

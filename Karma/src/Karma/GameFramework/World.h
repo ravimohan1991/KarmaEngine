@@ -4,14 +4,15 @@
 
 #include "Object.h"
 
-class AActor;
-class FTransform;
-class FActorSpawnParameters;
-class APawn;
-class ULevel;
-
 namespace Karma
 {
+	class AActor;
+	class FTransform;
+	struct FActorSpawnParameters;
+	class APawn;
+	class ULevel;
+	class UClass;
+
 	/* Struct of optional parameters passed to SpawnActor function(s). */
 	struct KARMA_API FActorSpawnParameters
 	{
@@ -41,7 +42,7 @@ namespace Karma
 #endif
 
 		/* The parent component to set the Actor in. */
-		class   UChildActorComponent* OverrideParentComponent;
+		class   UChildActorComponent* m_OverrideParentComponent;
 
 		/** Method for resolving collisions at the spawn point. Undefined means no override, use the actor's setting. */
 		// Need physics
@@ -73,10 +74,10 @@ namespace Karma
 		};
 
 		/* In which way should SpawnActor should treat the supplied Name if not none. */
-		ESpawnActorNameMode NameMode;
+		ESpawnActorNameMode m_NameMode;
 
 		/* Flags used to describe the spawned actor/object instance. */
-		EObjectFlags ObjectFlags;
+		EObjectFlags m_ObjectFlags;
 
 		/* Custom function allowing the caller to specific a function to execute post actor construction but before other systems see this actor spawn. */
 		// maybe later
@@ -105,6 +106,16 @@ namespace Karma
 		 *
 		 * @return	Actor that just spawned
 		 */
-		AActor* SpawnActor(FTransform const* Transform, const FActorSpawnParameters& SpawnParameters = FActorSpawnParameters());
+		AActor* SpawnActor(UClass* Class, FTransform const* Transform, const FActorSpawnParameters& SpawnParameters = FActorSpawnParameters());
+
+	private:
+//#if WITH_EDITORONLY_DATA
+		/** Pointer to the current level being edited. Level has to be in the Levels array and == PersistentLevel in the game. */
+		ULevel*								m_CurrentLevel;
+//#endif
+
+	public:
+		/** Is the world being torn down */
+		uint8_t m_bIsTearingDown : 1;
 	};
 }
