@@ -104,13 +104,13 @@ namespace Karma
 		 */
 		UObject* GetDefaultObject(bool bCreateIfNeeded = true) const
 		{
-			if (ClassDefaultObject == nullptr && bCreateIfNeeded)
+			if (m_ClassDefaultObject == nullptr && bCreateIfNeeded)
 			{
 				// some UE macro
 				const_cast<UClass*>(this)->CreateDefaultObject();
 			}
 
-			return ClassDefaultObject;
+			return m_ClassDefaultObject;
 		}
 
 		/**
@@ -146,7 +146,7 @@ namespace Karma
 
 	public:
 		/** The class default object; used for delta serialization and object initialization */
-		UObject* ClassDefaultObject;
+		UObject* m_ClassDefaultObject;
 
 	private:
 		/** Used to check if the class layout is currently changing and therefore is not ready for a CDO to be created */

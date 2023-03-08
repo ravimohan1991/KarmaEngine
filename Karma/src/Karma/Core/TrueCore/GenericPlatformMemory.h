@@ -4,6 +4,8 @@
 
 namespace Karma
 {
+	typedef size_t SIZE_T;
+
 	//---------------------------------------------------------------------
 	// Utility for automatically setting up the pointer-sized integer type
 	//---------------------------------------------------------------------

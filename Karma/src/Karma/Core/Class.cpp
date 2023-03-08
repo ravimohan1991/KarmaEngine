@@ -64,6 +64,7 @@ namespace Karma
 	**/
 	UObject* UClass::CreateDefaultObject()
 	{
+		/*
 		if (m_ClassDefaultObject == nullptr)
 		{
 			KR_CORE_ASSERT(!m_bLayoutChanging, "Class named {0} creating its CDO while changing its layout", GetName());
@@ -142,7 +143,8 @@ namespace Karma
 					ClassDefaultObject->PostCDOContruct();
 				}
 			}
-		}
+		}*/
+		//m_ClassDefaultObject = new 
 		return m_ClassDefaultObject;
 	}
 }

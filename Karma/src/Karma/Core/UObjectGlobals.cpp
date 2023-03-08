@@ -1,7 +1,7 @@
 #include "UObjectGlobals.h"
 #include "Object.h"
 #include "Core/Class.h"
-#include "Ganit/Math.h"
+#include "Ganit/KarmaMath.h"
 #include "UObjectAllocator.h"
 #include "Karma/Core/TrueCore/KarmaMemory.h"
 

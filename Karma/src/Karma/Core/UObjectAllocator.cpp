@@ -1,6 +1,6 @@
 #include "UObjectAllocator.h"
 #include "Karma/Core/TrueCore/KarmaMemory.h"
-#include "Karma/Ganit/Math.h"
+#include "Karma/Ganit/KarmaMath.h"
 
 namespace Karma
 {

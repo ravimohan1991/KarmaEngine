@@ -14,9 +14,9 @@ namespace Karma
 		UClass* m_StaticClass;
 
 	public:
-		static const TCHAR* StaticConfigName()
+		static const char* StaticConfigName()
 		{
-			return TEXT("Engine");
+			return "Engine";
 		}
 
 		/**

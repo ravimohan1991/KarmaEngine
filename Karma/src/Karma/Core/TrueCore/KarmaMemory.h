@@ -8,8 +8,11 @@
 
 #ifdef KR_WINDOWS_PLATFORM
 #include "Platform/Windows/Core/WindowsPlatformMemory.h"
-#endif // KR_WINDOWS_PLATFORM
+#elif KR_MAC_PLATFORM
+#include "Platform/Mac/Core/MacPlatformMemory.h"
+#endif
 
+#include "UObjectAllocator.h"
 
 namespace Karma
 {
@@ -61,7 +64,7 @@ namespace Karma
 		template< class T >
 		static FORCEINLINE void Memset(T& Src, uint8_t ValueToSet)
 		{
-			static_assert(!TIsPointer<T>::Value, "For pointers use the three parameters function");
+			KR_CORE_ASSERT(!TIsPointer<T>::Value, "For pointers use the three parameters function");
 			Memset(&Src, ValueToSet, sizeof(T));
 		}
 
@@ -73,7 +76,7 @@ namespace Karma
 		template< class T >
 		static FORCEINLINE void Memzero(T& Src)
 		{
-			static_assert(!TIsPointer<T>::Value, "For pointers use the two parameters function");
+			KR_CORE_ASSERT(!TIsPointer<T>::Value, "For pointers use the two parameters function");
 			Memzero(&Src, sizeof(T));
 		}
 
@@ -85,7 +88,7 @@ namespace Karma
 		template< class T >
 		static FORCEINLINE void Memcpy(T& Dest, const T& Src)
 		{
-			static_assert(!TIsPointer<T>::Value, "For pointers use the three parameters function");
+			KR_CORE_ASSERT(!TIsPointer<T>::Value, "For pointers use the three parameters function");
 			Memcpy(&Dest, &Src, sizeof(T));
 		}
 

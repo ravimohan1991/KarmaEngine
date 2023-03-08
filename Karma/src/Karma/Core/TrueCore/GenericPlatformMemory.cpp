@@ -1,5 +1,5 @@
 #include "GenericPlatformMemory.h"
-#include "Karma/Ganit/Math.h"
+#include "Karma/Ganit/KarmaMath.h"
 
 #ifndef RESTRICT
 #define RESTRICT __restrict						/* no alias hint */
