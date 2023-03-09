@@ -14,7 +14,7 @@ namespace Karma
 	KARMA_API bool			GIsInitialLoad = true;
 
 	// Try putting in .h also
-	extern FUObjectAllocator GUObjectAllocator;
+	//extern FUObjectAllocator GUObjectAllocator;
 
 	UObject* StaticFindObjectFastInternal(const UClass* ObjectClass, const UObject* ObjectPackage, const std::string& ObjectName, bool bExactClass, EObjectFlags ExcludeFlags, EInternalObjectFlags ExclusiveInternalFlags)
 	{

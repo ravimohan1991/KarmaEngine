@@ -8,13 +8,13 @@
 
 #include "krpch.h"
 
-class UObjectBase;
-
 namespace Karma
 {
+	class UObjectBase;
+
 	/**
- * Traits class which tests if a type is integral.
- */
+	 * Traits class which tests if a type is integral.
+	 */
 	template <typename T>
 	struct TIsIntegral
 	{
@@ -72,7 +72,7 @@ namespace Karma
 		return (T)(((uint64_t)Val + Alignment - 1) & ~(Alignment - 1));
 	}
 
-	class KARMA_API FUObjectAllocator
+	class FUObjectAllocator
 	{
 	public:
 
@@ -125,7 +125,7 @@ namespace Karma
 		 *
 		 * @param Object object to free
 		 */
-		void FreeUObject(UObjectBase* Object) const;
+		//void FreeUObject(UObjectBase* Object) const;
 
 	private:
 
@@ -140,5 +140,5 @@ namespace Karma
 	};
 
 	/** Global UObjectBase allocator							*/
-	extern KARMA_API FUObjectAllocator GUObjectAllocator;
+	extern FUObjectAllocator GUObjectAllocator;
 }

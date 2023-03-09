@@ -1,11 +1,12 @@
 #include "UObjectAllocator.h"
 #include "Karma/Core/TrueCore/KarmaMemory.h"
 #include "Karma/Ganit/KarmaMath.h"
+#include "Core/UObjectBase.h"
 
 namespace Karma
 {
 	/** Global UObjectBase allocator							*/
-	KARMA_API FUObjectAllocator GUObjectAllocator;
+	FUObjectAllocator GUObjectAllocator;
 
 	/**
 	 * Allocates and initializes the permanent object pool

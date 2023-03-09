@@ -2,24 +2,24 @@
 
 #include "krpch.h"
 
-//#include "glm/common.hpp"
+#include "glm/common.hpp"
 
 namespace Karma
 {
-	struct KARMA_API FMath// KARMA_API?
+	struct KARMA_API FMath
 	{
 		/** Returns higher value in a generic way */
 		template< class T >
 		static  T Max(const T A, const T B)
 		{
-			return A;//glm::max(A, B);
+			return glm::max(A, B);
 		}
 
 		/** Returns lower value in a generic way */
 		template< class T >
 		static  T Min(const T A, const T B)
 		{
-			return A;//glm::min(A, B);
+			return glm::min(A, B);
 		}
 
 		static uint32_t CountTrailingZeros(uint32_t Value)
