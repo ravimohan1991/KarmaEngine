@@ -195,7 +195,7 @@ KARMA_API UObject* StaticAllocateObject(const UClass* Class, UObject* InOuter, c
  * @param	Class		the class of object to construct
  * @param	Name		the name for the new object.  If not specified, the object will be given a transient name via MakeUniqueObjectName
  * @param	Flags		the object flags to apply to the new object
- * @param	Template	the object to use for initializing the new object.  If not specified, the class's default object will be used
+ * @param	Template	the object to use for initializing the new object.  If not specified, the class's default object will be used. Not functional atm
  * @param	bCopyTransientsFromClassDefaults	if true, copy transient from the class defaults instead of the pass in archetype ptr (often these are the same)
  * @param	InInstanceGraph						contains the mappings of instanced objects and components to their templates
  * @param	ExternalPackage						Assign an external Package to the created object if non-null
@@ -217,7 +217,7 @@ FUNCTION_NON_NULL_RETURN_END
 	Params.m_Outer = Outer;
 	Params.m_Name = name;
 	Params.m_SetFlags = Flags;
-	Params.m_Template = Template;
+	//Params.m_Template = Template;
 	Params.m_bCopyTransientsFromClassDefaults = bCopyTransientsFromClassDefaults;
 	//Params.InstanceGraph = InInstanceGraph;
 	//Params.ExternalPackage = ExternalPackage;

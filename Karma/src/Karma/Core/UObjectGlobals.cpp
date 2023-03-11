@@ -70,12 +70,12 @@ namespace Karma
 		UObject* InOuter = Params.m_Outer;
 		const std::string& InName = Params.m_Name;
 		EObjectFlags InFlags = Params.m_SetFlags;
-		UObject* InTemplate = Params.m_Template;
+		//UObject* InTemplate = Params.m_Template;
 
-		if (InTemplate)
+		/*if (InTemplate)
 		{
 			KR_CORE_ASSERT(InTemplate->IsA(InClass) || (InFlags & RF_ClassDefaultObject), "StaticConstructObject {0} is not an instance of class {1} and it is not a CDO", InTemplate->GetName(), InClass->GetName()); // template must be an instance of the class we are creating, except CDOs
-		}
+		}*/
 
 		// Need to write in garbage collection code
 

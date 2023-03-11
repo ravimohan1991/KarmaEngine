@@ -49,6 +49,8 @@ namespace Karma
 	 */
 	struct KARMA_API TRotator
 	{
+		TRotator();
+
 		/** Rotation around the right axis (around Y axis), Looking up and down (0=Straight Ahead, +Up, -Down) */
 		glm::vec1 m_Pitch;
 
@@ -58,7 +60,6 @@ namespace Karma
 		/** Rotation around the forward axis (around X axis), Tilting your head, (0=Straight, +Clockwise, -CCW) */
 		glm::vec1 m_Roll;
 	};
-
 
 	/**
 	 * Transform composed of Scale, Rotation (as a quaternion), and Translation.
@@ -78,9 +79,13 @@ namespace Karma
 	class KARMA_API FTransform
 	{
 	public:
+		FTransform();
+
+	public:
 		const TRotator& GetRotation() const { return m_Rotation; }
 		const glm::vec3& GetTranslation() const { return m_Translation; }
 		const glm::vec3& GetScale3D() const { return m_Scale3D; }
+		static const FTransform& Identity();
 
 	private:
 		/** Rotation of this transformation, need to work on quaternion <--> rotator conversions */

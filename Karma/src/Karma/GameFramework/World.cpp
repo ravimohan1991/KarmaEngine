@@ -3,6 +3,7 @@
 #include "GameFramework/Actor.h"
 #include "Core/Class.h"
 #include "GameFramework/Level.h"
+#include "Ganit/Transform.h"
 
 namespace Karma
 {
@@ -41,8 +42,10 @@ namespace Karma
 		std::string newActorName = spawnParameters.m_Name;
 		EObjectFlags actorFlags = spawnParameters.m_ObjectFlags;
 		// Use class's default actor as a template if none provided.
-		UObject* aTemplate = spawnParameters.m_Template ? spawnParameters.m_Template : Class->GetDefaultObject<AActor>();
+		UObject* aTemplate = spawnParameters.m_Template ? spawnParameters.m_Template : nullptr;//Class->GetDefaultObject<AActor>();
 
+		FTransform const UserTransform = (transform != nullptr) ? *transform : FTransform::Identity();
+		 
 		AActor* const Actor = NewObject<AActor>(LevelToSpawnIn, Class, newActorName, actorFlags, aTemplate, false);
 
 		LevelToSpawnIn->Actors.push_back(Actor);
