@@ -7,6 +7,9 @@ namespace Karma
 {
 	class UActorComponent;
 	class ULevel;
+	class APawn;
+	class FTransform;
+	class UWorld;
 
 	/**
 	 * Actor is the base class for an Object that can be placed or spawned in a level. A concept taken from Unreal Engine.
@@ -28,5 +31,11 @@ namespace Karma
 	public:
 		/** Return the ULevel that this Actor is part of. */
 		ULevel* GetLevel() const;
+
+		/** Called after the actor is spawned in the world.  Responsible for setting up actor for play. */
+		void PostSpawnInitialize(FTransform const& SpawnTransform, AActor* InOwner, APawn* InInstigator, bool bRemoteOwned, bool bNoFail, bool bDeferConstruction);
+
+		/** Getter for the cached world pointer, will return null if the actor is not actually spawned in a level */
+		virtual UWorld* GetWorld() const override final;
 	};
 }
