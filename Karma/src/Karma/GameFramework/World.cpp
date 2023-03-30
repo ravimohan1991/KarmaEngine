@@ -7,6 +7,14 @@
 
 namespace Karma
 {
+	UWorld::UWorld()
+	{
+		m_TimeSeconds = 0.0f;
+		m_CurrentLevel = nullptr;
+		m_PersistentLevel = nullptr;
+		m_bIsTearingDown = false;
+	}
+
 	AActor* UWorld::SpawnActor(UClass* Class, FTransform const* transform, const FActorSpawnParameters& spawnParameters)
 	{
 		if (Class == nullptr)
@@ -48,9 +56,16 @@ namespace Karma
 		 
 		AActor* const Actor = NewObject<AActor>(LevelToSpawnIn, Class, newActorName, actorFlags, aTemplate, false);
 
-		LevelToSpawnIn->Actors.push_back(Actor);
+		LevelToSpawnIn->m_Actors.Add(Actor);
 		//LevelToSpawnIn->ActorsForGC.Add(Actor);
 
+		Actor->PostSpawnInitialize(UserTransform, spawnParameters.m_Owner, spawnParameters.m_Instigator, spawnParameters.IsRemoteOwned(), spawnParameters.m_bNoFail, spawnParameters.m_bDeferConstruction);
+
 		return Actor;
+	}
+
+	bool UWorld::AreActorsInitialized() const
+	{
+		return m_bActorsInitialized && m_PersistentLevel && m_PersistentLevel->m_Actors.Num();
 	}
 }

@@ -8,6 +8,18 @@ class AActor;
 
 namespace Karma
 {
+	enum class EComponentCreationMethod : uint8_t
+	{
+		/** A component that is part of a native class. */
+		Native,
+		/** A component that is created from a template defined in the Components section of the Blueprint. */
+		SimpleConstructionScript,
+		/**A dynamically created component, either from the UserConstructionScript or from a Add Component node in a Blueprint event graph. */
+		UserConstructionScript,
+		/** A component added to a single Actor instance via the Component section of the Actor's details panel. */
+		Instance,
+	};
+
 	/**
 	 * ActorComponent is the base class for components that define reusable behavior that can be added to different types of Actors.
 	 * ActorComponents that have a transform are known as SceneComponents and those that can be rendered are PrimitiveComponents.
@@ -24,6 +36,10 @@ namespace Karma
 
 		/** Indicates that BeginPlay has been called, but EndPlay has not yet */
 		uint8_t m_bHasBegunPlay : 1;
+
+
+		/** Cached pointer to owning actor */
+		mutable AActor* m_OwnerPrivate;
 
 	public:
 		/**
@@ -50,5 +66,12 @@ namespace Karma
 		 * Called from AActor::EndPlay only if bHasBegunPlay is true
 		 */
 		virtual void EndPlay();//const EEndPlayReason::Type EndPlayReason);
+
+		/** Follow the Outer chain to get the  AActor  that 'Owns' this component */
+		AActor* GetOwner() const;
+
+	public:
+		/** Describes how a component instance will be created */
+		EComponentCreationMethod m_CreationMethod;
 	};
 }

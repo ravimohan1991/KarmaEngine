@@ -28,7 +28,7 @@ namespace Karma
 		AActor* m_Owner;
 
 		/* The APawn that is responsible for damage done by the spawned Actor. (Can be left as NULL). */
-		APawn* Instigator;
+		APawn* m_Instigator;
 
 		/* The ULevel to spawn the Actor in, i.e. the Outer of the Actor. If left as NULL the Outer of the Owner is used. If the Owner is NULL the persistent level is used. */
 		ULevel* m_OverrideLevel;
@@ -53,7 +53,7 @@ namespace Karma
 		//friend class UPackageMapClient;
 
 		/* Is the actor remotely owned. This should only be set true by the package map when it is creating an actor on a client that was replicated from the server. */
-		//uint8_t	bRemoteOwned : 1;
+		uint8_t m_bRemoteOwned : 1;
 
 	public:
 
@@ -82,6 +82,14 @@ namespace Karma
 		/* Custom function allowing the caller to specific a function to execute post actor construction but before other systems see this actor spawn. */
 		// maybe later
 		//TFunction<void(AActor*)> CustomPreSpawnInitalization;
+
+		bool IsRemoteOwned() const { return m_bRemoteOwned; }
+
+		/* Determines whether spawning will not fail if certain conditions are not met. If true, spawning will not fail because the class being spawned is `bStatic=true` or because the class of the template Actor is not the same as the class of the Actor being spawned. */
+		uint8_t m_bNoFail : 1;
+
+		/* Determines whether the construction script will be run. If true, the construction script will not be run on the spawned Actor. Only applicable if the Actor is being spawned from a Blueprint. */
+		uint8_t m_bDeferConstruction : 1;
 	};
 
 	/**
@@ -97,6 +105,8 @@ namespace Karma
 	class KARMA_API UWorld : public UObject
 	{
 	public:
+		UWorld();
+
 		/**
 		 * Spawn Actors with given transform and SpawnParameters
 		 *
@@ -114,8 +124,37 @@ namespace Karma
 		ULevel*								m_CurrentLevel;
 //#endif
 
+		/** Persistent level containing the world info, default brush and actors spawned during gameplay among other things			*/
+		ULevel*								m_PersistentLevel;
+
 	public:
 		/** Is the world being torn down */
 		uint8_t m_bIsTearingDown : 1;
+
+		/**  Time in seconds since level began play, but IS paused when the game is paused, and IS dilated/clamped. */
+		double m_TimeSeconds;
+
+		/** Whether actors have been initialized for play */
+		uint8_t m_bActorsInitialized : 1;
+
+	public:
+		//////////////////////////////////////////////////////////////////////////
+		// UWorld inlines:
+
+		// Is not live atm
+		FORCEINLINE double GetTimeSeconds() const
+		{
+			return m_TimeSeconds;
+		}
+
+	public:
+		/** Returns true if the actors have been initialized and are ready to start play */
+		bool AreActorsInitialized() const;
+
+		/**
+		 * Initializes a newly created world.
+		 * This and nearby functions (create destroy world for instance) should be useful
+		 */
+		//void InitializeNewWorld(const InitializationValues IVS = InitializationValues(), bool bInSkipInitWorld = false);
 	};
 }

@@ -25,4 +25,10 @@ namespace Karma
 
 		m_bHasBegunPlay = false;
 	}
+
+	AActor* UActorComponent::GetOwner() const
+	{
+		//checkSlow(OwnerPrivate == GetActorOwnerNoninline()); // verify cached value is correct
+		return m_OwnerPrivate;
+	}
 }

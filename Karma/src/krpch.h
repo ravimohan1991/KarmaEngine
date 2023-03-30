@@ -46,3 +46,5 @@
 // Karma's general includes
 #include "Karma/Core.h"
 #include "Karma/Log.h"
+
+#include "Karma/Core/KarmaTypes.h"

@@ -6,6 +6,8 @@
 
 namespace Karma
 {
+#define KR_SMALL_NUMBER			(1.e-8f)
+
 	/**
 	 * Floating point quaternion that can represent a rotation about an axis in 3-D space.
 	 * The X, Y, Z, W components also double as the Axis/Angle format.
@@ -50,6 +52,7 @@ namespace Karma
 	struct KARMA_API TRotator
 	{
 		TRotator();
+		TRotator(glm::vec3 EulerAngles);
 
 		/** Rotation around the right axis (around Y axis), Looking up and down (0=Straight Ahead, +Up, -Down) */
 		glm::vec1 m_Pitch;
@@ -80,12 +83,83 @@ namespace Karma
 	{
 	public:
 		FTransform();
+		FTransform(glm::vec3 rotation, glm::vec3 translation, glm::vec3 scale3D);
 
 	public:
 		const TRotator& GetRotation() const { return m_Rotation; }
 		const glm::vec3& GetTranslation() const { return m_Translation; }
 		const glm::vec3& GetScale3D() const { return m_Scale3D; }
 		static const FTransform& Identity();
+
+		FTransform GetRelativeTransform(const FTransform& RelativeToWhat) const;
+
+		/**
+		 * Return a transform that is the result of this multiplied by another transform.
+		 * Order matters when composing transforms : C = A * B will yield a transform C that logically first applies A then B to any subsequent transformation.
+		 *
+		 * @param  Other other transform by which to multiply.
+		 * @return new transform: this * Other
+		 */
+		inline FTransform operator*(const FTransform& Other) const;
+
+		/**
+		 * Create a new transform: OutTransform = A * B.
+		 *
+		 * Order matters when composing transforms : A * B will yield a transform that logically first applies A then B to any subsequent transformation.
+		 *
+		 * @param  OutTransform pointer to transform that will store the result of A * B.
+		 * @param  A Transform A.
+		 * @param  B Transform B.
+		 */
+		inline static void Multiply(FTransform* OutTransform, const FTransform* A, const FTransform* B);
+
+		inline bool static AnyHasNegativeScale(const glm::vec3& InScale3D, const glm::vec3& InOtherScale3D)
+		{
+			return  (InScale3D.x < 0.f || InScale3D.y < 0.f || InScale3D.z < 0.f
+				|| InOtherScale3D.x < 0.f || InOtherScale3D.y < 0.f || InOtherScale3D.z < 0.f);
+		}
+
+		/** 
+		 * Mathematically if you have 0 scale, it should be infinite, 
+		 * however, in practice if you have 0 scale, and relative transform doesn't make much sense 
+		 * anymore because you should be instead of showing gigantic infinite mesh
+		 * also returning BIG_NUMBER causes sequential NaN issues by multiplying 
+		 * so we hardcode as 0
+		 */
+		inline static glm::vec3 GetSafeScaleReciprocal(const glm::vec3& InScale, long long Tolerance)
+		{
+			glm::vec3 SafeReciprocalScale;
+
+			if (glm::abs(InScale.x) <= Tolerance)
+			{
+				SafeReciprocalScale.x = 0.f;
+			}
+			else
+			{
+				SafeReciprocalScale.x = 1 / InScale.x;
+			}
+
+			if (glm::abs(InScale.y) <= Tolerance)
+			{
+				SafeReciprocalScale.y = 0.f;
+			}
+			else
+			{
+				SafeReciprocalScale.y = 1 / InScale.y;
+			}
+
+			if (glm::abs(InScale.z) <= Tolerance)
+			{
+				SafeReciprocalScale.z = 0.f;
+			}
+			else
+			{
+				SafeReciprocalScale.z = 1 / InScale.z;
+			}
+
+			return SafeReciprocalScale;
+		}
+
 
 	private:
 		/** Rotation of this transformation, need to work on quaternion <--> rotator conversions */

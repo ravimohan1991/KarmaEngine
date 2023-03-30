@@ -38,5 +38,19 @@ namespace Karma
 			classType someClass;
 			return StaticClass(&someClass);
 		}
+
+		/**
+		 * Returns what UWorld this object is contained within.
+		 * By default this will follow its Outer chain, but it should be overridden if that will not work.
+		 */
+		virtual class UWorld* GetWorld() const;
+
+		/**
+		 * Test validity of object similar to IsValid(Test) however the null pointer test is skipped
+		 *
+		 * @param	Test			The object to test
+		 * @return	Return true if the object is usable: not pending kill or garbage
+		 */
+		bool IsValidChecked(const UObject* Test);
 	};
 }
