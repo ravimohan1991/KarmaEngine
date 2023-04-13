@@ -5,6 +5,8 @@
 #include "ActorComponent.h"
 #include "glm/glm.hpp"
 
+#include "Ganit/Transform.h"
+
 namespace Karma
 {
 	class FTransform;
@@ -55,6 +57,15 @@ namespace Karma
 		/** Current transform of the component, relative to the world */
 		FTransform m_ComponentToWorld;
 
+		/** If RelativeLocation should be considered relative to the world, rather than the parent */
+		uint8_t m_bAbsoluteLocation : 1;
+
+		/** If RelativeRotation should be considered relative to the world, rather than the parent */
+		uint8_t m_bAbsoluteRotation : 1;
+
+		/** If RelativeScale3D should be considered relative to the world, rather than the parent */
+		uint8_t m_bAbsoluteScale : 1;
+
 	public:
 		/**
 		* Velocity of the component.
@@ -64,7 +75,7 @@ namespace Karma
 
 	public:
 		/** What we are currently attached to. If valid, RelativeLocation etc. are used relative to this object */
-		std::shared_ptr<USceneComponent> m_AttachParent;
+		//std::shared_ptr<USceneComponent> m_AttachParent;
 
 		/** Optional socket name on AttachParent that we are attached to. */
 		std::string m_AttachSocketName;
@@ -157,10 +168,58 @@ namespace Karma
 		{
 			return m_ComponentToWorld;
 		}
-	};
 
-	inline std::shared_ptr<USceneComponent> USceneComponent::GetAttachParent() const
-	{
-		return m_AttachParent;
-	}
+		virtual void BeginDestroy() override;
+
+		/**
+		 * Gets the literal value of bAbsoluteLocation.
+		 *
+		 * This exists so subclasses don't need to have direct access to the bAbsoluteLocation property so it
+		 * can be made private later.
+		 */
+		bool IsUsingAbsoluteLocation() const
+		{
+			return m_bAbsoluteLocation;
+		}
+
+		/**
+		 * Gets the literal value of bAbsoluteRotation.
+		 *
+		 * This exists so subclasses don't need to have direct access to the bAbsoluteRotation property so it
+		 * can be made private later.
+		 */
+		bool IsUsingAbsoluteRotation() const
+		{
+			return m_bAbsoluteRotation;
+		}
+
+		/**
+		* Gets the literal value of bAbsoluteScale.
+		*
+		* This exists so subclasses don't need to have direct access to the bReplicates property so it
+		* can be made private later.
+		*/
+		bool IsUsingAbsoluteScale() const
+		{
+			return m_bAbsoluteScale;
+		}
+
+		/**
+		 * Set the transform of the component relative to its parent
+		 * @param NewTransform		New transform of the component relative to its parent.
+		 * 
+		 *  To be active once physics is enabled
+		 * @param SweepHitResult	Hit result from any impact if sweep is true.
+		 * @param bSweep			Whether we sweep to the destination (currently not supported for rotation).
+		 * @param bTeleport			Whether we teleport the physics state (if physics collision is enabled for this object).
+		 *							If true, physics velocity for this object is unchanged (so ragdoll parts are not affected by change in location).
+		 *							If false, physics velocity is updated based on the change in position (affecting ragdoll parts).
+		 */
+		void SetRelativeTransform(const FTransform& NewTransform/*, bool bSweep = false, FHitResult* OutSweepHitResult = nullptr, ETeleportType Teleport = ETeleportType::None*/);
+
+		FORCEINLINE const std::string& GetAttachSocketName() const
+		{
+			return m_AttachSocketName;
+		}
+	};
 }

@@ -52,5 +52,11 @@ namespace Karma
 		 * @return	Return true if the object is usable: not pending kill or garbage
 		 */
 		bool IsValidChecked(const UObject* Test);
+
+		/**
+		 * Called before destroying the object.  This is called immediately upon deciding to destroy the object, to allow the object to begin an
+		 * asynchronous cleanup process.
+		 */
+		virtual void BeginDestroy();
 	};
 }

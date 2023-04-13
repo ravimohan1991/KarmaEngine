@@ -2,18 +2,26 @@
 
 namespace Karma
 {
+	FTransform FTransform::m_Identity = FTransform();
+
 	TRotator::TRotator()
 	{
-		m_Yaw = glm::vec1(0.0f);
-		m_Pitch = glm::vec1(0.0f);
-		m_Roll = glm::vec1(0.0f);
+		m_Yaw = 0.0f;
+		m_Pitch = 0.0f;
+		m_Roll = 0.0f;
 	}
 
 	TRotator::TRotator(glm::vec3 eulerAngles)
 	{
-		m_Yaw = glm::vec1(eulerAngles.y);
-		m_Pitch = glm::vec1(eulerAngles.z);
-		m_Roll = glm::vec1(eulerAngles.x);
+		m_Yaw = eulerAngles.y;
+		m_Pitch = eulerAngles.z;
+		m_Roll = eulerAngles.x;
+	}
+
+	TRotator TRotator::Inverse() const
+	{
+		TRotator returnRotation = TRotator(glm::vec3(-m_Yaw, -m_Pitch, -m_Roll));
+		return returnRotation;
 	}
 
 	FTransform::FTransform()
@@ -30,7 +38,7 @@ namespace Karma
 	{
 	}
 
-	const FTransform&  FTransform::Identity()
+	FTransform FTransform::Identity()
 	{
 		return FTransform();
 	}
@@ -54,30 +62,44 @@ namespace Karma
 		else
 		{
 			glm::vec3 SafeRecipScale3D = GetSafeScaleReciprocal(RelativeToWhat.m_Scale3D, KR_SMALL_NUMBER);
-			Result.m_Scale3D = m_Scale3D * SafeRecipScale3D;
+			Result.SetScale3D(m_Scale3D * SafeRecipScale3D);
 
-			if (RelativeToWhat.m_Rotation.IsNormalized() == false)
+			/* What is this?
+			if (RelativeToWhat.GetRotation().IsNormalized() == false)
 			{
 				return Identity();
 			}
+			*/
 
-			TQuat<T> Inverse = Other.Rotation.Inverse();
-			Result.Rotation = Inverse * Rotation;
+			TRotator Inverse = RelativeToWhat.GetRotation().Inverse();
+			Result.SetRotation(Inverse * m_Rotation);
 
-			Result.Translation = (Inverse * (Translation - Other.Translation)) * (SafeRecipScale3D);
+			glm::vec3 relativeRotatedTranslation = Inverse * (m_Translation - RelativeToWhat.GetTranslation());
+
+			Result.SetTranslation(glm::vec3(relativeRotatedTranslation.x * SafeRecipScale3D.x,
+											relativeRotatedTranslation.y * SafeRecipScale3D.y,
+											relativeRotatedTranslation.z * SafeRecipScale3D.z));
 		}
 
 		return Result;
 	}
 
+	inline FTransform FTransform::operator*(const FTransform& Other) const
+	{
+		FTransform someTransform;
+		Multiply(&someTransform, this, &Other);
+
+		return someTransform;
+	}
+
 	/** Returns Multiplied Transform of 2 FTransforms **/
 	inline void FTransform::Multiply(FTransform* OutTransform, const FTransform* A, const FTransform* B)
 	{
-		A->DiagnosticCheckNaN_All();
-		B->DiagnosticCheckNaN_All();
+		//A->DiagnosticCheckNaN_All();
+		//B->DiagnosticCheckNaN_All();
 
-		checkSlow(A->IsRotationNormalized());
-		checkSlow(B->IsRotationNormalized());
+		//checkSlow(A->IsRotationNormalized());
+		//checkSlow(B->IsRotationNormalized());
 
 		//	When Q = quaternion, S = single scalar scale, and T = translation
 		//	QST(A) = Q(A), S(A), T(A), and QST(B) = Q(B), S(B), T(B)
@@ -93,33 +115,33 @@ namespace Karma
 		//	Q(AxB) = Q(B)*Q(A)
 		//	S(AxB) = S(A)*S(B)
 		//	T(AxB) = Q(B)*S(B)*T(A)*-Q(B) + T(B)
-		checkSlow(VectorGetComponent(A->Scale3D, 3) == 0.f);
-		checkSlow(VectorGetComponent(B->Scale3D, 3) == 0.f);
+		//checkSlow(VectorGetComponent(A->Scale3D, 3) == 0.f);
+		//checkSlow(VectorGetComponent(B->Scale3D, 3) == 0.f);
 
-		if (Private_AnyHasNegativeScale(A->Scale3D, B->Scale3D))
-		{
+		//if (Private_AnyHasNegativeScale(A->Scale3D, B->Scale3D))
+		//{
 			// @note, if you have 0 scale with negative, you're going to lose rotation as it can't convert back to quat
-			MultiplyUsingMatrixWithScale(OutTransform, A, B);
-		}
-		else
-		{
-			const TransformVectorRegister QuatA = A->Rotation;
-			const TransformVectorRegister QuatB = B->Rotation;
-			const TransformVectorRegister TranslateA = A->Translation;
-			const TransformVectorRegister TranslateB = B->Translation;
-			const TransformVectorRegister ScaleA = A->Scale3D;
-			const TransformVectorRegister ScaleB = B->Scale3D;
+		//	MultiplyUsingMatrixWithScale(OutTransform, A, B);
+		//}
+		//else
+		//{
+			const TRotator RotationA = A->GetRotation();
+			const TRotator RotationB = B->GetRotation();
+			const glm::vec3 TranslateA = A->GetTranslation();
+			const glm::vec3 TranslateB = B->GetTranslation();
+			const glm::vec3 ScaleA = A->GetScale3D();
+			const glm::vec3 ScaleB = B->GetScale3D();
 
 			// RotationResult = B.Rotation * A.Rotation
-			OutTransform->Rotation = VectorQuaternionMultiply2(QuatB, QuatA);
+			OutTransform->SetRotation(TRotator(glm::vec3(RotationA.m_Pitch + RotationB.m_Pitch, RotationA.m_Yaw + RotationB.m_Pitch, RotationA.m_Roll + RotationB.m_Roll)));
 
 			// TranslateResult = B.Rotate(B.Scale * A.Translation) + B.Translate
-			const TransformVectorRegister ScaledTransA = VectorMultiply(TranslateA, ScaleB);
-			const TransformVectorRegister RotatedTranslate = VectorQuaternionRotateVector(QuatB, ScaledTransA);
-			OutTransform->Translation = VectorAdd(RotatedTranslate, TranslateB);
+			const glm::vec3 ScaledTransA(TranslateA.x * ScaleB.x, TranslateA.y * ScaleB.y, TranslateA.z * ScaleB.z);// = VectorMultiply(TranslateA, ScaleB);
+			const glm::vec3 RotatedTranslate(RotationB * ScaledTransA);// = VectorQuaternionRotateVector(QuatB, ScaledTransA);
+			OutTransform->SetTranslation(RotatedTranslate + TranslateB);// = VectorAdd(RotatedTranslate, TranslateB);
 
 			// ScaleResult = Scale.B * Scale.A
-			OutTransform->Scale3D = VectorMultiply(ScaleA, ScaleB);
-		}
+			OutTransform->SetScale3D(glm::vec3(ScaleA.x * ScaleB.x, ScaleA.y * ScaleB.y, ScaleA.z * ScaleB.z));// = VectorMultiply(ScaleA, ScaleB);
+		//}
 	}
 }

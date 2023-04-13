@@ -5,6 +5,24 @@
 
 #include <algorithm>
 
+/** Specifies why an actor is being deleted/removed from a level */
+namespace EEndPlayReason
+{
+	enum Type : int
+	{
+		/** When the Actor or Component is explicitly destroyed. */
+		Destroyed,
+		/** When the world is being unloaded for a level transition. */
+		LevelTransition,
+		/** When the world is being unloaded because PIE is ending. */
+		EndPlayInEditor,
+		/** When the level it is a member of is streamed out. */
+		RemovedFromWorld,
+		/** When the application is being exited. */
+		Quit,
+	};
+}
+
 /// <summary>
 /// Karma's std::vector wrapper
 /// </summary>
@@ -16,12 +34,12 @@ public:
 	{
 		uint32_t occurences = 0;
 		typename std::vector<BuildingBlock>::iterator iterator = m_Elements.begin();
-	
+
 		while (iterator != m_Elements.end())
 		{
 			if (*iterator == aBlock)
 			{
-				iterator = m_Elements.erase(iter);
+				iterator = m_Elements.erase(iterator);
 				occurences++;
 			}
 			else
@@ -29,7 +47,7 @@ public:
 				++iterator;
 			}
 		}
-		
+
 		return occurences;
 	}
 
@@ -59,7 +77,7 @@ public:
 
 	uint32_t Num()
 	{
-		return m_Elements.size();
+		return (uint32_t) m_Elements.size();
 	}
 
 	/**

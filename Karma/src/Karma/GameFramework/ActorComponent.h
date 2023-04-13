@@ -37,9 +37,20 @@ namespace Karma
 		/** Indicates that BeginPlay has been called, but EndPlay has not yet */
 		uint8_t m_bHasBegunPlay : 1;
 
+		/** Indicates that OnCreatedComponent has been called, but OnDestroyedComponent has not yet */
+		uint8_t m_bHasBeenCreated : 1;
 
-		/** Cached pointer to owning actor */
-		mutable AActor* m_OwnerPrivate;
+		/** Whether the component is currently active. */
+		uint8_t m_bIsActive : 1;
+
+		/** Indicates that InitializeComponent has been called, but UninitializeComponent has not yet */
+		uint8_t m_bHasBeenInitialized : 1;
+
+		/**
+		 * Pointer to the world that this component is currently registered with.
+		 * This is only non-NULL when the component is registered.
+		 */
+		UWorld* m_WorldPrivate;
 
 	public:
 		/**
@@ -65,13 +76,91 @@ namespace Karma
 		 * Ends gameplay for this component.
 		 * Called from AActor::EndPlay only if bHasBegunPlay is true
 		 */
-		virtual void EndPlay();//const EEndPlayReason::Type EndPlayReason);
+		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 
 		/** Follow the Outer chain to get the  AActor  that 'Owns' this component */
 		AActor* GetOwner() const;
 
+		/** Indicates that OnCreatedComponent has been called, but OnDestroyedComponent has not yet */
+		bool HasBeenCreated() const { return m_bHasBeenCreated; }
+
+		/** Called when a component is created (not loaded). This can happen in the editor or during gameplay */
+		virtual void OnComponentCreated();
+
+		/** See if this component is currently registered */
+		inline bool IsRegistered() const { return m_bRegistered; }
+
+		/**
+		 * Returns whether the component is active or not
+		 * @return - The active state of the component.
+		 */
+		bool IsActive() const { return m_bIsActive; }
+
+		/**
+		 * Activates the SceneComponent, should be overridden by native child classes.
+		 * @param bReset - Whether the activation should happen even if ShouldActivate returns false.
+		 */
+		virtual void Activate(bool bReset = false);
+
+		/**
+		 * Sets the value of bIsActive without causing other side effects to this instance.
+		 *
+		 * Activate, Deactivate, and SetActive are preferred in most cases because they respect virtual behavior.
+		 */
+		void SetActiveFlag(const bool bNewIsActive);
+
+		/** Indicates that InitializeComponent has been called, but UninitializeComponent has not yet */
+		bool HasBeenInitialized() const { return m_bHasBeenInitialized; }
+
+		/**
+		 * Initializes the component.  Occurs at level startup or actor spawn. This is before BeginPlay (Actor or Component).
+		 * All Components in the level will be Initialized on load before any Actor/Component gets BeginPlay
+		 * Requires component to be registered, and bWantsInitializeComponent to be true.
+		 */
+		virtual void InitializeComponent();
+
+		/** 
+		 * Indicates that BeginPlay has been called, but EndPlay has not yet 
+		 */
+		bool HasBegunPlay() const { return m_bHasBegunPlay; }
+
+		//~ Begin UObject Interface.
+		virtual void BeginDestroy() override;
+		//~ End UObject Interface.
+
+		/**
+		 * Handle this component being Uninitialized.
+		 * 
+		 * @see Called from AActor::EndPlay only if bHasBeenInitialized is true
+		 */
+		virtual void UninitializeComponent();
+
+		/**
+		 * Called when a component is destroyed
+		 *
+		 * @param	bDestroyingHierarchy  - True if the entire component hierarchy is being torn down, allows avoiding expensive operations
+		 */
+		virtual void OnComponentDestroyed(bool bDestroyingHierarchy);
+
 	public:
 		/** Describes how a component instance will be created */
 		EComponentCreationMethod m_CreationMethod;
+
+		/** Whether the component is activated at creation or must be explicitly activated. */
+		uint8_t m_bAutoActivate : 1;
+
+
+		/** If true, we call the virtual InitializeComponent */
+		uint8_t m_bWantsInitializeComponent : 1;
+
+	protected:
+		/**
+		 *  Indicates if this ActorComponent is currently registered with a scene.
+		 */
+		uint8_t m_bRegistered : 1;
+
+	protected:
+		/** Return true if this component is in a state where it can be activated normally. */
+		virtual bool ShouldActivate() const;
 	};
 }

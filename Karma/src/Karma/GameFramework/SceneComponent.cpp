@@ -41,6 +41,25 @@ namespace Karma
 		}
 	}
 
+	void USceneComponent::BeginDestroy()
+	{
+		//PhysicsVolumeChangedDelegate.Clear();
+
+		UActorComponent::BeginDestroy();
+	}
+
+	void USceneComponent::SetRelativeTransform(const FTransform& NewTransform/*, bool bSweep, FHitResult* OutSweepHitResult, ETeleportType Teleport*/)
+	{
+		//SetRelativeLocationAndRotation(NewTransform.GetTranslation(), NewTransform.GetRotation(), bSweep, OutSweepHitResult, Teleport);
+		//SetRelativeScale3D(NewTransform.GetScale3D());
+
+		m_RelativeLocation = NewTransform.GetTranslation();
+		m_RelativeRotation.x = NewTransform.GetRotation().m_Pitch;
+		m_RelativeRotation.y = NewTransform.GetRotation().m_Yaw;
+		m_RelativeRotation.z = NewTransform.GetRotation().m_Roll;
+		m_RelativeScale3D = NewTransform.GetScale3D();
+	}
+
 	void USceneComponent::SetWorldTransform(const FTransform& NewTransform)
 	{
 		// If attached to something, transform into local space
@@ -65,11 +84,11 @@ namespace Karma
 				RelativeTM.CopyScale3D(NewTransform);
 			}
 
-			SetRelativeTransform(RelativeTM, bSweep, OutSweepHitResult, Teleport);
+			SetRelativeTransform(RelativeTM/*, bSweep, OutSweepHitResult, Teleport*/);
 		}
 		else
 		{
-			SetRelativeTransform(NewTransform, bSweep, OutSweepHitResult, Teleport);
+			SetRelativeTransform(NewTransform/*, bSweep, OutSweepHitResult, Teleport*/);
 		}
 	}
 }

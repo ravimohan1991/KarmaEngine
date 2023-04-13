@@ -1,6 +1,7 @@
 #include "UObjectBase.h"
 #include "Core/Object.h"
 #include "Core/Class.h"
+#include "Package.h"
 
 namespace Karma
 {
@@ -18,6 +19,44 @@ namespace Karma
 
 		// Add to global table.
 		AddObject(inName, inInternalFlags);
+	}
+
+	/**
+	 * Walks up the list of outers until it finds a package directly associated with the object.
+	 *
+	 * @return the package the object is in.
+	 */
+	UPackage* UObjectBase::GetPackage() const
+	{
+		const UObject* Top = static_cast<const UObject*>(this);
+		for (;;)
+		{
+			// GetExternalPackage will return itself if called on a UPackage
+			if (UPackage* Package = Top->GetExternalPackage())
+			{
+				return Package;
+			}
+			Top = Top->GetOuter();
+		}
+	}
+
+	UPackage* UObjectBase::GetExternalPackage() const
+	{
+		// if we have no outer, consider this a package, packages returns themselves as their external package
+		if (m_OuterPrivate == nullptr)
+		{
+			return static_cast<UPackage*>((UObject*)(this));
+		}
+
+		UPackage* ExternalPackage = nullptr;
+		if ((GetFlags() & RF_HasExternalPackage) != 0)
+		{
+			// Maybe we can get away without this path
+			// ExternalPackage = GetObjectExternalPackageThreadSafe(this);
+			// if the flag is set there should be an override set.
+			KR_CORE_ASSERT(ExternalPackage, "External package is null");
+		}
+		return ExternalPackage;
 	}
 
 	/**

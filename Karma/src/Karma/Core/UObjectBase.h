@@ -16,6 +16,7 @@ namespace Karma
 	class UObject;
 	class UClass;
 	//enum class EInternalObjectFlags;
+	class UPackage;
 
 	extern std::vector<UObject> GUObjectStore;
 
@@ -40,8 +41,17 @@ namespace Karma
 		 * @param	InName				name of the new object
 		 * @param	InObjectArchetype	archetype to assign
 		 */
-
 		UObjectBase(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName);
+
+		/**
+		 * Walks up the list of outers until it finds a package directly associated with the object.
+		 *
+		 * @return the package the object is in.
+		 */
+		UPackage* GetPackage() const;
+
+		/** Returns the external UPackage associated with this object, if any */
+		UPackage* GetExternalPackage() const;
 
 	private:
 

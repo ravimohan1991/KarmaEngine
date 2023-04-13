@@ -64,8 +64,20 @@ namespace Karma
 		return Actor;
 	}
 
+	bool UWorld::ShivaActor(AActor* ThisActor, bool bNetForce, bool bShouldModifyLevel)
+	{
+		// Not yet functional. Only placeholder till we get the spawn process satisfactory
+		// Return success.
+		return true;
+	}
+
 	bool UWorld::AreActorsInitialized() const
 	{
 		return m_bActorsInitialized && m_PersistentLevel && m_PersistentLevel->m_Actors.Num();
+	}
+
+	bool UWorld::HasBegunPlay() const
+	{
+		return m_bBegunPlay && m_PersistentLevel && m_PersistentLevel->m_Actors.Num();
 	}
 }

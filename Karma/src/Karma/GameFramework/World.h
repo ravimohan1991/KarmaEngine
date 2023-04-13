@@ -137,6 +137,9 @@ namespace Karma
 		/** Whether actors have been initialized for play */
 		uint8_t m_bActorsInitialized : 1;
 
+		/** Whether BeginPlay has been called on actors */
+		uint8_t m_bBegunPlay : 1;
+
 	public:
 		//////////////////////////////////////////////////////////////////////////
 		// UWorld inlines:
@@ -156,5 +159,26 @@ namespace Karma
 		 * This and nearby functions (create destroy world for instance) should be useful
 		 */
 		//void InitializeNewWorld(const InitializationValues IVS = InitializationValues(), bool bInSkipInitWorld = false);
+
+		/** Returns true if gameplay has already started, false otherwise. */
+		bool HasBegunPlay() const;
+
+		/**
+		 * Removes the actor from its level's actor list and generally cleans up the engine's internal state.
+		 * What this function does not do, but is handled via garbage collection instead, is remove references
+		 * to this actor from all other actors, and kill the actor's resources.  This function is set up so that
+		 * no problems occur even if the actor is being destroyed inside its recursion stack.
+		 * 
+		 * In UE this routine is called DestoryActor, in Karma, obviously, we be using ShivaActor which should mean
+		 * the same.
+		 *
+		 * @param	ThisActor				Actor to remove.
+		 * @param	bNetForce				[optional] Ignored unless called during play.  Default is false.
+		 * @param	bShouldModifyLevel		[optional] If true, Modify() the level before removing the actor.  Default is true.
+		 * @return							true if destroyed or already marked for destruction, false if actor couldn't be destroyed.
+		 * 
+		 * @see Actor::DispatchBeginPlay(bool bFromLevelStreaming)
+		 */
+		bool ShivaActor(AActor* Actor, bool bNetForce = false, bool bShouldModifyLevel = true);
 	};
 }

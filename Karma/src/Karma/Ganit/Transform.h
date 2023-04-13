@@ -3,6 +3,9 @@
 #include "krpch.h"
 
 #include "glm/glm.hpp"
+#include <glm/gtc/quaternion.hpp>
+
+#include <glm/gtx/euler_angles.hpp>
 
 namespace Karma
 {
@@ -55,13 +58,34 @@ namespace Karma
 		TRotator(glm::vec3 EulerAngles);
 
 		/** Rotation around the right axis (around Y axis), Looking up and down (0=Straight Ahead, +Up, -Down) */
-		glm::vec1 m_Pitch;
+		float m_Pitch;
 
 		/** Rotation around the up axis (around Z axis), Turning around (0=Forward, +Right, -Left)*/
-		glm::vec1 m_Yaw;
+		float m_Yaw;
 
 		/** Rotation around the forward axis (around X axis), Tilting your head, (0=Straight, +Clockwise, -CCW) */
-		glm::vec1 m_Roll;
+		float m_Roll;
+
+		/**
+		 * Returns the counter of this rotation governed by Yaw, Pitch, and Roll in the
+		 * fashion above
+		 */
+		inline TRotator Inverse() const;
+
+		inline TRotator operator*(const TRotator& Other) const
+		{
+			return TRotator(glm::vec3(m_Pitch + Other.m_Pitch, m_Yaw + Other.m_Yaw, m_Roll + Other.m_Roll));
+		}
+
+		inline glm::vec3 operator*(const glm::vec3& Translation) const
+		{
+			glm::mat4 transform = glm::eulerAngleYXZ(m_Pitch, m_Yaw, m_Roll);
+			glm::vec4 tempResult = transform * glm::vec4(Translation.x, Translation.y, Translation.z, 1.0f);
+
+			glm::vec3 returnVector(tempResult.x, tempResult.y, tempResult.z);
+			return returnVector;
+			
+		}
 	};
 
 	/**
@@ -85,11 +109,27 @@ namespace Karma
 		FTransform();
 		FTransform(glm::vec3 rotation, glm::vec3 translation, glm::vec3 scale3D);
 
-	public:
-		const TRotator& GetRotation() const { return m_Rotation; }
-		const glm::vec3& GetTranslation() const { return m_Translation; }
-		const glm::vec3& GetScale3D() const { return m_Scale3D; }
-		static const FTransform& Identity();
+		inline const glm::vec3& GetLocation() { return GetTranslation(); }
+		inline const TRotator& GetRotation() const { return m_Rotation; }
+		inline const glm::vec3& GetTranslation() const { return m_Translation; }
+		inline const glm::vec3& GetScale3D() const { return m_Scale3D; }
+
+		static FTransform Identity();
+
+		inline void SetScale3D(const glm::vec3& newScale)
+		{
+			m_Scale3D = newScale;
+		}
+
+		inline void SetRotation(const TRotator& newRotation)
+		{
+			m_Rotation = newRotation;
+		}
+
+		inline void SetTranslation(const glm::vec3& newTranslation)
+		{
+			m_Translation = newTranslation;
+		}
 
 		FTransform GetRelativeTransform(const FTransform& RelativeToWhat) const;
 
@@ -113,7 +153,7 @@ namespace Karma
 		 */
 		inline static void Multiply(FTransform* OutTransform, const FTransform* A, const FTransform* B);
 
-		inline bool static AnyHasNegativeScale(const glm::vec3& InScale3D, const glm::vec3& InOtherScale3D)
+		inline bool AnyHasNegativeScale(const glm::vec3& InScale3D, const glm::vec3& InOtherScale3D) const
 		{
 			return  (InScale3D.x < 0.f || InScale3D.y < 0.f || InScale3D.z < 0.f
 				|| InOtherScale3D.x < 0.f || InOtherScale3D.y < 0.f || InOtherScale3D.z < 0.f);
@@ -126,7 +166,7 @@ namespace Karma
 		 * also returning BIG_NUMBER causes sequential NaN issues by multiplying 
 		 * so we hardcode as 0
 		 */
-		inline static glm::vec3 GetSafeScaleReciprocal(const glm::vec3& InScale, long long Tolerance)
+		inline glm::vec3 GetSafeScaleReciprocal(const glm::vec3& InScale, float Tolerance) const
 		{
 			glm::vec3 SafeReciprocalScale;
 
@@ -160,6 +200,26 @@ namespace Karma
 			return SafeReciprocalScale;
 		}
 
+		/** Copy translation from another FTransform. */
+		FORCEINLINE void CopyTranslation(const FTransform& Other)
+		{
+			m_Translation = Other.GetTranslation();
+		}
+
+		/** Copy rotation from another FTransform. */
+		FORCEINLINE void CopyRotation(const FTransform& Other)
+		{
+			m_Rotation = Other.GetRotation();
+		}
+
+		/** Copy scale from another FTransform. */
+		FORCEINLINE void CopyScale3D(const FTransform Other)
+		{
+			m_Scale3D = Other.GetScale3D();
+		}
+
+	public:
+		static FTransform m_Identity;
 
 	private:
 		/** Rotation of this transformation, need to work on quaternion <--> rotator conversions */
