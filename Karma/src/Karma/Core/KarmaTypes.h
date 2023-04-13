@@ -132,11 +132,11 @@ public:
 
 	inline const std::vector<BuildingBlock>& GetElements() const { return m_Elements; }
 
-	std::vector<BuildingBlock>::iterator begin()
+	typename std::vector<BuildingBlock>::iterator begin()
 	{
 		return m_Elements.begin();
 	}
-	std::vector<BuildingBlock>::iterator end()
+	typename std::vector<BuildingBlock>::iterator end()
 	{
 		return m_Elements.end();
 	}

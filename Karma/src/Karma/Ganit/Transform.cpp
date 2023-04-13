@@ -84,7 +84,7 @@ namespace Karma
 		return Result;
 	}
 
-	inline FTransform FTransform::operator*(const FTransform& Other) const
+	FTransform FTransform::operator*(const FTransform& Other) const
 	{
 		FTransform someTransform;
 		Multiply(&someTransform, this, &Other);

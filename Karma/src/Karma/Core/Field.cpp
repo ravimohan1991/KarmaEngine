@@ -3,7 +3,7 @@
 
 namespace Karma
 {
-	FFieldClass::FFieldClass(const TCHAR* InCPPName, uint64_t InId, uint64_t InCastFlags, FFieldClass* InSuperClass, FField* (*ConstructFnPtr)(const FFieldVariant&, const std::string&, EObjectFlags))
+	FFieldClass::FFieldClass(const char* InCPPName, uint64_t InId, uint64_t InCastFlags, FFieldClass* InSuperClass, FField* (*ConstructFnPtr)(const FFieldVariant&, const std::string&, EObjectFlags))
 		: ClassFlags(CLASS_None)
 		, SuperClass(InSuperClass)
 		, DefaultObject(nullptr)

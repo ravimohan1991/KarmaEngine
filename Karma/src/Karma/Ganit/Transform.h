@@ -140,7 +140,7 @@ namespace Karma
 		 * @param  Other other transform by which to multiply.
 		 * @return new transform: this * Other
 		 */
-		inline FTransform operator*(const FTransform& Other) const;
+		FTransform operator*(const FTransform& Other) const;
 
 		/**
 		 * Create a new transform: OutTransform = A * B.
