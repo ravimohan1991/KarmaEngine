@@ -14,10 +14,13 @@ namespace Karma
 	 * Multiple Levels can be loaded and unloaded into the World to create a streaming experience.
 	 *
 	 * @see https://docs.unrealengine.com/latest/INT/Engine/Levels
-	 * @see UActor
 	 */
 	class KARMA_API ULevel : public UObject
 	{
+	public:
+
+		ULevel();
+
 	public:
 
 		/** URL associated with this level. */

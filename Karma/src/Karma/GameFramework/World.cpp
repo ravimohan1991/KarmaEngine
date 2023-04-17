@@ -4,9 +4,19 @@
 #include "Core/Class.h"
 #include "GameFramework/Level.h"
 #include "Ganit/Transform.h"
+#include "Level.h"
 
 namespace Karma
 {
+	FActorSpawnParameters::FActorSpawnParameters()
+	{
+		m_Name = "NoName";
+		m_Owner = nullptr;
+		m_Instigator = nullptr;
+		m_Template = nullptr;
+		m_OverrideLevel = nullptr;
+	}
+
 	UWorld::UWorld()
 	{
 		m_TimeSeconds = 0.0f;
@@ -40,7 +50,7 @@ namespace Karma
 			return nullptr;
 		}
 
-		ULevel* LevelToSpawnIn =spawnParameters.m_OverrideLevel;
+		ULevel* LevelToSpawnIn = spawnParameters.m_OverrideLevel;
 
 		if (LevelToSpawnIn == nullptr)
 		{
@@ -79,5 +89,13 @@ namespace Karma
 	bool UWorld::HasBegunPlay() const
 	{
 		return m_bBegunPlay && m_PersistentLevel && m_PersistentLevel->m_Actors.Num();
+	}
+
+	void UWorld::GenerateLevel()
+	{
+		m_CurrentLevel = new ULevel();
+		m_CurrentLevel->m_OwningWorld = this;
+
+		// Dereferencing required
 	}
 }

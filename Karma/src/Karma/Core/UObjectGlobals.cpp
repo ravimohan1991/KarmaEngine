@@ -110,7 +110,7 @@ namespace Karma
 
 		int32 totalSize = inClass->GetPropertiesSize();
 
-		KR_CORE_ASSERT(totalSize, "Empty data structure {0}", inClass->GetName());
+		KR_CORE_ASSERT(totalSize, "Empty data structure");
 
 		if (Object == nullptr)
 		{

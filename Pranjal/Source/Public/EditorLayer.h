@@ -23,6 +23,8 @@ namespace Karma
 		bool OnKeyPressed(KeyPressedEvent& e);
 		void InputPolling(float deltaTime);
 
+		void TentativeTrigger();
+
 	private:
 		std::shared_ptr<Karma::Shader> m_ModelShader;
 		std::shared_ptr<Karma::VertexArray> m_ModelVertexArray;

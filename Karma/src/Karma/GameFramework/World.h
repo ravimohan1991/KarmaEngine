@@ -150,6 +150,11 @@ namespace Karma
 			return m_TimeSeconds;
 		}
 
+		FORCEINLINE ULevel* GetCurrentLevel() const
+		{
+			return m_CurrentLevel;
+		}
+
 	public:
 		/** Returns true if the actors have been initialized and are ready to start play */
 		bool AreActorsInitialized() const;
@@ -162,6 +167,14 @@ namespace Karma
 
 		/** Returns true if gameplay has already started, false otherwise. */
 		bool HasBegunPlay() const;
+
+		/**
+		 * Attention:
+		 * A very tentative way of introducing level for lazy testing only.
+		 *
+		 * @see UE's version for proper implementation
+		 */
+		void GenerateLevel();
 
 		/**
 		 * Removes the actor from its level's actor list and generally cleans up the engine's internal state.

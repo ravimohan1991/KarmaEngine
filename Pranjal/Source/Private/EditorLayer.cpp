@@ -179,6 +179,11 @@ namespace Karma
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
 	{
+		if(e.GetKeyCode() == GLFW_KEY_T)
+		{
+			TentativeTrigger();
+		}
+
 		return false;
 	}
 
@@ -224,7 +229,6 @@ namespace Karma
 			m_EditorCamera->MoveSideways(val * cameraTranslationSpeed * deltaTime);
 		}
 		// Controller context ends
-
 
 		if (KarmaGuiMesa::m_ViewportHovered)
 		{
@@ -278,6 +282,26 @@ namespace Karma
 			m_EditorCamera->RotateAboutXAxis(-1.f * val * cameraRotationSpeed * deltaTime);
 		}
 		// Controller context ends
+	}
+
+	void EditorLayer::TentativeTrigger()
+	{
+		KR_INFO("========= Trigger invoked =========");
+		KR_INFO("-----> Spawning World");
+
+		UWorld* testWorld = new UWorld();
+
+		UClass* testActorClass = AActor::StaticClass<AActor>();
+		FTransform testTransform = FTransform::m_Identity;
+
+		FActorSpawnParameters testSParameters;
+		testSParameters.m_Owner = nullptr;
+		testSParameters.m_Name = "TestActor";
+		testSParameters.m_OverrideLevel = testWorld->GetCurrentLevel();
+
+		testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
+
+		delete testWorld;
 	}
 
 }

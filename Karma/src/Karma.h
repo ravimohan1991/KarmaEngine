@@ -2,6 +2,12 @@
 
 // To be included in clients
 
+// Game code specific includes
+#include "Karma/GameFramework/Actor.h"
+#include "Karma/GameFramework/World.h"
+
+#include "Karma/GameFramework/Level.h"
+
 #include "Karma/Application.h"
 #include "Karma/Layer.h"
 #include "Karma/Log.h"
