@@ -10,6 +10,8 @@
 #include "Platform/Windows/Core/WindowsPlatformMemory.h"
 #elif KR_MAC_PLATFORM
 #include "Platform/Mac/Core/MacPlatformMemory.h"
+#elif KR_LINUX_PLATFORM
+#include "Platform/Linux/Core/LinuxPlatformMemory.h"
 #endif
 
 #include "UObjectAllocator.h"
