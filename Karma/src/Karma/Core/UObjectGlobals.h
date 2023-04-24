@@ -10,7 +10,13 @@ namespace Karma
 	//enum EObjectFlags;
 	//enum class EInternalObjectFlags;
 
-	extern std::vector<UObject> GUObjectStore;
+	/**
+	 * Global UObject array instance
+	 * All the UObjects created are to be found in this store. Analogoue to GUObjectArray of UE, defined in UObjectHash.cpp
+	 * A note on GUObjectArray
+	 * https://forums.unrealengine.com/t/how-to-register-disregard-for-gc-objects/264991
+	 */
+	extern std::vector<UObject*> GUObjectStore;
 
 #define	INVALID_OBJECT	(UObject*)-1
 
@@ -298,6 +304,7 @@ FUNCTION_NON_NULL_RETURN_END
 	}
 
 	FStaticConstructObjectParameters Params;
+	Params.m_Class = Class;
 	Params.m_Outer = Outer;
 	Params.m_Name = name;
 	Params.m_SetFlags = Flags;

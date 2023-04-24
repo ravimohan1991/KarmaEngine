@@ -72,6 +72,14 @@ namespace Karma
 		return (T)(((uint64_t)Val + Alignment - 1) & ~(Alignment - 1));
 	}
 
+	/**
+	 * A pool allocator for Karma's UObjects.
+	 * I'd higly recomment Gregory's Game Engine Architecture section 5.2 for introductory
+	 * level and practical approach to memory system.
+	 *
+	 * A modular memory system https://github.com/ravimohan1991/cppGameMemorySystem
+	 * Karma's take https://github.com/ravimohan1991/KarmaEngine/wiki/Karma-Smriti
+	 */
 	class FUObjectAllocator
 	{
 	public:
@@ -131,10 +139,13 @@ namespace Karma
 
 		/** Size in bytes of pool for objects disregarded for GC.								*/
 		int32_t							PermanentObjectPoolSize;
+
 		/** Begin of pool for objects disregarded for GC.										*/
 		uint8_t* PermanentObjectPool;
+
 		/** Current position in pool for objects disregarded for GC.							*/
 		uint8_t* PermanentObjectPoolTail;
+
 		/** Tail that exceeded the size of the permanent object pool, >= PermanentObjectPoolTail.		*/
 		uint8_t* PermanentObjectPoolExceededTail;
 	};

@@ -73,7 +73,7 @@ namespace Karma
 
 		KR_CORE_ASSERT(thisElement, "Can't register not UObject types");
 		
-		GUObjectStore.push_back(*thisElement);
+		GUObjectStore.push_back(thisElement);
 		m_InternalIndex = (int32_t) GUObjectStore.size();
 
 		KR_CORE_ASSERT(inName != "", "UObject name can't be empty string");

@@ -16,7 +16,7 @@ namespace Karma
 	void FUObjectAllocator::AllocatePermanentObjectPool(int32_t InPermanentObjectPoolSize)
 	{
 		PermanentObjectPoolSize = InPermanentObjectPoolSize;
-		//PermanentObjectPool = (uint8_t*)FMemory::MallocPersistentAuxiliary(PermanentObjectPoolSize);
+		PermanentObjectPool = (uint8_t*)FMemory::SystemMalloc(InPermanentObjectPoolSize);//MallocPersistentAuxiliary(PermanentObjectPoolSize);
 		PermanentObjectPoolTail = PermanentObjectPool;
 		PermanentObjectPoolExceededTail = PermanentObjectPoolTail;
 	}

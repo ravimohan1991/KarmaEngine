@@ -18,8 +18,6 @@ namespace Karma
 	//enum class EInternalObjectFlags;
 	class UPackage;
 
-	extern std::vector<UObject> GUObjectStore;
-
 /** Mask for all object flags */
 #define RF_AllFlags				(EObjectFlags)0xffffffff	///< All flags, used mainly for error checking
 

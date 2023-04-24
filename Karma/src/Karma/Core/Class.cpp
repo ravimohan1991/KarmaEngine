@@ -4,6 +4,8 @@ namespace Karma
 {
 	UClass::UClass()
 	{
+		m_PropertiesSize = sizeof(UClass);
+		m_MinAlignment = alignof(UClass);
 	}
 
 	UClass::UClass(const std::string& name) : m_NamePrivate(name)

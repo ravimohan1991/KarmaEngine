@@ -23,6 +23,8 @@ namespace Karma
 		m_CurrentLevel = nullptr;
 		m_PersistentLevel = nullptr;
 		m_bIsTearingDown = false;
+
+		GenerateLevel();
 	}
 
 	AActor* UWorld::SpawnActor(UClass* Class, FTransform const* transform, const FActorSpawnParameters& spawnParameters)

@@ -7,9 +7,8 @@
 
 namespace Karma
 {
-	// Global UObject array instance
-	// All the UObjects created are to be found in this store. Analogoue to GUObjectArray of UE, defined in UObjectHash.cpp
-	std::vector<UObject> GUObjectStore;
+	std::vector<UObject*> GUObjectStore;
+
 	/** Whether we are still in the initial loading proces. (Got from CoreGlobals.cpp) */
 	KARMA_API bool			GIsInitialLoad = true;
 
@@ -26,16 +25,16 @@ namespace Karma
 			// how about const referencing element
 			for (auto& element : GUObjectStore)
 			{
-				if (element.GetName() == ObjectName
+				if (element->GetName() == ObjectName
 
 					/* Don't return objects that have any of the exclusive flags set */
-					&& !element.HasAnyFlags(ExcludeFlags)
+					&& !element->HasAnyFlags(ExcludeFlags)
 
 					/* check that the object has the correct Outer */
-					&& element.GetOuter() == ObjectPackage
+					&& element->GetOuter() == ObjectPackage
 
 					/** If a class was specified, check that the object is of the correct class (hierarchy) */
-					&& (ObjectClass == nullptr || (bExactClass ? element.GetClass() == ObjectClass : element.IsA(ObjectClass)))
+					&& (ObjectClass == nullptr || (bExactClass ? element->GetClass() == ObjectClass : element->IsA(ObjectClass)))
 
 					/** Include (or not) pending kill objects */
 					// leaving for now. may become relevant later
@@ -43,11 +42,11 @@ namespace Karma
 				{
 					if (result)
 					{
-						KR_CORE_WARN("Ambigous search, could be {0} or {1}", result->GetName(), element.GetName());
+						KR_CORE_WARN("Ambigous search, could be {0} or {1}", result->GetName(), element->GetName());
 					}
 					else
 					{
-						result = &element;
+						result = element;
 					}
 				}
 			}
@@ -115,7 +114,10 @@ namespace Karma
 		if (Object == nullptr)
 		{
 			int32 Alignment = FMath::Max(4, inClass->GetMinAlignment());
-			Object = (UObject*)GUObjectAllocator.AllocateUObject(totalSize, Alignment, GIsInitialLoad);// malloc
+
+			// This is the line corresponding to the instantiation of UObjects
+			// from Karma's memory system known by the name Smriti.
+			Object = (UObject*)GUObjectAllocator.AllocateUObject(totalSize, Alignment, GIsInitialLoad);
 		}
 
 		FMemory::Memzero((void*)Object, totalSize);
