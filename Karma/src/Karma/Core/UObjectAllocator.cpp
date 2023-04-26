@@ -15,10 +15,20 @@ namespace Karma
 	 */
 	void FUObjectAllocator::AllocatePermanentObjectPool(int32_t InPermanentObjectPoolSize)
 	{
-		PermanentObjectPoolSize = InPermanentObjectPoolSize;
-		PermanentObjectPool = (uint8_t*)FMemory::SystemMalloc(InPermanentObjectPoolSize);//MallocPersistentAuxiliary(PermanentObjectPoolSize);
-		PermanentObjectPoolTail = PermanentObjectPool;
-		PermanentObjectPoolExceededTail = PermanentObjectPoolTail;
+		m_PermanentObjectPoolSize = InPermanentObjectPoolSize;
+		m_PermanentObjectPool = (uint8_t*)FMemory::SystemMalloc(InPermanentObjectPoolSize);//MallocPersistentAuxiliary(PermanentObjectPoolSize);
+		m_PermanentObjectPoolTail = m_PermanentObjectPool;
+		m_PermanentObjectPoolExceededTail = m_PermanentObjectPoolTail;
+	}
+
+	void FUObjectAllocator::Initialize(uint8_t* pMemoryStart, size_t elemetSizeBytes, size_t numberOfElemets)
+	{
+		m_PermanentObjectPoolSize = (int32_t) (elemetSizeBytes * numberOfElemets);
+		m_PermanentObjectPool = pMemoryStart;
+		m_PermanentObjectPoolTail = m_PermanentObjectPool;
+		m_PermanentObjectPoolExceededTail = m_PermanentObjectPoolTail;
+
+		KR_CORE_INFO("Prepared a memory pool of {0} bytes for {1} UObjects' allocation", m_PermanentObjectPoolSize, numberOfElemets);
 	}
 
 	/**
@@ -26,13 +36,13 @@ namespace Karma
 	 */
 	void FUObjectAllocator::BootMessage()
 	{
-		if (PermanentObjectPoolSize && PermanentObjectPoolExceededTail - PermanentObjectPool > PermanentObjectPoolSize)
+		if (m_PermanentObjectPoolSize && m_PermanentObjectPoolExceededTail - m_PermanentObjectPool > m_PermanentObjectPoolSize)
 		{
-			KR_CORE_WARN("{0} Exceeds size of permanent object pool {1}, please tune SizeOfPermanentObjectPool.", PermanentObjectPoolExceededTail - PermanentObjectPool, PermanentObjectPoolSize);
+			KR_CORE_WARN("{0} Exceeds size of permanent object pool {1}, please tune SizeOfPermanentObjectPool.", m_PermanentObjectPoolExceededTail - m_PermanentObjectPool, m_PermanentObjectPoolSize);
 		}
 		else
 		{
-			KR_CORE_WARN("{0} out of {1} bytes used by permanent object pool ", PermanentObjectPoolExceededTail - PermanentObjectPool, PermanentObjectPoolSize);
+			KR_CORE_WARN("{0} out of {1} bytes used by permanent object pool ", m_PermanentObjectPoolExceededTail - m_PermanentObjectPool, m_PermanentObjectPoolSize);
 		}
 	}
 
@@ -51,26 +61,26 @@ namespace Karma
 		int32_t AlignedSize = Align(Size, Alignment);
 		UObjectBase* Result = nullptr;
 
-		bAllowPermanent &= PermanentObjectPool != nullptr;
-		const bool bPlaceInPerm = bAllowPermanent && (Align(PermanentObjectPoolTail, Alignment) + Size) <= (PermanentObjectPool + PermanentObjectPoolSize);
+		bAllowPermanent &= m_PermanentObjectPool != nullptr;
+		const bool bPlaceInPerm = bAllowPermanent && (Align(m_PermanentObjectPoolTail, Alignment) + Size) <= (m_PermanentObjectPool + m_PermanentObjectPoolSize);
 		if (bAllowPermanent && !bPlaceInPerm)
 		{
 			// advance anyway so we can determine how much space we should set aside in the ini
-			uint8_t* AlignedPtr = Align(PermanentObjectPoolExceededTail, Alignment);
-			PermanentObjectPoolExceededTail = AlignedPtr + Size;
+			uint8_t* AlignedPtr = Align(m_PermanentObjectPoolExceededTail, Alignment);
+			m_PermanentObjectPoolExceededTail = AlignedPtr + Size;
 		}
 		// Use object memory pool for objects disregarded by GC (initially loaded ones). This allows identifying their
 		// GC status by simply looking at their address.
 		if (bPlaceInPerm)
 		{
 			// Align current tail pointer and use it for object. 
-			uint8_t* AlignedPtr = Align(PermanentObjectPoolTail, Alignment);
+			uint8_t* AlignedPtr = Align(m_PermanentObjectPoolTail, Alignment);
 			// Update tail pointer.
-			PermanentObjectPoolTail = AlignedPtr + Size;
+			m_PermanentObjectPoolTail = AlignedPtr + Size;
 			Result = (UObjectBase*)AlignedPtr;
-			if (PermanentObjectPoolExceededTail < PermanentObjectPoolTail)
+			if (m_PermanentObjectPoolExceededTail < m_PermanentObjectPoolTail)
 			{
-				PermanentObjectPoolExceededTail = PermanentObjectPoolTail;
+				m_PermanentObjectPoolExceededTail = m_PermanentObjectPoolTail;
 			}
 		}
 		else

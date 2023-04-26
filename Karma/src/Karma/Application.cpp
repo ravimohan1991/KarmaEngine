@@ -3,11 +3,11 @@
 #include "Karma/Input.h"
 #include "Karma/Renderer/Renderer.h"
 #include "chrono"
-#include "Scene.h"
 
 namespace Karma
 {
 	Application* Application::s_Instance = nullptr;
+
 #ifdef KR_WINDOWS_PLATFORM
 	Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Windows;
 #elif KR_LINUX_PLATFORM
@@ -15,6 +15,10 @@ namespace Karma
 #elif KR_MAC_PLATFORM
 	Karma::RunningPlatform Karma::Application::m_RPlatform = Karma::RunningPlatform::Mac;
 #endif
+
+	// Think if singelton pattern is to be used or something else
+	// http://gameprogrammingpatterns.com/singleton.html
+	Karma::KarmaSmriti m_MemoryManager;
 
 	Application::Application()
 	{
@@ -33,6 +37,7 @@ namespace Karma
 
 	Application::~Application()
 	{
+		m_MemoryManager.ShutDown();
 		Renderer::DeleteData();
 		// We want to clear off layers and their rendering components before the m_Window
 		// and its context.
@@ -46,12 +51,19 @@ namespace Karma
 	void Application::PrepareApplicationForRun()
 	{
 		HookInputSystem(Input::GetInputInstance());
+		PrepareMemorySoftBed();
 	}
 
 	// May need to uplift to more abstract implementation
 	void Application::HookInputSystem(std::shared_ptr<Input> input)
 	{
 		input->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent), m_Window);
+	}
+
+	void Application::PrepareMemorySoftBed()
+	{
+		m_MemoryManager.StartUp();
+		KR_CORE_INFO("Prepared Karma's soft memory bed for resource allocation");
 	}
 
 	void Application::Run()

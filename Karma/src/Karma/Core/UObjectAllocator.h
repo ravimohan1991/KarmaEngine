@@ -88,19 +88,29 @@ namespace Karma
 		 * Constructor, initializes to no permanent object pool
 		 */
 		FUObjectAllocator() :
-			PermanentObjectPoolSize(0),
-			PermanentObjectPool(NULL),
-			PermanentObjectPoolTail(NULL),
-			PermanentObjectPoolExceededTail(NULL)
+			m_PermanentObjectPoolSize(0),
+			m_PermanentObjectPool(nullptr),
+			m_PermanentObjectPoolTail(nullptr),
+			m_PermanentObjectPoolExceededTail(nullptr)
 		{
 		}
 
 		/**
-		 * Allocates and initializes the permanent object pool
+		 * Allocates and initializes the permanent object pool. For legacy purpose.
 		 *
 		 * @param InPermanentObjectPoolSize size of permanent object pool
 		 */
 		void AllocatePermanentObjectPool(int32_t InPermanentObjectPoolSize);
+
+		/**
+		 * Initializes the pool allocator with alloted memory variables
+		 *
+		 * @param pMemoryStart			Pointer to the start of the pool memory
+		 * @param elementSizeBytes		Size of each element in bytes
+		 * @param numberOfElements		Tota number of UObjects envisoned
+		 * @see   KarmaSmriti::StartUp()
+		 */
+		void Initialize(uint8_t* pMemoryStart, size_t elemetSizeBytes, size_t numberOfElemets);
 
 		/**
 		 * Prints a debugf message to allow tuning
@@ -115,7 +125,7 @@ namespace Karma
 		 */
 		FORCEINLINE bool ResidesInPermanentPool(const UObjectBase* Object) const
 		{
-			return ((const uint8_t*)Object >= PermanentObjectPool) && ((const uint8_t*)Object < PermanentObjectPoolTail);
+			return ((const uint8_t*)Object >= m_PermanentObjectPool) && ((const uint8_t*)Object < m_PermanentObjectPoolTail);
 		}
 
 		/**
@@ -138,16 +148,16 @@ namespace Karma
 	private:
 
 		/** Size in bytes of pool for objects disregarded for GC.								*/
-		int32_t							PermanentObjectPoolSize;
+		int32_t							m_PermanentObjectPoolSize;
 
 		/** Begin of pool for objects disregarded for GC.										*/
-		uint8_t* PermanentObjectPool;
+		uint8_t* 						m_PermanentObjectPool;
 
 		/** Current position in pool for objects disregarded for GC.							*/
-		uint8_t* PermanentObjectPoolTail;
+		uint8_t* 						m_PermanentObjectPoolTail;
 
 		/** Tail that exceeded the size of the permanent object pool, >= PermanentObjectPoolTail.		*/
-		uint8_t* PermanentObjectPoolExceededTail;
+		uint8_t* 						m_PermanentObjectPoolExceededTail;
 	};
 
 	/** Global UObjectBase allocator							*/

@@ -9,6 +9,7 @@
 #include "Karma/KarmaGui/KarmaGuiLayer.h"
 #include "Karma/Input.h"
 #include "Scene.h"
+#include "Core/TrueCore/KarmaSmriti.h"
 
 namespace Karma
 {
@@ -33,7 +34,14 @@ namespace Karma
 		void PushOverlay(Layer* layer);
 
 		void PrepareApplicationForRun();
+
 		void HookInputSystem(std::shared_ptr<Input> input);
+
+		/**
+		 * All the bulk memory allocation is done to prevent frequent calls to
+		 * context swithing new/delete operators. 
+		 */
+		void PrepareMemorySoftBed();
 
 		inline static Application& Get() { return *s_Instance; }
 		inline Window& GetWindow() const { return *m_Window; }
