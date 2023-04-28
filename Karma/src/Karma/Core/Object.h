@@ -11,7 +11,7 @@ namespace Karma
 	class KARMA_API UObject : public UObjectBase
 	{
 	private:
-		UClass* m_StaticClass;
+		//UClass* m_StaticClass;
 
 	public:
 		static const char* StaticConfigName()

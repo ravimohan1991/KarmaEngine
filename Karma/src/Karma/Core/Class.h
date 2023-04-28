@@ -65,7 +65,14 @@ namespace Karma
 		UStruct* m_SuperStruct;
 
 	public:
-		/** Total size of all UProperties, the allocated structure may be larger due to alignment */
+		/** 
+		 * Total size of all UProperties, the allocated structure may be larger due to alignment 
+		 * 
+		 * From Epic's code, seems like the size of this object is m_ProperitesSize, for details see 
+		 * https://github.com/EpicGames/UnrealEngine/blob/5ca9da84c694c6eee288c30a547fcaa1a40aed9b/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h#L2016
+		 * 
+		 * Ponder why in the world this field is public.
+		 */
 		int32 m_PropertiesSize;
 
 		/** Alignment of structure in memory, structure will be at least this large */

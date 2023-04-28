@@ -308,6 +308,7 @@ FUNCTION_NON_NULL_RETURN_END
 	Params.m_Outer = Outer;
 	Params.m_Name = name;
 	Params.m_SetFlags = Flags;
+	Params.m_Class = Class;
 	//Params.m_Template = Template;
 	Params.m_bCopyTransientsFromClassDefaults = bCopyTransientsFromClassDefaults;
 	//Params.InstanceGraph = InInstanceGraph;

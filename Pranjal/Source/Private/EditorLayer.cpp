@@ -303,7 +303,6 @@ namespace Karma
 
 		delete testWorld;
 	}
-
 }
 
 class KarmaApp : public Karma::Application

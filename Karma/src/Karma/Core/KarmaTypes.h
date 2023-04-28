@@ -30,6 +30,11 @@ template<typename BuildingBlock>
 class KarmaVector
 {
 public:
+	KarmaVector()
+	{
+		m_Elements;
+	}
+
 	uint32_t Remove(BuildingBlock aBlock)
 	{
 		uint32_t occurences = 0;

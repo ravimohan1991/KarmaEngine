@@ -147,6 +147,8 @@ namespace Karma
 			//UE_ASSUME(SomeBaseClass);
 			//UE_ASSUME(ThisClass);
 
+			KR_CORE_ASSERT(ThisClass, "Comparing with null is useless");
+
 			return IsChildOfWorkaround(ThisClass, SomeBaseClass);
 		}
 
