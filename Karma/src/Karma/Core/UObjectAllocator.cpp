@@ -58,26 +58,32 @@ namespace Karma
 	{
 		// Force alignment to minimal of 16 bytes
 		Alignment = FMath::Max(16, Alignment);
-		int32_t AlignedSize = Align(Size, Alignment);
-		UObjectBase* Result = nullptr;
+		//int32_t AlignedSize = Align(Size, Alignment);
 
+		UObjectBase* Result = nullptr;
 		bAllowPermanent &= m_PermanentObjectPool != nullptr;
-		const bool bPlaceInPerm = bAllowPermanent && (Align(m_PermanentObjectPoolTail, Alignment) + Size) <= (m_PermanentObjectPool + m_PermanentObjectPoolSize);
+
+		const bool bPlaceInPerm = bAllowPermanent && (Align(m_PermanentObjectPoolTail, Alignment) + Size) <= (m_PermanentObjectPool + m_PermanentObjectPoolSize);// is memory available?
+
 		if (bAllowPermanent && !bPlaceInPerm)
 		{
 			// advance anyway so we can determine how much space we should set aside in the ini
 			uint8_t* AlignedPtr = Align(m_PermanentObjectPoolExceededTail, Alignment);
 			m_PermanentObjectPoolExceededTail = AlignedPtr + Size;
 		}
+
 		// Use object memory pool for objects disregarded by GC (initially loaded ones). This allows identifying their
 		// GC status by simply looking at their address.
 		if (bPlaceInPerm)
 		{
 			// Align current tail pointer and use it for object. 
 			uint8_t* AlignedPtr = Align(m_PermanentObjectPoolTail, Alignment);
+
 			// Update tail pointer.
 			m_PermanentObjectPoolTail = AlignedPtr + Size;
+
 			Result = (UObjectBase*)AlignedPtr;
+
 			if (m_PermanentObjectPoolExceededTail < m_PermanentObjectPoolTail)
 			{
 				m_PermanentObjectPoolExceededTail = m_PermanentObjectPoolTail;
