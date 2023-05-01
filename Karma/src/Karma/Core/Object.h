@@ -14,6 +14,8 @@ namespace Karma
 		//UClass* m_StaticClass;
 
 	public:
+		UObject();
+
 		static const char* StaticConfigName()
 		{
 			return "Engine";

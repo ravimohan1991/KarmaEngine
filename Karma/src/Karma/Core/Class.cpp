@@ -6,6 +6,10 @@ namespace Karma
 	{
 		m_PropertiesSize = sizeof(UClass);
 		m_MinAlignment = alignof(UClass);
+
+		// Experimental for now
+		//m_ClassWithin = nullptr;
+		//m_ClassDefaultObject = nullptr;
 	}
 
 	UClass::UClass(const std::string& name) : m_NamePrivate(name)
@@ -147,6 +151,6 @@ namespace Karma
 			}
 		}*/
 		//m_ClassDefaultObject = new 
-		return m_ClassDefaultObject;
+		return nullptr;//m_ClassDefaultObject;
 	}
 }

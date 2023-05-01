@@ -140,6 +140,12 @@ namespace Karma
 		/** Whether BeginPlay has been called on actors */
 		uint8_t m_bBegunPlay : 1;
 
+		/** The type of world this is. Describes the context in which it is being used (Editor, Game, Preview etc.) */
+		EWorldType::Type m_WorldType;
+
+		/** The current renderer feature level of this world */
+		//TEnumAsByte<ERHIFeatureLevel::Type> FeatureLevel;
+
 	public:
 		//////////////////////////////////////////////////////////////////////////
 		// UWorld inlines:
@@ -167,6 +173,11 @@ namespace Karma
 
 		/** Returns true if gameplay has already started, false otherwise. */
 		bool HasBegunPlay() const;
+
+		/**
+		 * Static function that creates a new UWorld and returns a pointer to it
+		 */
+		static UWorld* CreateWorld(const EWorldType::Type InWorldType, bool bInformEngineOfWorld, const std::string& WorldName = "NoName", UPackage* InWorldPackage = NULL, bool bAddToRoot = true,/* ERHIFeatureLevel::Type InFeatureLevel = ERHIFeatureLevel::Num, const InitializationValues* InIVS = nullptr,*/ bool bInSkipInitWorld = false);
 
 		/**
 		 * Attention:

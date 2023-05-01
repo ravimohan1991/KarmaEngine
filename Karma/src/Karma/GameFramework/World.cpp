@@ -5,6 +5,7 @@
 #include "GameFramework/Level.h"
 #include "Ganit/Transform.h"
 #include "Level.h"
+#include "Karma/Core/Package.h"
 
 namespace Karma
 {
@@ -17,7 +18,7 @@ namespace Karma
 		m_OverrideLevel = nullptr;
 	}
 
-	UWorld::UWorld()
+	UWorld::UWorld() : UObject()
 	{
 		m_TimeSeconds = 0.0f;
 		m_CurrentLevel = nullptr;
@@ -74,6 +75,69 @@ namespace Karma
 		Actor->PostSpawnInitialize(UserTransform, spawnParameters.m_Owner, spawnParameters.m_Instigator, spawnParameters.IsRemoteOwned(), spawnParameters.m_bNoFail, spawnParameters.m_bDeferConstruction);
 
 		return Actor;
+	}
+
+	UWorld* UWorld::CreateWorld(const EWorldType::Type InWorldType, bool bInformEngineOfWorld, const std::string& WorldName, UPackage* InWorldPackage, bool bAddToRoot,/* ERHIFeatureLevel::Type InFeatureLevel = ERHIFeatureLevel::Num, const InitializationValues* InIVS = nullptr,*/ bool bInSkipInitWorld)
+	{
+		//TRACE_CPUPROFILER_EVENT_SCOPE(UWorld::CreateWorld);
+
+		UPackage* WorldPackage = InWorldPackage;
+		if (!WorldPackage)
+		{
+			WorldPackage = CreatePackage("XPackage");// nullptr);
+		}
+
+		if (InWorldType == EWorldType::PIE)
+		{
+			WorldPackage->SetPackageFlags(PKG_PlayInEditor);
+		}
+
+		// Mark the package as containing a world.  This has to happen here rather than at serialization time,
+		// so that e.g. the referenced assets browser will work correctly.
+		//if (WorldPackage != GetTransientPackage())
+		//{
+			WorldPackage->ThisContainsMap();
+		//}
+
+		// Create new UWorld, ULevel and UModel.
+		std::string WorldNameString;
+		if (WorldName == "")
+		{
+			WorldNameString = "NoName";
+		}
+		else
+		{
+			WorldNameString = WorldName;
+		}
+
+		UWorld* NewWorld = NewObject<UWorld>(WorldPackage, WorldNameString);
+
+		NewWorld->SetFlags(RF_Transactional);
+		NewWorld->m_WorldType = InWorldType;
+		//NewWorld->FeatureLevel = InFeatureLevel;
+		//NewWorld->InitializeNewWorld(InIVS ? *InIVS : UWorld::InitializationValues().CreatePhysicsScene(InWorldType != EWorldType::Inactive).ShouldSimulatePhysics(false).EnableTraceCollision(true).CreateNavigation(InWorldType == EWorldType::Editor).CreateAISystem(InWorldType == EWorldType::Editor), bInSkipInitWorld);
+
+		// Clear the dirty flags set during SpawnActor and UpdateLevelComponents
+		//WorldPackage->SetDirtyFlag(false);
+		//for (UPackage* ExternalPackage : WorldPackage->GetExternalPackages())
+		//{
+		//	ExternalPackage->SetDirtyFlag(false);
+		//}
+
+		if (bAddToRoot)
+		{
+			// Add to root set so it doesn't get garbage collected.
+			NewWorld->AddToRoot();
+		}
+
+		// Tell the engine we are adding a world (unless we are asked not to)
+		/*
+		if ((GEngine) && (bInformEngineOfWorld == true))
+		{
+			GEngine->WorldAdded(NewWorld);
+		}*/
+
+		return NewWorld;
 	}
 
 	bool UWorld::ShivaActor(AActor* ThisActor, bool bNetForce, bool bShouldModifyLevel)

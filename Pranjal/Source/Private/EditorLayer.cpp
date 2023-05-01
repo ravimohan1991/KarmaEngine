@@ -289,7 +289,8 @@ namespace Karma
 		KR_INFO("========= Trigger invoked =========");
 		KR_INFO("-----> Spawning World");
 
-		UWorld* testWorld = new UWorld();
+		// A test world
+		UWorld* testWorld = UWorld::CreateWorld(EWorldType::PIE, true, "AWorld");
 
 		UClass* testActorClass = AActor::StaticClass<AActor>();
 		FTransform testTransform = FTransform::m_Identity;
@@ -301,6 +302,7 @@ namespace Karma
 
 		testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
 
+		// Shouldn't we be using Shivasomething?
 		delete testWorld;
 	}
 }

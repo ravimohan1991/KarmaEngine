@@ -5,6 +5,11 @@
 
 namespace Karma
 {
+	UActorComponent::UActorComponent()
+	{
+		m_OwnerPrivate = nullptr;
+	}
+
 	void UActorComponent::TickComponent(float deltaTime)
 	{
 	

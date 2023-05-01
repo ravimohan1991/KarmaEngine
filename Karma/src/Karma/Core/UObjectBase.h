@@ -30,6 +30,16 @@ namespace Karma
 	protected:
 		UObjectBase();
 
+		/**
+		 * Set the object flags directly
+		 *
+		 **/
+		FORCEINLINE void SetFlagsTo(EObjectFlags NewFlags)
+		{
+			KR_CORE_ASSERT((NewFlags & ~RF_AllFlags) == 0, "%s flagged as 0x%x but is trying to set flags to RF_AllFlags");
+			m_ObjectFlags = NewFlags;
+		}
+
 	public:
 		/**
 		 * Constructor used by StaticAllocateObject
@@ -173,6 +183,16 @@ namespace Karma
 			return m_ObjectFlags;
 		}
 
+		/** 
+		 * Modifies object flags for a specific object 
+		 */
+		FORCEINLINE void SetFlags(EObjectFlags NewFlags)
+		{
+			KR_CORE_ASSERT(!(NewFlags & (RF_MarkAsNative | RF_MarkAsRootSet | RF_PendingKill | RF_Garbage)), "These flags can't be used outside of constructors / internal code");
+			KR_CORE_ASSERT(!(NewFlags & (EObjectFlags)(RF_PendingKill | RF_Garbage)) || (GetFlags() & (NewFlags & (EObjectFlags)(RF_PendingKill | RF_Garbage))) == (NewFlags & (EObjectFlags)(RF_PendingKill | RF_Garbage)), "RF_PendingKill and RF_garbage can not be set through SetFlags function. Use MarkAsGarbage() instead");
+
+			SetFlagsTo(EObjectFlags (GetFlags() | NewFlags));
+		}
 
 		/**
 		 * Used to safely check whether any of the passed in flags are set.
@@ -184,6 +204,16 @@ namespace Karma
 		{
 			KR_CORE_ASSERT(!(FlagsToCheck & (RF_MarkAsNative | RF_MarkAsRootSet)) || FlagsToCheck == RF_AllFlags, "Illegal flags being used"); // These flags can't be used outside of constructors / internal code
 			return (GetFlags() & FlagsToCheck) != 0;
+		}
+
+		/**
+		 * Add an object to the root set. This prevents the object and all
+		 * its descendants from being deleted during garbage collection.
+		 */
+		FORCEINLINE void AddToRoot()
+		{
+			// Need to understand the logic of GC first
+			//GUObjectStore.IndexToObject(InternalIndex)->SetRootSet();
 		}
 
 		/*-------------------

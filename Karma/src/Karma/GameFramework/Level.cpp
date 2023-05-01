@@ -2,7 +2,7 @@
 
 namespace Karma
 {
-	ULevel::ULevel()
+	ULevel::ULevel() : UObject()
 	{
 		
 	}

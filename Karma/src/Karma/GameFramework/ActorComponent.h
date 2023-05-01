@@ -53,6 +53,8 @@ namespace Karma
 		UWorld* m_WorldPrivate;
 
 	public:
+		UActorComponent();
+
 		/**
 		 * Function called every frame on this ActorComponent. Override this function to implement custom logic to be executed every frame.
 		 * Only executes if the component is registered, and also PrimaryComponentTick.bCanEverTick must be set to true.

@@ -5,7 +5,7 @@
 
 namespace Karma
 {
-	USceneComponent::USceneComponent()
+	USceneComponent::USceneComponent() : UActorComponent()
 	{
 		m_AttachParent = nullptr;
 	}

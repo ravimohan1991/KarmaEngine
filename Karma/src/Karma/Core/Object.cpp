@@ -4,6 +4,10 @@
 
 namespace Karma
 {
+	UObject::UObject() : UObjectBase()
+	{
+	}
+
 	void UObject::FinishDestroy()
 	{
 	}

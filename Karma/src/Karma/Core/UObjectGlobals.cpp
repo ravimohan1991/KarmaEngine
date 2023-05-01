@@ -4,6 +4,7 @@
 #include "Ganit/KarmaMath.h"
 #include "UObjectAllocator.h"
 #include "Karma/Core/TrueCore/KarmaMemory.h"
+#include "Karma/Core/Package.h"
 
 namespace Karma
 {
@@ -126,5 +127,70 @@ namespace Karma
 		new((void*)Object) UObjectBase(const_cast<UClass*>(inClass), relevantFlags, internalSetFlags, inOuter, inName);
 
 		return Object;
+	}
+
+	UPackage* CreatePackage(const std::string& PackageName)
+	{
+		std::string InName;
+
+		if (PackageName != "")
+		{
+			InName = PackageName;
+		}
+
+		/*
+		if (InName.Contains(TEXT("//"), ESearchCase::CaseSensitive))
+		{
+			UE_LOG(LogUObjectGlobals, Fatal, TEXT("Attempted to create a package with name containing double slashes. PackageName: %s"), PackageName);
+		}
+
+		if (InName.EndsWith(TEXT("."), ESearchCase::CaseSensitive))
+		{
+			FString InName2 = InName.Left(InName.Len() - 1);
+			UE_LOG(LogUObjectGlobals, Log, TEXT("Invalid Package Name entered - '%s' renamed to '%s'"), *InName, *InName2);
+			InName = InName2;
+		}
+
+		if (InName.Len() == 0)
+		{
+			InName = MakeUniqueObjectName(nullptr, UPackage::StaticClass()).ToString();
+		}*/
+
+		UObject* Outer = nullptr;
+		//ResolveName(Outer, InName, true, false);
+
+		UPackage* Result = nullptr;
+
+		/*
+		if (InName.Len() == 0)
+		{
+			UE_LOG(LogUObjectGlobals, Fatal, TEXT("%s"), TEXT("Attempted to create a package with an empty package name."));
+		}*/
+
+		if (InName != "")
+		{
+			//Result = FindObject<UPackage>(nullptr, *InName);
+
+			if (Result == NULL)
+			{
+				//FName NewPackageName(*InName, FNAME_Add);
+				
+				/*if (FPackageName::IsShortPackageName(NewPackageName))
+				{
+					UE_LOG(LogUObjectGlobals, Warning, TEXT("Attempted to create a package with a short package name: %s Outer: %s"), PackageName, Outer ? *Outer->GetFullName() : TEXT("NullOuter"));
+				}
+				else
+				{*/
+					Result = NewObject<UPackage>(nullptr, /*NewPackageName*/InName, RF_Public);
+				//}
+			}
+		}
+		else
+		{
+			//UE_LOG(LogUObjectGlobals, Fatal, TEXT("%s"), TEXT("Attempted to create a package named 'None'"));
+			KR_CORE_ASSERT(false, "Attempted to create a package not even named");
+		}
+
+		return Result;
 	}
 }

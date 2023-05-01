@@ -446,9 +446,11 @@ namespace Karma
 		m_CreationTime = (World ? (float)World->GetTimeSeconds() : 0.f);
 
 		// Set owner.
+		if(InOwner)
 		SetOwner(InOwner);
 
 		// Set instigator
+		if(InInstigator)
 		SetInstigator(InInstigator);
 
 		// Set the actor's world transform if it has a native rootcomponent.

@@ -91,7 +91,7 @@ namespace Karma
 		UClass(const std::string& name);
 
 		/** The required type for the outer of instances of this class */
-		UClass* ClassWithin;
+		//UClass* m_ClassWithin;
 
 		/** Jugaad */
 		std::string m_NamePrivate;
@@ -111,13 +111,13 @@ namespace Karma
 		 */
 		UObject* GetDefaultObject(bool bCreateIfNeeded = true) const
 		{
-			if (m_ClassDefaultObject == nullptr && bCreateIfNeeded)
+			if (/*m_ClassDefaultObject == nullptr &&*/ bCreateIfNeeded)
 			{
 				// some UE macro
 				const_cast<UClass*>(this)->CreateDefaultObject();
 			}
 
-			return m_ClassDefaultObject;
+			return nullptr;//m_ClassDefaultObject;
 		}
 
 		/**
@@ -153,10 +153,10 @@ namespace Karma
 
 	public:
 		/** The class default object; used for delta serialization and object initialization */
-		UObject* m_ClassDefaultObject;
+		//UObject* m_ClassDefaultObject;
 
 	private:
 		/** Used to check if the class layout is currently changing and therefore is not ready for a CDO to be created */
-		bool m_bLayoutChanging;
+		//bool m_bLayoutChanging;
 	};
 }

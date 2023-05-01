@@ -7,6 +7,13 @@ namespace Karma
 {
 	UObjectBase::UObjectBase()
 	{
+		m_ObjectFlags = RF_NoFlags;
+		m_InternalIndex = INDEX_NONE;
+		m_ClassPrivate = nullptr;
+		m_OuterPrivate = nullptr;
+		m_NamePrivate = "NoName";
+
+		// Not adding to GUObjectStore
 	}
 
 	UObjectBase::UObjectBase(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName)
@@ -19,6 +26,9 @@ namespace Karma
 
 		// Add to global table.
 		AddObject(inName, inInternalFlags);
+
+		// For testing only
+		KR_CORE_INFO("UObjectBase Constructor");
 	}
 
 	/**
