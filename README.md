@@ -63,6 +63,9 @@ Patreon
 -----------
 Help me in supporting FOSS by being a member of this [page](https://www.patreon.com/FreeandOpen). No strings attached.
 
+Huge thanks to:
+Shiwali Mohan
+
 References
 -----------
 
