@@ -181,7 +181,7 @@ namespace Karma
 				}
 				else
 				{*/
-					Result = NewObject<UPackage>(nullptr, /*NewPackageName*/InName, RF_Public);
+					Result = NewObject<UPackage>(nullptr, UPackage::StaticClass<UPackage>(),/*NewPackageName*/InName, RF_Public);
 				//}
 			}
 		}

@@ -110,7 +110,7 @@ namespace Karma
 			WorldNameString = WorldName;
 		}
 
-		UWorld* NewWorld = NewObject<UWorld>(WorldPackage, WorldNameString);
+		UWorld* NewWorld = NewObject<UWorld>(WorldPackage, UWorld::StaticClass<UWorld>(), WorldNameString);
 
 		NewWorld->SetFlags(RF_Transactional);
 		NewWorld->m_WorldType = InWorldType;

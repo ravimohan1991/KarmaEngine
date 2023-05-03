@@ -362,11 +362,11 @@ FUNCTION_NON_NULL_RETURN_END
 
 	return static_cast<T*>(StaticConstructObject_Internal(Params));
 }
-
+/*
 template< class T >
-FUNCTION_NON_NULL_RETURN_START
-T* NewObject(UObject* Outer, const std::string& Name, EObjectFlags Flags = RF_NoFlags, UObject* Template = nullptr, bool bCopyTransientsFromClassDefaults = false/*, FObjectInstancingGraph* InInstanceGraph = nullptr*/)
-FUNCTION_NON_NULL_RETURN_END
+FUNCTION_NON_NULL_RETURN_START*/
+//T* NewObject(UObject* Outer, const std::string& Name, EObjectFlags Flags = RF_NoFlags, UObject* Template = nullptr, bool bCopyTransientsFromClassDefaults = false/*, FObjectInstancingGraph* InInstanceGraph = nullptr*/)
+/*FUNCTION_NON_NULL_RETURN_END
 {
 	if (Name == "")
 	{
@@ -380,10 +380,11 @@ FUNCTION_NON_NULL_RETURN_END
 	Params.m_SetFlags = Flags;
 	//Params.Template = Template;
 	Params.m_bCopyTransientsFromClassDefaults = bCopyTransientsFromClassDefaults;
+	Params.m_Class = T::StaticClass<T>();
 	//Params.InstanceGraph = InInstanceGraph;
 
 	return static_cast<T*>(StaticConstructObject_Internal(Params));
-}
+}*/
 
 /**
  * A routine to find if the object is instantiated already. May need to modify in accordance with thread safety in future
