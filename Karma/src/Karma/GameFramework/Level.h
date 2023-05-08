@@ -9,6 +9,8 @@ namespace Karma
 	class AActor;
 	class UWorld;
 
+	class AWorldSettings;
+
 	/**
 	 * A Level is a collection of Actors (lights, volumes, mesh instances etc.).
 	 * Multiple Levels can be loaded and unloaded into the World to create a streaming experience.
@@ -24,7 +26,7 @@ namespace Karma
 	public:
 
 		/** URL associated with this level. */
-		std::string					m_URL;
+		FURL					m_URL;
 
 		/** Array of all actors in this level, used by FActorIteratorBase and derived classes */
 		KarmaVector<AActor*> m_Actors;
@@ -38,5 +40,21 @@ namespace Karma
 		 * It should not be accessed during BeginDestroy(), just like any other UObject references, since GC may occur in any order.
 		 */
 		UWorld* m_OwningWorld; // UE uses smart pointer
+
+	public:
+		void Initialize(const FURL& InURL);
+
+		/**
+		 * Set level's world settings
+		 * Caution: not completely functional yet
+		 */
+		void SetWorldSettings(AWorldSettings* NewWorldSettings);
+
+	private:
+		/**
+		 * Script accessible world properties for this level
+		 */
+		// TObjectPTR in UE
+		AWorldSettings* m_WorldSettings;
 	};
 }

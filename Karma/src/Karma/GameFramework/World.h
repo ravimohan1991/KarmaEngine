@@ -3,6 +3,7 @@
 #include "krpch.h"
 
 #include "Object.h"
+#include "SubClassOf.h"
 
 namespace Karma
 {
@@ -118,6 +119,16 @@ namespace Karma
 		 */
 		AActor* SpawnActor(UClass* Class, FTransform const* Transform, const FActorSpawnParameters& SpawnParameters = FActorSpawnParameters());
 
+		/** 
+		 * Templated version of SpawnActor that allows you to specify the class type 
+		 * via parameter while the return type is a parent class of that type 
+		 */
+		template< class T >
+		T* SpawnActor(UClass* Class, const FActorSpawnParameters& SpawnParameters = FActorSpawnParameters())
+		{
+			return CastChecked<T>(SpawnActor(Class, nullptr, SpawnParameters), ECastCheckedType::NullAllowed);
+		}
+
 	private:
 //#if WITH_EDITORONLY_DATA
 		/** Pointer to the current level being edited. Level has to be in the Levels array and == PersistentLevel in the game. */
@@ -145,6 +156,79 @@ namespace Karma
 
 		/** The current renderer feature level of this world */
 		//TEnumAsByte<ERHIFeatureLevel::Type> FeatureLevel;
+
+		/** Struct containing a collection of optional parameters for initialization of a World. */
+		struct InitializationValues
+		{
+			InitializationValues()
+				: bInitializeScenes(true)
+				, bAllowAudioPlayback(true)
+				, bRequiresHitProxies(true)
+				, bCreatePhysicsScene(true)
+				, bCreateNavigation(true)
+				, bCreateAISystem(true)
+				, bShouldSimulatePhysics(true)
+				, bEnableTraceCollision(false)
+				, bForceUseMovementComponentInNonGameWorld(false)
+				, bTransactional(true)
+				, bCreateFXSystem(true)
+				, bCreateWorldPartition(false)
+			{
+			}
+
+			/** Should the scenes (physics, rendering) be created. */
+			uint32_t bInitializeScenes : 1;
+
+			/** Are sounds allowed to be generated from this world. */
+			uint32_t bAllowAudioPlayback : 1;
+
+			/** Should the render scene create hit proxies. */
+			uint32_t bRequiresHitProxies : 1;
+
+			/** Should the physics scene be created. bInitializeScenes must be true for this to be considered. */
+			uint32_t bCreatePhysicsScene : 1;
+
+			/** Should the navigation system be created for this world. */
+			uint32_t bCreateNavigation : 1;
+
+			/** Should the AI system be created for this world. */
+			uint32_t bCreateAISystem : 1;
+
+			/** Should physics be simulated in this world. */
+			uint32_t bShouldSimulatePhysics : 1;
+
+			/** Are collision trace calls valid within this world. */
+			uint32_t bEnableTraceCollision : 1;
+
+			/** Special flag to enable movement component in non game worlds (see UMovementComponent::OnRegister) */
+			uint32_t bForceUseMovementComponentInNonGameWorld : 1;
+
+			/** Should actions performed to objects in this world be saved to the transaction buffer. */
+			uint32_t bTransactional : 1;
+
+			/** Should the FX system be created for this world. */
+			uint32_t bCreateFXSystem : 1;
+
+			/** Should the world be partitioned */
+			uint32_t bCreateWorldPartition : 1;
+
+			/** The default game mode for this world (if any) */
+			TSubclassOf<class AGameModeBase> DefaultGameMode;
+
+			InitializationValues& InitializeScenes(const bool bInitialize) { bInitializeScenes = bInitialize; return *this; }
+			InitializationValues& AllowAudioPlayback(const bool bAllow) { bAllowAudioPlayback = bAllow; return *this; }
+			InitializationValues& RequiresHitProxies(const bool bRequires) { bRequiresHitProxies = bRequires; return *this; }
+			InitializationValues& CreatePhysicsScene(const bool bCreate) { bCreatePhysicsScene = bCreate; return *this; }
+			InitializationValues& CreateNavigation(const bool bCreate) { bCreateNavigation = bCreate; return *this; }
+			InitializationValues& CreateAISystem(const bool bCreate) { bCreateAISystem = bCreate; return *this; }
+			InitializationValues& ShouldSimulatePhysics(const bool bInShouldSimulatePhysics) { bShouldSimulatePhysics = bInShouldSimulatePhysics; return *this; }
+			InitializationValues& EnableTraceCollision(const bool bInEnableTraceCollision) { bEnableTraceCollision = bInEnableTraceCollision; return *this; }
+			InitializationValues& ForceUseMovementComponentInNonGameWorld(const bool bInForceUseMovementComponentInNonGameWorld) { bForceUseMovementComponentInNonGameWorld = bInForceUseMovementComponentInNonGameWorld; return *this; }
+			InitializationValues& SetTransactional(const bool bInTransactional) { bTransactional = bInTransactional; return *this; }
+			InitializationValues& CreateFXSystem(const bool bCreate) { bCreateFXSystem = bCreate; return *this; }
+			InitializationValues& CreateWorldPartition(const bool bCreate) { bCreateWorldPartition = bCreate; return *this; }
+			InitializationValues& SetDefaultGameMode(TSubclassOf<class AGameModeBase> GameMode) { DefaultGameMode = GameMode; return *this; }
+		};
 
 	public:
 		//////////////////////////////////////////////////////////////////////////
@@ -178,6 +262,11 @@ namespace Karma
 		 * Static function that creates a new UWorld and returns a pointer to it
 		 */
 		static UWorld* CreateWorld(const EWorldType::Type InWorldType, bool bInformEngineOfWorld, const std::string& WorldName = "NoName", UPackage* InWorldPackage = NULL, bool bAddToRoot = true,/* ERHIFeatureLevel::Type InFeatureLevel = ERHIFeatureLevel::Num, const InitializationValues* InIVS = nullptr,*/ bool bInSkipInitWorld = false);
+
+		/**
+		 * Initializes a newly created world.
+		 */
+		void InitializeNewWorld(const InitializationValues IVS = InitializationValues(), bool bInSkipInitWorld = false);
 
 		/**
 		 * Attention:

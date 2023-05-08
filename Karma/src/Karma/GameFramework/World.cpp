@@ -6,6 +6,7 @@
 #include "Ganit/Transform.h"
 #include "Level.h"
 #include "Karma/Core/Package.h"
+#include "WorldSettings.h"
 
 namespace Karma
 {
@@ -37,7 +38,8 @@ namespace Karma
 		}
 
 		// Remember this is jugaad reflection. In true reflection the syntax is AActor::StaticClass()
-		if (!Class->IsChildOf(AActor::StaticClass<AActor>()))
+		UClass* baseRequiredClass = AActor::StaticClass<AActor>();
+		if (!Class->IsChildOf(baseRequiredClass))
 		{
 			KR_CORE_ERROR("SpawnActor failed because {0} is not an actor class", Class->GetName());
 			return nullptr;
@@ -115,7 +117,7 @@ namespace Karma
 		NewWorld->SetFlags(RF_Transactional);
 		NewWorld->m_WorldType = InWorldType;
 		//NewWorld->FeatureLevel = InFeatureLevel;
-		//NewWorld->InitializeNewWorld(InIVS ? *InIVS : UWorld::InitializationValues().CreatePhysicsScene(InWorldType != EWorldType::Inactive).ShouldSimulatePhysics(false).EnableTraceCollision(true).CreateNavigation(InWorldType == EWorldType::Editor).CreateAISystem(InWorldType == EWorldType::Editor), bInSkipInitWorld);
+		NewWorld->InitializeNewWorld(UWorld::InitializationValues().CreatePhysicsScene(InWorldType != EWorldType::Inactive).ShouldSimulatePhysics(false).EnableTraceCollision(true).CreateNavigation(InWorldType == EWorldType::Editor).CreateAISystem(InWorldType == EWorldType::Editor), bInSkipInitWorld);
 
 		// Clear the dirty flags set during SpawnActor and UpdateLevelComponents
 		//WorldPackage->SetDirtyFlag(false);
@@ -138,6 +140,93 @@ namespace Karma
 		}*/
 
 		return NewWorld;
+	}
+
+	void UWorld::InitializeNewWorld(const InitializationValues IVS, bool bInSkipInitWorld)
+	{
+		if (!IVS.bTransactional)
+		{
+			ClearFlags(RF_Transactional);
+		}
+
+		m_PersistentLevel = NewObject<ULevel>(this, ULevel::StaticClass<ULevel>(), "PersistentLevel");
+		
+		FURL someURL("someurl");
+		m_PersistentLevel->Initialize(someURL);
+		
+		// BSP (Binary Space Partitioning stuff)
+		// m_PersistentLevel->Model = NewObject<UModel>(PersistentLevel);
+		// m_PersistentLevel->Model->Initialize(nullptr, 1);
+		
+		m_PersistentLevel->m_OwningWorld = this;
+
+		// Create the WorldInfo actor.
+		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.m_Name = "testWorldSettings";
+
+		// Mark objects are transactional for undo/ redo.
+		if (IVS.bTransactional)
+		{
+			SpawnInfo.m_ObjectFlags = (EObjectFlags) (SpawnInfo.m_ObjectFlags | RF_Transactional);
+			m_PersistentLevel->SetFlags(RF_Transactional);
+			//m_PersistentLevel->Model->SetFlags(RF_Transactional);
+		}
+		else
+		{
+			SpawnInfo.m_ObjectFlags = (EObjectFlags)(SpawnInfo.m_ObjectFlags & ~RF_Transactional);
+			m_PersistentLevel->ClearFlags(RF_Transactional);
+			//PersistentLevel->Model->ClearFlags(RF_Transactional);
+		}
+
+//#if WITH_EDITORONLY_DATA
+		// Need to associate current level so SpawnActor doesn't complain.
+		m_CurrentLevel = m_PersistentLevel;
+//#endif
+
+		//SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		// Set constant name for WorldSettings to make a network replication work between new worlds on host and client
+		//SpawnInfo.Name = GEngine->WorldSettingsClass->GetFName();
+
+		// Experimental
+		UClass* worldSettingsClass = AActor::StaticClass<AWorldSettings>();
+
+		AWorldSettings* WorldSettings = SpawnActor<AWorldSettings>(worldSettingsClass, SpawnInfo);
+
+		// Allow the world creator to override the default game mode in case they do not plan to load a level.
+		//if (IVS.DefaultGameMode)
+		//{
+		//	WorldSettings->DefaultGameMode = IVS.DefaultGameMode;
+		//}
+
+		m_PersistentLevel->SetWorldSettings(WorldSettings);
+
+		//check(GetWorldSettings());
+
+#if WITH_EDITOR
+		WorldSettings->SetIsTemporarilyHiddenInEditor(true);
+
+		// Check if newly created world should be partitioned
+		if (IVS.bCreateWorldPartition)
+		{
+			// World partition always uses actor folder objects
+			FLevelActorFoldersHelper::SetUseActorFolders(PersistentLevel, true);
+			PersistentLevel->ConvertAllActorsToPackaging(true);
+
+			check(!GetStreamingLevels().Num());
+
+			UWorldPartition::CreateOrRepairWorldPartition(WorldSettings);
+		}
+#endif
+
+		/*if (!bInSkipInitWorld)
+		{
+			// Initialize the world
+			InitWorld(IVS);
+
+			// Update components.
+			const bool bRerunConstructionScripts = !FPlatformProperties::RequiresCookedData();
+			UpdateWorldComponents(bRerunConstructionScripts, false);
+		}*/
 	}
 
 	bool UWorld::ShivaActor(AActor* ThisActor, bool bNetForce, bool bShouldModifyLevel)

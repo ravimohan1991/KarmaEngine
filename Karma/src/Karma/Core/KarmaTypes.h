@@ -180,3 +180,166 @@ public:
 private:
 	std::vector<BuildingBlock> m_Elements;
 };
+
+// Traveling from server to server.
+enum ETravelType
+{
+	/** Absolute URL. */
+	TRAVEL_Absolute,
+
+	/** Partial (carry name, reset server). */
+	TRAVEL_Partial,
+	
+	/** Relative URL. */
+	TRAVEL_Relative,
+	
+	TRAVEL_MAX,
+};
+
+/**
+ * Helper for obtaining the default Url configuration
+ */
+struct KARMA_API FUrlConfig
+{
+	std::string m_DefaultProtocol;
+	std::string m_DefaultName;
+	std::string m_DefaultHost;
+	std::string m_DefaultPortal;
+	std::string m_DefaultSaveExt;
+	int32_t m_DefaultPort;
+
+	/**
+	 * Initialize with defaults from ini
+	 */
+	void Init();
+
+	/**
+	 * Reset state
+	 */
+	void Reset();
+};
+
+//URL structure.
+struct KARMA_API FURL
+{
+	// Protocol, i.e. "karma" or "http".
+	std::string m_Protocol;
+
+	// Optional hostname, i.e. "204.157.115.40" or "unreal.epicgames.com", blank if local.
+	std::string m_Host;
+
+	// Optional host port.
+	int32_t m_Port;
+
+	int32_t m_Valid;
+
+	// Map name, i.e. "SkyCity", default is "Entry".
+	std::string m_Map;
+
+	// Optional place to download Map if client does not possess it
+	std::string m_RedirectURL;
+
+	// Options.
+	//TArray<FString> Op;
+
+	// Portal to enter through, default is "".
+	std::string m_Portal;
+
+	// Statics.
+	static FUrlConfig UrlConfig;
+	static bool m_bDefaultsInitialized;
+
+	/**
+	 * Prevent default from being generated.
+	 */
+	//explicit FURL(ENoInit) { }
+
+	/**
+	 * Construct a purely default, local URL from an optional filename.
+	 */
+	FURL(const std::string& Filename = "");
+
+	/**
+	 * Construct a URL from text and an optional relative base.
+	 */
+	//FURL(FURL* Base, const TCHAR* TextURL, ETravelType Type);
+
+	//static void StaticInit();
+	//static void StaticExit();
+
+	/**
+	 * Static: Removes any special URL characters from the specified string
+	 *
+	 * @param Str String to be filtered
+	 */
+	//static void FilterURLString(const std::string& Str);
+
+	/**
+	 * Returns whether this URL corresponds to an internal object, i.e. an Unreal
+	 * level which this app can try to connect to locally or on the net. If this
+	 * is false, the URL refers to an object that a remote application like Internet
+	 * Explorer can execute.
+	 */
+	//bool IsInternal() const;
+
+	/**
+	 * Returns whether this URL corresponds to an internal object on this local
+	 * process. In this case, no Internet use is necessary.
+	 */
+	//bool IsLocalInternal() const;
+
+	/**
+	 * Tests if the URL contains an option string.
+	 */
+	//bool HasOption(const TCHAR* Test) const;
+
+	/**
+	 * Returns the value associated with an option.
+	 *
+	 * @param Match The name of the option to get.
+	 * @param Default The value to return if the option wasn't found.
+	 *
+	 * @return The value of the named option, or Default if the option wasn't found.
+	 */
+	//const TCHAR* GetOption(const TCHAR* Match, const TCHAR* Default) const;
+
+	/**
+	 * Load URL from config.
+	 */
+	//void LoadURLConfig(const TCHAR* Section, const std::string& Filename = "GGameIni");
+
+	/**
+	 * Save URL to config.
+	 */
+	//void SaveURLConfig(const TCHAR* Section, const TCHAR* Item, const std::string& Filename = "GGameIni") const;
+
+	/**
+	 * Add a unique option to the URL, replacing any existing one.
+	 */
+	//void AddOption(const TCHAR* Str);
+
+	/**
+	 * Remove an option from the URL
+	 */
+	//void RemoveOption(const TCHAR* Key, const TCHAR* Section = nullptr, const std::string& Filename = "GGameIni");
+
+	/**
+	 * Convert this URL to text.
+	 */
+	//std::string ToString(bool FullyQualified = 0) const;
+
+	/**
+	 * Prepares the Host and Port values into a standards compliant string
+	 */
+	//std::string GetHostPortString() const;
+
+	/**
+	 * Serializes a FURL to or from an archive.
+	 */
+	//ENGINE_API friend FArchive& operator<<(FArchive& Ar, FURL& U);
+
+	/**
+	 * Compare two URLs to see if they refer to the same exact thing.
+	 */
+	//bool operator==(const FURL& Other) const;
+};

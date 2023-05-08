@@ -194,6 +194,15 @@ namespace Karma
 			SetFlagsTo(EObjectFlags (GetFlags() | NewFlags));
 		}
 
+		/** Clears subset of flags for a specific object */
+		FORCEINLINE void ClearFlags(EObjectFlags NewFlags)
+		{
+			KR_CORE_ASSERT(!(NewFlags & (RF_MarkAsNative | RF_MarkAsRootSet | RF_PendingKill | RF_Garbage)) || NewFlags == RF_AllFlags, "These flags can't be used outside of constructors / internal code");
+			KR_CORE_ASSERT(!(NewFlags & (EObjectFlags)(RF_PendingKill | RF_Garbage)) || (GetFlags() & (NewFlags & (EObjectFlags)(RF_PendingKill | RF_Garbage))) == RF_NoFlags, "RF_PendingKill and RF_garbage can not be cleared through ClearFlags function. Use ClearGarbage() instead");
+
+			SetFlagsTo(EObjectFlags (GetFlags() & ~NewFlags));
+		}
+
 		/**
 		 * Used to safely check whether any of the passed in flags are set.
 		 *

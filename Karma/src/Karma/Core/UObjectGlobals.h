@@ -294,6 +294,47 @@ namespace Karma
 		//friend FObjectInitializer;
 	};
 
+/** Parameter enum for CastChecked() function, defines when it will check/assert */
+namespace ECastCheckedType
+{
+	enum Type
+	{
+		/** Null is okay, only assert on incorrect type */
+		NullAllowed,
+		/** Null is not allowed, assert on incorrect type or null */
+		NullChecked
+	};
+};
+
+/**
+ * Sees if class of type U can be cast into T class type, returns the casted class
+ * Needs to move to own Cast class
+ * 
+ * @param Src					The object pointer which needs to be checked
+ * @param CheckType				How to perform cast checks
+ */
+template <class T, class U> 
+FORCEINLINE T* CastChecked(const U& Src, ECastCheckedType::Type CheckType = ECastCheckedType::NullChecked)
+{
+	if (Src)
+	{
+		T* Result = static_cast<T*>(Src);// this line may need some generalization, I will come back later
+		if (!Result)
+		{
+			KR_CORE_ERROR("Casting failed");
+		}
+
+		return Result;
+	}
+
+	if (CheckType == ECastCheckedType::NullChecked)
+	{
+		KR_CORE_ASSERT(false, "Attempting to cast nullptr");
+	}
+
+	return nullptr;
+}
+
 /**
  * Create a new instance of an object.  The returned object will be fully initialized.  If InFlags contains RF_NeedsLoad (indicating that the object still needs to load its object data from disk), components
  * are not instanced (this will instead occur in PostLoad()).  The different between StaticConstructObject and StaticAllocateObject is that StaticConstructObject will also call the class constructor on the object

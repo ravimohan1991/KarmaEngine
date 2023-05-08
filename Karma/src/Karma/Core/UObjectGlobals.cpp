@@ -103,9 +103,10 @@ namespace Karma
 		if (objectName == "")
 		{
 			objectName = "NoName";
+			KR_CORE_WARN("Attempting to create UObject with empty name string. Defaulting to NoName");
 		}
 
-		// see if object already exists in GUObjectStore
+		// see if object already exists in GUObjectStore. Maybe not functional
 		Object = StaticFindObjectFastInternal(nullptr, inOuter, objectName, true);
 
 		int32 totalSize = inClass->GetPropertiesSize();
