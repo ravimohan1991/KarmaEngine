@@ -1,6 +1,8 @@
 #include "Object.h"
 #include "Class.h"
 #include "World.h"
+#include "UObjectAllocator.h"
+#include "KarmaMemory.h"
 
 namespace Karma
 {
@@ -14,10 +16,18 @@ namespace Karma
 
 	UClass* UObject::StaticClass(UObject* someObject)
 	{
-		static UClass StaticUClass;
+		UClass* StaticUClass;
+		size_t ClassSize = sizeof(UClass);
 
-		StaticUClass.SetPName(typeid(*someObject).name());// heh, wanna see how this works
-		return &StaticUClass;
+		StaticUClass = (UClass*)GUObjectAllocator.AllocateUObject(ClassSize, alignof(UClass), true);
+
+		// Note: UE doesn't 0 initialize
+		FMemory::Memzero((void*)StaticUClass, ClassSize);
+
+		// call the constructor
+		StaticUClass = new (StaticUClass) UClass(typeid(*someObject).name());
+
+		return StaticUClass;
 	}
 
 	class UWorld* UObject::GetWorld() const

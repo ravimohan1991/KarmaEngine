@@ -32,6 +32,13 @@ namespace Karma
 		virtual const std::string& GetDesc() { static std::string someString = "";  return someString; }
 
 	public:
+		/**
+		 * Allocates relevant space in UObjectAllocator pool for 
+		 * UClass type of object and returns the pointer
+		 * 
+		 * @param someObject				The "type" of UObject whose corresponding UClass is to be instantiated
+		 * @return UClass* to the someObject type
+		 */
 		static UClass* StaticClass(UObject* someObject);
 
 		template<typename classType>

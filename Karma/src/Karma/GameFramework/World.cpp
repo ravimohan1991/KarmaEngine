@@ -38,8 +38,7 @@ namespace Karma
 		}
 
 		// Remember this is jugaad reflection. In true reflection the syntax is AActor::StaticClass()
-		UClass* baseRequiredClass = AActor::StaticClass<AActor>();
-		if (!Class->IsChildOf(baseRequiredClass))
+		if (!Class->IsChildOf(AActor::StaticClass<AActor>()))
 		{
 			KR_CORE_ERROR("SpawnActor failed because {0} is not an actor class", Class->GetName());
 			return nullptr;
