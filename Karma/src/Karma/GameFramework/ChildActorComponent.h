@@ -12,6 +12,8 @@ namespace Karma
 	/** A component that spawns an Actor when registered, and destroys it when unregistered.*/
 	class KARMA_API UChildActorComponent : public USceneComponent
 	{
+		DECLARE_KARMA_CLASS(UChildActorComponent, USceneComponent)
+
 	private:
 		/** The class of Actor to spawn */
 		TSubclassOf<AActor>	m_ChildActorClass;

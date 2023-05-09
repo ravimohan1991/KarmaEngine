@@ -32,6 +32,8 @@ namespace Karma
 	 */
 	class KARMA_API USceneComponent : public UActorComponent
 	{
+		DECLARE_KARMA_CLASS(USceneComponent, UActorComponent)
+
 	public:
 		USceneComponent();
 

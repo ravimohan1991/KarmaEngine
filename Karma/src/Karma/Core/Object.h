@@ -3,6 +3,7 @@
 #include "krpch.h"
 
 #include "UObjectBase.h"
+#include "GFrameworkMacros.h"
 
 namespace Karma
 {
@@ -10,6 +11,9 @@ namespace Karma
 
 	class KARMA_API UObject : public UObjectBase
 	{
+		// In UE, this is done in ObjectMacros.h, #define DECLARE_CLASS
+		DECLARE_KARMA_CLASS(UObject, UObject)
+
 	private:
 		//UClass* m_StaticClass;
 

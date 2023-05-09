@@ -13,6 +13,6 @@ namespace Karma
 	 */
 	class KARMA_API AWorldSettings : public AActor
 	{
-
+		DECLARE_KARMA_CLASS(AWorldSettings, AActor)
 	};
 }

@@ -20,6 +20,8 @@ namespace Karma
 	 */
 	class KARMA_API AActor : public UObject
 	{
+		DECLARE_KARMA_CLASS(AActor, UObject)
+
 	public:
 		/** Default constructor for AActor */
 		AActor();

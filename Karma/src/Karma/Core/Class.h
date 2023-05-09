@@ -18,6 +18,8 @@ namespace Karma
 	//
 	class KARMA_API UField : public UObject
 	{
+		DECLARE_KARMA_CLASS(UField, UObject)
+
 		/** Next Field in the linked list */
 		UField* m_Next;
 
@@ -44,6 +46,8 @@ namespace Karma
 	 */
 	class KARMA_API UStruct : public UField
 	{
+		DECLARE_KARMA_CLASS(UStruct, UField)
+
 	public:
 		/** Returns true if this struct either is SomeBase, or is a child of SomeBase. This will not crash on null structs */
 		bool IsChildOf(const UStruct* SomeBase) const;
@@ -85,6 +89,8 @@ namespace Karma
 	 */
 	class KARMA_API UClass : public UStruct
 	{
+		DECLARE_KARMA_CLASS(UClass, UStruct)
+
 	public:
 		/** Constructor */
 		UClass();

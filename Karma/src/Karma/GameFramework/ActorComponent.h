@@ -30,6 +30,8 @@ namespace Karma
 	 */
 	class KARMA_API UActorComponent : public UObject
 	{
+		DECLARE_KARMA_CLASS(UActorComponent, UObject)
+
 	private:
 		/** Cached pointer to owning actor */
 		mutable AActor* m_OwnerPrivate;

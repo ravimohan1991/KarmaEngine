@@ -19,8 +19,9 @@ namespace Karma
 	 */
 	class KARMA_API ULevel : public UObject
 	{
-	public:
+		DECLARE_KARMA_CLASS(ULevel, UObject)
 
+	public:
 		ULevel();
 
 	public:

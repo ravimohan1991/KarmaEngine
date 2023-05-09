@@ -13,6 +13,8 @@ namespace Karma
 	 */
 	class KARMA_API UPrimitiveComponent : public USceneComponent
 	{
+		DECLARE_KARMA_CLASS(UPrimitiveComponent, USceneComponent)
+
 	public:
 		/** Controls whether the primitive component should cast a shadow or not. */
 		uint8_t CastShadow : 1;

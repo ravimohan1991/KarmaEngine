@@ -8,6 +8,8 @@ namespace Karma
 {
 	class KARMA_API UPackage : public UObject
 	{
+		DECLARE_KARMA_CLASS(UPackage, UObject)
+
 	public:
 		/**
 		* Set the specified flags to true. Does not affect any other flags.

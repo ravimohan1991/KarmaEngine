@@ -105,6 +105,8 @@ namespace Karma
 	 */
 	class KARMA_API UWorld : public UObject
 	{
+		DECLARE_KARMA_CLASS(UWorld, UObject)
+
 	public:
 		UWorld();
 
