@@ -14,22 +14,6 @@ namespace Karma
 	{
 	}
 
-	UClass* UObject::StaticClass(UObject* someObject)
-	{
-		UClass* StaticUClass;
-		size_t ClassSize = sizeof(UClass);
-
-		StaticUClass = (UClass*)GUObjectAllocator.AllocateUObject(ClassSize, alignof(UClass), true);
-
-		// Note: UE doesn't 0 initialize
-		FMemory::Memzero((void*)StaticUClass, ClassSize);
-
-		// call the constructor
-		StaticUClass = new (StaticUClass) UClass(typeid(*someObject).name());
-
-		return StaticUClass;
-	}
-
 	class UWorld* UObject::GetWorld() const
 	{
 		if (UObject* Outer = GetOuter())
@@ -68,5 +52,78 @@ namespace Karma
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 		DebugBeginDestroyed.RemoveSingle(this);
 #endif*/
+	}
+
+	void GetPrivateStaticClassBody(
+		const std::string& PackageName,
+		const std::string& Name,
+		UClass*& ReturnClass,
+		/*void(*RegisterNativeFunc)(),*/
+		uint32_t InSize,
+		uint32_t InAlignment,
+		/*EClassFlags InClassFlags,
+		EClassCastFlags InClassCastFlags,
+		const TCHAR* InConfigName,
+		UClass::ClassConstructorType InClassConstructor,
+		UClass::ClassVTableHelperCtorCallerType InClassVTableHelperCtorCaller,
+		FUObjectCppClassStaticFunctions&& InCppClassStaticFunctions,*/
+		StaticClassFunctionType InSuperClassFn
+	/*UClass::StaticClassFunctionType InWithinClassFn*/)
+	{
+		// TODO: search if already exists
+		//size_t ClassSize = sizeof(UClass);
+
+		ReturnClass = (UClass*)GUObjectAllocator.AllocateUObject(InSize, InAlignment, true);
+
+		// Note: UE doesn't 0 initialize
+		FMemory::Memzero((void*)ReturnClass, InSize);
+
+		// call the constructor
+		ReturnClass = new (ReturnClass) UClass(Name, InSize, InAlignment);
+
+		InitializePrivateStaticClass(
+			InSuperClassFn(),
+			ReturnClass,
+			nullptr,
+			PackageName,
+			Name
+		);
+	}
+
+	/**
+	* Shared function called from the various InitializePrivateStaticClass functions generated my the IMPLEMENT_CLASS macro.
+	*/
+	void InitializePrivateStaticClass(
+		class UClass* TClass_Super_StaticClass,
+		class UClass* TClass_PrivateStaticClass,
+		class UClass* TClass_WithinClass_StaticClass,
+		const std::string& PackageName,
+		const std::string& Name
+	)
+	{
+		//TRACE_LOADTIME_CLASS_INFO(TClass_PrivateStaticClass, Name);
+
+		/* No recursive ::StaticClass calls allowed. Setup extras. */
+		if (TClass_Super_StaticClass != TClass_PrivateStaticClass)
+		{
+			TClass_PrivateStaticClass->SetSuperStruct(TClass_Super_StaticClass);
+		}
+		else
+		{
+			TClass_PrivateStaticClass->SetSuperStruct(nullptr);
+		}
+
+		/*
+		TClass_PrivateStaticClass->ClassWithin = TClass_WithinClass_StaticClass;
+
+		// Register the class's dependencies, then itself.
+		TClass_PrivateStaticClass->RegisterDependencies();
+		{
+			// Defer
+			TClass_PrivateStaticClass->Register(PackageName, Name);
+		}
+		*/
+
+		// jugaad name is already set by UClass() constructor
 	}
 }

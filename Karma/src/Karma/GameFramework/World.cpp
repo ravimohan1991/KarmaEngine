@@ -38,7 +38,7 @@ namespace Karma
 		}
 
 		// Remember this is jugaad reflection. In true reflection the syntax is AActor::StaticClass()
-		if (!Class->IsChildOf(AActor::StaticClass<AActor>()))
+		if (!Class->IsChildOf(AActor::StaticClass()))
 		{
 			KR_CORE_ERROR("SpawnActor failed because {0} is not an actor class", Class->GetName());
 			return nullptr;
@@ -111,7 +111,7 @@ namespace Karma
 			WorldNameString = WorldName;
 		}
 
-		UWorld* NewWorld = NewObject<UWorld>(WorldPackage, UWorld::StaticClass<UWorld>(), WorldNameString);
+		UWorld* NewWorld = NewObject<UWorld>(WorldPackage, UWorld::StaticClass(), WorldNameString);
 
 		NewWorld->SetFlags(RF_Transactional);
 		NewWorld->m_WorldType = InWorldType;
@@ -148,7 +148,7 @@ namespace Karma
 			ClearFlags(RF_Transactional);
 		}
 
-		m_PersistentLevel = NewObject<ULevel>(this, ULevel::StaticClass<ULevel>(), "PersistentLevel");
+		m_PersistentLevel = NewObject<ULevel>(this, ULevel::StaticClass(), "PersistentLevel");
 		
 		FURL someURL("someurl");
 		m_PersistentLevel->Initialize(someURL);
@@ -187,7 +187,7 @@ namespace Karma
 		//SpawnInfo.Name = GEngine->WorldSettingsClass->GetFName();
 
 		// Experimental
-		UClass* worldSettingsClass = AActor::StaticClass<AWorldSettings>();
+		UClass* worldSettingsClass = AWorldSettings::StaticClass();
 
 		AWorldSettings* WorldSettings = SpawnActor<AWorldSettings>(worldSettingsClass, SpawnInfo);
 

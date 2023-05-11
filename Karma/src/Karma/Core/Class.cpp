@@ -1,7 +1,18 @@
 #include "Class.h"
+#include "KarmaMemory.h"
 
 namespace Karma
 {
+	void UStruct::SetSuperStruct(UStruct* NewSuperStruct)
+	{
+		m_SuperStruct = NewSuperStruct;
+/*
+#if USTRUCT_FAST_ISCHILDOF_IMPL == USTRUCT_ISCHILDOF_STRUCTARRAY
+		this->ReinitializeBaseChainArray();
+#endif
+*/
+	}
+
 	UClass::UClass()
 	{
 		m_PropertiesSize = sizeof(UClass);
@@ -16,6 +27,12 @@ namespace Karma
 	{
 		m_PropertiesSize = sizeof(UClass);
 		m_MinAlignment = alignof(UClass);
+	}
+
+	UClass::UClass(const std::string& name, uint32_t size, uint32_t alignment) : m_NamePrivate(name)
+	{
+		m_PropertiesSize = size;
+		m_MinAlignment = alignment;
 	}
 
 	UClass* UField::GetOwnerClass() const
@@ -37,6 +54,24 @@ namespace Karma
 	const std::string& UClass::GetDesc()
 	{
 		return GetName();
+	}
+
+	void UClass::SetSuperStruct(UStruct* NewSuperStruct)
+	{
+		/*UnhashObject(this);
+		ClearFunctionMapsCaches();*/
+
+		Super::SetSuperStruct(NewSuperStruct);
+
+		/*if (!GetSparseClassDataStruct())
+		{
+			if (UScriptStruct* SparseClassDataStructArchetype = GetSparseClassDataArchetypeStruct())
+			{
+				SetSparseClassDataStruct(SparseClassDataStructArchetype);
+			}
+		}*/
+
+		//HashObject(this);
 	}
 
 	/**

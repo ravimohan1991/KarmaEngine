@@ -9,6 +9,52 @@ namespace Karma
 {
 	class UClass;
 
+	typedef UClass* (*StaticClassFunctionType)();
+
+	/**
+	 * Helper template allocate and construct a UClass
+	 * In UE, this helper is declared and defined in Class.h/.cpp. I don't know
+	 * how that worked, hehe.
+	 *
+	 * @param PackageName name of the package this class will be inside
+	 * @param Name of the class
+	 * @param ReturnClass reference to pointer to result. This must be PrivateStaticClass.
+	 * @param RegisterNativeFunc Native function registration function pointer.
+	 * @param InSize Size of the class
+	 * @param InAlignment Alignment of the class
+	 * @param InClassFlags Class flags
+	 * @param InClassCastFlags Class cast flags
+	 * @param InConfigName Class config name
+	 * @param InClassConstructor Class constructor function pointer
+	 * @param InClassVTableHelperCtorCaller Class constructor function for vtable pointer
+	 * @param InCppClassStaticFunctions Function pointers for the class's version of Unreal's reflected static functions
+	 * @param InSuperClassFn Super class function pointer
+	 * @param WithinClass Within class
+	 */
+	KARMA_API void GetPrivateStaticClassBody(
+		const std::string& PackageName,
+		const std::string& Name,
+		UClass*& ReturnClass,
+		/*void(*RegisterNativeFunc)(),*/
+		uint32_t InSize,
+		uint32_t InAlignment,
+		/*EClassFlags InClassFlags,
+		EClassCastFlags InClassCastFlags,
+		const TCHAR* InConfigName,
+		UClass::ClassConstructorType InClassConstructor,
+		UClass::ClassVTableHelperCtorCallerType InClassVTableHelperCtorCaller,
+		FUObjectCppClassStaticFunctions&& InCppClassStaticFunctions,*/
+		StaticClassFunctionType InSuperClassFn
+	/*UClass::StaticClassFunctionType InWithinClassFn*/);
+
+	KARMA_API void InitializePrivateStaticClass(
+		class UClass* TClass_Super_StaticClass,
+		class UClass* TClass_PrivateStaticClass,
+		class UClass* TClass_WithinClass_StaticClass,
+		const std::string& PackageName,
+		const std::string& Name
+	);
+
 	class KARMA_API UObject : public UObjectBase
 	{
 		// In UE, this is done in ObjectMacros.h, #define DECLARE_CLASS
@@ -36,22 +82,6 @@ namespace Karma
 		virtual const std::string& GetDesc() { static std::string someString = "";  return someString; }
 
 	public:
-		/**
-		 * Allocates relevant space in UObjectAllocator pool for 
-		 * UClass type of object and returns the pointer
-		 * 
-		 * @param someObject				The "type" of UObject whose corresponding UClass is to be instantiated
-		 * @return UClass* to the someObject type
-		 */
-		static UClass* StaticClass(UObject* someObject);
-
-		template<typename classType>
-		static UClass* StaticClass()
-		{
-			classType someClass;
-			return StaticClass(&someClass);
-		}
-
 		/**
 		 * Returns what UWorld this object is contained within.
 		 * By default this will follow its Outer chain, but it should be overridden if that will not work.

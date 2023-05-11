@@ -6,8 +6,6 @@
 
 namespace Karma
 {
-	class UClass;
-	//class UStruct;
 
 	/*-----------------------------------------------------------------------------
 		UField.
@@ -64,6 +62,12 @@ namespace Karma
 			return m_PropertiesSize;
 		}
 
+		/**
+		 * Sets the super struct pointer and updates hash information as necessary.
+		 * Note that this is not sufficient to actually reparent a struct, it simply sets a pointer.
+		 */
+		virtual void SetSuperStruct(UStruct* NewSuperStruct);
+
 	private:
 		/** Struct this inherits from, may be null */
 		UStruct* m_SuperStruct;
@@ -92,9 +96,11 @@ namespace Karma
 		DECLARE_KARMA_CLASS(UClass, UStruct)
 
 	public:
-		/** Constructor */
+		/** Constructors */
 		UClass();
 		UClass(const std::string& name);
+
+		UClass(const std::string& name, uint32_t size, uint32_t alignment);
 
 		/** The required type for the outer of instances of this class */
 		//UClass* m_ClassWithin;
@@ -134,7 +140,7 @@ namespace Karma
 		T* GetDefaultObject() const
 		{
 			UObject* Ret = GetDefaultObject();
-			KR_CORE_ASSERT(Ret->IsA(UObject::StaticClass<T>()), "Class {0} is not subclass of UObject");
+			KR_CORE_ASSERT(Ret->IsA(T::StaticClass()), "Class {0} is not subclass of UObject");
 			return (T*)Ret;
 		}
 
@@ -149,6 +155,9 @@ namespace Karma
 		{
 			return m_MinAlignment;
 		}
+
+		// UStruct interface.
+		virtual void SetSuperStruct(UStruct* NewSuperStruct) override;
 
 	protected:
 		/**

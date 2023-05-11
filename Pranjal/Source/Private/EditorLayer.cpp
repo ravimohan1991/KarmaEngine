@@ -245,7 +245,7 @@ namespace Karma
 
 		if (Input::IsKeyPressed(GLFW_KEY_G))
 		{
-			KR_CORE_INFO("someUObject name is {0}", UObject::StaticClass<UClass>()->GetPName());
+			//KR_CORE_INFO("someUObject name is {0}", UObject::StaticClass<UClass>()->GetPName());
 		}
 
 		if (Input::IsKeyPressed(GLFW_KEY_SPACE))
@@ -289,22 +289,24 @@ namespace Karma
 		KR_INFO("========= Trigger invoked =========");
 		KR_INFO("-----> Spawning World");
 
+		UClass* testActorClass = AActor::StaticClass();
+
 		// A test world
 		UWorld* testWorld = UWorld::CreateWorld(EWorldType::PIE, true, "AWorld");
 
-		UClass* testActorClass = AActor::StaticClass<AActor>();
+		//UClass* testActorClass = AActor::StaticClass();
 		FTransform testTransform = FTransform::m_Identity;
 
 		FActorSpawnParameters testSParameters;
 		testSParameters.m_Owner = nullptr;
 		testSParameters.m_Name = "TestActor";
-		testSParameters.m_OverrideLevel = testWorld->GetCurrentLevel();
+		//testSParameters.m_OverrideLevel = testWorld->GetCurrentLevel();
 
 		KR_INFO("-----> Spawning Actor");
-		testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
+		//testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
 
 		// Shouldn't we be using Shivasomething?
-		delete testWorld;
+		//delete testWorld;
 	}
 }
 
