@@ -20,15 +20,15 @@ public: \
 	/** Typedef for the base class ({{ typedef-type }}) */ \
 	typedef TSuperClass Super;\
 	/** Returns a UClass object representing this class at runtime */ \
-	inline static UClass* StaticClass() \
+	static UClass* StaticClass() \
 	{ \
-		UClass* returnClass = nullptr; \
-		if(#TClass !=  #TSuperClass) \
+		UClass* returnClass_##TClass = nullptr; \
+		if(strcmp(#TClass, #TSuperClass) != 0) \
 		{ \
 			GetPrivateStaticClassBody( \
 				"GeneralPackage", \
 				#TClass, \
-				returnClass, \
+				returnClass_##TClass, \
 				sizeof(TClass), \
 				alignof(TClass), \
 				&TClass::Super::StaticClass \
@@ -39,15 +39,15 @@ public: \
 			GetPrivateStaticClassBody( \
 				"GeneralPackage", \
 				"UObject", \
-				returnClass, \
+				returnClass_##TClass, \
 				sizeof(UObject), \
 				alignof(UObject), \
-				&TClass::NullPointerFunction \
+				&TClass::Super::NullClass \
 			); \
 		} \
-		return returnClass; \
+		return returnClass_##TClass; \
 	} \
-	inline static UClass* NullPointerFunction() \
+	inline static UClass* NullClass() \
 	{ \
 		return nullptr; \
 	}

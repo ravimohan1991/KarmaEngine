@@ -68,18 +68,17 @@ namespace Karma
 		UClass::ClassVTableHelperCtorCallerType InClassVTableHelperCtorCaller,
 		FUObjectCppClassStaticFunctions&& InCppClassStaticFunctions,*/
 		StaticClassFunctionType InSuperClassFn
-	/*UClass::StaticClassFunctionType InWithinClassFn*/)
+		/*UClass::StaticClassFunctionType InWithinClassFn*/)
 	{
 		// TODO: search if already exists
-		//size_t ClassSize = sizeof(UClass);
 
-		ReturnClass = (UClass*)GUObjectAllocator.AllocateUObject(InSize, InAlignment, true);
+		ReturnClass = (UClass*)GUObjectAllocator.AllocateUObject(sizeof(UClass), alignof(UClass), true);
 
 		// Note: UE doesn't 0 initialize
 		FMemory::Memzero((void*)ReturnClass, InSize);
 
-		// call the constructor
-		ReturnClass = new (ReturnClass) UClass(Name, InSize, InAlignment);
+		// Call the constructor
+		ReturnClass = ::new (ReturnClass) UClass(Name, InSize, InAlignment);
 
 		InitializePrivateStaticClass(
 			InSuperClassFn(),
@@ -91,8 +90,8 @@ namespace Karma
 	}
 
 	/**
-	* Shared function called from the various InitializePrivateStaticClass functions generated my the IMPLEMENT_CLASS macro.
-	*/
+	 * Shared function called from the various InitializePrivateStaticClass functions generated my the IMPLEMENT_CLASS macro.
+	 */
 	void InitializePrivateStaticClass(
 		class UClass* TClass_Super_StaticClass,
 		class UClass* TClass_PrivateStaticClass,
@@ -103,8 +102,7 @@ namespace Karma
 	{
 		//TRACE_LOADTIME_CLASS_INFO(TClass_PrivateStaticClass, Name);
 
-		/* No recursive ::StaticClass calls allowed. Setup extras. */
-		if (TClass_Super_StaticClass != TClass_PrivateStaticClass)
+		if(TClass_Super_StaticClass)
 		{
 			TClass_PrivateStaticClass->SetSuperStruct(TClass_Super_StaticClass);
 		}

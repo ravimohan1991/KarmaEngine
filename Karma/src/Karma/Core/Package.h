@@ -1,7 +1,6 @@
 #pragma once
 
 #include "krpch.h"
-
 #include "Object.h"
 
 namespace Karma
@@ -12,10 +11,15 @@ namespace Karma
 
 	public:
 		/**
-		* Set the specified flags to true. Does not affect any other flags.
-		*
-		* @param	NewFlags		Package flags to enable
-		*/
+		 * A constructor
+		 */
+		UPackage();
+
+		/**
+		 * Set the specified flags to true. Does not affect any other flags.
+		 *
+		 * @param	NewFlags		Package flags to enable
+		 */
 		FORCEINLINE void SetPackageFlags(uint32_t NewFlags)
 		{
 			SetPackageFlagsTo(m_PackageFlagsPrivate | NewFlags);

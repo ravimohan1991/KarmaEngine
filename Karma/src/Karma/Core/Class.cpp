@@ -13,26 +13,28 @@ namespace Karma
 */
 	}
 
-	UClass::UClass()
+	UClass::UClass() : m_NamePrivate("NoName")
 	{
-		m_PropertiesSize = sizeof(UClass);
-		m_MinAlignment = alignof(UClass);
+		m_PropertiesSize = 0;
+		m_MinAlignment = 0;
 
-		// Experimental for now
-		//m_ClassWithin = nullptr;
-		//m_ClassDefaultObject = nullptr;
+		SetSuperStruct(nullptr);
 	}
 
 	UClass::UClass(const std::string& name) : m_NamePrivate(name)
 	{
-		m_PropertiesSize = sizeof(UClass);
-		m_MinAlignment = alignof(UClass);
+		m_PropertiesSize = 0;
+		m_MinAlignment = 0;
+
+		SetSuperStruct(nullptr);
 	}
 
 	UClass::UClass(const std::string& name, uint32_t size, uint32_t alignment) : m_NamePrivate(name)
 	{
 		m_PropertiesSize = size;
 		m_MinAlignment = alignment;
+
+		SetSuperStruct(nullptr);
 	}
 
 	UClass* UField::GetOwnerClass() const

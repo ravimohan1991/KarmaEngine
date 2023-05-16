@@ -46,11 +46,12 @@ namespace Karma
 
 	struct KARMA_API FGenericPlatformMemory
 	{
-		/** Copies count bytes of characters from Src to Dest. If some regions of the source
-	 * area and the destination overlap, memmove ensures that the original source bytes
-	 * in the overlapping region are copied before being overwritten.  NOTE: make sure
-	 * that the destination buffer is the same size or larger than the source buffer!
-	 */
+		/**
+		 * Copies count bytes of characters from Src to Dest. If some regions of the source
+		 * area and the destination overlap, memmove ensures that the original source bytes
+		 * in the overlapping region are copied before being overwritten.  NOTE: make sure
+		 * that the destination buffer is the same size or larger than the source buffer!
+		 */
 		static FORCEINLINE void* Memmove(void* Dest, const void* Src, SIZE_T Count)
 		{
 			return memmove(Dest, Src, Count);
