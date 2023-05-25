@@ -68,6 +68,8 @@ namespace Karma
 		 */
 		virtual void SetSuperStruct(UStruct* NewSuperStruct);
 
+		bool operator==(const UStruct& Comparable) const;
+
 	private:
 		/** Struct this inherits from, may be null */
 		UStruct* m_SuperStruct;
@@ -100,22 +102,21 @@ namespace Karma
 		UClass();
 		UClass(const std::string& name);
 
+		/**
+		 * A useful constructor for StaticClass initialization
+		 * 
+		 * @see GetPrivateStaticClassBody in Object.cpp
+		 */
 		UClass(const std::string& name, uint32_t size, uint32_t alignment);
 
 		/** The required type for the outer of instances of this class */
 		//UClass* m_ClassWithin;
-
-		/** Jugaad */
-		std::string m_NamePrivate;
 
 	public:
 		// UObject interface.
 		virtual const std::string& GetDesc() override;
 
 	public:
-		void SetPName(const std::string& name);
-		const std::string& GetPName() const { return m_NamePrivate; }
-
 		/**
 		 * Get the default object from the class
 		 * @param	bCreateIfNeeded if true (default) then the CDO is created if it is null

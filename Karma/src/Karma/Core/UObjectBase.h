@@ -105,6 +105,11 @@ namespace Karma
 			return m_NamePrivate;
 		}
 
+		FORCEINLINE void SetObjectName(const std::string& aName)
+		{
+			m_NamePrivate = aName;
+		}
+
 		/** Returns the UObject this object resides in */
 		FORCEINLINE UObject* GetOuter() const
 		{

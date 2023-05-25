@@ -4,6 +4,7 @@
 #include "GLFW/glfw3.h"
 #include "Core/Object.h"
 #include "Core/Class.h"
+#include "Core/Package.h"
 
 namespace Karma
 {
@@ -289,21 +290,19 @@ namespace Karma
 		KR_INFO("========= Trigger invoked =========");
 		KR_INFO("-----> Spawning World");
 
-		UClass* testActorClass = AActor::StaticClass();
-
 		// A test world
 		UWorld* testWorld = UWorld::CreateWorld(EWorldType::PIE, true, "AWorld");
 
-		//UClass* testActorClass = AActor::StaticClass();
+		UClass* testActorClass = AActor::StaticClass();
 		FTransform testTransform = FTransform::m_Identity;
 
 		FActorSpawnParameters testSParameters;
 		testSParameters.m_Owner = nullptr;
 		testSParameters.m_Name = "TestActor";
-		//testSParameters.m_OverrideLevel = testWorld->GetCurrentLevel();
+		testSParameters.m_OverrideLevel = testWorld->GetCurrentLevel();
 
 		KR_INFO("-----> Spawning Actor");
-		//testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
+		testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
 
 		// Shouldn't we be using Shivasomething?
 		//delete testWorld;
