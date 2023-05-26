@@ -26,9 +26,6 @@ namespace Karma
 
 		// Add to global table.
 		AddObject(inName, inInternalFlags);
-
-		// For testing only
-		KR_CORE_INFO("UObjectBase Constructor");
 	}
 
 	/**

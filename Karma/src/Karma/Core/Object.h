@@ -65,6 +65,7 @@ namespace Karma
 
 	public:
 		UObject();
+		UObject(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName);
 
 		static const char* StaticConfigName()
 		{

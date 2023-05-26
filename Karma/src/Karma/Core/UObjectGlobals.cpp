@@ -125,7 +125,10 @@ namespace Karma
 		FMemory::Memzero((void*)Object, totalSize);
 
 		EObjectFlags relevantFlags = EObjectFlags (inFlags | RF_NeedInitialization);
-		new((void*)Object) UObjectBase(const_cast<UClass*>(inClass), relevantFlags, internalSetFlags, inOuter, inName);
+
+		// Oddly, UE does a placement new by calling the constructor of UObjectBase, hehe. When I do that
+		// I get wierd offsets in the datamembers. A moment for a question.
+		new((void*)Object) UObject(const_cast<UClass*>(inClass), relevantFlags, internalSetFlags, inOuter, inName);
 
 		return Object;
 	}

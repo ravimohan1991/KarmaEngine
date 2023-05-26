@@ -291,7 +291,7 @@ namespace Karma
 		KR_INFO("-----> Spawning World");
 
 		// A test world
-		UWorld* testWorld = UWorld::CreateWorld(EWorldType::PIE, true, "AWorld");
+		UWorld* testWorld = UWorld::CreateWorld(EWorldType::PIE, true, "AWholeNewWorld");
 
 		UClass* testActorClass = AActor::StaticClass();
 		FTransform testTransform = FTransform::m_Identity;

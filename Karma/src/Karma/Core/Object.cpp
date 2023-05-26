@@ -10,6 +10,11 @@ namespace Karma
 	{
 	}
 
+	UObject::UObject(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName) : 
+		UObjectBase(inClass, inFlags, inInternalFlags, inOuter, inName)
+	{
+	}
+
 	void UObject::FinishDestroy()
 	{
 	}
