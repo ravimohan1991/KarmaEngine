@@ -113,9 +113,9 @@ namespace Karma
 		/**
 		 * Spawn Actors with given transform and SpawnParameters
 		 *
-		 * @param	Class					Class to Spawn -> Shall be used when reflection system is ready
-		 * @param	Transform				World Transform to spawn on
-		 * @param	SpawnParameters			Spawn Parameters
+		 * @param	Class					Karma's, UE based, meta info Class to Spawn
+		 * @param	Transform				World Transform to spawn with
+		 * @param	SpawnParameters			Spawn Parameters specific to the Actor
 		 *
 		 * @return	Actor that just spawned
 		 */
@@ -269,14 +269,6 @@ namespace Karma
 		 * Initializes a newly created world.
 		 */
 		void InitializeNewWorld(const InitializationValues IVS = InitializationValues(), bool bInSkipInitWorld = false);
-
-		/**
-		 * Attention:
-		 * A very tentative way of introducing level for lazy testing only.
-		 *
-		 * @see UE's version for proper implementation
-		 */
-		void GenerateLevel();
 
 		/**
 		 * Removes the actor from its level's actor list and generally cleans up the engine's internal state.

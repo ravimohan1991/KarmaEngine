@@ -25,8 +25,6 @@ namespace Karma
 		m_CurrentLevel = nullptr;
 		m_PersistentLevel = nullptr;
 		m_bIsTearingDown = false;
-
-		GenerateLevel();
 	}
 
 	AActor* UWorld::SpawnActor(UClass* Class, FTransform const* transform, const FActorSpawnParameters& spawnParameters)
@@ -243,13 +241,5 @@ namespace Karma
 	bool UWorld::HasBegunPlay() const
 	{
 		return m_bBegunPlay && m_PersistentLevel && m_PersistentLevel->m_Actors.Num();
-	}
-
-	void UWorld::GenerateLevel()
-	{
-		m_CurrentLevel = new ULevel();
-		m_CurrentLevel->m_OwningWorld = this;
-
-		// Dereferencing required
 	}
 }
