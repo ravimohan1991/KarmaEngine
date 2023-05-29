@@ -31,7 +31,7 @@ namespace Karma
 		SetObjectName(name);
 	}
 
-	UClass::UClass(const std::string& name, uint32_t size, uint32_t alignment)
+	UClass::UClass(const std::string& name, size_t size, size_t alignment)
 	{
 		m_PropertiesSize = size;
 		m_MinAlignment = alignment;
@@ -42,13 +42,21 @@ namespace Karma
 
 	UClass* UField::GetOwnerClass() const
 	{
-		return nullptr;// for now
+		UClass* ownerClass = nullptr;
+		UObject* testObject = const_cast<UField*>(this);
+
+		while((testObject != nullptr) && (ownerClass == nullptr))
+		{
+			ownerClass = dynamic_cast<UClass*>(testObject);
+			testObject = testObject->GetOuter();
+		}
+
+		return ownerClass;
 	}
 
 	const std::string& UField::GetAuthoredName() const
 	{
-		static std::string someString = "NoName";
-		return someString;
+		return "NotFunctional";
 	}
 
 	const std::string& UClass::GetDesc()
@@ -91,7 +99,7 @@ namespace Karma
 		bool bOldResult = false;
 		for (const UStruct* TempStruct = this; TempStruct; TempStruct = TempStruct->GetSuperStruct())
 		{
-			if (TempStruct->GetName() == SomeBase->GetName()) // Jugaad for now by == operator overloading. Need to write registration system like in UE
+			if (TempStruct->GetName() == SomeBase->GetName()) // Jugaad for now by comparing names. Need to write registration system like in UE
 			{
 				bOldResult = true;
 				break;
@@ -99,16 +107,6 @@ namespace Karma
 		}
 
 		return bOldResult;
-	}
-
-	bool UStruct::operator==(const UStruct& Comparable) const
-	{
-		if (GetName() == Comparable.GetName())
-		{
-			return true;
-		}
-
-		return false;
 	}
 
 	/**

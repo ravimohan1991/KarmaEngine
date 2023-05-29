@@ -21,7 +21,11 @@ namespace Karma
 		/** Next Field in the linked list */
 		UField* m_Next;
 
-		/** Goes up the outer chain to look for a UClass */
+		/**
+		 * Goes up the outer chain to look for a UClass.
+		 * Basically looks for the  m_OuterPrivate  in the chinese chain
+		 * of outer objects.
+		 */
 		UClass* GetOwnerClass() const;
 
 		/** Goes up the outer chain to look for a UStruct */
@@ -68,8 +72,6 @@ namespace Karma
 		 */
 		virtual void SetSuperStruct(UStruct* NewSuperStruct);
 
-		bool operator==(const UStruct& Comparable) const;
-
 	private:
 		/** Struct this inherits from, may be null */
 		UStruct* m_SuperStruct;
@@ -83,11 +85,11 @@ namespace Karma
 		 * 
 		 * Ponder why in the world this field is public.
 		 */
-		int32 m_PropertiesSize;
+		size_t m_PropertiesSize;
 
 		/** Alignment of structure in memory, structure will be at least this large */
 		// Public?
-		int32 m_MinAlignment;
+		size_t m_MinAlignment;
 	};
 
 	/**
@@ -107,7 +109,7 @@ namespace Karma
 		 * 
 		 * @see GetPrivateStaticClassBody in Object.cpp
 		 */
-		UClass(const std::string& name, uint32_t size, uint32_t alignment);
+		UClass(const std::string& name, size_t size, size_t alignment);
 
 		/** The required type for the outer of instances of this class */
 		//UClass* m_ClassWithin;
@@ -152,7 +154,7 @@ namespace Karma
 		}
 
 		/** Alignment of structure in memory, structure will be at least this large */
-		FORCEINLINE int32_t GetMinAlignment() const
+		FORCEINLINE size_t GetMinAlignment() const
 		{
 			return m_MinAlignment;
 		}

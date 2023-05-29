@@ -64,8 +64,8 @@ namespace Karma
 		const std::string& Name,
 		UClass*& ReturnClass,
 		/*void(*RegisterNativeFunc)(),*/
-		uint32_t InSize,
-		uint32_t InAlignment,
+		size_t InSize,
+		size_t InAlignment,
 		/*EClassFlags InClassFlags,
 		EClassCastFlags InClassCastFlags,
 		const TCHAR* InConfigName,

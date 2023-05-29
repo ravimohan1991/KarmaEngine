@@ -131,12 +131,12 @@ namespace Karma
 		/**
 		 * Allocates a UObjectBase from the free store or the permanent object pool
 		 *
-		 * @param Size size of uobject to allocate
-		 * @param Alignment alignment of uobject to allocate
-		 * @param bAllowPermanent if true, allow allocation in the permanent object pool, if it fits
+		 * @param Size 									size of uobject to allocate
+		 * @param Alignment 							alignment of uobject to allocate
+		 * @param bAllowPermanent 						if true, allow allocation in the permanent object pool, if it fits
 		 * @return newly allocated UObjectBase (not really a UObjectBase yet, no constructor like thing has been called).
 		 */
-		UObjectBase* AllocateUObject(int32_t Size, int32_t Alignment, bool bAllowPermanent);
+		UObjectBase* AllocateUObject(size_t Size, size_t Alignment, bool bAllowPermanent);
 
 		/**
 		 * Returns a UObjectBase to the free store, unless it is in the permanent object pool

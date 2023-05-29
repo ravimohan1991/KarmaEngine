@@ -47,17 +47,17 @@ namespace Karma
 	}
 
 	/**
-	 * Allocates a UObjectBase from the free store or the permanent object pool
+	 * Allocates a UObjectBase from the free store or the permanent object pool.
 	 *
 	 * @param Size size of uobject to allocate
 	 * @param Alignment alignment of uobject to allocate
 	 * @param bAllowPermanent if true, allow allocation in the permanent object pool, if it fits
 	 * @return newly allocated UObjectBase (not really a UObjectBase yet, no constructor like thing has been called).
 	 */
-	UObjectBase* FUObjectAllocator::AllocateUObject(int32_t Size, int32_t Alignment, bool bAllowPermanent)
+	UObjectBase* FUObjectAllocator::AllocateUObject(size_t Size, size_t Alignment, bool bAllowPermanent)
 	{
 		// Force alignment to minimal of 16 bytes
-		Alignment = FMath::Max(16, Alignment);
+		Alignment = FMath::Max<size_t>(16, Alignment);
 		//int32_t AlignedSize = Align(Size, Alignment);
 
 		UObjectBase* Result = nullptr;

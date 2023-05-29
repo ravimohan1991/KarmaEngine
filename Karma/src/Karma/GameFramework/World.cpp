@@ -35,7 +35,7 @@ namespace Karma
 			return nullptr;
 		}
 
-		// Remember this is jugaad reflection. In true reflection the syntax is AActor::StaticClass()
+		// The Class hierarcy is traversed and m_NamePrivate is string compared
 		if (!Class->IsChildOf(AActor::StaticClass()))
 		{
 			KR_CORE_ERROR("SpawnActor failed because {0} is not an actor class", Class->GetName());
