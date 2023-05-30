@@ -18,11 +18,11 @@ namespace Karma
 		KR_CORE_INFO("Initializing Karma's Memory System");
 
 		// Do some minor computation of number of UObjects allowed
-		const size_t poolBytes = 256 * 50000;
+		const size_t poolBytes = 256 * 5000;
 
 		// Allocate memory region for all allocators
-		size_t m_totalBytes = poolBytes;//dynamicBytes + persistantBytes + oneFrameBytes + pool16Bytes + pool32Bytes;
-		m_pMemBlock = FMemory::SystemMalloc(m_totalBytes);
+		m_TotalBytes = poolBytes;//dynamicBytes + persistantBytes + oneFrameBytes + pool16Bytes + pool32Bytes;
+		m_pMemBlock = FMemory::SystemMalloc(m_TotalBytes);
 
 		uint8_t* pBytePtr = static_cast<uint8_t*>(m_pMemBlock);
 		GUObjectAllocator.Initialize(pBytePtr, 256, 50000);
@@ -30,7 +30,7 @@ namespace Karma
 
 	void KarmaSmriti::ShutDown()
 	{
-		free(m_pMemBlock);
+		FMemory::SystemFree(m_pMemBlock);
 		KR_CORE_INFO("Freed Karma's memory softbed");
 	}
 }
