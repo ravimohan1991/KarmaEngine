@@ -109,13 +109,13 @@ namespace Karma
 		// see if object already exists in GUObjectStore. Maybe not functional
 		Object = StaticFindObjectFastInternal(nullptr, inOuter, objectName, true);
 
-		int32 totalSize = inClass->GetPropertiesSize();
+		size_t totalSize = inClass->GetPropertiesSize();
 
 		KR_CORE_ASSERT(totalSize, "Empty data structure");
 
 		if (Object == nullptr)
 		{
-			int32 Alignment = FMath::Max<size_t>(4, inClass->GetMinAlignment());
+			size_t Alignment = FMath::Max<size_t>(4, inClass->GetMinAlignment());
 
 			// This is the line corresponding to the instantiation of UObjects
 			// from Karma's memory system known by the name Smriti.

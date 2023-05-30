@@ -61,7 +61,7 @@ namespace Karma
 		}
 
 		/** Total size of all UProperties, the allocated structure may be larger due to alignment */
-		FORCEINLINE int32 GetPropertiesSize() const
+		FORCEINLINE size_t GetPropertiesSize() const
 		{
 			return m_PropertiesSize;
 		}

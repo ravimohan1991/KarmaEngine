@@ -107,14 +107,7 @@ namespace Karma
 	{
 		//TRACE_LOADTIME_CLASS_INFO(TClass_PrivateStaticClass, Name);
 
-		if(TClass_Super_StaticClass)
-		{
-			TClass_PrivateStaticClass->SetSuperStruct(TClass_Super_StaticClass);
-		}
-		else
-		{
-			TClass_PrivateStaticClass->SetSuperStruct(nullptr);
-		}
+		TClass_PrivateStaticClass->SetSuperStruct(TClass_Super_StaticClass);
 
 		/*
 		TClass_PrivateStaticClass->ClassWithin = TClass_WithinClass_StaticClass;
