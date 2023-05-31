@@ -92,9 +92,6 @@ namespace Karma
 		else
 		{
 			KR_CORE_ASSERT(false, "Memory requirements exceeded the tentative allotment");
-
-			// Allocate new memory of the appropriate size and alignment.
-			Result = (UObjectBase*)FMemory::Malloc(Size, Alignment);
 		}
 
 		return Result;
