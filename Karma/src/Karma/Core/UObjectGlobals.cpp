@@ -119,7 +119,7 @@ namespace Karma
 
 			// This is the line corresponding to the instantiation of UObjects
 			// from Karma's memory system known by the name Smriti.
-			Object = (UObject*)GUObjectAllocator.AllocateUObject(totalSize, Alignment, GIsInitialLoad);
+			Object = reinterpret_cast<UObject*>(GUObjectAllocator.AllocateUObject(totalSize, Alignment, GIsInitialLoad));
 		}
 
 		FMemory::Memzero((void*)Object, totalSize);
