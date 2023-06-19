@@ -47,7 +47,8 @@ namespace Karma
 		 * @param	InFlags				RF_Flags to assign
 		 * @param	InOuter				outer for this object
 		 * @param	InName				name of the new object
-		 * @param	InObjectArchetype	archetype to assign
+		 * @param	InObjectArchetype	archetype to assign (not functional for now)
+		 * @see StaticAllocateObject() in UObjectGlobals.h
 		 */
 		UObjectBase(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName);
 

@@ -16,6 +16,7 @@ namespace Karma
 		// Not adding to GUObjectStore
 	}
 
+	// This constructor is called by StaticAllocateObject
 	UObjectBase::UObjectBase(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName)
 		: m_ObjectFlags(inFlags)
 		, m_InternalIndex(INDEX_NONE)

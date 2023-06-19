@@ -77,7 +77,9 @@ namespace Karma
 	{
 		// TODO: search if already exists
 
-		ReturnClass = reinterpret_cast<UClass*>(GUObjectAllocator.AllocateUObject(sizeof(UClass), alignof(UClass), true));
+		void* aPtr = reinterpret_cast<void*>(GUObjectAllocator.AllocateUObject(sizeof(UClass), alignof(UClass), true));
+
+		ReturnClass = (UClass*)aPtr;
 
 		// Note: UE doesn't 0 initialize
 		FMemory::Memzero((void*)ReturnClass, sizeof(UClass));

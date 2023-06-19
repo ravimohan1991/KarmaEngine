@@ -117,9 +117,13 @@ namespace Karma
 		{
 			size_t Alignment = FMath::Max<size_t>(4, inClass->GetMinAlignment());
 
-			// This is the line corresponding to the instantiation of UObjects
+			// Following corresponds to the instantiation of UObjects
 			// from Karma's memory system known by the name Smriti.
-			Object = reinterpret_cast<UObject*>(GUObjectAllocator.AllocateUObject(totalSize, Alignment, GIsInitialLoad));
+
+			// I am using firs reinterpret cast to void and then to UObject pointer
+			// because direct reinterpret cast to UObject gives a warning in AppleClang
+			void* aPtr = reinterpret_cast<void*>(GUObjectAllocator.AllocateUObject(totalSize, Alignment, GIsInitialLoad));
+			Object = (UObject*)aPtr;
 		}
 
 		FMemory::Memzero((void*)Object, totalSize);

@@ -5,7 +5,8 @@ namespace Karma
 {
 	ULevel::ULevel() : UObject()
 	{
-		
+		m_WorldSettings = nullptr;
+		m_URL = FURL();
 	}
 
 	void ULevel::Initialize(const FURL& InURL)

@@ -48,6 +48,8 @@ namespace Karma
 
 	/**
 	 * Allocates a UObjectBase from the free store or the permanent object pool.
+	 * Note: We are returning UObjectBase pointer because ue does so. Else void pointer could have
+	 * done the job, since what we are returning is not really a UObjectBase.
 	 *
 	 * @param Size size of uobject to allocate
 	 * @param Alignment alignment of uobject to allocate

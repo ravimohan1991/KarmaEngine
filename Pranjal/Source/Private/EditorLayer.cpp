@@ -302,7 +302,7 @@ namespace Karma
 		testSParameters.m_OverrideLevel = testWorld->GetCurrentLevel();
 
 		KR_INFO("-----> Spawning Actor");
-		testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
+		AActor* someActor = testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
 
 		// Shouldn't we be using Shivasomething?
 		//delete testWorld;

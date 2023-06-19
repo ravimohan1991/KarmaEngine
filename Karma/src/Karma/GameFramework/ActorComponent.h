@@ -23,8 +23,11 @@ namespace Karma
 	/**
 	 * ActorComponent is the base class for components that define reusable behavior that can be added to different types of Actors.
 	 * ActorComponents that have a transform are known as SceneComponents and those that can be rendered are PrimitiveComponents.
+	 * Components are a special type of Object that Actors can attach to themselves as sub-objects.
+	 * Components are useful for sharing common behaviors
 	 *
 	 * @see [ActorComponent](https://docs.unrealengine.com/latest/INT/Programming/UnrealArchitecture/Actors/Components/index.html#actorcomponents)
+	 * @see https://docs.unrealengine.com/5.2/en-US/components-in-unreal-engine/
 	 * @see USceneComponent
 	 * @see UPrimitiveComponent
 	 */

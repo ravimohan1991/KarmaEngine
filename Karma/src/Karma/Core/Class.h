@@ -109,7 +109,7 @@ namespace Karma
 		 * 
 		 * @see GetPrivateStaticClassBody in Object.cpp
 		 */
-		UClass(const std::string& name, size_t size, size_t alignment);
+			UClass(const std::string& name, size_t size, size_t alignment);
 
 		/** The required type for the outer of instances of this class */
 		//UClass* m_ClassWithin;
