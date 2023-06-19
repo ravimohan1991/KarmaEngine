@@ -97,6 +97,7 @@ namespace Karma
 		// Also need to write (InClass->ClassWithin && InClass->ClassConstructor)
 		KR_CORE_ASSERT(inClass != nullptr, "The class of the object is not valid");
 
+		UObjectBase* ObjectBase = nullptr;
 		UObject* Object = nullptr;
 		std::string objectName = inName;
 
@@ -123,16 +124,17 @@ namespace Karma
 			// I am using firs reinterpret cast to void and then to UObject pointer
 			// because direct reinterpret cast to UObject gives a warning in AppleClang
 			void* aPtr = reinterpret_cast<void*>(GUObjectAllocator.AllocateUObject(totalSize, Alignment, GIsInitialLoad));
-			Object = (UObject*)aPtr;
-		}
+			FMemory::Memzero(aPtr, totalSize);
 
-		FMemory::Memzero((void*)Object, totalSize);
+			ObjectBase = (UObjectBase*)aPtr;
+		}
 
 		EObjectFlags relevantFlags = EObjectFlags (inFlags | RF_NeedInitialization);
 
-		// Oddly, UE does a placement new by calling the constructor of UObjectBase, hehe. When I do that
-		// I get wierd offsets in the datamembers. A moment for a question.
-		new((void*)Object) UObject(const_cast<UClass*>(inClass), relevantFlags, internalSetFlags, inOuter, inName);
+		// Following UE, we first call the UObjectBase constructor
+		new (ObjectBase) UObjectBase(const_cast<UClass*>(inClass), relevantFlags, internalSetFlags, inOuter, inName);
+
+		Object = (UObject*)ObjectBase;
 
 		return Object;
 	}
