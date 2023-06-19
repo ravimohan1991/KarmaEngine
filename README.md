@@ -64,6 +64,9 @@ References
 
 ### Books
 * [Game Engine Architecture (Second Edition)](https://www.gameenginebook.com/)
+* [Game Coding Complete, 4th Edition](http://www.amazon.com/gp/offer-listing/1133776574/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1133776574&linkCode=am2&tag=gamecodecompl-20&linkId=YTOZOL6OXF45PZSQ) ([Discussions](https://www.mcshaffry.com/GameCode/))
+* [Game Programming Patterns](https://gameprogrammingpatterns.com/contents.html)
+* [Some Text-Books Curation](https://github.com/kurong00/GameProgramBooks)
 
 ### Youtube Channels
 * [The Cherno](https://www.youtube.com/user/TheChernoProject)
