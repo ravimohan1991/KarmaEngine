@@ -96,6 +96,8 @@ namespace Karma
 			KR_CORE_ASSERT(false, "Memory requirements exceeded the tentative allotment");
 		}
 
+		// ue performs alignment test
+
 		return Result;
 	}
 }

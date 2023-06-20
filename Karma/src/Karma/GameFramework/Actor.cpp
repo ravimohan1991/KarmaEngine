@@ -140,8 +140,6 @@ namespace Karma
 
 	void AActor::InitializeComponents()
 	{
-		//QUICK_SCOPE_CYCLE_COUNTER(STAT_Actor_InitializeComponents);
-
 		KarmaVector<UActorComponent*> Components;
 		GetComponents(Components);
 
@@ -165,8 +163,6 @@ namespace Karma
 
 	void AActor::PostInitializeComponents()
 	{
-		//QUICK_SCOPE_CYCLE_COUNTER(STAT_Actor_PostInitComponents);
-
 		if (IsValidChecked(this))
 		{
 			m_bActorInitialized = true;
@@ -294,7 +290,8 @@ namespace Karma
 				{
 					if (!m_bActorInitialized)
 					{
-						KR_CORE_ASSERT(false, "{0} failed to route PostInitializeComponents.  Please call Super::PostInitializeComponents() in your <className>::PostInitializeComponents() function", GetName());
+						KR_CORE_ASSERT(true, "{0} failed to route PostInitializeComponents.Please call Super::PostInitializeComponents() in your <className>::PostInitializeComponents() function", GetName());
+						//KR_CORE_ERROR("failed to route PostInitializeComponents");
 						//UE_LOG(LogActor, Fatal, TEXT("%s failed to route PostInitializeComponents.  Please call Super::PostInitializeComponents() in your <className>::PostInitializeComponents() function. "), *GetFullName());
 					}
 
@@ -347,14 +344,6 @@ namespace Karma
 
 			m_bActorBeginningPlayFromLevelStreaming = bFromLevelStreaming;
 			m_ActorHasBegunPlay = EActorBeginPlayState::BeginningPlay;
-
-			//BuildReplicatedComponentsInfo();
-
-/*
-#if UE_WITH_IRIS
-			BeginReplication();
-#endif // UE_WITH_IRIS
-*/
 
 			BeginPlay();
 

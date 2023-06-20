@@ -271,6 +271,14 @@ namespace Karma
 		void InitializeNewWorld(const InitializationValues IVS = InitializationValues(), bool bInSkipInitWorld = false);
 
 		/**
+		 * Initializes all actors and prepares them to start gameplay
+		 * 
+		 * @param InURL							commandline URL
+		 * @param bResetTime (optional)			whether the WorldSettings's TimeSeconds should be reset to zero
+		 */
+		void InitializeActorsForPlay(const FURL& InURL, bool bResetTime = true/*, FRegisterComponentContext* Context = nullptr*/);
+
+		/**
 		 * Removes the actor from its level's actor list and generally cleans up the engine's internal state.
 		 * What this function does not do, but is handled via garbage collection instead, is remove references
 		 * to this actor from all other actors, and kill the actor's resources.  This function is set up so that

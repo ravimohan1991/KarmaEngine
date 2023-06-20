@@ -10,13 +10,9 @@
 
 namespace Karma
 {
-	FActorSpawnParameters::FActorSpawnParameters()
+	FActorSpawnParameters::FActorSpawnParameters() : m_Name("NoName"), m_ObjectFlags(RF_Transactional),
+		m_Owner(nullptr), m_Instigator(nullptr), m_Template(nullptr), m_OverrideLevel(nullptr)
 	{
-		m_Name = "NoName";
-		m_Owner = nullptr;
-		m_Instigator = nullptr;
-		m_Template = nullptr;
-		m_OverrideLevel = nullptr;
 	}
 
 	UWorld::UWorld() : UObject()
@@ -224,6 +220,24 @@ namespace Karma
 			const bool bRerunConstructionScripts = !FPlatformProperties::RequiresCookedData();
 			UpdateWorldComponents(bRerunConstructionScripts, false);
 		}*/
+
+		// JUGAAD for experimental purposes only
+		InitializeActorsForPlay(FURL());
+		m_bBegunPlay = true;
+	}
+
+	void UWorld::InitializeActorsForPlay(const FURL& InURL, bool bResetTime)
+	{
+		// KR_CORE_ASSERT(bIsWorldInitialized, "");
+
+		// m_URL = InURL;
+
+		if (!AreActorsInitialized())
+		{
+			m_bActorsInitialized = true;
+
+			// Spawn server actors
+		}
 	}
 
 	bool UWorld::ShivaActor(AActor* ThisActor, bool bNetForce, bool bShouldModifyLevel)
