@@ -7,11 +7,13 @@ namespace Karma
 {
 	UObjectBase::UObjectBase()
 	{
-		m_ObjectFlags = RF_NoFlags;
+		// This constructor is itentionally left blank because of multiple use
+		// invoked by before and after placement new.
+		/*m_ObjectFlags = RF_NoFlags;
 		m_InternalIndex = INDEX_NONE;
 		m_ClassPrivate = nullptr;
 		m_OuterPrivate = nullptr;
-		m_NamePrivate = "NoName";
+		m_NamePrivate = "NoName";*/
 
 		// Not adding to GUObjectStore
 	}

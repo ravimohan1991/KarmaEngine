@@ -6,7 +6,6 @@
 
 namespace Karma
 {
-
 	/*-----------------------------------------------------------------------------
 		UField.
 	-----------------------------------------------------------------------------*/
@@ -109,16 +108,42 @@ namespace Karma
 		 * 
 		 * @see GetPrivateStaticClassBody in Object.cpp
 		 */
-			UClass(const std::string& name, size_t size, size_t alignment);
+		UClass(const std::string& name, size_t size, size_t alignment, ClassConstructorType inClassConstructor);
 
 		/** The required type for the outer of instances of this class */
 		//UClass* m_ClassWithin;
+
+		// Only for hot reload purposes
+		// typedef UObject*	(*ClassVTableHelperCtorCallerType)	(FVTableHelper& Helper);
+
+		ClassConstructorType m_ClassConstructor;
+
+		/** Class flags; See EClassFlags for more information */
+		EClassFlags m_ClassFlags;
 
 	public:
 		// UObject interface.
 		virtual const std::string& GetDesc() override;
 
+		/**
+		 * Used to safely check whether the passed in flag is set.
+		 *
+		 * @param	FlagsToCheck		Class flag(s) to check for
+		 *
+		 * @return	true if the passed in flag is set, false otherwise
+		 *			(including no flag passed in, unless the FlagsToCheck is CLASS_AllFlags)
+		 */
+		FORCEINLINE bool HasAnyClassFlags(EClassFlags FlagsToCheck) const
+		{
+			return EnumHasAnyFlags(m_ClassFlags, FlagsToCheck) != 0;
+		}
+
 	public:
+		/**
+		 * Allows class to provide data to the object initializer that can affect how native class subobjects are created.
+		 */
+		virtual void SetupObjectInitializer(FObjectInitializer& ObjectInitializer) const {}
+
 		/**
 		 * Get the default object from the class
 		 * @param	bCreateIfNeeded if true (default) then the CDO is created if it is null
@@ -161,6 +186,15 @@ namespace Karma
 
 		// UStruct interface.
 		virtual void SetSuperStruct(UStruct* NewSuperStruct) override;
+
+		/**
+		 * Helper method to assist with initializing object properties from an explicit list.
+		 *
+		 * @param	InStruct			the current scope for which the given property list applies
+		 * @param	DataPtr				destination address (where to start copying values to)
+		 * @param	DefaultDataPtr		source address (where to start copying the defaults data from)
+		 */
+		virtual void InitPropertiesFromCustomList(uint8_t* DataPtr, const uint8_t* DefaultDataPtr) {}
 
 	protected:
 		/**

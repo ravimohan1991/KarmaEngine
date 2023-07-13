@@ -12,6 +12,15 @@ namespace Karma
 	typedef UClass* (*StaticClassFunctionType)();
 
 	/**
+	 * Helper template to call the default constructor for a class
+	 */
+	template<class T>
+	void InternalConstructor(const FObjectInitializer& X)
+	{
+		T::__DefaultConstructor(X);
+	}
+
+	/**
 	 * Helper template allocate and construct a UClass
 	 * In UE, this helper is declared and defined in Class.h/.cpp. I don't know
 	 * how that worked, hehe.
@@ -40,9 +49,9 @@ namespace Karma
 		size_t InAlignment,
 		/*EClassFlags InClassFlags,
 		EClassCastFlags InClassCastFlags,
-		const TCHAR* InConfigName,
-		UClass::ClassConstructorType InClassConstructor,
-		UClass::ClassVTableHelperCtorCallerType InClassVTableHelperCtorCaller,
+		const TCHAR* InConfigName,*/
+		ClassConstructorType InClassConstructor,
+		/*UClass::ClassVTableHelperCtorCallerType InClassVTableHelperCtorCaller,
 		FUObjectCppClassStaticFunctions&& InCppClassStaticFunctions,*/
 		StaticClassFunctionType InSuperClassFn
 	/*UClass::StaticClassFunctionType InWithinClassFn*/);

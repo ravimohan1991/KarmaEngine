@@ -31,13 +31,15 @@ namespace Karma
 		SetObjectName(name);
 	}
 
-	UClass::UClass(const std::string& name, size_t size, size_t alignment)
+	UClass::UClass(const std::string& name, size_t size, size_t alignment, ClassConstructorType inClassConstructor)
 	{
 		m_PropertiesSize = size;
 		m_MinAlignment = alignment;
 
 		SetSuperStruct(nullptr);
 		SetObjectName(name);
+
+		m_ClassConstructor = inClassConstructor;
 	}
 
 	UClass* UField::GetOwnerClass() const

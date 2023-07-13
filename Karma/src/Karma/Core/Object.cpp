@@ -6,7 +6,7 @@
 
 namespace Karma
 {
-	UObject::UObject() : UObjectBase()
+	UObject::UObject()
 	{
 	}
 
@@ -68,9 +68,9 @@ namespace Karma
 		size_t InAlignment,
 		/*EClassFlags InClassFlags,
 		EClassCastFlags InClassCastFlags,
-		const TCHAR* InConfigName,
-		UClass::ClassConstructorType InClassConstructor,
-		UClass::ClassVTableHelperCtorCallerType InClassVTableHelperCtorCaller,
+		const TCHAR* InConfigName,*/
+		ClassConstructorType InClassConstructor,
+		/*UClass::ClassVTableHelperCtorCallerType InClassVTableHelperCtorCaller,
 		FUObjectCppClassStaticFunctions&& InCppClassStaticFunctions,*/
 		StaticClassFunctionType InSuperClassFn
 		/*UClass::StaticClassFunctionType InWithinClassFn*/)
@@ -85,7 +85,7 @@ namespace Karma
 		FMemory::Memzero((void*)ReturnClass, sizeof(UClass));
 
 		// Call the constructor
-		ReturnClass = ::new (ReturnClass) UClass(Name, InSize, InAlignment);
+		ReturnClass = ::new (ReturnClass) UClass(Name, InSize, InAlignment, InClassConstructor);
 
 		InitializePrivateStaticClass(
 			InSuperClassFn(),

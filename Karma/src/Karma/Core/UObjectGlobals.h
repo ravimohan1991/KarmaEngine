@@ -26,6 +26,13 @@ namespace Karma
 
 	enum { INDEX_NONE = -1 };
 
+	// Got from EnumClassFlags.h
+	template<typename Enum>
+	constexpr bool EnumHasAnyFlags(Enum Flags, Enum Contains)
+	{
+		return(((__underlying_type(Enum))Flags) & (__underlying_type(Enum))Contains) != 0;
+	}
+
 	/**
 	 * Flags describing a class.
 	 *
@@ -284,6 +291,9 @@ namespace Karma
 		/** Callback for custom code to initialize properties before PostInitProperties runs */
 		//TFunction<void()> PropertyInitCallback;
 
+		/** Contains the mappings of instanced objects and components to their templates */
+		//FObjectInstancingGraph* InstanceGraph = nullptr;
+
 	private:
 		//FObjectInitializer::FOverrides* SubobjectOverrides = nullptr;
 
@@ -451,4 +461,78 @@ KARMA_API UObject* StaticFindObjectFastInternal(const UClass* ObjectClass, const
  *
  */
 KARMA_API UPackage* CreatePackage(const std::string& PackageName);
+
+/**
+ * Internal class to finalize UObject creation (initialize properties) after the real C++ constructor is called
+ */
+class KARMA_API FObjectInitializer
+{
+	public:
+		/**
+		 * Default Constructor, used when you are using the C++ "new" syntax. UObject::UObject will set the object pointer
+		 */
+		FObjectInitializer();
+
+		/**
+		 * Constructor
+		 * @param	InObj object to initialize, from static allocate object, after construction
+		 * @param	InObjectArchetype object to initialize properties from
+		 * @param	bInCopyTransientsFromClassDefaults - if true, copy transient from the class defaults instead of the pass in archetype ptr (often these are the same)
+		 * @param	bInShouldInitializeProps false is a special case for changing base classes in UCCMake
+		 * @param	InInstanceGraph passed instance graph
+		 */
+		FObjectInitializer(UObject* InObj, UObject* InObjectArchetype, bool bInCopyTransientsFromClassDefaults, bool bInShouldInitializeProps, struct FObjectInstancingGraph* InInstanceGraph = nullptr);
+
+		~FObjectInitializer();
+
+		/**
+		 * Return the object that is being constructed
+		 */
+		FORCEINLINE UObject* GetObj() const
+		{
+			return m_Object;
+		}
+
+	private:
+		friend class UObject;
+
+		template<class T>
+		friend void InternalConstructor(const class FObjectInitializer& X);
+
+		/**
+		 * Finalizes a constructed UObject by initializing properties,
+		 * instancing/initializing sub-objects, etc.
+		 */
+		void PostConstructInit();
+
+		/**
+		 * Binary initialize object properties to zero or defaults.
+		 *
+		 * @param	Obj					object to initialize data for
+		 * @param	DefaultsClass		the class to use for initializing the data
+		 * @param	DefaultData			the buffer containing the source data for the initialization
+		 * @param	bCopyTransientsFromClassDefaults if true, copy the transients from the DefaultsClass defaults, otherwise copy the transients from DefaultData
+		 */
+		static void InitProperties(UObject* Object, UClass* DefaultsClass, UObject* DefaultData, bool bCopyTransientsFromClassDefaults);
+
+	private:
+		/** object to intialize, from static allocate object, after construction */
+		UObject* m_Object;
+
+		/** object to copy properties from */
+		UObject* m_ObjectArchetype;
+
+		/**  if true, copy the transients from the DefaultsClass defaults, otherwise copy the transients from DefaultData **/
+		bool m_bCopyTransientsFromClassDefaults;
+
+		/**  If true, initialize the properties **/
+		bool m_bShouldInitializePropsFromArchetype;
+	
+		/**  Only true until ObjectInitializer has not reached the base UObject class */
+		bool m_bSubobjectClassInitializationAllowed;
+
+		/**  Previously constructed object in the callstack */
+		UObject* m_LastConstructedObject;
+
+};
 }
