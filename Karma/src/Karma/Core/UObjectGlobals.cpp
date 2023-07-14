@@ -44,7 +44,6 @@ namespace Karma
 	 */
 	FObjectInitializer::~FObjectInitializer()
 	{
-
 		KR_CORE_ASSERT(m_Object != nullptr, "");
 
 		const bool bIsCDO = m_Object->HasAnyFlags(RF_ClassDefaultObject);
@@ -395,6 +394,14 @@ namespace Karma
 		KR_CORE_ASSERT(InClass->m_ClassConstructor, "No default constructor found");
 
 		(*InClass->m_ClassConstructor)(FObjectInitializer(Result, /*InTemplate*/nullptr, Params.m_bCopyTransientsFromClassDefaults, true, /*Params.InstanceGraph*/nullptr));
+
+		{
+			// Since the placement new (called in the constructor above, m_ClassConstructor) resets the m_NamePrivate and m_ObjectFlags
+			// we set them again. Seems jugaadu and no offsets are created.
+			
+			Result->SetObjectName(InName);
+			Result->SetFlags(EObjectFlags(InFlags | RF_NeedInitialization));
+		}
 
 		KR_CORE_ASSERT(Result != nullptr, "Couldn't create new object.");
 
