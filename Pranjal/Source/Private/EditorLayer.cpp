@@ -5,6 +5,7 @@
 #include "Core/Object.h"
 #include "Core/Class.h"
 #include "Core/Package.h"
+#include "ChildActorComponent.h"
 
 namespace Karma
 {
@@ -305,7 +306,7 @@ namespace Karma
 		AActor* someActor = testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
 
 		// Shouldn't we be using Shivasomething?
-		//delete testWorld;
+		// delete testWorld;
 	}
 }
 

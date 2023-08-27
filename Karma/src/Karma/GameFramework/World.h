@@ -295,5 +295,22 @@ namespace Karma
 		 * @see Actor::DispatchBeginPlay(bool bFromLevelStreaming)
 		 */
 		bool ShivaActor(AActor* Actor, bool bNetForce = false, bool bShouldModifyLevel = true);
+
+		/**
+		 * Add a listener for OnActorSpawned events
+		 *
+		 * Not functional
+		 */
+		void AddOnActorSpawnedHandler() const;
+		void RemoveOnActorSpawnedHander() const {}
+
+		/**
+		 * Broadcasts a notification whenever an actor is spawned.
+		 * This event is only for newly created actors.
+		 *
+		 * We may take digression from ue in the sense that we may use Karma's own event broadcasting system
+		 * Not functional
+		 */
+		/*mutable FOnActorSpawned*/ void OnActorSpawned();
 	};
 }

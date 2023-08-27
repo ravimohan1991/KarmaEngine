@@ -62,14 +62,24 @@ namespace Karma
 		/** Returns the external UPackage associated with this object, if any */
 		UPackage* GetExternalPackage() const;
 
+		/** Checks if the object is unreachable. */
+		// Caution: use with vigilance
+		bool IsUnreachable() const;
+
+		/** Set indexing for GUObjectStore for lookup of UObjects. */
+		FORCEINLINE void SetInternalIndex(uint32_t StoreIndex) { m_InternalIndex = StoreIndex; }
+
 	private:
 
 		/** Flags used to track and report various object states. This needs to be 8 byte aligned on 32-bit
 			platforms to reduce memory waste */
 		EObjectFlags					m_ObjectFlags;
 
-		/** Index into GUObjectStore...very private. */
-		int32_t							m_InternalIndex;
+		/**
+		 * Index into GUObjectStore... very private.
+		 * Since this is meant literally for array index, hence we take positive data structure
+		 */
+		uint32_t							m_InternalIndex;
 
 		/** Object this object resides in. */
 		UObject* m_OuterPrivate;
@@ -218,6 +228,30 @@ namespace Karma
 		{
 			KR_CORE_ASSERT(!(FlagsToCheck & (RF_MarkAsNative | RF_MarkAsRootSet)) || FlagsToCheck == RF_AllFlags, "Illegal flags being used"); // These flags can't be used outside of constructors / internal code
 			return (GetFlags() & FlagsToCheck) != 0;
+		}
+
+		/**
+		 * Used to safely check whether any of the passed in internal flags are set.
+		 *
+		 * @param FlagsToCheck	Object flags to check for.
+		 * @return				true if any of the passed in flags are set, false otherwise  (including no flags passed in).
+		 */
+		FORCEINLINE bool HasAnyInternalFlags(EInternalObjectFlags FlagsToCheck) const
+		{
+			return GUObjectStore.IndexToObject(m_InternalIndex)->HasAnyFlags(FlagsToCheck);
+		}
+
+		/**
+		 * Sets internal flags of the FUObjectItem
+		 *
+		 * @param FlagsToSet
+		 */
+		FORCEINLINE void SetInternalFlags(EInternalObjectFlags FlagsToSet) const
+		{
+			FUObjectItem* ObjectItem = GUObjectStore.IndexToObject(m_InternalIndex);
+			KR_CORE_ASSERT(!(int32_t(FlagsToSet) & (int32_t(EInternalObjectFlags::PendingKill) | int32_t(EInternalObjectFlags::Garbage))) || (int32_t(FlagsToSet) & (int32_t(EInternalObjectFlags::PendingKill) | int32_t(EInternalObjectFlags::Garbage))) == (int32_t(ObjectItem->GetFlags()) & (int32_t(EInternalObjectFlags::PendingKill) | int32_t(EInternalObjectFlags::Garbage))), "");
+
+			ObjectItem->SetFlags(FlagsToSet);
 		}
 
 		/**

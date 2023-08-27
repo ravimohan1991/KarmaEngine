@@ -78,13 +78,11 @@ namespace Karma
 	{
 		m_NamePrivate = inName;
 		EInternalObjectFlags InternalFlagsToSet = inSetInternalFlags;
-		
-		UObject* thisElement = static_cast<UObject*>(this);
 
-		KR_CORE_ASSERT(thisElement, "Can't register not UObject types");
-		
-		GUObjectStore.push_back(thisElement);
-		m_InternalIndex = (int32_t) GUObjectStore.size();
+		UObject* anObject = static_cast<UObject*>(this);
+		KR_CORE_ASSERT(anObject, "Can't and won't add non UObject types in the store");
+
+		GUObjectStore.AddUObject(anObject);
 
 		KR_CORE_ASSERT(inName != "", "UObject name can't be empty string");
 		KR_CORE_ASSERT(m_InternalIndex >= 0, "m_InternalIndex has to be non-negative");
@@ -97,7 +95,18 @@ namespace Karma
 		HashObject(this);
 		*/
 
+		CacheObject(anObject);// We are using this instead of HashObject because of simplicity
+
 		KR_CORE_ASSERT(IsValidLowLevel(), "Not valid UObject from low level perspective");
+	}
+
+	bool UObjectBase::IsUnreachable() const
+	{
+		//return GUObjectStore.IndexToObject(m_InternalIndex)->IsUnreachable();
+
+		// is this the right way? See UObjectGlobals::StaticAllocateObject in ue, Obj->SetInternalFlags()
+		// intersetflags are different from m_ObjectFlags
+		return !!(m_ObjectFlags & int32_t(EInternalObjectFlags::Unreachable));
 	}
 
 	/**

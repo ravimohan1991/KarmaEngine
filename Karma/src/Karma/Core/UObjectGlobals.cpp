@@ -8,7 +8,8 @@
 
 namespace Karma
 {
-	std::vector<UObject*> GUObjectStore;
+	FUObjectArray GUObjectStore;
+	KarmaMap<UClass*, KarmaVector<UObject*>> m_ClassToObjectVectorMap;
 
 	/** Whether we are still in the initial loading proces. (Got from CoreGlobals.cpp) */
 	KARMA_API bool			GIsInitialLoad = true;
@@ -334,16 +335,16 @@ namespace Karma
 			// how about const referencing element
 			for (auto& element : GUObjectStore)
 			{
-				if (element->GetName() == ObjectName
+				if (element->m_Object->GetName() == ObjectName
 
 					/* Don't return objects that have any of the exclusive flags set */
-					&& !element->HasAnyFlags(ExcludeFlags)
+					&& !element->m_Object->HasAnyFlags(ExcludeFlags)
 
 					/* check that the object has the correct Outer */
-					&& element->GetOuter() == ObjectPackage
+					&& element->m_Object->GetOuter() == ObjectPackage
 
 					/** If a class was specified, check that the object is of the correct class (hierarchy) */
-					&& (ObjectClass == nullptr || (bExactClass ? element->GetClass() == ObjectClass : element->IsA(ObjectClass)))
+					&& (ObjectClass == nullptr || (bExactClass ? element->m_Object->GetClass() == ObjectClass : element->m_Object->IsA(ObjectClass)))
 
 					/** Include (or not) pending kill objects */
 					// leaving for now. may become relevant later
@@ -351,11 +352,11 @@ namespace Karma
 				{
 					if (result)
 					{
-						KR_CORE_WARN("Ambigous search, could be {0} or {1}", result->GetName(), element->GetName());
+						KR_CORE_WARN("Ambigous search, could be {0} or {1}", result->GetName(), element->m_Object->GetName());
 					}
 					else
 					{
-						result = element;
+						result = (UObject*)element->m_Object;
 					}
 				}
 			}
@@ -401,6 +402,8 @@ namespace Karma
 			
 			Result->SetObjectName(InName);
 			Result->SetFlags(EObjectFlags(InFlags | RF_NeedInitialization));
+
+			Result->SetInternalFlags(Params.m_InternalSetFlags);
 		}
 
 		KR_CORE_ASSERT(Result != nullptr, "Couldn't create new object.");
@@ -522,5 +525,59 @@ namespace Karma
 		}
 
 		return Result;
+	}
+
+	void FUObjectArray::AddUObject(UObject* Object)
+	{
+		FUObjectItem* ObjectItem = new FUObjectItem();
+
+		Object->SetInternalIndex(GUObjectStore.Num());
+		ObjectItem->m_Object = Object;
+
+		Add(ObjectItem);
+	}
+
+	void GetObjectsOfClass(const UClass* ClassToLookFor, KarmaVector<UObject *>& Results, bool bIncludeDerivedClasses, EObjectFlags ExclusionFlags, EInternalObjectFlags ExclusionInternalFlags)
+	{
+		//SCOPE_CYCLE_COUNTER(STAT_Hash_GetObjectsOfClass);
+
+		ForEachObjectOfClass(ClassToLookFor,
+			[&Results](UObject* Object)
+			{
+				Results.Add(Object);
+			}
+		, bIncludeDerivedClasses, ExclusionFlags, ExclusionInternalFlags);
+
+		KR_CORE_ASSERT(Results.Num() <= GUObjectStore.Num(), ""); // otherwise we have a cycle in the outer chain, which should not be possible
+	}
+
+	void ForEachObjectOfClass(const UClass* ClassToLookFor, std::function<void(UObject*)> Operation, bool bIncludeDerivedClasses, EObjectFlags ExclusionFlags, EInternalObjectFlags ExclusionInternalFlags)
+	{
+		//TRACE_CPUPROFILER_EVENT_SCOPE(ForEachObjectOfClass)
+
+		UClass* classToSearch = const_cast<UClass*>(ClassToLookFor);
+
+		KarmaVector<UObject*>* objectVector = m_ClassToObjectVectorMap.Find(classToSearch);
+
+		if(objectVector != nullptr)
+		{
+			for(UObject* Object : *objectVector)
+			{
+				if (!Object->HasAnyFlags(ExclusionFlags) && !Object->HasAnyInternalFlags(ExclusionInternalFlags))
+				{
+					Operation(Object);
+				}
+			}
+		}
+		else
+		{
+			KR_CORE_INFO("Could not find any objects corresponding to class %s", ClassToLookFor->GetName());
+		}
+	}
+
+	void CacheObject(UObject* Object)
+	{
+		KarmaVector<UObject*> objectVector = m_ClassToObjectVectorMap.FindOrAdd(Object->GetClass());
+		objectVector.Add(Object);
 	}
 }

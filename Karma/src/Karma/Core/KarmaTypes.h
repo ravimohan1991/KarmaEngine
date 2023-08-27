@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <cstdint>
-
+#include <map>
+#include <utility>
 #include <algorithm>
 
 /** Specifies why an actor is being deleted/removed from a level */
@@ -53,6 +54,65 @@ namespace EWorldType
 		Inactive
 	};
 }
+
+/// <summary>
+/// Karma's std::map wrapper
+/// </summary>
+template <typename KeyType, typename ValueType>
+class KarmaMap
+{
+public:
+	typedef std::map<KeyType, ValueType> AMap;
+	typedef AMap::iterator AnIterator;
+	/**
+	 * Find the value associated with a specified key, or if none exists,
+	 * adds a value using the default constructor.
+	 *
+	 * Algorithm courtsey: https://stackoverflow.com/a/1409465
+	 *
+	 * @param Key The key to search for.
+	 * @return A reference to the value associated with the specified key.
+	 */
+	ValueType& FindOrAdd(const KeyType& Key)
+	{
+		ValueType aValue;
+		std::pair<AnIterator, bool> const& result = m_KeyValuePair.insert(typename AMap::value_type(Key, aValue));
+
+		// a simple return.first->second could work. doing this for better understandibility
+		if(result.second)
+		{
+			// Value was inserted, meaning wasn't there earlier
+			return result.first->second;
+		}
+		else
+		{
+			// Nothing inserted, meaning value with key already exists
+			return result.first->second;
+		}
+	}
+
+	/**
+	 * Find the value associated with a specified key.
+	 *
+	 * @param Key The key to search for.
+	 * @return A pointer to the value associated with the specified key, or nullptr if the key isn't contained in this map.  The pointer
+	 *			is only valid until the next change to any key in the map.
+	 */
+
+	ValueType* Find(const KeyType& Key)
+	{
+		AnIterator result = m_KeyValuePair.find(Key);
+
+		if(result != m_KeyValuePair.end())
+		{
+			return &result->second;
+		}
+
+		return nullptr;
+	}
+private:
+	AMap m_KeyValuePair;
+};
 
 /// <summary>
 /// Karma's std::vector wrapper
@@ -153,6 +213,8 @@ public:
 				delete iterator;
 				iterator = nullptr;
 			}
+
+			// iterator increment statement here
 		}
 
 		m_Elements.clear();
@@ -172,12 +234,30 @@ public:
 	{
 		return m_Elements.begin();
 	}
+
 	typename std::vector<BuildingBlock>::iterator end()
 	{
 		return m_Elements.end();
 	}
 
-private:
+	/**
+	 * Returns the UObject corresponding to index. Be advised this is only for very low level use.
+	 *
+	 * @param Index				index of object to return
+	 * @return Object at this index
+	 */
+	FORCEINLINE BuildingBlock IndexToObject(int32_t Index)
+	{
+		KR_CORE_ASSERT(Index >= 0, "");
+		if(Index < m_Elements.size())
+		{
+			return m_Elements.at(Index);
+		}
+
+		return nullptr;
+	}
+
+protected:
 	std::vector<BuildingBlock> m_Elements;
 };
 

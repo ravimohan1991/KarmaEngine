@@ -11,15 +11,7 @@ namespace Karma
 	//enum EObjectFlags;
 	//enum class EInternalObjectFlags;
 
-	/**
-	 * Global UObject array instance
-	 * All the UObjects created are to be found in this store. Analogoue to GUObjectArray of UE, defined in UObjectHash.cpp
-	 * A note on GUObjectArray
-	 * https://forums.unrealengine.com/t/how-to-register-disregard-for-gc-objects/264991
-	 */
-	extern std::vector<UObject*> GUObjectStore;
-
-#define	INVALID_OBJECT	(UObject*)-1
+	#define	INVALID_OBJECT	(UObject*)-1
 
 	// 32-bit signed integer <- find or write appropriate class for such type
 	typedef signed int	 		int32;
@@ -250,6 +242,87 @@ namespace Karma
 	};
 
 	/**
+	 * Single item in UObjectStore
+	 */
+	struct FUObjectItem
+	{
+		// Pointer to the allocated object
+		class UObjectBase* m_Object;
+
+		// Internal Flags
+		int32_t m_InternalFlags;
+
+		FUObjectItem() : m_Object(nullptr), m_InternalFlags(0)
+		{
+		}
+
+		// Non-copyable
+		FUObjectItem(FUObjectItem&&) = delete;
+		FUObjectItem(const FUObjectItem&) = delete;
+		FUObjectItem& operator=(FUObjectItem&&) = delete;
+		FUObjectItem& operator=(const FUObjectItem&) = delete;
+
+		// digression from ue, from threadatomicallysetflag
+		FORCEINLINE void SetFlags(EInternalObjectFlags FlagsToSet)
+		{
+			KR_CORE_ASSERT((int32_t(FlagsToSet) & ~int32_t(EInternalObjectFlags::AllFlags)) == 0, "");
+
+			m_InternalFlags = int32_t(FlagsToSet);
+		}
+
+		FORCEINLINE EInternalObjectFlags GetFlags() const
+		{
+			//return FPlatformAtomics::AtomicRead_Relaxed((int32*)&Flags);
+			return EInternalObjectFlags(m_InternalFlags);
+		}
+
+		FORCEINLINE bool HasAnyFlags(EInternalObjectFlags InFlags) const
+		{
+				return !!(m_InternalFlags & int32_t(InFlags));
+		}
+	};
+
+	/**
+	 * A class for managing the collection of UObjects (all or some?)
+	 *
+	 * Note from UE devlopers (for the class FUObjectArray):
+	 * Note the layout of this data structure is mostly to emulate the old behavior and minimize code rework during code restructure.
+	 * Better data structures could be used in the future, for example maybe all that is needed is a TSet<UObject *>
+	 * One has to be a little careful with this, especially with the GC optimization. I have seen spots that assume
+	 * that non-GC objects come before GC ones during iteration.
+	 */
+	class KARMA_API FUObjectArray : public KarmaVector<FUObjectItem*>
+	{
+	public:
+		/** Add an element to the list*/
+		// Maybe use pool allocations instead of new delete operators for optimization
+		void AddUObject(UObject* Object);
+
+		/** Retrieve the list of the UObjects */
+		const std::vector<FUObjectItem*>& GetObjectsList() const { return m_Elements; }
+	};
+
+	/**
+	 * Global UObject array instance
+	 * All the UObjects created are to be found in this store. Analogoue to GUObjectArray of UE, defined in UObjectHash.cpp
+	 * A note on GUObjectArray
+	 * https://forums.unrealengine.com/t/how-to-register-disregard-for-gc-objects/264991
+	 */
+	extern FUObjectArray GUObjectStore;
+
+	/**
+	 * A cache of UClass and UObjects maps for quick lookup of objects
+	 * by class.
+	 *
+	 * Global public variable because UE has so FUObjectHashTables::ClassToObjectListMap. Think about
+	 * access specifier.
+	 *
+	 * Please note: Unreal Engine uses more complex TBucketMap<UClass*> ClassToObjectListMap for
+	 * caching the objects by class
+	 */
+	extern KarmaMap<UClass*, KarmaVector<UObject*>> m_ClassToObjectVectorMap;
+
+	/**
 	* This struct is used for passing parameter values to the StaticConstructObject_Internal() method.  Only the constructor parameters are required to
 	* be valid - all other members are optional.
 	*/
@@ -463,76 +536,105 @@ KARMA_API UObject* StaticFindObjectFastInternal(const UClass* ObjectClass, const
 KARMA_API UPackage* CreatePackage(const std::string& PackageName);
 
 /**
- * Internal class to finalize UObject creation (initialize properties) after the real C++ constructor is called
+ * Returns a vector of objects of a specific class. Optionally, results can include objects of derived classes as well.
+ *
+ * @param	ClassToLookFor				Class of the objects to return.
+ * @param	Results						An output list of objects of the specified class.
+ * @param	bIncludeDerivedClasses		If true, the results will include objects of child classes as well.
+ * @param	AdditionalExcludeFlags		Objects with any of these flags will be excluded from the results.
+ * @param	ExclusiveInternalFlags	Specifies internal flags to use as a filter for which objects to return
  */
-class KARMA_API FObjectInitializer
-{
-	public:
-		/**
-		 * Default Constructor, used when you are using the C++ "new" syntax. UObject::UObject will set the object pointer
-		 */
-		FObjectInitializer();
+KARMA_API void GetObjectsOfClass(const UClass* ClassToLookFor, KarmaVector<UObject *>& Results, bool bIncludeDerivedClasses = true, EObjectFlags ExcludeFlags = RF_ClassDefaultObject, EInternalObjectFlags ExclusionInternalFlags = EInternalObjectFlags::None);
 
-		/**
-		 * Constructor
-		 * @param	InObj object to initialize, from static allocate object, after construction
-		 * @param	InObjectArchetype object to initialize properties from
-		 * @param	bInCopyTransientsFromClassDefaults - if true, copy transient from the class defaults instead of the pass in archetype ptr (often these are the same)
-		 * @param	bInShouldInitializeProps false is a special case for changing base classes in UCCMake
-		 * @param	InInstanceGraph passed instance graph
-		 */
-		FObjectInitializer(UObject* InObj, UObject* InObjectArchetype, bool bInCopyTransientsFromClassDefaults, bool bInShouldInitializeProps, struct FObjectInstancingGraph* InInstanceGraph = nullptr);
+/**
+ * Performs an operation on all objects of the provided class
+ * Note that the operation must not modify UObject hash maps so it can not create, rename, or destroy UObjects.
+ *
+ * @param	Outer						UObject class to loop over instances of
+ * @param	Operation					Function to be called for each object
+ * @param	bIncludeDerivedClasses		If true, the results will include objects of child classes as well.
+ * @param	AdditionalExcludeFlags		Objects with any of these flags will be excluded from the results.
+ */
+KARMA_API void ForEachObjectOfClass(const UClass* ClassToLookFor, std::function<void(UObject*)> Operation, bool bIncludeDerivedClasses = true, EObjectFlags ExcludeFlags = RF_ClassDefaultObject, EInternalObjectFlags ExclusionInternalFlags = EInternalObjectFlags::None);
 
-		~FObjectInitializer();
+/**
+ * Add an object to the cache, categorized by class
+ *
+ * @param	Object		Object to add to the cache
+ * @see m_ClassToObjectVectorMap
+ */
+KARMA_API void CacheObject(class UObject* Object);
 
-		/**
-		 * Return the object that is being constructed
-		 */
-		FORCEINLINE UObject* GetObj() const
-		{
-			return m_Object;
-		}
+	/**
+	 * Internal class to finalize UObject creation (initialize properties) after the real C++ constructor is called
+	 */
+	class KARMA_API FObjectInitializer
+	{
+		public:
+			/**
+			 * Default Constructor, used when you are using the C++ "new" syntax. UObject::UObject will set the object pointer
+			 */
+			FObjectInitializer();
 
-	private:
-		friend class UObject;
+			/**
+			 * Constructor
+			 * @param	InObj object to initialize, from static allocate object, after construction
+			 * @param	InObjectArchetype object to initialize properties from
+			 * @param	bInCopyTransientsFromClassDefaults - if true, copy transient from the class defaults instead of the pass in archetype ptr (often these are the same)
+			 * @param	bInShouldInitializeProps false is a special case for changing base classes in UCCMake
+			 * @param	InInstanceGraph passed instance graph
+			 */
+			FObjectInitializer(UObject* InObj, UObject* InObjectArchetype, bool bInCopyTransientsFromClassDefaults, bool 	bInShouldInitializeProps, struct FObjectInstancingGraph* InInstanceGraph = nullptr);
 
-		template<class T>
-		friend void InternalConstructor(const class FObjectInitializer& X);
+			~FObjectInitializer();
 
-		/**
-		 * Finalizes a constructed UObject by initializing properties,
-		 * instancing/initializing sub-objects, etc.
-		 */
-		void PostConstructInit();
+			/**
+			 * Return the object that is being constructed
+			 */
+			FORCEINLINE UObject* GetObj() const
+			{
+				return m_Object;
+			}
 
-		/**
-		 * Binary initialize object properties to zero or defaults.
-		 *
-		 * @param	Obj					object to initialize data for
-		 * @param	DefaultsClass		the class to use for initializing the data
-		 * @param	DefaultData			the buffer containing the source data for the initialization
-		 * @param	bCopyTransientsFromClassDefaults if true, copy the transients from the DefaultsClass defaults, otherwise copy the transients from DefaultData
-		 */
-		static void InitProperties(UObject* Object, UClass* DefaultsClass, UObject* DefaultData, bool bCopyTransientsFromClassDefaults);
+		private:
+			friend class UObject;
 
-	private:
-		/** object to intialize, from static allocate object, after construction */
-		UObject* m_Object;
+			template<class T>
+			friend void InternalConstructor(const class FObjectInitializer& X);
 
-		/** object to copy properties from */
-		UObject* m_ObjectArchetype;
+			/**
+			 * Finalizes a constructed UObject by initializing properties,
+			 * instancing/initializing sub-objects, etc.
+			 */
+			void PostConstructInit();
 
-		/**  if true, copy the transients from the DefaultsClass defaults, otherwise copy the transients from DefaultData **/
-		bool m_bCopyTransientsFromClassDefaults;
+			/**
+			 * Binary initialize object properties to zero or defaults.
+			 *
+			 * @param	Obj					object to initialize data for
+			 * @param	DefaultsClass		the class to use for initializing the data
+			 * @param	DefaultData			the buffer containing the source data for the initialization
+			 * @param	bCopyTransientsFromClassDefaults if true, copy the transients from the DefaultsClass defaults, otherwise copy the transients from DefaultData
+			 */
+			static void InitProperties(UObject* Object, UClass* DefaultsClass, UObject* DefaultData, bool 	bCopyTransientsFromClassDefaults);
 
-		/**  If true, initialize the properties **/
-		bool m_bShouldInitializePropsFromArchetype;
-	
-		/**  Only true until ObjectInitializer has not reached the base UObject class */
-		bool m_bSubobjectClassInitializationAllowed;
+		private:
+			/** object to intialize, from static allocate object, after construction */
+			UObject* m_Object;
 
-		/**  Previously constructed object in the callstack */
-		UObject* m_LastConstructedObject;
+			/** object to copy properties from */
+			UObject* m_ObjectArchetype;
 
-};
+			/**  if true, copy the transients from the DefaultsClass defaults, otherwise copy the transients from DefaultData **/
+			bool m_bCopyTransientsFromClassDefaults;
+
+			/**  If true, initialize the properties **/
+			bool m_bShouldInitializePropsFromArchetype;
+
+			/**  Only true until ObjectInitializer has not reached the base UObject class */
+			bool m_bSubobjectClassInitializationAllowed;
+
+			/**  Previously constructed object in the callstack */
+			UObject* m_LastConstructedObject;
+	};
 }

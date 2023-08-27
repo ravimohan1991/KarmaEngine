@@ -256,4 +256,14 @@ namespace Karma
 	{
 		return m_bBegunPlay && m_PersistentLevel && m_PersistentLevel->m_Actors.Num();
 	}
+
+	void UWorld::OnActorSpawned()
+	{
+		// Broadcast the event
+	}
+
+	void UWorld::AddOnActorSpawnedHandler() const
+	{
+		
+	}
 }
