@@ -50,7 +50,7 @@ namespace EWorldType
 		/** A minimal RPC world for a game */
 		GameRPC,
 
-		/** An editor world that was loaded but not currently being edited in the level editor */
+		/* An editor world that was loaded but not currently being edited in the level editor */
 		Inactive
 	};
 }
@@ -186,35 +186,20 @@ public:
 	 */
 	void Reset()
 	{
-		/*
-		if (NewSize < 0)
-		{
-			OnInvalidNum((USizeType)NewSize);
-		}
-
-		// If we have space to hold the excepted size, then don't reallocate
-		if (NewSize <= ArrayMax)
-		{
-			DestructItems(GetData(), ArrayNum);
-			ArrayNum = 0;
-		}
-		else
-		{
-			Empty(NewSize);
-		}*/
-
 		// Maybe make smartpointer instead of manually deleting
-		typename std::vector<BuildingBlock>::iterator iterator = m_Elements.begin();
-
-		while (iterator != m_Elements.end())
+		typename std::vector<BuildingBlock>::iterator iter = m_Elements.begin();
+		
+		// solution got from https://www.reddit.com/r/cpp_questions/comments/panivh/constexpr_if_statement_to_check_if_template/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+		if constexpr(std::is_pointer_v<BuildingBlock>)
 		{
-			if (iterator != nullptr)
+			for (iter = m_Elements.begin(); iter != m_Elements.end(); iter++)
 			{
-				delete iterator;
-				iterator = nullptr;
+				if (*iter != nullptr)
+				{
+					delete *iter;
+					*iter = nullptr;
+				}
 			}
-
-			// iterator increment statement here
 		}
 
 		m_Elements.clear();
