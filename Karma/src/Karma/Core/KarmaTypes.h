@@ -152,9 +152,42 @@ public:
 		m_Elements.push_back(aBlock);
 	}
 
-	bool Contains(BuildingBlock aBlock)
+	/**
+	 * Finds element within the array.
+	 *
+	 * @param Item Item to look for.
+	 * @returns Index of the found element. INDEX_NONE otherwise.
+	 * 
+	 * @see FindLast, FindLastByPredicate
+	 * @see https://www.techiedelight.com/find-index-element-vector-cpp/
+	 */
+	int32_t Find(const BuildingBlock& Item) const
 	{
-		typename std::vector<BuildingBlock>::iterator iterator = m_Elements.begin();
+		int32_t returnIndex = 0;
+
+		typename std::vector<BuildingBlock>::const_iterator iter = m_Elements.begin();
+
+		for (; iter != m_Elements.end(); iter++)
+		{
+			if (m_Elements[returnIndex] == Item)
+			{
+				break;
+			}
+			returnIndex++;
+		}
+
+		if (iter != m_Elements.end())
+		{
+			return returnIndex;
+		}
+
+		// Make an enum with name INDEX_NONE and value -1
+		return -1;
+	}
+
+	bool Contains(BuildingBlock aBlock) const
+	{
+		typename std::vector<BuildingBlock>::const_iterator iterator = m_Elements.begin();
 
 		while (iterator != m_Elements.end())
 		{
@@ -211,6 +244,11 @@ public:
 	void SmartReset()
 	{
 		m_Elements.clear();
+	}
+
+	void SetVectorElementByIndex(int32_t Index, BuildingBlock Value)
+	{
+		m_Elements[Index] = Value;
 	}
 
 	inline const std::vector<BuildingBlock>& GetElements() const { return m_Elements; }

@@ -3,6 +3,7 @@
 #include "World.h"
 #include "UObjectAllocator.h"
 #include "KarmaMemory.h"
+#include "Package.h"
 
 namespace Karma
 {
@@ -123,5 +124,51 @@ namespace Karma
 		*/
 
 		// jugaad name is already set by UClass() constructor
+	}
+
+#if WITH_EDITOR
+	bool UObject::CanModify() const
+	{
+		return (!HasAnyFlags(RF_NeedInitialization) &&/* !IsGarbageCollecting() && !GExitPurge &&*/ !IsUnreachable());
+	}
+
+	bool UObject::Modify(bool bAlwaysMarkDirty/*=true*/)
+	{
+		bool bSavedToTransactionBuffer = false;
+
+		if (CanModify())
+		{
+			// Do not consider script packages, as they should never end up in the
+			// transaction buffer and we don't want to mark them dirty here either.
+			// We do want to consider PIE objects however
+			if ((GetPackage()->HasAnyPackageFlags(PKG_ContainsScript | PKG_CompiledIn) == false || GetClass()->HasAnyClassFlags(EClassFlags(CLASS_DefaultConfig | CLASS_Config))) &&
+				!HasAnyInternalFlags(EInternalObjectFlags::Async | EInternalObjectFlags::AsyncLoading))
+			{
+				// Attempt to mark the package dirty and save a copy of the object to the transaction
+				// buffer. The save will fail if there isn't a valid transactor, the object isn't
+				// transactional, etc.
+				//  bSavedToTransactionBuffer = SaveToTransactionBuffer(this, bAlwaysMarkDirty);
+
+				// If we failed to save to the transaction buffer, but the user requested the package
+				// marked dirty anyway, do so
+				if (!bSavedToTransactionBuffer && bAlwaysMarkDirty)
+				{
+					//  MarkPackageDirty();
+				}
+			}
+			//FCoreUObjectDelegates::BroadcastOnObjectModified(this);
+		}
+
+		return bSavedToTransactionBuffer;
+	}
+#endif
+
+	bool UObject::IsSelected() const
+	{
+#if WITH_EDITOR
+		return IsSelectedInEditor();
+#else
+		return false;
+#endif
 	}
 }

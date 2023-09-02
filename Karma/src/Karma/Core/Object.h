@@ -111,5 +111,54 @@ namespace Karma
 		 * asynchronous cleanup process.
 		 */
 		virtual void BeginDestroy();
+
+		/**
+		 * Note that the object will be modified.  If we are currently recording into the
+		 * transaction buffer (undo/redo), save a copy of this object into the buffer and
+		 * marks the package as needing to be saved.
+		 *
+		 * @param	bAlwaysMarkDirty	if true, marks the package dirty even if we aren't
+		 *								currently recording an active undo/redo transaction
+		 * @return true if the object was saved to the transaction buffer
+		 */
+#if WITH_EDITOR
+		virtual bool Modify(bool bAlwaysMarkDirty = true);
+
+		/** Utility to allow overrides of Modify to avoid doing work if this object cannot be safely modified */
+		bool CanModify() const;
+#else
+		FORCEINLINE bool Modify(bool bAlwaysMarkDirty = true) { return false; }
+#endif
+
+		/**
+		 * Test the selection state of a UObject
+		 *
+		 * @return		true if the object is selected, false otherwise.
+		 * @todo UE this doesn't belong here, but it doesn't belong anywhere else any better
+		 */
+		bool IsSelected() const;
 	};
+
+	/**
+	 * Note the name. Need to understand UE's take upon the subject
+	 * 
+	 */
+
+	FORCEINLINE bool TentativeFlagChecks(const UObject* Test)
+	{
+		KR_CORE_ASSERT(GUObjectStore.IndexToObject(Test->GetInterIndex())->HasAnyFlags(EInternalObjectFlags(int32_t(EInternalObjectFlags::PendingKill) | int32_t(EInternalObjectFlags::Garbage))) == Test->HasAnyFlags(EObjectFlags(RF_PendingKill | RF_Garbage)), "");
+		
+		return !Test->HasAnyFlags(EObjectFlags(RF_PendingKill | RF_Garbage));
+	}
+
+	/**
+	 * Test validity of object
+	 *
+	 * @param	Test			The object to test
+	 * @return	Return true if the object is usable: non-null and not pending kill or garbage
+	 */
+	FORCEINLINE bool IsValid(const UObject* Test)
+	{
+		return Test && /*FInternalUObjectBaseUtilityIsValidFlagsChecker::CheckObjectValidBasedOnItsFlags(Test)*/ TentativeFlagChecks(Test);
+	}
 }

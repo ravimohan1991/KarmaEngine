@@ -226,6 +226,49 @@ namespace Karma
 		m_bBegunPlay = true;
 	}
 
+	void UWorld::ModifyLevel(ULevel* Level) const
+	{
+		if (Level && Level->HasAnyFlags(RF_Transactional))
+		{
+			Level->Modify(false);
+			//Level->Model->Modify(false); some BSP stuff
+		}
+	}
+
+	bool UWorld::IsGameWorld() const
+	{
+		return m_WorldType == EWorldType::Game || m_WorldType == EWorldType::PIE || m_WorldType == EWorldType::GamePreview || m_WorldType == EWorldType::GameRPC;
+	}
+
+	void UWorld::RemoveActor(AActor* Actor, bool bShouldModifyLevel) const
+	{
+		if (ULevel* CheckLevel = Actor->GetLevel())
+		{
+			const int32 ActorListIndex = CheckLevel->m_Actors.Find(Actor);
+
+			// Search the entire list.
+			if (ActorListIndex != INDEX_NONE)
+			{
+				if (bShouldModifyLevel /* && GUndo*/)
+				{
+					ModifyLevel(CheckLevel);
+				}
+
+				if (!IsGameWorld())
+				{
+					CheckLevel->m_Actors.GetElements()[ActorListIndex]->Modify();
+				}
+
+				CheckLevel->m_Actors.SetVectorElementByIndex(ActorListIndex, nullptr);
+
+				//CheckLevel->ActorsForGC.RemoveSwap(Actor);
+			}
+		}
+
+		// Remove actor from network list
+		// RemoveNetworkActor(Actor);
+	}
+
 	void UWorld::InitializeActorsForPlay(const FURL& InURL, bool bResetTime)
 	{
 		// KR_CORE_ASSERT(bIsWorldInitialized, "");

@@ -6,11 +6,14 @@
 #include "Core/Class.h"
 #include "Core/Package.h"
 #include "ChildActorComponent.h"
+#include "ActorIterator.h"
 
 namespace Karma
 {
 	EditorLayer::EditorLayer() : Layer("Pranjal")
 	{
+		testWorld = nullptr;
+
 		// Instantiate camera
 		m_EditorCamera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
 
@@ -185,6 +188,10 @@ namespace Karma
 		{
 			TentativeTrigger();
 		}
+		else if (e.GetKeyCode() == GLFW_KEY_Y)
+		{
+			IterateActors();
+		}
 
 		return false;
 	}
@@ -289,10 +296,13 @@ namespace Karma
 	void EditorLayer::TentativeTrigger()
 	{
 		KR_INFO("========= Trigger invoked =========");
-		KR_INFO("-----> Spawning World");
 
 		// A test world
-		UWorld* testWorld = UWorld::CreateWorld(EWorldType::PIE, true, "AWholeNewWorld");
+		if (testWorld == nullptr)
+		{
+			KR_INFO("-----> Spawning World");
+			testWorld.reset(UWorld::CreateWorld(EWorldType::PIE, true, "AWholeNewWorld"));
+		}
 
 		UClass* testActorClass = AActor::StaticClass();
 		FTransform testTransform = FTransform::m_Identity;
@@ -307,6 +317,16 @@ namespace Karma
 
 		// Shouldn't we be using Shivasomething?
 		// delete testWorld;
+	}
+
+	void EditorLayer::IterateActors()
+	{
+		// Iterate over all actors, can also supply a different base class if needed
+		for (TActorIterator<AActor> ActorItr(testWorld.get()); ActorItr; ++ActorItr)
+		{
+			// print name
+			KR_INFO("Iterating over actor: ", (*ActorItr)->GetName());
+		}
 	}
 }
 

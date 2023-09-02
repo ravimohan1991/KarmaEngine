@@ -131,6 +131,8 @@ namespace Karma
 			return CastChecked<T>(SpawnActor(Class, nullptr, SpawnParameters), ECastCheckedType::NullAllowed);
 		}
 
+		ULevel* GetPersistentLevel() const { return m_PersistentLevel; }
+
 	private:
 //#if WITH_EDITORONLY_DATA
 		/** Pointer to the current level being edited. Level has to be in the Levels array and == PersistentLevel in the game. */
@@ -277,6 +279,24 @@ namespace Karma
 		 * @param bResetTime (optional)			whether the WorldSettings's TimeSeconds should be reset to zero
 		 */
 		void InitializeActorsForPlay(const FURL& InURL, bool bResetTime = true/*, FRegisterComponentContext* Context = nullptr*/);
+
+		/**
+		 * Transacts the specified level -- the correct way to modify a level
+		 * as opposed to calling Level->Modify.
+		 */
+		void ModifyLevel(ULevel* Level) const;
+
+		/** Returns true if this world is any kind of game world (including PIE worlds) */
+		bool IsGameWorld() const;
+
+		/**
+		 * Removes the passed in actor from the actor lists. Please note that the code actually doesn't physically remove the
+		 * index but rather clears it so other indices are still valid and the actors array size doesn't change.
+		 *
+		 * @param	Actor					Actor to remove.
+		 * @param	bShouldModifyLevel		If true, Modify() the level before removing the actor if in the editor.
+		 */
+		void RemoveActor( AActor* Actor, bool bShouldModifyLevel ) const;
 
 		/**
 		 * Removes the actor from its level's actor list and generally cleans up the engine's internal state.

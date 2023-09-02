@@ -69,6 +69,8 @@ namespace Karma
 		/** Set indexing for GUObjectStore for lookup of UObjects. */
 		FORCEINLINE void SetInternalIndex(uint32_t StoreIndex) { m_InternalIndex = StoreIndex; }
 
+		FORCEINLINE uint32_t GetInterIndex() const { return m_InternalIndex; }
+
 	private:
 
 		/** Flags used to track and report various object states. This needs to be 8 byte aligned on 32-bit

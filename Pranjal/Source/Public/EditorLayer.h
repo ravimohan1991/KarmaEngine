@@ -24,6 +24,7 @@ namespace Karma
 		void InputPolling(float deltaTime);
 
 		void TentativeTrigger();
+		void IterateActors();
 
 	private:
 		std::shared_ptr<Karma::Shader> m_ModelShader;
@@ -36,5 +37,8 @@ namespace Karma
 
 		float cameraTranslationSpeed = 1.0f;
 		float cameraRotationSpeed = 80.0f;
+
+		// Tentative stuff
+		std::shared_ptr<UWorld> testWorld;
 	};
 }

@@ -25,7 +25,7 @@ namespace Karma
 		static uint32_t CountTrailingZeros(uint32_t Value)
 		{
 			// return 32 if value was 0
-			unsigned long BitIndex;	// 0-based, where the LSB is 0 and MSB is 31
+			unsigned long BitIndex = 0;	// 0-based, where the LSB is 0 and MSB is 31
 			return Value;//_BitScanForward(&BitIndex, Value) ? BitIndex : 32;
 		}
 	};

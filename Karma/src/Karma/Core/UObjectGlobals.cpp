@@ -530,7 +530,13 @@ namespace Karma
 	void FUObjectArray::AddUObject(UObject* Object)
 	{
 		FUObjectItem* ObjectItem = new FUObjectItem();
-
+		
+		/**
+		 * Taken from Game Coding Complete 4th edition, page 169. 
+		 * There is variety of ways for indexing the UObjects, for simplicity we will start with number
+		 * and based upon the complexity (if any?) we may transition to more appropriate indexing scheme
+		 * as per the need.
+		 */
 		Object->SetInternalIndex(GUObjectStore.Num());
 		ObjectItem->m_Object = Object;
 
