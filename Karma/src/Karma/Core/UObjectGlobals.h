@@ -302,6 +302,31 @@ namespace Karma
 		const std::vector<FUObjectItem*>& GetObjectsList() const { return m_Elements; }
 	};
 
+	class KarmaClassObjectMap : public KarmaMap<UClass*, KarmaVector<UObject*>*>
+	{
+	public:
+		KarmaClassObjectMap()
+		{}
+
+		/**
+		 * Find the object vector associated with class
+		 *
+		 * @param Key The key to search for.
+		 * @return A pointer to the object vector
+		 */
+
+		KarmaVector<UObject*>* FindClassObjects(const UClass* Key);
+
+		/**
+		 * Find the value associated with a specified key, or if none exists,
+		 * adds a value using the default constructor.
+		 *
+		 * @param Key The key to search for.
+		 * @return A reference to the value associated with the specified key.
+		 */
+		KarmaVector<UObject*>* FindOrAddClass(const UClass* Key);
+	};
+
 	/**
 	 * Global UObject array instance
 	 * All the UObjects created are to be found in this store. Analogoue to GUObjectArray of UE, defined in UObjectHash.cpp
@@ -320,7 +345,7 @@ namespace Karma
 	 * Please note: Unreal Engine uses more complex TBucketMap<UClass*> ClassToObjectListMap for
 	 * caching the objects by class
 	 */
-	extern KarmaMap<UClass*, KarmaVector<UObject*>> m_ClassToObjectVectorMap;
+	extern KarmaClassObjectMap m_ClassToObjectVectorMap;
 
 	/**
 	* This struct is used for passing parameter values to the StaticConstructObject_Internal() method.  Only the constructor parameters are required to

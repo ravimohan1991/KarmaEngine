@@ -9,7 +9,7 @@
 namespace Karma
 {
 	FUObjectArray GUObjectStore;
-	KarmaMap<UClass*, KarmaVector<UObject*>> m_ClassToObjectVectorMap;
+	KarmaClassObjectMap m_ClassToObjectVectorMap;
 
 	/** Whether we are still in the initial loading proces. (Got from CoreGlobals.cpp) */
 	KARMA_API bool			GIsInitialLoad = true;
@@ -391,6 +391,11 @@ namespace Karma
 		UObject* Result = nullptr;
 
 		Result = StaticAllocateObject(InClass, InOuter, InName, InFlags, Params.m_InternalSetFlags);
+		if(Result == nullptr)
+		{
+			KR_CORE_INFO("Could not allocate space for UObject");
+			return nullptr;
+		}
 
 		KR_CORE_ASSERT(InClass->m_ClassConstructor, "No default constructor found");
 
@@ -450,6 +455,11 @@ namespace Karma
 			FMemory::Memzero(aPtr, totalSize);
 
 			ObjectBase = (UObjectBase*)aPtr;
+		}
+		else
+		{
+			KR_CORE_INFO("UObject with name {0} already exists. Won't create new.", objectName);
+			return nullptr;
 		}
 
 		EObjectFlags relevantFlags = EObjectFlags (inFlags | RF_NeedInitialization);
@@ -557,13 +567,47 @@ namespace Karma
 		KR_CORE_ASSERT(Results.Num() <= GUObjectStore.Num(), ""); // otherwise we have a cycle in the outer chain, which should not be possible
 	}
 
+	KarmaVector<UObject*>* KarmaClassObjectMap::FindClassObjects(const UClass* Key)
+	{
+		// see if iterators can be used
+		for(auto iterator = m_KeyValuePair.begin(); iterator != m_KeyValuePair.end(); iterator++)
+		{
+			if(iterator->first->GetName() == Key->GetName())// again jugaad class name comparison, also see UStruct::IsChildOf
+			{
+				return iterator->second;
+			}
+		}
+		return nullptr;
+	}
+
+	KarmaVector<UObject*>* KarmaClassObjectMap::FindOrAddClass(const UClass* Key)
+	{
+		// see if iterators can be used
+		for(auto iterator = m_KeyValuePair.begin(); iterator != m_KeyValuePair.end(); iterator++)
+		{
+			if(iterator->first->GetName() == Key->GetName())// again jugaad class name comparison, also seeUStruct::IsChildOf
+			{
+				return iterator->second;
+			}
+		}
+
+		// Specified UClass doesn't exist yet, so add one
+		UClass* aKey = const_cast<UClass*>(Key);
+		KarmaVector<UObject*>* objects = new KarmaVector<UObject*>();// +++++++++ memory management needed here +++++++
+
+		std::pair<UClass*, KarmaVector<UObject*>*> aPair = std::make_pair(aKey, objects);
+
+		// Add the (key, value) pair
+		m_KeyValuePair.emplace(aPair);
+
+		return objects;
+	}
+
 	void ForEachObjectOfClass(const UClass* ClassToLookFor, std::function<void(UObject*)> Operation, bool bIncludeDerivedClasses, EObjectFlags ExclusionFlags, EInternalObjectFlags ExclusionInternalFlags)
 	{
 		//TRACE_CPUPROFILER_EVENT_SCOPE(ForEachObjectOfClass)
 
-		UClass* classToSearch = const_cast<UClass*>(ClassToLookFor);
-
-		KarmaVector<UObject*>* objectVector = m_ClassToObjectVectorMap.Find(classToSearch);
+		KarmaVector<UObject*>* objectVector = m_ClassToObjectVectorMap.FindClassObjects(ClassToLookFor);
 
 		if(objectVector != nullptr)
 		{
@@ -577,13 +621,15 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_INFO("Could not find any objects corresponding to class %s", ClassToLookFor->GetName());
+			KR_CORE_INFO("Could not find any objects corresponding to class {0}", ClassToLookFor->GetName());
 		}
 	}
 
 	void CacheObject(UObject* Object)
 	{
-		KarmaVector<UObject*> objectVector = m_ClassToObjectVectorMap.FindOrAdd(Object->GetClass());
-		objectVector.Add(Object);
+		const UClass* classToLookFor = const_cast<UClass*>(Object->GetClass());
+
+		KarmaVector<UObject*>* objectVector = m_ClassToObjectVectorMap.FindOrAddClass(classToLookFor);
+		objectVector->Add(Object);
 	}
 }

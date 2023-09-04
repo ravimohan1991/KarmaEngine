@@ -325,7 +325,7 @@ namespace Karma
 		for (TActorIterator<AActor> ActorItr(testWorld.get()); ActorItr; ++ActorItr)
 		{
 			// print name
-			KR_INFO("Iterating over actor: ", (*ActorItr)->GetName());
+			KR_INFO("Iterating over actor: {0}", (*ActorItr)->GetName());
 		}
 	}
 }

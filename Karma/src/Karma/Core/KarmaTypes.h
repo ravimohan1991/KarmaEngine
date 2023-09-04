@@ -64,6 +64,12 @@ class KarmaMap
 public:
 	typedef std::map<KeyType, ValueType> AMap;
 	typedef AMap::iterator AnIterator;
+
+	KarmaMap()
+	{
+		
+	}
+
 	/**
 	 * Find the value associated with a specified key, or if none exists,
 	 * adds a value using the default constructor.
@@ -110,7 +116,7 @@ public:
 
 		return nullptr;
 	}
-private:
+protected:
 	AMap m_KeyValuePair;
 };
 
@@ -123,7 +129,7 @@ class KarmaVector
 public:
 	KarmaVector()
 	{
-		m_Elements;
+		//m_Elements;
 	}
 
 	uint32_t Remove(BuildingBlock aBlock)

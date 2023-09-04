@@ -64,6 +64,12 @@ namespace Karma
 		 
 		AActor* const Actor = NewObject<AActor>(LevelToSpawnIn, Class, newActorName, actorFlags, aTemplate, false);
 
+		if(Actor == nullptr)
+		{
+			KR_CORE_INFO("Couldn't spawn the Actor {0}. Please browse the logs", newActorName);
+			return nullptr;
+		}
+
 		LevelToSpawnIn->m_Actors.Add(Actor);
 		//LevelToSpawnIn->ActorsForGC.Add(Actor);
 

@@ -173,7 +173,7 @@ namespace Karma
 		EActorIteratorFlags m_Flags;
 
 		// smart pointer?
-		FActorIteratorState* m_State;
+		std::shared_ptr<FActorIteratorState> m_State;
 
 	protected:
 		/**
@@ -189,8 +189,9 @@ namespace Karma
 		{
 			//m_State.Emplace(InWorld, InClass);
 
-			m_State->m_CurrentWorld = InWorld;
-			m_State->m_DesiredClass = InClass;
+			m_State.reset(new FActorIteratorState(InWorld, InClass));
+			//m_State->m_CurrentWorld = InWorld;
+			//m_State->m_DesiredClass = InClass;
 		}
 
 	public:
@@ -201,7 +202,7 @@ namespace Karma
 		{
 			// Use local version to avoid LHSs as compiler is not required to write out member variables to memory.
 			AActor* localCurrentActor = nullptr;
-			uint32_t             localIndex = m_State->m_Index;
+			int32_t             localIndex = m_State->m_Index;
 			KarmaVector<UObject*>& localObjectArray = m_State->m_ObjectArray;
 			KarmaVector<AActor*>& localSpawnedActorArray = m_State->m_SpawnedActorArray;
 			const UWorld* localCurrentWorld = m_State->m_CurrentWorld;
@@ -223,7 +224,7 @@ namespace Karma
 				if (actorLevel
 					&& static_cast<const Derived*>(this)->IsActorSuitable(localCurrentActor)
 					&& static_cast<const Derived*>(this)->CanIterateLevel(actorLevel)
-					&& actorLevel->GetWorld() == localCurrentWorld)
+					/*&& actorLevel->GetWorld()->GetName() == localCurrentWorld->GetName()*/)
 				{
 					// ignore non-persistent world settings
 					if (actorLevel == localCurrentWorld->GetPersistentLevel() || !localCurrentActor->IsA(AWorldSettings::StaticClass()))
