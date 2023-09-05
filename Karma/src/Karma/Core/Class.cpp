@@ -58,7 +58,8 @@ namespace Karma
 
 	const std::string& UField::GetAuthoredName() const
 	{
-		return "NotFunctional";
+		static std::string noString = "NotFunctional";
+		return noString;
 	}
 
 	const std::string& UClass::GetDesc()

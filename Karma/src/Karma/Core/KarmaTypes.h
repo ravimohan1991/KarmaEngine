@@ -63,7 +63,7 @@ class KarmaMap
 {
 public:
 	typedef std::map<KeyType, ValueType> AMap;
-	typedef AMap::iterator AnIterator;
+	typedef typename AMap::iterator AnIterator;
 
 	KarmaMap()
 	{
