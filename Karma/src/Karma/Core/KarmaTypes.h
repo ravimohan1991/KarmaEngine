@@ -67,7 +67,7 @@ public:
 
 	KarmaMap()
 	{
-		
+
 	}
 
 	/**
@@ -129,7 +129,10 @@ class KarmaVector
 public:
 	KarmaVector()
 	{
-		//m_Elements;
+	}
+
+	~KarmaVector()
+	{
 	}
 
 	uint32_t Remove(BuildingBlock aBlock)
@@ -163,7 +166,7 @@ public:
 	 *
 	 * @param Item Item to look for.
 	 * @returns Index of the found element. INDEX_NONE otherwise.
-	 * 
+	 *
 	 * @see FindLast, FindLastByPredicate
 	 * @see https://www.techiedelight.com/find-index-element-vector-cpp/
 	 */
@@ -217,7 +220,7 @@ public:
 
 	/**
 	 * We just reset the vector. UE has the following implementation
-	 * 
+	 *
 	 * Same as empty, but doesn't change memory allocations, unless the new size is larger than
 	 * the current array. It calls the destructors on held items if needed and then zeros the ArrayNum.
 	 *
@@ -227,7 +230,7 @@ public:
 	{
 		// Maybe make smartpointer instead of manually deleting
 		typename std::vector<BuildingBlock>::iterator iter = m_Elements.begin();
-		
+
 		// solution got from https://www.reddit.com/r/cpp_questions/comments/panivh/constexpr_if_statement_to_check_if_template/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 		if constexpr(std::is_pointer_v<BuildingBlock>)
 		{
@@ -235,6 +238,7 @@ public:
 			{
 				if (*iter != nullptr)
 				{
+					KR_CORE_INFO("Deleting UObjects");
 					delete *iter;
 					*iter = nullptr;
 				}
@@ -243,7 +247,7 @@ public:
 
 		m_Elements.clear();
 	}
-	
+
 	/**
 	 * Assuming the use of smart pointers
 	 */
@@ -298,10 +302,10 @@ enum ETravelType
 
 	/** Partial (carry name, reset server). */
 	TRAVEL_Partial,
-	
+
 	/** Relative URL. */
 	TRAVEL_Relative,
-	
+
 	TRAVEL_MAX,
 };
 

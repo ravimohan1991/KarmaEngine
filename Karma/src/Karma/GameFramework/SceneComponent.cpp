@@ -15,7 +15,7 @@ namespace Karma
 		// Find parent and set relative position with respect to the parent
 	}
 
-	inline std::shared_ptr<USceneComponent> USceneComponent::GetAttachParent() const
+	std::shared_ptr<USceneComponent> USceneComponent::GetAttachParent() const
 	{
 		return m_AttachParent;
 	}

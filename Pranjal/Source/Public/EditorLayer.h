@@ -31,7 +31,7 @@ namespace Karma
 		std::shared_ptr<Karma::VertexArray> m_ModelVertexArray;
 		std::shared_ptr<Karma::Material> m_ModelMaterial;
 		std::shared_ptr<Karma::Texture> m_ModelTexture;
-		
+
 		std::shared_ptr<Karma::PerspectiveCamera> m_EditorCamera;
 		std::shared_ptr<Karma::Scene> m_EditorScene;
 
@@ -39,6 +39,6 @@ namespace Karma
 		float cameraRotationSpeed = 80.0f;
 
 		// Tentative stuff
-		std::shared_ptr<UWorld> testWorld;
+		UWorld* testWorld;
 	};
 }

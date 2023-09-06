@@ -404,7 +404,7 @@ namespace Karma
 		{
 			// Since the placement new (called in the constructor above, m_ClassConstructor) resets the m_NamePrivate and m_ObjectFlags
 			// we set them again. Seems jugaadu and no offsets are created.
-			
+
 			Result->SetObjectName(InName);
 			Result->SetFlags(EObjectFlags(InFlags | RF_NeedInitialization));
 
@@ -421,7 +421,7 @@ namespace Karma
 		EInternalObjectFlags internalSetFlags)
 	{
 		KR_CORE_ASSERT(inOuter != INVALID_OBJECT, "");
-		
+
 		// Also need to write (InClass->ClassWithin && InClass->ClassConstructor)
 		KR_CORE_ASSERT(inClass != nullptr, "The class of the object is not valid");
 
@@ -517,7 +517,7 @@ namespace Karma
 			if (Result == NULL)
 			{
 				//FName NewPackageName(*InName, FNAME_Add);
-				
+
 				/*if (FPackageName::IsShortPackageName(NewPackageName))
 				{
 					UE_LOG(LogUObjectGlobals, Warning, TEXT("Attempted to create a package with a short package name: %s Outer: %s"), PackageName, Outer ? *Outer->GetFullName() : TEXT("NullOuter"));
@@ -540,9 +540,9 @@ namespace Karma
 	void FUObjectArray::AddUObject(UObject* Object)
 	{
 		FUObjectItem* ObjectItem = new FUObjectItem();
-		
+
 		/**
-		 * Taken from Game Coding Complete 4th edition, page 169. 
+		 * Taken from Game Coding Complete 4th edition, page 169.
 		 * There is variety of ways for indexing the UObjects, for simplicity we will start with number
 		 * and based upon the complexity (if any?) we may transition to more appropriate indexing scheme
 		 * as per the need.
@@ -593,7 +593,7 @@ namespace Karma
 
 		// Specified UClass doesn't exist yet, so add one
 		UClass* aKey = const_cast<UClass*>(Key);
-		KarmaVector<UObject*>* objects = new KarmaVector<UObject*>();// +++++++++ memory management needed here +++++++
+		KarmaVector<UObject*>* objects = new KarmaVector<UObject*>();// +++++++++ memory management needed here +++++++, try using KarmaSmriti for allocating memory
 
 		std::pair<UClass*, KarmaVector<UObject*>*> aPair = std::make_pair(aKey, objects);
 
@@ -601,6 +601,18 @@ namespace Karma
 		m_KeyValuePair.emplace(aPair);
 
 		return objects;
+	}
+
+	KarmaClassObjectMap::~KarmaClassObjectMap()
+	{
+		for(auto iterator = m_KeyValuePair.begin(); iterator != m_KeyValuePair.end(); iterator++)
+		{
+			if(iterator->second != nullptr)
+			{
+				delete iterator->second;
+			}
+		}
+
 	}
 
 	void ForEachObjectOfClass(const UClass* ClassToLookFor, std::function<void(UObject*)> Operation, bool bIncludeDerivedClasses, EObjectFlags ExclusionFlags, EInternalObjectFlags ExclusionInternalFlags)

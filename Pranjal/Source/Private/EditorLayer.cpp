@@ -301,7 +301,7 @@ namespace Karma
 		if (testWorld == nullptr)
 		{
 			KR_INFO("-----> Spawning World");
-			testWorld.reset(UWorld::CreateWorld(EWorldType::PIE, true, "AWholeNewWorld"));
+			testWorld = UWorld::CreateWorld(EWorldType::PIE, true, "AWholeNewWorld");
 		}
 
 		UClass* testActorClass = AActor::StaticClass();
@@ -322,7 +322,7 @@ namespace Karma
 	void EditorLayer::IterateActors()
 	{
 		// Iterate over all actors, can also supply a different base class if needed
-		for (TActorIterator<AActor> ActorItr(testWorld.get()); ActorItr; ++ActorItr)
+		for (TActorIterator<AActor> ActorItr(testWorld); ActorItr; ++ActorItr)
 		{
 			// print name
 			KR_INFO("Iterating over actor: {0}", (*ActorItr)->GetName());
