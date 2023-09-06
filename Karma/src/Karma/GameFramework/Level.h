@@ -51,6 +51,9 @@ namespace Karma
 		 */
 		void SetWorldSettings(AWorldSettings* NewWorldSettings);
 
+	public:
+		virtual UWorld* GetWorld() const override final;
+
 	private:
 		/**
 		 * Script accessible world properties for this level

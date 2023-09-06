@@ -14,6 +14,11 @@ namespace Karma
 		//m_URL = InURL;
 	}
 
+	UWorld* ULevel::GetWorld() const
+	{
+		return m_OwningWorld;
+	}
+
 	// Not completely functional yet
 	void ULevel::SetWorldSettings(AWorldSettings* NewWorldSettings)
 	{

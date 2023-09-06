@@ -104,6 +104,7 @@ namespace Karma
 		InputPolling(deltaTime);
 	}
 
+	// Rename to KarmaGuiRender for uniformity
 	void EditorLayer::ImGuiRender(float deltaTime)
 	{
 		KGGuiID dockspaceID;
@@ -322,7 +323,8 @@ namespace Karma
 
 	void EditorLayer::IterateActors()
 	{
-		// Iterate over all actors, can also supply a different base class if needed
+		// Iterate over all actors, can also supply a different derived class
+		// ActorItr(testWorld, AWorldSettings::StaticClass())
 		for (TActorIterator<AActor> ActorItr(testWorld); ActorItr; ++ActorItr)
 		{
 			// print name

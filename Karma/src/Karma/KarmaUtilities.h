@@ -224,7 +224,7 @@ namespace Karma
 				if (actorLevel
 					&& static_cast<const Derived*>(this)->IsActorSuitable(localCurrentActor)
 					&& static_cast<const Derived*>(this)->CanIterateLevel(actorLevel)
-					/*&& actorLevel->GetWorld()->GetName() == localCurrentWorld->GetName()*/)
+					&& actorLevel->GetWorld() == localCurrentWorld)
 				{
 					// ignore non-persistent world settings
 					if (actorLevel == localCurrentWorld->GetPersistentLevel() || !localCurrentActor->IsA(AWorldSettings::StaticClass()))
