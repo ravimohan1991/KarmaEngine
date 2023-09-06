@@ -13,6 +13,7 @@ namespace Karma
 	EditorLayer::EditorLayer() : Layer("Pranjal")
 	{
 		testWorld = nullptr;
+		m_ActorCounter = 0;
 
 		// Instantiate camera
 		m_EditorCamera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
@@ -309,10 +310,10 @@ namespace Karma
 
 		FActorSpawnParameters testSParameters;
 		testSParameters.m_Owner = nullptr;
-		testSParameters.m_Name = "TestActor";
+		testSParameters.m_Name = "TestActor" + std::to_string(m_ActorCounter++);
 		testSParameters.m_OverrideLevel = testWorld->GetCurrentLevel();
 
-		KR_INFO("-----> Spawning Actor");
+		KR_INFO("-----> Spawning {0}", testSParameters.m_Name);
 		AActor* someActor = testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
 
 		// Shouldn't we be using Shivasomething?

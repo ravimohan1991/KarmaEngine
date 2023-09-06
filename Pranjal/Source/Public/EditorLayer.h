@@ -40,5 +40,6 @@ namespace Karma
 
 		// Tentative stuff
 		UWorld* testWorld;
+		uint32_t m_ActorCounter;
 	};
 }
