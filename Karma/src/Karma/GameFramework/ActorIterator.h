@@ -61,7 +61,7 @@ namespace Karma
 		 * @param InClass	The subclass of actors to be iterated over.
 		 * @param InFlags	Iteration flags indicating which types of levels and actors should be iterated
 		 */
-		explicit TActorIterator(const UWorld* InWorld, TSubclassOf<ActorType> InClass = ActorType::StaticClass(), EActorIteratorFlags InFlags = EActorIteratorFlags(EActorIteratorFlags::OnlyActiveLevels | EActorIteratorFlags::SkipPendingKill))
+		explicit TActorIterator(const UWorld* InWorld, TSubclassOf<AActor> InClass = ActorType::StaticClass(), EActorIteratorFlags InFlags = EActorIteratorFlags(EActorIteratorFlags::OnlyActiveLevels | EActorIteratorFlags::SkipPendingKill))
 			: Super(InWorld, InClass, InFlags)
 		{
 			++(*this);

@@ -187,11 +187,7 @@ namespace Karma
 		TActorIteratorBase(const UWorld* InWorld, TSubclassOf<AActor> InClass, const EActorIteratorFlags InFlags)
 			: m_Flags(InFlags)
 		{
-			//m_State.Emplace(InWorld, InClass);
-
 			m_State.reset(new FActorIteratorState(InWorld, InClass));
-			//m_State->m_CurrentWorld = InWorld;
-			//m_State->m_DesiredClass = InClass;
 		}
 
 	public:
