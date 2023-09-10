@@ -294,6 +294,124 @@ namespace Karma
 	class KARMA_API FUObjectArray : public KarmaVector<FUObjectItem*>
 	{
 	public:
+		/**
+		 * Low level iterator.
+		 */
+		class TIterator
+		{
+		public:
+			enum EEndTagType
+			{
+				EndTag
+			};
+
+			/**
+			 * Constructor
+			 *
+			 * @param	InArray				the array to iterate on
+			 * @param	bOnlyGCedObjects	if true, skip all of the permanent objects
+			 */
+			TIterator(const FUObjectArray& InArray, bool bOnlyGCedObjects = false) :
+				m_Array(InArray),
+				m_Index(-1),
+				m_CurrentObject(nullptr)
+			{
+				if (bOnlyGCedObjects)
+				{
+					//m_Index = m_Array.ObjLastNonGCIndex;
+				}
+				Advance();
+			}
+
+			/**
+			 * Constructor
+			 *
+			 * @param	InArray				the array to iterate on
+			 * @param	bOnlyGCedObjects	if true, skip all of the permanent objects
+			 */
+			TIterator(EEndTagType, const TIterator& InIter) :
+				m_Array(InIter.m_Array),
+				m_Index(m_Array.GetElements().size())
+			{
+			}
+
+			/**
+			 * Iterator advance
+			 */
+			FORCEINLINE void operator++()
+			{
+				Advance();
+			}
+
+			bool operator==(const TIterator& Rhs) const { return m_Index == Rhs.m_Index; }
+			bool operator!=(const TIterator& Rhs) const { return m_Index != Rhs.m_Index; }
+
+			/** Conversion to "bool" returning true if the iterator is valid. */
+			FORCEINLINE explicit operator bool() const
+			{
+				return !!m_CurrentObject;
+			}
+			/** inverse of the "bool" operator */
+			FORCEINLINE bool operator !() const
+			{
+				return !(bool)*this;
+			}
+
+			FORCEINLINE int32 GetIndex() const
+			{
+				return m_Index;
+			}
+
+		protected:
+
+			/**
+			 * Dereferences the iterator with an ordinary name for clarity in derived classes
+			 *
+			 * @return	the UObject at the iterator
+			 */
+			FORCEINLINE FUObjectItem* GetObject() const
+			{
+				return m_CurrentObject;
+			}
+
+			/**
+			 * Iterator advance with ordinary name for clarity in subclasses
+			 * @return	true if the iterator points to a valid object, false if iteration is complete
+			 */
+			FORCEINLINE bool Advance()
+			{
+				//@todo UE check this for LHS on Index on consoles
+				FUObjectItem* NextObject = nullptr;
+				m_CurrentObject = nullptr;
+				while(++m_Index < m_Array.GetObjectsList().size())
+				{
+					NextObject = m_Array.GetObjectsList()[m_Index];
+					if (NextObject->m_Object)
+					{
+						m_CurrentObject = NextObject;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			/** Gets the array this iterator iterates over */
+			const FUObjectArray& GetIteratedArray() const
+			{
+				return m_Array;
+			}
+
+		private:
+			/** the array that we are iterating on, probably always GUObjectArray */
+			const FUObjectArray& m_Array;
+			/** index of the current element in the object array */
+			int32_t m_Index;
+
+			/** Current object */
+			mutable FUObjectItem* m_CurrentObject;
+		};
+
+	public:
 		/** Add an element to the list*/
 		// Maybe use pool allocations instead of new delete operators for optimization
 		void AddUObject(UObject* Object);
@@ -564,6 +682,8 @@ KARMA_API UPackage* CreatePackage(const std::string& PackageName);
 
 /**
  * Returns a vector of objects of a specific class. Optionally, results can include objects of derived classes as well.
+ *
+ * bIncludeDerivedClasses not functional yet
  *
  * @param	ClassToLookFor				Class of the objects to return.
  * @param	Results						An output list of objects of the specified class.

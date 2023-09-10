@@ -290,6 +290,18 @@ public:
 		return nullptr;
 	}
 
+	/**
+	 * Tests if index is valid, i.e. greater than or equal to zero, and less than the number of elements in the array.
+	 *
+	 * @param Index Index to test.
+	 * @returns True if index is valid. False otherwise.
+	 */
+	FORCEINLINE bool IsValidIndex(int32_t Index) const
+	{
+		return Index >= 0 && Index < m_Elements.size();
+	}
+
+
 protected:
 	std::vector<BuildingBlock> m_Elements;
 };

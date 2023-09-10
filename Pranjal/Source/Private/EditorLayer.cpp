@@ -7,6 +7,7 @@
 #include "Core/Package.h"
 #include "ChildActorComponent.h"
 #include "ActorIterator.h"
+#include "UObjectIterator.h"
 
 namespace Karma
 {
@@ -325,10 +326,15 @@ namespace Karma
 	{
 		// Iterate over all actors, can also supply a different derived class
 		// ActorItr(testWorld, AWorldSettings::StaticClass())
-		for (TActorIterator<AActor> ActorItr(testWorld); ActorItr; ++ActorItr)
+		for (TActorIterator<AWorldSettings> ActorItr(testWorld); ActorItr; ++ActorItr)
 		{
 			// print name
-			KR_INFO("Iterating over actor: {0}", (*ActorItr)->GetName());
+			//KR_INFO("Iterating over actor: {0}", (*ActorItr)->GetName());
+		}
+
+		for(FRawObjectIterator ObjectItr; ObjectItr; ++ObjectItr)
+		{
+			KR_INFO("Iterating over UObject: {0}", (*ObjectItr)->m_Object->GetName());
 		}
 	}
 }

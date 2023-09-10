@@ -92,6 +92,9 @@ namespace Karma
 		/** Name of this object */
 		std::string							m_NamePrivate;
 
+		/** If true, objects will never be marked as PendingKill so references to them will not be nulled automatically by the garbage collector */
+		static bool m_bPendingKillDisabled;
+
 	private:
 		/**
 		 * Add a newly created object to the name hash tables and the object array
@@ -154,6 +157,25 @@ namespace Karma
 		 */
 		bool IsValidLowLevel() const;
 
+		/** Helper function that sets the appropriate flag based on PK being enabled or not */
+		FORCEINLINE static EInternalObjectFlags FixGarbageOrPendingKillInternalObjectFlags(const EInternalObjectFlags InFlags)
+		{
+			//PRAGMA_DISABLE_DEPRECATION_WARNINGS
+			if (!(int32_t(InFlags) & (int32_t(EInternalObjectFlags::Garbage) | int32_t(EInternalObjectFlags::PendingKill))))
+			{
+				// Pass through
+				return InFlags;
+			}
+			else
+			{
+				return m_bPendingKillDisabled ?
+					EInternalObjectFlags(((int32_t(InFlags) & ~int32_t(EInternalObjectFlags::PendingKill)) | int32_t(EInternalObjectFlags::Garbage))) : // Replace PK with Garbage
+					EInternalObjectFlags(((int32_t(InFlags) & ~int32_t(EInternalObjectFlags::Garbage)) | int32_t(EInternalObjectFlags::PendingKill))); // Replace Garbage with PK
+			}
+			//PRAGMA_ENABLE_DEPRECATION_WARNINGS
+		}
+
+
 	public:
 		/** Returns true if this object is of the specified type. */
 		template <typename OtherClassType>
@@ -186,7 +208,7 @@ namespace Karma
 		}
 
 		/*-------------------
-				Flags
+			Flags
 		-------------------*/
 
 		/**
@@ -200,8 +222,8 @@ namespace Karma
 			return m_ObjectFlags;
 		}
 
-		/** 
-		 * Modifies object flags for a specific object 
+		/**
+		 * Modifies object flags for a specific object
 		 */
 		FORCEINLINE void SetFlags(EObjectFlags NewFlags)
 		{

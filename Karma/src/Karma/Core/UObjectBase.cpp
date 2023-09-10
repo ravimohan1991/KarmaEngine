@@ -5,6 +5,13 @@
 
 namespace Karma
 {
+	// Console variable so that GarbageCollectorSettings work in the editor but we don't want to use it in runtime
+	// as we can't support changing its value from console
+	int32 GPendingKillEnabled = 1;
+
+	// If GPendingKillEnabled is true, objects marked as PendingKill will be automatically nulled and destroyed by Garbage Collector.
+	bool UObjectBase::m_bPendingKillDisabled = !GPendingKillEnabled;
+
 	UObjectBase::UObjectBase()
 	{
 		// This constructor is itentionally left blank because of multiple use
@@ -86,7 +93,7 @@ namespace Karma
 
 		KR_CORE_ASSERT(inName != "", "UObject name can't be empty string");
 		KR_CORE_ASSERT(m_InternalIndex >= 0, "m_InternalIndex has to be non-negative");
-		
+
 		/*
 		if (InternalFlagsToSet != EInternalObjectFlags::None)
 		{
