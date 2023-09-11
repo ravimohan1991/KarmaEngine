@@ -213,7 +213,7 @@ public:
 		return false;
 	}
 
-	uint32_t Num()
+	uint32_t Num() const
 	{
 		return (uint32_t) m_Elements.size();
 	}

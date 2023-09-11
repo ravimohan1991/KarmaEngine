@@ -330,9 +330,9 @@ namespace Karma
 			 * @param	bOnlyGCedObjects	if true, skip all of the permanent objects
 			 */
 			TIterator(EEndTagType, const TIterator& InIter) :
-				m_Array(InIter.m_Array),
-				m_Index(m_Array.GetElements().size())
+				m_Array(InIter.m_Array)
 			{
+				m_Index = m_Array.Num();
 			}
 
 			/**

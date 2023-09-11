@@ -43,6 +43,9 @@ namespace Karma
 		 */
 		void PrepareMemorySoftBed();
 
+		void InitializeApplicationEngine();
+		void DecommisionApplicationEngine();
+
 		inline static Application& Get() { return *s_Instance; }
 		inline Window& GetWindow() const { return *m_Window; }
 

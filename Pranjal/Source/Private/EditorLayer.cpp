@@ -334,7 +334,7 @@ namespace Karma
 
 		for(FRawObjectIterator ObjectItr; ObjectItr; ++ObjectItr)
 		{
-			KR_INFO("Iterating over UObject: {0}", (*ObjectItr)->m_Object->GetName());
+			KR_INFO("Iterating over UObject: {0} with Class: {1}", (*ObjectItr)->m_Object->GetName(), (*ObjectItr)->m_Object->GetClass()->GetName());
 		}
 	}
 }

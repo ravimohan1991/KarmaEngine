@@ -3,6 +3,8 @@
 #include "Karma/Input.h"
 #include "Karma/Renderer/Renderer.h"
 #include "chrono"
+#include "Engine/Engine.h"
+#include "Core/UObjectGlobals.h"// to be bundled appropriately in core.h
 
 namespace Karma
 {
@@ -37,6 +39,8 @@ namespace Karma
 
 	Application::~Application()
 	{
+		// Deinitialize Kengine
+
 		m_MemoryManager.ShutDown();
 		Renderer::DeleteData();
 		// We want to clear off layers and their rendering components before the m_Window
@@ -52,6 +56,19 @@ namespace Karma
 	{
 		HookInputSystem(Input::GetInputInstance());
 		PrepareMemorySoftBed();
+
+		// Initialize KEngine
+		InitializeApplicationEngine();
+	}
+
+	void Application::InitializeApplicationEngine()
+	{
+		GEngine = NewObject<KEngine>(CreatePackage("XPackage"), KEngine::StaticClass(), "KEngine");
+	}
+
+	void Application::DecommisionApplicationEngine()
+	{
+
 	}
 
 	// May need to uplift to more abstract implementation
