@@ -58,13 +58,14 @@ namespace Karma
 		HookInputSystem(Input::GetInputInstance());
 		PrepareMemorySoftBed();
 
+		StaticUObjectInit();
 		// Initialize KEngine
 		InitializeApplicationEngine();
 	}
 
 	void Application::InitializeApplicationEngine()
 	{
-		GEngine = NewObject<KEngine>(CreatePackage("XPackage"), KEngine::StaticClass(), "KEngine");
+		GEngine = NewObject<KEngine>(GetTransientPackage(), KEngine::StaticClass(), "KEngine");
 	}
 
 	void Application::DecommisionApplicationEngine()

@@ -9,13 +9,35 @@
 namespace Karma
 {
 	FUObjectArray GUObjectStore;
-	KarmaClassObjectMap m_ClassToObjectVectorMap;
+	KarmaClassObjectMap m_ClassToObjectVectorMap;// naming?
+
+	/** Transient package.													*/
+	static UPackage*			GObjectTransientPackage								= NULL;
 
 	/** Whether we are still in the initial loading proces. (Got from CoreGlobals.cpp) */
 	KARMA_API bool			GIsInitialLoad = true;
 
 	// Try putting in .h also
 	//extern FUObjectAllocator GUObjectAllocator;
+
+	//
+	// Init the object manager and allocate tables.
+	//
+	void StaticUObjectInit()
+	{
+		//UObjectBaseInit();
+
+		// Allocate special packages.
+		GObjectTransientPackage = NewObject<UPackage>(nullptr, UPackage::StaticClass(), "TransientPackage", RF_Transient);
+		GObjectTransientPackage->AddToRoot();
+
+		KR_CORE_INFO("Object subsystem initialized");
+	}
+
+	UPackage* GetTransientPackage()
+	{
+		return GObjectTransientPackage;
+	}
 
 	FObjectInitializer::FObjectInitializer(UObject* InObj, UObject* InObjectArchetype, bool bInCopyTransientsFromClassDefaults, bool 	bInShouldInitializeProps, struct FObjectInstancingGraph* InInstanceGraph)
 		: m_Object(InObj)

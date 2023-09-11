@@ -712,6 +712,10 @@ KARMA_API void ForEachObjectOfClass(const UClass* ClassToLookFor, std::function<
  */
 KARMA_API void CacheObject(class UObject* Object);
 
+// Global Internal functions
+extern void StaticUObjectInit();
+extern UPackage* GetTransientPackage();
+
 	/**
 	 * Internal class to finalize UObject creation (initialize properties) after the real C++ constructor is called
 	 */
