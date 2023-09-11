@@ -5,6 +5,7 @@
 #include "chrono"
 #include "Engine/Engine.h"
 #include "Core/UObjectGlobals.h"// to be bundled appropriately in core.h
+#include "Core/Package.h"
 
 namespace Karma
 {

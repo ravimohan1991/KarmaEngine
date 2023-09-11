@@ -18,12 +18,12 @@ namespace Karma
 
 	public:
 		/** Update everything.  Should be economic for processor and rest of the resources. */
-		virtual void Tick(float DeltaSeconds, bool bIdleMode);
+		virtual void Tick(float DeltaSeconds, bool bIdleMode){}
 
 		/** Clean up the GameViewport */
 		void CleanupGameViewport();
 	};
 
 	/** Global engine pointer. Can be 0 so don't use without checking. */
-	extern KEngine*			GEngine;
+	extern KARMA_API KEngine*			GEngine;
 }
