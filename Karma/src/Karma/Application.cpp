@@ -101,6 +101,9 @@ namespace Karma
 
 			deltaTime /= 1000000.0f;
 
+			// Tick KEngine
+			GEngine->Tick(deltaTime, false);
+
 			for (auto layer : *m_LayerStack)
 			{
 				layer->OnUpdate(deltaTime);

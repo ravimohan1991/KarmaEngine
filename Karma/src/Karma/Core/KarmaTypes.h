@@ -162,6 +162,31 @@ public:
 	}
 
 	/**
+	 * Adds unique element to array if it doesn't exist.
+	 *
+	 * Move semantics version.
+	 *
+	 * @param Item Item to add.
+	 * @returns Index of the element in the array.
+	 *
+	 * @see Add, AddDefaulted, AddZeroed, Append, Insert
+	 */
+	FORCEINLINE int32_t AddUnique(const BuildingBlock& Item)
+	{
+		int32_t index = Find(Item);
+
+		if(index == -1)
+		{
+			Add(Item);
+			return Num() - 1;
+		}
+		else
+		{
+			return index;
+		}
+	}
+
+	/**
 	 * Finds element within the array.
 	 *
 	 * @param Item Item to look for.
@@ -279,7 +304,7 @@ public:
 	 * @param Index				index of object to return
 	 * @return Object at this index
 	 */
-	FORCEINLINE BuildingBlock IndexToObject(int32_t Index)
+	FORCEINLINE BuildingBlock& IndexToObject(int32_t Index)
 	{
 		KR_CORE_ASSERT(Index >= 0, "");
 		if(Index < m_Elements.size())
@@ -287,7 +312,10 @@ public:
 			return m_Elements.at(Index);
 		}
 
-		return nullptr;
+		KR_CORE_ASSERT(false, "Shouldn't happen");
+
+		static BuildingBlock aBlock;
+		return aBlock;
 	}
 
 	/**

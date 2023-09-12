@@ -7,6 +7,7 @@
 #include "Level.h"
 #include "Karma/Core/Package.h"
 #include "WorldSettings.h"
+#include "Engine/Engine.h"
 
 namespace Karma
 {
@@ -132,11 +133,10 @@ namespace Karma
 		}
 
 		// Tell the engine we are adding a world (unless we are asked not to)
-		/*
-		if ((GEngine) && (bInformEngineOfWorld == true))
+		if ((GEngine) && bInformEngineOfWorld)
 		{
 			GEngine->WorldAdded(NewWorld);
-		}*/
+		}
 
 		return NewWorld;
 	}

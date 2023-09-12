@@ -13,6 +13,7 @@ namespace Karma
 	class APawn;
 	class ULevel;
 	class UClass;
+	class UGameInstance;
 
 	/* Struct of optional parameters passed to SpawnActor function(s). */
 	struct KARMA_API FActorSpawnParameters
@@ -133,6 +134,12 @@ namespace Karma
 
 		ULevel* GetPersistentLevel() const { return m_PersistentLevel; }
 
+		/** Sets the owning game instance for this world */
+		inline void SetGameInstance(UGameInstance* NewGI)
+		{
+			m_OwningGameInstance = NewGI;
+		}
+
 	private:
 //#if WITH_EDITORONLY_DATA
 		/** Pointer to the current level being edited. Level has to be in the Levels array and == PersistentLevel in the game. */
@@ -141,6 +148,9 @@ namespace Karma
 
 		/** Persistent level containing the world info, default brush and actors spawned during gameplay among other things			*/
 		ULevel*								m_PersistentLevel;
+
+
+		UGameInstance*						m_OwningGameInstance;
 
 	public:
 		/** Is the world being torn down */

@@ -411,9 +411,17 @@ namespace Karma
 			}
 		}
 
+		// Start ticking, experimental
+		//GEngine->RegisterActorForTicking(this);
+
 		// For blueprint trigger
 		//ReceiveBeginPlay();
 		m_ActorHasBegunPlay = EActorBeginPlayState::HasBegunPlay;
+	}
+
+	void AActor::Tick(float DeltaSeconds)
+	{
+		
 	}
 
 	void AActor::PostSpawnInitialize(FTransform const& UserSpawnTransform, AActor* InOwner, APawn* InInstigator, bool bRemoteOwned, bool bNoFail, bool bDeferConstruction)
