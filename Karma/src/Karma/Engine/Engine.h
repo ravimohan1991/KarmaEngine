@@ -177,6 +177,9 @@ namespace Karma
 		/** Needs to be called when a world is destroyed to broadcast messages. */
 		virtual void			WorldDestroyed(UWorld* InWorld) {}
 
+		/** Get current gameintance. */
+		virtual class UGameInstance*		GetCurrentGameInstance() const { return m_GameInstance; }
+
 	protected:
 		KarmaVector<FWorldContext*> m_WorldList;
 	};

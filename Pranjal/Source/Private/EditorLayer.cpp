@@ -8,6 +8,8 @@
 #include "ChildActorComponent.h"
 #include "ActorIterator.h"
 #include "UObjectIterator.h"
+#include "Engine.h"
+#include "GameInstance.h"
 
 namespace Karma
 {
@@ -303,9 +305,13 @@ namespace Karma
 		// A test world
 		if (testWorld == nullptr)
 		{
-			KR_INFO("-----> Spawning World");
-			testWorld = UWorld::CreateWorld(EWorldType::PIE, true, "AWholeNewWorld");
+			testWorld = GEngine->GetCurrentGameInstance()->GetWorldContext()->World();
+			if(testWorld == nullptr)
+			{
+				KR_CORE_INFO("Couldnt find the template world");
+			}
 		}
+
 
 		UClass* testActorClass = AActor::StaticClass();
 		FTransform testTransform = FTransform::m_Identity;

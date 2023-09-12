@@ -27,8 +27,8 @@ namespace Karma
 
 		// Spawning GameInstance
 		{
-			m_GameInstance = NewObject<UGameInstance>(this, UGameInstance::StaticClass());
-			m_GameInstance->InitializeStandalone();
+			m_GameInstance = NewObject<UGameInstance>(this, UGameInstance::StaticClass(), "EkDa");
+			m_GameInstance->InitializeStandalone("AWholeNewWorld");
 		}
 	}
 

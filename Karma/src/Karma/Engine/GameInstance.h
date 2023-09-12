@@ -17,7 +17,7 @@ namespace Karma
 		DECLARE_KARMA_CLASS(UGameInstance, UObject)
 
 	protected:
-		struct FWorldContext* WorldContext;
+		struct FWorldContext* m_WorldContext;
 
 	protected:
 		/** virtual function to allow custom GameInstances an opportunity to set up what it needs */
@@ -28,6 +28,8 @@ namespace Karma
 	public:
 		/* Called to initialize the game instance for standalone instances of the game */
 		void InitializeStandalone(const std::string& InWorldName = "No_Name", UPackage* InWorldPackage = nullptr);
+
+		struct FWorldContext* GetWorldContext() const { return m_WorldContext; }
 
 	};
 }
