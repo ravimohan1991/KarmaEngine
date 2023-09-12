@@ -453,7 +453,7 @@ namespace Karma
 	 * A note on GUObjectArray
 	 * https://forums.unrealengine.com/t/how-to-register-disregard-for-gc-objects/264991
 	 */
-	extern FUObjectArray GUObjectStore;
+	extern KARMA_API FUObjectArray GUObjectStore;
 
 	/**
 	 * A cache of UClass and UObjects maps for quick lookup of objects
