@@ -433,6 +433,8 @@ namespace Karma
 		 *
 		 * @param Key The key to search for.
 		 * @return A pointer to the object vector
+		 * @see UStruct::IsChildOf()
+		 * @todo write class registration system for comparing UClass
 		 */
 		KarmaVector<UObject*>* FindClassObjects(const UClass* Key);
 
