@@ -434,7 +434,6 @@ namespace Karma
 		 * @param Key The key to search for.
 		 * @return A pointer to the object vector
 		 */
-
 		KarmaVector<UObject*>* FindClassObjects(const UClass* Key);
 
 		/**
@@ -465,7 +464,7 @@ namespace Karma
 	 * Please note: Unreal Engine uses more complex TBucketMap<UClass*> ClassToObjectListMap for
 	 * caching the objects by class
 	 */
-	extern KarmaClassObjectMap m_ClassToObjectVectorMap;
+	extern KARMA_API KarmaClassObjectMap m_ClassToObjectVectorMap;
 
 	/**
 	* This struct is used for passing parameter values to the StaticConstructObject_Internal() method.  Only the constructor parameters are required to

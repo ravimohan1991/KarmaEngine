@@ -152,12 +152,35 @@ namespace Karma
 
 		UGameInstance*						m_OwningGameInstance;
 
+		//////////////////////////////////////////////////////////////////////////
+		// Time variables
+		/**  Time in seconds since level began play, but IS paused when the game is paused, and IS dilated/clamped. */
+		double m_TimeSeconds;
+
+		/**  Time in seconds since level began play, but IS NOT paused when the game is paused, and IS dilated/clamped. */
+		double m_UnpausedTimeSeconds;
+
+		/** Time in seconds since level began play, but IS NOT paused when the game is paused, and IS NOT dilated/clamped. */
+		double m_RealTimeSeconds;
+
+		/** Time in seconds since level began play, but IS paused when the game is paused, and IS NOT dilated/clamped. */
+		double m_AudioTimeSeconds;
+
+		/** Frame delta time in seconds with no adjustment for time dilation. */
+		float m_DeltaRealTimeSeconds;
+
+		/** Frame delta time in seconds adjusted by e.g. time dilation. */
+		float m_DeltaTimeSeconds;
+
+		/** time at which to start pause **/
+		double m_PauseDelay;
+
 	public:
 		/** Is the world being torn down */
 		uint8_t m_bIsTearingDown : 1;
 
 		/**  Time in seconds since level began play, but IS paused when the game is paused, and IS dilated/clamped. */
-		double m_TimeSeconds;
+		//double m_TimeSeconds;
 
 		/** Whether actors have been initialized for play */
 		uint8_t m_bActorsInitialized : 1;
@@ -243,6 +266,12 @@ namespace Karma
 			InitializationValues& CreateWorldPartition(const bool bCreate) { bCreateWorldPartition = bCreate; return *this; }
 			InitializationValues& SetDefaultGameMode(TSubclassOf<class AGameModeBase> GameMode) { DefaultGameMode = GameMode; return *this; }
 		};
+
+		/**
+		 * Update the level after a variable amount of time, DeltaSeconds, has passed.
+		 * All child actors are ticked after their owners have been ticked.
+		 */
+		void Tick(/*ELevelTick TickType,*/ float DeltaSeconds);
 
 	public:
 		//////////////////////////////////////////////////////////////////////////

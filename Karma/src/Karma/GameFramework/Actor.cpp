@@ -9,7 +9,7 @@ namespace Karma
 {
 	uint32_t AActor::m_BeginPlayCallDepth = 0;
 
-	AActor::AActor()
+	AActor::AActor() : m_bCanEverTick(true)
 	{
 		m_Owner = nullptr;
 		m_RootComponent = nullptr;
@@ -421,7 +421,6 @@ namespace Karma
 
 	void AActor::Tick(float DeltaSeconds)
 	{
-		
 	}
 
 	void AActor::PostSpawnInitialize(FTransform const& UserSpawnTransform, AActor* InOwner, APawn* InInstigator, bool bRemoteOwned, bool bNoFail, bool bDeferConstruction)

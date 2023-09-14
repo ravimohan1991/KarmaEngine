@@ -19,6 +19,12 @@ namespace Karma
 	UWorld::UWorld() : UObject()
 	{
 		m_TimeSeconds = 0.0f;
+		m_UnpausedTimeSeconds = 0.0f;
+		m_RealTimeSeconds = 0.0f;
+		m_AudioTimeSeconds = 0.0f;
+		m_DeltaRealTimeSeconds = 0.0f;
+		m_DeltaTimeSeconds = 0.0f;
+		m_PauseDelay = 0.0f;
 		m_CurrentLevel = nullptr;
 		m_PersistentLevel = nullptr;
 		m_bIsTearingDown = false;
@@ -286,6 +292,24 @@ namespace Karma
 			m_bActorsInitialized = true;
 
 			// Spawn server actors
+		}
+	}
+
+	void UWorld::Tick(float DeltaSeconds)
+	{
+		// Update time.
+		m_RealTimeSeconds += DeltaSeconds;
+
+		// Save off actual delta
+		float RealDeltaSeconds = DeltaSeconds;
+
+		// We digress for UE for sake of building with simplicity
+		for (const auto& element : m_CurrentLevel->m_Actors)
+		{
+			if (element->CanTick())
+			{
+				element->Tick(DeltaSeconds);
+			}
 		}
 	}
 

@@ -203,15 +203,18 @@ namespace Karma
 			KarmaVector<AActor*>& localSpawnedActorArray = m_State->m_SpawnedActorArray;
 			const UWorld* localCurrentWorld = m_State->m_CurrentWorld;
 
-			while (++localIndex < (localObjectArray.Num() + localSpawnedActorArray.Num()))
+			int32_t lObjectArrayNum = int32_t(localObjectArray.Num());
+			int32_t lSAArrayNum = int32_t(localSpawnedActorArray.Num());
+
+			while (++localIndex < (lObjectArrayNum + lSAArrayNum))
 			{
-				if (localIndex < localObjectArray.Num())
+				if (localIndex < lObjectArrayNum)
 				{
 					localCurrentActor = static_cast<AActor*>(localObjectArray.GetElements()[localIndex]);
 				}
 				else
 				{
-					localCurrentActor = localSpawnedActorArray.GetElements()[localIndex - localObjectArray.Num()];
+					localCurrentActor = localSpawnedActorArray.GetElements()[localIndex - lObjectArrayNum];
 				}
 				m_State->m_ConsideredCount++;
 

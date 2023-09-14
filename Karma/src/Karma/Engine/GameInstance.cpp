@@ -25,6 +25,7 @@ namespace Karma
 		UWorld* aWorld = UWorld::CreateWorld(EWorldType::Game, false, InWorldName, InWorldPackage);
 		aWorld->SetGameInstance(this);
 		m_WorldContext->SetCurrentWorld(aWorld);
+		m_WorldContext->m_WorldType = EWorldType::Game;
 
 		Init();
 	}

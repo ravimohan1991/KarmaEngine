@@ -267,9 +267,12 @@ namespace Karma
 
 		static USceneComponent* FixupNativeActorComponents(AActor* Actor);
 
+		bool CanTick() const { return m_bCanEverTick; }
+		void DisableTick(bool bDisable) { m_bCanEverTick = !bDisable; }
+
 		/**
 		 *	Function called every frame on this Actor. Override this function to implement custom logic to be executed every frame.
-		 *	Note that Tick is disabled by default, and you will need to check PrimaryActorTick.bCanEverTick is set to true to enable it.
+		 *	Note that Tick is enabled by default, and you will need to check m_bCanEverTick is set to false to disable it.
 		 *
 		 *	@param	DeltaSeconds	Game time elapsed during last frame modified by the time dilation
 		 */
@@ -314,5 +317,7 @@ namespace Karma
 		 * Needs be raw pointer only
 		 */
 		USceneComponent* m_RootComponent;
+
+		bool m_bCanEverTick;
 	};
 }

@@ -34,6 +34,25 @@ namespace Karma
 
 	void KEngine::Tick(float DeltaSeconds, bool bIdle)
 	{
+		// Tick the worlds
+		for (uint32_t WorldIdx = 0; WorldIdx < m_WorldList.Num(); ++WorldIdx)
+		{
+			FWorldContext& Context = *m_WorldList.GetElements()[WorldIdx];
+
+			if (Context.World() == nullptr /* || !Context.World()->ShouldTick()*/)
+			{
+				continue;
+			}
+
+			UWorld* aWorld = Context.World();
+
+			// Tick all travel and Pending NetGames (Seamless, server, client)
+
+			// Actual worldtick
+			{
+				aWorld->Tick(DeltaSeconds);
+			}
+		}
 	}
 
 	FWorldContext& KEngine::CreateNewWorldContext(EWorldType::Type WorldType)
