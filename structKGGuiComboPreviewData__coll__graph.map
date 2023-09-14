@@ -1,5 +1,8 @@
 <map id="KGGuiComboPreviewData" name="KGGuiComboPreviewData">
-<area shape="rect" id="node1" title=" " alt="" coords="5,215,181,240"/>
-<area shape="rect" id="node2" href="$structKGRect.html" title=" " alt="" coords="211,117,279,143"/>
-<area shape="rect" id="node3" href="$structKGVec2.html" title=" " alt="" coords="15,5,86,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,217,181,243"/>
+<area shape="rect" id="Node000002" href="$structKGRect.html" title=" " alt="" coords="210,119,277,144"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="213,155,113,219,110,214,210,151"/>
+<area shape="rect" id="Node000003" href="$structKGVec2.html" title=" " alt="" coords="15,5,86,31"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="46,47,38,97,39,126,44,153,62,188,83,215,79,218,57,191,39,155,33,126,33,97,40,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="86,37,224,116,221,120,83,41"/>
 </map>

@@ -1,5 +1,7 @@
 <map id="Karma::VulkanVertexArray" name="Karma::VulkanVertexArray">
-<area shape="rect" id="node1" title=" " alt="" coords="84,93,257,119"/>
-<area shape="rect" id="node2" href="$classKarma_1_1VertexArray.html" title=" " alt="" coords="5,13,139,38"/>
-<area shape="rect" id="node3" title=" " alt="" coords="163,5,375,45"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="83,94,255,120"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1VertexArray.html" title=" " alt="" coords="5,13,138,39"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,46,156,91,152,96,96,50"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="162,5,373,46"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="233,58,186,95,182,91,230,54"/>
 </map>

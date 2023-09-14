@@ -1,4 +1,5 @@
 <map id="KGBitVector" name="KGBitVector">
-<area shape="rect" id="node1" title=" " alt="" coords="30,93,125,119"/>
-<area shape="rect" id="node2" href="$structKGVector.html" title=" " alt="" coords="5,5,149,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="30,94,124,120"/>
+<area shape="rect" id="Node000002" href="$structKGVector.html" title=" " alt="" coords="5,5,149,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="80,47,80,94,74,94,74,47"/>
 </map>

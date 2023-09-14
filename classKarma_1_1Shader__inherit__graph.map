@@ -1,5 +1,7 @@
 <map id="Karma::Shader" name="Karma::Shader">
-<area shape="rect" id="node1" title=" " alt="" coords="118,5,225,31"/>
-<area shape="rect" id="node2" href="$classKarma_1_1OpenGLShader.html" title=" " alt="" coords="5,79,161,104"/>
-<area shape="rect" id="node3" href="$classKarma_1_1VulkanShader.html" title=" " alt="" coords="186,79,333,104"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="117,5,223,31"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1OpenGLShader.html" title=" " alt="" coords="5,79,161,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="145,43,99,81,96,77,142,39"/>
+<area shape="rect" id="Node000003" href="$classKarma_1_1VulkanShader.html" title=" " alt="" coords="185,79,331,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="198,39,245,77,241,81,195,43"/>
 </map>

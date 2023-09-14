@@ -1,7 +1,13 @@
 <map id="KGGuiNextWindowData" name="KGGuiNextWindowData">
-<area shape="rect" id="node1" title=" " alt="" coords="190,273,352,299"/>
-<area shape="rect" id="node2" href="$structKGVec2.html" title=" " alt="" coords="161,5,232,31"/>
-<area shape="rect" id="node3" href="$structKGRect.html" title=" " alt="" coords="162,154,230,179"/>
-<area shape="rect" id="node4" href="$structKarmaGuiSizeCallbackData.html" title=" " alt="" coords="254,154,437,179"/>
-<area shape="rect" id="node5" href="$structKarmaGuiWindowClass.html" title=" " alt="" coords="461,154,620,179"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="187,277,348,303"/>
+<area shape="rect" id="Node000002" href="$structKGVec2.html" title=" " alt="" coords="159,5,229,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="145,37,113,51,79,70,48,95,24,125,13,149,8,170,12,190,24,212,39,230,57,244,99,265,144,278,188,285,187,290,142,284,97,270,54,248,36,233,20,216,7,192,3,170,8,147,20,123,44,91,76,66,110,46,143,32"/>
+<area shape="rect" id="Node000003" href="$structKGRect.html" title=" " alt="" coords="161,156,228,182"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="197,47,197,156,192,156,192,47"/>
+<area shape="rect" id="Node000004" href="$structKarmaGuiSizeCallbackData.html" title=" " alt="" coords="252,156,433,182"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="219,40,332,154,328,158,215,44"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="191,197,191,225,200,252,212,265,228,274,225,279,209,269,195,254,186,226,186,197"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="339,197,329,226,314,255,289,278,285,275,309,251,324,224,334,196"/>
+<area shape="rect" id="Node000005" href="$structKarmaGuiWindowClass.html" title=" " alt="" coords="456,156,615,182"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="509,194,462,225,405,255,331,279,329,274,403,251,459,221,506,189"/>
 </map>

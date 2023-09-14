@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['queuefamilyindices_0',['QueueFamilyIndices',['../structKarma_1_1QueueFamilyIndices.html',1,'Karma']]]
+  ['perspectivecamera_0',['PerspectiveCamera',['../classKarma_1_1PerspectiveCamera.html',1,'Karma']]]
 ];

@@ -1,5 +1,7 @@
 <map id="KGGuiOldColumnData" name="KGGuiOldColumnData">
-<area shape="rect" id="node1" title=" " alt="" coords="5,196,157,221"/>
-<area shape="rect" id="node2" href="$structKGRect.html" title=" " alt="" coords="47,108,115,133"/>
-<area shape="rect" id="node3" href="$structKGVec2.html" title=" " alt="" coords="46,5,117,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,198,157,223"/>
+<area shape="rect" id="Node000002" href="$structKGRect.html" title=" " alt="" coords="47,109,115,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="84,150,84,197,78,197,78,150"/>
+<area shape="rect" id="Node000003" href="$structKGVec2.html" title=" " alt="" coords="46,5,116,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="84,47,84,109,78,109,78,47"/>
 </map>

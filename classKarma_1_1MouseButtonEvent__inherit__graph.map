@@ -1,6 +1,9 @@
 <map id="Karma::MouseButtonEvent" name="Karma::MouseButtonEvent">
-<area shape="rect" id="node1" title=" " alt="" coords="122,79,298,104"/>
-<area shape="rect" id="node3" href="$classKarma_1_1MouseButtonPressedEvent.html" title=" " alt="" coords="5,152,196,192"/>
-<area shape="rect" id="node4" href="$classKarma_1_1MouseButtonReleasedEvent.html" title=" " alt="" coords="221,152,418,192"/>
-<area shape="rect" id="node2" href="$classKarma_1_1Event.html" title=" " alt="" coords="161,5,259,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="121,79,296,105"/>
+<area shape="rect" id="Node000003" href="$classKarma_1_1MouseButtonPressedEvent.html" title=" " alt="" coords="5,153,196,193"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="182,116,129,154,126,150,178,112"/>
+<area shape="rect" id="Node000004" href="$classKarma_1_1MouseButtonReleasedEvent.html" title=" " alt="" coords="220,153,416,193"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="239,112,292,150,289,154,236,116"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1Event.html" title=" " alt="" coords="159,5,258,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="211,46,211,79,206,79,206,46"/>
 </map>

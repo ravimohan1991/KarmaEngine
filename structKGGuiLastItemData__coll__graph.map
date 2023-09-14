@@ -1,5 +1,7 @@
 <map id="KGGuiLastItemData" name="KGGuiLastItemData">
-<area shape="rect" id="node1" title=" " alt="" coords="5,225,145,251"/>
-<area shape="rect" id="node2" href="$structKGRect.html" title=" " alt="" coords="41,108,109,133"/>
-<area shape="rect" id="node3" href="$structKGVec2.html" title=" " alt="" coords="40,5,111,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,228,145,253"/>
+<area shape="rect" id="Node000002" href="$structKGRect.html" title=" " alt="" coords="41,109,109,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="78,150,78,227,72,227,72,150"/>
+<area shape="rect" id="Node000003" href="$structKGVec2.html" title=" " alt="" coords="40,5,110,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="78,47,78,109,72,109,72,47"/>
 </map>

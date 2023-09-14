@@ -1,0 +1,11 @@
+<map id="Karma::UChildActorComponent" name="Karma::UChildActorComponent">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,300,207,326"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1USceneComponent.html" title=" " alt="" coords="17,226,195,252"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,267,109,300,103,300,103,267"/>
+<area shape="rect" id="Node000003" href="$classKarma_1_1UActorComponent.html" title=" " alt="" coords="20,153,192,178"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="109,194,109,226,103,226,103,194"/>
+<area shape="rect" id="Node000004" href="$classKarma_1_1UObject.html" title=" " alt="" coords="49,79,163,105"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="109,120,109,152,103,152,103,120"/>
+<area shape="rect" id="Node000005" href="$classKarma_1_1UObjectBase.html" title=" " alt="" coords="34,5,178,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="109,46,109,79,103,79,103,46"/>
+</map>

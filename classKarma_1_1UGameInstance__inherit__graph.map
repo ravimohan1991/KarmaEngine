@@ -1,0 +1,7 @@
+<map id="Karma::UGameInstance" name="Karma::UGameInstance">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,153,166,178"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1UObject.html" title=" " alt="" coords="29,79,142,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="88,120,88,152,83,152,83,120"/>
+<area shape="rect" id="Node000003" href="$classKarma_1_1UObjectBase.html" title=" " alt="" coords="14,5,157,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="88,46,88,79,83,79,83,46"/>
+</map>

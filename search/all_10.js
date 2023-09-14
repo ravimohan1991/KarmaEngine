@@ -1,15 +1,12 @@
 var searchData=
 [
-  ['vertexarray_0',['VertexArray',['../classKarma_1_1VertexArray.html',1,'Karma']]],
-  ['vertexbuffer_1',['VertexBuffer',['../classKarma_1_1VertexBuffer.html',1,'Karma']]],
-  ['vulkancontext_2',['VulkanContext',['../classKarma_1_1VulkanContext.html',1,'Karma']]],
-  ['vulkanholder_3',['VulkanHolder',['../classKarma_1_1VulkanHolder.html',1,'Karma']]],
-  ['vulkanimagebuffer_4',['VulkanImageBuffer',['../classKarma_1_1VulkanImageBuffer.html',1,'Karma']]],
-  ['vulkanindexbuffer_5',['VulkanIndexBuffer',['../classKarma_1_1VulkanIndexBuffer.html',1,'Karma']]],
-  ['vulkanrendererapi_6',['VulkanRendererAPI',['../classKarma_1_1VulkanRendererAPI.html',1,'Karma']]],
-  ['vulkanshader_7',['VulkanShader',['../classKarma_1_1VulkanShader.html',1,'Karma']]],
-  ['vulkantexture_8',['VulkanTexture',['../classKarma_1_1VulkanTexture.html',1,'Karma']]],
-  ['vulkanuniformbuffer_9',['VulkanUniformBuffer',['../structKarma_1_1VulkanUniformBuffer.html',1,'Karma']]],
-  ['vulkanvertexarray_10',['VulkanVertexArray',['../classKarma_1_1VulkanVertexArray.html',1,'Karma']]],
-  ['vulkanvertexbuffer_11',['VulkanVertexBuffer',['../classKarma_1_1VulkanVertexBuffer.html',1,'Karma']]]
+  ['removeactor_0',['RemoveActor',['../classKarma_1_1UWorld.html#a3aff72d4b31e41c11de23e86e07d8aa8',1,'Karma::UWorld']]],
+  ['removedfromworld_1',['RemovedFromWorld',['../namespaceEEndPlayReason.html#a8b44c9c9dc5082d57986ffb19ba69a8ca5f27f0fe87342be762acd51410a5a767',1,'EEndPlayReason']]],
+  ['removeownedcomponent_2',['RemoveOwnedComponent',['../classKarma_1_1AActor.html#ababf85c7b5f319ba0d8164b380e5f110',1,'Karma::AActor']]],
+  ['removeref_3',['RemoveRef',['../structKarma_1_1FWorldContext.html#a017d70c9178b814d0138f100b10f2b9b',1,'Karma::FWorldContext']]],
+  ['rendercommand_4',['RenderCommand',['../classKarma_1_1RenderCommand.html',1,'Karma']]],
+  ['renderer_5',['Renderer',['../classKarma_1_1Renderer.html',1,'Karma']]],
+  ['rendererapi_6',['RendererAPI',['../classKarma_1_1RendererAPI.html',1,'Karma']]],
+  ['reset_7',['reset',['../classKarmaVector.html#ae5e9df07563a38837d836291d9e0484f',1,'KarmaVector::Reset()'],['../structFUrlConfig.html#a66bbb00e91116a81d98680bb3e699437',1,'FUrlConfig::Reset()']]],
+  ['residesinpermanentpool_8',['ResidesInPermanentPool',['../classKarma_1_1FUObjectAllocator.html#aba5e829ed5b33ac77a217c8b0dd10242',1,'Karma::FUObjectAllocator']]]
 ];

@@ -1,0 +1,13 @@
+<map id="Karma::UClass" name="Karma::UClass">
+<area shape="rect" id="Node000001" title=" " alt="" coords="143,319,251,345"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1UStruct.html" title=" " alt="" coords="22,230,132,256"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,263,182,316,179,321,104,267"/>
+<area shape="rect" id="Node000003" href="$classKarma_1_1UField.html" title=" " alt="" coords="25,155,129,181"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="80,196,80,230,74,230,74,196"/>
+<area shape="rect" id="Node000004" href="$classKarma_1_1UObject.html" title=" " alt="" coords="20,80,134,106"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="80,121,80,155,74,155,74,121"/>
+<area shape="rect" id="Node000005" href="$classKarma_1_1UObjectBase.html" title=" " alt="" coords="5,5,149,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="80,46,80,80,74,80,74,46"/>
+<area shape="rect" id="Node000006" href="$classKarma_1_1FObjectInitializer.html" title=" " alt="" coords="156,230,318,256"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="227,271,205,320,200,318,223,269"/>
+</map>

@@ -1,52 +1,141 @@
 <map id="KGGuiDockRequest" name="KGGuiDockRequest">
-<area shape="rect" id="node1" title=" " alt="" coords="4383,871,4521,897"/>
-<area shape="rect" id="node2" href="$structKGGuiWindow.html" title=" " alt="" coords="4065,874,4172,899"/>
-<area shape="rect" id="node4" href="$structKGGuiViewportP.html" title=" " alt="" coords="4391,498,4513,523"/>
-<area shape="rect" id="node41" href="$structKGVector.html" title=" " alt="" coords="4355,921,4549,946"/>
-<area shape="rect" id="node3" href="$structKarmaGuiWindowClass.html" title=" " alt="" coords="3718,823,3877,849"/>
-<area shape="rect" id="node5" href="$structKarmaGuiViewport.html" title=" " alt="" coords="1349,403,1480,429"/>
-<area shape="rect" id="node7" href="$structKGDrawData.html" title=" " alt="" coords="1702,437,1801,462"/>
-<area shape="rect" id="node6" href="$structKGVec2.html" title=" " alt="" coords="31,571,101,597"/>
-<area shape="rect" id="node14" href="$structKGDrawVert.html" title=" " alt="" coords="665,483,760,509"/>
-<area shape="rect" id="node15" href="$structKGDrawListSharedData.html" title=" " alt="" coords="994,639,1155,665"/>
-<area shape="rect" id="node21" href="$structKGFontAtlas.html" title=" " alt="" coords="315,1306,413,1331"/>
-<area shape="rect" id="node24" href="$structKGFontAtlasCustomRect.html" title=" " alt="" coords="990,1106,1159,1131"/>
-<area shape="rect" id="node26" href="$structKGFontConfig.html" title=" " alt="" coords="1023,1238,1126,1263"/>
-<area shape="rect" id="node28" href="$structKGVector.html" title=" " alt="" coords="637,597,788,622"/>
-<area shape="rect" id="node38" href="$structKGGuiWindowTempData.html" title=" " alt="" coords="4687,943,4853,969"/>
-<area shape="rect" id="node46" href="$structKGRect.html" title=" " alt="" coords="2339,830,2407,855"/>
-<area shape="rect" id="node8" href="$structKGDrawList.html" title=" " alt="" coords="1368,639,1461,665"/>
-<area shape="rect" id="node10" href="$structKGDrawCmd.html" title=" " alt="" coords="1702,790,1801,815"/>
-<area shape="rect" id="node36" href="$structKGVector.html" title=" " alt="" coords="1661,565,1841,590"/>
-<area shape="rect" id="node9" href="$structKGVector.html" title=" " alt="" coords="1932,729,2109,754"/>
-<area shape="rect" id="node34" href="$structKGDrawChannel.html" title=" " alt="" coords="2313,729,2432,754"/>
-<area shape="rect" id="node11" href="$structKGVec4.html" title=" " alt="" coords="31,923,101,949"/>
-<area shape="rect" id="node29" href="$structKGVector.html" title=" " alt="" coords="812,878,963,903"/>
-<area shape="rect" id="node31" href="$structImDrawCmdHeader.html" title=" " alt="" coords="477,918,613,943"/>
-<area shape="rect" id="node12" href="$structKGVector.html" title=" " alt="" coords="991,853,1158,878"/>
-<area shape="rect" id="node13" href="$structKGVector.html" title=" " alt="" coords="987,526,1162,551"/>
-<area shape="rect" id="node16" href="$structKGFont.html" title=" " alt="" coords="679,1226,746,1251"/>
-<area shape="rect" id="node22" href="$structKGVector.html" title=" " alt="" coords="997,1323,1152,1349"/>
-<area shape="rect" id="node17" href="$structKGVector.html" title=" " alt="" coords="301,1094,427,1119"/>
-<area shape="rect" id="node18" href="$structKGVector.html" title=" " alt="" coords="285,1190,443,1215"/>
-<area shape="rect" id="node19" href="$structKGVector.html" title=" " alt="" coords="275,1239,453,1265"/>
-<area shape="rect" id="node20" href="$structKGFontGlyph.html" title=" " alt="" coords="16,1251,116,1277"/>
-<area shape="rect" id="node23" href="$structKGVector.html" title=" " alt="" coords="1309,1133,1520,1173"/>
-<area shape="rect" id="node25" href="$structKGVector.html" title=" " alt="" coords="1323,1323,1506,1349"/>
-<area shape="rect" id="node27" href="$structKGFontBuilderIO.html" title=" " alt="" coords="5,1351,127,1377"/>
-<area shape="rect" id="node30" href="$structKGVector.html" title=" " alt="" coords="987,689,1163,714"/>
-<area shape="rect" id="node32" href="$structKGDrawListSplitter.html" title=" " alt="" coords="3074,673,3209,698"/>
-<area shape="rect" id="node45" href="$structKGGuiOldColumns.html" title=" " alt="" coords="3451,717,3583,742"/>
-<area shape="rect" id="node33" href="$structKGVector.html" title=" " alt="" coords="2611,729,2808,754"/>
-<area shape="rect" id="node35" href="$structKGDrawDataBuilder.html" title=" " alt="" coords="2133,553,2272,578"/>
-<area shape="rect" id="node37" href="$structKGVector.html" title=" " alt="" coords="3721,975,3874,1001"/>
-<area shape="rect" id="node39" href="$structKGVec1.html" title=" " alt="" coords="4417,1025,4487,1050"/>
-<area shape="rect" id="node40" href="$structKGGuiMenuColumns.html" title=" " alt="" coords="4380,1074,4524,1099"/>
-<area shape="rect" id="node42" href="$structKarmaGuiStorage.html" title=" " alt="" coords="3735,1074,3860,1099"/>
-<area shape="rect" id="node43" href="$structKGVector.html" title=" " alt="" coords="3420,1060,3613,1100"/>
-<area shape="rect" id="node44" href="$structKarmaGuiStorage_1_1ImGuiStoragePair.html" title=" " alt="" coords="3024,1067,3259,1093"/>
-<area shape="rect" id="node50" href="$structKGVector.html" title=" " alt="" coords="3692,773,3903,798"/>
-<area shape="rect" id="node48" href="$structKGGuiOldColumnData.html" title=" " alt="" coords="2633,830,2785,855"/>
-<area shape="rect" id="node47" href="$structKGVector.html" title=" " alt="" coords="3045,809,3238,849"/>
-<area shape="rect" id="node49" href="$structKGVec2ih.html" title=" " alt="" coords="3757,1025,3838,1050"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="3655,1604,3794,1629"/>
+<area shape="rect" id="Node000002" href="$structKGGuiWindow.html" title=" " alt="" coords="2195,1404,2301,1429"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2266,1442,2304,1499,2331,1528,2361,1553,2404,1574,2458,1592,2521,1606,2591,1617,2745,1631,2907,1635,3435,1635,3551,1631,3655,1622,3655,1627,3552,1636,3435,1640,2907,1640,2745,1636,2590,1623,2520,1612,2456,1597,2402,1579,2359,1557,2327,1532,2300,1502,2261,1445"/>
+<area shape="poly" id="edge73_Node000002_Node000002" title=" " alt="" coords="2218,1386,2228,1379,2248,1377,2266,1379,2278,1385,2281,1395,2276,1404,2271,1402,2275,1394,2274,1389,2265,1384,2248,1382,2230,1384,2220,1391"/>
+<area shape="rect" id="Node000004" href="$structKGGuiViewportP.html" title=" " alt="" coords="2521,681,2641,707"/>
+<area shape="poly" id="edge42_Node000004_Node000002" title=" " alt="" coords="2263,1389,2299,1322,2333,1240,2341,1202,2342,1171,2345,1140,2358,1103,2381,1067,2406,1045,2432,1023,2458,990,2487,931,2520,848,2572,706,2577,708,2525,850,2491,933,2462,993,2436,1026,2409,1049,2385,1071,2362,1106,2350,1141,2348,1171,2347,1203,2339,1241,2303,1325,2267,1391"/>
+<area shape="rect" id="Node000041" href="$structKGVector.html" title=" " alt="" coords="2484,1426,2677,1452"/>
+<area shape="poly" id="edge55_Node000041_Node000002" title=" " alt="" coords="2317,1418,2484,1430,2483,1435,2316,1424"/>
+<area shape="rect" id="Node000052" href="$structKGGuiDockNode.html" title=" " alt="" coords="3373,1413,3494,1439"/>
+<area shape="poly" id="edge88_Node000052_Node000002" title=" " alt="" coords="2298,1433,2355,1451,2424,1470,2501,1485,2579,1491,3230,1491,3281,1485,3330,1471,3374,1454,3408,1437,3410,1441,3376,1458,3332,1476,3282,1491,3230,1496,2579,1496,2501,1490,2423,1476,2353,1456,2297,1438"/>
+<area shape="rect" id="Node000055" href="$structKGGuiTabItem.html" title=" " alt="" coords="2527,1162,2635,1188"/>
+<area shape="poly" id="edge81_Node000055_Node000002" title=" " alt="" coords="2255,1388,2270,1351,2291,1307,2321,1263,2358,1226,2399,1203,2443,1188,2486,1178,2526,1174,2526,1179,2487,1184,2444,1193,2401,1208,2362,1230,2325,1267,2296,1310,2274,1353,2260,1389"/>
+<area shape="rect" id="Node000003" href="$structKarmaGuiWindowClass.html" title=" " alt="" coords="1819,878,1978,904"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1927,912,2006,990,2079,1068,2108,1105,2138,1156,2147,1179,2152,1198,2162,1239,2205,1333,2241,1402,2237,1404,2200,1336,2157,1241,2146,1199,2142,1181,2133,1159,2103,1108,2075,1072,2002,994,1923,916"/>
+<area shape="poly" id="edge87_Node000052_Node000003" title=" " alt="" coords="1993,884,2257,874,2579,868,3230,868,3253,874,3274,889,3294,912,3312,943,3345,1019,3373,1110,3396,1204,3414,1292,3433,1412,3428,1413,3408,1293,3391,1205,3368,1111,3340,1021,3308,945,3290,915,3271,893,3251,879,3230,874,2579,874,2257,879,1993,889"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="2555,719,2511,762,2457,822,2404,895,2381,934,2362,975,2350,1013,2345,1046,2346,1105,2350,1166,2347,1201,2339,1241,2321,1290,2299,1336,2260,1404,2256,1402,2295,1334,2316,1288,2333,1240,2342,1200,2345,1166,2341,1106,2340,1046,2345,1012,2358,973,2376,932,2400,892,2453,819,2507,758,2551,715"/>
+<area shape="rect" id="Node000005" href="$structKarmaGuiViewport.html" title=" " alt="" coords="1472,713,1602,739"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="1618,714,1657,711,1909,699,2156,693,2520,691,2520,696,2156,699,1909,705,1657,716,1618,719"/>
+<area shape="rect" id="Node000007" href="$structKGDrawData.html" title=" " alt="" coords="1850,733,1947,759"/>
+<area shape="poly" id="edge40_Node000007_Node000005" title=" " alt="" coords="1618,727,1850,740,1849,746,1618,733"/>
+<area shape="rect" id="Node000006" href="$structKGVec2.html" title=" " alt="" coords="20,753,90,779"/>
+<area shape="poly" id="edge48_Node000002_Node000006" title=" " alt="" coords="63,793,93,964,119,1083,151,1208,190,1326,211,1378,234,1425,259,1463,285,1493,312,1511,340,1518,933,1518,1036,1520,1080,1520,1120,1516,1158,1508,1195,1492,1231,1467,1270,1431,1280,1416,1283,1401,1280,1370,1277,1338,1282,1322,1294,1308,1326,1289,1368,1276,1417,1269,1473,1266,1599,1273,1738,1292,1877,1319,2008,1349,2202,1400,2200,1405,2007,1354,1876,1324,1737,1297,1599,1278,1473,1271,1417,1274,1369,1281,1328,1294,1298,1312,1287,1325,1282,1338,1285,1369,1288,1401,1285,1418,1274,1434,1235,1471,1197,1497,1160,1513,1121,1522,1080,1525,1036,1525,932,1523,339,1523,309,1516,281,1497,255,1467,230,1427,206,1380,185,1327,146,1209,114,1084,88,965,58,794"/>
+<area shape="poly" id="edge41_Node000004_Node000006" title=" " alt="" coords="105,748,128,742,267,716,376,701,627,678,836,653,1013,627,1315,583,1461,569,1617,562,1794,565,2004,580,2154,600,2302,627,2528,678,2527,683,2301,632,2153,605,2003,586,1794,571,1617,567,1461,574,1316,588,1014,632,837,658,628,683,377,707,268,721,129,747,106,753"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="106,762,1472,725,1472,730,106,767"/>
+<area shape="poly" id="edge39_Node000007_Node000006" title=" " alt="" coords="106,766,129,767,488,783,848,792,1115,793,1405,791,1648,786,1769,780,1855,756,1857,762,1770,786,1648,791,1405,796,1115,799,848,797,488,788,129,772,106,771"/>
+<area shape="rect" id="Node000014" href="$structKGDrawVert.html" title=" " alt="" coords="678,289,773,315"/>
+<area shape="poly" id="edge15_Node000014_Node000006" title=" " alt="" coords="55,737,60,654,72,547,81,494,93,446,108,407,127,381,158,369,212,361,361,353,513,349,603,343,651,329,694,313,696,318,653,334,604,348,513,354,361,358,212,366,159,374,130,385,113,410,98,448,87,495,77,548,65,655,60,737"/>
+<area shape="rect" id="Node000015" href="$structKGDrawListSharedData.html" title=" " alt="" coords="1075,392,1236,417"/>
+<area shape="poly" id="edge17_Node000015_Node000006" title=" " alt="" coords="69,738,94,703,127,669,158,646,185,631,251,611,304,600,349,595,427,596,505,598,550,596,603,589,726,574,824,563,869,552,914,535,961,509,1013,470,1021,460,1024,448,1027,436,1037,424,1055,413,1074,407,1076,412,1057,418,1040,428,1032,438,1029,449,1026,462,1017,474,964,513,916,540,870,557,825,568,726,579,604,594,550,601,505,604,426,601,349,600,304,605,252,616,187,636,161,650,130,673,98,706,74,741"/>
+<area shape="rect" id="Node000021" href="$structKGFontAtlas.html" title=" " alt="" coords="293,413,389,439"/>
+<area shape="poly" id="edge25_Node000021_Node000006" title=" " alt="" coords="54,737,59,689,70,628,91,564,107,534,127,507,163,475,207,452,251,437,292,429,293,434,253,442,209,457,166,479,131,510,112,537,96,567,75,630,64,690,60,738"/>
+<area shape="rect" id="Node000028" href="$structKGVector.html" title=" " alt="" coords="651,480,800,505"/>
+<area shape="poly" id="edge29_Node000028_Node000006" title=" " alt="" coords="56,737,61,698,74,652,95,606,109,586,127,567,454,508,557,498,650,493,651,498,557,504,454,514,130,572,113,589,99,609,79,654,67,699,61,738"/>
+<area shape="rect" id="Node000038" href="$structKGGuiWindowTempData.html" title=" " alt="" coords="2825,1288,2991,1313"/>
+<area shape="poly" id="edge51_Node000038_Node000006" title=" " alt="" coords="60,794,66,922,79,1103,100,1286,114,1360,131,1415,168,1513,184,1556,203,1594,225,1625,254,1649,291,1664,340,1670,2411,1670,2456,1666,2500,1657,2542,1642,2583,1623,2660,1574,2729,1516,2788,1454,2837,1396,2896,1312,2901,1315,2841,1399,2792,1458,2732,1520,2663,1578,2586,1628,2544,1647,2501,1662,2457,1672,2411,1675,339,1675,290,1669,251,1654,221,1629,198,1597,179,1558,163,1515,126,1417,109,1362,95,1286,74,1104,61,922,55,794"/>
+<area shape="rect" id="Node000046" href="$structKGRect.html" title=" " alt="" coords="307,1149,375,1175"/>
+<area shape="poly" id="edge61_Node000046_Node000006" title=" " alt="" coords="59,794,63,844,74,909,96,978,111,1011,131,1041,171,1080,219,1112,267,1134,308,1150,306,1155,265,1139,216,1116,168,1085,127,1044,107,1013,91,980,69,910,58,845,54,794"/>
+<area shape="poly" id="edge86_Node000052_Node000006" title=" " alt="" coords="101,782,149,801,208,819,273,833,340,839,932,839,1234,837,1468,832,2004,813,2125,808,2246,804,3231,804,3252,811,3272,827,3292,851,3309,879,3337,934,3351,969,3373,1034,3390,1101,3415,1233,3429,1343,3434,1412,3429,1413,3423,1344,3410,1234,3385,1102,3368,1035,3347,971,3332,936,3304,881,3287,854,3269,831,3249,815,3230,810,2247,810,2125,813,2004,819,1468,837,1234,842,933,844,339,844,272,839,207,824,147,806,99,787"/>
+<area shape="rect" id="Node000053" href="$structKGGuiTabBar.html" title=" " alt="" coords="3178,1010,3280,1036"/>
+<area shape="poly" id="edge83_Node000053_Node000006" title=" " alt="" coords="71,791,95,827,111,844,130,858,198,891,258,911,313,921,367,923,483,916,550,913,627,915,906,929,1142,935,1350,936,1543,933,1944,924,2181,923,2460,926,2731,930,2850,934,3002,944,3080,946,3113,950,3155,963,3190,984,3217,1008,3213,1012,3187,988,3153,968,3112,955,3079,951,3002,950,2849,939,2731,935,2460,931,2181,928,1944,929,1543,938,1350,941,1142,940,906,934,627,920,550,919,483,921,367,928,313,926,256,916,196,896,127,863,108,848,91,830,67,794"/>
+<area shape="poly" id="edge44_Node000004_Node000007" title=" " alt="" coords="1963,742,2131,737,2336,725,2460,710,2520,701,2520,706,2460,715,2336,730,2132,742,1963,747"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="1836,765,1751,779,1704,780,1657,775,1606,760,1563,742,1565,737,1608,755,1658,770,1704,775,1751,773,1836,760"/>
+<area shape="rect" id="Node000008" href="$structKGDrawList.html" title=" " alt="" coords="1491,348,1583,373"/>
+<area shape="poly" id="edge72_Node000002_Node000008" title=" " alt="" coords="1555,385,1598,452,1626,489,1659,522,1707,559,1751,584,1794,601,1836,615,1877,630,1919,649,1961,677,2006,719,2061,786,2093,847,2115,913,2138,998,2150,1066,2150,1120,2150,1173,2162,1240,2180,1288,2201,1334,2240,1402,2235,1404,2196,1336,2175,1290,2157,1241,2145,1174,2145,1120,2145,1066,2133,1000,2110,915,2088,849,2056,789,2002,722,1958,682,1916,654,1875,635,1834,620,1792,606,1749,589,1704,564,1656,526,1622,492,1593,455,1551,388"/>
+<area shape="poly" id="edge43_Node000004_Node000008" title=" " alt="" coords="1576,378,1658,415,1725,434,1794,446,1896,459,1985,463,2140,459,2213,461,2288,473,2370,499,2461,543,2502,574,2534,612,2559,650,2575,679,2571,681,2555,653,2530,616,2498,578,2459,548,2368,504,2287,478,2212,467,2140,464,1985,468,1896,465,1793,451,1724,439,1656,420,1574,383"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1548,387,1562,434,1585,494,1617,557,1659,614,1706,654,1759,687,1812,712,1857,730,1855,735,1809,717,1757,692,1703,658,1655,617,1612,560,1580,496,1557,436,1543,389"/>
+<area shape="rect" id="Node000010" href="$structKGDrawCmd.html" title=" " alt="" coords="1850,296,1947,321"/>
+<area shape="poly" id="edge11_Node000010_Node000008" title=" " alt="" coords="1598,348,1657,339,1849,312,1850,317,1658,344,1599,353"/>
+<area shape="rect" id="Node000036" href="$structKGVector.html" title=" " alt="" coords="1809,410,1988,436"/>
+<area shape="poly" id="edge47_Node000036_Node000008" title=" " alt="" coords="1595,376,1658,391,1735,404,1809,413,1808,418,1734,409,1657,397,1594,381"/>
+<area shape="rect" id="Node000009" href="$structKGVector.html" title=" " alt="" coords="2160,324,2336,349"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="2145,345,2004,351,1583,362,1583,357,2004,346,2144,339"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="1963,311,2159,327,2159,332,1963,316"/>
+<area shape="rect" id="Node000011" href="$structKGVec4.html" title=" " alt="" coords="20,110,90,136"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="82,98,127,70,184,45,230,29,278,20,339,18,1539,18,1572,20,1604,27,1665,53,1721,90,1770,135,1813,182,1848,227,1892,294,1887,297,1844,230,1809,185,1767,139,1718,95,1663,58,1603,32,1571,25,1538,23,340,23,278,25,232,34,186,50,130,75,85,103"/>
+<area shape="poly" id="edge27_Node000015_Node000011" title=" " alt="" coords="106,127,224,144,372,172,446,190,512,210,567,232,605,257,616,275,618,293,619,310,629,325,681,335,800,353,1075,391,1075,396,800,358,680,340,626,329,614,312,612,294,611,277,601,261,564,237,510,215,444,195,371,178,223,149,105,132"/>
+<area shape="poly" id="edge26_Node000021_Node000011" title=" " alt="" coords="71,149,107,234,116,270,121,285,131,302,167,340,211,370,256,393,297,410,295,415,254,398,209,375,164,344,127,305,116,287,111,271,102,236,66,151"/>
+<area shape="rect" id="Node000029" href="$structKGVector.html" title=" " alt="" coords="454,58,603,84"/>
+<area shape="poly" id="edge32_Node000029_Node000011" title=" " alt="" coords="105,107,128,102,303,80,453,71,454,76,303,86,129,107,106,112"/>
+<area shape="rect" id="Node000031" href="$structImDrawCmdHeader.html" title=" " alt="" coords="864,113,999,139"/>
+<area shape="poly" id="edge36_Node000031_Node000011" title=" " alt="" coords="106,120,863,123,863,128,106,126"/>
+<area shape="rect" id="Node000012" href="$structKGVector.html" title=" " alt="" coords="1072,180,1239,205"/>
+<area shape="poly" id="edge12_Node000008_Node000012" title=" " alt="" coords="1254,192,1336,204,1379,217,1418,234,1455,259,1487,290,1530,346,1525,349,1483,294,1452,264,1416,239,1377,222,1335,210,1253,197"/>
+<area shape="rect" id="Node000013" href="$structKGVector.html" title=" " alt="" coords="1069,278,1242,304"/>
+<area shape="poly" id="edge13_Node000008_Node000013" title=" " alt="" coords="1257,297,1336,307,1418,322,1498,344,1496,349,1416,327,1335,313,1257,303"/>
+<area shape="poly" id="edge30_Node000008_Node000014" title=" " alt="" coords="789,306,1039,329,1294,345,1491,356,1490,361,1294,351,1038,334,788,311"/>
+<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="788,297,1068,290,1068,296,788,303"/>
+<area shape="poly" id="edge16_Node000008_Node000015" title=" " alt="" coords="1251,392,1417,374,1490,364,1491,370,1417,379,1251,398"/>
+<area shape="rect" id="Node000016" href="$structKGFont.html" title=" " alt="" coords="692,390,759,416"/>
+<area shape="poly" id="edge18_Node000015_Node000016" title=" " alt="" coords="775,400,1075,401,1075,407,775,406"/>
+<area shape="rect" id="Node000017" href="$structKGVector.html" title=" " alt="" coords="279,626,403,652"/>
+<area shape="poly" id="edge19_Node000016_Node000017" title=" " alt="" coords="368,614,407,584,453,554,494,532,528,518,561,504,602,482,626,465,702,414,705,419,629,469,605,487,563,509,530,523,496,537,455,559,410,589,372,618"/>
+<area shape="poly" id="edge66_Node000038_Node000017" title=" " alt="" coords="361,663,402,718,463,789,500,825,540,859,583,890,628,915,699,927,864,947,1353,1000,2080,1071,2582,1071,2644,1070,2693,1072,2739,1085,2792,1114,2813,1141,2844,1189,2901,1286,2897,1288,2840,1192,2809,1144,2789,1118,2737,1089,2692,1077,2643,1075,2582,1076,2080,1076,1352,1005,864,952,698,932,626,920,580,894,536,863,496,829,459,792,398,722,357,666"/>
+<area shape="rect" id="Node000018" href="$structKGVector.html" title=" " alt="" coords="263,462,419,488"/>
+<area shape="poly" id="edge20_Node000016_Node000018" title=" " alt="" coords="434,463,517,452,603,437,691,412,692,417,604,442,517,458,435,469"/>
+<area shape="rect" id="Node000019" href="$structKGVector.html" title=" " alt="" coords="252,285,430,311"/>
+<area shape="poly" id="edge21_Node000016_Node000019" title=" " alt="" coords="406,313,693,392,691,397,405,318"/>
+<area shape="rect" id="Node000020" href="$structKGFontGlyph.html" title=" " alt="" coords="5,248,105,273"/>
+<area shape="poly" id="edge23_Node000016_Node000020" title=" " alt="" coords="120,253,129,252,228,252,287,252,339,249,430,241,473,244,515,253,559,274,605,308,616,323,618,340,620,355,629,369,659,388,693,397,691,402,657,392,625,373,615,356,613,340,611,325,601,312,556,279,513,259,472,249,431,247,340,254,287,258,228,258,129,258,121,258"/>
+<area shape="poly" id="edge22_Node000019_Node000020" title=" " alt="" coords="120,266,129,267,252,283,251,289,128,273,120,271"/>
+<area shape="poly" id="edge24_Node000016_Node000021" title=" " alt="" coords="404,419,692,402,692,408,405,425"/>
+<area shape="poly" id="edge34_Node000008_Node000028" title=" " alt="" coords="815,488,1025,477,1149,463,1271,442,1399,407,1501,371,1502,376,1400,412,1273,447,1149,468,1025,482,815,494"/>
+<area shape="poly" id="edge28_Node000015_Node000028" title=" " alt="" coords="806,473,1088,415,1089,420,807,478"/>
+<area shape="poly" id="edge31_Node000008_Node000029" title=" " alt="" coords="619,67,963,69,1142,76,1272,88,1351,100,1383,112,1419,137,1444,162,1465,190,1500,250,1522,306,1535,346,1530,348,1517,308,1495,252,1461,193,1440,165,1415,141,1381,117,1349,106,1272,94,1142,81,963,75,619,73"/>
+<area shape="rect" id="Node000030" href="$structKGVector.html" title=" " alt="" coords="1068,229,1243,255"/>
+<area shape="poly" id="edge33_Node000008_Node000030" title=" " alt="" coords="1259,247,1338,260,1418,283,1476,313,1521,345,1518,349,1473,318,1416,288,1337,265,1258,252"/>
+<area shape="poly" id="edge35_Node000008_Node000031" title=" " alt="" coords="1014,112,1103,108,1208,113,1262,121,1317,134,1369,153,1418,178,1442,196,1463,217,1497,265,1520,311,1534,346,1529,348,1515,313,1492,267,1459,220,1439,200,1416,183,1367,158,1315,139,1261,126,1207,118,1103,113,1015,118"/>
+<area shape="rect" id="Node000032" href="$structKGDrawListSplitter.html" title=" " alt="" coords="1089,880,1222,905"/>
+<area shape="poly" id="edge37_Node000008_Node000032" title=" " alt="" coords="1191,869,1241,836,1301,792,1362,737,1415,675,1440,635,1463,591,1497,503,1519,425,1531,373,1536,374,1524,426,1502,504,1467,593,1445,637,1419,678,1365,741,1304,796,1244,841,1194,873"/>
+<area shape="rect" id="Node000045" href="$structKGGuiOldColumns.html" title=" " alt="" coords="1472,1198,1603,1224"/>
+<area shape="poly" id="edge65_Node000045_Node000032" title=" " alt="" coords="1194,911,1243,944,1302,988,1364,1041,1419,1101,1427,1116,1431,1129,1435,1141,1443,1153,1472,1178,1504,1195,1502,1200,1469,1182,1439,1157,1430,1143,1426,1130,1422,1118,1415,1105,1360,1045,1299,992,1240,948,1191,916"/>
+<area shape="rect" id="Node000033" href="$structKGVector.html" title=" " alt="" coords="627,880,824,905"/>
+<area shape="poly" id="edge38_Node000032_Node000033" title=" " alt="" coords="839,890,1088,890,1088,895,839,895"/>
+<area shape="rect" id="Node000035" href="$structKGDrawDataBuilder.html" title=" " alt="" coords="2179,416,2317,441"/>
+<area shape="poly" id="edge45_Node000004_Node000035" title=" " alt="" coords="2333,434,2399,451,2432,466,2462,485,2486,507,2508,533,2542,589,2565,642,2578,680,2573,682,2560,643,2537,591,2503,536,2482,511,2458,489,2429,471,2397,456,2331,439"/>
+<area shape="poly" id="edge46_Node000035_Node000036" title=" " alt="" coords="2004,422,2179,425,2179,430,2004,427"/>
+<area shape="rect" id="Node000037" href="$structKGVector.html" title=" " alt="" coords="1822,1249,1975,1275"/>
+<area shape="poly" id="edge49_Node000002_Node000037" title=" " alt="" coords="1991,1257,2064,1266,2102,1276,2137,1291,2172,1316,2202,1347,2241,1402,2237,1405,2198,1350,2169,1320,2134,1296,2100,1281,2063,1271,1990,1262"/>
+<area shape="poly" id="edge50_Node000002_Node000038" title=" " alt="" coords="2851,1285,2777,1267,2685,1252,2635,1249,2584,1249,2534,1255,2485,1266,2450,1278,2416,1295,2352,1334,2300,1374,2265,1405,2261,1401,2297,1370,2349,1329,2413,1290,2448,1273,2483,1260,2533,1249,2584,1244,2635,1244,2685,1247,2778,1262,2852,1280"/>
+<area shape="rect" id="Node000039" href="$structKGVec1.html" title=" " alt="" coords="2546,1325,2616,1351"/>
+<area shape="poly" id="edge52_Node000038_Node000039" title=" " alt="" coords="2632,1341,2707,1345,2790,1339,2836,1327,2876,1311,2878,1316,2837,1332,2791,1344,2707,1350,2631,1346"/>
+<area shape="rect" id="Node000040" href="$structKGGuiMenuColumns.html" title=" " alt="" coords="2509,1276,2652,1301"/>
+<area shape="poly" id="edge53_Node000038_Node000040" title=" " alt="" coords="2668,1285,2790,1288,2825,1290,2825,1296,2790,1294,2668,1291"/>
+<area shape="poly" id="edge54_Node000038_Node000041" title=" " alt="" coords="2693,1437,2742,1429,2789,1413,2824,1391,2854,1363,2896,1312,2900,1315,2858,1367,2827,1395,2791,1418,2743,1434,2694,1443"/>
+<area shape="poly" id="edge77_Node000052_Node000041" title=" " alt="" coords="2693,1439,2701,1439,2790,1439,3373,1425,3373,1430,2790,1444,2701,1444,2693,1444"/>
+<area shape="rect" id="Node000042" href="$structKarmaGuiStorage.html" title=" " alt="" coords="1836,1112,1961,1137"/>
+<area shape="poly" id="edge69_Node000002_Node000042" title=" " alt="" coords="1957,1141,2046,1181,2094,1209,2137,1242,2175,1283,2205,1329,2243,1402,2239,1404,2201,1331,2171,1287,2134,1246,2091,1213,2044,1185,1955,1146"/>
+<area shape="poly" id="edge56_Node000038_Node000042" title=" " alt="" coords="1976,1119,2179,1115,2433,1114,2662,1121,2744,1129,2791,1141,2814,1155,2834,1173,2866,1213,2890,1254,2904,1286,2899,1288,2885,1257,2862,1216,2830,1176,2811,1159,2789,1145,2743,1134,2661,1126,2433,1119,2179,1121,1976,1125"/>
+<area shape="rect" id="Node000043" href="$structKGVector.html" title=" " alt="" coords="1441,1103,1633,1143"/>
+<area shape="poly" id="edge57_Node000042_Node000043" title=" " alt="" coords="1649,1121,1836,1121,1836,1127,1649,1126"/>
+<area shape="rect" id="Node000044" href="$structKarmaGuiStorage_1_1ImGuiStoragePair.html" title=" " alt="" coords="1039,1110,1272,1136"/>
+<area shape="poly" id="edge58_Node000043_Node000044" title=" " alt="" coords="1287,1120,1440,1120,1440,1126,1287,1126"/>
+<area shape="poly" id="edge59_Node000038_Node000045" title=" " alt="" coords="1618,1206,1786,1203,1994,1205,2194,1217,2276,1229,2337,1244,2363,1257,2383,1272,2412,1304,2440,1335,2459,1349,2485,1360,2568,1383,2603,1386,2636,1385,2704,1373,2790,1351,2840,1333,2883,1311,2885,1316,2842,1337,2791,1356,2706,1379,2636,1391,2603,1391,2567,1388,2483,1366,2457,1354,2437,1339,2408,1307,2379,1276,2360,1261,2335,1250,2275,1234,2193,1223,1994,1211,1786,1208,1618,1211"/>
+<area shape="rect" id="Node000050" href="$structKGVector.html" title=" " alt="" coords="1793,1553,2004,1579"/>
+<area shape="poly" id="edge71_Node000050_Node000045" title=" " alt="" coords="1553,1237,1587,1300,1640,1383,1673,1426,1710,1468,1750,1506,1795,1539,1816,1550,1813,1555,1792,1544,1747,1511,1706,1472,1669,1429,1636,1386,1583,1303,1549,1239"/>
+<area shape="poly" id="edge67_Node000002_Node000046" title=" " alt="" coords="384,1179,455,1204,596,1223,866,1256,1135,1291,1228,1306,1273,1318,1283,1330,1286,1343,1289,1354,1298,1364,1330,1380,1371,1394,1475,1414,1600,1426,1736,1431,1872,1431,2001,1428,2194,1417,2195,1423,2001,1433,1872,1436,1735,1436,1600,1431,1475,1419,1370,1399,1328,1385,1294,1368,1284,1357,1281,1344,1279,1332,1271,1323,1227,1311,1134,1296,865,1261,595,1229,453,1210,382,1184"/>
+<area shape="poly" id="edge60_Node000045_Node000046" title=" " alt="" coords="390,1167,589,1196,718,1212,848,1223,1025,1228,1200,1227,1471,1213,1471,1219,1200,1232,1025,1234,848,1228,717,1217,589,1202,390,1172"/>
+<area shape="rect" id="Node000048" href="$structKGGuiOldColumnData.html" title=" " alt="" coords="650,1149,801,1175"/>
+<area shape="poly" id="edge64_Node000048_Node000046" title=" " alt="" coords="390,1159,649,1159,649,1164,390,1164"/>
+<area shape="poly" id="edge82_Node000053_Node000046" title=" " alt="" coords="389,1150,454,1139,1055,1082,1657,1034,2119,1019,2568,1014,2942,1016,3177,1019,3177,1025,2941,1021,2568,1020,2120,1024,1657,1039,1056,1087,454,1144,390,1155"/>
+<area shape="rect" id="Node000047" href="$structKGVector.html" title=" " alt="" coords="1059,1160,1252,1201"/>
+<area shape="poly" id="edge62_Node000045_Node000047" title=" " alt="" coords="1267,1187,1471,1203,1471,1208,1267,1192"/>
+<area shape="poly" id="edge63_Node000047_Node000048" title=" " alt="" coords="817,1163,1059,1173,1058,1179,817,1168"/>
+<area shape="rect" id="Node000049" href="$structKGVec2ih.html" title=" " alt="" coords="1858,1454,1939,1480"/>
+<area shape="poly" id="edge68_Node000002_Node000049" title=" " alt="" coords="1954,1470,2040,1472,2088,1470,2135,1462,2183,1447,2222,1427,2225,1432,2185,1452,2136,1468,2089,1475,2040,1478,1954,1475"/>
+<area shape="poly" id="edge70_Node000002_Node000050" title=" " alt="" coords="2019,1566,2078,1557,2134,1537,2169,1513,2198,1483,2237,1428,2241,1431,2202,1486,2172,1517,2137,1542,2080,1562,2020,1571"/>
+<area shape="rect" id="Node000051" href="$structKGGuiWindowDockStyle.html" title=" " alt="" coords="1816,1504,1981,1529"/>
+<area shape="poly" id="edge74_Node000002_Node000051" title=" " alt="" coords="1996,1517,2066,1511,2135,1494,2164,1480,2191,1462,2232,1427,2235,1431,2194,1467,2166,1485,2137,1499,2066,1517,1997,1523"/>
+<area shape="poly" id="edge89_Node000001_Node000052" title=" " alt="" coords="3470,1445,3704,1601,3701,1605,3467,1450"/>
+<area shape="poly" id="edge75_Node000002_Node000052" title=" " alt="" coords="3418,1453,3389,1486,3371,1502,3350,1515,3301,1536,3258,1549,3219,1556,3181,1558,3102,1555,3002,1556,2818,1572,2743,1580,2673,1583,2603,1581,2531,1571,2451,1549,2359,1515,2327,1497,2298,1474,2258,1432,2262,1428,2302,1470,2330,1492,2361,1510,2452,1544,2532,1566,2604,1576,2672,1578,2742,1574,2818,1567,3002,1550,3102,1550,3181,1553,3219,1551,3257,1544,3300,1531,3348,1510,3367,1498,3385,1482,3413,1449"/>
+<area shape="poly" id="edge76_Node000052_Node000052" title=" " alt="" coords="3413,1396,3420,1389,3434,1386,3446,1388,3454,1395,3456,1404,3453,1413,3448,1411,3451,1404,3450,1398,3444,1393,3434,1391,3422,1394,3417,1400"/>
+<area shape="poly" id="edge78_Node000052_Node000053" title=" " alt="" coords="3246,1049,3428,1411,3423,1413,3241,1051"/>
+<area shape="rect" id="Node000054" href="$structKGVector.html" title=" " alt="" coords="2814,1108,3002,1133"/>
+<area shape="poly" id="edge79_Node000053_Node000054" title=" " alt="" coords="2987,1101,3068,1081,3153,1054,3200,1034,3202,1039,3155,1059,3069,1086,2988,1106"/>
+<area shape="poly" id="edge80_Node000054_Node000055" title=" " alt="" coords="2649,1161,2826,1131,2827,1136,2650,1166"/>
+<area shape="rect" id="Node000056" href="$structKarmaGuiTextBuffer.html" title=" " alt="" coords="2839,960,2977,985"/>
+<area shape="poly" id="edge84_Node000053_Node000056" title=" " alt="" coords="2993,978,3154,1002,3178,1007,3177,1012,3153,1007,2992,983"/>
+<area shape="rect" id="Node000057" href="$structKGVector.html" title=" " alt="" coords="2518,960,2643,985"/>
+<area shape="poly" id="edge85_Node000056_Node000057" title=" " alt="" coords="2659,970,2838,970,2838,975,2659,975"/>
 </map>

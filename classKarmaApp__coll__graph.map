@@ -1,4 +1,6 @@
 <map id="KarmaApp" name="KarmaApp">
-<area shape="rect" id="node1" title=" " alt="" coords="29,79,112,104"/>
-<area shape="rect" id="node2" href="$classKarma_1_1Application.html" title=" " alt="" coords="5,5,136,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="29,79,111,105"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1Application.html" title=" " alt="" coords="5,5,135,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="64,46,66,78,60,79,59,46"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="81,46,80,79,74,78,76,46"/>
 </map>

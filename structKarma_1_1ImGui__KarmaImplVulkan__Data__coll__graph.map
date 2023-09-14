@@ -1,6 +1,0 @@
-<map id="Karma::ImGui_KarmaImplVulkan_Data" name="Karma::ImGui_KarmaImplVulkan_Data">
-<area shape="rect" id="node1" title=" " alt="" coords="805,45,1051,70"/>
-<area shape="rect" id="node2" href="$structKarma_1_1ImGui__KarmaImplVulkan__InitInfo.html" title=" " alt="" coords="387,5,597,45"/>
-<area shape="rect" id="node3" href="$structKarma_1_1ImGui__KarmaImplVulkanH__WindowRenderBuffers.html" title=" " alt="" coords="387,69,597,109"/>
-<area shape="rect" id="node4" href="$structKarma_1_1ImGui__KarmaImplVulkanH__ImageFrameRenderBuffers.html" title=" " alt="" coords="5,69,216,109"/>
-</map>

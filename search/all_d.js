@@ -1,13 +1,22 @@
 var searchData=
 [
-  ['scene_0',['Scene',['../classKarma_1_1Scene.html',1,'Karma']]],
-  ['scenemodel_1',['SceneModel',['../classKarma_1_1SceneModel.html',1,'Karma']]],
-  ['shader_2',['Shader',['../classKarma_1_1Shader.html',1,'Karma']]],
-  ['skeletalmesh_3',['SkeletalMesh',['../classKarma_1_1SkeletalMesh.html',1,'Karma']]],
-  ['stb_5ftexteditstate_4',['STB_TexteditState',['../structSTB__TexteditState.html',1,'']]],
-  ['stbtexteditrow_5',['StbTexteditRow',['../structStbTexteditRow.html',1,'']]],
-  ['stbundorecord_6',['StbUndoRecord',['../structStbUndoRecord.html',1,'']]],
-  ['stbundostate_7',['StbUndoState',['../structStbUndoState.html',1,'']]],
-  ['swapchainsupportdetails_8',['SwapChainSupportDetails',['../structKarma_1_1SwapChainSupportDetails.html',1,'Karma']]],
-  ['systemram_9',['SystemRAM',['../structKarma_1_1KarmaTuringMachineElectronics_1_1SystemRAM.html',1,'Karma::KarmaTuringMachineElectronics']]]
+  ['onactorspawned_0',['OnActorSpawned',['../classKarma_1_1UWorld.html#a394860bd2d1ad419e9805e94e364a96b',1,'Karma::UWorld']]],
+  ['oncomponentcreated_1',['OnComponentCreated',['../classKarma_1_1UActorComponent.html#af03f928aefb27f23ebccd0a1166cad1f',1,'Karma::UActorComponent']]],
+  ['oncomponentdestroyed_2',['OnComponentDestroyed',['../classKarma_1_1UActorComponent.html#aea2bd88d4c5ecc7e6e5542b5090dfcf9',1,'Karma::UActorComponent']]],
+  ['openglcontext_3',['OpenGLContext',['../classKarma_1_1OpenGLContext.html',1,'Karma']]],
+  ['openglimagebuffer_4',['OpenGLImageBuffer',['../classKarma_1_1OpenGLImageBuffer.html',1,'Karma']]],
+  ['openglindexbuffer_5',['OpenGLIndexBuffer',['../classKarma_1_1OpenGLIndexBuffer.html',1,'Karma']]],
+  ['openglrendererapi_6',['OpenGLRendererAPI',['../classKarma_1_1OpenGLRendererAPI.html',1,'Karma']]],
+  ['openglshader_7',['OpenGLShader',['../classKarma_1_1OpenGLShader.html',1,'Karma']]],
+  ['opengluniformbuffer_8',['OpenGLUniformBuffer',['../structKarma_1_1OpenGLUniformBuffer.html',1,'Karma']]],
+  ['openglvertexarray_9',['OpenGLVertexArray',['../classKarma_1_1OpenGLVertexArray.html',1,'Karma']]],
+  ['openglvertexbuffer_10',['OpenGLVertexBuffer',['../classKarma_1_1OpenGLVertexBuffer.html',1,'Karma']]],
+  ['operator_20bool_11',['operator bool',['../classKarma_1_1FUObjectArray_1_1TIterator.html#a5049f0ee18514f8bace2e5b40e7f6e75',1,'Karma::FUObjectArray::TIterator::operator bool()'],['../classKarma_1_1TActorIteratorBase.html#acc4b7437672b4fbcd32c46f19ee93b4e',1,'Karma::TActorIteratorBase::operator bool()']]],
+  ['operator_20tclasstype_20_2a_12',['operator TClassType *',['../classKarma_1_1TSubclassOf.html#a4d6c6ac14c0a8db0fc25837b73f8d9b3',1,'Karma::TSubclassOf']]],
+  ['operator_21_13',['operator!',['../classKarma_1_1FUObjectArray_1_1TIterator.html#a39e58fe22b010178c2eb47636cf61598',1,'Karma::FUObjectArray::TIterator']]],
+  ['operator_2a_14',['operator*',['../classKarma_1_1TSubclassOf.html#a4c104a6ab191daf81e7ee1c55958216f',1,'Karma::TSubclassOf::operator*()'],['../classKarma_1_1FRawObjectIterator.html#a4fbdc4e3783eb3898615709a19a0ddca',1,'Karma::FRawObjectIterator::operator*()'],['../classKarma_1_1TActorIterator.html#a7222b36006e10813b0259dc94396fe64',1,'Karma::TActorIterator::operator*()'],['../classKarma_1_1FTransform.html#ac3aae64f1c6a3898d6e792a8d154d179',1,'Karma::FTransform::operator*()'],['../classKarma_1_1TActorIteratorBase.html#a59ac729f63733868c0d99cef34e94ddd',1,'Karma::TActorIteratorBase::operator*()']]],
+  ['operator_2b_2b_15',['operator++',['../classKarma_1_1FUObjectArray_1_1TIterator.html#a2bc0e6adea6eed14d32ab65e7e33f535',1,'Karma::FUObjectArray::TIterator::operator++()'],['../classKarma_1_1TActorIteratorBase.html#a3a5dd30211ddec43d49ee0ee53357b48',1,'Karma::TActorIteratorBase::operator++()']]],
+  ['operator_2d_3e_16',['operator-&gt;',['../classKarma_1_1TSubclassOf.html#a4c9b8cc11e2cc3c25ff883d4caa87295',1,'Karma::TSubclassOf::operator-&gt;()'],['../classKarma_1_1FRawObjectIterator.html#ac9b7b87bccc975aeccc1a64f22f225a9',1,'Karma::FRawObjectIterator::operator-&gt;()'],['../classKarma_1_1TActorIterator.html#a21a6002b76ddcf9c7b2d14c21ea87703',1,'Karma::TActorIterator::operator-&gt;()'],['../classKarma_1_1TActorIteratorBase.html#a2578f00513dfe902a54d3c43fd361bf6',1,'Karma::TActorIteratorBase::operator-&gt;()']]],
+  ['operator_3d_17',['operator=',['../classKarma_1_1TSubclassOf.html#a36d8e8bfec48b3ee7de39ed0d24b848b',1,'Karma::TSubclassOf::operator=(const TSubclassOf&lt; TClassA &gt; &amp;From)'],['../classKarma_1_1TSubclassOf.html#a80ed84caa4324f19d856cb24cd0695ee',1,'Karma::TSubclassOf::operator=(TClassType *From)'],['../classKarma_1_1TSubclassOf.html#a75097f77f836404d28834b1bef118cd0',1,'Karma::TSubclassOf::operator=(U &amp;&amp;From)']]],
+  ['orthographiccamera_18',['OrthographicCamera',['../classKarma_1_1OrthographicCamera.html',1,'Karma']]]
 ];
