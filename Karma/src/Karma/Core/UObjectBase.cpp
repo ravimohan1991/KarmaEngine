@@ -163,8 +163,8 @@ namespace Karma
 		return Result;
 	}
 
-	bool UObjectBase::IsChildOfWorkaround(const UClass* ObjClass, const UClass* TestCls)
+	bool UObjectBase::IsChildOfWorkaround(const UClass* ObjClass, const UClass* TestClass)
 	{
-		return ObjClass->IsChildOf(TestCls);
+		return ObjClass->IsChildOf(TestClass);
 	}
 }

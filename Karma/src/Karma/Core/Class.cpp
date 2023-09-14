@@ -87,6 +87,9 @@ namespace Karma
 
 	/**
 	 * @return	true if this object is of the specified type.
+	 * @todo	write class registration system for comparing UClass
+	 *
+	 * @see KarmaClassObjectMap::FindClassObjects()
 	 */
 	bool UStruct::IsChildOf(const UStruct* SomeBase) const
 	{
