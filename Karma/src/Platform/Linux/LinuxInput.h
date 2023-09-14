@@ -16,7 +16,7 @@ namespace Karma
 	public:
 		LinuxInput();
 
-		void SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window) override;
+		void SetEventCallback(const EventCallbackFn& callback, Window* window) override;
 	protected:
 		virtual bool IsKeyPressedImpl(int keycode) override;
 		virtual bool IsMouseButtonPressedImpl(int button) override;

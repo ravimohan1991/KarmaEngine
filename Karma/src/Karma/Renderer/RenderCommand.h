@@ -32,6 +32,11 @@ namespace Karma
 		{
 			s_RendererAPI->EndScene();
 		}
+		
+		inline static glm::vec4& GetClearColor()
+		{
+			return s_RendererAPI->GetClearColor();
+		}
 
 		inline static RendererAPI* GetRendererAPI() { return s_RendererAPI; }
 

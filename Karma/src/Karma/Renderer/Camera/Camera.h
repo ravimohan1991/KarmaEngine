@@ -9,7 +9,7 @@ namespace Karma
 	class KARMA_API Camera
 	{
 	public:
-        Camera(const glm::vec3& initialCameraPosition);
+		Camera(const glm::vec3& initialCameraPosition);
 		virtual ~Camera();
 
 		const glm::vec3& GetPosition() const { return m_Position; }
@@ -18,7 +18,7 @@ namespace Karma
 		void LeftMouseButtonPressed();
 		void LeftMouseButtonReleased();
 		void ComputeCameraFront();
-		
+
 		void SetPosition(const glm::vec3& position);
 		void SetRotation(float rotation) { m_Rotation = rotation; RecalculateViewMatrix(); }
 		inline void SetCameraFront(const glm::vec3& front) { m_CameraFront = front; }
@@ -38,7 +38,7 @@ namespace Karma
 
 	protected:
 		void InitializePitchRoll();
-	
+
 	protected:
 		glm::mat4 m_ProjectionMatrix;
 		glm::mat4 m_ViewMatrix;

@@ -3,6 +3,7 @@
 #include "krpch.h"
 
 #include "Karma/Events/Event.h"
+#include "Renderer/Scene.h"
 
 namespace Karma
 {
@@ -12,18 +13,12 @@ namespace Karma
 		Layer(const std::string& name = "Layer");
 		virtual ~Layer();
 
-		virtual void OnAttach()
-		{
-		}
-		virtual void OnDetach()
-		{
-		}
-		virtual void OnUpdate(float deltaTime)
-		{
-		}
-		virtual void OnImGuiRender()
-		{
-		}
+		virtual void OnAttach() = 0;
+		virtual void OnDetach() = 0;
+		virtual void OnUpdate(float deltaTime) = 0;
+		// If we want DearImGui to render the scene
+		virtual void ImGuiRender(float deltaTime) = 0;
+
 		virtual void OnEvent(Event& event)
 		{
 		}

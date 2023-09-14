@@ -6,10 +6,10 @@
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/Events/ControllerDeviceEvent.h"
 #include "Karma/LayerStack.h"
-#include "Karma/ImGui/ImGuiLayer.h"
+#include "Karma/KarmaGui/KarmaGuiLayer.h"
 #include "Karma/Input.h"
-
-#include <memory>
+#include "Scene.h"
+#include "Core/TrueCore/KarmaSmriti.h"
 
 namespace Karma
 {
@@ -34,10 +34,22 @@ namespace Karma
 		void PushOverlay(Layer* layer);
 
 		void PrepareApplicationForRun();
+
 		void HookInputSystem(std::shared_ptr<Input> input);
+
+		/**
+		 * All the bulk memory allocation is done to prevent frequent calls to
+		 * context swithing new/delete operators. 
+		 */
+		void PrepareMemorySoftBed();
+
+		void InitializeApplicationEngine();
+		void DecommisionApplicationEngine();
 
 		inline static Application& Get() { return *s_Instance; }
 		inline Window& GetWindow() const { return *m_Window; }
+
+		void CloseApplication();
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
@@ -45,10 +57,13 @@ namespace Karma
 		bool OnControllerDeviceConnected(ControllerDeviceConnectedEvent& event);
 		bool OnControllerDeviceDisconnected(ControllerDeviceDisconnectedEvent& event);
 
-		std::shared_ptr<Window> m_Window;
-		//ImGuiLayer* m_ImGuiLayer;
+		// We are using raw pointers because we want necessary control over the lifetime of
+		// the objects. Especially for clearing up Vulkan relevant parts.
+		Window* m_Window;
+		LayerStack* m_LayerStack;
+
+		KarmaGuiLayer* m_KarmaGuiLayer;
 		bool m_Running = true;
-		LayerStack m_LayerStack;// Created on stack. For entire lifetime of the program (singleton?)
 
 		static Application* s_Instance;
 		static RunningPlatform m_RPlatform;

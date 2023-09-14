@@ -1,6 +1,8 @@
 #include "OpenGLBuffer.h"
 #include "glad/glad.h"
 
+#include "Karma/KarmaUtilities.h"
+
 namespace Karma
 {
 	// VertexBuffer
@@ -63,14 +65,13 @@ namespace Karma
 	}
 
 	// OpenGLImageBuffer
-
+	unsigned int OpenGLImageBuffer::m_ImageBufferID;
 	void OpenGLImageBuffer::SetUpImageBuffer(const char* filenames)
 	{
-
-		// Load and create a texture. Need proper texture loading abstraction 
-		unsigned int texture1;
-		glGenTextures(1, &texture1);
-		glBindTexture(GL_TEXTURE_2D, texture1);
+		// Load and create a texture. Need proper texture loading abstraction
+		//unsigned int texture1;
+		glGenTextures(1, &m_ImageBufferID);
+		glBindTexture(GL_TEXTURE_2D, m_ImageBufferID);
 		// set the texture wrapping parameters
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -81,14 +82,14 @@ namespace Karma
 		// enable z-test
 		glEnable(GL_DEPTH_TEST);
 
-		// load image, create texture and generate mipmaps
+		// load image, create texture, and generate mipmaps
 		int width, height, nrChannels;
 		stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
 		// The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-		unsigned char* data = stbi_load(filenames, &width, &height, &nrChannels, 0);
+		unsigned char* data = KarmaUtilities::GetImagePixelData(filenames, &width, &height, &nrChannels, STBI_rgb_alpha);
 		if (data)
 		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 		else
@@ -96,7 +97,11 @@ namespace Karma
 			KR_CORE_ASSERT(data, "Failed to load textures image!");
 		}
 		stbi_image_free(data);
+	}
 
+	void OpenGLImageBuffer::BindTexture()
+	{
+		glBindTexture(GL_TEXTURE_2D, m_ImageBufferID);
 	}
 
 	OpenGLUniformBuffer::OpenGLUniformBuffer(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex) :

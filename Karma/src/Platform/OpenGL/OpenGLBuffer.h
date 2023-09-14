@@ -44,6 +44,10 @@ namespace Karma
 	{
 	public:
 		static void SetUpImageBuffer(const char* filenames);
+		static void BindTexture();// Experimental, need right OpenGLTexture abstraction
+
+	private:
+		static unsigned int m_ImageBufferID;
 	};
 
 	struct KARMA_API OpenGLUniformBuffer : public UniformBufferObject

@@ -7,11 +7,12 @@
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
+#include "Platform/Vulkan/VulkanRendererAPI.h"
 
 namespace Karma
 {
 	class RendererAPI;
-	class VulkanRendererAPI;
+	//class VulkanRendererAPI;
 	class VulkanVertexArray;
 	struct VulkanUniformBuffer;
 
@@ -104,12 +105,12 @@ namespace Karma
 		VkFormat FindDepthFormat();
 		bool HasStencilComponent(VkFormat format);
 
-		// Texture image
-		void CreateTextureImage(VulkanImageBuffer* vImageBuffer);
+		// Texture relevant
+		//void CreateTextureImage(VulkanImageBuffer* vImageBuffer);
 		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-		void CreateTextureImageView();
-		void CreateTextureSampler();
+		//void CreateTextureImageView();
+		//void CreateTextureSampler();
 
 		void RecreateSwapChain();
 		void CleanupSwapChain();
@@ -120,7 +121,7 @@ namespace Karma
 		void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
 		void ClearUBO();
 		void RecreateUBO();
-		void UploadUBO(size_t currentImage);
+		void UploadUBO(size_t frameIndex);
 
 		// Getters
 		VkDevice GetLogicalDevice() const { return m_device; }
@@ -130,12 +131,20 @@ namespace Karma
 		const std::vector<VkFramebuffer>& GetSwapChainFrameBuffer() const { return m_swapChainFrameBuffers; }
 		VkSwapchainKHR GetSwapChain() const { return m_swapChain; }
 		inline const std::vector<VkImage>& GetSwapChainImages() const { return m_swapChainImages; }
+		VkFormat GetSwapChainImageFormat() const { return m_swapChainImageFormat; }
+		const std::vector<VkImageView>& GetSwapChainImageViews() const { return m_swapChainImageViews; }
+		VkSurfaceFormatKHR GetSurfaceFormat() const { return m_surfaceFormat; }
 		VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
 		VkQueue GetPresentQueue() const { return m_presentQueue; }
 		VkCommandPool GetCommandPool() const { return m_commandPool; }
-		VkImageView GetTextureImageView() const { return m_TextureImageView; }
-		VkSampler GetTextureSampler() const { return m_TextureSampler; }
+		//VkImageView GetTextureImageView() const { return m_TextureImageView; }
+		//VkSampler GetTextureSampler() const { return m_TextureSampler; }
 		const VkPhysicalDeviceFeatures& GetSupportedDeviceFeatures() const { return m_SupportedDeviceFeatures; }
+		VkInstance GetInstance() const { return m_Instance; }
+		uint32_t GetImageCount() const { return uint32_t(m_swapChainImages.size()); }
+		uint32_t GetMinImageCount() const { return m_MinImageCount; }
+		VkSurfaceKHR GetSurface() const { return m_surface; }
+		VkPresentModeKHR GetPresentMode() const { return m_presentMode; }
 
 	private:
 		// Apologies for little out-of-sync naming convention, was dealing with flood of lines when
@@ -156,12 +165,14 @@ namespace Karma
 
 		VkSurfaceKHR m_surface;
 		VkQueue m_presentQueue;
+		VkPresentModeKHR m_presentMode;
+
+		VkSurfaceFormatKHR m_surfaceFormat;
 
 		VkSwapchainKHR m_swapChain;
 		std::vector<VkImage> m_swapChainImages;
 		VkFormat m_swapChainImageFormat;
 		VkExtent2D m_swapChainExtent;
-
 		std::vector<VkImageView> m_swapChainImageViews;
 
 		VkRenderPass m_renderPass;
@@ -177,11 +188,13 @@ namespace Karma
 		VkDeviceMemory m_DepthImageMemory;
 		VkImageView m_DepthImageView;
 
-		// Prototype
-		// VulkanImageBuffer* m_ImageBuffer;
-		VkImage m_TextureImage;
+		uint32_t m_MinImageCount = 0;
+
+		//VkImage m_TextureImage;
+		/*
 		VkDeviceMemory m_TextureImageMemory;
 		VkImageView m_TextureImageView;
 		VkSampler m_TextureSampler;
+		 */
 	};
 }

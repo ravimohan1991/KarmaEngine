@@ -138,19 +138,23 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # If using MSVC (Windows), we need dynamic libraries' members exported
-if(MSVC)
+if(MSVC AND WIN32)
     if(BUILD_SHARED_LIBS)
         set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
     endif()
 endif()
+
+# Some defines
+# add_compile_definitions(IMGUI_IMPL_VULKAN_NO_PROTOTYPES)
 
 # Platform specific defines
 # NOTE: These defines transcend libraries
 if(WIN32)
     add_compile_definitions(KR_WINDOWS_PLATFORM)
 	if(MSVC)
-	    # For faster multithreaded compilation 
-        add_definitions(/MP)
+	    # For faster multithreaded compilation
+        #add_definitions(/MP)
+        add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 	endif()
 elseif(UNIX AND NOT APPLE)
     add_compile_definitions(KR_LINUX_PLATFORM)
@@ -170,21 +174,29 @@ endif()
 add_subdirectory(vendor/Glad)
 add_subdirectory(vendor/GLFW)
 add_subdirectory(vendor/GLM)
-add_subdirectory(vendor/ImGui)
+add_subdirectory(vendor/SDL)
+# add_subdirectory(vendor/ImGui)
 add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/assimp)
 add_subdirectory(vendor/glslang)
 add_subdirectory(vendor/stb)
+add_subdirectory(vendor/BiosReader)
 
 list(APPEND ESSENTIAL_LIBS Glad)
 list(APPEND ESSENTIAL_LIBS GLFW)
 list(APPEND ESSENTIAL_LIBS glm)
-list(APPEND ESSENTIAL_LIBS ImGui)
+if(BUILD_SHARED_LIBS AND NOT MSVC)
+	list(APPEND ESSENTIAL_LIBS SDL2)
+else()
+	list(APPEND ESSENTIAL_LIBS SDL2-static)
+endif()
+# list(APPEND ESSENTIAL_LIBS ImGUI)
 list(APPEND ESSENTIAL_LIBS spdlog)
 list(APPEND ESSENTIAL_LIBS AssImp)
 list(APPEND ESSENTIAL_LIBS ${Vulkan_LIBRARY})
 list(APPEND ESSENTIAL_LIBS GlSlang)
 list(APPEND ESSENTIAL_LIBS stbimage)
+list(APPEND ESSENTIAL_LIBS BiosReader)
 
 # Print Karma's libraries
 message(STATUS "########################")
@@ -210,6 +222,9 @@ if(MSVC AND BUILD_SHARED_LIBS)
     endif()
 endif()
 
+# General compile
+add_compile_definitions(KARMAGUI_HAS_DOCK)
+
 # Karma's personal code
 file(GLOB_RECURSE CPPFILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 # Shows the headerfile directory in project
@@ -225,24 +240,36 @@ else()
     add_library(KarmaEngine STATIC ${CPPFILES} ${HEADERFILES})
 endif()
 
-# Linking to common point
+# Linking to common point. Modified into a web of relevant linkages!
 target_link_libraries(KarmaEngine PUBLIC Glad)
 target_link_libraries(KarmaEngine PUBLIC glfw)
 target_link_libraries(KarmaEngine PUBLIC glm)
-target_link_libraries(KarmaEngine PUBLIC ImGui)
+# For Windows static seems the solution
+if(BUILD_SHARED_LIBS AND NOT MSVC)
+	target_link_libraries(KarmaEngine PUBLIC SDL2)
+else()
+	target_link_libraries(KarmaEngine PUBLIC SDL2-static)
+endif()
+# target_link_libraries(KarmaEngine PUBLIC ImGUI)
 target_link_libraries(KarmaEngine PUBLIC spdlogging)
 target_link_libraries(KarmaEngine PUBLIC AssImp)
 target_link_libraries(KarmaEngine PUBLIC ${Vulkan_LIBRARY})
 target_link_libraries(KarmaEngine PUBLIC GlSlang)
 target_link_libraries(KarmaEngine PUBLIC stbimage)
+target_link_libraries(KarmaEngine PUBLIC BiosReader)
 
 # Cluster Karma's libraries into a single folder for project/solution visualization
 set_property(TARGET Glad PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 set_property(TARGET AssImp PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
-set_property(TARGET ImGui PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+# set_property(TARGET ImGUI PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 set_property(TARGET GlSlang PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 set_property(TARGET spdlogging PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 set_property(TARGET stbimage PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+if(BUILD_SHARED_LIBS AND NOT MSVC)
+	set_property(TARGET SDL2 PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+else()
+	set_property(TARGET SDL2-static PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+endif()
 
 if(BUILD_SHARED_LIBS)
     set_property(TARGET glm_shared PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
@@ -251,6 +278,8 @@ else()
     set_property(TARGET glm_static PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 ]]
 endif()
+
+set_property(TARGET BiosReader PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 
 # INTERFACE (Something that Consumers require but Producers don't)
 # Since I am a library coder here, I am the Producer
@@ -263,6 +292,7 @@ target_include_directories(KarmaEngine
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/assimp/contrib
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/assimp/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/BiosReader/src/public
         ${Vulkan_INCLUDE_DIR}
     PUBLIC
         # where top-level project will look for the library's public headers
@@ -277,7 +307,7 @@ COLLECTIVEINCLUDES(${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_compile_definitions(KarmaEngine PUBLIC KarmaEngine)
 
 # Precompiled headers
-target_precompile_headers(KarmaEngine 
+target_precompile_headers(KarmaEngine
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/krpch.h
 )

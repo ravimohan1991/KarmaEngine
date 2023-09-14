@@ -25,10 +25,16 @@ namespace Karma
 		virtual void BeginScene() = 0;
 		virtual void DrawIndexed(std::shared_ptr<VertexArray> vertexArray) = 0;
 		virtual void EndScene() = 0;
+		
+		inline glm::vec4& GetClearColor() const { return m_ClearColor; }
 
 		inline static API GetAPI() { return s_API; }
 
 	private:
 		static API s_API;
+		
+	protected:
+		// Need to see the utility
+		static glm::vec4 m_ClearColor;
 	};
 }

@@ -206,6 +206,7 @@ namespace Karma
 		glfwTerminate();
 		if (m_Context)
 		{
+			KR_CORE_INFO("Deleting context from window destructor");
 			delete m_Context;
 			m_Context = 0;
 		}

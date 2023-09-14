@@ -55,6 +55,8 @@ namespace Karma
 		return nullptr;
 	}
 
+	// Need to fine tune the getters by index.
+	// We are with the assumption that there be only single shader and texture.
 	std::shared_ptr<Shader> Material::GetShader(int index)
 	{
 		for (const auto& elem : m_Shaders)
@@ -62,6 +64,16 @@ namespace Karma
 				return elem;
 		}
 		KR_CORE_WARN("Couldn't find the Shader with index {0}", index);
+		return nullptr;
+	}
+
+	std::shared_ptr<Texture> Material::GetTexture(int index)
+	{
+		for (const auto& elem : m_Textures)
+		{
+				return elem;
+		}
+		KR_CORE_WARN("Couldn't find the Texture with index {0}", index);
 		return nullptr;
 	}
 }

@@ -11,7 +11,7 @@ namespace Karma
 
 	}
 
-	void WindowsInput::SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window)
+	void WindowsInput::SetEventCallback(const EventCallbackFn& callback, Window* window)
 	{
 		m_Data.EventCallback = callback;
 

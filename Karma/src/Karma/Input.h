@@ -15,10 +15,10 @@
 
 namespace Karma
 {
-    enum class InputRegisteringAPI
+	enum class InputRegisteringAPI
 	{
 		None = 0,
-        GlfwInput
+		GlfwInput
 	};
 
 	struct InputData
@@ -127,7 +127,7 @@ namespace Karma
 		static std::shared_ptr<Input> GetInputInstance() { return s_Instance; }
 
 		using EventCallbackFn = std::function<void(Event&)>;
-		virtual void SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window) = 0;
+		virtual void SetEventCallback(const EventCallbackFn& callback, Window* window) = 0;
 
 		void SetGamepadMapping();
 

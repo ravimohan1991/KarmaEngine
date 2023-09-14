@@ -5,20 +5,13 @@
 class ExampleLayer : public Karma::Layer
 {
 public:
-	ExampleLayer() : Layer("Example") /*m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)*/
+	ExampleLayer() : Layer("Example")
 	{
 		m_Camera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
 
 		m_SquareVA.reset(Karma::VertexArray::Create());
-
-		/*
-		Karma::SceneModel* sModel = new Karma::SceneModel("../Resources/Models/viking_room.obj");
-		m_SquareVA->SetMesh(sModel->GetMeshList()[0]);
-		delete sModel;
-		*/
-
 		std::shared_ptr<Karma::Mesh> trialMesh;
-		trialMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
+		trialMesh.reset(new Karma::Mesh("../Resources/Models/viking_room.obj"));
 		m_SquareVA->SetMesh(trialMesh);
 
 		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
@@ -34,31 +27,52 @@ public:
 		m_SquareMat->AttatchMainCamera(m_Camera);
 
 		m_SquareVA->SetMaterial(m_SquareMat);
+		
+		m_Scene.reset(new Karma::Scene());
 
-		// Should be Material
-		//m_SquareVA->SetShader(m_BlueSQShader);
+		m_Scene->AddCamera(m_Camera);
+		m_Scene->AddVertexArray(m_SquareVA);
+
+		m_Scene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
+
+		//Karma::Renderer::SetScene(m_Scene);
 	}
 
 	virtual void OnUpdate(float deltaTime) override
 	{
 		KarmaAppInputPolling(deltaTime);
-
 		Karma::RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
+
 		Karma::RenderCommand::Clear();
 
-		Karma::Renderer::BeginScene(*m_Camera);
+		Karma::Renderer::BeginScene(m_Scene);
 
 		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
 		m_SquareVA->UpdateProcessAndSetReadyForSubmission();
 		m_SquareVA->Bind();
 
-		Karma::Renderer::Submit(m_SquareVA);
+		Karma::Renderer::Submit(m_Scene);
 
 		Karma::Renderer::EndScene();
 	}
 
-	virtual void OnImGuiRender() override
+	virtual void ImGuiRender(float deltaTime) override
 	{
+		
+		//KarmaAppInputPolling(deltaTime);
+		//Karma::RenderCommand::SetClearColor(m_Scene->GetClearColor());
+
+		//Karma::RenderCommand::Clear();
+
+		//Karma::Renderer::BeginScene(m_Scene);
+
+		//KR_INFO("DeltaTime = {0} ms", deltaTime * 1000.0f);
+		//m_SquareVA->UpdateProcessAndSetReadyForSubmission();
+		//m_SquareVA->Bind();
+
+		//Karma::Renderer::Submit(m_Scene);
+		//Karma::Renderer::EndScene();
+	
 	}
 
 	virtual void OnEvent(Karma::Event& e) override
@@ -106,7 +120,7 @@ public:
 		}
 		// Controller context ends
 
-
+		
 		if (Karma::Input::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_1))
 		{
 			m_Camera->LeftMouseButtonPressed();
@@ -153,6 +167,14 @@ public:
 		// Controller context ends
 	}
 
+	virtual void OnAttach() override
+	{
+	}
+
+	virtual void OnDetach() override
+	{
+	}
+
 private:
 	std::shared_ptr<Karma::Shader> m_BlueSQShader;
 
@@ -161,9 +183,12 @@ private:
 	std::shared_ptr<Karma::Texture> m_SquareTex;
 
 	std::shared_ptr<Karma::PerspectiveCamera> m_Camera;
+	std::shared_ptr<Karma::Scene> m_Scene;
 
 	float cameraTranslationSpeed = 1.0f;
 	float cameraRotationSpeed = 80.0f;
+
+	bool queryForElectronics = false;
 };
 
 class KarmaApp : public Karma::Application
@@ -173,7 +198,6 @@ public:
 	{
 		PushLayer(new ExampleLayer());
 	}
-
 };
 
 Karma::Application* Karma::CreateApplication()

@@ -8,7 +8,7 @@ namespace Karma
 	{
 	}
 
-	void MacInput::SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window)
+	void MacInput::SetEventCallback(const EventCallbackFn& callback, Window* window)
 	{
 		m_Data.EventCallback = callback;
 
@@ -47,8 +47,8 @@ namespace Karma
 					EventDispatcher dispatcher(eve);
 					dispatcher.Dispatch<ControllerDeviceConnectedEvent>([](ControllerDeviceConnectedEvent event) -> bool
 					{
-					KR_CORE_INFO("Event: {0}", event.ToString().c_str());
-					return true;
+						KR_CORE_INFO("Event: {0}", event.ToString().c_str());
+						return true;
 					});
 				}
 

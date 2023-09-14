@@ -32,12 +32,16 @@ namespace Karma
 		inline VkBuffer GetVertexBuffer() const { return m_VertexBuffer; }
 		inline VkDeviceMemory GetVertexBufferMemory() const { return m_VertexBufferMemory; }
 
+		inline size_t GetBufferSize() { return m_BufferSize; }
+
 	private:
 		VkDevice m_Device;
 		BufferLayout m_Layout;
 
 		VkBuffer m_VertexBuffer;
 		VkDeviceMemory m_VertexBufferMemory;
+
+		size_t m_BufferSize;
 	};
 
 	class KARMA_API VulkanIndexBuffer : public IndexBuffer
@@ -59,12 +63,16 @@ namespace Karma
 		inline VkBuffer GetIndexBuffer() const { return m_IndexBuffer; }
 		inline VkDeviceMemory GetIndexBufferMemory() const { return m_IndexBufferMemory; }
 
+		inline size_t GetBufferSize() { return m_BufferSize; }
+
 	private:
 		VkDevice m_Device;
 		uint32_t m_Count;
 
 		VkBuffer m_IndexBuffer;
 		VkDeviceMemory m_IndexBufferMemory;
+
+		size_t m_BufferSize;
 	};
 
 	struct KARMA_API VulkanUniformBuffer : public UniformBufferObject
@@ -81,7 +89,7 @@ namespace Karma
 		void ClearBuffer();
 		void BufferCreation();
 
-		void UploadUniformBuffer(size_t currentImage);
+		void UploadUniformBuffer(size_t frameIndex);
 
 	private:
 		VkDevice m_Device;

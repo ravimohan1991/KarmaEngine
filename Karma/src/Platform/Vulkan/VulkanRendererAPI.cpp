@@ -11,7 +11,6 @@ namespace Karma
 
 	VulkanRendererAPI::~VulkanRendererAPI()
 	{
-
 	}
 
 	void VulkanRendererAPI::ClearVulkanRendererAPI()
@@ -19,7 +18,10 @@ namespace Karma
 		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
 
 		RemoveSynchronicity();
-		vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		if (m_commandBuffers.size() > 0)
+		{
+			vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		}
 	}
 
 	void VulkanRendererAPI::SetClearColor(const glm::vec4& color)
@@ -40,9 +42,11 @@ namespace Karma
 		}
 	}
 
+	// Command buffers are used for stacking rendering commands (in bulk) to be processed in batches
 	void VulkanRendererAPI::AllocateCommandBuffers()
 	{
-		m_commandBuffers.resize(VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer().size());
+		// Since we be needing stack of commands per frame basis
+		m_commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -55,55 +59,54 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffers!");
 	}
 
-	void VulkanRendererAPI::RecordCommandBuffers()
+	void VulkanRendererAPI::RecordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex)
 	{
-		for (size_t i = 0; i < m_commandBuffers.size(); i++)
+		VkCommandBufferBeginInfo beginInfo{};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+		beginInfo.pInheritanceInfo = nullptr;
+
+		VkResult result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin recording command buffer");
+
+		VkRenderPassBeginInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassInfo.renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
+		renderPassInfo.framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[imageIndex];
+		renderPassInfo.renderArea.offset = { 0, 0 };
+		renderPassInfo.renderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
+
+		std::array<VkClearValue, 2> clearValues{};
+		clearValues[0] = { m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a };
+		clearValues[1].depthStencil = { 1.0f, 0 };
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
+
+		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+		for (auto vulkanVA : m_VulkaVertexArrays)
 		{
-			VkCommandBufferBeginInfo beginInfo{};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-			beginInfo.pInheritanceInfo = nullptr;
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipeline());
 
-			VkResult result = vkBeginCommandBuffer(m_commandBuffers[i], &beginInfo);
+			// Bind vertex/index buffers
+			VkBuffer vertexBuffers[] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
+			VkDeviceSize offsets[] = { 0 };
 
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin recording command buffer");
+			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+			vkCmdBindIndexBuffer(commandBuffer, vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
-			VkRenderPassBeginInfo renderPassInfo{};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
-			renderPassInfo.framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[i];
-			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
+			// DescriptorSets number needs be depending upon MAX_FRAMES_IN_FLIGHT or swapchainimages size
+			vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[m_CurrentFrame], 0, nullptr);
 
-			std::array<VkClearValue, 2> clearValues{};
-			clearValues[0] = { m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a };
-			clearValues[1].depthStencil = { 1.0f, 0 };
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-			renderPassInfo.pClearValues = clearValues.data();
-
-			vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-			for (auto vulkanVA : m_VulkaVertexArrays)
-			{
-				vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipeline());
-
-				// Bind vertex/index buffers
-				VkBuffer vertexBuffers[] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
-				VkDeviceSize offsets[] = { 0 };
-
-				vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
-				vkCmdBindIndexBuffer(m_commandBuffers[i], vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-				vkCmdBindDescriptorSets(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[i], 0, nullptr);
-
-				vkCmdDrawIndexed(m_commandBuffers[i], vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
-			}
-
-			vkCmdEndRenderPass(m_commandBuffers[i]);
-
-			VkResult resultCB = vkEndCommandBuffer(m_commandBuffers[i]);
-
-			KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
+			vkCmdDrawIndexed(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
 		}
+
+		vkCmdEndRenderPass(commandBuffer);
+
+		VkResult resultCB = vkEndCommandBuffer(commandBuffer);
+
+		KR_CORE_ASSERT(resultCB == VK_SUCCESS, "Failed to record command buffer");
 	}
 
 	void VulkanRendererAPI::EndScene()
@@ -172,7 +175,13 @@ namespace Karma
 			KR_CORE_ASSERT(false, "Failed to acquire swapchain image");
 		}
 
-		VulkanHolder::GetVulkanContext()->UploadUBO(imageIndex);
+		VulkanHolder::GetVulkanContext()->UploadUBO(m_CurrentFrame);
+
+		vkResetFences(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
+		vkResetCommandBuffer(m_commandBuffers[m_CurrentFrame], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+
+		RecordCommandBuffers(m_commandBuffers[m_CurrentFrame], imageIndex);
+
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -182,13 +191,11 @@ namespace Karma
 		submitInfo.pWaitSemaphores = waitSemaphores;
 		submitInfo.pWaitDstStageMask = waitStages;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &m_commandBuffers[imageIndex];
+		submitInfo.pCommandBuffers = &m_commandBuffers[m_CurrentFrame];
 
 		VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphores[m_CurrentFrame] };
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphores;
-
-		vkResetFences(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
 
 		VkResult result = vkQueueSubmit(VulkanHolder::GetVulkanContext()->GetGraphicsQueue(), 1, &submitInfo, m_InFlightFences[m_CurrentFrame]);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit draw command buffer");
@@ -205,6 +212,7 @@ namespace Karma
 
 		VkResult resultQP = vkQueuePresentKHR(VulkanHolder::GetVulkanContext()->GetPresentQueue(), &presentInfo);
 
+		// Think about resizing of framebuffer
 		if (resultQP == VK_ERROR_OUT_OF_DATE_KHR || resultQP == VK_SUBOPTIMAL_KHR)
 		{
 			RecreateCommandBuffersPipelineSwapchain();
@@ -215,6 +223,16 @@ namespace Karma
 		}
 
 		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+	}
+
+	void VulkanRendererAPI::RecreateCommandBuffersAndSwapChain()
+	{
+		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
+		vkFreeCommandBuffers(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), VulkanHolder::GetVulkanContext()->GetCommandPool(), static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+
+		VulkanHolder::GetVulkanContext()->RecreateSwapChain();
+		AllocateCommandBuffers();
+		m_bAllocateCommandBuffers = false;
 	}
 
 	void VulkanRendererAPI::RecreateCommandBuffersPipelineSwapchain()
@@ -245,7 +263,6 @@ namespace Karma
 	{
 		std::shared_ptr<VulkanVertexArray> vulkanVA = std::static_pointer_cast<VulkanVertexArray>(vertexArray);
 		m_VulkaVertexArrays.push_back(vulkanVA);
-		RecordCommandBuffers();
 		SubmitCommandBuffers();
 	}
 }

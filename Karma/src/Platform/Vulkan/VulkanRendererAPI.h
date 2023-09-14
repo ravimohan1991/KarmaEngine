@@ -21,16 +21,23 @@ namespace Karma
 		virtual void EndScene() override;
 
 		void AllocateCommandBuffers();
-		void RecordCommandBuffers();
+		void RecordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 		void SubmitCommandBuffers();
 		void CreateSynchronicity();
 		void ClearVulkanRendererAPI();
 		void RemoveSynchronicity();
 		void RecreateCommandBuffersPipelineSwapchain();
+		void RecreateCommandBuffersAndSwapChain();
+
+		// Getters. Depending on detailed implementation of other API (such as OpenGL), we may promote the getter to abstract
+		const std::vector<VkCommandBuffer>& GetCommandBuffers() const { return m_commandBuffers; }
+		const int& GetMaxFramesInFlight() const { return MAX_FRAMES_IN_FLIGHT; }
+		const std::vector<VkFence>& GetFences() const { return m_InFlightFences; }
+		const std::vector<VkSemaphore>& GetImageAvailableSemaphores() const { return m_ImageAvailableSemaphores; }
+		const std::vector<VkSemaphore> GetRenderFinishedSemaphore() const { return m_RenderFinishedSemaphores; }
 
 	private:
 		size_t m_CurrentFrame = 0;
-		glm::vec4 m_ClearColor;
 
 		std::vector<VkCommandBuffer> m_commandBuffers;
 		std::vector<std::shared_ptr<VulkanVertexArray>> m_VulkaVertexArrays;
@@ -39,6 +46,8 @@ namespace Karma
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores;
 		std::vector<VkFence> m_InFlightFences;
 
+		// Number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1
+		// Clearly, MAX_FRAMES_IN_FLIGHT shouldn't exceed m_SwapChainImages.size()
 		const int MAX_FRAMES_IN_FLIGHT = 2;
 
 		bool m_bAllocateCommandBuffers;

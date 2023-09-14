@@ -9,7 +9,7 @@ namespace Karma
 	{
 	}
 
-	void LinuxInput::SetEventCallback(const EventCallbackFn& callback, std::shared_ptr<Window> window)
+	void LinuxInput::SetEventCallback(const EventCallbackFn& callback, Window* window)
 	{
 		m_Data.EventCallback = callback;
 

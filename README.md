@@ -1,6 +1,6 @@
 KarmaEngine
 ===========
-![image](https://user-images.githubusercontent.com/2173654/207840133-e219bcbd-9f99-4536-a731-3b94eae92dd8.png)
+<img width="1440" alt="Screenshot 2023-02-15 at 15 45 40" src="https://user-images.githubusercontent.com/2173654/218999401-fe78d0e1-7bff-45ca-a0ab-cb6ab2ce31aa.png">
 
 A cross-platform Game Engine for practical learning and research purposes.
 
@@ -71,9 +71,14 @@ References
 
 ### Books
 * [Game Engine Architecture (Second Edition)](https://www.gameenginebook.com/)
+* [Game Coding Complete, 4th Edition](http://www.amazon.com/gp/offer-listing/1133776574/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1133776574&linkCode=am2&tag=gamecodecompl-20&linkId=YTOZOL6OXF45PZSQ) ([Discussions](https://www.mcshaffry.com/GameCode/))
+* [Game Programming Patterns](https://gameprogrammingpatterns.com/contents.html)
+* [Some Text-Books Curation](https://github.com/kurong00/GameProgramBooks)
 
 ### Youtube Channels
 * [The Cherno](https://www.youtube.com/user/TheChernoProject)
 * [Travis Vroman](https://www.youtube.com/user/barzahd512)
 * [ThinMatrix](https://www.youtube.com/watch?v=f3Cr8Yx3GGA)
 
+### Resources and Misc
+* [deoxygen integration](https://github.com/satu0king/Github-Documentation-With-Doxygen)

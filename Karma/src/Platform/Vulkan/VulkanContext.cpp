@@ -6,15 +6,12 @@
 #include "Karma/Renderer/RenderCommand.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
-#include <set>
-#include <cstdint>
-#include <fstream>
 
 namespace Karma
 {
 	const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
 	// Subject to change based on available hardware scrutiny
-	std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+	std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 #ifdef KR_DEBUG
 	bool VulkanContext::bEnableValidationLayers = true;
@@ -33,11 +30,6 @@ namespace Karma
 	{
 		m_vulkanRendererAPI->ClearVulkanRendererAPI();
 		ClearUBO();
-
-		vkDestroySampler(m_device, m_TextureSampler, nullptr);
-		vkDestroyImageView(m_device, m_TextureImageView, nullptr);
-		vkDestroyImage(m_device, m_TextureImage, nullptr);
-		vkFreeMemory(m_device, m_TextureImageMemory, nullptr);
 
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
@@ -60,7 +52,9 @@ namespace Karma
 		{
 			DestroyDebugUtilsMessengerEXT(m_Instance, debugMessenger, nullptr);
 		}
+
 		vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
+
 		vkDestroyInstance(m_Instance, nullptr);
 
 		glslang::FinalizeProcess();
@@ -71,11 +65,11 @@ namespace Karma
 		m_VulkanUBO.insert(ubo);
 	}
 
-	void VulkanContext::UploadUBO(size_t currentImage)
+	void VulkanContext::UploadUBO(size_t frameIndex)
 	{
 		for (auto ubo : m_VulkanUBO)
 		{
-			ubo->UploadUniformBuffer(currentImage);
+			ubo->UploadUniformBuffer(frameIndex);
 		}
 	}
 
@@ -236,6 +230,7 @@ namespace Karma
 		return 0;
 	}
 
+	/*
 	void VulkanContext::CreateTextureImage(VulkanImageBuffer* vImageBuffer)
 	{
 		VkImageCreateInfo imageInfo{};
@@ -300,6 +295,7 @@ namespace Karma
 		VkResult result = vkCreateSampler(m_device, &samplerInfo, nullptr, &m_TextureSampler);
 		KR_CORE_ASSERT(result == false, "Failed to create texture sampler!");
 	}
+	*/
 
 	void VulkanContext::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 	{
@@ -394,6 +390,7 @@ namespace Karma
 		vkFreeCommandBuffers(m_device, m_commandPool, 1, &commandBuffer);
 	}
 
+	/*
 	void VulkanContext::CreateTextureImageView()
 	{
 		VkImageViewCreateInfo viewInfo{};
@@ -411,6 +408,7 @@ namespace Karma
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create texture image view");
 	}
+	*/
 
 	void VulkanContext::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 	{
@@ -528,11 +526,15 @@ namespace Karma
 	{
 		SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(m_physicalDevice);
 
-		VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
-		VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);// Analogous to v-sync
+		// Dear ImGui may have, MAY, different requirements.
+		m_surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
+		m_presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);// Analogous to v-sync
+
 		VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
 
-		uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+		m_MinImageCount = swapChainSupport.capabilities.minImageCount;
+		uint32_t imageCount = m_MinImageCount + 1;
+
 		if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
 		{
 			imageCount = swapChainSupport.capabilities.maxImageCount;
@@ -542,15 +544,15 @@ namespace Karma
 		createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 		createInfo.surface = m_surface;
 		createInfo.minImageCount = imageCount;
-		createInfo.imageFormat = surfaceFormat.format;
-		createInfo.imageColorSpace = surfaceFormat.colorSpace;
+		createInfo.imageFormat = m_surfaceFormat.format;
+		createInfo.imageColorSpace = m_surfaceFormat.colorSpace;
 		createInfo.imageExtent = extent;
 		createInfo.imageArrayLayers = 1;
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
-		uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(),
-			indices.presentFamily.value()};
+		uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(),
+			indices.presentFamily.value() };
 
 		if (indices.graphicsFamily != indices.presentFamily)
 		{
@@ -567,7 +569,7 @@ namespace Karma
 
 		createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
 		createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-		createInfo.presentMode = presentMode;
+		createInfo.presentMode = m_presentMode;
 		createInfo.clipped = VK_TRUE;
 		createInfo.oldSwapchain = VK_NULL_HANDLE;
 
@@ -579,7 +581,7 @@ namespace Karma
 		m_swapChainImages.resize(imageCount);
 		vkGetSwapchainImagesKHR(m_device, m_swapChain, &imageCount, m_swapChainImages.data());
 
-		m_swapChainImageFormat = surfaceFormat.format;
+		m_swapChainImageFormat = m_surfaceFormat.format;
 		m_swapChainExtent = extent;
 	}
 
@@ -622,8 +624,8 @@ namespace Karma
 		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(),
-		indices.presentFamily.value()};
+		std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(),
+		indices.presentFamily.value() };
 
 		if (bEnableValidationLayers)
 		{
@@ -650,7 +652,7 @@ namespace Karma
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.samplerAnisotropy = VK_TRUE;
-		if(m_SupportedDeviceFeatures.logicOp)
+		if (m_SupportedDeviceFeatures.logicOp)
 		{
 			deviceFeatures.logicOp = VK_TRUE;
 		}
@@ -699,7 +701,7 @@ namespace Karma
 			PrintAvailablePhysicalDevices(devices);
 		}
 
-		for (const auto & device : devices)
+		for (const auto& device : devices)
 		{
 			if (IsDeviceSuitable(device))
 			{
@@ -758,9 +760,9 @@ namespace Karma
 #ifdef KR_MAC_PLATFORM
 		// Case by case query for required extensions
 		// One for MacOS: VK_KHR_portability_subset
-		for(auto anExtention : availableExtensions)
+		for (auto anExtention : availableExtensions)
 		{
-			if(strcmp(anExtention.extensionName, "VK_KHR_portability_subset") != 0)
+			if (strcmp(anExtention.extensionName, "VK_KHR_portability_subset") != 0)
 			{
 				deviceExtensions.push_back("VK_KHR_portability_subset");
 				break;
@@ -900,7 +902,7 @@ namespace Karma
 			createInfo.ppEnabledLayerNames = validationLayers.data();
 
 			PopulateDebugMessengerCreateInfo(debugCreateInfo);
-			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) (&debugCreateInfo);
+			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)(&debugCreateInfo);
 		}
 		else
 		{
@@ -987,9 +989,9 @@ namespace Karma
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, vulkanExtensions.data());
 
 		uint32_t index = 1;
-		for(auto anExtension : vulkanExtensions)
+		for (auto anExtension : vulkanExtensions)
 		{
-			if(strcmp(anExtension.extensionName, "VK_KHR_portability_enumeration"))
+			if (strcmp(anExtension.extensionName, "VK_KHR_portability_enumeration"))
 			{
 				extensions.push_back("VK_KHR_portability_enumeration");
 				flagsToBeSet = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;

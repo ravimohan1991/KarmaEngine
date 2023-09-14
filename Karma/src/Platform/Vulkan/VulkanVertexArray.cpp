@@ -1,13 +1,14 @@
 #include "VulkanVertexArray.h"
 #include "Platform/Vulkan/VulkanHolder.h"
-#include <fstream>
+#include "Platform/Vulkan/VulkanTexutre.h"
+#include "Karma/Renderer/RenderCommand.h"
 
 namespace Karma
 {
 	VulkanVertexArray::VulkanVertexArray() : m_SupportedDeviceFeatures(VulkanHolder::GetVulkanContext()->GetSupportedDeviceFeatures()),
 		m_device(VulkanHolder::GetVulkanContext()->GetLogicalDevice())
 	{
-
+		m_UseExternalViewPort = false;
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
@@ -42,6 +43,18 @@ namespace Karma
 		m_Shader = std::static_pointer_cast<VulkanShader>(shader);
 		VulkanHolder::GetVulkanContext()->RegisterUBO(m_Shader->GetUniformBufferObject());
 		GenerateVulkanVA();
+	}
+
+	void VulkanVertexArray::CreateExternalViewPort(float startX, float startY, float width, float height)
+	{
+		m_ExternalViewPort.x = startX;
+		m_ExternalViewPort.y = startY;
+		m_ExternalViewPort.width = width;
+		m_ExternalViewPort.height = height;
+		m_ExternalViewPort.minDepth = 0.0f;
+		m_ExternalViewPort.maxDepth = 1.0f;
+
+		m_UseExternalViewPort = true;
 	}
 
 	void VulkanVertexArray::CreateGraphicsPipeline()
@@ -90,7 +103,15 @@ namespace Karma
 		VkPipelineViewportStateCreateInfo viewportState{};
 		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		viewportState.viewportCount = 1;
-		viewportState.pViewports = &viewport;
+		if (m_UseExternalViewPort)
+		{
+			viewportState.pViewports = &m_ExternalViewPort;
+		}
+		else
+		{
+			viewportState.pViewports = &viewport;
+		}
+		
 		viewportState.scissorCount = 1;
 		viewportState.pScissors = &scissor;
 
@@ -126,7 +147,7 @@ namespace Karma
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
 			| VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		if(!bLogicalOperationsAllowed)
+		if (!bLogicalOperationsAllowed)
 		{
 			colorBlendAttachment.blendEnable = VK_TRUE;
 		}
@@ -144,7 +165,7 @@ namespace Karma
 		// Combine the old and new value using a bitwise operation
 		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-		if(bLogicalOperationsAllowed)
+		if (bLogicalOperationsAllowed)
 		{
 			colorBlending.logicOpEnable = VK_TRUE;
 		}
@@ -192,6 +213,11 @@ namespace Karma
 		//mesh->GetVertexBuffer()->Bind();
 		AddVertexBuffer(mesh->GetVertexBuffer());
 
+		if(m_VertexBuffers.size() != 0)
+		{
+			m_VertexBuffers.pop_back();
+		}
+
 		// We are seperating VertexBuffers from Mesh.  Hopefully useful for batch rendering!
 		m_VertexBuffers.push_back(mesh->GetVertexBuffer());
 
@@ -235,27 +261,27 @@ namespace Karma
 	{
 		switch (type)
 		{
-			case ShaderDataType::Float:
-				return VK_FORMAT_R32_SFLOAT;
-			case ShaderDataType::Float2:
-				return VK_FORMAT_R32G32_SFLOAT;
-			case ShaderDataType::Float3:
-				return VK_FORMAT_R32G32B32_SFLOAT;
-			case ShaderDataType::Float4:
-				return VK_FORMAT_R32G32B32A32_SFLOAT;
-			case ShaderDataType::None:
-			case ShaderDataType::Mat3:
-			case ShaderDataType::Mat4:
-			case ShaderDataType::Int:
-			case ShaderDataType::Int2:
-			case ShaderDataType::Int3:
-			case ShaderDataType::Int4:
-			case ShaderDataType::Bool:
-				// Refer Mesh::GaugeVertexDataLayout for usual datatype
-				// to be used in the context of vertex buffer
-				KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
+		case ShaderDataType::Float:
+			return VK_FORMAT_R32_SFLOAT;
+		case ShaderDataType::Float2:
+			return VK_FORMAT_R32G32_SFLOAT;
+		case ShaderDataType::Float3:
+			return VK_FORMAT_R32G32B32_SFLOAT;
+		case ShaderDataType::Float4:
+			return VK_FORMAT_R32G32B32A32_SFLOAT;
+		case ShaderDataType::None:
+		case ShaderDataType::Mat3:
+		case ShaderDataType::Mat4:
+		case ShaderDataType::Int:
+		case ShaderDataType::Int2:
+		case ShaderDataType::Int3:
+		case ShaderDataType::Int4:
+		case ShaderDataType::Bool:
+			// Refer Mesh::GaugeVertexDataLayout for usual datatype
+			// to be used in the context of vertex buffer
+			KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
 				return VK_FORMAT_UNDEFINED;
-				break;
+			break;
 		}
 
 		KR_CORE_ASSERT(false, "Vulkan doesn't support this ShaderDatatype");
@@ -361,30 +387,47 @@ namespace Karma
 
 	void VulkanVertexArray::CreateDescriptorSets()
 	{
-		std::vector<VkDescriptorSetLayout> layouts(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(),
-			m_descriptorSetLayout);
+		RendererAPI* rAPI = RenderCommand::GetRendererAPI();
+		VulkanRendererAPI* vulkanAPI = nullptr;
+
+		if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
+		{
+			vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
+		}
+		else
+		{
+			KR_CORE_ASSERT(false, "How is this even possible?");
+		}
+
+		int maxFramesInFlight = vulkanAPI->GetMaxFramesInFlight();
+
+		std::vector<VkDescriptorSetLayout> layouts(maxFramesInFlight, m_descriptorSetLayout);
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		allocInfo.descriptorPool = m_descriptorPool;
-		allocInfo.descriptorSetCount = static_cast<uint32_t>(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size());
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(maxFramesInFlight);
 		allocInfo.pSetLayouts = layouts.data();
 
-		m_descriptorSets.resize(VulkanHolder::GetVulkanContext()->GetSwapChainImages().size());
+		m_descriptorSets.resize(maxFramesInFlight);
 		VkResult result = vkAllocateDescriptorSets(m_device, &allocInfo, m_descriptorSets.data());
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to allocate descriptor sets!");
 
-		for (size_t i = 0; i < VulkanHolder::GetVulkanContext()->GetSwapChainImages().size(); i++)
+		for (size_t i = 0; i < maxFramesInFlight; i++)
 		{
 			VkDescriptorBufferInfo bufferInfo{};
 			bufferInfo.buffer = m_Shader->GetUniformBufferObject()->GetUniformBuffers()[i];
 			bufferInfo.offset = 0;
 			bufferInfo.range = m_Shader->GetUniformBufferObject()->GetBufferSize();
 
+			// Fetch right texture pointer first whose image is to be considered.
+			// Caution: GetTexture index is with temporary assumption that needs addressing.
+			std::shared_ptr<VulkanTexture> vTexture = m_Materials[0]->GetTexture(0)->GetVulkanTexture();
+
 			VkDescriptorImageInfo imageInfo{};
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = VulkanHolder::GetVulkanContext()->GetTextureImageView();
-			imageInfo.sampler = VulkanHolder::GetVulkanContext()->GetTextureSampler();
+			imageInfo.imageView = vTexture->GetImageView();
+			imageInfo.sampler = vTexture->GetImageSampler();
 
 			std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
