@@ -295,7 +295,7 @@ namespace Karma
 	private:
 		// Hmm, let me try my way
 		//template <typename ClassType>
-		static bool IsChildOfWorkaround(const UClass* ObjClass, const UClass* TestCls);
+		static bool IsChildOfWorkaround(const UClass* ObjClass, const UClass* TestClass);
 		//static FORCEINLINE bool IsChildOfWorkaround(const ClassType* ObjClass, const ClassType* TestCls);
 		//{
 		//	return ObjClass->IsChildOf(TestCls);
