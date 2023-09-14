@@ -6,9 +6,7 @@ name: Doxygen Action
 # events but only for the master branch
 on:
   push:
-    branches: 
-      - main
-      - Karma-doxygen-documentation
+    branches: [ Karma-doxygen-documentation ]
   pull_request:
     branches: [ main ]
 
