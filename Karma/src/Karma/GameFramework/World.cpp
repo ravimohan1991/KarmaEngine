@@ -18,6 +18,7 @@ namespace Karma
 
 	UWorld::UWorld() : UObject()
 	{
+		m_bIsPaused = false;
 		m_TimeSeconds = 0.0f;
 		m_UnpausedTimeSeconds = 0.0f;
 		m_RealTimeSeconds = 0.0f;
@@ -299,6 +300,11 @@ namespace Karma
 	{
 		// Update time.
 		m_RealTimeSeconds += DeltaSeconds;
+
+		if(!m_bIsPaused)
+		{
+			m_TimeSeconds += DeltaSeconds;
+		}
 
 		// Save off actual delta
 		float RealDeltaSeconds = DeltaSeconds;

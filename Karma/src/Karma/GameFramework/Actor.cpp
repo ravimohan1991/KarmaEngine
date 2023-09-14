@@ -443,11 +443,15 @@ namespace Karma
 
 		// Set owner.
 		if(InOwner)
-		SetOwner(InOwner);
+		{
+			SetOwner(InOwner);
+		}
 
 		// Set instigator
 		if(InInstigator)
-		SetInstigator(InInstigator);
+		{
+			SetInstigator(InInstigator);
+		}
 
 		// Set the actor's world transform if it has a native rootcomponent.
 		USceneComponent* const SceneRootComponent = FixupNativeActorComponents(this);

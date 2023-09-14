@@ -175,6 +175,8 @@ namespace Karma
 		/** time at which to start pause **/
 		double m_PauseDelay;
 
+		bool m_bIsPaused;
+
 	public:
 		/** Is the world being torn down */
 		uint8_t m_bIsTearingDown : 1;
@@ -277,7 +279,6 @@ namespace Karma
 		//////////////////////////////////////////////////////////////////////////
 		// UWorld inlines:
 
-		// Is not live atm
 		FORCEINLINE double GetTimeSeconds() const
 		{
 			return m_TimeSeconds;
