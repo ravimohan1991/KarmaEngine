@@ -299,6 +299,7 @@ namespace Karma
 		static void DrawKarmaSceneHierarchyPanelMesa();
 		static void Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene);
 		static void DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback);
+		static void DrawMemoryExhibitor();
 
 		// Mesas!
 		static void ShowAboutKarmaMesa(bool* pbOpen);

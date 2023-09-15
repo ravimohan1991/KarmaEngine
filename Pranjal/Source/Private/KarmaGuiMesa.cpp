@@ -106,6 +106,11 @@ namespace Karma
 			DrawContentBrowser(editorCallbacks.openSceneCallback);
 		}
 
+		// 7. Memory-usage exhibhitor
+		{
+			DrawMemoryExhibitor();
+		}
+
 		// Display ready log message and do one time initialization stuff
 		{
 			if(!m_EditorInitialized)
@@ -136,6 +141,35 @@ namespace Karma
 	std::filesystem::path KarmaGuiMesa::m_CurrentDirectory = std::filesystem::current_path();
 	uint32_t KarmaGuiMesa::m_DirectoryIcon = 3;
 	uint32_t KarmaGuiMesa::m_FileIcon = 2;
+
+	void KarmaGuiMesa::DrawMemoryExhibitor()
+	{
+		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoScrollWithMouse | KGGuiWindowFlags_NoScrollbar;
+
+		KarmaGui::Begin("Memory Exhibitor", nullptr, windowFlags);
+
+		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
+
+		float x, y;
+		float memoryBlockWidth = 600;
+		float memoryBlockHeight = 250;
+
+		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
+
+		x = currentWindow->Pos.x + currentWindow->Size.x / 2 - memoryBlockWidth / 2;
+		y = currentWindow->Pos.y + currentWindow->Size.y / 2 + memoryBlockHeight / 2;
+		KGVec2 bottomLeftCoordinates = KGVec2(x, y);
+		x = currentWindow->Pos.x + currentWindow->Size.x / 2 + memoryBlockWidth / 2;
+		y = currentWindow->Pos.y + currentWindow->Size.y / 2 - memoryBlockHeight / 2;
+		KGVec2 topRightCoordinates = KGVec2(x, y);
+
+		KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
+
+		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
+		drawList->AddRectFilled(bottomLeftCoordinates, KGVec2(topRightCoordinates.x - memoryBlockWidth / 2, topRightCoordinates.y), occupiedMemoryColor);
+
+		KarmaGui::End();
+	}
 
 	void KarmaGuiMesa::DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback)
 	{
@@ -219,6 +253,8 @@ namespace Karma
 
 	void KarmaGuiMesa::Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene)
 	{
+		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoScrollWithMouse | KGGuiWindowFlags_NoScrollbar;
+		KarmaGui::Begin("3D Exhibitor", nullptr, windowFlags);
 		KarmaGui::SetNextWindowSize(KGVec2(400, 400), KGGuiCond_FirstUseEver);
 
 		KGVec4 bgColor;
@@ -229,11 +265,7 @@ namespace Karma
 
 		KarmaGui::PushStyleColor(KGGuiCol_WindowBg, KarmaGui::GetColorU32(bgColor));
 
-		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoScrollWithMouse | KGGuiWindowFlags_NoScrollbar;
-
-		KarmaGui::Begin("3D Exhibitor", nullptr, windowFlags);
-
-		KGGuiWindow* window = KarmaGuiInternal::FindWindowByName("3D Exhibitor");
+		KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
 
 		m_ViewportFocused = KarmaGui::IsWindowFocused();
 		m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
@@ -258,30 +290,30 @@ namespace Karma
 			//KR_CORE_INFO("Scene Callback");
 		};
 
-		KGGuiWindow* theWindow = KarmaGuiInternal::GetCurrentWindow();
-		scene->SetRenderWindow(theWindow);
+		//KGGuiWindow* theWindow = KarmaGuiInternal::GetCurrentWindow();
+		scene->SetRenderWindow(window);
 
 		{
 			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
 			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
 			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
 			KGVec4 border_col = KGVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
-			KarmaGui::Image(backgroundImageTextureID, KGVec2(theWindow->Size.x, theWindow->Size.y), uvMin, uvMax, tint_col, border_col);
+			KarmaGui::Image(backgroundImageTextureID, KGVec2(window->Size.x, window->Size.y), uvMin, uvMax, tint_col, border_col);
 		}
 
-		if(theWindow->Size.x != m_3DExhibitor.widthCache || theWindow->Size.y != m_3DExhibitor.heightCache)
+		if(window->Size.x != m_3DExhibitor.widthCache || window->Size.y != m_3DExhibitor.heightCache)
 		{
 			scene->SetWindowToRenderWithinResize(true);
 
-			m_3DExhibitor.widthCache = theWindow->Size.x;
-			m_3DExhibitor.heightCache = theWindow->Size.y;
+			m_3DExhibitor.widthCache = window->Size.x;
+			m_3DExhibitor.heightCache = window->Size.y;
 		}
-		else if (theWindow->Pos.x != m_3DExhibitor.startXCache || theWindow->Pos.y != m_3DExhibitor.startYCache)
+		else if (window->Pos.x != m_3DExhibitor.startXCache || window->Pos.y != m_3DExhibitor.startYCache)
 		{
 			scene->SetWindowToRenderWithinResize(true);
 
-			m_3DExhibitor.startYCache = theWindow->Pos.y;
-			m_3DExhibitor.startXCache = theWindow->Pos.x;
+			m_3DExhibitor.startYCache = window->Pos.y;
+			m_3DExhibitor.startXCache = window->Pos.x;
 		}
 		else if(io.DisplaySize.x != m_3DExhibitor.ioDisplayXCache || io.DisplaySize.y != m_3DExhibitor.ioDisplayYCache)
 		{
@@ -303,8 +335,8 @@ namespace Karma
 			m_RefreshRenderingResources = false;
 		}
 
-		KarmaGui::End();
 		KarmaGui::PopStyleColor();
+		KarmaGui::End();
 	}
 
 	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
