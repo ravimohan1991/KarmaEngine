@@ -151,7 +151,7 @@ namespace Karma
 			KarmaGui::End();
 		}
 
-		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset
+		// The complete UI Pranjal shall (ever?) need. Not counting meta morpho analytic and service toolset
 		{
 			static CallbacksFromEditor editorCallbacks;
 			editorCallbacks.openSceneCallback = std::bind(&EditorLayer::OpenScene, this, std::placeholders::_1);

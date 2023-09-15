@@ -292,6 +292,38 @@ namespace  Karma
 		va_end(args);
 	}
 
+	/// Draws vertical text. The position is the bottom left of the text rect.
+	/// Courtsey: https://github.com/ocornut/imgui/issues/705 with my own modular scaling modification
+	void KarmaGui::AddTextVertical(KGDrawList* DrawList, const char *text, KGVec2 pos, KGU32 text_color)
+	{
+		pos.x = KG_ROUND(pos.x);
+		pos.y = KG_ROUND(pos.y);
+		KGFont *font = GKarmaGui->Font;
+		const KGFontGlyph *glyph;
+		char c;
+		KarmaGuiContext& g = *GKarmaGui;
+		//KGVec2 text_size = CalcTextSize(text);
+		while ((c = *text++))
+		{
+			glyph = font->FindGlyph(c);
+			if (!glyph) continue;
+
+			DrawList->PrimReserve(6, 4);
+			DrawList->PrimQuadUV(
+								pos + KGVec2(glyph->Y0 * font->Scale, -glyph->X0 * font->Scale),
+								pos + KGVec2(glyph->Y0 * font->Scale, -glyph->X1 * font->Scale),
+								pos + KGVec2(glyph->Y1 * font->Scale, -glyph->X1 * font->Scale),
+								pos + KGVec2(glyph->Y1 * font->Scale, -glyph->X0 * font->Scale),
+
+								KGVec2(glyph->U0, glyph->V0),
+								KGVec2(glyph->U1, glyph->V0),
+								KGVec2(glyph->U1, glyph->V1),
+								KGVec2(glyph->U0, glyph->V1),
+								text_color);
+			pos.y -= glyph->AdvanceX * font->Scale;
+		}
+	}
+
 	void KarmaGui::TextColoredV(const KGVec4& col, const char* fmt, va_list args)
 	{
 		PushStyleColor(KGGuiCol_Text, col);

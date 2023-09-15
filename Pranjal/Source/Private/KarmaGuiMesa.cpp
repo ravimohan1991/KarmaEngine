@@ -150,9 +150,11 @@ namespace Karma
 
 		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
 
-		float x, y;
-		float memoryBlockWidth = 600;
-		float memoryBlockHeight = 250;
+		static float x, y;
+		static float memoryBlockWidth = 600;
+		static float memoryBlockHeight = 250;
+		static KGVec4 legendTextColor = KGVec4(0.0f, 1.0f, 0.0f, 1.0f);
+		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
 
 		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
 
@@ -163,10 +165,23 @@ namespace Karma
 		y = currentWindow->Pos.y + currentWindow->Size.y / 2 - memoryBlockHeight / 2;
 		KGVec2 topRightCoordinates = KGVec2(x, y);
 
-		KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
-
 		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
 		drawList->AddRectFilled(bottomLeftCoordinates, KGVec2(topRightCoordinates.x - memoryBlockWidth / 2, topRightCoordinates.y), occupiedMemoryColor);
+
+		static KGVec2 textSize = KarmaGui::CalcTextSize("Memory Quota for UObjects");
+
+		KarmaGui::SetCursorPos(KGVec2(currentWindow->Size.x / 2 - textSize.x / 2, currentWindow->Size.y / 2 + memoryBlockHeight / 2));
+		KarmaGui::TextColored(legendTextColor, "Memory Quota for UObjects");
+
+		static KGFont* verticalTextFont = KarmaGui::GetFont();
+		verticalTextFont->Scale = 0.5f;
+
+		KarmaGui::PushFont(verticalTextFont);
+		static KGVec2 textSize2 = KarmaGui::CalcTextSize("Vertical Text");
+		KarmaGui::AddTextVertical(drawList, "Vertical Text", KGVec2(topRightCoordinates.x - memoryBlockWidth / 2, bottomLeftCoordinates.y - memoryBlockHeight / 2 + textSize2.x / 2), KG_COL32_BLACK);
+		//KarmaGui::TextColored(legendTextColor, "Memory Quota for UObjects");
+		KarmaGui::PopFont();
+		verticalTextFont->Scale = 1.0f;
 
 		KarmaGui::End();
 	}

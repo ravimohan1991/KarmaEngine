@@ -369,6 +369,7 @@ namespace Karma
 		static void          Text(const char* fmt, ...)                                      KG_FMTARGS(1); // formatted text
 		static void          TextV(const char* fmt, va_list args)                            KG_FMTLIST(1);
 		static void          TextColored(const KGVec4& col, const char* fmt, ...)            KG_FMTARGS(2); // shortcut for PushStyleColor(KGGuiCol_Text, col); Text(fmt, ...); PopStyleColor();
+		static void          AddTextVertical(KGDrawList* DrawList, const char *text, KGVec2 pos, KGU32 text_color);
 		static void          TextColoredV(const KGVec4& col, const char* fmt, va_list args)  KG_FMTLIST(2);
 		static void          TextDisabled(const char* fmt, ...)                              KG_FMTARGS(1); // shortcut for PushStyleColor(KGGuiCol_Text, style.Colors[KGGuiCol_TextDisabled]); Text(fmt, ...); PopStyleColor();
 		static void          TextDisabledV(const char* fmt, va_list args)                    KG_FMTLIST(1);
