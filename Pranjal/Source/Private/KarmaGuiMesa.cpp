@@ -161,6 +161,7 @@ namespace Karma
 		static KGVec4 legendTextColor = KGVec4(0.0f, 1.0f, 0.0f, 1.0f);
 		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
 		static KGU32 arrowColor = KG_COL32(255, 215, 0, 255);
+		static KGU32 usageColor = KG_COL32(128, 0, 128, 255);
 		static float occupiedMemoryPercent = 25.0f;
 
 		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
@@ -185,7 +186,7 @@ namespace Karma
 		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
 		drawList->AddRectFilled(bottomLeftCoordinates, fillerTopRightCoordinates, occupiedMemoryColor);
 
-		static std::string addressText = "0x001BB";
+		static std::string addressText = "0xb73eb000";
 		static KGVec2 addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
 
 		KGVec2 pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax;
@@ -221,9 +222,9 @@ namespace Karma
 		verticalTextFont->Scale = 0.6f;
 
 		KarmaGui::PushFont(verticalTextFont);
-		static KGVec2 textSize2 = KarmaGui::CalcTextSize("Vertical Text");
-		KarmaGui::AddTextVertical(drawList, "Vertical Text", KGVec2(topRightCoordinates.x - memoryBlockWidth / 2, bottomLeftCoordinates.y - memoryBlockHeight / 2 + textSize2.x / 2), KG_COL32_BLACK);
-		//KarmaGui::TextColored(legendTextColor, "Memory Quota for UObjects");
+		std::string usageText = "Memory Usage: " + std::to_string(int(occupiedMemoryPercent)) + "%";
+		static KGVec2 textSize2 = KarmaGui::CalcTextSize(usageText.c_str());
+		KarmaGui::AddTextVertical(drawList, usageText.c_str(), KGVec2(fillerTopRightCoordinates.x, bottomLeftCoordinates.y - memoryBlockHeight / 2 + textSize2.x / 2), usageColor);
 		KarmaGui::PopFont();
 		verticalTextFont->Scale = 1.0f;
 
