@@ -183,10 +183,20 @@ namespace Karma
 
 		// Draw appropriate lables for display of addresses explicitly
 		KarmaGuiInternal::RenderArrowPointingAt(drawList, bottomLeftCoordinates, KGVec2(5, 16), KGGuiDir_Up, arrowColor);
-		drawList->AddRect(KGVec2(bottomLeftCoordinates.x - 2.5, bottomLeftCoordinates.y + 16 + addressTextSize.y), KGVec2(bottomLeftCoordinates.x - 2.5 + addressTextSize.x, bottomLeftCoordinates.y + 16), KG_COL32_BLACK);
+		KGVec2 pointerRectangleCoordinatesMin = KGVec2(bottomLeftCoordinates.x - 2.5, bottomLeftCoordinates.y + 16 + addressTextSize.y);
+		KGVec2 pointerRectangleCoordinatesMax = KGVec2(bottomLeftCoordinates.x - 2.5 + addressTextSize.x, bottomLeftCoordinates.y + 16);
+		drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
+		KGVec2 cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - currentWindow->Pos.x + KarmaGui::GetScrollX(), pointerRectangleCoordinatesMin.y - currentWindow->Pos.y - addressTextSize.y);
+		KarmaGui::SetCursorPos(cursorPosition);
+		KarmaGui::TextColored(legendTextColor, addressText);
 
 		KarmaGuiInternal::RenderArrowPointingAt(drawList, fillerTopRightCoordinates, KGVec2(5, 16), KGGuiDir_Down, arrowColor);
-		drawList->AddRect(KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16), KGVec2(fillerTopRightCoordinates.x + addressTextSize.x / 2, fillerTopRightCoordinates.y - 16 - addressTextSize.y), KG_COL32_BLACK);
+		pointerRectangleCoordinatesMin = KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16);
+		pointerRectangleCoordinatesMax = KGVec2(fillerTopRightCoordinates.x + addressTextSize.x / 2, fillerTopRightCoordinates.y - 16 - addressTextSize.y);
+		drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
+		cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - currentWindow->Pos.x + KarmaGui::GetScrollX(), pointerRectangleCoordinatesMin.y - currentWindow->Pos.y - addressTextSize.y);
+		KarmaGui::SetCursorPos(cursorPosition);
+		KarmaGui::TextColored(legendTextColor, addressText);
 
 		static KGVec2 textSize = KarmaGui::CalcTextSize("Memory Quota for UObjects");
 
