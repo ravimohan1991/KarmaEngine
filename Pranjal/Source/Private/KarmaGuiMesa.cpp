@@ -185,29 +185,36 @@ namespace Karma
 		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
 		drawList->AddRectFilled(bottomLeftCoordinates, fillerTopRightCoordinates, occupiedMemoryColor);
 
-		const char* addressText = "0x001AB0DWAR";
-		static KGVec2 addressTextSize = KarmaGui::CalcTextSize(addressText);
+		static std::string addressText = "0x001BB";
+		static KGVec2 addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
+
+		KGVec2 pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax;
+		KGVec2 cursorPosition;
 
 		// Draw appropriate lables for display of addresses explicitly
-		KarmaGuiInternal::RenderArrowPointingAt(drawList, bottomLeftCoordinates, KGVec2(5, 16), KGGuiDir_Up, arrowColor);
-		KGVec2 pointerRectangleCoordinatesMin = KGVec2(bottomLeftCoordinates.x - 2.5, bottomLeftCoordinates.y + 16 + addressTextSize.y);
-		KGVec2 pointerRectangleCoordinatesMax = KGVec2(bottomLeftCoordinates.x - 2.5 + addressTextSize.x, bottomLeftCoordinates.y + 16);
-		drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
-		KGVec2 cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - currentWindow->Pos.x + KarmaGui::GetScrollX(), pointerRectangleCoordinatesMin.y - currentWindow->Pos.y - addressTextSize.y);
-		KarmaGui::SetCursorPos(cursorPosition);
-		KarmaGui::TextColored(legendTextColor, "%s", addressText);
+		{
+			KarmaGuiInternal::RenderArrowPointingAt(drawList, bottomLeftCoordinates, KGVec2(5, 16), KGGuiDir_Up, arrowColor);
+			pointerRectangleCoordinatesMin = KGVec2(bottomLeftCoordinates.x - 2.5, bottomLeftCoordinates.y + 16 + addressTextSize.y);
+			pointerRectangleCoordinatesMax = KGVec2(bottomLeftCoordinates.x - 2.5 + addressTextSize.x, bottomLeftCoordinates.y + 16);
+			drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
+			cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - bareToFrameX, pointerRectangleCoordinatesMin.y - bareToFrameY - addressTextSize.y);
+			KarmaGui::SetCursorPos(cursorPosition);
+			KarmaGui::TextColored(legendTextColor, "%s", addressText.c_str());
+		}
 
-		KarmaGuiInternal::RenderArrowPointingAt(drawList, fillerTopRightCoordinates, KGVec2(5, 16), KGGuiDir_Down, arrowColor);
-		pointerRectangleCoordinatesMin = KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16);
-		pointerRectangleCoordinatesMax = KGVec2(fillerTopRightCoordinates.x + addressTextSize.x / 2, fillerTopRightCoordinates.y - 16 - addressTextSize.y);
-		drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
-		cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - currentWindow->Pos.x + KarmaGui::GetScrollX(), pointerRectangleCoordinatesMin.y - currentWindow->Pos.y - addressTextSize.y);
-		KarmaGui::SetCursorPos(cursorPosition);
-		KarmaGui::TextColored(legendTextColor, "%s", addressText);
+		{
+			KarmaGuiInternal::RenderArrowPointingAt(drawList, fillerTopRightCoordinates, KGVec2(5, 16), KGGuiDir_Down, arrowColor);
+			pointerRectangleCoordinatesMin = KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16);
+			pointerRectangleCoordinatesMax = KGVec2(fillerTopRightCoordinates.x + addressTextSize.x / 2, fillerTopRightCoordinates.y - 16 - addressTextSize.y);
+			drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
+			cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - bareToFrameX, pointerRectangleCoordinatesMin.y - bareToFrameY - addressTextSize.y);
+			KarmaGui::SetCursorPos(cursorPosition);
+			KarmaGui::TextColored(legendTextColor, "%s", addressText.c_str());
+		}
 
 		static KGVec2 textSize = KarmaGui::CalcTextSize("Memory Quota for UObjects");
 
-		KarmaGui::SetCursorPos(KGVec2((45 + memoryBlockWidth) / 2 - textSize.x / 2, currentWindow->Size.y / 2 + memoryBlockHeight / 2));// local coordinates, scrolling included
+		KarmaGui::SetCursorPos(KGVec2((bareXBL + memoryBlockWidth) / 2 - textSize.x / 2, bareYBL));// local coordinates, scrolling included
 		KarmaGui::TextColored(legendTextColor, "Memory Quota for UObjects");
 
 		static KGFont* verticalTextFont = KarmaGui::GetFont();
