@@ -327,6 +327,19 @@ namespace Karma
 
 		KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
 
+		static bool bShouldRefresh = false;
+
+		// refresh once when clicked and rendered
+		if(window->Appearing && bShouldRefresh)
+		{
+			m_RefreshRenderingResources = true;
+			bShouldRefresh = false;
+		}
+		else
+		{
+			bShouldRefresh = true;
+		}
+
 		m_ViewportFocused = KarmaGui::IsWindowFocused();
 		m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
 
