@@ -133,7 +133,7 @@ namespace Karma
 	}
 
 	//-----------------------------------------------------------------------------
-	// [SECTION] A variety of Dear ImGui mesas
+	// [SECTION] A variety of KarmaGui  mesas
 	//-----------------------------------------------------------------------------
 
 	// Once we have projects, change this
@@ -144,24 +144,27 @@ namespace Karma
 
 	void KarmaGuiMesa::DrawMemoryExhibitor()
 	{
-		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoScrollWithMouse | KGGuiWindowFlags_NoScrollbar;
+		KarmaGuiWindowFlags windowFlags =  KGGuiWindowFlags_HorizontalScrollbar;
 
+		// fiddle this parameter on increasing / decreasing memoryBlockWidth
+		KarmaGui::SetNextWindowContentSize(KGVec2(1450, 500));
 		KarmaGui::Begin("Memory Exhibitor", nullptr, windowFlags);
 
 		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
 
 		static float x, y;
-		static float memoryBlockWidth = 600;
+		//static float scrollHorizontalOffset;
+		static float memoryBlockWidth = 1250;
 		static float memoryBlockHeight = 250;
 		static KGVec4 legendTextColor = KGVec4(0.0f, 1.0f, 0.0f, 1.0f);
 		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
 
 		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
 
-		x = currentWindow->Pos.x + currentWindow->Size.x / 2 - memoryBlockWidth / 2;
+		x = currentWindow->Pos.x + 45 - KarmaGui::GetScrollX();
 		y = currentWindow->Pos.y + currentWindow->Size.y / 2 + memoryBlockHeight / 2;
 		KGVec2 bottomLeftCoordinates = KGVec2(x, y);
-		x = currentWindow->Pos.x + currentWindow->Size.x / 2 + memoryBlockWidth / 2;
+		x = currentWindow->Pos.x + memoryBlockWidth - KarmaGui::GetScrollX();
 		y = currentWindow->Pos.y + currentWindow->Size.y / 2 - memoryBlockHeight / 2;
 		KGVec2 topRightCoordinates = KGVec2(x, y);
 
@@ -170,11 +173,11 @@ namespace Karma
 
 		static KGVec2 textSize = KarmaGui::CalcTextSize("Memory Quota for UObjects");
 
-		KarmaGui::SetCursorPos(KGVec2(currentWindow->Size.x / 2 - textSize.x / 2, currentWindow->Size.y / 2 + memoryBlockHeight / 2));
+		KarmaGui::SetCursorPos(KGVec2((45 + memoryBlockWidth) / 2 - textSize.x / 2, currentWindow->Size.y / 2 + memoryBlockHeight / 2));// local coordinates, scrolling included
 		KarmaGui::TextColored(legendTextColor, "Memory Quota for UObjects");
 
 		static KGFont* verticalTextFont = KarmaGui::GetFont();
-		verticalTextFont->Scale = 0.5f;
+		verticalTextFont->Scale = 0.6f;
 
 		KarmaGui::PushFont(verticalTextFont);
 		static KGVec2 textSize2 = KarmaGui::CalcTextSize("Vertical Text");
