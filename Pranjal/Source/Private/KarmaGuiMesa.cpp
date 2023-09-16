@@ -153,9 +153,11 @@ namespace Karma
 		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
 
 		static float x, y;
-		//static float scrollHorizontalOffset;
+		static float bareToFrameX, bareToFrameY;
+		static float bareXBL, bareYBL;
+		static float bareXTR, bareYTR;
 		static float memoryBlockWidth = 1250;
-		static float memoryBlockHeight = 250;
+		static float memoryBlockHeight = 150;
 		static KGVec4 legendTextColor = KGVec4(0.0f, 1.0f, 0.0f, 1.0f);
 		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
 		static KGU32 arrowColor = KG_COL32(255, 215, 0, 255);
@@ -163,11 +165,16 @@ namespace Karma
 
 		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
 
-		x = currentWindow->Pos.x + 45 - KarmaGui::GetScrollX();
-		y = currentWindow->Pos.y + currentWindow->Size.y / 2 + memoryBlockHeight / 2;
+		bareXBL = 45;
+		bareYBL = 100 + memoryBlockHeight;
+		bareToFrameX = currentWindow->Pos.x - KarmaGui::GetScrollX();
+		bareToFrameY = currentWindow->Pos.y - KarmaGui::GetScrollY();
+
+		x = bareXBL + bareToFrameX;
+		y = bareYBL + bareToFrameY;
 		KGVec2 bottomLeftCoordinates = KGVec2(x, y);
-		x = currentWindow->Pos.x + 45 + memoryBlockWidth - KarmaGui::GetScrollX();
-		y = currentWindow->Pos.y + currentWindow->Size.y / 2 - memoryBlockHeight / 2;
+		x = x + memoryBlockWidth;
+		y = y - memoryBlockHeight;
 		KGVec2 topRightCoordinates = KGVec2(x, y);
 
 		KGVec2 fillerTopRightCoordinates = KGVec2(topRightCoordinates.x - (1 - occupiedMemoryPercent / 100) * memoryBlockWidth, topRightCoordinates.y);
@@ -188,7 +195,7 @@ namespace Karma
 		drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
 		KGVec2 cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - currentWindow->Pos.x + KarmaGui::GetScrollX(), pointerRectangleCoordinatesMin.y - currentWindow->Pos.y - addressTextSize.y);
 		KarmaGui::SetCursorPos(cursorPosition);
-		KarmaGui::TextColored(legendTextColor, addressText);
+		KarmaGui::TextColored(legendTextColor, "%s", addressText);
 
 		KarmaGuiInternal::RenderArrowPointingAt(drawList, fillerTopRightCoordinates, KGVec2(5, 16), KGGuiDir_Down, arrowColor);
 		pointerRectangleCoordinatesMin = KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16);
@@ -196,7 +203,7 @@ namespace Karma
 		drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
 		cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - currentWindow->Pos.x + KarmaGui::GetScrollX(), pointerRectangleCoordinatesMin.y - currentWindow->Pos.y - addressTextSize.y);
 		KarmaGui::SetCursorPos(cursorPosition);
-		KarmaGui::TextColored(legendTextColor, addressText);
+		KarmaGui::TextColored(legendTextColor, "%s", addressText);
 
 		static KGVec2 textSize = KarmaGui::CalcTextSize("Memory Quota for UObjects");
 
