@@ -158,18 +158,35 @@ namespace Karma
 		static float memoryBlockHeight = 250;
 		static KGVec4 legendTextColor = KGVec4(0.0f, 1.0f, 0.0f, 1.0f);
 		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
+		static KGU32 arrowColor = KG_COL32(255, 215, 0, 255);
+		static float occupiedMemoryPercent = 25.0f;
 
 		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
 
 		x = currentWindow->Pos.x + 45 - KarmaGui::GetScrollX();
 		y = currentWindow->Pos.y + currentWindow->Size.y / 2 + memoryBlockHeight / 2;
 		KGVec2 bottomLeftCoordinates = KGVec2(x, y);
-		x = currentWindow->Pos.x + memoryBlockWidth - KarmaGui::GetScrollX();
+		x = currentWindow->Pos.x + 45 + memoryBlockWidth - KarmaGui::GetScrollX();
 		y = currentWindow->Pos.y + currentWindow->Size.y / 2 - memoryBlockHeight / 2;
 		KGVec2 topRightCoordinates = KGVec2(x, y);
 
+		KGVec2 fillerTopRightCoordinates = KGVec2(topRightCoordinates.x - (1 - occupiedMemoryPercent / 100) * memoryBlockWidth, topRightCoordinates.y);
+
+		KarmaGui::SliderFloat("Memory Occupied", &occupiedMemoryPercent, 0.0f, 100.0f);
+
+		// Draw total memory block and occupied memory
 		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
-		drawList->AddRectFilled(bottomLeftCoordinates, KGVec2(topRightCoordinates.x - memoryBlockWidth / 2, topRightCoordinates.y), occupiedMemoryColor);
+		drawList->AddRectFilled(bottomLeftCoordinates, fillerTopRightCoordinates, occupiedMemoryColor);
+
+		const char* addressText = "0x001AB0DWAR";
+		static KGVec2 addressTextSize = KarmaGui::CalcTextSize(addressText);
+
+		// Draw appropriate lables for display of addresses explicitly
+		KarmaGuiInternal::RenderArrowPointingAt(drawList, bottomLeftCoordinates, KGVec2(5, 16), KGGuiDir_Up, arrowColor);
+		drawList->AddRect(KGVec2(bottomLeftCoordinates.x - 2.5, bottomLeftCoordinates.y + 16 + addressTextSize.y), KGVec2(bottomLeftCoordinates.x - 2.5 + addressTextSize.x, bottomLeftCoordinates.y + 16), KG_COL32_BLACK);
+
+		KarmaGuiInternal::RenderArrowPointingAt(drawList, fillerTopRightCoordinates, KGVec2(5, 16), KGGuiDir_Down, arrowColor);
+		drawList->AddRect(KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16), KGVec2(fillerTopRightCoordinates.x + addressTextSize.x / 2, fillerTopRightCoordinates.y - 16 - addressTextSize.y), KG_COL32_BLACK);
 
 		static KGVec2 textSize = KarmaGui::CalcTextSize("Memory Quota for UObjects");
 
