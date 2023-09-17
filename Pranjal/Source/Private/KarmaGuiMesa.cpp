@@ -165,7 +165,7 @@ namespace Karma
 		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
 		static KGU32 arrowColor = KG_COL32(255, 215, 0, 255);
 		static KGU32 usageColor = KG_COL32(128, 0, 128, 255);
-		float occupiedMemoryPercent = 25.0f;
+		float occupiedMemoryFraction = 0.0f;
 
 		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
 
@@ -185,9 +185,9 @@ namespace Karma
 		std::string memoryBegin;
 		std::string memoryCurrent;
 		std::string memoryEnd;
-		float memoryBeginui;
-		float memoryCurrentui;
-		float memoryEndui;
+		double memoryBeginui;
+		double memoryCurrentui;
+		double memoryEndui;
 
 		{
 			std::ostringstream oss;
@@ -214,9 +214,9 @@ namespace Karma
 		}
 
 		// Compute how much of memory is filled with UObjects
-		occupiedMemoryPercent = (memoryCurrentui - memoryBeginui) / (memoryEndui - memoryBeginui) * 100.0f;
+		occupiedMemoryFraction = (memoryCurrentui - memoryBeginui) / (memoryEndui - memoryBeginui);
 
-		KGVec2 fillerTopRightCoordinates = KGVec2(topRightCoordinates.x - (1 - occupiedMemoryPercent / 100) * memoryBlockWidth, topRightCoordinates.y);
+		KGVec2 fillerTopRightCoordinates = KGVec2(topRightCoordinates.x - (1 - occupiedMemoryFraction) * memoryBlockWidth, topRightCoordinates.y);
 
 		//KarmaGui::SliderFloat("Memory Occupied", &occupiedMemoryPercent, 0.0f, 100.0f);
 
@@ -293,7 +293,7 @@ namespace Karma
 		verticalTextFont->Scale = 0.6f;
 
 		KarmaGui::PushFont(verticalTextFont);
-		std::string usageText = "Memory Usage: " + std::to_string(int(occupiedMemoryPercent)) + "%";
+		std::string usageText = "Memory Usage: " + std::to_string(int(occupiedMemoryFraction * 100.f)) + "%";
 		static KGVec2 textSize2 = KarmaGui::CalcTextSize(usageText.c_str());
 		KarmaGui::AddTextVertical(drawList, usageText.c_str(), KGVec2(fillerTopRightCoordinates.x, bottomLeftCoordinates.y - memoryBlockHeight / 2 + textSize2.x / 2), usageColor);
 		KarmaGui::PopFont();

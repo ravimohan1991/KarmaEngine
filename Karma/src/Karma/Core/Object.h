@@ -39,6 +39,8 @@ namespace Karma
 	 * @param InCppClassStaticFunctions Function pointers for the class's version of Unreal's reflected static functions
 	 * @param InSuperClassFn Super class function pointer
 	 * @param WithinClass Within class
+	 *
+	 * @todo some params are not functional yet
 	 */
 	KARMA_API void GetPrivateStaticClassBody(
 		const std::string& PackageName,

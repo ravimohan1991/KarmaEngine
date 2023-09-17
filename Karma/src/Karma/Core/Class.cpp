@@ -40,6 +40,10 @@ namespace Karma
 		SetObjectName(name);
 
 		m_ClassConstructor = inClassConstructor;
+
+		// Add to UObjectStore
+		UObject* anObject = static_cast<UObject*>(this);
+		GUObjectStore.AddUObject(anObject);
 	}
 
 	UClass* UField::GetOwnerClass() const

@@ -76,7 +76,29 @@ namespace Karma
 		StaticClassFunctionType InSuperClassFn
 		/*UClass::StaticClassFunctionType InWithinClassFn*/)
 	{
-		// TODO: search if already exists
+		// search if already exists, deviation from UE
+		UClass* result = nullptr;
+
+		for (auto& element : GUObjectStore)
+		{
+			if (element->m_Object->GetName() == Name)
+			{
+				if (result)
+				{
+					KR_CORE_WARN("Ambigous search, could be {0} or {1}", result->GetName(), element->m_Object->GetName());
+				}
+				else
+				{
+					result = (UClass*)element->m_Object;
+				}
+			}
+		}
+
+		if(result)
+		{
+			ReturnClass = result;
+			return;
+		}
 
 		void* aPtr = reinterpret_cast<void*>(GUObjectAllocator.AllocateUObject(sizeof(UClass), alignof(UClass), true));
 
