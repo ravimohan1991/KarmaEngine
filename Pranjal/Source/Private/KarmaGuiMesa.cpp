@@ -186,14 +186,22 @@ namespace Karma
 		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
 		drawList->AddRectFilled(bottomLeftCoordinates, fillerTopRightCoordinates, occupiedMemoryColor);
 
-		static std::string addressText = "0xb73eb000";
-		static KGVec2 addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
+		std::string addressText;
+		static KGVec2 addressTextSize;
 
 		KGVec2 pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax;
 		KGVec2 cursorPosition;
 
 		// Draw appropriate lables for display of addresses explicitly
+
+		// 1. Draw arrow alpha, starting of reserved memory block
 		{
+			std::ostringstream oss;
+			oss << m_MemoryManager.GetMemBlock();
+
+			addressText = oss.str();
+			addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
+
 			KarmaGuiInternal::RenderArrowPointingAt(drawList, bottomLeftCoordinates, KGVec2(5, 16), KGGuiDir_Up, arrowColor);
 			pointerRectangleCoordinatesMin = KGVec2(bottomLeftCoordinates.x - 2.5, bottomLeftCoordinates.y + 16 + addressTextSize.y);
 			pointerRectangleCoordinatesMax = KGVec2(bottomLeftCoordinates.x - 2.5 + addressTextSize.x, bottomLeftCoordinates.y + 16);
@@ -203,10 +211,22 @@ namespace Karma
 			KarmaGui::TextColored(legendTextColor, "%s", addressText.c_str());
 		}
 
+		// 2. Draw the current available memory pointer arrow
 		{
 			KarmaGuiInternal::RenderArrowPointingAt(drawList, fillerTopRightCoordinates, KGVec2(5, 16), KGGuiDir_Down, arrowColor);
 			pointerRectangleCoordinatesMin = KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16);
 			pointerRectangleCoordinatesMax = KGVec2(fillerTopRightCoordinates.x + addressTextSize.x / 2, fillerTopRightCoordinates.y - 16 - addressTextSize.y);
+			drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
+			cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - bareToFrameX, pointerRectangleCoordinatesMin.y - bareToFrameY - addressTextSize.y);
+			KarmaGui::SetCursorPos(cursorPosition);
+			KarmaGui::TextColored(legendTextColor, "%s", addressText.c_str());
+		}
+
+		// 3. Draw arrow omega, the pointer at the end of memory block
+		{
+			KarmaGuiInternal::RenderArrowPointingAt(drawList, KGVec2(topRightCoordinates.x, topRightCoordinates.y + memoryBlockHeight), KGVec2(5, 16), KGGuiDir_Up, arrowColor);
+			pointerRectangleCoordinatesMin = KGVec2(topRightCoordinates.x - addressTextSize.x / 2, topRightCoordinates.y + memoryBlockHeight + addressTextSize.y + 16);
+			pointerRectangleCoordinatesMax = KGVec2(topRightCoordinates.x + addressTextSize.x / 2, topRightCoordinates.y + 16 + memoryBlockHeight);
 			drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
 			cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - bareToFrameX, pointerRectangleCoordinatesMin.y - bareToFrameY - addressTextSize.y);
 			KarmaGui::SetCursorPos(cursorPosition);
