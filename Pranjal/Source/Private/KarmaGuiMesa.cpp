@@ -194,7 +194,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPool();
 
 			memoryBegin = oss.str();
-			memoryBeginui = std::stoul(memoryBegin, nullptr, 16);
+			memoryBeginui = uint32_t(GUObjectAllocator.GetPermanentObjectPool());
 		}
 
 		{
@@ -202,7 +202,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolEnd();
 
 			memoryEnd = oss.str();
-			memoryEndui = std::stoul(memoryEnd, nullptr, 16);
+			memoryEndui = uint32_t(GUObjectAllocator.GetPermanentObjectPoolEnd());
 		}
 
 		{
@@ -210,7 +210,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolTail();
 
 			memoryCurrent = oss.str();
-			memoryCurrentui = std::stoul(memoryCurrent, nullptr, 16);
+			memoryCurrentui = uint32_t(GUObjectAllocator.GetPermanentObjectPoolTail());
 		}
 
 		// Compute how much of memory is filled with UObjects
