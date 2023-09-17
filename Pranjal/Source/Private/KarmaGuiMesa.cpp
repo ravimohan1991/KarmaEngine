@@ -194,7 +194,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPool();
 
 			memoryBegin = oss.str();
-			memoryBeginui = uint32_t(GUObjectAllocator.GetPermanentObjectPool());
+			memoryBeginui = (unsigned long)GUObjectAllocator.GetPermanentObjectPool();
 		}
 
 		{
@@ -202,7 +202,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolEnd();
 
 			memoryEnd = oss.str();
-			memoryEndui = uint32_t(GUObjectAllocator.GetPermanentObjectPoolEnd());
+			memoryEndui = (unsigned long)GUObjectAllocator.GetPermanentObjectPoolEnd();
 		}
 
 		{
@@ -210,7 +210,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolTail();
 
 			memoryCurrent = oss.str();
-			memoryCurrentui = uint32_t(GUObjectAllocator.GetPermanentObjectPoolTail());
+			memoryCurrentui = (unsigned long)GUObjectAllocator.GetPermanentObjectPoolTail();
 		}
 
 		// Compute how much of memory is filled with UObjects
