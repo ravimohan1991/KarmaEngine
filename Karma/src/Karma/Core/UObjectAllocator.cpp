@@ -27,6 +27,7 @@ namespace Karma
 		m_PermanentObjectPool = pMemoryStart;
 		m_PermanentObjectPoolTail = m_PermanentObjectPool;
 		m_PermanentObjectPoolExceededTail = m_PermanentObjectPoolTail;
+		m_PermanentObjectPoolEnd = m_PermanentObjectPool + size_t(m_PermanentObjectPoolSize);
 
 		KR_CORE_INFO("Prepared a memory pool of {0} bytes for {1} UObjects' allocation", m_PermanentObjectPoolSize, numberOfElemets);
 	}
@@ -51,7 +52,7 @@ namespace Karma
 	 * Note: We are returning UObjectBase pointer because ue does so. Else void pointer could have
 	 * done the job, since what we are returning is not really a UObjectBase.
 	 *
-	 * @param Size size of uobject to allocate
+	 * @param Size size of uobject to allocate, in bytes?
 	 * @param Alignment alignment of uobject to allocate
 	 * @param bAllowPermanent if true, allow allocation in the permanent object pool, if it fits
 	 * @return newly allocated UObjectBase (not really a UObjectBase yet, no constructor like thing has been called).

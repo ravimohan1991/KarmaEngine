@@ -145,6 +145,27 @@ namespace Karma
 		 */
 		//void FreeUObject(UObjectBase* Object) const;
 
+		// Getters
+		/**
+		 * Get the current position of objectpool tail
+		 */
+		uint8_t* GetPermanentObjectPoolTail() const { return m_PermanentObjectPoolTail; }
+
+		/**
+		 * Get the begining of object pool
+		 */
+		uint8_t* GetPermanentObjectPool() const { return m_PermanentObjectPool; }
+
+		/**
+		 * Get the total pool size in bytes
+		 */
+		uint32_t GetPermanentPoolSize() const { return m_PermanentObjectPoolSize; }
+
+		/**
+		 * Get the address of memory pool block ending
+		 */
+		uint8_t* GetPermanentObjectPoolEnd() const { return m_PermanentObjectPoolEnd; }
+
 	private:
 
 		/** Size in bytes of pool for objects disregarded for GC.								*/
@@ -156,10 +177,13 @@ namespace Karma
 		/** Current position in pool for objects disregarded for GC.							*/
 		uint8_t* 						m_PermanentObjectPoolTail;
 
+		/** Position of pool block end.												*/
+		uint8_t*						m_PermanentObjectPoolEnd;
+
 		/** Tail that exceeded the size of the permanent object pool, >= PermanentObjectPoolTail.		*/
 		uint8_t* 						m_PermanentObjectPoolExceededTail;
 	};
 
 	/** Global UObjectBase allocator							*/
-	extern FUObjectAllocator GUObjectAllocator;
+	extern KARMA_API FUObjectAllocator GUObjectAllocator;
 }

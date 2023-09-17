@@ -14,6 +14,9 @@
 #include "Karma/Renderer/RendererAPI.h"
 #include "spdlog/sinks/callback_sink.h"
 
+// Experimental
+#include "Karma/Core/UObjectAllocator.h"
+
 namespace Karma
 {
 	KarmaTuringMachineElectronics KarmaGuiMesa::electronicsItems;
@@ -162,7 +165,7 @@ namespace Karma
 		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
 		static KGU32 arrowColor = KG_COL32(255, 215, 0, 255);
 		static KGU32 usageColor = KG_COL32(128, 0, 128, 255);
-		static float occupiedMemoryPercent = 25.0f;
+		float occupiedMemoryPercent = 25.0f;
 
 		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
 
@@ -178,9 +181,44 @@ namespace Karma
 		y = y - memoryBlockHeight;
 		KGVec2 topRightCoordinates = KGVec2(x, y);
 
+		// Some addresses computations for memory block
+		std::string memoryBegin;
+		std::string memoryCurrent;
+		std::string memoryEnd;
+		float memoryBeginui;
+		float memoryCurrentui;
+		float memoryEndui;
+
+		{
+			std::ostringstream oss;
+			oss << (void*)GUObjectAllocator.GetPermanentObjectPool();
+
+			memoryBegin = oss.str();
+			memoryBeginui = std::stoul(memoryBegin, nullptr, 16);
+		}
+
+		{
+			std::ostringstream oss;
+			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolEnd();
+
+			memoryEnd = oss.str();
+			memoryEndui = std::stoul(memoryEnd, nullptr, 16);
+		}
+
+		{
+			std::ostringstream oss;
+			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolTail();
+
+			memoryCurrent = oss.str();
+			memoryCurrentui = std::stoul(memoryCurrent, nullptr, 16);
+		}
+
+		// Compute how much of memory is filled with UObjects
+		occupiedMemoryPercent = (memoryCurrentui - memoryBeginui) / (memoryEndui - memoryBeginui) * 100.0f;
+
 		KGVec2 fillerTopRightCoordinates = KGVec2(topRightCoordinates.x - (1 - occupiedMemoryPercent / 100) * memoryBlockWidth, topRightCoordinates.y);
 
-		KarmaGui::SliderFloat("Memory Occupied", &occupiedMemoryPercent, 0.0f, 100.0f);
+		//tKarmaGui::SliderFloat("Memory Occupied", &occupiedMemoryPercent, 0.0f, 100.0f);
 
 		// Draw total memory block and occupied memory
 		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
@@ -196,10 +234,7 @@ namespace Karma
 
 		// 1. Draw arrow alpha, starting of reserved memory block
 		{
-			std::ostringstream oss;
-			oss << m_MemoryManager.GetMemBlock();
-
-			addressText = oss.str();
+			addressText = memoryBegin;
 			addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
 
 			KarmaGuiInternal::RenderArrowPointingAt(drawList, bottomLeftCoordinates, KGVec2(5, 16), KGGuiDir_Up, arrowColor);
@@ -213,6 +248,9 @@ namespace Karma
 
 		// 2. Draw the current available memory pointer arrow
 		{
+			addressText = memoryCurrent;
+			addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
+			
 			KarmaGuiInternal::RenderArrowPointingAt(drawList, fillerTopRightCoordinates, KGVec2(5, 16), KGGuiDir_Down, arrowColor);
 			pointerRectangleCoordinatesMin = KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16);
 			pointerRectangleCoordinatesMax = KGVec2(fillerTopRightCoordinates.x + addressTextSize.x / 2, fillerTopRightCoordinates.y - 16 - addressTextSize.y);
@@ -224,6 +262,9 @@ namespace Karma
 
 		// 3. Draw arrow omega, the pointer at the end of memory block
 		{
+			addressText = memoryEnd;
+			addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
+
 			KarmaGuiInternal::RenderArrowPointingAt(drawList, KGVec2(topRightCoordinates.x, topRightCoordinates.y + memoryBlockHeight), KGVec2(5, 16), KGGuiDir_Up, arrowColor);
 			pointerRectangleCoordinatesMin = KGVec2(topRightCoordinates.x - addressTextSize.x / 2, topRightCoordinates.y + memoryBlockHeight + addressTextSize.y + 16);
 			pointerRectangleCoordinatesMax = KGVec2(topRightCoordinates.x + addressTextSize.x / 2, topRightCoordinates.y + 16 + memoryBlockHeight);
