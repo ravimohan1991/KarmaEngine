@@ -74,7 +74,7 @@ namespace Karma
 
 	/**
 	 * A pool allocator for Karma's UObjects.
-	 * I'd higly recomment Gregory's Game Engine Architecture section 5.2 for introductory
+	 * I'd higly recommend Gregory's Game Engine Architecture section 5.2 for introductory
 	 * level and practical approach to memory system.
 	 *
 	 * A modular memory system https://github.com/ravimohan1991/cppGameMemorySystem
@@ -130,9 +130,11 @@ namespace Karma
 
 		/**
 		 * Allocates a UObjectBase from the free store or the permanent object pool
+		 * Note: We are returning UObjectBase pointer because ue does so. Else void pointer could have
+		 * done the job, since what we are returning is not really a UObjectBase.
 		 *
 		 * @param Size 									size of uobject to allocate
-		 * @param Alignment 							alignment of uobject to allocate
+		 * @param Alignment 								alignment of uobject to allocate
 		 * @param bAllowPermanent 						if true, allow allocation in the permanent object pool, if it fits
 		 * @return newly allocated UObjectBase (not really a UObjectBase yet, no constructor like thing has been called).
 		 */
@@ -145,7 +147,9 @@ namespace Karma
 		 */
 		//void FreeUObject(UObjectBase* Object) const;
 
+		//
 		// Getters
+		//
 		/**
 		 * Get the current position of objectpool tail
 		 */
@@ -166,6 +170,21 @@ namespace Karma
 		 */
 		uint8_t* GetPermanentObjectPoolEnd() const { return m_PermanentObjectPoolEnd; }
 
+		/**
+		 * Get the bare cumulatice size of UObjects
+		 */
+		uint32_t GetBareUObjectSize() const { return m_BareUObjectsSize; }
+
+		/**
+		 * Get total boundary aligned size of UObject
+		 */
+		uint32_t GetAlignedUObjectSize() const { return m_AlignedUObjectsSize; }
+
+		/**
+		 * Get total number of UObjects
+		 */
+		uint32_t GetNumberOfUObjects() const { return m_NumberOfUObjects; }
+
 	private:
 
 		/** Size in bytes of pool for objects disregarded for GC.								*/
@@ -182,6 +201,20 @@ namespace Karma
 
 		/** Tail that exceeded the size of the permanent object pool, >= PermanentObjectPoolTail.		*/
 		uint8_t* 						m_PermanentObjectPoolExceededTail;
+
+		/** For statistical significance, the size of bare (unaligned) UObjects, in bytes.					*/
+		uint32_t						m_BareUObjectsSize;
+
+		/** For statistical significance, the size of dressed (unaligned) UObjects, in bytes.					*/
+		uint32_t						m_AlignedUObjectsSize;
+
+		/**
+		 * For statistical significance, total number of UObjects
+		 *
+		 * @todo additive only, need to subtract once Shiva AActors and similar operation for UObjects
+		 * 		becomes functional.
+		 */
+		uint32_t						m_NumberOfUObjects;
 	};
 
 	/** Global UObjectBase allocator							*/

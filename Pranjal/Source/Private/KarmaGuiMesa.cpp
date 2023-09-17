@@ -218,7 +218,7 @@ namespace Karma
 
 		KGVec2 fillerTopRightCoordinates = KGVec2(topRightCoordinates.x - (1 - occupiedMemoryPercent / 100) * memoryBlockWidth, topRightCoordinates.y);
 
-		//tKarmaGui::SliderFloat("Memory Occupied", &occupiedMemoryPercent, 0.0f, 100.0f);
+		//KarmaGui::SliderFloat("Memory Occupied", &occupiedMemoryPercent, 0.0f, 100.0f);
 
 		// Draw total memory block and occupied memory
 		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
@@ -272,6 +272,16 @@ namespace Karma
 			cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - bareToFrameX, pointerRectangleCoordinatesMin.y - bareToFrameY - addressTextSize.y);
 			KarmaGui::SetCursorPos(cursorPosition);
 			KarmaGui::TextColored(legendTextColor, "%s", addressText.c_str());
+		}
+
+		// 4. Render statistics for UObjects
+		{
+			KarmaGui::SetCursorPos(KGVec2(45, bareYBL + 50));
+			KarmaGui::Text("UObjects Statistics:");
+			KarmaGui::Text("Bare UObjects: %u bytes", GUObjectAllocator.GetBareUObjectSize());
+			KarmaGui::Text("Aligned UObjects: %u bytes", GUObjectAllocator.GetAlignedUObjectSize());
+			KarmaGui::Text("Total reservation: %u bytes", GUObjectAllocator.GetPermanentPoolSize());
+			KarmaGui::Text("Number of UObjects: %u", GUObjectAllocator.GetNumberOfUObjects());
 		}
 
 		static KGVec2 textSize = KarmaGui::CalcTextSize("Memory Quota for UObjects");
