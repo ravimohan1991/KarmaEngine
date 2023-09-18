@@ -101,7 +101,7 @@ namespace Karma
 		}
 
 		void* aPtr = reinterpret_cast<void*>(GUObjectAllocator.AllocateUObject(sizeof(UClass), alignof(UClass), true));
-		GUObjectAllocator.DumpUObjectsInformation(aPtr, Name, InSize, InAlignment, nullptr);
+		GUObjectAllocator.DumpUObjectsInformation(aPtr, Name, sizeof(UClass), alignof(UClass), nullptr);
 
 		ReturnClass = (UClass*)aPtr;
 
