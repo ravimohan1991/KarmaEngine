@@ -98,6 +98,12 @@ namespace Karma
 		/** Return a one line description of an object for viewing in the thumbnail view of the generic browser */
 		virtual const std::string& GetDesc() { static std::string someString = "";  return someString; }
 
+		/**
+		 * Client's callback registering routine for receiving UObjects relevant
+		 * data dump
+		 * 
+		 * @param dumpCallback The callback function defined in client
+		 */
 		static void RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback);
 
 	public:

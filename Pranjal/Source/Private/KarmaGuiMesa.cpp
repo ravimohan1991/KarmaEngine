@@ -165,7 +165,7 @@ namespace Karma
 		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
 		static KGU32 arrowColor = KG_COL32(255, 215, 0, 255);
 		static KGU32 usageColor = KG_COL32(128, 0, 128, 255);
-		float occupiedMemoryFraction = 0.0f;
+		double occupiedMemoryFraction = 0.0f;
 
 		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
 
@@ -214,9 +214,9 @@ namespace Karma
 		}
 
 		// Compute how much of memory is filled with UObjects
-		occupiedMemoryFraction = (memoryCurrentui - memoryBeginui) / (memoryEndui - memoryBeginui);
+		occupiedMemoryFraction = (float) (memoryCurrentui - memoryBeginui) / (memoryEndui - memoryBeginui);
 
-		KGVec2 fillerTopRightCoordinates = KGVec2(topRightCoordinates.x - (1 - occupiedMemoryFraction) * memoryBlockWidth, topRightCoordinates.y);
+		KGVec2 fillerTopRightCoordinates = KGVec2(topRightCoordinates.x - (1 - (float)occupiedMemoryFraction) * memoryBlockWidth, topRightCoordinates.y);
 
 		//KarmaGui::SliderFloat("Memory Occupied", &occupiedMemoryPercent, 0.0f, 100.0f);
 
@@ -238,8 +238,8 @@ namespace Karma
 			addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
 
 			KarmaGuiInternal::RenderArrowPointingAt(drawList, bottomLeftCoordinates, KGVec2(5, 16), KGGuiDir_Up, arrowColor);
-			pointerRectangleCoordinatesMin = KGVec2(bottomLeftCoordinates.x - 2.5, bottomLeftCoordinates.y + 16 + addressTextSize.y);
-			pointerRectangleCoordinatesMax = KGVec2(bottomLeftCoordinates.x - 2.5 + addressTextSize.x, bottomLeftCoordinates.y + 16);
+			pointerRectangleCoordinatesMin = KGVec2(bottomLeftCoordinates.x - 2.5f, bottomLeftCoordinates.y + 16 + addressTextSize.y);
+			pointerRectangleCoordinatesMax = KGVec2(bottomLeftCoordinates.x - 2.5f + addressTextSize.x, bottomLeftCoordinates.y + 16);
 			drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
 			cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - bareToFrameX, pointerRectangleCoordinatesMin.y - bareToFrameY - addressTextSize.y);
 			KarmaGui::SetCursorPos(cursorPosition);
@@ -431,7 +431,7 @@ namespace Karma
 
 		KGDrawCallback sceneCallBack = [](const KGDrawList* parentList, const KGDrawCmd* drawCommand)
 		{
-			//KR_CORE_INFO("Scene Callback");
+			//KR_INFO("Scene Callback");
 		};
 
 		//KGGuiWindow* theWindow = KarmaGuiInternal::GetCurrentWindow();
@@ -654,7 +654,7 @@ namespace Karma
 			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
 			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
 			KGVec4 border_col = KGVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
-			KarmaGui::Image(aboutImageTextureID, KGVec2(width, height), uvMin, uvMax, tint_col, border_col);
+			KarmaGui::Image(aboutImageTextureID, KGVec2((float)width, (float)height), uvMin, uvMax, tint_col, border_col);
 		}
 
 		//-----------------------------------------------------------------------------------------------------------//
@@ -860,7 +860,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally.");
+			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
 		catcher = electronics_spit(pi_bioslanguages);
@@ -872,7 +872,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally.");
+			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
 		catcher = electronics_spit(pi_systemmemory);
@@ -884,7 +884,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally.");
+			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
 		catcher = electronics_spit(ps_systemmemory);
@@ -902,7 +902,7 @@ namespace Karma
 			}
 			else
 			{
-				KR_CORE_WARN("ramInformation is already allocated which should have been cleared in the first place.");
+				KR_WARN("ramInformation is already allocated which should have been cleared in the first place.");
 			}
 
 			uint32_t counter = 0;
@@ -916,7 +916,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally.");
+			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
 		catcher = electronics_spit(ps_processor);
@@ -944,7 +944,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally");
+			KR_WARN("BiosReader isn't behaving normally");
 		}
 
 		catcher = electronics_spit(ps_graphicscard);
@@ -957,7 +957,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally");
+			KR_WARN("BiosReader isn't behaving normally");
 		}
 
 		electronicsItems.bHasQueried = true;
@@ -1041,7 +1041,7 @@ namespace Karma
 	{
 		if (ramCluster == nullptr)
 		{
-			KR_CORE_WARN("Memory devices pointer is null. No Ram(s) shall be detected and reported");
+			KR_WARN("Memory devices pointer is null. No Ram(s) shall be detected and reported");
 			return;
 		}
 
@@ -1092,7 +1092,7 @@ namespace Karma
 
 	double KarmaGuiMesa::HexStringToDecimal(const std::string& hexString)
 	{
-		return std::stoll(hexString, 0, 16);
+		return (double)std::stoll(hexString, 0, 16);
 	}
 
 	void KarmaGuiMesa::DumpUObjectStatistics(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, UClass* InClass)
@@ -1101,7 +1101,7 @@ namespace Karma
 		oss << InObject;
 
 		std::string pointerAddress = oss.str();
-		KR_CORE_INFO("[UObjectDump] {0}, {1}, {2}, {3}", pointerAddress, InName, InSize, InAlignment);
+		KR_INFO("[UObjectDump] {0}, {1}, {2}, {3}", pointerAddress, InName, InSize, InAlignment);
 	}
 
 	//-----------------------------------------------------------------------------
