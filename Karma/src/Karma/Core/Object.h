@@ -12,6 +12,11 @@ namespace Karma
 	typedef UClass* (*StaticClassFunctionType)();
 
 	/**
+	 * For UObjects statistics
+	 */
+	typedef void (*FUObjectAllocatorCallback)(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, class UClass* InClass);
+
+	/**
 	 * Helper template to call the default constructor for a class
 	 */
 	template<class T>
@@ -92,6 +97,8 @@ namespace Karma
 
 		/** Return a one line description of an object for viewing in the thumbnail view of the generic browser */
 		virtual const std::string& GetDesc() { static std::string someString = "";  return someString; }
+
+		static void RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback);
 
 	public:
 		/**

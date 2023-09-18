@@ -14,6 +14,9 @@ namespace Karma
 
 	/**
 	 * For UObjects statistics
+	 * 
+	 * We are defining here again because we don't want dependency with Object.h include
+	 * which already has this definition
 	 */
 	typedef void (*FUObjectAllocatorCallback)(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, class UClass* InClass);
 
@@ -85,7 +88,7 @@ namespace Karma
 	 * A modular memory system https://github.com/ravimohan1991/cppGameMemorySystem
 	 * Karma's take https://github.com/ravimohan1991/KarmaEngine/wiki/Karma-Smriti
 	 */
-	class KARMA_API FUObjectAllocator
+	class FUObjectAllocator
 	{
 	public:
 

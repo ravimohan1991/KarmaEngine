@@ -10,7 +10,7 @@
 #include "UObjectIterator.h"
 #include "Engine.h"
 #include "GameInstance.h"
-#include "UObjectAllocator.h"
+//#include "UObjectAllocator.h" shouldn't be here
 
 namespace Karma
 {
@@ -20,7 +20,7 @@ namespace Karma
 		m_ActorCounter = 0;
 
 		// Register UObject statistics dump 
-		GUObjectAllocator.RegisterUObjectsStatisticsCallback(KarmaGuiMesa::DumpUObjectStatistics);
+		UObject::RegisterUObjectsStatisticsCallback(KarmaGuiMesa::DumpUObjectStatistics);
 
 		// Instantiate camera
 		m_EditorCamera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));

@@ -194,4 +194,9 @@ namespace Karma
 		return false;
 #endif
 	}
+
+	void UObject::RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback)
+	{
+		GUObjectAllocator.RegisterUObjectsStatisticsCallback(dumpCallback);
+	}
 }

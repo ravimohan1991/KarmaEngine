@@ -80,7 +80,7 @@ namespace Karma
 			m_NumberOfUObjects++;
 
 			// Record the offset for aligned size and add to total size
-			m_AlignedUObjectsSize += uint32_t(AlignedPtr - m_PermanentObjectPoolTail) + Size;
+			m_AlignedUObjectsSize += uint32_t(AlignedPtr - m_PermanentObjectPoolTail) + (uint32_t)Size;
 
 			// Update tail pointer.
 			m_PermanentObjectPoolTail = AlignedPtr + Size;
