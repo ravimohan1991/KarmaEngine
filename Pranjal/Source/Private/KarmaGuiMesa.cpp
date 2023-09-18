@@ -1092,20 +1092,7 @@ namespace Karma
 
 	double KarmaGuiMesa::HexStringToDecimal(const std::string& hexString)
 	{
-		if(hexString.at(1) == 'x' || hexString.at(1) == 'X')
-		{
-			//std::string tempString = hexString.substr(2);
-
-			//std::transform(tempString.begin(), tempString.end(), tempString.begin(), ::toupper);
-			return std::stol(hexString, 0, 16);
-		}
-		else
-		{
-			//std::string tempString = hexString;
-
-			//std::transform(tempString.begin(), tempString.end(), tempString.begin(), ::toupper);
-			return std::stol(hexString, 0, 16);
-		}
+		return std::stoll(hexString, 0, 16);
 	}
 
 	//-----------------------------------------------------------------------------

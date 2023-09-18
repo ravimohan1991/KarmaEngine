@@ -5,9 +5,12 @@
 
 namespace Karma
 {
+	UGameInstance::UGameInstance() : m_WorldContext(nullptr)
+	{
+	}
+
 	void UGameInstance::Init()
 	{
-
 	}
 
 	KEngine* UGameInstance::GetEngine() const

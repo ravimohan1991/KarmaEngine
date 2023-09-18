@@ -16,6 +16,9 @@ namespace Karma
 	{
 		DECLARE_KARMA_CLASS(UGameInstance, UObject)
 
+	public:
+		UGameInstance();
+
 	protected:
 		struct FWorldContext* m_WorldContext;
 
@@ -30,6 +33,5 @@ namespace Karma
 		void InitializeStandalone(const std::string& InWorldName = "No_Name", UPackage* InWorldPackage = nullptr);
 
 		struct FWorldContext* GetWorldContext() const { return m_WorldContext; }
-
 	};
 }
