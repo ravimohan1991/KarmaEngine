@@ -13,6 +13,11 @@ namespace Karma
 	class UObjectBase;
 
 	/**
+	 * For UObjects statistics
+	 */
+	typedef void (*FUObjectAllocatorCallback)(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, class UClass* InClass);
+
+	/**
 	 * Traits class which tests if a type is integral.
 	 */
 	template <typename T>
@@ -80,7 +85,7 @@ namespace Karma
 	 * A modular memory system https://github.com/ravimohan1991/cppGameMemorySystem
 	 * Karma's take https://github.com/ravimohan1991/KarmaEngine/wiki/Karma-Smriti
 	 */
-	class FUObjectAllocator
+	class KARMA_API FUObjectAllocator
 	{
 	public:
 
@@ -139,6 +144,18 @@ namespace Karma
 		 * @return newly allocated UObjectBase (not really a UObjectBase yet, no constructor like thing has been called).
 		 */
 		UObjectBase* AllocateUObject(size_t Size, size_t Alignment, bool bAllowPermanent);
+
+		/**
+		 * A callback based routine for curating statistics of UObjects being allocated
+		 */
+		void DumpUObjectsInformation(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, class UClass* InClass);
+
+		/*
+		 * Routine for registering callback function for statistics purposes
+		 * 
+		 * @see FUObjectAllocator::DumpUObjectsInformation
+		 */
+		void RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback);
 
 		/**
 		 * Returns a UObjectBase to the free store, unless it is in the permanent object pool
@@ -215,6 +232,11 @@ namespace Karma
 		 * 		becomes functional.
 		 */
 		uint32_t						m_NumberOfUObjects;
+
+		/**
+		 * For statistical significance, callback functions for dumped UObjects relevant informstion
+		 */
+		KarmaVector<FUObjectAllocatorCallback> m_DumpingCallbacks;
 	};
 
 	/** Global UObjectBase allocator							*/

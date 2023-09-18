@@ -76,7 +76,7 @@ namespace Karma
 			uint8_t* AlignedPtr = Align(m_PermanentObjectPoolTail, Alignment);
 
 			// Increment bare UObject size and number of UObjects
-			m_BareUObjectsSize += Size;
+			m_BareUObjectsSize += (uint32_t)Size;
 			m_NumberOfUObjects++;
 
 			// Record the offset for aligned size and add to total size
@@ -100,5 +100,19 @@ namespace Karma
 		// ue performs alignment test
 
 		return Result;
+	}
+
+	void FUObjectAllocator::RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback)
+	{
+		m_DumpingCallbacks.Add(dumpCallback);
+	}
+
+	void FUObjectAllocator::DumpUObjectsInformation(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, UClass* InClass)
+	{
+		// Iterate through all the registered callbacks
+		for (const auto& element : m_DumpingCallbacks)
+		{
+			element(InObject, InName, InSize, InAlignment, InClass);
+		}
 	}
 }

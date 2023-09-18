@@ -323,6 +323,9 @@ namespace Karma
 		static std::string ChernDimensionsFromString(const std::string& ramString);
 		static double HexStringToDecimal(const std::string& hexString);
 
+		// Statistics
+		static void DumpUObjectStatistics(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, class UClass* InClass);
+
 	public:
 		static std::string notAvailableText;
 		static KarmaLogMesa m_KarmaLog;

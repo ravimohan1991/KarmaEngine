@@ -1095,6 +1095,15 @@ namespace Karma
 		return std::stoll(hexString, 0, 16);
 	}
 
+	void KarmaGuiMesa::DumpUObjectStatistics(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, UClass* InClass)
+	{
+		std::ostringstream oss;
+		oss << InObject;
+
+		std::string pointerAddress = oss.str();
+		KR_CORE_INFO("[UObjectDump] {0}, {1}, {2}, {3}", pointerAddress, InName, InSize, InAlignment);
+	}
+
 	//-----------------------------------------------------------------------------
 	// [SECTION] Omega stuff!
 	//-----------------------------------------------------------------------------

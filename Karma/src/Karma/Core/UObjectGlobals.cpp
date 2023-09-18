@@ -474,6 +474,8 @@ namespace Karma
 			// I am using first reinterpret cast to void and then to UObject pointer
 			// because direct reinterpret cast to UObject gives a warning in AppleClang
 			void* aPtr = reinterpret_cast<void*>(GUObjectAllocator.AllocateUObject(totalSize, Alignment, GIsInitialLoad));
+			GUObjectAllocator.DumpUObjectsInformation(aPtr, inName, totalSize, Alignment, const_cast<UClass*>(inClass));
+
 			FMemory::Memzero(aPtr, totalSize);
 
 			ObjectBase = (UObjectBase*)aPtr;
