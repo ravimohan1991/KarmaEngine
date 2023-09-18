@@ -194,7 +194,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPool();
 
 			memoryBegin = oss.str();
-			memoryBeginui = (unsigned long)GUObjectAllocator.GetPermanentObjectPool();
+			memoryBeginui = HexStringToDecimal(memoryBegin);//(unsigned long)GUObjectAllocator.GetPermanentObjectPool();
 		}
 
 		{
@@ -202,7 +202,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolEnd();
 
 			memoryEnd = oss.str();
-			memoryEndui = (unsigned long)GUObjectAllocator.GetPermanentObjectPoolEnd();
+			memoryEndui = HexStringToDecimal(memoryEnd);//(unsigned long)GUObjectAllocator.GetPermanentObjectPoolEnd();
 		}
 
 		{
@@ -210,7 +210,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolTail();
 
 			memoryCurrent = oss.str();
-			memoryCurrentui = (unsigned long)GUObjectAllocator.GetPermanentObjectPoolTail();
+			memoryCurrentui = HexStringToDecimal(memoryCurrent);//(unsigned long)GUObjectAllocator.GetPermanentObjectPoolTail();
 		}
 
 		// Compute how much of memory is filled with UObjects
@@ -1087,6 +1087,24 @@ namespace Karma
 		else
 		{
 			return true;
+		}
+	}
+
+	double KarmaGuiMesa::HexStringToDecimal(const std::string& hexString)
+	{
+		if(hexString.at(1) == 'x' || hexString.at(1) == 'X')
+		{
+			//std::string tempString = hexString.substr(2);
+
+			//std::transform(tempString.begin(), tempString.end(), tempString.begin(), ::toupper);
+			return std::stol(hexString, 0, 16);
+		}
+		else
+		{
+			//std::string tempString = hexString;
+
+			//std::transform(tempString.begin(), tempString.end(), tempString.begin(), ::toupper);
+			return std::stol(hexString, 0, 16);
 		}
 	}
 

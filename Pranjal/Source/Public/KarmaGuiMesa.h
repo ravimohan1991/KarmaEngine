@@ -321,6 +321,7 @@ namespace Karma
 		static void QueryForTuringMachineElectronics();
 		static uint32_t ChernUint32FromString(const std::string& ramString);
 		static std::string ChernDimensionsFromString(const std::string& ramString);
+		static double HexStringToDecimal(const std::string& hexString);
 
 	public:
 		static std::string notAvailableText;
