@@ -16,6 +16,7 @@
 
 // Experimental
 #include "Karma/Core/UObjectAllocator.h"
+#include "Karma/Ganit/KarmaMath.h"
 
 namespace Karma
 {
@@ -23,6 +24,7 @@ namespace Karma
 	std::string KarmaGuiMesa::notAvailableText = "Kasturi Trishna (The MuskThirst)";
 	bool KarmaGuiMesa::m_ViewportFocused = false;
 	bool KarmaGuiMesa::m_ViewportHovered = false;
+	KarmaVector<UObjectsStatistics> KarmaGuiMesa::m_UObjectStatistics;
 	KarmaLogMesa KarmaGuiMesa::m_KarmaLog;
 	KarmaGuiTextBuffer     KarmaLogMesa::TextBuffer;
 	KarmaGuiTextFilter     KarmaLogMesa::TextFilter;
@@ -35,6 +37,7 @@ namespace Karma
 	bool KarmaGuiMesa::m_RefreshRenderingResources = false;
 
 	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
+	WindowManipulationGaugeData	KarmaGuiMesa::m_MemoryExhibitor;
 
 	KarmaGuiDockPreviewData::KarmaGuiDockPreviewData() : FutureNode(0)
 	{
@@ -165,6 +168,7 @@ namespace Karma
 		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
 		static KGU32 arrowColor = KG_COL32(255, 215, 0, 255);
 		static KGU32 usageColor = KG_COL32(128, 0, 128, 255);
+		static KGU32 partitionColor = KG_COL32(50, 50, 200, 255);
 		double occupiedMemoryFraction = 0.0f;
 
 		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
@@ -194,7 +198,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPool();
 
 			memoryBegin = oss.str();
-			memoryBeginui = HexStringToDecimal(memoryBegin);//(unsigned long)GUObjectAllocator.GetPermanentObjectPool();
+			memoryBeginui = HexStringToDecimal(memoryBegin);
 		}
 
 		{
@@ -202,7 +206,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolEnd();
 
 			memoryEnd = oss.str();
-			memoryEndui = HexStringToDecimal(memoryEnd);//(unsigned long)GUObjectAllocator.GetPermanentObjectPoolEnd();
+			memoryEndui = HexStringToDecimal(memoryEnd);
 		}
 
 		{
@@ -210,7 +214,7 @@ namespace Karma
 			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolTail();
 
 			memoryCurrent = oss.str();
-			memoryCurrentui = HexStringToDecimal(memoryCurrent);//(unsigned long)GUObjectAllocator.GetPermanentObjectPoolTail();
+			memoryCurrentui = HexStringToDecimal(memoryCurrent);
 		}
 
 		// Compute how much of memory is filled with UObjects
@@ -224,12 +228,57 @@ namespace Karma
 		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
 		drawList->AddRectFilled(bottomLeftCoordinates, fillerTopRightCoordinates, occupiedMemoryColor);
 
+		double uobjectPlacement = 0;
+		double placementFraction = 0;
+		KGVec2 uobjectTopRightCoordinates;
+		bool bHandleResize = false;
+
+		if(currentWindow->Size.x != m_MemoryExhibitor.widthCache || currentWindow->Size.y != m_MemoryExhibitor.heightCache)
+		{
+			bHandleResize = true;
+
+			m_MemoryExhibitor.widthCache = currentWindow->Size.x;
+			m_MemoryExhibitor.heightCache = currentWindow->Size.y;
+		}
+		else if (currentWindow->Pos.x != m_MemoryExhibitor.startXCache || currentWindow->Pos.y != m_MemoryExhibitor.startYCache)
+		{
+			bHandleResize = true;
+
+			m_MemoryExhibitor.startYCache = currentWindow->Pos.y;
+			m_MemoryExhibitor.startXCache = currentWindow->Pos.x;
+		}
+		else
+		{
+			bHandleResize = false;
+		}
+
+		// Draw partitions
+		for(auto& element : m_UObjectStatistics)
+		{
+			if(element.placementCoordi.x == 0 || bHandleResize)
+			{
+				uobjectPlacement = std::stoll(element.beginAddress, 0 , 16);
+				placementFraction = (float) (memoryEndui - uobjectPlacement) / (memoryEndui - memoryBeginui);
+
+				uobjectTopRightCoordinates = KGVec2(topRightCoordinates.x - (placementFraction) * memoryBlockWidth, topRightCoordinates.y);
+				drawList->AddRectFilled(uobjectTopRightCoordinates + KGVec2(-1, memoryBlockHeight), uobjectTopRightCoordinates, partitionColor);
+
+				element.placementCoordi = uobjectTopRightCoordinates;
+			}
+			else
+			{
+				KGVec2 coordinates = element.placementCoordi - KGVec2(KarmaGui::GetScrollX(), KarmaGui::GetScrollY());
+				drawList->AddRectFilled(coordinates + KGVec2(-1, memoryBlockHeight), coordinates, partitionColor);
+			}
+		}
+
 		// well done ocornut for nutting up the rectangle coordinates convention
 		bool bIsHoveringFilledSlot = KarmaGui::IsMouseHoveringRect(bottomLeftCoordinates - KGVec2(0, memoryBlockHeight), fillerTopRightCoordinates + KGVec2(0, memoryBlockHeight));
 
 		if(bIsHoveringFilledSlot)
 		{
 			KarmaGuiInternal::BeginTooltipEx(KGGuiTooltipFlags_OverridePreviousTooltip, KGGuiWindowFlags_None);
+			KarmaGui::Text("Current Memory: 0x34245421AC");
 			KarmaGui::Text("UObject Details");
 			KarmaGui::Text("Name: SomeName");
 			KarmaGui::Text("Begin Address: 0x34245421AC");
@@ -1121,7 +1170,32 @@ namespace Karma
 		oss << InObject;
 
 		std::string pointerAddress = oss.str();
-		KR_INFO("[UObjectDump] {0}, {1}, {2}, {3}", pointerAddress, InName, InSize, InAlignment);
+		KR_INFO("[UObjectDump] {0}, {1}, {2}, {3}", pointerAddress, InName, InSize, FMath::Max<size_t>(16, InAlignment));
+
+		UObjectsStatistics anElement;
+		anElement.objectPointer = InObject;
+		anElement.beginAddress = pointerAddress;
+		anElement.size = InSize;
+		anElement.alignment = (uint32_t)InAlignment;
+
+		std::ostringstream osb;
+		osb << (void*)((uint8_t*)InObject + InSize);
+
+		anElement.endAddress = osb.str();
+
+		uint32_t vectorLength = m_UObjectStatistics.Num();
+
+		if(vectorLength > 0)
+		{
+			//double sizeInPool = std::stoll(m_UobjectStatistics.GetElements()[vectorLength - 1].beginAddress) - std::stoll(pointerAddress);
+			long sizeInPool = (uint8_t*)m_UObjectStatistics.GetElements()[vectorLength - 1].objectPointer - (uint8_t*)InObject;
+			m_UObjectStatistics.ModifyElements()[vectorLength - 1].sizeInPool = sizeInPool;
+		}
+
+		long sizeInPool = Align((uint8_t*)GUObjectAllocator.GetPermanentObjectPoolTail(), FMath::Max<size_t>(16, InAlignment)) - (uint8_t*)InObject;
+		anElement.sizeInPool = sizeInPool;
+
+		m_UObjectStatistics.Add(anElement);
 	}
 
 	//-----------------------------------------------------------------------------

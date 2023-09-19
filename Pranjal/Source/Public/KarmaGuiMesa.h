@@ -288,6 +288,26 @@ namespace Karma
 		float ioDisplayYCache;
 	};
 
+	struct UObjectsStatistics
+	{
+		void* objectPointer;
+		std::string beginAddress;
+		std::string endAddress;
+		size_t size;
+		size_t sizeInPool;
+		std::string uobjectName;
+		uint32_t alignment;
+		UClass* classObject;
+
+		// Placement in memory pool
+		KGVec2 placementCoordi;//nates
+
+		UObjectsStatistics()
+		{
+			placementCoordi.x = placementCoordi.y = 0.0f;
+		}
+	};
+
 	class KarmaGuiMesa
 	{
 	public:
@@ -333,6 +353,7 @@ namespace Karma
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;
 		static WindowManipulationGaugeData m_3DExhibitor;
+		static WindowManipulationGaugeData m_MemoryExhibitor;
 		static bool m_EditorInitialized;
 		static bool m_RefreshRenderingResources;
 
@@ -342,6 +363,9 @@ namespace Karma
 		// Need agnostic naming scheme
 		static uint32_t m_DirectoryIcon;
 		static uint32_t m_FileIcon;
+
+		// UObjects statistics
+		static KarmaVector<UObjectsStatistics> m_UObjectStatistics;
 
 	public:
 		static bool m_ViewportFocused;
