@@ -224,6 +224,26 @@ namespace Karma
 		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
 		drawList->AddRectFilled(bottomLeftCoordinates, fillerTopRightCoordinates, occupiedMemoryColor);
 
+		// well done ocornut for nutting up the rectangle coordinates convention
+		bool bIsHoveringFilledSlot = KarmaGui::IsMouseHoveringRect(bottomLeftCoordinates - KGVec2(0, memoryBlockHeight), fillerTopRightCoordinates + KGVec2(0, memoryBlockHeight));
+
+		if(bIsHoveringFilledSlot)
+		{
+			KarmaGuiInternal::BeginTooltipEx(KGGuiTooltipFlags_OverridePreviousTooltip, KGGuiWindowFlags_None);
+			KarmaGui::Text("UObject Details");
+			KarmaGui::Text("Name: SomeName");
+			KarmaGui::Text("Begin Address: 0x34245421AC");
+			KarmaGui::Text("End Address: 0x34245422AC");
+			KarmaGui::Text("Size (bytes): 25");
+			KarmaGui::Text("Size in pool (bytes): 28");
+			KarmaGui::Text("Alignment: 16");
+			KarmaGui::Text("Class Name: AnotherName");
+			KarmaGui::EndTooltip();
+		}
+
+		//float someCol = 11316;
+		//KarmaGui::ColorEdit4("acolor", &someCol);
+
 		std::string addressText;
 		static KGVec2 addressTextSize;
 
