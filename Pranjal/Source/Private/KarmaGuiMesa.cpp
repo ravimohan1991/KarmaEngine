@@ -282,7 +282,7 @@ namespace Karma
 		// well done ocornut for nutting up the rectangle coordinates convention
 		bool bIsHoveringFilledSlot = KarmaGui::IsMouseHoveringRect(bottomLeftCoordinates - KGVec2(0, memoryBlockHeight), fillerTopRightCoordinates + KGVec2(0, memoryBlockHeight));
 
-		if(bIsHoveringFilledSlot)
+		if(bIsHoveringFilledSlot && !currentWindow->Hidden)
 		{
 			KarmaGuiInternal::BeginTooltipEx(KGGuiTooltipFlags_OverridePreviousTooltip, KGGuiWindowFlags_None);
 			KarmaGui::Text("Current Memory: 0x34245421AC");
@@ -478,7 +478,7 @@ namespace Karma
 		static bool bShouldRefresh = false;
 
 		// refresh once when clicked and rendered
-		if(window->Appearing && bShouldRefresh)
+		if(!window->Hidden && bShouldRefresh)
 		{
 			m_RefreshRenderingResources = true;
 			bShouldRefresh = false;

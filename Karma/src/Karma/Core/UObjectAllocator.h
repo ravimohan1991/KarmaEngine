@@ -4,6 +4,9 @@
 	UnObjAllocator.h: Unreal object allocation
 =============================================================================*/
 
+// This system needs further writing to conform with UE
+// https://github.com/ravimohan1991/KarmaEngine/discussions/10
+
 #pragma once
 
 #include "krpch.h"
