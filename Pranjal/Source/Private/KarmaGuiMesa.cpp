@@ -259,7 +259,11 @@ namespace Karma
 			bHandleDynamicPartitioning = false;
 		}
 
-		// Draw partitions
+		uint32_t index = 0;
+		int32_t hoverIndex = -1;// default
+
+		// Draw partitions and see which column mouse is hovering upon, along sides
+		// may need mild modifications upon removal of UObjects
 		for(auto& element : m_UObjectStatistics)
 		{
 			if(element.placementCoordi.x == 0 || bHandleDynamicPartitioning)
@@ -271,13 +275,26 @@ namespace Karma
 				drawList->AddRectFilled(uobjectTopRightCoordinates + KGVec2(-1, memoryBlockHeight), uobjectTopRightCoordinates, partitionColor);
 
 				element.placementCoordi = uobjectTopRightCoordinates;
+
+				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(element.size, memoryBlockHeight)))
+				{
+					hoverIndex = index;
+				}
 			}
 			else
 			{
-				KGVec2 coordinates = element.placementCoordi;// - KGVec2(KarmaGui::GetScrollX(), KarmaGui::GetScrollY());
+				KGVec2 coordinates = element.placementCoordi;
 				drawList->AddRectFilled(coordinates + KGVec2(-1, memoryBlockHeight), coordinates, partitionColor);
+
+				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(element.size, memoryBlockHeight)))
+				{
+					hoverIndex = index;
+				}
 			}
+			index++;
 		}
+
+		KR_INFO("hover index is: {0}", hoverIndex);
 
 		// well done ocornut for nutting up the rectangle coordinates convention
 		bool bIsHoveringFilledSlot = KarmaGui::IsMouseHoveringRect(bottomLeftCoordinates - KGVec2(0, memoryBlockHeight), fillerTopRightCoordinates + KGVec2(0, memoryBlockHeight));
