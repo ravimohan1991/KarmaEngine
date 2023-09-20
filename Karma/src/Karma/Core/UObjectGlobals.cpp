@@ -668,4 +668,9 @@ namespace Karma
 		KarmaVector<UObject*>* objectVector = m_ClassToObjectVectorMap.FindOrAddClass(classToLookFor);
 		objectVector->Add(Object);
 	}
+
+	void RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback)
+	{
+		GUObjectAllocator.RegisterUObjectsStatisticsCallback(dumpCallback);
+	}
 }

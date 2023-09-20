@@ -11,7 +11,7 @@ namespace Karma
 	{
 	}
 
-	UObject::UObject(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName) : 
+	UObject::UObject(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName) :
 		UObjectBase(inClass, inFlags, inInternalFlags, inOuter, inName)
 	{
 	}
@@ -193,10 +193,5 @@ namespace Karma
 #else
 		return false;
 #endif
-	}
-
-	void UObject::RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback)
-	{
-		GUObjectAllocator.RegisterUObjectsStatisticsCallback(dumpCallback);
 	}
 }

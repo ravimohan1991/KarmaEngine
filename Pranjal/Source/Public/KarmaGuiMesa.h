@@ -286,6 +286,8 @@ namespace Karma
 		float startYCache;
 		float ioDisplayXCache;
 		float ioDisplayYCache;
+		float scrollX;
+		float scrollY;
 	};
 
 	struct UObjectsStatistics

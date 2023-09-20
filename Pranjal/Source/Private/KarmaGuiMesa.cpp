@@ -15,7 +15,7 @@
 #include "spdlog/sinks/callback_sink.h"
 
 // Experimental
-#include "Karma/Core/UObjectAllocator.h"
+//#include "Karma/Core/UObjectAllocator.h"
 #include "Karma/Ganit/KarmaMath.h"
 
 namespace Karma
@@ -247,6 +247,13 @@ namespace Karma
 			m_MemoryExhibitor.startYCache = currentWindow->Pos.y;
 			m_MemoryExhibitor.startXCache = currentWindow->Pos.x;
 		}
+		else if(KarmaGui::GetScrollX() != m_MemoryExhibitor.scrollX || KarmaGui::GetScrollY() != m_MemoryExhibitor.scrollY)
+		{
+			bHandleResize = true;
+
+			m_MemoryExhibitor.scrollX = KarmaGui::GetScrollX();
+			m_MemoryExhibitor.scrollY = KarmaGui::GetScrollY();
+		}
 		else
 		{
 			bHandleResize = false;
@@ -267,7 +274,7 @@ namespace Karma
 			}
 			else
 			{
-				KGVec2 coordinates = element.placementCoordi - KGVec2(KarmaGui::GetScrollX(), KarmaGui::GetScrollY());
+				KGVec2 coordinates = element.placementCoordi;// - KGVec2(KarmaGui::GetScrollX(), KarmaGui::GetScrollY());
 				drawList->AddRectFilled(coordinates + KGVec2(-1, memoryBlockHeight), coordinates, partitionColor);
 			}
 		}

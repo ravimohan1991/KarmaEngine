@@ -12,11 +12,6 @@ namespace Karma
 	typedef UClass* (*StaticClassFunctionType)();
 
 	/**
-	 * For UObjects statistics
-	 */
-	typedef void (*FUObjectAllocatorCallback)(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, class UClass* InClass);
-
-	/**
 	 * Helper template to call the default constructor for a class
 	 */
 	template<class T>
@@ -98,14 +93,6 @@ namespace Karma
 		/** Return a one line description of an object for viewing in the thumbnail view of the generic browser */
 		virtual const std::string& GetDesc() { static std::string someString = "";  return someString; }
 
-		/**
-		 * Client's callback registering routine for receiving UObjects relevant
-		 * data dump
-		 * 
-		 * @param dumpCallback The callback function defined in client
-		 */
-		static void RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback);
-
 	public:
 		/**
 		 * Returns what UWorld this object is contained within.
@@ -156,13 +143,13 @@ namespace Karma
 
 	/**
 	 * Note the name. Need to understand UE's take upon the subject
-	 * 
+	 *
 	 */
 
 	FORCEINLINE bool TentativeFlagChecks(const UObject* Test)
 	{
 		KR_CORE_ASSERT(GUObjectStore.IndexToObject(Test->GetInterIndex())->HasAnyFlags(EInternalObjectFlags(int32_t(EInternalObjectFlags::PendingKill) | int32_t(EInternalObjectFlags::Garbage))) == Test->HasAnyFlags(EObjectFlags(RF_PendingKill | RF_Garbage)), "");
-		
+
 		return !Test->HasAnyFlags(EObjectFlags(RF_PendingKill | RF_Garbage));
 	}
 
