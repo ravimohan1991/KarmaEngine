@@ -231,38 +231,38 @@ namespace Karma
 		double uobjectPlacement = 0;
 		double placementFraction = 0;
 		KGVec2 uobjectTopRightCoordinates;
-		bool bHandleResize = false;
+		bool bHandleDynamicPartitioning = false;
 
 		if(currentWindow->Size.x != m_MemoryExhibitor.widthCache || currentWindow->Size.y != m_MemoryExhibitor.heightCache)
 		{
-			bHandleResize = true;
+			bHandleDynamicPartitioning = true;
 
 			m_MemoryExhibitor.widthCache = currentWindow->Size.x;
 			m_MemoryExhibitor.heightCache = currentWindow->Size.y;
 		}
 		else if (currentWindow->Pos.x != m_MemoryExhibitor.startXCache || currentWindow->Pos.y != m_MemoryExhibitor.startYCache)
 		{
-			bHandleResize = true;
+			bHandleDynamicPartitioning = true;
 
 			m_MemoryExhibitor.startYCache = currentWindow->Pos.y;
 			m_MemoryExhibitor.startXCache = currentWindow->Pos.x;
 		}
 		else if(KarmaGui::GetScrollX() != m_MemoryExhibitor.scrollX || KarmaGui::GetScrollY() != m_MemoryExhibitor.scrollY)
 		{
-			bHandleResize = true;
+			bHandleDynamicPartitioning = true;
 
 			m_MemoryExhibitor.scrollX = KarmaGui::GetScrollX();
 			m_MemoryExhibitor.scrollY = KarmaGui::GetScrollY();
 		}
 		else
 		{
-			bHandleResize = false;
+			bHandleDynamicPartitioning = false;
 		}
 
 		// Draw partitions
 		for(auto& element : m_UObjectStatistics)
 		{
-			if(element.placementCoordi.x == 0 || bHandleResize)
+			if(element.placementCoordi.x == 0 || bHandleDynamicPartitioning)
 			{
 				uobjectPlacement = std::stoll(element.beginAddress, 0 , 16);
 				placementFraction = (float) (memoryEndui - uobjectPlacement) / (memoryEndui - memoryBeginui);
