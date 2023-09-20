@@ -41,9 +41,9 @@ namespace Karma
 
 	KarmaGuiDockPreviewData::KarmaGuiDockPreviewData() : FutureNode(0)
 	{
-		IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false; 
-		SplitNode = NULL; SplitDir = KGGuiDir_None; SplitRatio = 0.f; 
-		
+		IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false;
+		SplitNode = NULL; SplitDir = KGGuiDir_None; SplitRatio = 0.f;
+
 		for (int n = 0; n < KG_ARRAYSIZE(DropRectsDraw); n++)
 		{
 			DropRectsDraw[n] = KGRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -319,7 +319,7 @@ namespace Karma
 		{
 			addressText = memoryCurrent;
 			addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
-			
+
 			KarmaGuiInternal::RenderArrowPointingAt(drawList, fillerTopRightCoordinates, KGVec2(5, 16), KGGuiDir_Down, arrowColor);
 			pointerRectangleCoordinatesMin = KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16);
 			pointerRectangleCoordinatesMax = KGVec2(fillerTopRightCoordinates.x + addressTextSize.x / 2, fillerTopRightCoordinates.y - 16 - addressTextSize.y);
@@ -350,6 +350,7 @@ namespace Karma
 			KarmaGui::Text("Bare UObjects: %u bytes", GUObjectAllocator.GetBareUObjectSize());
 			KarmaGui::Text("Aligned UObjects: %u bytes", GUObjectAllocator.GetAlignedUObjectSize());
 			KarmaGui::Text("Total reservation: %u bytes", GUObjectAllocator.GetPermanentPoolSize());
+			KarmaGui::Text("Usable memory: %u bytes", GUObjectAllocator.GetPermanentPoolSize() - GUObjectAllocator.GetAlignedUObjectSize());
 			KarmaGui::Text("Number of UObjects: %u", GUObjectAllocator.GetNumberOfUObjects());
 		}
 
@@ -541,7 +542,7 @@ namespace Karma
 		}
 
 		KarmaGuiInternal::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
-		
+
 		if (m_RefreshRenderingResources)
 		{
 			scene->SetWindowToRenderWithinResize(true);
@@ -555,7 +556,7 @@ namespace Karma
 	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
 	{
 		KarmaGui::SetNextWindowSize(KGVec2(500, 400), KGGuiCond_FirstUseEver);
-		
+
 		KarmaGui::Begin("Scene Hierarchy");
 		KarmaGui::Text("Some Stuff 1");
 		KarmaGui::Text("Some stuff 2");
@@ -650,7 +651,7 @@ namespace Karma
 			});
 
 			callbackSink->set_level(spdlog::level::trace);
-			
+
 			if (s_MesaClientLogger)
 			{
 				s_MesaClientLogger->add_sink(callbackSink);
