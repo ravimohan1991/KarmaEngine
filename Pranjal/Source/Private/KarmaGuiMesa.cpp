@@ -276,7 +276,9 @@ namespace Karma
 
 				element.placementCoordi = uobjectTopRightCoordinates;
 
-				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(element.size, memoryBlockHeight)))
+				double offset = (double)element.size / (double)GUObjectAllocator.GetPermanentPoolSize() * (topRightCoordinates.x - bottomLeftCoordinates.x);
+
+				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(offset, memoryBlockHeight)))
 				{
 					hoverIndex = index;
 				}
@@ -286,15 +288,15 @@ namespace Karma
 				KGVec2 coordinates = element.placementCoordi;
 				drawList->AddRectFilled(coordinates + KGVec2(-1, memoryBlockHeight), coordinates, partitionColor);
 
-				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(element.size, memoryBlockHeight)))
+				double offset = (double)element.size / (double)GUObjectAllocator.GetPermanentPoolSize() * (topRightCoordinates.x - bottomLeftCoordinates.x);
+
+				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(offset, memoryBlockHeight)))
 				{
 					hoverIndex = index;
 				}
 			}
 			index++;
 		}
-
-		KR_INFO("hover index is: {0}", hoverIndex);
 
 		// well done ocornut for nutting up the rectangle coordinates convention
 		bool bIsHoveringFilledSlot = KarmaGui::IsMouseHoveringRect(bottomLeftCoordinates - KGVec2(0, memoryBlockHeight), fillerTopRightCoordinates + KGVec2(0, memoryBlockHeight));
