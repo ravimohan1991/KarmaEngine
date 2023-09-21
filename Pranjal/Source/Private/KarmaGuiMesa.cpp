@@ -304,15 +304,19 @@ namespace Karma
 		if(bIsHoveringFilledSlot && !currentWindow->Hidden)
 		{
 			KarmaGuiInternal::BeginTooltipEx(KGGuiTooltipFlags_OverridePreviousTooltip, KGGuiWindowFlags_None);
-			KarmaGui::Text("Current Memory: 0x34245421AC");
+			//KarmaGui::Text("Current Memory: 0x34245421AC");
 			KarmaGui::Text("UObject Details");
-			KarmaGui::Text("Name: SomeName");
-			KarmaGui::Text("Begin Address: 0x34245421AC");
-			KarmaGui::Text("End Address: 0x34245422AC");
-			KarmaGui::Text("Size (bytes): 25");
-			KarmaGui::Text("Size in pool (bytes): 28");
-			KarmaGui::Text("Alignment: 16");
-			KarmaGui::Text("Class Name: AnotherName");
+			KarmaGui::Text("Number: %d", hoverIndex);
+			KarmaGui::Text("Name: %s", m_UObjectStatistics.IndexToObject(hoverIndex).uobjectName.c_str());
+			KarmaGui::Text("Begin Address: %s", m_UObjectStatistics.IndexToObject(hoverIndex).beginAddress.c_str());
+			KarmaGui::Text("End Address: %s", m_UObjectStatistics.IndexToObject(hoverIndex).endAddress.c_str());
+			KarmaGui::Text("Size : %zu (bytes)", m_UObjectStatistics.IndexToObject(hoverIndex).size);
+			KarmaGui::Text("Size in pool : %zu (bytes)", m_UObjectStatistics.IndexToObject(hoverIndex).sizeInPool);
+			KarmaGui::Text("Alignment: %u", m_UObjectStatistics.IndexToObject(hoverIndex).alignment);
+			if(m_UObjectStatistics.IndexToObject(hoverIndex).classObject != nullptr && m_UObjectStatistics.IndexToObject(hoverIndex).classObject->GetName() != "")
+			{
+				KarmaGui::Text("Class Name: %s", m_UObjectStatistics.IndexToObject(hoverIndex).classObject->GetName().c_str());
+			}
 			KarmaGui::EndTooltip();
 		}
 
@@ -1197,13 +1201,14 @@ namespace Karma
 		oss << InObject;
 
 		std::string pointerAddress = oss.str();
-		KR_INFO("[UObjectDump] {0}, {1}, {2}, {3}", pointerAddress, InName, InSize, FMath::Max<size_t>(16, InAlignment));
+		//KR_INFO("[UObjectDump] {0}, {1}, {2}, {3}", pointerAddress, InName, InSize, FMath::Max<size_t>(16, InAlignment));
 
 		UObjectsStatistics anElement;
+		anElement.uobjectName = InName;
 		anElement.objectPointer = InObject;
 		anElement.beginAddress = pointerAddress;
 		anElement.size = InSize;
-		anElement.alignment = (uint32_t)InAlignment;
+		anElement.alignment = (uint32_t)FMath::Max<size_t>(16, InAlignment);
 
 		std::ostringstream osb;
 		osb << (void*)((uint8_t*)InObject + InSize);
@@ -1215,12 +1220,13 @@ namespace Karma
 		if(vectorLength > 0)
 		{
 			//double sizeInPool = std::stoll(m_UobjectStatistics.GetElements()[vectorLength - 1].beginAddress) - std::stoll(pointerAddress);
-			long sizeInPool = (uint8_t*)m_UObjectStatistics.GetElements()[vectorLength - 1].objectPointer - (uint8_t*)InObject;
+			long sizeInPool = (uint8_t*)InObject - (uint8_t*)m_UObjectStatistics.GetElements()[vectorLength - 1].objectPointer;
 			m_UObjectStatistics.ModifyElements()[vectorLength - 1].sizeInPool = sizeInPool;
 		}
 
 		long sizeInPool = Align((uint8_t*)GUObjectAllocator.GetPermanentObjectPoolTail(), FMath::Max<size_t>(16, InAlignment)) - (uint8_t*)InObject;
 		anElement.sizeInPool = sizeInPool;
+		anElement.classObject = InClass;
 
 		m_UObjectStatistics.Add(anElement);
 	}
