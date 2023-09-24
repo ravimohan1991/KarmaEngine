@@ -14,12 +14,17 @@
 #include "Karma/Renderer/RendererAPI.h"
 #include "spdlog/sinks/callback_sink.h"
 
+// Experimental
+//#include "Karma/Core/UObjectAllocator.h"
+#include "Karma/Ganit/KarmaMath.h"
+
 namespace Karma
 {
 	KarmaTuringMachineElectronics KarmaGuiMesa::electronicsItems;
 	std::string KarmaGuiMesa::notAvailableText = "Kasturi Trishna (The MuskThirst)";
 	bool KarmaGuiMesa::m_ViewportFocused = false;
 	bool KarmaGuiMesa::m_ViewportHovered = false;
+	KarmaVector<UObjectsStatistics> KarmaGuiMesa::m_UObjectStatistics;
 	KarmaLogMesa KarmaGuiMesa::m_KarmaLog;
 	KarmaGuiTextBuffer     KarmaLogMesa::TextBuffer;
 	KarmaGuiTextFilter     KarmaLogMesa::TextFilter;
@@ -32,12 +37,13 @@ namespace Karma
 	bool KarmaGuiMesa::m_RefreshRenderingResources = false;
 
 	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
+	WindowManipulationGaugeData	KarmaGuiMesa::m_MemoryExhibitor;
 
 	KarmaGuiDockPreviewData::KarmaGuiDockPreviewData() : FutureNode(0)
 	{
-		IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false; 
-		SplitNode = NULL; SplitDir = KGGuiDir_None; SplitRatio = 0.f; 
-		
+		IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false;
+		SplitNode = NULL; SplitDir = KGGuiDir_None; SplitRatio = 0.f;
+
 		for (int n = 0; n < KG_ARRAYSIZE(DropRectsDraw); n++)
 		{
 			DropRectsDraw[n] = KGRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -106,6 +112,11 @@ namespace Karma
 			DrawContentBrowser(editorCallbacks.openSceneCallback);
 		}
 
+		// 7. Memory-usage exhibhitor
+		{
+			DrawMemoryExhibitor();
+		}
+
 		// Display ready log message and do one time initialization stuff
 		{
 			if(!m_EditorInitialized)
@@ -128,7 +139,7 @@ namespace Karma
 	}
 
 	//-----------------------------------------------------------------------------
-	// [SECTION] A variety of Dear ImGui mesas
+	// [SECTION] A variety of KarmaGui  mesas
 	//-----------------------------------------------------------------------------
 
 	// Once we have projects, change this
@@ -136,6 +147,260 @@ namespace Karma
 	std::filesystem::path KarmaGuiMesa::m_CurrentDirectory = std::filesystem::current_path();
 	uint32_t KarmaGuiMesa::m_DirectoryIcon = 3;
 	uint32_t KarmaGuiMesa::m_FileIcon = 2;
+
+	void KarmaGuiMesa::DrawMemoryExhibitor()
+	{
+		KarmaGuiWindowFlags windowFlags =  KGGuiWindowFlags_HorizontalScrollbar;
+
+		// fiddle this parameter on increasing / decreasing memoryBlockWidth
+		KarmaGui::SetNextWindowContentSize(KGVec2(1450, 500));
+		KarmaGui::Begin("Memory Exhibitor", nullptr, windowFlags);
+
+		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
+
+		static float x, y;
+		static float bareToFrameX, bareToFrameY;
+		static float bareXBL, bareYBL;
+		static float bareXTR, bareYTR;
+		static float memoryBlockWidth = 1250;
+		static float memoryBlockHeight = 150;
+		static KGVec4 legendTextColor = KGVec4(0.0f, 1.0f, 0.0f, 1.0f);
+		static KGU32 occupiedMemoryColor = KG_COL32(128, 128, 128, 100);
+		static KGU32 arrowColor = KG_COL32(255, 215, 0, 255);
+		static KGU32 usageColor = KG_COL32(128, 0, 128, 255);
+		static KGU32 partitionColor = KG_COL32(50, 50, 200, 255);
+		double occupiedMemoryFraction = 0.0f;
+
+		KGGuiWindow* currentWindow = KarmaGuiInternal::GetCurrentWindow();
+
+		bareXBL = 45;
+		bareYBL = 100 + memoryBlockHeight;
+		bareToFrameX = currentWindow->Pos.x - KarmaGui::GetScrollX();
+		bareToFrameY = currentWindow->Pos.y - KarmaGui::GetScrollY();
+
+		x = bareXBL + bareToFrameX;
+		y = bareYBL + bareToFrameY;
+		KGVec2 bottomLeftCoordinates = KGVec2(x, y);
+		x = x + memoryBlockWidth;
+		y = y - memoryBlockHeight;
+		KGVec2 topRightCoordinates = KGVec2(x, y);
+
+		// Some addresses computations for memory block
+		std::string memoryBegin;
+		std::string memoryCurrent;
+		std::string memoryEnd;
+		double memoryBeginui;
+		double memoryCurrentui;
+		double memoryEndui;
+
+		{
+			std::ostringstream oss;
+			oss << (void*)GUObjectAllocator.GetPermanentObjectPool();
+
+			memoryBegin = oss.str();
+			memoryBeginui = HexStringToDecimal(memoryBegin);
+		}
+
+		{
+			std::ostringstream oss;
+			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolEnd();
+
+			memoryEnd = oss.str();
+			memoryEndui = HexStringToDecimal(memoryEnd);
+		}
+
+		{
+			std::ostringstream oss;
+			oss << (void*)GUObjectAllocator.GetPermanentObjectPoolTail();
+
+			memoryCurrent = oss.str();
+			memoryCurrentui = HexStringToDecimal(memoryCurrent);
+		}
+
+		// Compute how much of memory is filled with UObjects
+		occupiedMemoryFraction = (float) (memoryCurrentui - memoryBeginui) / (memoryEndui - memoryBeginui);
+
+		KGVec2 fillerTopRightCoordinates = KGVec2(topRightCoordinates.x - (1 - (float)occupiedMemoryFraction) * memoryBlockWidth, topRightCoordinates.y);
+
+		//KarmaGui::SliderFloat("Memory Occupied", &occupiedMemoryPercent, 0.0f, 100.0f);
+
+		// Draw total memory block and occupied memory
+		drawList->AddRectFilled(bottomLeftCoordinates, topRightCoordinates, KG_COL32_WHITE);
+		drawList->AddRectFilled(bottomLeftCoordinates, fillerTopRightCoordinates, occupiedMemoryColor);
+
+		double uobjectPlacement = 0;
+		double placementFraction = 0;
+		KGVec2 uobjectTopRightCoordinates;
+		bool bHandleDynamicPartitioning = false;
+
+		if(currentWindow->Size.x != m_MemoryExhibitor.widthCache || currentWindow->Size.y != m_MemoryExhibitor.heightCache)
+		{
+			bHandleDynamicPartitioning = true;
+
+			m_MemoryExhibitor.widthCache = currentWindow->Size.x;
+			m_MemoryExhibitor.heightCache = currentWindow->Size.y;
+		}
+		else if (currentWindow->Pos.x != m_MemoryExhibitor.startXCache || currentWindow->Pos.y != m_MemoryExhibitor.startYCache)
+		{
+			bHandleDynamicPartitioning = true;
+
+			m_MemoryExhibitor.startYCache = currentWindow->Pos.y;
+			m_MemoryExhibitor.startXCache = currentWindow->Pos.x;
+		}
+		else if(KarmaGui::GetScrollX() != m_MemoryExhibitor.scrollX || KarmaGui::GetScrollY() != m_MemoryExhibitor.scrollY)
+		{
+			bHandleDynamicPartitioning = true;
+
+			m_MemoryExhibitor.scrollX = KarmaGui::GetScrollX();
+			m_MemoryExhibitor.scrollY = KarmaGui::GetScrollY();
+		}
+		else
+		{
+			bHandleDynamicPartitioning = false;
+		}
+
+		uint32_t index = 0;
+		int32_t hoverIndex = -1;// default
+
+		// Draw partitions and see which column mouse is hovering upon, along sides
+		// may need mild modifications upon removal of UObjects
+		for(auto& element : m_UObjectStatistics)
+		{
+			if(element.placementCoordi.x == 0 || bHandleDynamicPartitioning)
+			{
+				uobjectPlacement = std::stoll(element.beginAddress, 0 , 16);
+				placementFraction = (float) (memoryEndui - uobjectPlacement) / (memoryEndui - memoryBeginui);
+
+				uobjectTopRightCoordinates = KGVec2(topRightCoordinates.x - (placementFraction) * memoryBlockWidth, topRightCoordinates.y);
+				drawList->AddRectFilled(uobjectTopRightCoordinates + KGVec2(-1, memoryBlockHeight), uobjectTopRightCoordinates, partitionColor);
+
+				element.placementCoordi = uobjectTopRightCoordinates;
+
+				double offset = (double)element.size / (double)GUObjectAllocator.GetPermanentPoolSize() * (topRightCoordinates.x - bottomLeftCoordinates.x);
+
+				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(offset, memoryBlockHeight)))
+				{
+					hoverIndex = index;
+				}
+			}
+			else
+			{
+				KGVec2 coordinates = element.placementCoordi;
+				drawList->AddRectFilled(coordinates + KGVec2(-1, memoryBlockHeight), coordinates, partitionColor);
+
+				double offset = (double)element.size / (double)GUObjectAllocator.GetPermanentPoolSize() * (topRightCoordinates.x - bottomLeftCoordinates.x);
+
+				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(offset, memoryBlockHeight)))
+				{
+					hoverIndex = index;
+				}
+			}
+			index++;
+		}
+
+		// well done ocornut for nutting up the rectangle coordinates convention
+		bool bIsHoveringFilledSlot = KarmaGui::IsMouseHoveringRect(bottomLeftCoordinates - KGVec2(0, memoryBlockHeight), fillerTopRightCoordinates + KGVec2(0, memoryBlockHeight));
+
+		if(bIsHoveringFilledSlot && !currentWindow->Hidden)
+		{
+			KarmaGuiInternal::BeginTooltipEx(KGGuiTooltipFlags_OverridePreviousTooltip, KGGuiWindowFlags_None);
+			//KarmaGui::Text("Current Memory: 0x34245421AC");
+			KarmaGui::Text("UObject Details");
+			KarmaGui::Text("Number: %d", hoverIndex);
+			KarmaGui::Text("Name: %s", m_UObjectStatistics.IndexToObject(hoverIndex).uobjectName.c_str());
+			KarmaGui::Text("Begin Address: %s", m_UObjectStatistics.IndexToObject(hoverIndex).beginAddress.c_str());
+			KarmaGui::Text("End Address: %s", m_UObjectStatistics.IndexToObject(hoverIndex).endAddress.c_str());
+			KarmaGui::Text("Size : %zu (bytes)", m_UObjectStatistics.IndexToObject(hoverIndex).size);
+			KarmaGui::Text("Size in pool : %zu (bytes)", m_UObjectStatistics.IndexToObject(hoverIndex).sizeInPool);
+			KarmaGui::Text("Alignment: %u", m_UObjectStatistics.IndexToObject(hoverIndex).alignment);
+			if(m_UObjectStatistics.IndexToObject(hoverIndex).classObject != nullptr && m_UObjectStatistics.IndexToObject(hoverIndex).classObject->GetName() != "")
+			{
+				KarmaGui::Text("Class Name: %s", m_UObjectStatistics.IndexToObject(hoverIndex).classObject->GetName().c_str());
+			}
+			KarmaGui::EndTooltip();
+		}
+
+		//float someCol = 11316;
+		//KarmaGui::ColorEdit4("acolor", &someCol);
+
+		std::string addressText;
+		static KGVec2 addressTextSize;
+
+		KGVec2 pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax;
+		KGVec2 cursorPosition;
+
+		// Draw appropriate lables for display of addresses explicitly
+
+		// 1. Draw arrow alpha, starting of reserved memory block
+		{
+			addressText = memoryBegin;
+			addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
+
+			KarmaGuiInternal::RenderArrowPointingAt(drawList, bottomLeftCoordinates, KGVec2(5, 16), KGGuiDir_Up, arrowColor);
+			pointerRectangleCoordinatesMin = KGVec2(bottomLeftCoordinates.x - 2.5f, bottomLeftCoordinates.y + 16 + addressTextSize.y);
+			pointerRectangleCoordinatesMax = KGVec2(bottomLeftCoordinates.x - 2.5f + addressTextSize.x, bottomLeftCoordinates.y + 16);
+			drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
+			cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - bareToFrameX, pointerRectangleCoordinatesMin.y - bareToFrameY - addressTextSize.y);
+			KarmaGui::SetCursorPos(cursorPosition);
+			KarmaGui::TextColored(legendTextColor, "%s", addressText.c_str());
+		}
+
+		// 2. Draw the current available memory pointer arrow
+		{
+			addressText = memoryCurrent;
+			addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
+
+			KarmaGuiInternal::RenderArrowPointingAt(drawList, fillerTopRightCoordinates, KGVec2(5, 16), KGGuiDir_Down, arrowColor);
+			pointerRectangleCoordinatesMin = KGVec2(fillerTopRightCoordinates.x - addressTextSize.x / 2, fillerTopRightCoordinates.y - 16);
+			pointerRectangleCoordinatesMax = KGVec2(fillerTopRightCoordinates.x + addressTextSize.x / 2, fillerTopRightCoordinates.y - 16 - addressTextSize.y);
+			drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
+			cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - bareToFrameX, pointerRectangleCoordinatesMin.y - bareToFrameY - addressTextSize.y);
+			KarmaGui::SetCursorPos(cursorPosition);
+			KarmaGui::TextColored(legendTextColor, "%s", addressText.c_str());
+		}
+
+		// 3. Draw arrow omega, the pointer at the end of memory block
+		{
+			addressText = memoryEnd;
+			addressTextSize = KarmaGui::CalcTextSize(addressText.c_str());
+
+			KarmaGuiInternal::RenderArrowPointingAt(drawList, KGVec2(topRightCoordinates.x, topRightCoordinates.y + memoryBlockHeight), KGVec2(5, 16), KGGuiDir_Up, arrowColor);
+			pointerRectangleCoordinatesMin = KGVec2(topRightCoordinates.x - addressTextSize.x / 2, topRightCoordinates.y + memoryBlockHeight + addressTextSize.y + 16);
+			pointerRectangleCoordinatesMax = KGVec2(topRightCoordinates.x + addressTextSize.x / 2, topRightCoordinates.y + 16 + memoryBlockHeight);
+			drawList->AddRect(pointerRectangleCoordinatesMin, pointerRectangleCoordinatesMax, KG_COL32_BLACK);
+			cursorPosition = KGVec2(pointerRectangleCoordinatesMin.x - bareToFrameX, pointerRectangleCoordinatesMin.y - bareToFrameY - addressTextSize.y);
+			KarmaGui::SetCursorPos(cursorPosition);
+			KarmaGui::TextColored(legendTextColor, "%s", addressText.c_str());
+		}
+
+		// 4. Render statistics for UObjects
+		{
+			KarmaGui::SetCursorPos(KGVec2(45, bareYBL + 50));
+			KarmaGui::Text("UObjects Statistics:");
+			KarmaGui::Text("Bare UObjects: %u bytes", GUObjectAllocator.GetBareUObjectSize());
+			KarmaGui::Text("Aligned UObjects: %u bytes", GUObjectAllocator.GetAlignedUObjectSize());
+			KarmaGui::Text("Total reservation: %u bytes", GUObjectAllocator.GetPermanentPoolSize());
+			KarmaGui::Text("Usable memory: %u bytes", GUObjectAllocator.GetPermanentPoolSize() - GUObjectAllocator.GetAlignedUObjectSize());
+			KarmaGui::Text("Number of UObjects: %u", GUObjectAllocator.GetNumberOfUObjects());
+		}
+
+		static KGVec2 textSize = KarmaGui::CalcTextSize("Memory Quota for UObjects");
+
+		KarmaGui::SetCursorPos(KGVec2((bareXBL + memoryBlockWidth) / 2 - textSize.x / 2, bareYBL));// local coordinates, scrolling included
+		KarmaGui::TextColored(legendTextColor, "Memory Quota for UObjects");
+
+		static KGFont* verticalTextFont = KarmaGui::GetFont();
+		verticalTextFont->Scale = 0.6f;
+
+		KarmaGui::PushFont(verticalTextFont);
+		std::string usageText = "Memory Usage: " + std::to_string(int(occupiedMemoryFraction * 100.f)) + "%";
+		static KGVec2 textSize2 = KarmaGui::CalcTextSize(usageText.c_str());
+		KarmaGui::AddTextVertical(drawList, usageText.c_str(), KGVec2(fillerTopRightCoordinates.x, bottomLeftCoordinates.y - memoryBlockHeight / 2 + textSize2.x / 2), usageColor);
+		KarmaGui::PopFont();
+		verticalTextFont->Scale = 1.0f;
+
+		KarmaGui::End();
+	}
 
 	void KarmaGuiMesa::DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback)
 	{
@@ -219,6 +484,8 @@ namespace Karma
 
 	void KarmaGuiMesa::Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene)
 	{
+		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoScrollWithMouse | KGGuiWindowFlags_NoScrollbar;
+		KarmaGui::Begin("3D Exhibitor", nullptr, windowFlags);
 		KarmaGui::SetNextWindowSize(KGVec2(400, 400), KGGuiCond_FirstUseEver);
 
 		KGVec4 bgColor;
@@ -229,11 +496,20 @@ namespace Karma
 
 		KarmaGui::PushStyleColor(KGGuiCol_WindowBg, KarmaGui::GetColorU32(bgColor));
 
-		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoScrollWithMouse | KGGuiWindowFlags_NoScrollbar;
+		KGGuiWindow* window = KarmaGuiInternal::GetCurrentWindow();
 
-		KarmaGui::Begin("3D Exhibitor", nullptr, windowFlags);
+		static bool bShouldRefresh = false;
 
-		KGGuiWindow* window = KarmaGuiInternal::FindWindowByName("3D Exhibitor");
+		// refresh once when clicked and rendered
+		if(!window->Hidden && bShouldRefresh)
+		{
+			m_RefreshRenderingResources = true;
+			bShouldRefresh = false;
+		}
+		else
+		{
+			bShouldRefresh = true;
+		}
 
 		m_ViewportFocused = KarmaGui::IsWindowFocused();
 		m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
@@ -255,33 +531,33 @@ namespace Karma
 
 		KGDrawCallback sceneCallBack = [](const KGDrawList* parentList, const KGDrawCmd* drawCommand)
 		{
-			//KR_CORE_INFO("Scene Callback");
+			//KR_INFO("Scene Callback");
 		};
 
-		KGGuiWindow* theWindow = KarmaGuiInternal::GetCurrentWindow();
-		scene->SetRenderWindow(theWindow);
+		//KGGuiWindow* theWindow = KarmaGuiInternal::GetCurrentWindow();
+		scene->SetRenderWindow(window);
 
 		{
 			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
 			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
 			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
 			KGVec4 border_col = KGVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
-			KarmaGui::Image(backgroundImageTextureID, KGVec2(theWindow->Size.x, theWindow->Size.y), uvMin, uvMax, tint_col, border_col);
+			KarmaGui::Image(backgroundImageTextureID, KGVec2(window->Size.x, window->Size.y), uvMin, uvMax, tint_col, border_col);
 		}
 
-		if(theWindow->Size.x != m_3DExhibitor.widthCache || theWindow->Size.y != m_3DExhibitor.heightCache)
+		if(window->Size.x != m_3DExhibitor.widthCache || window->Size.y != m_3DExhibitor.heightCache)
 		{
 			scene->SetWindowToRenderWithinResize(true);
 
-			m_3DExhibitor.widthCache = theWindow->Size.x;
-			m_3DExhibitor.heightCache = theWindow->Size.y;
+			m_3DExhibitor.widthCache = window->Size.x;
+			m_3DExhibitor.heightCache = window->Size.y;
 		}
-		else if (theWindow->Pos.x != m_3DExhibitor.startXCache || theWindow->Pos.y != m_3DExhibitor.startYCache)
+		else if (window->Pos.x != m_3DExhibitor.startXCache || window->Pos.y != m_3DExhibitor.startYCache)
 		{
 			scene->SetWindowToRenderWithinResize(true);
 
-			m_3DExhibitor.startYCache = theWindow->Pos.y;
-			m_3DExhibitor.startXCache = theWindow->Pos.x;
+			m_3DExhibitor.startYCache = window->Pos.y;
+			m_3DExhibitor.startXCache = window->Pos.x;
 		}
 		else if(io.DisplaySize.x != m_3DExhibitor.ioDisplayXCache || io.DisplaySize.y != m_3DExhibitor.ioDisplayYCache)
 		{
@@ -296,21 +572,21 @@ namespace Karma
 		}
 
 		KarmaGuiInternal::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
-		
+
 		if (m_RefreshRenderingResources)
 		{
 			scene->SetWindowToRenderWithinResize(true);
 			m_RefreshRenderingResources = false;
 		}
 
-		KarmaGui::End();
 		KarmaGui::PopStyleColor();
+		KarmaGui::End();
 	}
 
 	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
 	{
 		KarmaGui::SetNextWindowSize(KGVec2(500, 400), KGGuiCond_FirstUseEver);
-		
+
 		KarmaGui::Begin("Scene Hierarchy");
 		KarmaGui::Text("Some Stuff 1");
 		KarmaGui::Text("Some stuff 2");
@@ -405,7 +681,7 @@ namespace Karma
 			});
 
 			callbackSink->set_level(spdlog::level::trace);
-			
+
 			if (s_MesaClientLogger)
 			{
 				s_MesaClientLogger->add_sink(callbackSink);
@@ -478,7 +754,7 @@ namespace Karma
 			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
 			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
 			KGVec4 border_col = KGVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
-			KarmaGui::Image(aboutImageTextureID, KGVec2(width, height), uvMin, uvMax, tint_col, border_col);
+			KarmaGui::Image(aboutImageTextureID, KGVec2((float)width, (float)height), uvMin, uvMax, tint_col, border_col);
 		}
 
 		//-----------------------------------------------------------------------------------------------------------//
@@ -684,7 +960,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally.");
+			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
 		catcher = electronics_spit(pi_bioslanguages);
@@ -696,7 +972,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally.");
+			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
 		catcher = electronics_spit(pi_systemmemory);
@@ -708,7 +984,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally.");
+			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
 		catcher = electronics_spit(ps_systemmemory);
@@ -726,7 +1002,7 @@ namespace Karma
 			}
 			else
 			{
-				KR_CORE_WARN("ramInformation is already allocated which should have been cleared in the first place.");
+				KR_WARN("ramInformation is already allocated which should have been cleared in the first place.");
 			}
 
 			uint32_t counter = 0;
@@ -740,7 +1016,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally.");
+			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
 		catcher = electronics_spit(ps_processor);
@@ -768,7 +1044,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally");
+			KR_WARN("BiosReader isn't behaving normally");
 		}
 
 		catcher = electronics_spit(ps_graphicscard);
@@ -781,7 +1057,7 @@ namespace Karma
 		}
 		else
 		{
-			KR_CORE_WARN("BiosReader isn't behaving normally");
+			KR_WARN("BiosReader isn't behaving normally");
 		}
 
 		electronicsItems.bHasQueried = true;
@@ -865,7 +1141,7 @@ namespace Karma
 	{
 		if (ramCluster == nullptr)
 		{
-			KR_CORE_WARN("Memory devices pointer is null. No Ram(s) shall be detected and reported");
+			KR_WARN("Memory devices pointer is null. No Ram(s) shall be detected and reported");
 			return;
 		}
 
@@ -912,6 +1188,47 @@ namespace Karma
 		{
 			return true;
 		}
+	}
+
+	double KarmaGuiMesa::HexStringToDecimal(const std::string& hexString)
+	{
+		return (double)std::stoll(hexString, 0, 16);
+	}
+
+	void KarmaGuiMesa::DumpUObjectStatistics(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, UClass* InClass)
+	{
+		std::ostringstream oss;
+		oss << InObject;
+
+		std::string pointerAddress = oss.str();
+		//KR_INFO("[UObjectDump] {0}, {1}, {2}, {3}", pointerAddress, InName, InSize, FMath::Max<size_t>(16, InAlignment));
+
+		UObjectsStatistics anElement;
+		anElement.uobjectName = InName;
+		anElement.objectPointer = InObject;
+		anElement.beginAddress = pointerAddress;
+		anElement.size = InSize;
+		anElement.alignment = (uint32_t)FMath::Max<size_t>(16, InAlignment);
+
+		std::ostringstream osb;
+		osb << (void*)((uint8_t*)InObject + InSize);
+
+		anElement.endAddress = osb.str();
+
+		uint32_t vectorLength = m_UObjectStatistics.Num();
+
+		if(vectorLength > 0)
+		{
+			//double sizeInPool = std::stoll(m_UobjectStatistics.GetElements()[vectorLength - 1].beginAddress) - std::stoll(pointerAddress);
+			long sizeInPool = (uint8_t*)InObject - (uint8_t*)m_UObjectStatistics.GetElements()[vectorLength - 1].objectPointer;
+			m_UObjectStatistics.ModifyElements()[vectorLength - 1].sizeInPool = sizeInPool;
+		}
+
+		long sizeInPool = Align((uint8_t*)GUObjectAllocator.GetPermanentObjectPoolTail(), FMath::Max<size_t>(16, InAlignment)) - (uint8_t*)InObject;
+		anElement.sizeInPool = sizeInPool;
+		anElement.classObject = InClass;
+
+		m_UObjectStatistics.Add(anElement);
 	}
 
 	//-----------------------------------------------------------------------------

@@ -287,6 +287,7 @@ public:
 	}
 
 	inline const std::vector<BuildingBlock>& GetElements() const { return m_Elements; }
+	inline std::vector<BuildingBlock>& ModifyElements() { return m_Elements; }
 
 	typename std::vector<BuildingBlock>::iterator begin()
 	{

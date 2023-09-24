@@ -286,6 +286,28 @@ namespace Karma
 		float startYCache;
 		float ioDisplayXCache;
 		float ioDisplayYCache;
+		float scrollX;
+		float scrollY;
+	};
+
+	struct UObjectsStatistics
+	{
+		void* objectPointer;
+		std::string beginAddress;
+		std::string endAddress;
+		size_t size;
+		size_t sizeInPool;
+		std::string uobjectName;
+		uint32_t alignment;
+		UClass* classObject;
+
+		// Placement in memory pool
+		KGVec2 placementCoordi;//nates
+
+		UObjectsStatistics()
+		{
+			placementCoordi.x = placementCoordi.y = 0.0f;
+		}
 	};
 
 	class KarmaGuiMesa
@@ -299,6 +321,7 @@ namespace Karma
 		static void DrawKarmaSceneHierarchyPanelMesa();
 		static void Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene);
 		static void DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback);
+		static void DrawMemoryExhibitor();
 
 		// Mesas!
 		static void ShowAboutKarmaMesa(bool* pbOpen);
@@ -320,6 +343,10 @@ namespace Karma
 		static void QueryForTuringMachineElectronics();
 		static uint32_t ChernUint32FromString(const std::string& ramString);
 		static std::string ChernDimensionsFromString(const std::string& ramString);
+		static double HexStringToDecimal(const std::string& hexString);
+
+		// Statistics
+		static void DumpUObjectStatistics(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, class UClass* InClass);
 
 	public:
 		static std::string notAvailableText;
@@ -328,6 +355,7 @@ namespace Karma
 	private:
 		static KarmaTuringMachineElectronics electronicsItems;
 		static WindowManipulationGaugeData m_3DExhibitor;
+		static WindowManipulationGaugeData m_MemoryExhibitor;
 		static bool m_EditorInitialized;
 		static bool m_RefreshRenderingResources;
 
@@ -337,6 +365,9 @@ namespace Karma
 		// Need agnostic naming scheme
 		static uint32_t m_DirectoryIcon;
 		static uint32_t m_FileIcon;
+
+		// UObjects statistics
+		static KarmaVector<UObjectsStatistics> m_UObjectStatistics;
 
 	public:
 		static bool m_ViewportFocused;

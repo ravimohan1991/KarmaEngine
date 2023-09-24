@@ -706,6 +706,20 @@ KARMA_API void GetObjectsOfClass(const UClass* ClassToLookFor, KarmaVector<UObje
 KARMA_API void ForEachObjectOfClass(const UClass* ClassToLookFor, std::function<void(UObject*)> Operation, bool bIncludeDerivedClasses = true, EObjectFlags ExcludeFlags = RF_ClassDefaultObject, EInternalObjectFlags ExclusionInternalFlags = EInternalObjectFlags::None);
 
 /**
+ * For UObjects statistics
+ */
+typedef void (*FUObjectAllocatorCallback)(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, class UClass* InClass);
+
+/**
+ * Client's callback registering routine for receiving UObjects relevant
+ * data dump
+ *
+ * @param dumpCallback The callback function defined in client
+ */
+KARMA_API extern void RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback);
+
+
+/**
  * Add an object to the cache, categorized by class
  *
  * @param	Object		Object to add to the cache

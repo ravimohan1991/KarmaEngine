@@ -28,6 +28,11 @@ namespace Karma
 		 */
 		void ShutDown();
 
+		/**
+		 * Getter for the pointer to start of allocated memory address
+		 */
+		void* GetMemBlock() const { return m_pMemBlock; }
+
 	private:
 		/**
 		 * Pointer to the start of allocated memory

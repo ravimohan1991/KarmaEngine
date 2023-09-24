@@ -39,6 +39,8 @@ namespace Karma
 	 * @param InCppClassStaticFunctions Function pointers for the class's version of Unreal's reflected static functions
 	 * @param InSuperClassFn Super class function pointer
 	 * @param WithinClass Within class
+	 *
+	 * @todo some params are not functional yet
 	 */
 	KARMA_API void GetPrivateStaticClassBody(
 		const std::string& PackageName,
@@ -141,13 +143,13 @@ namespace Karma
 
 	/**
 	 * Note the name. Need to understand UE's take upon the subject
-	 * 
+	 *
 	 */
 
 	FORCEINLINE bool TentativeFlagChecks(const UObject* Test)
 	{
 		KR_CORE_ASSERT(GUObjectStore.IndexToObject(Test->GetInterIndex())->HasAnyFlags(EInternalObjectFlags(int32_t(EInternalObjectFlags::PendingKill) | int32_t(EInternalObjectFlags::Garbage))) == Test->HasAnyFlags(EObjectFlags(RF_PendingKill | RF_Garbage)), "");
-		
+
 		return !Test->HasAnyFlags(EObjectFlags(RF_PendingKill | RF_Garbage));
 	}
 
