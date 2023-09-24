@@ -81,4 +81,5 @@ References
 * [ThinMatrix](https://www.youtube.com/watch?v=f3Cr8Yx3GGA)
 
 ### Resources and Misc
+* [Academic Code Documenting Style](https://www.cs.cmu.edu/~410/doc/doxygen.html)
 * [deoxygen integration](https://github.com/satu0king/Github-Documentation-With-Doxygen)
