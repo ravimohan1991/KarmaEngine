@@ -1,3 +1,13 @@
+/**
+ * @file Object.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains types to be consumed by the application library.
+ * @version 1.0
+ * @date February 27, 2023
+ *
+ * @copyright Karma Engine, copyright(c) People of India in accordance with Epic EULA (https://www.unrealengine.com/en-US/eula/unreal)
+ */
+
 #pragma once
 
 #include "krpch.h"
@@ -66,6 +76,13 @@ namespace Karma
 		const std::string& Name
 	);
 
+	/**
+	 * @brief The base class of all the game code relevant objects.
+	 * The base class of all UE objects. The type of an object is defined by its UClass.
+	 * This provides support functions for creating and using objects, and virtual functions that should be overridden in child classes.
+	 *
+	 * @see https://docs.unrealengine.com/ProgrammingAndScripting/ProgrammingWithCPP/UnrealArchitecture/Objects
+	 */
 	class KARMA_API UObject : public UObjectBase
 	{
 		// In UE, this is done in ObjectMacros.h, #define DECLARE_CLASS
