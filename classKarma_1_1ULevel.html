@@ -88,7 +88,7 @@ Inheritance diagram for Karma::ULevel:</div>
 <div class="center"><img src="classKarma_1_1ULevel__inherit__graph.png" border="0" usemap="#aKarma_1_1ULevel_inherit__map" alt="Inheritance graph"/></div>
 <map name="aKarma_1_1ULevel_inherit__map" id="aKarma_1_1ULevel_inherit__map">
 <area shape="rect" title=" " alt="" coords="23,153,131,178"/>
-<area shape="rect" href="classKarma_1_1UObject.html" title=" " alt="" coords="20,79,134,105"/>
+<area shape="rect" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects...." alt="" coords="20,79,134,105"/>
 <area shape="poly" title=" " alt="" coords="80,120,80,152,74,152,74,120"/>
 <area shape="rect" href="classKarma_1_1UObjectBase.html" title=" " alt="" coords="5,5,149,31"/>
 <area shape="poly" title=" " alt="" coords="80,46,80,79,74,79,74,46"/>
@@ -100,7 +100,7 @@ Collaboration diagram for Karma::ULevel:</div>
 <div class="center"><img src="classKarma_1_1ULevel__coll__graph.png" border="0" usemap="#aKarma_1_1ULevel_coll__map" alt="Collaboration graph"/></div>
 <map name="aKarma_1_1ULevel_coll__map" id="aKarma_1_1ULevel_coll__map">
 <area shape="rect" title=" " alt="" coords="123,273,231,298"/>
-<area shape="rect" href="classKarma_1_1UObject.html" title=" " alt="" coords="20,80,134,106"/>
+<area shape="rect" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects...." alt="" coords="20,80,134,106"/>
 <area shape="poly" title=" " alt="" coords="65,121,51,164,49,187,55,209,70,230,91,247,136,270,134,275,88,251,67,233,51,211,44,187,45,163,60,119"/>
 <area shape="rect" href="classKarma_1_1UWorld.html" title=" " alt="" coords="66,177,174,202"/>
 <area shape="poly" title=" " alt="" coords="91,119,117,175,112,177,86,121"/>
@@ -124,6 +124,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Initialize</b> (const
 <tr class="memitem:a9b12be5c0116f57621ec2b4a6ef54326" id="r_a9b12be5c0116f57621ec2b4a6ef54326"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1ULevel.html#a9b12be5c0116f57621ec2b4a6ef54326">SetWorldSettings</a> (<a class="el" href="classKarma_1_1AWorldSettings.html">AWorldSettings</a> *NewWorldSettings)</td></tr>
 <tr class="separator:a9b12be5c0116f57621ec2b4a6ef54326"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb1ccf1e63646f7c76e6ade1222d4172" id="r_adb1ccf1e63646f7c76e6ade1222d4172"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classKarma_1_1UWorld.html">UWorld</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1ULevel.html#adb1ccf1e63646f7c76e6ade1222d4172">GetWorld</a> () const override final</td></tr>
+<tr class="memdesc:adb1ccf1e63646f7c76e6ade1222d4172"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns what <a class="el" href="classKarma_1_1UWorld.html">UWorld</a> this object is contained within. By default this will follow its Outer chain, but it should be overridden if that will not work.  <br /></td></tr>
 <tr class="separator:adb1ccf1e63646f7c76e6ade1222d4172"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classKarma_1_1UObject"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classKarma_1_1UObject')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classKarma_1_1UObject.html">Karma::UObject</a></td></tr>
 <tr class="memitem:a7f271f36308fe16bca4fbb1e97a586c8 inherit pub_methods_classKarma_1_1UObject" id="r_a7f271f36308fe16bca4fbb1e97a586c8"><td class="memItemLeft" align="right" valign="top">
@@ -132,14 +133,17 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Initialize</b> (const
 <tr class="memitem:a12d23b4ef1a935c31572e76a8e793ed7 inherit pub_methods_classKarma_1_1UObject" id="r_a12d23b4ef1a935c31572e76a8e793ed7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#a12d23b4ef1a935c31572e76a8e793ed7">FinishDestroy</a> ()</td></tr>
 <tr class="separator:a12d23b4ef1a935c31572e76a8e793ed7 inherit pub_methods_classKarma_1_1UObject"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79cd8eb1f2579df9484a42c12d3a9ace inherit pub_methods_classKarma_1_1UObject" id="r_a79cd8eb1f2579df9484a42c12d3a9ace"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#a79cd8eb1f2579df9484a42c12d3a9ace">GetDesc</a> ()</td></tr>
+<tr class="memdesc:a79cd8eb1f2579df9484a42c12d3a9ace inherit pub_methods_classKarma_1_1UObject"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a one line description of an object for viewing in the thumbnail view of the generic browser.  <br /></td></tr>
 <tr class="separator:a79cd8eb1f2579df9484a42c12d3a9ace inherit pub_methods_classKarma_1_1UObject"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab91541016e5576774decd434a5eb186b inherit pub_methods_classKarma_1_1UObject" id="r_ab91541016e5576774decd434a5eb186b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#ab91541016e5576774decd434a5eb186b">IsValidChecked</a> (const <a class="el" href="classKarma_1_1UObject.html">UObject</a> *Test)</td></tr>
 <tr class="separator:ab91541016e5576774decd434a5eb186b inherit pub_methods_classKarma_1_1UObject"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add7a5c2d46c62ab98edb91bec3e2d448 inherit pub_methods_classKarma_1_1UObject" id="r_add7a5c2d46c62ab98edb91bec3e2d448"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#add7a5c2d46c62ab98edb91bec3e2d448">BeginDestroy</a> ()</td></tr>
+<tr class="memdesc:add7a5c2d46c62ab98edb91bec3e2d448 inherit pub_methods_classKarma_1_1UObject"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called before destroying the object. This is called immediately upon deciding to destroy the object, to allow the object to begin an asynchronous cleanup process.  <br /></td></tr>
 <tr class="separator:add7a5c2d46c62ab98edb91bec3e2d448 inherit pub_methods_classKarma_1_1UObject"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2786afda12b43188bdf3dedf1e401bb7 inherit pub_methods_classKarma_1_1UObject" id="r_a2786afda12b43188bdf3dedf1e401bb7"><td class="memItemLeft" align="right" valign="top">FORCEINLINE bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#a2786afda12b43188bdf3dedf1e401bb7">Modify</a> (bool bAlwaysMarkDirty=true)</td></tr>
 <tr class="separator:a2786afda12b43188bdf3dedf1e401bb7 inherit pub_methods_classKarma_1_1UObject"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa4c5fbf1ee70624094244573d7c3470 inherit pub_methods_classKarma_1_1UObject" id="r_afa4c5fbf1ee70624094244573d7c3470"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#afa4c5fbf1ee70624094244573d7c3470">IsSelected</a> () const</td></tr>
+<tr class="memdesc:afa4c5fbf1ee70624094244573d7c3470 inherit pub_methods_classKarma_1_1UObject"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test the selection state of a <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a>.  <br /></td></tr>
 <tr class="separator:afa4c5fbf1ee70624094244573d7c3470 inherit pub_methods_classKarma_1_1UObject"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classKarma_1_1UObjectBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classKarma_1_1UObjectBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classKarma_1_1UObjectBase.html">Karma::UObjectBase</a></td></tr>
 <tr class="memitem:ae5443b9f74f6f118535129f1b5e87955 inherit pub_methods_classKarma_1_1UObjectBase" id="r_ae5443b9f74f6f118535129f1b5e87955"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObjectBase.html#ae5443b9f74f6f118535129f1b5e87955">UObjectBase</a> (<a class="el" href="classKarma_1_1UClass.html">UClass</a> *inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, <a class="el" href="classKarma_1_1UObject.html">UObject</a> *inOuter, const std::string &amp;inName)</td></tr>
@@ -243,6 +247,7 @@ static const char *&#160;</td><td class="memItemRight" valign="bottom"><b>Static
   </tr>
 </table>
 </div><div class="memdoc">
+
 <p>Returns what <a class="el" href="classKarma_1_1UWorld.html">UWorld</a> this object is contained within. By default this will follow its Outer chain, but it should be overridden if that will not work. </p>
 
 <p>Reimplemented from <a class="el" href="classKarma_1_1UObject.html#ab34f1884071a9796e8364d0541808ba9">Karma::UObject</a>.</p>
@@ -310,7 +315,7 @@ static const char *&#160;</td><td class="memItemRight" valign="bottom"><b>Static
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The World that has this level in its Levels array. This is not the same as <a class="el" href="classKarma_1_1UObjectBase.html#a291abefc5f1962966f928cfba5b959e7">GetOuter()</a>, because <a class="el" href="classKarma_1_1UObjectBase.html#a291abefc5f1962966f928cfba5b959e7">GetOuter()</a> for a streaming level is a vestigial world that is not used. It should not be accessed during <a class="el" href="classKarma_1_1UObject.html#add7a5c2d46c62ab98edb91bec3e2d448">BeginDestroy()</a>, just like any other <a class="el" href="classKarma_1_1UObject.html">UObject</a> references, since GC may occur in any order. </p>
+<p>The World that has this level in its Levels array. This is not the same as <a class="el" href="classKarma_1_1UObjectBase.html#a291abefc5f1962966f928cfba5b959e7">GetOuter()</a>, because <a class="el" href="classKarma_1_1UObjectBase.html#a291abefc5f1962966f928cfba5b959e7">GetOuter()</a> for a streaming level is a vestigial world that is not used. It should not be accessed during <a class="el" href="classKarma_1_1UObject.html#add7a5c2d46c62ab98edb91bec3e2d448" title="Called before destroying the object. This is called immediately upon deciding to destroy the object,...">BeginDestroy()</a>, just like any other <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a> references, since GC may occur in any order. </p>
 
 </div>
 </div>

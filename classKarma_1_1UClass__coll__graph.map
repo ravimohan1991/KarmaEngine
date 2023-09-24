@@ -4,7 +4,7 @@
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,263,182,316,179,321,104,267"/>
 <area shape="rect" id="Node000003" href="$classKarma_1_1UField.html" title=" " alt="" coords="25,155,129,181"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="80,196,80,230,74,230,74,196"/>
-<area shape="rect" id="Node000004" href="$classKarma_1_1UObject.html" title=" " alt="" coords="20,80,134,106"/>
+<area shape="rect" id="Node000004" href="$classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects...." alt="" coords="20,80,134,106"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="80,121,80,155,74,155,74,121"/>
 <area shape="rect" id="Node000005" href="$classKarma_1_1UObjectBase.html" title=" " alt="" coords="5,5,149,31"/>
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="80,46,80,80,74,80,74,46"/>

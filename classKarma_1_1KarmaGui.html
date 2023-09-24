@@ -475,6 +475,8 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>TextV</b> (con
 <tr class="memitem:a460eeefe24d6c63a8d4104515c7b8220" id="r_a460eeefe24d6c63a8d4104515c7b8220"><td class="memItemLeft" align="right" valign="top"><a id="a460eeefe24d6c63a8d4104515c7b8220" name="a460eeefe24d6c63a8d4104515c7b8220"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>TextColored</b> (const <a class="el" href="structKGVec4.html">KGVec4</a> &amp;col, const char *fmt,...) KG_FMTARGS(2)</td></tr>
 <tr class="separator:a460eeefe24d6c63a8d4104515c7b8220"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac377901621df4a3cac7b1ad6a4af1391" id="r_ac377901621df4a3cac7b1ad6a4af1391"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1KarmaGui.html#ac377901621df4a3cac7b1ad6a4af1391">AddTextVertical</a> (<a class="el" href="structKGDrawList.html">KGDrawList</a> *DrawList, const char *text, <a class="el" href="structKGVec2.html">KGVec2</a> pos, KGU32 text_color)</td></tr>
+<tr class="separator:ac377901621df4a3cac7b1ad6a4af1391"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e3f5048feaf76f8d69f387c4c5a9530" id="r_a6e3f5048feaf76f8d69f387c4c5a9530"><td class="memItemLeft" align="right" valign="top"><a id="a6e3f5048feaf76f8d69f387c4c5a9530" name="a6e3f5048feaf76f8d69f387c4c5a9530"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>TextColoredV</b> (const <a class="el" href="structKGVec4.html">KGVec4</a> &amp;col, const char *fmt, va_list args) KG_FMTLIST(2)</td></tr>
 <tr class="separator:a6e3f5048feaf76f8d69f387c4c5a9530"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1271,6 +1273,56 @@ static <a class="el" href="structKarmaGuiViewport.html">KarmaGuiViewport</a> *&#
 static KarmaGuiKey&#160;</td><td class="memItemRight" valign="bottom"><b>GetKeyIndex</b> (KarmaGuiKey key)</td></tr>
 <tr class="separator:a0fc7beef2d31e3b45fe56ae960ac64ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac377901621df4a3cac7b1ad6a4af1391" name="ac377901621df4a3cac7b1ad6a4af1391"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac377901621df4a3cac7b1ad6a4af1391">&#9670;&#160;</a></span>AddTextVertical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::KarmaGui::AddTextVertical </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structKGDrawList.html">KGDrawList</a> *&#160;</td>
+          <td class="paramname"><em>DrawList</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structKGVec2.html">KGVec2</a>&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">KGU32&#160;</td>
+          <td class="paramname"><em>text_color</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Draws vertical text. The position is the bottom left of the text rect. Courtsey: <a href="https://github.com/ocornut/imgui/issues/705">https://github.com/ocornut/imgui/issues/705</a> with my own modular scaling modification </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>Karma/src/Karma/KarmaGui/<a class="el" href="KarmaGui_8h_source.html">KarmaGui.h</a></li>
 <li>Karma/src/Karma/KarmaGui/<b>KarmaGui.cpp</b></li>

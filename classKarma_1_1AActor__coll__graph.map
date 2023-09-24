@@ -1,7 +1,7 @@
 <map id="Karma::AActor" name="Karma::AActor">
 <area shape="rect" id="Node000001" title=" " alt="" coords="135,334,240,360"/>
 <area shape="poly" id="edge3_Node000001_Node000001" title=" " alt="" coords="258,338,267,347,259,355,241,358,240,352,256,350,262,347,254,343"/>
-<area shape="rect" id="Node000002" href="$classKarma_1_1UObject.html" title=" " alt="" coords="20,80,134,106"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects...." alt="" coords="20,80,134,106"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="74,122,71,154,70,192,75,232,89,270,103,290,122,307,161,331,158,336,118,311,99,293,84,272,70,233,65,192,65,153,69,121"/>
 <area shape="rect" id="Node000006" href="$classKarma_1_1UActorComponent.html" title=" " alt="" coords="100,155,273,181"/>
 <area shape="poly" id="edge7_Node000006_Node000002" title=" " alt="" coords="109,113,170,153,167,157,106,117"/>

@@ -11,9 +11,10 @@ var searchData=
   ['uniformbufferobject_8',['UniformBufferObject',['../structKarma_1_1UniformBufferObject.html',1,'Karma']]],
   ['uobject_9',['UObject',['../classKarma_1_1UObject.html',1,'Karma']]],
   ['uobjectbase_10',['UObjectBase',['../classKarma_1_1UObjectBase.html',1,'Karma']]],
-  ['upackage_11',['UPackage',['../classKarma_1_1UPackage.html',1,'Karma']]],
-  ['uprimitivecomponent_12',['UPrimitiveComponent',['../classKarma_1_1UPrimitiveComponent.html',1,'Karma']]],
-  ['uscenecomponent_13',['USceneComponent',['../classKarma_1_1USceneComponent.html',1,'Karma']]],
-  ['ustruct_14',['UStruct',['../classKarma_1_1UStruct.html',1,'Karma']]],
-  ['uworld_15',['UWorld',['../classKarma_1_1UWorld.html',1,'Karma']]]
+  ['uobjectsstatistics_11',['UObjectsStatistics',['../structKarma_1_1UObjectsStatistics.html',1,'Karma']]],
+  ['upackage_12',['UPackage',['../classKarma_1_1UPackage.html',1,'Karma']]],
+  ['uprimitivecomponent_13',['UPrimitiveComponent',['../classKarma_1_1UPrimitiveComponent.html',1,'Karma']]],
+  ['uscenecomponent_14',['USceneComponent',['../classKarma_1_1USceneComponent.html',1,'Karma']]],
+  ['ustruct_15',['UStruct',['../classKarma_1_1UStruct.html',1,'Karma']]],
+  ['uworld_16',['UWorld',['../classKarma_1_1UWorld.html',1,'Karma']]]
 ];

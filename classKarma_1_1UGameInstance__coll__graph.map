@@ -2,7 +2,7 @@
 <area shape="rect" id="Node000001" title=" " alt="" coords="86,155,246,181"/>
 <area shape="rect" id="Node000004" href="$structKarma_1_1FWorldContext.html" title=" " alt="" coords="156,348,307,373"/>
 <area shape="poly" id="edge8_Node000004_Node000001" title=" " alt="" coords="110,189,67,206,30,228,17,241,10,254,9,268,16,283,44,311,79,331,118,345,156,352,155,358,117,350,77,336,41,316,11,286,4,269,5,253,13,238,27,224,65,201,108,184"/>
-<area shape="rect" id="Node000002" href="$classKarma_1_1UObject.html" title=" " alt="" coords="236,80,350,106"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects...." alt="" coords="236,80,350,106"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="260,116,189,157,186,153,257,112"/>
 <area shape="rect" id="Node000005" href="$classKarma_1_1UGameViewportClient.html" title=" " alt="" coords="288,252,482,277"/>
 <area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="300,120,308,150,321,180,348,219,375,250,371,253,343,223,316,182,303,151,295,122"/>
