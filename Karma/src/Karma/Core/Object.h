@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "UObjectBase.h"
 #include "GFrameworkMacros.h"
 
@@ -19,10 +17,17 @@ namespace Karma
 {
 	class UClass;
 
+	/**
+	 * A function pointer with UClass return type.
+	 *
+	 * @see GetPrivateStaticClassBody()
+	 */
 	typedef UClass* (*StaticClassFunctionType)();
 
 	/**
 	 * @brief Helper template to call the default constructor for a class
+	 *
+	 * @see #define DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass) in GFrameworkMacros.h
 	 */
 	template<class T>
 	void InternalConstructor(const FObjectInitializer& X)
@@ -67,8 +72,16 @@ namespace Karma
 		/*UClass::ClassVTableHelperCtorCallerType InClassVTableHelperCtorCaller,
 		FUObjectCppClassStaticFunctions&& InCppClassStaticFunctions,*/
 		StaticClassFunctionType InSuperClassFn
-	/*UClass::StaticClassFunctionType InWithinClassFn*/);
+		/*UClass::StaticClassFunctionType InWithinClassFn*/);
 
+	/**
+	 * Shared function called from the various InitializePrivateStaticClass functions generated my the DECLARE_KARMA_CLASS macro.
+	 * Basically sets up the class hierarchy by setting UStruct::m_SuperStruct with TClass_Super_StaticClass
+	 *
+	 * @param TClass_Super_StaticClass	The class which is base for this class
+	 * @param TClass_PrivateStaticClass	The current class which is being initialized
+	 * @see UClass::SetSuperStruct
+	 */
 	KARMA_API void InitializePrivateStaticClass(
 		class UClass* TClass_Super_StaticClass,
 		class UClass* TClass_PrivateStaticClass,
@@ -93,9 +106,18 @@ namespace Karma
 		//UClass* m_StaticClass;
 
 	public:
+		/**
+		 * Default constructor does nothing for now except well, being used as default constructor in DECLARE_KARMA_CLASS which is needed
+		 * for placement new and, thus, initializing the UObject
+		 *
+		 *@see #define DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass)
+		 *@see https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044
+		 */
 		UObject();
-		UObject(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName);
 
+		/**
+		 * A legacy function from UE
+		 */
 		static const char* StaticConfigName()
 		{
 			return "Engine";
@@ -105,10 +127,14 @@ namespace Karma
 		 * Called to finish destroying the object.  After UObject::FinishDestroy is called, the object's memory should no longer be accessed.
 		 *
 		 * @warning Because properties are destroyed here, Super::FinishDestroy() should always be called at the end of your child class's FinishDestroy() method, rather than at the beginning.
+		 * @todo To be written with Shiva logic for UObject destruction.
 		 */
 		virtual void FinishDestroy();
 
-		/** @brief Return a one line description of an object for viewing in the thumbnail view of the generic browser */
+		/**
+		 * @brief Return a one line description of an object for viewing in the thumbnail view of the generic browser
+		 * @todo Place holder for now. Plan to rewrite once Editor reaches that stage
+		 */
 		virtual const std::string& GetDesc() { static std::string someString = "";  return someString; }
 
 	public:
@@ -129,6 +155,7 @@ namespace Karma
 		/**
 		 * @brief Called before destroying the object.  This is called immediately upon deciding to destroy the object, to allow the object to begin an
 		 * asynchronous cleanup process.
+		 * @todo To be written with Shiva logic for UObject destruction.
 		 */
 		virtual void BeginDestroy();
 
@@ -154,7 +181,7 @@ namespace Karma
 		 * @brief Test the selection state of a UObject
 		 *
 		 * @return		true if the object is selected, false otherwise.
-		 * @todo UE this doesn't belong here, but it doesn't belong anywhere else any better
+		 * @todo UE this doesn't belong here, but it doesn't belong anywhere else any better. To be written after Editor is functional with UObjects
 		 */
 		bool IsSelected() const;
 	};
