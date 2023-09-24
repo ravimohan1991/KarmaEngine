@@ -1,7 +1,7 @@
 /**
  * @file Object.h
  * @author Ravi Mohan (the_cowboy)
- * @brief This file contains types to be consumed by the application library.
+ * @brief This file contains the class UObject along with helper functions.
  * @version 1.0
  * @date February 27, 2023
  *
@@ -22,7 +22,7 @@ namespace Karma
 	typedef UClass* (*StaticClassFunctionType)();
 
 	/**
-	 * Helper template to call the default constructor for a class
+	 * @brief Helper template to call the default constructor for a class
 	 */
 	template<class T>
 	void InternalConstructor(const FObjectInitializer& X)
@@ -31,7 +31,7 @@ namespace Karma
 	}
 
 	/**
-	 * Helper template allocate and construct a UClass
+	 * @brief Helper template to allocate and construct a UClass
 	 * In UE, this helper is declared and defined in Class.h/.cpp. I don't know
 	 * how that worked, hehe.
 	 *
@@ -50,6 +50,7 @@ namespace Karma
 	 * @param InSuperClassFn Super class function pointer
 	 * @param WithinClass Within class
 	 *
+	 * @see DECLARE_KARMA_CLASS(TClass, TSuperClass) in GFrameworkMacros.h
 	 * @todo some params are not functional yet
 	 */
 	KARMA_API void GetPrivateStaticClassBody(
@@ -107,12 +108,12 @@ namespace Karma
 		 */
 		virtual void FinishDestroy();
 
-		/** Return a one line description of an object for viewing in the thumbnail view of the generic browser */
+		/** @brief Return a one line description of an object for viewing in the thumbnail view of the generic browser */
 		virtual const std::string& GetDesc() { static std::string someString = "";  return someString; }
 
 	public:
 		/**
-		 * Returns what UWorld this object is contained within.
+		 * @brief Returns what UWorld this object is contained within.
 		 * By default this will follow its Outer chain, but it should be overridden if that will not work.
 		 */
 		virtual class UWorld* GetWorld() const;
@@ -126,7 +127,7 @@ namespace Karma
 		bool IsValidChecked(const UObject* Test);
 
 		/**
-		 * Called before destroying the object.  This is called immediately upon deciding to destroy the object, to allow the object to begin an
+		 * @brief Called before destroying the object.  This is called immediately upon deciding to destroy the object, to allow the object to begin an
 		 * asynchronous cleanup process.
 		 */
 		virtual void BeginDestroy();
@@ -143,14 +144,14 @@ namespace Karma
 #if WITH_EDITOR
 		virtual bool Modify(bool bAlwaysMarkDirty = true);
 
-		/** Utility to allow overrides of Modify to avoid doing work if this object cannot be safely modified */
+		/** @brief Utility to allow overrides of Modify to avoid doing work if this object cannot be safely modified */
 		bool CanModify() const;
 #else
 		FORCEINLINE bool Modify(bool bAlwaysMarkDirty = true) { return false; }
 #endif
 
 		/**
-		 * Test the selection state of a UObject
+		 * @brief Test the selection state of a UObject
 		 *
 		 * @return		true if the object is selected, false otherwise.
 		 * @todo UE this doesn't belong here, but it doesn't belong anywhere else any better
@@ -159,8 +160,7 @@ namespace Karma
 	};
 
 	/**
-	 * Note the name. Need to understand UE's take upon the subject
-	 *
+	 * @brief Note the name. Need to understand UE's take upon the subject
 	 */
 
 	FORCEINLINE bool TentativeFlagChecks(const UObject* Test)
@@ -171,7 +171,7 @@ namespace Karma
 	}
 
 	/**
-	 * Test validity of object
+	 * @brief Test validity of object
 	 *
 	 * @param	Test			The object to test
 	 * @return	Return true if the object is usable: non-null and not pending kill or garbage
