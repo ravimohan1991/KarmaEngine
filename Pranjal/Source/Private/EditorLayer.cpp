@@ -18,6 +18,9 @@ namespace Karma
 		testWorld = nullptr;
 		m_ActorCounter = 0;
 
+		// Register UObject statistics dump
+		RegisterUObjectsStatisticsCallback(KarmaGuiMesa::DumpUObjectStatistics);
+
 		// Instantiate camera
 		m_EditorCamera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
 
@@ -151,7 +154,7 @@ namespace Karma
 			KarmaGui::End();
 		}
 
-		// The complete UI Karma shall (ever?) need. Not counting meta morpho analytic and service toolset
+		// The complete UI Pranjal shall (ever?) need. Not counting meta morpho analytic and service toolset
 		{
 			static CallbacksFromEditor editorCallbacks;
 			editorCallbacks.openSceneCallback = std::bind(&EditorLayer::OpenScene, this, std::placeholders::_1);
@@ -340,7 +343,14 @@ namespace Karma
 
 		for(FRawObjectIterator ObjectItr; ObjectItr; ++ObjectItr)
 		{
-			KR_INFO("Iterating over UObject: {0} with Class: {1}", (*ObjectItr)->m_Object->GetName(), (*ObjectItr)->m_Object->GetClass()->GetName());
+			if((*ObjectItr)->m_Object->GetClass())
+			{
+				KR_INFO("Iterating over UObject: {0} with Class: {1}", (*ObjectItr)->m_Object->GetName(), (*ObjectItr)->m_Object->GetClass()->GetName());
+			}
+			else
+			{
+				KR_INFO("Iterating over UObject: {0} UClass", (*ObjectItr)->m_Object->GetName());
+			}
 		}
 	}
 }

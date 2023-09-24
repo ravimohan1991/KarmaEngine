@@ -27,6 +27,9 @@ namespace Karma
 		m_PermanentObjectPool = pMemoryStart;
 		m_PermanentObjectPoolTail = m_PermanentObjectPool;
 		m_PermanentObjectPoolExceededTail = m_PermanentObjectPoolTail;
+		m_PermanentObjectPoolEnd = m_PermanentObjectPool + size_t(m_PermanentObjectPoolSize);
+		m_BareUObjectsSize = 0;
+		m_AlignedUObjectsSize = 0;
 
 		KR_CORE_INFO("Prepared a memory pool of {0} bytes for {1} UObjects' allocation", m_PermanentObjectPoolSize, numberOfElemets);
 	}
@@ -46,16 +49,6 @@ namespace Karma
 		}
 	}
 
-	/**
-	 * Allocates a UObjectBase from the free store or the permanent object pool.
-	 * Note: We are returning UObjectBase pointer because ue does so. Else void pointer could have
-	 * done the job, since what we are returning is not really a UObjectBase.
-	 *
-	 * @param Size size of uobject to allocate
-	 * @param Alignment alignment of uobject to allocate
-	 * @param bAllowPermanent if true, allow allocation in the permanent object pool, if it fits
-	 * @return newly allocated UObjectBase (not really a UObjectBase yet, no constructor like thing has been called).
-	 */
 	UObjectBase* FUObjectAllocator::AllocateUObject(size_t Size, size_t Alignment, bool bAllowPermanent)
 	{
 		// Force alignment to minimal of 16 bytes
@@ -65,7 +58,8 @@ namespace Karma
 		UObjectBase* Result = nullptr;
 		bAllowPermanent &= m_PermanentObjectPool != nullptr;
 
-		const bool bPlaceInPerm = bAllowPermanent && (Align(m_PermanentObjectPoolTail, Alignment) + Size) <= (m_PermanentObjectPool + m_PermanentObjectPoolSize);// is memory available?
+		// is memory available?
+		const bool bPlaceInPerm = bAllowPermanent && (Align(m_PermanentObjectPoolTail, Alignment) + Size) <= (m_PermanentObjectPool + m_PermanentObjectPoolSize);
 
 		if (bAllowPermanent && !bPlaceInPerm)
 		{
@@ -80,6 +74,13 @@ namespace Karma
 		{
 			// Align current tail pointer and use it for object. 
 			uint8_t* AlignedPtr = Align(m_PermanentObjectPoolTail, Alignment);
+
+			// Increment bare UObject size and number of UObjects
+			m_BareUObjectsSize += (uint32_t)Size;
+			m_NumberOfUObjects++;
+
+			// Record the offset for aligned size and add to total size
+			m_AlignedUObjectsSize += uint32_t(AlignedPtr - m_PermanentObjectPoolTail) + (uint32_t)Size;
 
 			// Update tail pointer.
 			m_PermanentObjectPoolTail = AlignedPtr + Size;
@@ -99,5 +100,19 @@ namespace Karma
 		// ue performs alignment test
 
 		return Result;
+	}
+
+	void FUObjectAllocator::RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback)
+	{
+		m_DumpingCallbacks.Add(dumpCallback);
+	}
+
+	void FUObjectAllocator::DumpUObjectsInformation(void* InObject, const std::string& InName, size_t InSize, size_t InAlignment, UClass* InClass)
+	{
+		// Iterate through all the registered callbacks
+		for (const auto& element : m_DumpingCallbacks)
+		{
+			element(InObject, InName, InSize, InAlignment, InClass);
+		}
 	}
 }

@@ -69,6 +69,8 @@ namespace Karma
 		static RunningPlatform m_RPlatform;
 	};
 
+	extern KARMA_API KarmaSmriti m_MemoryManager;
+
 	// To be defined in the client application
 	Application* CreateApplication();
 }

@@ -50,6 +50,7 @@ namespace Karma
 		DECLARE_KARMA_CLASS(UStruct, UField)
 
 	public:
+
 		/** Returns true if this struct either is SomeBase, or is a child of SomeBase. This will not crash on null structs */
 		bool IsChildOf(const UStruct* SomeBase) const;
 

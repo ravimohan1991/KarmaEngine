@@ -1858,9 +1858,9 @@ bool KarmaGuiListClipper::Step()
 	bool ret = ImGuiListClipper_StepInternal(this);
 	if (ret && (DisplayStart == DisplayEnd))
 		ret = false;
-	if (g.CurrentTable && g.CurrentTable->IsUnfrozenRows == false);
+	if (g.CurrentTable && g.CurrentTable->IsUnfrozenRows == false) {}
 		//KR_CORE_INFO("Clipper: Step(): inside frozen table row.");
-	if (need_items_height && ItemsHeight > 0.0f);
+	if (need_items_height && ItemsHeight > 0.0f) {}
 		//KR_CORE_INFO("Clipper: Step(): computed ItemsHeight: %.2f.", ItemsHeight);
 	if (ret)
 	{
