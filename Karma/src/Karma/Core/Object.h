@@ -37,6 +37,7 @@ namespace Karma
 
 	/**
 	 * @brief Helper template to allocate and construct a UClass
+	 *
 	 * In UE, this helper is declared and defined in Class.h/.cpp. I don't know
 	 * how that worked, hehe.
 	 *
@@ -57,6 +58,8 @@ namespace Karma
 	 *
 	 * @see DECLARE_KARMA_CLASS(TClass, TSuperClass) in GFrameworkMacros.h
 	 * @todo some params are not functional yet
+	 *
+	 * @since Karma 1.0.0
 	 */
 	KARMA_API void GetPrivateStaticClassBody(
 		const std::string& PackageName,
@@ -81,6 +84,7 @@ namespace Karma
 	 * @param TClass_Super_StaticClass	The class which is base for this class
 	 * @param TClass_PrivateStaticClass	The current class which is being initialized
 	 * @see UClass::SetSuperStruct
+	 * @since Karma 1.0.0
 	 */
 	KARMA_API void InitializePrivateStaticClass(
 		class UClass* TClass_Super_StaticClass,
@@ -92,6 +96,7 @@ namespace Karma
 
 	/**
 	 * @brief The base class of all the game code relevant objects.
+	 *
 	 * The base class of all UE objects. The type of an object is defined by its UClass.
 	 * This provides support functions for creating and using objects, and virtual functions that should be overridden in child classes.
 	 *
@@ -112,6 +117,8 @@ namespace Karma
 		 *
 		 *@see #define DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass)
 		 *@see https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044
+		 *
+		 * @since Karma 1.0.0
 		 */
 		UObject();
 
@@ -128,19 +135,26 @@ namespace Karma
 		 *
 		 * @warning Because properties are destroyed here, Super::FinishDestroy() should always be called at the end of your child class's FinishDestroy() method, rather than at the beginning.
 		 * @todo To be written with Shiva logic for UObject destruction.
+		 *
+		 * @since Karma 1.0.0
 		 */
 		virtual void FinishDestroy();
 
 		/**
 		 * @brief Return a one line description of an object for viewing in the thumbnail view of the generic browser
 		 * @todo Place holder for now. Plan to rewrite once Editor reaches that stage
+		 *
+		 * @since Karma 1.0.0
 		 */
 		virtual const std::string& GetDesc() { static std::string someString = "";  return someString; }
 
 	public:
 		/**
 		 * @brief Returns what UWorld this object is contained within.
+		 *
 		 * By default this will follow its Outer chain, but it should be overridden if that will not work.
+		 *
+		 * @since Karma 1.0.0
 		 */
 		virtual class UWorld* GetWorld() const;
 
@@ -149,6 +163,8 @@ namespace Karma
 		 *
 		 * @param	Test			The object to test
 		 * @return	Return true if the object is usable: not pending kill or garbage
+		 *
+		 * @since Karma 1.0.0
 		 */
 		bool IsValidChecked(const UObject* Test);
 
@@ -156,6 +172,8 @@ namespace Karma
 		 * @brief Called before destroying the object.  This is called immediately upon deciding to destroy the object, to allow the object to begin an
 		 * asynchronous cleanup process.
 		 * @todo To be written with Shiva logic for UObject destruction.
+		 *
+		 * @since Karma 1.0.0
 		 */
 		virtual void BeginDestroy();
 
@@ -167,6 +185,8 @@ namespace Karma
 		 * @param	bAlwaysMarkDirty	if true, marks the package dirty even if we aren't
 		 *								currently recording an active undo/redo transaction
 		 * @return true if the object was saved to the transaction buffer
+		 *
+		 * @since Karma 1.0.0
 		 */
 #if WITH_EDITOR
 		virtual bool Modify(bool bAlwaysMarkDirty = true);
@@ -182,12 +202,16 @@ namespace Karma
 		 *
 		 * @return		true if the object is selected, false otherwise.
 		 * @todo UE this doesn't belong here, but it doesn't belong anywhere else any better. To be written after Editor is functional with UObjects
+		 *
+		 * @since Karma 1.0.0
 		 */
 		bool IsSelected() const;
 	};
 
 	/**
 	 * @brief Note the name. Need to understand UE's take upon the subject
+	 *
+	 * @since Karma 1.0.0
 	 */
 
 	FORCEINLINE bool TentativeFlagChecks(const UObject* Test)
@@ -202,6 +226,8 @@ namespace Karma
 	 *
 	 * @param	Test			The object to test
 	 * @return	Return true if the object is usable: non-null and not pending kill or garbage
+	 *
+	 * @since Karma 1.0.0
 	 */
 	FORCEINLINE bool IsValid(const UObject* Test)
 	{

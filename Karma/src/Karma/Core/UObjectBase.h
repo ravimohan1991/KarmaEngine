@@ -1,4 +1,12 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+/**
+ * @file ObjectBase.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the class UObjectBase class.
+ * @version 1.0
+ * @date March 1, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India, in accordance with Epic EULA (https://www.unrealengine.com/en-US/eula/unreal)
+ */
 
 /*=============================================================================
 	UObjectBase.h: Base class for UObject, defines low level functionality
@@ -6,23 +14,20 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "Core/UObjectGlobals.h"
 
 namespace Karma
 {
-	//enum EObjectFlags;
 	class UObject;
 	class UClass;
-	//enum class EInternalObjectFlags;
+
 	class UPackage;
 
-/** Mask for all object flags */
-#define RF_AllFlags				(EObjectFlags)0xffffffff	///< All flags, used mainly for error checking
+	/** Mask for all object flags */
+	#define RF_AllFlags				(EObjectFlags)0xffffffff	///< All flags, used mainly for error checking
 
 	/**
-	 * Low level implementation of UObject, should not be used directly in game code
+	 * @brief Low level implementation of UObject, should not be used directly in game code
 	 * Taken from UE's UObjectBaseUtility.h.
 	 */
 	class KARMA_API UObjectBase
