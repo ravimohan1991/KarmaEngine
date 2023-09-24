@@ -1,5 +1,5 @@
 <map id="Karma::UObject" name="Karma::UObject">
-<area shape="rect" id="Node000001" title="The base class of all the game code relevant objects. The base class of all UE objects...." alt="" coords="197,203,310,228"/>
+<area shape="rect" id="Node000001" title="The base class of all the game code relevant objects." alt="" coords="197,203,310,228"/>
 <area shape="rect" id="Node000003" href="$classKarma_1_1AActor.html" title=" " alt="" coords="403,5,508,31"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="261,187,275,153,295,113,322,73,356,40,378,28,402,21,403,26,380,33,360,44,326,77,299,116,280,155,266,189"/>
 <area shape="rect" id="Node000005" href="$classKarma_1_1KEngine.html" title=" " alt="" coords="399,55,512,80"/>
@@ -18,7 +18,7 @@
 <area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="272,240,308,290,332,316,359,337,393,352,391,356,357,342,328,320,303,294,267,243"/>
 <area shape="rect" id="Node000017" href="$classKarma_1_1UWorld.html" title=" " alt="" coords="401,400,509,426"/>
 <area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="266,242,280,276,299,315,326,354,360,387,379,398,401,405,400,410,377,403,356,391,322,358,295,318,275,278,261,244"/>
-<area shape="rect" id="Node000002" href="$classKarma_1_1UObjectBase.html" title=" " alt="" coords="5,203,149,228"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1UObjectBase.html" title="Low level implementation of UObject, should not be used directly in game code Taken from UE&#39;s UObject..." alt="" coords="5,203,149,228"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,213,196,213,196,218,164,218"/>
 <area shape="rect" id="Node000004" href="$classKarma_1_1AWorldSettings.html" title=" " alt="" coords="612,5,767,31"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="524,16,611,16,611,21,524,21"/>

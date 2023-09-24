@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>The base class of all the game code relevant objects. The base class of all UE objects. The type of an object is defined by its <a class="el" href="classKarma_1_1UClass.html">UClass</a>. This provides support functions for creating and using objects, and virtual functions that should be overridden in child classes.  
+<p>The base class of all the game code relevant objects.  
  <a href="classKarma_1_1UObject.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="Object_8h_source.html">Object.h</a>&gt;</code></p>
@@ -90,7 +90,7 @@ Inheritance diagram for Karma::UObject:</div>
 <div class="dyncontent">
 <div class="center"><img src="classKarma_1_1UObject__inherit__graph.png" border="0" usemap="#aKarma_1_1UObject_inherit__map" alt="Inheritance graph"/></div>
 <map name="aKarma_1_1UObject_inherit__map" id="aKarma_1_1UObject_inherit__map">
-<area shape="rect" title="The base class of all the game code relevant objects. The base class of all UE objects...." alt="" coords="197,203,310,228"/>
+<area shape="rect" title="The base class of all the game code relevant objects." alt="" coords="197,203,310,228"/>
 <area shape="rect" href="classKarma_1_1AActor.html" title=" " alt="" coords="403,5,508,31"/>
 <area shape="poly" title=" " alt="" coords="261,187,275,153,295,113,322,73,356,40,378,28,402,21,403,26,380,33,360,44,326,77,299,116,280,155,266,189"/>
 <area shape="rect" href="classKarma_1_1KEngine.html" title=" " alt="" coords="399,55,512,80"/>
@@ -109,7 +109,7 @@ Inheritance diagram for Karma::UObject:</div>
 <area shape="poly" title=" " alt="" coords="272,240,308,290,332,316,359,337,393,352,391,356,357,342,328,320,303,294,267,243"/>
 <area shape="rect" href="classKarma_1_1UWorld.html" title=" " alt="" coords="401,400,509,426"/>
 <area shape="poly" title=" " alt="" coords="266,242,280,276,299,315,326,354,360,387,379,398,401,405,400,410,377,403,356,391,322,358,295,318,275,278,261,244"/>
-<area shape="rect" href="classKarma_1_1UObjectBase.html" title=" " alt="" coords="5,203,149,228"/>
+<area shape="rect" href="classKarma_1_1UObjectBase.html" title="Low level implementation of UObject, should not be used directly in game code Taken from UE&#39;s UObject..." alt="" coords="5,203,149,228"/>
 <area shape="poly" title=" " alt="" coords="164,213,196,213,196,218,164,218"/>
 <area shape="rect" href="classKarma_1_1AWorldSettings.html" title=" " alt="" coords="612,5,767,31"/>
 <area shape="poly" title=" " alt="" coords="524,16,611,16,611,21,524,21"/>
@@ -130,8 +130,8 @@ Collaboration diagram for Karma::UObject:</div>
 <div class="dyncontent">
 <div class="center"><img src="classKarma_1_1UObject__coll__graph.png" border="0" usemap="#aKarma_1_1UObject_coll__map" alt="Collaboration graph"/></div>
 <map name="aKarma_1_1UObject_coll__map" id="aKarma_1_1UObject_coll__map">
-<area shape="rect" title="The base class of all the game code relevant objects. The base class of all UE objects...." alt="" coords="20,79,134,105"/>
-<area shape="rect" href="classKarma_1_1UObjectBase.html" title=" " alt="" coords="5,5,149,31"/>
+<area shape="rect" title="The base class of all the game code relevant objects." alt="" coords="20,79,134,105"/>
+<area shape="rect" href="classKarma_1_1UObjectBase.html" title="Low level implementation of UObject, should not be used directly in game code Taken from UE&#39;s UObject..." alt="" coords="5,5,149,31"/>
 <area shape="poly" title=" " alt="" coords="80,46,80,79,74,79,74,46"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -146,7 +146,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a79cd8eb1f2579df9484a42c12d3a9ace"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a one line description of an object for viewing in the thumbnail view of the generic browser.  <br /></td></tr>
 <tr class="separator:a79cd8eb1f2579df9484a42c12d3a9ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab34f1884071a9796e8364d0541808ba9" id="r_ab34f1884071a9796e8364d0541808ba9"><td class="memItemLeft" align="right" valign="top">virtual class <a class="el" href="classKarma_1_1UWorld.html">UWorld</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#ab34f1884071a9796e8364d0541808ba9">GetWorld</a> () const</td></tr>
-<tr class="memdesc:ab34f1884071a9796e8364d0541808ba9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns what <a class="el" href="classKarma_1_1UWorld.html">UWorld</a> this object is contained within. By default this will follow its Outer chain, but it should be overridden if that will not work.  <br /></td></tr>
+<tr class="memdesc:ab34f1884071a9796e8364d0541808ba9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns what <a class="el" href="classKarma_1_1UWorld.html">UWorld</a> this object is contained within.  <br /></td></tr>
 <tr class="separator:ab34f1884071a9796e8364d0541808ba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab91541016e5576774decd434a5eb186b" id="r_ab91541016e5576774decd434a5eb186b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#ab91541016e5576774decd434a5eb186b">IsValidChecked</a> (const <a class="el" href="classKarma_1_1UObject.html">UObject</a> *Test)</td></tr>
 <tr class="separator:ab91541016e5576774decd434a5eb186b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,7 +156,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2786afda12b43188bdf3dedf1e401bb7" id="r_a2786afda12b43188bdf3dedf1e401bb7"><td class="memItemLeft" align="right" valign="top">FORCEINLINE bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#a2786afda12b43188bdf3dedf1e401bb7">Modify</a> (bool bAlwaysMarkDirty=true)</td></tr>
 <tr class="separator:a2786afda12b43188bdf3dedf1e401bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa4c5fbf1ee70624094244573d7c3470" id="r_afa4c5fbf1ee70624094244573d7c3470"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#afa4c5fbf1ee70624094244573d7c3470">IsSelected</a> () const</td></tr>
-<tr class="memdesc:afa4c5fbf1ee70624094244573d7c3470"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test the selection state of a <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a>.  <br /></td></tr>
+<tr class="memdesc:afa4c5fbf1ee70624094244573d7c3470"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test the selection state of a <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects.">UObject</a>.  <br /></td></tr>
 <tr class="separator:afa4c5fbf1ee70624094244573d7c3470"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classKarma_1_1UObjectBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classKarma_1_1UObjectBase')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classKarma_1_1UObjectBase.html">Karma::UObjectBase</a></td></tr>
 <tr class="memitem:ae5443b9f74f6f118535129f1b5e87955 inherit pub_methods_classKarma_1_1UObjectBase" id="r_ae5443b9f74f6f118535129f1b5e87955"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObjectBase.html#ae5443b9f74f6f118535129f1b5e87955">UObjectBase</a> (<a class="el" href="classKarma_1_1UClass.html">UClass</a> *inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, <a class="el" href="classKarma_1_1UObject.html">UObject</a> *inOuter, const std::string &amp;inName)</td></tr>
@@ -225,7 +225,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a05a4f6b686e1c38f2c96d1c2fa4039bc inherit pro_methods_classKarma_1_1UObjectBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The base class of all the game code relevant objects. The base class of all UE objects. The type of an object is defined by its <a class="el" href="classKarma_1_1UClass.html">UClass</a>. This provides support functions for creating and using objects, and virtual functions that should be overridden in child classes. </p>
+<div class="textblock"><p>The base class of all the game code relevant objects. </p>
+<p>The base class of all UE objects. The type of an object is defined by its <a class="el" href="classKarma_1_1UClass.html">UClass</a>. This provides support functions for creating and using objects, and virtual functions that should be overridden in child classes.</p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://docs.unrealengine.com/ProgrammingAndScripting/ProgrammingWithCPP/UnrealArchitecture/Objects">https://docs.unrealengine.com/ProgrammingAndScripting/ProgrammingWithCPP/UnrealArchitecture/Objects</a> </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa22288f8334533600337d9dd2cb4fe5c" name="aa22288f8334533600337d9dd2cb4fe5c"></a>
@@ -242,10 +243,11 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Default constructor does nothing for now except well, being used as default constructor in DECLARE_KARMA_CLASS which is needed for placement new and, thus, initializing the <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a></p>
+<p>Default constructor does nothing for now except well, being used as default constructor in DECLARE_KARMA_CLASS which is needed for placement new and, thus, initializing the <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects.">UObject</a></p>
 <dl class="section see"><dt>See also</dt><dd>define DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass) </dd>
 <dd>
-<a href="https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044">https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044</a> </dd></dl>
+<a href="https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044">https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044</a></dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
@@ -274,7 +276,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Called before destroying the object. This is called immediately upon deciding to destroy the object, to allow the object to begin an asynchronous cleanup process. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>To be written with Shiva logic for <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a> destruction. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>To be written with Shiva logic for <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects.">UObject</a> destruction.</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classKarma_1_1UActorComponent.html#ab44e27070a0463a99e67d44c67fba01d">Karma::UActorComponent</a>, <a class="el" href="classKarma_1_1UChildActorComponent.html#a9b3b72f7e5854d9f692b17994adbe029">Karma::UChildActorComponent</a>, and <a class="el" href="classKarma_1_1USceneComponent.html#a1af80d6d21b247c705cfe7244bf3db7f">Karma::USceneComponent</a>.</p>
 
@@ -304,7 +307,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Called to finish destroying the object. After <a class="el" href="classKarma_1_1UObject.html#a12d23b4ef1a935c31572e76a8e793ed7">UObject::FinishDestroy</a> is called, the object's memory should no longer be accessed.</p>
 <dl class="section warning"><dt>Warning</dt><dd>Because properties are destroyed here, Super::FinishDestroy() should always be called at the end of your child class's <a class="el" href="classKarma_1_1UObject.html#a12d23b4ef1a935c31572e76a8e793ed7">FinishDestroy()</a> method, rather than at the beginning. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>To be written with Shiva logic for <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a> destruction. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>To be written with Shiva logic for <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects.">UObject</a> destruction.</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
@@ -332,7 +336,8 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return a one line description of an object for viewing in the thumbnail view of the generic browser. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Place holder for now. Plan to rewrite once Editor reaches that stage </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Place holder for now. Plan to rewrite once Editor reaches that stage</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classKarma_1_1UClass.html#a84eee992921ab3d65a0b753965d27804">Karma::UClass</a>.</p>
 
@@ -361,7 +366,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns what <a class="el" href="classKarma_1_1UWorld.html">UWorld</a> this object is contained within. By default this will follow its Outer chain, but it should be overridden if that will not work. </p>
+<p>Returns what <a class="el" href="classKarma_1_1UWorld.html">UWorld</a> this object is contained within. </p>
+<p>By default this will follow its Outer chain, but it should be overridden if that will not work.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classKarma_1_1AActor.html#ad37e490c5d588dcbc0f0b324bf4579fb">Karma::AActor</a>, and <a class="el" href="classKarma_1_1ULevel.html#adb1ccf1e63646f7c76e6ade1222d4172">Karma::ULevel</a>.</p>
 
@@ -382,9 +389,10 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Test the selection state of a <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a>. </p>
+<p>Test the selection state of a <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects.">UObject</a>. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if the object is selected, false otherwise. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>UE this doesn't belong here, but it doesn't belong anywhere else any better. To be written after Editor is functional with UObjects </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>UE this doesn't belong here, but it doesn't belong anywhere else any better. To be written after Editor is functional with UObjects</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
@@ -410,7 +418,8 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Return true if the object is usable: not pending kill or garbage </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Return true if the object is usable: not pending kill or garbage</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
@@ -444,7 +453,8 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the object was saved to the transaction buffer </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the object was saved to the transaction buffer</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>

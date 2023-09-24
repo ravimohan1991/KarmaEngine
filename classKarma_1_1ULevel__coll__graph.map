@@ -1,10 +1,10 @@
 <map id="Karma::ULevel" name="Karma::ULevel">
 <area shape="rect" id="Node000001" title=" " alt="" coords="123,273,231,298"/>
-<area shape="rect" id="Node000002" href="$classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects...." alt="" coords="20,80,134,106"/>
+<area shape="rect" id="Node000002" href="$classKarma_1_1UObject.html" title="The base class of all the game code relevant objects." alt="" coords="20,80,134,106"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="65,121,51,164,49,187,55,209,70,230,91,247,136,270,134,275,88,251,67,233,51,211,44,187,45,163,60,119"/>
 <area shape="rect" id="Node000007" href="$classKarma_1_1UWorld.html" title=" " alt="" coords="66,177,174,202"/>
 <area shape="poly" id="edge7_Node000007_Node000002" title=" " alt="" coords="91,119,117,175,112,177,86,121"/>
-<area shape="rect" id="Node000003" href="$classKarma_1_1UObjectBase.html" title=" " alt="" coords="5,5,149,31"/>
+<area shape="rect" id="Node000003" href="$classKarma_1_1UObjectBase.html" title="Low level implementation of UObject, should not be used directly in game code Taken from UE&#39;s UObject..." alt="" coords="5,5,149,31"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="80,46,80,80,74,80,74,46"/>
 <area shape="rect" id="Node000004" href="$structFURL.html" title=" " alt="" coords="209,177,265,202"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="231,218,215,250,194,274,190,270,211,247,226,216"/>
