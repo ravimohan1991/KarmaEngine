@@ -138,9 +138,8 @@ Collaboration diagram for Karma::UObject:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7f271f36308fe16bca4fbb1e97a586c8" id="r_a7f271f36308fe16bca4fbb1e97a586c8"><td class="memItemLeft" align="right" valign="top"><a id="a7f271f36308fe16bca4fbb1e97a586c8" name="a7f271f36308fe16bca4fbb1e97a586c8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>UObject</b> (<a class="el" href="classKarma_1_1UClass.html">UClass</a> *inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, <a class="el" href="classKarma_1_1UObject.html">UObject</a> *inOuter, const std::string &amp;inName)</td></tr>
-<tr class="separator:a7f271f36308fe16bca4fbb1e97a586c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa22288f8334533600337d9dd2cb4fe5c" id="r_aa22288f8334533600337d9dd2cb4fe5c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#aa22288f8334533600337d9dd2cb4fe5c">UObject</a> ()</td></tr>
+<tr class="separator:aa22288f8334533600337d9dd2cb4fe5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12d23b4ef1a935c31572e76a8e793ed7" id="r_a12d23b4ef1a935c31572e76a8e793ed7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#a12d23b4ef1a935c31572e76a8e793ed7">FinishDestroy</a> ()</td></tr>
 <tr class="separator:a12d23b4ef1a935c31572e76a8e793ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79cd8eb1f2579df9484a42c12d3a9ace" id="r_a79cd8eb1f2579df9484a42c12d3a9ace"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#a79cd8eb1f2579df9484a42c12d3a9ace">GetDesc</a> ()</td></tr>
@@ -213,8 +212,7 @@ FORCEINLINE void&#160;</td><td class="memItemRight" valign="bottom"><b>SetObject
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a562a78b2cdc64e23d39e2e68e575954b" id="r_a562a78b2cdc64e23d39e2e68e575954b"><td class="memItemLeft" align="right" valign="top"><a id="a562a78b2cdc64e23d39e2e68e575954b" name="a562a78b2cdc64e23d39e2e68e575954b"></a>
-static const char *&#160;</td><td class="memItemRight" valign="bottom"><b>StaticConfigName</b> ()</td></tr>
+<tr class="memitem:a562a78b2cdc64e23d39e2e68e575954b" id="r_a562a78b2cdc64e23d39e2e68e575954b"><td class="memItemLeft" align="right" valign="top">static const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObject.html#a562a78b2cdc64e23d39e2e68e575954b">StaticConfigName</a> ()</td></tr>
 <tr class="separator:a562a78b2cdc64e23d39e2e68e575954b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_methods_classKarma_1_1UObjectBase"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classKarma_1_1UObjectBase')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classKarma_1_1UObjectBase.html">Karma::UObjectBase</a></td></tr>
 <tr class="memitem:a14d3b9ddbe2a2d5cdfa1d444837fb27a inherit pub_static_methods_classKarma_1_1UObjectBase" id="r_a14d3b9ddbe2a2d5cdfa1d444837fb27a"><td class="memItemLeft" align="right" valign="top">static FORCEINLINE EInternalObjectFlags&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKarma_1_1UObjectBase.html#a14d3b9ddbe2a2d5cdfa1d444837fb27a">FixGarbageOrPendingKillInternalObjectFlags</a> (const EInternalObjectFlags InFlags)</td></tr>
@@ -229,7 +227,29 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The base class of all the game code relevant objects. The base class of all UE objects. The type of an object is defined by its <a class="el" href="classKarma_1_1UClass.html">UClass</a>. This provides support functions for creating and using objects, and virtual functions that should be overridden in child classes. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://docs.unrealengine.com/ProgrammingAndScripting/ProgrammingWithCPP/UnrealArchitecture/Objects">https://docs.unrealengine.com/ProgrammingAndScripting/ProgrammingWithCPP/UnrealArchitecture/Objects</a> </dd></dl>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aa22288f8334533600337d9dd2cb4fe5c" name="aa22288f8334533600337d9dd2cb4fe5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa22288f8334533600337d9dd2cb4fe5c">&#9670;&#160;</a></span>UObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Karma::UObject::UObject </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Default constructor does nothing for now except well, being used as default constructor in DECLARE_KARMA_CLASS which is needed for placement new and, thus, initializing the <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a></p>
+<dl class="section see"><dt>See also</dt><dd>define DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass) </dd>
+<dd>
+<a href="https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044">https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="add7a5c2d46c62ab98edb91bec3e2d448" name="add7a5c2d46c62ab98edb91bec3e2d448"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#add7a5c2d46c62ab98edb91bec3e2d448">&#9670;&#160;</a></span>BeginDestroy()</h2>
 
@@ -254,6 +274,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Called before destroying the object. This is called immediately upon deciding to destroy the object, to allow the object to begin an asynchronous cleanup process. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>To be written with Shiva logic for <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a> destruction. </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classKarma_1_1UActorComponent.html#ab44e27070a0463a99e67d44c67fba01d">Karma::UActorComponent</a>, <a class="el" href="classKarma_1_1UChildActorComponent.html#a9b3b72f7e5854d9f692b17994adbe029">Karma::UChildActorComponent</a>, and <a class="el" href="classKarma_1_1USceneComponent.html#a1af80d6d21b247c705cfe7244bf3db7f">Karma::USceneComponent</a>.</p>
 
@@ -283,6 +304,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Called to finish destroying the object. After <a class="el" href="classKarma_1_1UObject.html#a12d23b4ef1a935c31572e76a8e793ed7">UObject::FinishDestroy</a> is called, the object's memory should no longer be accessed.</p>
 <dl class="section warning"><dt>Warning</dt><dd>Because properties are destroyed here, Super::FinishDestroy() should always be called at the end of your child class's <a class="el" href="classKarma_1_1UObject.html#a12d23b4ef1a935c31572e76a8e793ed7">FinishDestroy()</a> method, rather than at the beginning. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>To be written with Shiva logic for <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a> destruction. </dd></dl>
 
 </div>
 </div>
@@ -310,6 +332,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return a one line description of an object for viewing in the thumbnail view of the generic browser. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Place holder for now. Plan to rewrite once Editor reaches that stage </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classKarma_1_1UClass.html#a84eee992921ab3d65a0b753965d27804">Karma::UClass</a>.</p>
 
@@ -361,7 +384,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Test the selection state of a <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects. The base class of all UE objects....">UObject</a>. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if the object is selected, false otherwise. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>UE this doesn't belong here, but it doesn't belong anywhere else any better </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>UE this doesn't belong here, but it doesn't belong anywhere else any better. To be written after Editor is functional with UObjects </dd></dl>
 
 </div>
 </div>
@@ -422,6 +445,32 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the object was saved to the transaction buffer </dd></dl>
+
+</div>
+</div>
+<a id="a562a78b2cdc64e23d39e2e68e575954b" name="a562a78b2cdc64e23d39e2e68e575954b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a562a78b2cdc64e23d39e2e68e575954b">&#9670;&#160;</a></span>StaticConfigName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static const char * Karma::UObject::StaticConfigName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>A legacy function from UE </p>
 
 </div>
 </div>
