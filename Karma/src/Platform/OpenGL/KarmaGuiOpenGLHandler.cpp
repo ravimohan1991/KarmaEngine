@@ -160,7 +160,7 @@ namespace Karma
 			{
 				KGGuiWindow* windowToRenderWithin = static_cast<KGGuiWindow*>(sceneToDraw->GetRenderingWindow());
 
-				glViewport((GLsizei)windowToRenderWithin->Pos.x * (GLsizei)drawData->FramebufferScale.x, ((GLsizei)windowToRenderWithin->Pos.y + (GLsizei)windowToRenderWithin->TitleBarHeight()) * (GLsizei)drawData->FramebufferScale.y, (GLsizei) windowToRenderWithin->Size.x * (GLsizei)drawData->FramebufferScale.x, ((GLsizei)windowToRenderWithin->Size.y - (GLsizei)windowToRenderWithin->TitleBarHeight()) * (GLsizei)drawData->FramebufferScale.y);
+				glViewport((GLint)windowToRenderWithin->Pos.x * (GLint)drawData->FramebufferScale.x, ((GLint)windowToRenderWithin->Pos.y + (GLint)windowToRenderWithin->TitleBarHeight()) * (GLint)drawData->FramebufferScale.y, (GLsizei) windowToRenderWithin->Size.x * (GLsizei)drawData->FramebufferScale.x, ((GLsizei)windowToRenderWithin->Size.y - (GLsizei)windowToRenderWithin->TitleBarHeight()) * (GLsizei)drawData->FramebufferScale.y);
 				sceneToDraw->SetWindowToRenderWithinResize(false);
 			}
 		}
