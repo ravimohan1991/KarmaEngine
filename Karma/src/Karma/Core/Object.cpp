@@ -11,11 +11,6 @@ namespace Karma
 	{
 	}
 
-	UObject::UObject(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName) :
-		UObjectBase(inClass, inFlags, inInternalFlags, inOuter, inName)
-	{
-	}
-
 	void UObject::FinishDestroy()
 	{
 	}
@@ -120,9 +115,6 @@ namespace Karma
 		);
 	}
 
-	/**
-	 * Shared function called from the various InitializePrivateStaticClass functions generated my the IMPLEMENT_CLASS macro.
-	 */
 	void InitializePrivateStaticClass(
 		class UClass* TClass_Super_StaticClass,
 		class UClass* TClass_PrivateStaticClass,
