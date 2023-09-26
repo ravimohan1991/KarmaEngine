@@ -268,17 +268,17 @@ namespace Karma
 		{
 			if(element.placementCoordi.x == 0 || bHandleDynamicPartitioning)
 			{
-				uobjectPlacement = std::stoll(element.beginAddress, 0 , 16);
+				uobjectPlacement = (double)std::stoll(element.beginAddress, 0 , 16);
 				placementFraction = (float) (memoryEndui - uobjectPlacement) / (memoryEndui - memoryBeginui);
 
-				uobjectTopRightCoordinates = KGVec2(topRightCoordinates.x - (placementFraction) * memoryBlockWidth, topRightCoordinates.y);
+				uobjectTopRightCoordinates = KGVec2((float)(topRightCoordinates.x - (placementFraction) * memoryBlockWidth), float(topRightCoordinates.y));
 				drawList->AddRectFilled(uobjectTopRightCoordinates + KGVec2(-1, memoryBlockHeight), uobjectTopRightCoordinates, partitionColor);
 
 				element.placementCoordi = uobjectTopRightCoordinates;
 
 				double offset = (double)element.size / (double)GUObjectAllocator.GetPermanentPoolSize() * (topRightCoordinates.x - bottomLeftCoordinates.x);
 
-				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(offset, memoryBlockHeight)))
+				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2((float)offset, memoryBlockHeight)))
 				{
 					hoverIndex = index;
 				}
@@ -290,7 +290,7 @@ namespace Karma
 
 				double offset = (double)element.size / (double)GUObjectAllocator.GetPermanentPoolSize() * (topRightCoordinates.x - bottomLeftCoordinates.x);
 
-				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2(offset, memoryBlockHeight)))
+				if(KarmaGui::IsMouseHoveringRect(element.placementCoordi, element.placementCoordi + KGVec2((float)offset, memoryBlockHeight)))
 				{
 					hoverIndex = index;
 				}
@@ -608,7 +608,7 @@ namespace Karma
 			}
 			if (KarmaGui::BeginMenu("Details"))
 			{
-				if (KarmaGui::MenuItem("About", nullptr, &showKarmaAbout));
+				if (KarmaGui::MenuItem("About", nullptr, &showKarmaAbout)) {}
 				KarmaGui::EndMenu();
 			}
 			KarmaGui::EndMainMenuBar();
@@ -1219,12 +1219,11 @@ namespace Karma
 
 		if(vectorLength > 0)
 		{
-			//double sizeInPool = std::stoll(m_UobjectStatistics.GetElements()[vectorLength - 1].beginAddress) - std::stoll(pointerAddress);
-			long sizeInPool = (uint8_t*)InObject - (uint8_t*)m_UObjectStatistics.GetElements()[vectorLength - 1].objectPointer;
+			long sizeInPool = long((uint8_t*)InObject - (uint8_t*)m_UObjectStatistics.GetElements()[vectorLength - 1].objectPointer);
 			m_UObjectStatistics.ModifyElements()[vectorLength - 1].sizeInPool = sizeInPool;
 		}
 
-		long sizeInPool = Align((uint8_t*)GUObjectAllocator.GetPermanentObjectPoolTail(), FMath::Max<size_t>(16, InAlignment)) - (uint8_t*)InObject;
+		long sizeInPool = long(Align((uint8_t*)GUObjectAllocator.GetPermanentObjectPoolTail(), FMath::Max<size_t>(16, InAlignment)) - (uint8_t*)InObject);
 		anElement.sizeInPool = sizeInPool;
 		anElement.classObject = InClass;
 

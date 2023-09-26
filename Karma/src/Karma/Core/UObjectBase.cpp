@@ -38,11 +38,6 @@ namespace Karma
 		AddObject(inName, inInternalFlags);
 	}
 
-	/**
-	 * Walks up the list of outers until it finds a package directly associated with the object.
-	 *
-	 * @return the package the object is in.
-	 */
 	UPackage* UObjectBase::GetPackage() const
 	{
 		const UObject* Top = static_cast<const UObject*>(this);
@@ -116,10 +111,6 @@ namespace Karma
 		return !!(m_ObjectFlags & int32_t(EInternalObjectFlags::Unreachable));
 	}
 
-	/**
-	 * Checks to see if the object appears to be valid
-	 * @return true if this appears to be a valid object
-	 */
 	bool UObjectBase::IsValidLowLevel() const
 	{
 		if (this == nullptr)

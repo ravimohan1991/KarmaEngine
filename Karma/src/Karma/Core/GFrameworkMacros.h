@@ -1,5 +1,5 @@
 /**
- * @file GFrameWorkMacros.h
+ * @file GFrameworkMacros.h
  * @author Ravi Mohan (the_cowboy)
  * @brief This file contains some commonly used game code macros.
  * @version 1.0
@@ -15,6 +15,11 @@
 enum EInternal						{EC_InternalUseOnlyConstructor};
 typedef void		(*ClassConstructorType)				(const Karma::FObjectInitializer&);
 
+/**
+ * @brief Default constructor for Karma's gamecode class declaration
+ * 
+ * @remark There is a <b>placement new</b> operator in the definition
+ */
 #define DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass) \
 	static void __DefaultConstructor(const FObjectInitializer& X) { new((EInternal*)X.GetObj())TClass; }
 
@@ -25,6 +30,17 @@ typedef void		(*ClassConstructorType)				(const Karma::FObjectInitializer&);
 	Class declaration macros.
 -----------------------------------------------------------------------------*/
 
+/**
+ * @brief Karma's gamecode object class declaration
+ * 
+ * Generates class hierarchy, defines base class and
+ * calls default constructor with placement new during UObjectAllocation
+ * (*InClass->m_ClassConstructor)(FObjectInitializer)
+ * 
+ * @see StaticConstructObject_Internal() in UObjectGlobals.cpp
+ * @remark In UE, this is done in ObjectMacros.h, #define DECLARE_CLASS
+ * 
+ */
 #define DECLARE_KARMA_CLASS(TClass, TSuperClass) \
 public: \
 	DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass) \

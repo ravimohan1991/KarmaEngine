@@ -104,7 +104,14 @@ namespace Karma
 	 */
 	class KARMA_API UObject : public UObjectBase
 	{
-		// In UE, this is done in ObjectMacros.h, #define DECLARE_CLASS
+		/*
+		 * Declaration shaped for Karma's game code
+		 * 
+		 * Contains reference to default constructor (defined in this file) and definition
+		 * for "Super", the base class and StaticClass()
+		 * 
+		 * Note: UObject's base class is UObject
+		 */
 		DECLARE_KARMA_CLASS(UObject, UObject)
 
 	private:
@@ -112,11 +119,11 @@ namespace Karma
 
 	public:
 		/**
-		 * Default constructor does nothing for now except well, being used as default constructor in DECLARE_KARMA_CLASS which is needed
+		 * Default constructor does nothing for now except well, being used as default constructor in DECLARE_KARMA_CLASS(TClass, TSuperClass) which is needed
 		 * for placement new and, thus, initializing the UObject
 		 *
-		 *@see #define DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass)
-		 *@see https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044
+		 * @see DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass)
+		 * @see https://forums.unrealengine.com/t/placement-new-for-aactor-spawning/1223044
 		 *
 		 * @since Karma 1.0.0
 		 */
@@ -216,7 +223,7 @@ namespace Karma
 
 	FORCEINLINE bool TentativeFlagChecks(const UObject* Test)
 	{
-		KR_CORE_ASSERT(GUObjectStore.IndexToObject(Test->GetInterIndex())->HasAnyFlags(EInternalObjectFlags(int32_t(EInternalObjectFlags::PendingKill) | int32_t(EInternalObjectFlags::Garbage))) == Test->HasAnyFlags(EObjectFlags(RF_PendingKill | RF_Garbage)), "");
+		KR_CORE_ASSERT(GUObjectStore.IndexToObject(Test->GetInternalIndex())->HasAnyFlags(EInternalObjectFlags(int32_t(EInternalObjectFlags::PendingKill) | int32_t(EInternalObjectFlags::Garbage))) == Test->HasAnyFlags(EObjectFlags(RF_PendingKill | RF_Garbage)), "");
 
 		return !Test->HasAnyFlags(EObjectFlags(RF_PendingKill | RF_Garbage));
 	}

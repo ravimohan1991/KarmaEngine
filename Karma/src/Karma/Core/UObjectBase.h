@@ -1,5 +1,5 @@
 /**
- * @file ObjectBase.h
+ * @file UObjectBase.h
  * @author Ravi Mohan (the_cowboy)
  * @brief This file contains the class UObjectBase class.
  * @version 1.0
@@ -28,17 +28,32 @@ namespace Karma
 
 	/**
 	 * @brief Low level implementation of UObject, should not be used directly in game code
-	 * Taken from UE's UObjectBaseUtility.h.
+	 * 
+	 * Taken from UE's UObjectBaseUtility.h and combined UObjectBase and UObjectBaseUtility classes
+	 * for simplicity
 	 */
 	class KARMA_API UObjectBase
 	{
 	protected:
+		/**
+		 * @brief Providing a default constructor
+		 * 
+		 * Basically required constructor for DECLARE_KARMA_CLASS(TClass, TSuperClass)
+		 * in the derived classes
+		 * 
+		 * @see UObject::UObject()
+		 * @since Karma 1.0.0
+		 */
 		UObjectBase();
 
 		/**
 		 * Set the object flags directly
-		 *
-		 **/
+		 * 
+		 * @see UObjectBase::SetFlags()
+		 * @see UObjectBase::ClearFlags()
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE void SetFlagsTo(EObjectFlags NewFlags)
 		{
 			KR_CORE_ASSERT((NewFlags & ~RF_AllFlags) == 0, "%s flagged as 0x%x but is trying to set flags to RF_AllFlags");
@@ -50,45 +65,74 @@ namespace Karma
 		 * Constructor used by StaticAllocateObject
 		 * @param	InClass				non NULL, this gives the class of the new object, if known at this time
 		 * @param	InFlags				RF_Flags to assign
-		 * @param	InOuter				outer for this object
+		 * @param	InOuter				outer for this object (UObject this object resides in, for instance LevelToSpawnIn is outer for AActor)
 		 * @param	InName				name of the new object
 		 * @param	InObjectArchetype	archetype to assign (not functional for now)
 		 * @see StaticAllocateObject() in UObjectGlobals.h
+		 * @since Karma 1.0.0
 		 */
 		UObjectBase(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName);
 
 		/**
 		 * Walks up the list of outers until it finds a package directly associated with the object.
 		 *
-		 * @return the package the object is in.
+		 * @return the package the object is in
+		 * @since Karma 1.0.0
 		 */
 		UPackage* GetPackage() const;
 
-		/** Returns the external UPackage associated with this object, if any */
+		/** 
+		 * Returns the external UPackage associated with this object, if any 
+		 * @since Karma 1.0.0
+		 */
 		UPackage* GetExternalPackage() const;
 
-		/** Checks if the object is unreachable. */
-		// Caution: use with vigilance
+		/** 
+		 * Checks if the object is unreachable.
+		 *
+		 * @warning use with vigilance
+		 * @since Karma 1.0.0
+		 */
 		bool IsUnreachable() const;
 
-		/** Set indexing for GUObjectStore for lookup of UObjects. */
+		/** 
+		 * Set indexing for GUObjectStore for lookup of UObjects.
+		 * 
+		 * @see FUObjectArray::AddUObject
+		 */
 		FORCEINLINE void SetInternalIndex(uint32_t StoreIndex) { m_InternalIndex = StoreIndex; }
 
-		FORCEINLINE uint32_t GetInterIndex() const { return m_InternalIndex; }
+		/**
+		 * Getter for m_InternalIndex of UObjects
+		 * 
+		 * @see TentativeFlagChecks()
+		 */
+		FORCEINLINE uint32_t GetInternalIndex() const { return m_InternalIndex; }
 
 	private:
 
-		/** Flags used to track and report various object states. This needs to be 8 byte aligned on 32-bit
-			platforms to reduce memory waste */
+		/**
+		 * Flags used to track and report various object states. This needs to be 8 byte aligned on 32-bit
+		 * platforms to reduce memory waste (UE's recommendation)
+		 * 
+		 * @remark We are not yet aligning this member because we need to first understand the meaning in this context
+		 */
 		EObjectFlags					m_ObjectFlags;
 
 		/**
 		 * Index into GUObjectStore... very private.
-		 * Since this is meant literally for array index, hence we take positive data structure
+		 * 
+		 * @see UObjectBase::GetInternalIndex
+		 * @remark Since this is meant literally for array index, hence we take positive data structure
 		 */
 		uint32_t							m_InternalIndex;
 
-		/** Object this object resides in. */
+		/** 
+		 * Object this object resides in. 
+		 * 
+		 * @remark Could be LevelToSpawnIn for AActor or UPackage for UWorld
+		 * @see UWorld::CreateWorld
+		 */
 		UObject* m_OuterPrivate;
 
 		/** Class the object belongs to. */
@@ -112,26 +156,48 @@ namespace Karma
 	public:
 		/**
 		 * Marks the object for garbage collection
+		 * 
+		 * @todo Not functional
+		 * @since Karma 1.0.0
 		 */
 		void MarkAsGarbage();
 
 		/**
-		 * Unmarks this object as Garbage.
+		 * Unmarks this object as Garbage
+		 * 
+		 * @todo Not functional
+		 * @since Karma 1.0.0
 		 */
 		void ClearGarbage();
 
-		/** Returns the logical name of this object */
+		/**
+		 * Returns the logical name of this object 
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE const std::string& GetName() const
 		{
 			return m_NamePrivate;
 		}
 
+		/**
+		 * Sets the name of UObjects
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE void SetObjectName(const std::string& aName)
 		{
 			m_NamePrivate = aName;
 		}
 
-		/** Returns the UObject this object resides in */
+		/** 
+		 * Returns the UObject this object resides in 
+		 * 
+		 * @remark Could be LevelToSpawnIn for AActor or UPackage for UWorld
+		 * @see UWorld::CreateWorld for how UPackage is outer for UWorld
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE UObject* GetOuter() const
 		{
 			return m_OuterPrivate;
@@ -142,13 +208,18 @@ namespace Karma
 		 *
 		 * @param	Target class to search for
 		 * @return	a pointer to the first object in this object's Outer chain which is of the correct type.
+		 * 
+		 * @since Karma 1.0.0
 		 */
 		UObject* GetTypedOuter(UClass* Target) const;
 
 		/**
-		 * Traverses the outer chain searching for the next object of a certain type.  (T must be derived from UObject)
+		 * Traverses the outer chain searching for the next object of a certain type.
 		 *
 		 * @return	a pointer to the first object in this object's Outer chain which is of the correct type.
+		 * @remark	T must be derived from UObject
+		 * 
+		 * @since Karma 1.0.0
 		 */
 		template<typename T>
 		T* GetTypedOuter() const
@@ -158,7 +229,11 @@ namespace Karma
 
 		/**
 		 * Checks to see if the object appears to be valid
+		 * 
 		 * @return true if this appears to be a valid object
+		 * @todo Not functional
+		 * 
+		 * @since Karma 1.0.0
 		 */
 		bool IsValidLowLevel() const;
 
