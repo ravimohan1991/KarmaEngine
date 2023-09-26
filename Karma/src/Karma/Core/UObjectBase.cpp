@@ -124,7 +124,7 @@ namespace Karma
 			return false;
 		}
 
-		return true;// GUObjectArray.IsValid(this);
+		return GUObjectStore.IsValid(this);
 	}
 
 	void UObjectBase::MarkAsGarbage()

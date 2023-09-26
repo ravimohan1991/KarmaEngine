@@ -577,6 +577,18 @@ namespace Karma
 		Add(ObjectItem);
 	}
 
+	bool FUObjectArray::IsValid(const UObjectBase* Object) const
+	{
+		int32 Index = Object->GetInternalIndex();
+		if(Index == INDEX_NONE)
+		{
+			KR_CORE_WARN("Object is not in global object array");
+			return false;
+		}
+		
+		return true;
+	}
+
 	void GetObjectsOfClass(const UClass* ClassToLookFor, KarmaVector<UObject *>& Results, bool bIncludeDerivedClasses, EObjectFlags ExclusionFlags, EInternalObjectFlags ExclusionInternalFlags)
 	{
 		//SCOPE_CYCLE_COUNTER(STAT_Hash_GetObjectsOfClass);

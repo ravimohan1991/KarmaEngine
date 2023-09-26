@@ -283,7 +283,7 @@ namespace Karma
 	};
 
 	/**
-	 * A class for managing the collection of UObjects (all or some?)
+	 * @brief A class for managing the collection of UObjects (all or some?)
 	 *
 	 * Note from UE devlopers (for the class FUObjectArray):
 	 * Note the layout of this data structure is mostly to emulate the old behavior and minimize code rework during code restructure.
@@ -295,7 +295,7 @@ namespace Karma
 	{
 	public:
 		/**
-		 * Low level iterator.
+		 * @brief Low level iterator.
 		 */
 		class TIterator
 		{
@@ -418,6 +418,14 @@ namespace Karma
 
 		/** Retrieve the list of the UObjects */
 		const std::vector<FUObjectItem*>& GetObjectsList() const { return m_Elements; }
+
+		/**
+		 * @brief Checks if a UObject pointer is valid
+		 *
+		 * @param	Object object to test for validity
+		 * @return	true if this index is valid
+		 */
+		bool IsValid(const UObjectBase* Object) const;
 	};
 
 	class KarmaClassObjectMap : public KarmaMap<UClass*, KarmaVector<UObject*>*>
