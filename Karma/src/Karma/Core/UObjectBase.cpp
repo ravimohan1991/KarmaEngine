@@ -14,15 +14,6 @@ namespace Karma
 
 	UObjectBase::UObjectBase()
 	{
-		// This constructor is itentionally left blank because of multiple use
-		// invoked by before and after placement new.
-		/*m_ObjectFlags = RF_NoFlags;
-		m_InternalIndex = INDEX_NONE;
-		m_ClassPrivate = nullptr;
-		m_OuterPrivate = nullptr;
-		m_NamePrivate = "NoName";*/
-
-		// Not adding to GUObjectStore
 	}
 
 	// This constructor is called by StaticAllocateObject
@@ -71,11 +62,6 @@ namespace Karma
 		return ExternalPackage;
 	}
 
-	/**
-	 * Add a newly created object to the name hash tables (for now no hashtables for Karma) and the object array
-	 *
-	 * @param Name name to assign to this uobject
-	 */
 	void UObjectBase::AddObject(const std::string& inName, EInternalObjectFlags inSetInternalFlags)
 	{
 		m_NamePrivate = inName;
@@ -135,12 +121,6 @@ namespace Karma
 	{
 	}
 
-	/**
-	 * Traverses the outer chain searching for the next object of a certain type.  (T must be derived from UObject)
-	 *
-	 * @param	Target class to search for
-	 * @return	a pointer to the first object in this object's Outer chain which is of the correct type.
-	 */
 	UObject* UObjectBase::GetTypedOuter(UClass* Target) const
 	{
 		UObject* Result = nullptr;

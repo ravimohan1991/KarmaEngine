@@ -146,10 +146,15 @@ namespace Karma
 
 	private:
 		/**
-		 * Add a newly created object to the name hash tables and the object array
+		 * @brief Add a newly created object to the name hash tables and the object array
+		 *
+		 * Add a newly created object to the name hash tables (for now no hashtables for Karma) and the object array
 		 *
 		 * @param name					name to assign to this uobject
 		 * @param inSetInternalFlags	Internal object flags to be set on the object once it's been added to the array
+		 *
+		 * @todo Write a decent hashing class
+		 * @since Karma 1.0.0
 		 */
 		void AddObject(const std::string& name, EInternalObjectFlags inSetInternalFlags);
 
@@ -237,7 +242,12 @@ namespace Karma
 		 */
 		bool IsValidLowLevel() const;
 
-		/** Helper function that sets the appropriate flag based on PK being enabled or not */
+		/** 
+		 * Helper function that sets the appropriate flag based on PK being enabled or not
+		 *
+		 * @todo Need to write decent garbage collection system. Then this may become useful.
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE static EInternalObjectFlags FixGarbageOrPendingKillInternalObjectFlags(const EInternalObjectFlags InFlags)
 		{
 			//PRAGMA_DISABLE_DEPRECATION_WARNINGS
@@ -255,33 +265,42 @@ namespace Karma
 			//PRAGMA_ENABLE_DEPRECATION_WARNINGS
 		}
 
-
 	public:
-		/** Returns true if this object is of the specified type. */
+		/** 
+		 * Returns true if this object is of the specified type.
+		 *
+		 * @param SomeBase	The UClass that this UObject is subjected to the comparison
+		 * @see UObjectBase::GetTypedOuter
+		 *
+		 * @since Karma 1.0.0
+		 */
 		template <typename OtherClassType>
 		FORCEINLINE bool IsA(OtherClassType SomeBase) const
 		{
-			// We have a cyclic dependency between UObjectBase and UClass,
-			// so we use a template to allow inlining of something we haven't yet seen, because it delays compilation until the function is called.
+			// Atm we don't have the cyclic dependency therefore we have forward declared
+			// UClass. Maybe we will have some dependency in future, then
+			// when we have a cyclic dependency between UObjectBase and UClass,
+			// we use a template to allow inlining of something we haven't yet seen, because it delays compilation until the function is called.
 
 			// 'static_assert' that this thing is actually a UClass pointer or convertible to it.
 			const UClass* SomeBaseClass = SomeBase;
-			(void)SomeBaseClass;
+
 			KR_CORE_ASSERT(SomeBaseClass, "IsA(NULL) cannot yield meaningful results");
 
 			const UClass* ThisClass = GetClass();
 
 			// Stop the compiler doing some unnecessary branching for nullptr checks
 			// Would be interesting to write the analog of this
-			//UE_ASSUME(SomeBaseClass);
-			//UE_ASSUME(ThisClass);
-
-			KR_CORE_ASSERT(ThisClass, "Comparing with null is useless");
+			KR_CORE_ASSERT(ThisClass, "Couldn't find UClass of {0}. Comparing with null is useless", this->GetName());
 
 			return IsChildOfWorkaround(ThisClass, SomeBaseClass);
 		}
 
-		/** Returns the UClass that defines the fields of this object */
+		/** 
+		 * Returns the UClass that defines the fields of this object
+		 *
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE UClass* GetClass() const
 		{
 			return m_ClassPrivate;
@@ -292,10 +311,11 @@ namespace Karma
 		-------------------*/
 
 		/**
-		* Retrieve the object flags directly
-		*
-		* @return Flags for this object
-		**/
+		 * Retrieve the object flags directly
+		 *
+		 * @return Flags for this object
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE EObjectFlags GetFlags() const
 		{
 			KR_CORE_ASSERT((m_ObjectFlags & ~RF_AllFlags) == 0, "{0} flagged as RF_ALLFlags", GetName());
@@ -304,6 +324,11 @@ namespace Karma
 
 		/**
 		 * Modifies object flags for a specific object
+		 *
+		 * @param NewFlags	The EObjectFlags to be set for this object
+		 * @see UObjectBase::SetFlagsTo
+		 *
+		 * @since Karma 1.0.0
 		 */
 		FORCEINLINE void SetFlags(EObjectFlags NewFlags)
 		{
@@ -313,20 +338,27 @@ namespace Karma
 			SetFlagsTo(EObjectFlags (GetFlags() | NewFlags));
 		}
 
-		/** Clears subset of flags for a specific object */
-		FORCEINLINE void ClearFlags(EObjectFlags NewFlags)
+		/**
+		 * Clears subset of flags for a specific object
+		 *
+		 * @param FlagsToClear	EObjectFlags to be cleared
+		 * @since Karma 1.0.0
+		 */
+		FORCEINLINE void ClearFlags(EObjectFlags FlagsToClear)
 		{
-			KR_CORE_ASSERT(!(NewFlags & (RF_MarkAsNative | RF_MarkAsRootSet | RF_PendingKill | RF_Garbage)) || NewFlags == RF_AllFlags, "These flags can't be used outside of constructors / internal code");
-			KR_CORE_ASSERT(!(NewFlags & (EObjectFlags)(RF_PendingKill | RF_Garbage)) || (GetFlags() & (NewFlags & (EObjectFlags)(RF_PendingKill | RF_Garbage))) == RF_NoFlags, "RF_PendingKill and RF_garbage can not be cleared through ClearFlags function. Use ClearGarbage() instead");
+			KR_CORE_ASSERT(!(FlagsToClear & (RF_MarkAsNative | RF_MarkAsRootSet | RF_PendingKill | RF_Garbage)) || FlagsToClear == RF_AllFlags, "These flags can't be used outside of constructors / internal code");
+			KR_CORE_ASSERT(!(FlagsToClear & (EObjectFlags)(RF_PendingKill | RF_Garbage)) || (GetFlags() & (FlagsToClear & (EObjectFlags)(RF_PendingKill | RF_Garbage))) == RF_NoFlags, "RF_PendingKill and RF_garbage can not be cleared through ClearFlags function. Use ClearGarbage() instead");
 
-			SetFlagsTo(EObjectFlags (GetFlags() & ~NewFlags));
+			SetFlagsTo(EObjectFlags (GetFlags() & ~FlagsToClear));
 		}
 
 		/**
 		 * Used to safely check whether any of the passed in flags are set.
 		 *
-		 * @param FlagsToCheck	Object flags to check for.
-		 * @return				true if any of the passed in flags are set, false otherwise  (including no flags passed in).
+		 * @param FlagsToCheck	Object flags to check for
+		 * @return				true if any of the passed in flags are set, false otherwise  (including no flags passed in)
+		 *
+		 * @since Karma 1.0.0
 		 */
 		FORCEINLINE bool HasAnyFlags(EObjectFlags FlagsToCheck) const
 		{
@@ -337,8 +369,10 @@ namespace Karma
 		/**
 		 * Used to safely check whether any of the passed in internal flags are set.
 		 *
-		 * @param FlagsToCheck	Object flags to check for.
-		 * @return				true if any of the passed in flags are set, false otherwise  (including no flags passed in).
+		 * @param FlagsToCheck	Object flags to check for
+		 * @return				true if any of the passed in flags are set, false otherwise  (including no flags passed in)
+		 *
+		 * @since Karma 1.0.0
 		 */
 		FORCEINLINE bool HasAnyInternalFlags(EInternalObjectFlags FlagsToCheck) const
 		{
@@ -349,6 +383,7 @@ namespace Karma
 		 * Sets internal flags of the FUObjectItem
 		 *
 		 * @param FlagsToSet
+		 * @since Karma 1.0.0
 		 */
 		FORCEINLINE void SetInternalFlags(EInternalObjectFlags FlagsToSet) const
 		{
@@ -361,6 +396,8 @@ namespace Karma
 		/**
 		 * Add an object to the root set. This prevents the object and all
 		 * its descendants from being deleted during garbage collection.
+		 *
+		 * @todo To be implemented when garbage collection system is finished
 		 */
 		FORCEINLINE void AddToRoot()
 		{
@@ -376,12 +413,12 @@ namespace Karma
 
 		/**
 		 * See if ObjClass is child of TestClass
+		 *
+		 * @param ObjClass		The UObject object whose class is to be seen
+		 * @param TestClass		The UClass object which is to be compared with
+		 *
+		 * @since Karma 1.0.0
 		 */
 		static bool IsChildOfWorkaround(const UClass* ObjClass, const UClass* TestClass);
-
-		//static FORCEINLINE bool IsChildOfWorkaround(const ClassType* ObjClass, const ClassType* TestCls);
-		//{
-		//	return ObjClass->IsChildOf(TestCls);
-		//}
 	};
 }

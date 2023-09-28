@@ -51,7 +51,11 @@ namespace Karma
 
 	public:
 
-		/** Returns true if this struct either is SomeBase, or is a child of SomeBase. This will not crash on null structs */
+		/** 
+		 * Returns true if this struct either is SomeBase, or is a child of SomeBase. This will not crash on null structs
+		 *
+		 * @todo Need to write a decent class registration code for class comparison
+		 */
 		bool IsChildOf(const UStruct* SomeBase) const;
 
 		/** Struct this inherits from, may be null */
