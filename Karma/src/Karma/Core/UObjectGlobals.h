@@ -1,3 +1,12 @@
+/**
+ * @file UObjectGlobals.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains some commonly used game code macros.
+ * @version 1.0
+ * @date May 10, 2023
+ *
+ * @copyright Karma Engine: copyright(c) People of India */
+
 #pragma once
 
 #include "krpch.h"

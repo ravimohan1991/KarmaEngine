@@ -466,7 +466,7 @@ namespace Karma
 
 		if (Object == nullptr)
 		{
-			size_t Alignment = FMath::Max<size_t>(4, inClass->GetMinAlignment());
+			size_t Alignment = inClass->GetMinAlignment();//FMath::Max<size_t>(4, inClass->GetMinAlignment());
 
 			// Following corresponds to the instantiation of UObjects
 			// from Karma's memory system known by the name Smriti.

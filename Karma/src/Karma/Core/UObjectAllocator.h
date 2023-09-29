@@ -5,7 +5,7 @@
  * @version 1.0
  * @date March 8, 2023
  *
- * @copyright Karma Engine copyright(c) People of India, in accordance with Epic EULA (https://www.unrealengine.com/en-US/eula/unreal)
+ * @copyright Karma Engine copyright(c) People of India
  */
 
 /*=============================================================================
@@ -16,8 +16,6 @@
 // https://github.com/ravimohan1991/KarmaEngine/discussions/10
 
 #pragma once
-
-#include "krpch.h"
 
 namespace Karma
 {
@@ -169,7 +167,7 @@ namespace Karma
 		/**
 		 * @brief Allocates a UObjectBase from the free store or the permanent object pool
 		 *
-		 * @remark: We are returning UObjectBase pointer because ue does so. Else void pointer could have
+		 * @remark We are returning UObjectBase pointer because ue does so. Else void pointer could have
 		 * done the job, since what we are returning is not really a UObjectBase.
 		 *
 		 * @param Size 									size of uobject to allocate

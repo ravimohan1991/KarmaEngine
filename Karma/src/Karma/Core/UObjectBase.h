@@ -5,7 +5,7 @@
  * @version 1.0
  * @date March 1, 2023
  *
- * @copyright Karma Engine copyright(c) People of India, in accordance with Epic EULA (https://www.unrealengine.com/en-US/eula/unreal)
+ * @copyright Karma Engine copyright(c) People of India
  */
 
 /*=============================================================================
