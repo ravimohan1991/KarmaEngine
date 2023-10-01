@@ -478,7 +478,8 @@ namespace Karma
 
 			FMemory::Memzero(aPtr, totalSize);
 
-			ObjectBase = (UObjectBase*)aPtr;
+			//ObjectBase = (UObjectBase*)aPtr; deviation from ue's implementation
+			Object = (UObject*)aPtr;
 		}
 		else
 		{
@@ -488,10 +489,15 @@ namespace Karma
 
 		EObjectFlags relevantFlags = EObjectFlags (inFlags | RF_NeedInitialization);
 
+		ObjectBase = (UObjectBase*)Object;
+
 		// Following UE, we first call the UObjectBase constructor
 		new (ObjectBase) UObjectBase(const_cast<UClass*>(inClass), relevantFlags, internalSetFlags, inOuter, inName);
 
-		Object = (UObject*)ObjectBase;
+		// 8 bytes offset is introduced, https://ravimohan.net/2023/06/14/c-typecasts-an-assembly-pov/
+		// which interfares with the previous allocation, so we are not doing this way.
+		// May see how ue comes about this issue.
+		//Object = (UObject*)ObjectBase;
 
 		return Object;
 	}
