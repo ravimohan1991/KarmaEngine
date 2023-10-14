@@ -17,17 +17,35 @@ namespace Karma
 	class AActor;
 	class UClass;
 	class UPackage;
-	//enum EObjectFlags;
-	//enum class EInternalObjectFlags;
 
+	/**
+	 * @brief maximum value, 0xffffffff
+	 */
 	#define	INVALID_OBJECT	(UObject*)-1
 
-	// 32-bit signed integer <- find or write appropriate class for such type
+	/**
+	 * @brief 32-bit signed integer
+	 * @todo find or write appropriate class for such type
+	 *
+	 * @remark usage hasn't caught on in usual engine routines
+	 */
 	typedef signed int	 		int32;
 
+	/**
+	 * @brief euphemism for no index situations
+	 * @todo usage hasn't caught on in usual engine routines
+	 */
 	enum { INDEX_NONE = -1 };
 
-	// Got from EnumClassFlags.h
+	/**
+	 * @brief Sees if a specified flag(s) exists in the linear combination of flags
+	 * @note Got from EnumClassFlags.h
+	 *
+	 * @param Flags					The linear combination (&'d) of flags
+	 * @param Contains				The flags to be seen
+	 *
+	 * @todo may need to write in seperate file
+	 */
 	template<typename Enum>
 	constexpr bool EnumHasAnyFlags(Enum Flags, Enum Contains)
 	{
@@ -35,9 +53,9 @@ namespace Karma
 	}
 
 	/**
-	 * Flags describing a class.
+	 * @brief Flags describing a class.
 	 *
-	 * This MUST be kept in sync with EClassFlags defined in
+	 * @note This MUST be kept in sync with EClassFlags defined in
 	 * Engine\Source\Programs\Shared\EpicGames.Core\UnrealEngineTypes.cs
 	 */
 	enum EClassFlags
@@ -119,9 +137,9 @@ namespace Karma
 	};
 
 	/**
-	 * Package flags, passed into UPackage::SetPackageFlags and related functions
+	 * @brief Package flags, passed into UPackage::SetPackageFlags and related functions
 	 *
-	 * This MUST be kept in sync with EPackageFlags defined in
+	 * @note This MUST be kept in sync with EPackageFlags defined in
 	 * Engine\Source\Programs\Shared\EpicGames.Core\UnrealEngineTypes.cs
 	 */
 	enum EPackageFlags
@@ -164,7 +182,7 @@ namespace Karma
 	};
 
 	/**
-	 * Flags describing an object instance
+	 * @brief Flags describing an object instance
 	 */
 	enum EObjectFlags
 	{
@@ -221,11 +239,11 @@ namespace Karma
 	};
 
 	/**
-	 * Objects flags for internal use (GC, low level UObject code)
-	*
-	* This MUST be kept in sync with EInternalObjectFlags defined in
-	* Engine\Source\Programs\Shared\EpicGames.Core\UnrealEngineTypes.cs
-	*/
+	 * @brief Objects flags for internal use (GC, low level UObject code)
+	 *
+	 * @note This MUST be kept in sync with EInternalObjectFlags defined in
+	 * Engine\Source\Programs\Shared\EpicGames.Core\UnrealEngineTypes.cs
+	 */
 	enum class EInternalObjectFlags : int32
 	{
 		None = 0,
@@ -251,16 +269,28 @@ namespace Karma
 	};
 
 	/**
-	 * Single item in UObjectStore
+	 * @brief Single item in UObjectStore
 	 */
 	struct FUObjectItem
 	{
-		// Pointer to the allocated object
+		/**
+		 * Pointer to the allocated object, usually in GUObjectStore
+		 */
 		class UObjectBase* m_Object;
 
-		// Internal Flags
+		/**
+		 * Internal Flags, different from UObjectBase::m_ObjectFlags.
+		 *
+		 * @see UObjectBase::HasAnyInternalFlags, UObjectBase::SetInternalFlags, and
+		 * UObject::TentativeFlagChecks
+		 */
 		int32_t m_InternalFlags;
 
+		/**
+		 * @brief Null (basically default) constructor
+		 *
+		 * @since Karma 1.0.0
+		 */
 		FUObjectItem() : m_Object(nullptr), m_InternalFlags(0)
 		{
 		}
@@ -271,7 +301,14 @@ namespace Karma
 		FUObjectItem& operator=(FUObjectItem&&) = delete;
 		FUObjectItem& operator=(const FUObjectItem&) = delete;
 
-		// digression from ue, from threadatomicallysetflag
+		/**
+		 * @brief Set the internal flags
+		 *
+		 * @note digression from ue, from threadatomicallysetflag
+		 * @see UObjectBase::SetInternalFlags called via StaticConstructObject_Internal()
+		 *
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE void SetFlags(EInternalObjectFlags FlagsToSet)
 		{
 			KR_CORE_ASSERT((int32_t(FlagsToSet) & ~int32_t(EInternalObjectFlags::AllFlags)) == 0, "");
@@ -279,12 +316,26 @@ namespace Karma
 			m_InternalFlags = int32_t(FlagsToSet);
 		}
 
+		/**
+		 * @brief Getter for internal flags
+		 *
+		 * @return m_InternalFlags
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE EInternalObjectFlags GetFlags() const
 		{
 			//return FPlatformAtomics::AtomicRead_Relaxed((int32*)&Flags);
 			return EInternalObjectFlags(m_InternalFlags);
 		}
 
+		/**
+		 * @brief Query for m_InternalFlags
+		 *
+		 * @param InFlags				Flags to be queried
+		 * @return true if the internal flags contain queried flags
+		 *
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE bool HasAnyFlags(EInternalObjectFlags InFlags) const
 		{
 				return !!(m_InternalFlags & int32_t(InFlags));
@@ -318,7 +369,12 @@ namespace Karma
 			 * Constructor
 			 *
 			 * @param	InArray				the array to iterate on
-			 * @param	bOnlyGCedObjects	if true, skip all of the permanent objects
+			 * @param	bOnlyGCedObjects	if true, skip all of the permanent objects (not functional)
+			 *
+			 * @see FRawObjectIterator::FRawObjectIterator() child class, with GUObjectStore for InArray
+			 * @todo Garbage collection may require some changes here
+			 *
+			 * @since Karma 1.0.0
 			 */
 			TIterator(const FUObjectArray& InArray, bool bOnlyGCedObjects = false) :
 				m_Array(InArray),
@@ -333,10 +389,12 @@ namespace Karma
 			}
 
 			/**
-			 * Constructor
+			 * Constructor (need to write more)
 			 *
-			 * @param	InArray				the array to iterate on
-			 * @param	bOnlyGCedObjects	if true, skip all of the permanent objects
+			 * @param	EEndTagType				the array to iterate on
+			 * @param	InIter					if true, skip all of the permanent objects
+			 *
+			 * @since Karma 1.0.0
 			 */
 			TIterator(EEndTagType, const TIterator& InIter) :
 				m_Array(InIter.m_Array)
@@ -345,27 +403,56 @@ namespace Karma
 			}
 
 			/**
-			 * Iterator advance
+			 * Iterator advance, operator overloading
+			 *
+			 * @since Karma 1.0.0
 			 */
 			FORCEINLINE void operator++()
 			{
 				Advance();
 			}
 
+			/**
+			 * Iterator comparison
+			 *
+			 * @since Karma 1.0.0
+			 */
 			bool operator==(const TIterator& Rhs) const { return m_Index == Rhs.m_Index; }
+
+			/**
+			 * Iterator comparison
+			 *
+			 * @since Karma 1.0.0
+			 */
 			bool operator!=(const TIterator& Rhs) const { return m_Index != Rhs.m_Index; }
 
-			/** Conversion to "bool" returning true if the iterator is valid. */
+			/** 
+			 * Conversion to "bool" returning true if the iterator is valid.
+			 *
+			 * @since Karma 1.0.0
+			 */
 			FORCEINLINE explicit operator bool() const
 			{
 				return !!m_CurrentObject;
 			}
-			/** inverse of the "bool" operator */
+
+			/** 
+			 * inverse of the "bool" operator
+			 *
+			 * @remark Need to understand meaning and usage
+			 * @since Karma 1.0.0
+			 */
 			FORCEINLINE bool operator !() const
 			{
 				return !(bool)*this;
 			}
 
+			/**
+			 * Getter for current index
+			 *
+			 * @return The current index of the interator
+			 * @since Karma 1.0.0
+			 */
 			FORCEINLINE int32 GetIndex() const
 			{
 				return m_Index;
@@ -377,6 +464,7 @@ namespace Karma
 			 * Dereferences the iterator with an ordinary name for clarity in derived classes
 			 *
 			 * @return	the UObject at the iterator
+			 * @since Karma 1.0.0
 			 */
 			FORCEINLINE FUObjectItem* GetObject() const
 			{
@@ -384,8 +472,12 @@ namespace Karma
 			}
 
 			/**
-			 * Iterator advance with ordinary name for clarity in subclasses
+			 * Iterator advance with ordinary name for clarity in subclasses.
+			 *
+			 * @remark Advances the m_Index by 1, or caches the next UObject* in the supplied array
 			 * @return	true if the iterator points to a valid object, false if iteration is complete
+			 *
+			 * @since Karma 1.0.0
 			 */
 			FORCEINLINE bool Advance()
 			{
@@ -404,7 +496,11 @@ namespace Karma
 				return false;
 			}
 
-			/** Gets the array this iterator iterates over */
+			/** 
+			 * Gets the array this iterator iterates over
+			 *
+			 * @since Karma 1.0.0
+			 */
 			const FUObjectArray& GetIteratedArray() const
 			{
 				return m_Array;
@@ -421,11 +517,23 @@ namespace Karma
 		};
 
 	public:
-		/** Add an element to the list*/
-		// Maybe use pool allocations instead of new delete operators for optimization
+		/** 
+		 * Add an element to the list
+		 *
+		 * @param Object		The pointer to UObject object to be added to "array"
+		 *
+		 * @remark Maybe use pool allocations instead of new delete operators for optimization
+		 * @todo Benchmark if this is bottle neck for SpawnActor
+		 *
+		 * @since Karma 1.0.0
+		 */
 		void AddUObject(UObject* Object);
 
-		/** Retrieve the list of the UObjects */
+		/** 
+		 * Retrieve the list of the UObjects
+		 *
+		 * @since Karma 1.0.0
+		 */
 		const std::vector<FUObjectItem*>& GetObjectsList() const { return m_Elements; }
 
 		/**
@@ -433,80 +541,116 @@ namespace Karma
 		 *
 		 * @param	Object object to test for validity
 		 * @return	true if this index is valid
+		 *
+		 * @since Karma 1.0.0
 		 */
 		bool IsValid(const UObjectBase* Object) const;
 	};
 
+	/**
+	 * @brief Class for caching list of UObject pointers categorized by UClass
+	 */
 	class KarmaClassObjectMap : public KarmaMap<UClass*, KarmaVector<UObject*>*>
 	{
 	public:
+
+		/**
+		 * Default constructor
+		 *
+		 * @since Karma 1.0.0
+		 */
 		KarmaClassObjectMap()
 		{}
 
+		/**
+		 * Default destructor
+		 *
+		 * @since Karma 1.0.0
+		 */
 		~KarmaClassObjectMap();
 
 		/**
 		 * Find the object vector associated with class
 		 *
-		 * @param Key The key to search for.
-		 * @return A pointer to the object vector
-		 * @see UStruct::IsChildOf()
-		 * @todo write class registration system for comparing UClass
+		 * @param Key			The key to search for.
+		 * @return 				A pointer to the object vector
+		 * @see 				UStruct::IsChildOf()
+		 * @todo 				write class registration system for comparing UClass
+		 *
+		 * @since Karma 1.0.0
 		 */
 		KarmaVector<UObject*>* FindClassObjects(const UClass* Key);
 
 		/**
-		 * Find the value associated with a specified key, or if none exists,
+		 * Find the value associated with a specified UClass key, or if none exists,
 		 * adds a value using the default constructor.
 		 *
-		 * @param Key The key to search for.
-		 * @return A reference to the value associated with the specified key.
+		 * @param Key			The key to search for
+		 * @return 				A reference to the value associated with the specified key
+		 * @todo 				<b>Priority based:</b> memory management needed, especially since new is used
+		 * 						to allocate KarmaVector<UObject*> on heap
+		 * @since Karma 1.0.0
 		 */
 		KarmaVector<UObject*>* FindOrAddClass(const UClass* Key);
 	};
 
 	/**
-	 * Global UObject array instance
+	 * @brief Global UObject array instance
 	 * All the UObjects created are to be found in this store. Analogoue to GUObjectArray of UE, defined in UObjectHash.cpp
-	 * A note on GUObjectArray
-	 * https://forums.unrealengine.com/t/how-to-register-disregard-for-gc-objects/264991
+	 *
+	 * @see FRawObjectIterator which iterates over all the UObjects: including class default objects, unreachable objects...all UObjects
 	 */
 	extern KARMA_API FUObjectArray GUObjectStore;
 
 	/**
-	 * A cache of UClass and UObjects maps for quick lookup of objects
+	 * @brief A cache of UClass and UObjects maps for quick lookup of objects
 	 * by class.
 	 *
 	 * Global public variable because UE has so FUObjectHashTables::ClassToObjectListMap. Think about
 	 * access specifier.
 	 *
-	 * Please note: Unreal Engine uses more complex TBucketMap<UClass*> ClassToObjectListMap for
+	 * @remark Unreal Engine uses more complex TBucketMap<UClass*> ClassToObjectListMap for
 	 * caching the objects by class
 	 */
 	extern KARMA_API KarmaClassObjectMap m_ClassToObjectVectorMap;
 
 	/**
-	* This struct is used for passing parameter values to the StaticConstructObject_Internal() method.  Only the constructor parameters are required to
-	* be valid - all other members are optional.
-	*/
+	 * @brief This struct is used for passing parameter values to the StaticConstructObject_Internal() method.  Only the constructor parameters are required to
+	 * be valid - all other members are optional. Basically various UObject variables to be initialized when calling the NewObject routine.
+	 */
 	struct FStaticConstructObjectParameters
 	{
 		/** The class of the object to create */
 		const UClass* m_Class;
 
-		/** The object to create this object within (the Outer property for the new object will be set to the value specified here). */
+		/**
+		 * The object to create this object within (the Outer property for the new object will be set to the value specified here). For instance m_Outer for
+		 * AActor m_Outer is LevelToSpawnIn
+		 */
 		UObject* m_Outer;
 
-		/** The name to give the new object.If no value(NAME_None) is specified, the object will be given a unique name in the form of ClassName_#. */
+		/** 
+		 * The name to give the new object.
+		 * @todo If no value (NAME_None) is specified, the object will be given a unique name in the form of ClassName_#.
+		 */
 		std::string m_Name;
 
-		/** The ObjectFlags to assign to the new object. some flags can affect the behavior of constructing the object. */
+		/**
+		 * The ObjectFlags to assign to the new object. 
+		 *
+		 * @remark Some flags can affect the behavior of constructing the object.
+		 */
 		EObjectFlags m_SetFlags = EObjectFlags::RF_NoFlags;
 
-		/** The InternalObjectFlags to assign to the new object. some flags can affect the behavior of constructing the object. */
+		/** 
+		 * The InternalObjectFlags to assign to the new object.
+		 *
+		 * @remark Some flags can affect the behavior of constructing the object.
+		 * @see FUObjectItem class m_InternalFlags set via UObjectBase::SetInternalFlags
+		 */
 		EInternalObjectFlags m_InternalSetFlags = EInternalObjectFlags::None;
 
-		/** If true, copy transient from the class defaults instead of the pass in archetype ptr(often these are the same) */
+		/** If true, copy transient from the class defaults instead of the pass in archetype ptr (often these are the same) */
 		bool m_bCopyTransientsFromClassDefaults = false;
 
 		/** If true, Template is guaranteed to be an archetype */
@@ -558,6 +702,8 @@ namespace ECastCheckedType
  *
  * @param Src					The object pointer which needs to be checked
  * @param CheckType				How to perform cast checks
+ *
+ * @todo static_cast may require more addition depending on the usage
  */
 template <class T, class U>
 FORCEINLINE T* CastChecked(const U& Src, ECastCheckedType::Type CheckType = ECastCheckedType::NullChecked)
@@ -692,15 +838,41 @@ FUNCTION_NON_NULL_RETURN_START*/
 KARMA_API UObject* StaticFindObjectFastInternal(const UClass* ObjectClass, const UObject* ObjectPackage, const std::string& ObjectName, bool bExactClass = false, EObjectFlags ExcludeFlags = RF_NoFlags, EInternalObjectFlags ExclusiveInternalFlags = EInternalObjectFlags::None);
 
 /**
- * Find an existing package by name or create it if it doesn't exist
- * @return The existing package or a newly created one
+ * Tries to find an object in memory. This will handle fully qualified paths of the form /path/packagename.object:subobject and resolve references for you.
  *
+ * @param	Class			The to be found object's class
+ * @param	InOuter			Outer object to look inside. If this is null then InName should start with a package name
+ * @param	InName			The object path to search for an object, relative to InOuter
+ * @param	ExactClass		Whether to require an exact match with the passed in class
+ *
+ * @return	Returns a pointer to the found object or nullptr if none could be found
+ */
+ KARMA_API UObject* StaticFindObject(UClass* Class, UObject* InOuter, const std::string& Name, bool ExactClass = false);
+
+/**
+ * @brief Find an optional object.
+ *
+ * Tries to find an object in memory
+ * @see StaticFindObject()
+ */
+template< class T >
+inline KARMA_API T* FindObject(UObject* Outer, const std::string& Name, bool ExactClass = false)
+{
+	return (T*)StaticFindObjectFastInternal(T::StaticClass(), Outer, Name, ExactClass);
+}
+
+/**
+ * Find an existing package by name or create it if it doesn't exist
+ *
+ * @param The name of the package to be searched or create
+ * @return The existing package or a newly created one
  */
 KARMA_API UPackage* CreatePackage(const std::string& PackageName);
 
 /**
  * Returns a vector of objects of a specific class. Optionally, results can include objects of derived classes as well.
  *
+ * @todo Results of derived class logic needs be written
  * bIncludeDerivedClasses not functional yet
  *
  * @param	ClassToLookFor				Class of the objects to return.
@@ -735,7 +907,6 @@ typedef void (*FUObjectAllocatorCallback)(void* InObject, const std::string& InN
  */
 KARMA_API extern void RegisterUObjectsStatisticsCallback(FUObjectAllocatorCallback dumpCallback);
 
-
 /**
  * Add an object to the cache, categorized by class
  *
@@ -749,13 +920,19 @@ extern void StaticUObjectInit();
 extern UPackage* GetTransientPackage();
 
 	/**
-	 * Internal class to finalize UObject creation (initialize properties) after the real C++ constructor is called
+	 * @brief Internal class to finalize UObject creation (initialize properties) after the real C++ constructor is called
 	 */
 	class KARMA_API FObjectInitializer
 	{
 		public:
 			/**
-			 * Default Constructor, used when you are using the C++ "new" syntax. UObject::UObject will set the object pointer
+			 * @brief Default Constructor, used when you are using the C++ "new" syntax. UObject::UObject will set the object pointer
+			 *
+			 * The custom constructor (InternalConstructor<TClass>) to be called after UObject allocation and
+			 * during UObject initialization. Calls <b>placement new</b> with specified UObject class constructor.
+			 *
+			 * @see <b>InClass->m_ClassConstructor</b> line in the routine StaticConstructObject_Internal(const FStaticConstructObjectParameters&)
+			 * @since Karma 1.0.0
 			 */
 			FObjectInitializer();
 
@@ -766,6 +943,8 @@ extern UPackage* GetTransientPackage();
 			 * @param	bInCopyTransientsFromClassDefaults - if true, copy transient from the class defaults instead of the pass in archetype ptr (often these are the same)
 			 * @param	bInShouldInitializeProps false is a special case for changing base classes in UCCMake
 			 * @param	InInstanceGraph passed instance graph
+			 *
+			 * @since Karma 1.0.0
 			 */
 			FObjectInitializer(UObject* InObj, UObject* InObjectArchetype, bool bInCopyTransientsFromClassDefaults, bool 	bInShouldInitializeProps, struct FObjectInstancingGraph* InInstanceGraph = nullptr);
 
@@ -773,6 +952,9 @@ extern UPackage* GetTransientPackage();
 
 			/**
 			 * Return the object that is being constructed
+			 *
+			 * @see DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass)
+			 * @since Karma 1.0.0
 			 */
 			FORCEINLINE UObject* GetObj() const
 			{
@@ -788,6 +970,8 @@ extern UPackage* GetTransientPackage();
 			/**
 			 * Finalizes a constructed UObject by initializing properties,
 			 * instancing/initializing sub-objects, etc.
+			 *
+			 * @since Karma 1.0.0
 			 */
 			void PostConstructInit();
 
@@ -798,6 +982,7 @@ extern UPackage* GetTransientPackage();
 			 * @param	DefaultsClass		the class to use for initializing the data
 			 * @param	DefaultData			the buffer containing the source data for the initialization
 			 * @param	bCopyTransientsFromClassDefaults if true, copy the transients from the DefaultsClass defaults, otherwise copy the transients from DefaultData
+			 *  @since Karma 1.0.0
 			 */
 			static void InitProperties(UObject* Object, UClass* DefaultsClass, UObject* DefaultData, bool 	bCopyTransientsFromClassDefaults);
 

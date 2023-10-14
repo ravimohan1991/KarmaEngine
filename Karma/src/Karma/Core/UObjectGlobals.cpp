@@ -421,6 +421,7 @@ namespace Karma
 
 		KR_CORE_ASSERT(InClass->m_ClassConstructor, "No default constructor found");
 
+		// Calls another placement new with the specific UObject (or derived) object class constructor call
 		(*InClass->m_ClassConstructor)(FObjectInitializer(Result, /*InTemplate*/nullptr, Params.m_bCopyTransientsFromClassDefaults, true, /*Params.InstanceGraph*/nullptr));
 
 		{
@@ -457,7 +458,7 @@ namespace Karma
 			KR_CORE_WARN("Attempting to create UObject with empty name string. Defaulting to NoName");
 		}
 
-		// see if object already exists in GUObjectStore. Maybe not functional
+		// see if object already exists in GUObjectStore
 		Object = StaticFindObjectFastInternal(nullptr, inOuter, objectName, true);
 
 		size_t totalSize = inClass->GetPropertiesSize();
@@ -542,7 +543,7 @@ namespace Karma
 
 		if (InName != "")
 		{
-			//Result = FindObject<UPackage>(nullptr, *InName);
+			Result = FindObject<UPackage>(nullptr, InName);
 
 			if (Result == NULL)
 			{
