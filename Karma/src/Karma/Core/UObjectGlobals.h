@@ -5,7 +5,8 @@
  * @version 1.0
  * @date May 10, 2023
  *
- * @copyright Karma Engine: copyright(c) People of India */
+ * @copyright Karma Engine: copyright(c) People of India 
+ */
 
 #pragma once
 
@@ -968,9 +969,12 @@ extern UPackage* GetTransientPackage();
 			friend void InternalConstructor(const class FObjectInitializer& X);
 
 			/**
-			 * Finalizes a constructed UObject by initializing properties,
+			 * @brief Finalizes a constructed UObject by initializing properties,
 			 * instancing/initializing sub-objects, etc.
+			 * @remark This is the place where CDO (Class Default Objects or Class Archetypes) is used to initialize
+			 * properties if required by m_bShouldInitializePropsFromArchetype, usually true
 			 *
+			 * @todo Understand the relevance in simple terms
 			 * @since Karma 1.0.0
 			 */
 			void PostConstructInit();
@@ -982,7 +986,10 @@ extern UPackage* GetTransientPackage();
 			 * @param	DefaultsClass		the class to use for initializing the data
 			 * @param	DefaultData			the buffer containing the source data for the initialization
 			 * @param	bCopyTransientsFromClassDefaults if true, copy the transients from the DefaultsClass defaults, otherwise copy the transients from DefaultData
-			 *  @since Karma 1.0.0
+			 * @todo Understand the relevance in simple terms
+			 * @see FObjectInitializer::PostConstructInit()
+			 *
+			 * @since Karma 1.0.0
 			 */
 			static void InitProperties(UObject* Object, UClass* DefaultsClass, UObject* DefaultData, bool 	bCopyTransientsFromClassDefaults);
 
