@@ -33,12 +33,6 @@ namespace Karma
 	typedef signed int	 		int32;
 
 	/**
-	 * @brief euphemism for no index situations
-	 * @todo usage hasn't caught on in usual engine routines
-	 */
-	enum { INDEX_NONE = -1 };
-
-	/**
 	 * @brief Sees if a specified flag(s) exists in the linear combination of flags
 	 * @note Got from EnumClassFlags.h
 	 *
