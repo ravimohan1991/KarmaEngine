@@ -81,7 +81,7 @@
 #define FORCEINLINE inline
 #endif
 
- /**
+/**
  * Makes a type non-copyable and non-movable by deleting copy/move constructors and assignment/move operators.
  * The macro should be placed in the public section of the type for better compiler diagnostic messages.
  * Example usage:
