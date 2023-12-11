@@ -11,12 +11,12 @@ namespace Karma
 	{
 		union PtrUnion
 		{
-			void* PtrVoid;
+			void* PtrVoid;// 4 or 8 bytes based on architecture
 			uint8_t* Ptr8;
 			uint16_t* Ptr16;
 			uint32_t* Ptr32;
 			uint64_t* Ptr64;
-			UPTRINT PtrUint;
+			UPTRINT PtrUint;// 32 or 64 bit uint, based on the architecture
 		};
 
 		PtrUnion Union1 = { Ptr1 };

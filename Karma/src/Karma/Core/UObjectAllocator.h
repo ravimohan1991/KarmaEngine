@@ -170,7 +170,7 @@ namespace Karma
 		 * @remark We are returning UObjectBase pointer because ue does so. Else void pointer could have
 		 * done the job, since what we are returning is not really a UObjectBase.
 		 *
-		 * @param Size 									size of uobject to allocate
+		 * @param Size 									size (in bytes) of UObject to allocate
 		 * @param Alignment 								alignment of uobject to allocate
 		 * @param bAllowPermanent 						if true, allow allocation in the permanent object pool, if it fits
 		 * @return newly allocated UObjectBase (not really a UObjectBase yet, no constructor like thing has been called).
