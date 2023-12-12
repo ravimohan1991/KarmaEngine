@@ -1,3 +1,12 @@
+/**
+ * @file Buffer.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains base classes for various kinds of buffers for Engine.
+ * @version 1.0
+ * @date December 21, 2020
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #include "krpch.h"
@@ -7,6 +16,9 @@
 
 namespace Karma
 {
+	/**
+	 * @brief 
+	 */
 	enum class ShaderDataType
 	{
 		None = 0,
