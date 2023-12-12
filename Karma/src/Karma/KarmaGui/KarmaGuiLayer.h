@@ -1,3 +1,13 @@
+/**
+ * @file KarmaGuiLayer.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the class KarmaGuiLayer, a Layer between Engine and KarmaGui.
+ * @version 1.0
+ * @date December 7, 2020
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
 #pragma once
 
 #include "krpch.h"

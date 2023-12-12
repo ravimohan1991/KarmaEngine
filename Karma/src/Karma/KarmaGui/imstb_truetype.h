@@ -1,3 +1,13 @@
+/**
+ * @file imstb_truetype.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief Just for the sake of completeness. Couldn't find any use yet. See comments below.
+ * @version 1.0
+ * @date February 7, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
 // [DEAR IMGUI]
 // This is a slightly modified version of stb_truetype.h 1.26.
 // Mostly fixing for compiler and static analyzer warnings.

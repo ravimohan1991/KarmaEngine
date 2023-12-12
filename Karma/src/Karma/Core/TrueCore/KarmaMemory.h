@@ -41,7 +41,6 @@ namespace Karma
 		MIN_ALIGNMENT = 8,///<Minimum allocator alignment
 	};
 
-
 	/**
 	 * @brief Class with memory relevant functions
 	 */

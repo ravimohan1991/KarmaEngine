@@ -1,3 +1,13 @@
+/**
+ * @file KarmaGuiRenderer.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the renderer for Karma's UI
+ * @version 1.0
+ * @date February 19, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
 #pragma once
 
 #include "krpch.h"

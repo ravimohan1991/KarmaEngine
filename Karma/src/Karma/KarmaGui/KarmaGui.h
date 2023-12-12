@@ -1,4 +1,15 @@
-// Dear ImGui (1.89.2) is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
+/**
+ * @file KarmaGui.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file constains KarmaGui class. The chief class for our UI needs..
+ * @version 1.0
+ * @date January 10, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
+// Dear ImGui (1.89.2) is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context, with minor modifications of course!!
+
 #pragma once
 
 #if(defined(__clang__) || defined(__GNUC__))
