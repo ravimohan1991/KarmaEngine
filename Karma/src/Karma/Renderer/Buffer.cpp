@@ -91,7 +91,11 @@ namespace Karma
 		{
 			uint32_t uniformBaseAlignment = ComputeBaseAlignment(uniformDataType);
 			uint32_t uniformAlignedOffset = 0;
+			
 			uint32_t uniformSize = ShaderDataTypeSize(uniformDataType);
+
+			// seems like ShaderDataTypeSize and ComputeBaseAlignment are spitting same number
+			// think why different names
 
 			if (index == 0)
 			{

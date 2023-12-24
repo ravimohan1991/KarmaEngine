@@ -89,7 +89,7 @@ namespace Karma
 		void ClearBuffer();
 		void BufferCreation();
 
-		void UploadUniformBuffer(size_t frameIndex);
+		void UploadUniformBuffer(size_t frameIndex) override;
 
 	private:
 		VkDevice m_Device;
