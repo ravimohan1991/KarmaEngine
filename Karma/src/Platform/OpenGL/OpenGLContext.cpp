@@ -26,6 +26,7 @@ namespace Karma
 	{
 		glfwSwapBuffers(m_windowHandle);
 		glfwSwapInterval(1);
+		
 		glFinish();
 	}
 

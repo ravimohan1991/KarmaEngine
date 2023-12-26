@@ -263,6 +263,7 @@ namespace Karma
 	{
 		std::shared_ptr<VulkanVertexArray> vulkanVA = std::static_pointer_cast<VulkanVertexArray>(vertexArray);
 		m_VulkaVertexArrays.push_back(vulkanVA);
+		
 		SubmitCommandBuffers();
 	}
 }

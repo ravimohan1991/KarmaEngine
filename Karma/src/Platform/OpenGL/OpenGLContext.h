@@ -13,6 +13,7 @@ namespace Karma
 
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
+		
 		virtual bool OnWindowResize(WindowResizeEvent& event) override;
 
 	private:
