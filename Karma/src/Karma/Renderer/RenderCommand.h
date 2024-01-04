@@ -16,7 +16,7 @@
 namespace Karma
 {
 	/**
-	 * @brief A class with static routines relevant for rendering a scene
+	 * @brief A class with static routines relevant for rendering a scene using RendererAPI
 	 */
 	class KARMA_API RenderCommand
 	{
@@ -88,6 +88,8 @@ namespace Karma
 		 *
 		 * For OpenGL the command is glDrawElements
 		 * For Vulkan the command is vkCmdDrawIndexed
+		 *
+		 * @param vertexArray				The mesh + material to be rendered
 		 *
 		 * @since Karma 1.0.0
 		 */
