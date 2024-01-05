@@ -26,8 +26,6 @@ namespace Karma
 
 		std::vector<uint32_t> Compile(const std::string& src, const std::string& source, EShLanguage lang);
 
-		virtual void GenerateUniformBufferObject() override {}
-		virtual void BindUniformBufferObject() override {}
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 
 		//Getters
