@@ -1,3 +1,12 @@
+/**
+ * @file VertexArray.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the VertexArray class.
+ * @version 1.0
+ * @date December 24, 2020
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #include "krpch.h"
@@ -9,9 +18,17 @@
 
 namespace Karma
 {
+	/**
+	 * @brief A class, comprising of Mesh and Material substances along with relevant setup, for a renderable unit
+	 */
 	class KARMA_API VertexArray
 	{
 	public:
+		/**
+		 * @brief A destructor
+		 *
+		 * @since Karma 1.0.0
+		 */
 		virtual ~VertexArray()
 		{
 		}
