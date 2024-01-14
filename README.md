@@ -13,7 +13,7 @@ Developing
 
 Karma rocks on ```Linux```, ```MacOS```, and ```Windows```.  The architecture is liberal enough to support Mobile, perhaps, in the future (I won't count stars for that though). 
 
-Make sure to install [CMake](https://cmake.org/) for mega convinence and null nuiances.
+Make sure to install [CMake](https://cmake.org/) for null nuiances.
 
 #### Global Software Requirements ###
 * [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) should be installed depending on your choice of development platform
