@@ -1,7 +1,7 @@
 var searchData=
 [
   ['indextoobject_0',['IndexToObject',['../classKarmaVector.html#a8b4a388fcc565d0cca7a3040cb08ed8b',1,'KarmaVector']]],
-  ['init_1',['init',['../structFUrlConfig.html#a9a5deca06d7cd537d4459ae925d8794e',1,'FUrlConfig::Init()'],['../classKarma_1_1UGameInstance.html#a17507a6abe2563c9fd6b47c0171d540f',1,'Karma::UGameInstance::Init()']]],
+  ['init_1',['Init',['../structFUrlConfig.html#a9a5deca06d7cd537d4459ae925d8794e',1,'FUrlConfig::Init()'],['../classKarma_1_1UGameInstance.html#a17507a6abe2563c9fd6b47c0171d540f',1,'Karma::UGameInstance::Init()']]],
   ['initialize_2',['Initialize',['../classKarma_1_1FUObjectAllocator.html#ab5249d39d85e80b07983975d0a22e073',1,'Karma::FUObjectAllocator']]],
   ['initializeactorsforplay_3',['InitializeActorsForPlay',['../classKarma_1_1UWorld.html#af860d736772c6415e40a600316aa993f',1,'Karma::UWorld']]],
   ['initializecomponent_4',['InitializeComponent',['../classKarma_1_1UActorComponent.html#a25bc8170d894c07cb2717ec43e8d4de1',1,'Karma::UActorComponent']]],

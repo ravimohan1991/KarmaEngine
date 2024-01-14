@@ -10,8 +10,8 @@ var searchData=
   ['getcomponents_7',['GetComponents',['../classKarma_1_1AActor.html#aad20f51357eb42b27dce34c4df5b6029',1,'Karma::AActor']]],
   ['getcomponenttransform_8',['GetComponentTransform',['../classKarma_1_1USceneComponent.html#aae29334bdbfd1f2083c76a0fbdd3ad44',1,'Karma::USceneComponent']]],
   ['getcurrentgameinstance_9',['GetCurrentGameInstance',['../classKarma_1_1KEngine.html#a52433f29a63c79e3019e57d6f9f5c164',1,'Karma::KEngine']]],
-  ['getdefaultobject_10',['getdefaultobject',['../classKarma_1_1UClass.html#a81eebb0d1e60fb7ed97461de984e65a8',1,'Karma::UClass::GetDefaultObject(bool bCreateIfNeeded=true) const'],['../classKarma_1_1UClass.html#a25682fb1dd9bb53ec2594b001304e939',1,'Karma::UClass::GetDefaultObject() const'],['../classKarma_1_1TSubclassOf.html#a714c999e0edb4fc911ee4f0daf8a6199',1,'Karma::TSubclassOf::GetDefaultObject()']]],
-  ['getdesc_11',['getdesc',['../classKarma_1_1UObject.html#a79cd8eb1f2579df9484a42c12d3a9ace',1,'Karma::UObject::GetDesc()'],['../classKarma_1_1UClass.html#a84eee992921ab3d65a0b753965d27804',1,'Karma::UClass::GetDesc()']]],
+  ['getdefaultobject_10',['GetDefaultObject',['../classKarma_1_1UClass.html#a81eebb0d1e60fb7ed97461de984e65a8',1,'Karma::UClass::GetDefaultObject(bool bCreateIfNeeded=true) const'],['../classKarma_1_1UClass.html#a25682fb1dd9bb53ec2594b001304e939',1,'Karma::UClass::GetDefaultObject() const'],['../classKarma_1_1TSubclassOf.html#a714c999e0edb4fc911ee4f0daf8a6199',1,'Karma::TSubclassOf::GetDefaultObject()']]],
+  ['getdesc_11',['GetDesc',['../classKarma_1_1UClass.html#a84eee992921ab3d65a0b753965d27804',1,'Karma::UClass::GetDesc()'],['../classKarma_1_1UObject.html#a79cd8eb1f2579df9484a42c12d3a9ace',1,'Karma::UObject::GetDesc()']]],
   ['getexternalpackage_12',['GetExternalPackage',['../classKarma_1_1UObjectBase.html#a46fb8397ce68c58be4e93f9f89c3e172',1,'Karma::UObjectBase']]],
   ['getflags_13',['GetFlags',['../classKarma_1_1UObjectBase.html#aaef9d86ecab5fc6f3c1223439a2c88a4',1,'Karma::UObjectBase']]],
   ['getiteratedarray_14',['GetIteratedArray',['../classKarma_1_1FUObjectArray_1_1TIterator.html#ad78e4d3270fa4a781ca7cdaac4983b75',1,'Karma::FUObjectArray::TIterator']]],
@@ -44,6 +44,6 @@ var searchData=
   ['getsuperclass_41',['GetSuperClass',['../classKarma_1_1UClass.html#a0c1440fb1079e6502f502bee802fe4d0',1,'Karma::UClass']]],
   ['getsuperstruct_42',['GetSuperStruct',['../classKarma_1_1UStruct.html#a8f09778c228f77cfe33f3a8951835bc0',1,'Karma::UStruct']]],
   ['gettransform_43',['GetTransform',['../classKarma_1_1AActor.html#a62070dc615815966caa896477cb2fec3',1,'Karma::AActor']]],
-  ['gettypedouter_44',['gettypedouter',['../classKarma_1_1UObjectBase.html#a79a89a224162e7b6de1c66a10c6171c5',1,'Karma::UObjectBase::GetTypedOuter(UClass *Target) const'],['../classKarma_1_1UObjectBase.html#a6176da3b9be2ce7e523471657def00e7',1,'Karma::UObjectBase::GetTypedOuter() const']]],
-  ['getworld_45',['getworld',['../classKarma_1_1UObject.html#ab34f1884071a9796e8364d0541808ba9',1,'Karma::UObject::GetWorld()'],['../classKarma_1_1AActor.html#ad37e490c5d588dcbc0f0b324bf4579fb',1,'Karma::AActor::GetWorld()'],['../classKarma_1_1ULevel.html#adb1ccf1e63646f7c76e6ade1222d4172',1,'Karma::ULevel::GetWorld()']]]
+  ['gettypedouter_44',['GetTypedOuter',['../classKarma_1_1UObjectBase.html#a79a89a224162e7b6de1c66a10c6171c5',1,'Karma::UObjectBase::GetTypedOuter(UClass *Target) const'],['../classKarma_1_1UObjectBase.html#a6176da3b9be2ce7e523471657def00e7',1,'Karma::UObjectBase::GetTypedOuter() const']]],
+  ['getworld_45',['GetWorld',['../classKarma_1_1UObject.html#ab34f1884071a9796e8364d0541808ba9',1,'Karma::UObject::GetWorld()'],['../classKarma_1_1AActor.html#ad37e490c5d588dcbc0f0b324bf4579fb',1,'Karma::AActor::GetWorld()'],['../classKarma_1_1ULevel.html#adb1ccf1e63646f7c76e6ade1222d4172',1,'Karma::ULevel::GetWorld()']]]
 ];

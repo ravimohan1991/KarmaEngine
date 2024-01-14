@@ -36,7 +36,7 @@ var searchData=
   ['m_5fnext_33',['m_Next',['../classKarma_1_1FField.html#a0a0578437bd41226bcfcab05825cdb56',1,'Karma::FField']]],
   ['m_5fobjectarray_34',['m_ObjectArray',['../classKarma_1_1FActorIteratorState.html#a883977eb58ba5e31cc36f36d0c119ae9',1,'Karma::FActorIteratorState']]],
   ['m_5fouter_35',['m_Outer',['../structKarma_1_1FStaticConstructObjectParameters.html#af1c5f4201d2d1e95c609a7faa978823b',1,'Karma::FStaticConstructObjectParameters']]],
-  ['m_5fowner_36',['m_owner',['../classKarma_1_1FField.html#aa4ac7164aae52778ec1b04c52fa6efdf',1,'Karma::FField::m_Owner'],['../classKarma_1_1AActor.html#a88efec17b7147bdd5155daca7568b85e',1,'Karma::AActor::m_Owner']]],
+  ['m_5fowner_36',['m_Owner',['../classKarma_1_1FField.html#aa4ac7164aae52778ec1b04c52fa6efdf',1,'Karma::FField::m_Owner'],['../classKarma_1_1AActor.html#a88efec17b7147bdd5155daca7568b85e',1,'Karma::AActor::m_Owner']]],
   ['m_5fowningworld_37',['m_OwningWorld',['../classKarma_1_1ULevel.html#a95c275d0f27d8de75f4fbe349a22846c',1,'Karma::ULevel']]],
   ['m_5fpitch_38',['m_Pitch',['../structKarma_1_1TRotator.html#ad47295713662d68f4da60b95bee31889',1,'Karma::TRotator']]],
   ['m_5fpropertiessize_39',['m_PropertiesSize',['../classKarma_1_1UStruct.html#abf2a81f4c7f63c623f079db3c041c52c',1,'Karma::UStruct']]],

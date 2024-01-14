@@ -13,7 +13,7 @@ var searchData=
   ['setpackageflags_10',['SetPackageFlags',['../classKarma_1_1UPackage.html#a0c1dd21b4bfde9044c5a5ecf5b6cdcb6',1,'Karma::UPackage']]],
   ['setrelativetransform_11',['SetRelativeTransform',['../classKarma_1_1USceneComponent.html#a2c83f64f0a997d15a882f28d6dae1436',1,'Karma::USceneComponent']]],
   ['setrootcomponent_12',['SetRootComponent',['../classKarma_1_1AActor.html#ab26ebfcc548bc3ce6e477943d98b0423',1,'Karma::AActor']]],
-  ['setsuperstruct_13',['setsuperstruct',['../classKarma_1_1UClass.html#a465ff07f560138a8a2050758fbdcbaac',1,'Karma::UClass::SetSuperStruct()'],['../classKarma_1_1UStruct.html#a053e7365ff398f64859750f0bfc028db',1,'Karma::UStruct::SetSuperStruct()']]],
+  ['setsuperstruct_13',['SetSuperStruct',['../classKarma_1_1UStruct.html#a053e7365ff398f64859750f0bfc028db',1,'Karma::UStruct::SetSuperStruct()'],['../classKarma_1_1UClass.html#a465ff07f560138a8a2050758fbdcbaac',1,'Karma::UClass::SetSuperStruct(UStruct *NewSuperStruct) override']]],
   ['setupobjectinitializer_14',['SetupObjectInitializer',['../classKarma_1_1UClass.html#ab809a3270e0bd5caf80efe3f67563301',1,'Karma::UClass']]],
   ['setworldlocation_15',['SetWorldLocation',['../classKarma_1_1USceneComponent.html#a919ca8e2b78b908147ce6e12db2a4741',1,'Karma::USceneComponent']]],
   ['setworldsettings_16',['SetWorldSettings',['../classKarma_1_1ULevel.html#a9b12be5c0116f57621ec2b4a6ef54326',1,'Karma::ULevel']]],
@@ -22,7 +22,7 @@ var searchData=
   ['shouldactivate_19',['ShouldActivate',['../classKarma_1_1UActorComponent.html#a1ae972531434186170b4c09840a329f9',1,'Karma::UActorComponent']]],
   ['shutdown_20',['ShutDown',['../classKarma_1_1KarmaSmriti.html#a21b5ac62a8735740108219f4ef250422',1,'Karma::KarmaSmriti']]],
   ['smartreset_21',['SmartReset',['../classKarmaVector.html#a89ce8d9e4e2ae54328630ac045e2b6dd',1,'KarmaVector']]],
-  ['spawnactor_22',['spawnactor',['../classKarma_1_1UWorld.html#a03c21c1bc9c03fce6047d3e7e023e6f1',1,'Karma::UWorld::SpawnActor(UClass *Class, FTransform const *Transform, const FActorSpawnParameters &amp;SpawnParameters=FActorSpawnParameters())'],['../classKarma_1_1UWorld.html#accb513cc3a8473d863fcec6f04fe2ac0',1,'Karma::UWorld::SpawnActor(UClass *Class, const FActorSpawnParameters &amp;SpawnParameters=FActorSpawnParameters())']]],
+  ['spawnactor_22',['SpawnActor',['../classKarma_1_1UWorld.html#a03c21c1bc9c03fce6047d3e7e023e6f1',1,'Karma::UWorld::SpawnActor(UClass *Class, FTransform const *Transform, const FActorSpawnParameters &amp;SpawnParameters=FActorSpawnParameters())'],['../classKarma_1_1UWorld.html#accb513cc3a8473d863fcec6f04fe2ac0',1,'Karma::UWorld::SpawnActor(UClass *Class, const FActorSpawnParameters &amp;SpawnParameters=FActorSpawnParameters())']]],
   ['startup_23',['StartUp',['../classKarma_1_1KarmaSmriti.html#a79b2f7dc034ac8d9de44bc37c9f7a1bb',1,'Karma::KarmaSmriti']]],
   ['staticconfigname_24',['StaticConfigName',['../classKarma_1_1UObject.html#a562a78b2cdc64e23d39e2e68e575954b',1,'Karma::UObject']]],
   ['streamingmemcpy_25',['StreamingMemcpy',['../structKarma_1_1FGenericPlatformMemory.html#ad6731dc471b132575253e7d9e93017ff',1,'Karma::FGenericPlatformMemory']]]
