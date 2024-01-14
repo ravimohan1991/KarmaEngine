@@ -26,6 +26,7 @@ Open the command prompt in the root directory and type the following commands
 ```
 mkdir KarmaLightHouse
 cd KarmaLightHouse
+
 cmake ../
 ```
 
@@ -55,6 +56,7 @@ Karma has been developed and tested on macOS Monterey and should work on any upp
 ```
 mkdir KarmaLightHouse
 cd KarmaLightHouse
+
 cmake -G Xcode ..
 ```
 This shall generate full-fledged Xcode project file bundle.  Then you are at the mercy of the IDE!
