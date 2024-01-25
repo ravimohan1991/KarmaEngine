@@ -59,7 +59,7 @@ namespace Karma
 	void KarmaGuiLayer::OnDetach()
 	{
 		KarmaGuiRenderer::OnKarmaGuiLayerDetach();
-		KR_CORE_INFO("Shutting down ImGuiLayer");
+		KR_CORE_INFO("Shutting down KarmaGuiLayer");
 	}
 
 	// The KarmaGuiLayer sequence begins
