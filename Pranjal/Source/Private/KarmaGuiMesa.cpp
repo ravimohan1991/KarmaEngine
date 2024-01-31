@@ -1075,7 +1075,7 @@ namespace Karma
 		return n;
 	}
 
-	uint32_t KarmaGuiMesa::ChernUint32FromString(const std::string& ramString)
+	uint32_t KarmaGuiMesa::ChurnUint32FromString(const std::string& ramString)
 	{
 		std::string digitString;
 		//bool ctype = std::isdigit(ramString[0]);
@@ -1097,7 +1097,7 @@ namespace Karma
 		return value;
 	}
 
-	std::string KarmaGuiMesa::ChernDimensionsFromString(const std::string& ramString)
+	std::string KarmaGuiMesa::ChurnDimensionsFromString(const std::string& ramString)
 	{
 		std::string dimensionString;
 
@@ -1128,13 +1128,13 @@ namespace Karma
 		// Assumption dimension of memory is GB only
 		for (uint32_t counter = 0; counter < KarmaGuiMesa::GetGatheredElectronicsInformation().ramSoftSlots.size(); counter++)
 		{
-			ramSizeFound += KarmaGuiMesa::ChernUint32FromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[counter].ramSize);
+			ramSizeFound += KarmaGuiMesa::ChurnUint32FromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[counter].ramSize);
 		}
 
 		KarmaGuiMesa::GetGatheredElectronicsInformationForModification().totalRamSize = ramSizeFound;
 
 		// Hoping for GB only dimension
-		KarmaGuiMesa::GetGatheredElectronicsInformationForModification().ramSizeDimensions = KarmaGuiMesa::ChernDimensionsFromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[0].ramSize);
+		KarmaGuiMesa::GetGatheredElectronicsInformationForModification().ramSizeDimensions = KarmaGuiMesa::ChurnDimensionsFromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[0].ramSize);
 	}
 
 	void KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(random_access_memory* ramCluster)

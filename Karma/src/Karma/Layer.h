@@ -16,7 +16,7 @@ namespace Karma
 		virtual void OnAttach() = 0;
 		virtual void OnDetach() = 0;
 		virtual void OnUpdate(float deltaTime) = 0;
-		// If we want DearImGui to render the scene
+		// If we want KarmaGui to render the scene
 		virtual void ImGuiRender(float deltaTime) = 0;
 
 		virtual void OnEvent(Event& event)
