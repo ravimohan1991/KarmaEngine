@@ -38,6 +38,7 @@ namespace Karma
 	{
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
+		
 		m_Data.Height = props.Height;
 
 		KR_CORE_INFO("Creating Linux window {0} ({1}, {2})", props.Title, props.Width, props.Height);

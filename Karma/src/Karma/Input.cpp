@@ -85,7 +85,6 @@ namespace Karma
 		std::string testString = KarmaUtilities::ReadFileToSpitString("../Resources/Misc/GameControllerDB.txt");
 
 		const char* mappings = testString.c_str();
-
 		glfwUpdateGamepadMappings(mappings);
 	}
 
