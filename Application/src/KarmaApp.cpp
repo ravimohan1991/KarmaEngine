@@ -56,7 +56,7 @@ public:
 		Karma::Renderer::EndScene();
 	}
 
-	virtual void ImGuiRender(float deltaTime) override
+	virtual void KarmaGuiRender(float deltaTime) override
 	{
 		
 		//KarmaAppInputPolling(deltaTime);

@@ -1,13 +1,13 @@
 /*
-* I am little bit unsure of the implementation of PopLayer and
-* PopOverlay. They basically remove the pointer to the layers/overlaya
-* with doesn't deallocate the memory. The instances of layers are still there
-* In destructor, now those pointers were no longer there, that memory will never
-* be freed. Isn't this a memory leak.
-*
-* The Cherno talk about this stuff here https://youtu.be/_Kj6BSfM6P4?list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT&t=717
-* but the above issue doesn't seem to get resolved.
-*/
+ * I am little bit unsure of the implementation of PopLayer and
+ * PopOverlay. They basically remove the pointer to the layers/overlaya
+ * with doesn't deallocate the memory. The instances of layers are still there
+ * In destructor, now those pointers were no longer there, that memory will never
+ * be freed. Isn't this a memory leak.
+ *
+ * The Cherno talk about this stuff here https://youtu.be/_Kj6BSfM6P4?list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT&t=717
+ * but the above issue doesn't seem to get resolved.
+ */
 
 #include "LayerStack.h"
 
@@ -50,6 +50,7 @@ namespace Karma
 		{
 			layer->OnDetach();
 			m_Layers.erase(it);
+			
 			m_LayerInsertIndex--;
 		}
 	}

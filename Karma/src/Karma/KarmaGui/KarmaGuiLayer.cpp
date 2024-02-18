@@ -69,7 +69,7 @@ namespace Karma
 		KarmaGui::NewFrame();
 	}
 
-	void KarmaGuiLayer::ImGuiRender(float deltaTime)
+	void KarmaGuiLayer::KarmaGuiRender(float deltaTime)
 	{
 	}
 

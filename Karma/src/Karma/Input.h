@@ -289,9 +289,7 @@ namespace Karma
 
 		/**
 		 * @brief Set the gamepad mapping based on a database (../Resources/Misc/GameControllerDB.txt)
-		 * 	The mapping is done by taking XBox controller as a reference. For the need of such mapping
-		 *
-		 * 	please see https://www.glfw.org/docs/3.3/input_guide.html#gamepad_mapping
+		 * 	The mapping is done by taking XBox controller as a reference. For the need of such mapping please see https://www.glfw.org/docs/3.3/input_guide.html#gamepad_mapping
 		 *
 		 * 	@code{}
 		 * 	The joystick functions provide unlabeled axes, buttons and hats, with no indication of where they are located on the device.
@@ -300,6 +298,16 @@ namespace Karma
 		 * 	To solve this problem the SDL community crowdsourced the SDL_GameControllerDB project, a database of mappings from many
 		 * 	different devices to an Xbox-like gamepad.
 		 * 	@endcode
+		 *
+		 * The code is like so
+		 * 	\code{.cpp}
+		 * 		std::string testString = KarmaUtilities::ReadFileToSpitString("../Resources/Misc/GameControllerDB.txt");
+		 *
+		 * 		const char* mappings = testString.c_str();
+		 * 		glfwUpdateGamepadMappings(mappings);
+		 * 	\endcode
+		 *
+		 * @since Karma 1.0.0
 		 */
 		void SetGamepadMapping();
 

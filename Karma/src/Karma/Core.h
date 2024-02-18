@@ -105,7 +105,7 @@
 #endif
 
 /**
- * @brief Macro for std::bind routine
+ * @brief Macro for std::bind routine. See https://en.cppreference.com/w/cpp/utility/functional/bind
  *
  * @since Karma 1.0.0
  */

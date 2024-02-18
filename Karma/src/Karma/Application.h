@@ -108,6 +108,8 @@ namespace Karma
 		 * For instance the layer inserted first has least index and subsequent layers have higher indices ordered accordingly.
 		 *
 		 * @param layer						The Layer to be placed
+		 *
+		 * @see LayerStack::PushLayer
 		 * @since Karma 1.0.0
 		 */
 		void PushLayer(Layer* layer);
