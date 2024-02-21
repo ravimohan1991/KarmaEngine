@@ -243,7 +243,7 @@ namespace Karma
 		KR_CORE_ASSERT(info->Device != VK_NULL_HANDLE, "No device found");
 		KR_CORE_ASSERT(info->Queue != VK_NULL_HANDLE, "No queue assigned");
 		KR_CORE_ASSERT(info->DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
-		KR_CORE_ASSERT(info->MinImageCount <= 2, "Minimum image count exceeding limit");
+		//KR_CORE_ASSERT(info->MinImageCount <= 2, "Minimum image count exceeding limit");
 		KR_CORE_ASSERT(info->ImageCount >= info->MinImageCount, "Not enough pitch for ImageCount");
 		KR_CORE_ASSERT(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
 

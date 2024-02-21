@@ -46,7 +46,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #----------------------------------------------------------------------------#
 
 # Set Engine project
-project(${KARMA_GAME_NAME} VERSION 1.0)
+project(${KARMA_GAME_NAME})
 add_compile_definitions(KR_APPLICATION_NAME="${KARMA_GAME_NAME}")
 
 # Setting some flags
