@@ -34,7 +34,7 @@ namespace Karma
 		virtual void KarmaGuiRender(float deltaTime) override;
 		virtual void OnUpdate(float deltaTime) override;
 
-		// Only for ImGui layer
+		// Only for KarmaGui layer
 		void Begin();
 		void End();
 

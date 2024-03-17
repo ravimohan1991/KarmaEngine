@@ -65,6 +65,7 @@ namespace Karma
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 			glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+			
 			glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		}
 
@@ -99,10 +100,10 @@ namespace Karma
 		stbi_image_free(karmaEQ.pixels);
 	}
 
-		bool LinuxWindow::OnResize(WindowResizeEvent& event)
-		{
-			return m_Context->OnWindowResize(event);
-		}
+	bool LinuxWindow::OnResize(WindowResizeEvent& event)
+	{
+		return m_Context->OnWindowResize(event);
+	}
 
 	void LinuxWindow::SetGLFWCallbacks(GLFWwindow* glfwWindow)
 	{

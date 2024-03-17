@@ -8,6 +8,7 @@
 #include "stb_image.h"
 #include "Karma/Renderer/Renderer.h"
 #include "Platform/Vulkan/VulkanContext.h"
+#include "Karma/KarmaUtilities.h"
 
 namespace Karma
 {
@@ -97,6 +98,12 @@ namespace Karma
 
 		// Set glfw callbacks
 		SetGLFWCallbacks(m_Window);
+
+		// Set the ICOOOOON
+		GLFWimage karmaEQ;
+		karmaEQ.pixels = KarmaUtilities::GetImagePixelData("../Resources/Textures/KarmaEQ.png", &karmaEQ.width, &karmaEQ.height, 0, 4); //rgba channels
+		glfwSetWindowIcon(m_Window, 1, &karmaEQ);
+		stbi_image_free(karmaEQ.pixels);
 	}
 
 	void MacWindow::SetGLFWCallbacks(GLFWwindow* glfwWindow)

@@ -4116,7 +4116,7 @@ void Karma::KarmaGui::EndFrame()
 
 // Prepare the data for rendering so you can call GetDrawData()
 // (As with anything within the KarmaGui:: namspace this doesn't touch your GPU or graphics API at all:
-// it is the role of the ImGui_ImplXXXX_RenderDrawData() function provided by the renderer backend)
+// it is the role of the KarmaGui_ImplXXXX_RenderDrawData() function provided by the renderer backend)
 void Karma::KarmaGui::Render()
 {
 	KarmaGuiContext& g = *GKarmaGui;
@@ -13449,7 +13449,7 @@ void Karma::KarmaGui::DestroyPlatformWindows()
 {
 	// We call the destroy window on every viewport (including the main viewport, index 0) to give a chance to the backend
 	// to clear any data they may have stored in e.g. PlatformUserData, RendererUserData.
-	// It is convenient for the platform backend code to store something in the main viewport, in order for e.g. the mouse handling
+	// It is alright for the platform backend code to store something in the main viewport, in order for e.g. the mouse handling
 	// code to operator a consistent manner.
 	// It is expected that the backend can handle calls to Renderer_DestroyWindow/Platform_DestroyWindow without
 	// crashing if it doesn't have data stored.

@@ -1,3 +1,12 @@
+/**
+ * @file PrimitiveComponent.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the class UPrimitiveComponent.
+ * @version 1.0
+ * @date March 1, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #include "krpch.h"
@@ -7,7 +16,7 @@
 namespace Karma
 {
 	/**
-	 * PrimitiveComponents are SceneComponents that contain or generate some sort of geometry, generally to be rendered or used as collision data.
+	 * @brief PrimitiveComponents are SceneComponents that contain or generate some sort of geometry, generally to be rendered or used as collision data.
 	 * There are several subclasses for the various types of geometry, but the most common by far are the ShapeComponents (Capsule, Sphere, Box), StaticMeshComponent, and SkeletalMeshComponent.
 	 * ShapeComponents generate geometry that is used for collision detection but are not rendered, while StaticMeshComponents and SkeletalMeshComponents contain pre-built geometry that is rendered, but can also be used for collision detection.
 	 */
@@ -19,7 +28,11 @@ namespace Karma
 		/** Controls whether the primitive component should cast a shadow or not. */
 		uint8_t CastShadow : 1;
 
-		/** Used to detach physics objects before simulation begins. This is needed because at runtime we can't have simulated objects inside the attachment hierarchy */
+		/** 
+		 * @brief Used to detach physics objects before simulation begins. This is needed because at runtime we can't have simulated objects inside the attachment hierarchy
+		 *
+		 * @since Karma 1.0.0
+		 */
 		virtual void BeginPlay() override;
 
 	private:
@@ -37,7 +50,10 @@ namespace Karma
 
 	public:
 		/**
-		 * Utility to cache the max draw distance based on cull distance volumes or the desired max draw distance
+		 * @brief Utility to cache the max draw distance based on cull distance volumes or the desired max draw distance
+		 *
+		 * @param newCachedMaxDrawDistance						The new max distance to be cached
+		 * @since Karma 1.0.0
 		 */
 		void SetCachedMaxDrawDistance(const float newCachedMaxDrawDistance);
 	};

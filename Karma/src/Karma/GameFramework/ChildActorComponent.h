@@ -1,3 +1,12 @@
+/**
+ * @file ChildActorComponent.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the class UChildActorComponent.
+ * @version 1.0
+ * @date April 13, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #include "krpch.h"
@@ -9,7 +18,9 @@ namespace Karma
 {
 	class AActor;
 
-	/** A component that spawns an Actor when registered, and destroys it when unregistered.*/
+	/** 
+	 * @brief A component that spawns an Actor when registered, and destroys it when unregistered.
+	 */
 	class KARMA_API UChildActorComponent : public USceneComponent
 	{
 		DECLARE_KARMA_CLASS(UChildActorComponent, USceneComponent)
@@ -39,6 +50,11 @@ namespace Karma
 		uint8_t m_bNeedsRecreate : 1;
 
 	public:
+		/**
+		 * @brief Overridden BeginDestroy for UChildActorComponent
+		 *
+		 * @since Karma 1.0.0
+		 */
 		virtual void BeginDestroy() override;
 	};
 }

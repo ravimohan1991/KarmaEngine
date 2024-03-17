@@ -143,30 +143,6 @@ namespace Karma
 		}
 	}
 
-	void KarmaGuiOpenGLHandler::KarmaGui_ImpOpenGL3_SetupRenderStateFor3DRendering(Scene* sceneToDraw, KGDrawData* drawData)
-	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBlendEquation(GL_FUNC_ADD);
-		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-		glDisable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-		//glEnable(GL_STENCIL_TEST);
-		glEnable(GL_SCISSOR_TEST);
-
-		// Setup viewport:
-		{
-			if (sceneToDraw->GetWindowToRenderWithinResizeStatus())
-			{
-				KGGuiWindow* windowToRenderWithin = static_cast<KGGuiWindow*>(sceneToDraw->GetRenderingWindow());
-
-				glViewport((GLint)windowToRenderWithin->Pos.x * (GLint)drawData->FramebufferScale.x, ((GLint)windowToRenderWithin->Pos.y + (GLint)windowToRenderWithin->TitleBarHeight()) * (GLint)drawData->FramebufferScale.y, (GLsizei) windowToRenderWithin->Size.x * (GLsizei)drawData->FramebufferScale.x, ((GLsizei)windowToRenderWithin->Size.y - (GLsizei)windowToRenderWithin->TitleBarHeight()) * (GLsizei)drawData->FramebufferScale.y);
-				sceneToDraw->SetWindowToRenderWithinResize(false);
-			}
-		}
-	
-	}
-
 	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(KGDrawData* draw_data, int fb_width, int fb_height, GLuint vertex_array_object)
 	{
 		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
@@ -204,7 +180,7 @@ namespace Karma
 #endif
 
 		// Setup viewport, orthographic projection matrix
-		// Our visible KarmaGui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize 	(bottom right). DisplayPos is (0,0) for single viewport apps.
+		// Our visible KarmaGui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos + data_data->DisplaySize 	(bottom right). DisplayPos is (0,0) for single viewport applications.
 		glViewport(0, 0, (GLsizei)fb_width, (GLsizei)fb_height);
 		float L = draw_data->DisplayPos.x;
 		float R = draw_data->DisplayPos.x + draw_data->DisplaySize.x;
@@ -361,7 +337,7 @@ namespace Karma
 				if (pcmd->UserCallback != nullptr)
 				{
 					// User callback, registered via KarmaDrawList::AddCallback()
-					// (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to 	reset render state.)
+					// (KGDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to 	reset render state.)
 					if (pcmd->UserCallback == KGDrawCallback_ResetRenderState)
 					{
 						KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
@@ -372,24 +348,15 @@ namespace Karma
 						sceneToDraw = static_cast<Scene*>(pcmd->UserCallbackData);
 						if (sceneToDraw)
 						{
-							//KarmaGui_ImpOpenGL3_SetupRenderStateFor3DRendering(sceneToDraw, draw_data);
-							//KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
-
 							std::shared_ptr<OpenGLVertexArray> openGLVA = static_pointer_cast<OpenGLVertexArray>(sceneToDraw->GetRenderableVertexArray());
 
 							openGLVA->UpdateProcessAndSetReadyForSubmission();
 							openGLVA->Bind();
 
-							//openGLVA->GetMaterial()->GetShader("CylinderShader")->Bind("texSampler");
-
-							//glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->GetTexID());
-							//openGLVA->GetMaterial()->GetTexture(0)->b
-
 							// A very experimental hack
 							OpenGLImageBuffer::BindTexture();
 							glDrawElements(GL_TRIANGLES, openGLVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 						}
-						//KarmaGui_ImpOpenGL3_SetupRenderStateFor3DRendering(sceneToDraw, draw_data);
 						KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
 					}
 				}
@@ -528,14 +495,17 @@ namespace Karma
 		GLint status = 0, log_length = 0;
 		glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
 		glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &log_length);
+
 		if ((GLboolean)status == GL_FALSE)
-			fprintf(stderr, "ERROR: ImGui_ImplOpenGL3_CreateDeviceObjects: failed to compile %s! With GLSL: %s\n", desc, bd->GlslVersionString);
+		{
+			KR_CORE_ERROR("KarmaGuiOpenGLHandler::CheckShader: failed to compile {0}! With GLSL:{1}", desc, bd->GlslVersionString);
+		}
 		if (log_length > 1)
 		{
 			KGVector<char> buf;
 			buf.resize((int)(log_length + 1));
 			glGetShaderInfoLog(handle, log_length, NULL, (GLchar*)buf.begin());
-			fprintf(stderr, "%s\n", buf.begin());
+			KR_CORE_ERROR("{0}", buf.begin());
 		}
 		return (GLboolean)status == GL_TRUE;
 	}
@@ -548,13 +518,15 @@ namespace Karma
 		glGetProgramiv(handle, GL_LINK_STATUS, &status);
 		glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &log_length);
 		if ((GLboolean)status == GL_FALSE)
-			fprintf(stderr, "ERROR: ImGui_ImplOpenGL3_CreateDeviceObjects: failed to link %s! With GLSL %s\n", desc, bd->GlslVersionString);
+		{
+			KR_CORE_ERROR("KarmaGuiOpenGLHandler::CheckProgram: failed to link {0}! With GLSL:{1}", desc, bd->GlslVersionString);
+		}
 		if (log_length > 1)
 		{
 			KGVector<char> buf;
 			buf.resize((int)(log_length + 1));
 			glGetProgramInfoLog(handle, log_length, NULL, (GLchar*)buf.begin());
-			fprintf(stderr, "%s\n", buf.begin());
+			KR_CORE_ERROR("{0}", buf.begin());
 		}
 		return (GLboolean)status == GL_TRUE;
 	}
@@ -756,12 +728,6 @@ namespace Karma
 		if (bd->ShaderHandle) { glDeleteProgram(bd->ShaderHandle); bd->ShaderHandle = 0; }
 		KarmaGui_ImplOpenGL3_DestroyFontsTexture();
 	}
-
-	//--------------------------------------------------------------------------------------------------------
-	// MULTI-VIEWPORT / PLATFORM INTERFACE SUPPORT
-	// This is an _advanced_ and _optional_ feature, allowing the backend to create and handle multiple viewports 	simultaneously.
-	// If you are new to dear imgui or creating a new binding for dear imgui, it is recommended that you completely ignore this 	section first..
-	//--------------------------------------------------------------------------------------------------------
 
 	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_RenderWindow(KarmaGuiViewport* viewport, void*)
 	{

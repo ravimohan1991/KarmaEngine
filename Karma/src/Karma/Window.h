@@ -60,56 +60,56 @@ namespace Karma
 	 * @brief The abstract base class of Karma's window (for platform specific purposes)
 	 */
 	class KARMA_API Window
-{
-public:
-	/**
-	 * @brief A data structure for use in Window::SetEventCallback
-	 *
-	 * For instance KR_BIND_EVENT_FN(Application::OnEvent) is a EventCallbackFn.
-	 *
-	 * @since Karma 1.0.0
-	 */
-	using EventCallbackFn = std::function<void(Event&)>;
-
-	/**
-	 * @brief A virtual destructor for the Window
-	 *
-	 * @since Karma 1.0.0
-	 */
-	virtual ~Window()
 	{
-	}
-
-	/**
-	 * @brief Pure virtual function for calls in each loop
-	 *
-	 * @see Application::Run()
-	 * @since Karma 1.0.0
-	 */
-	virtual void OnUpdate() = 0;
-
-	/**
-	 * @brief Pure virtual function called when Window resize happens
-	 *
-	 * @see Application::OnWindowResize
-	 * @since Karma 1.0.0
-	 */
-	virtual bool OnResize(WindowResizeEvent& event) = 0;
-
-	/**
-	 * @brief A pure virtual getter for Width of the Window
-	 *
-	 * @since Karma 1.0.0
-	 */
-	virtual unsigned int GetWidth() const = 0;
-
-	/**
-	 * @brief Pure virtual getter for the Height of the Window
-	 *
-	 * @since Karma 1.0.0
-	 */
-	virtual unsigned int GetHeight() const = 0;
-
+	public:
+		/**
+		 * @brief A data structure for use in Window::SetEventCallback
+		 *
+		 * For instance KR_BIND_EVENT_FN(Application::OnEvent) is a EventCallbackFn.
+		 *
+		 * @since Karma 1.0.0
+		 */
+		using EventCallbackFn = std::function<void(Event&)>;
+		
+		/**
+		 * @brief A virtual destructor for the Window
+		 *
+		 * @since Karma 1.0.0
+		 */
+		virtual ~Window()
+		{
+		}
+		
+		/**
+		 * @brief Pure virtual function for calls in each loop
+		 *
+		 * @see Application::Run()
+		 * @since Karma 1.0.0
+		 */
+		virtual void OnUpdate() = 0;
+		
+		/**
+		 * @brief Pure virtual function called when Window resize happens
+		 *
+		 * @see Application::OnWindowResize
+		 * @since Karma 1.0.0
+		 */
+		virtual bool OnResize(WindowResizeEvent& event) = 0;
+		
+		/**
+		 * @brief A pure virtual getter for Width of the Window
+		 *
+		 * @since Karma 1.0.0
+		 */
+		virtual unsigned int GetWidth() const = 0;
+		
+		/**
+		 * @brief Pure virtual getter for the Height of the Window
+		 *
+		 * @since Karma 1.0.0
+		 */
+		virtual unsigned int GetHeight() const = 0;
+		
 		/**
 		 * @brief Setting a function, Application::OnEvent, to be called when a Karma Event happens, detected by GLFW Window like so
 		 * @code{.cpp}
@@ -142,28 +142,28 @@ public:
 		 * @since Karma 1.0.0
 		 */
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
-
+		
 		/**
 		 * @brief Pure virtual function for VSync
 		 *
 		 * @since Karma 1.0.0
 		 */
 		virtual void SetVSync(bool enabled) = 0;
-
+		
 		/**
 		 * @brief Pure virtual function for VSync status
 		 *
 		 * @since Karma 1.0.0
 		 */
 		virtual bool IsVSync() const = 0;
-
+		
 		/**
 		 * @brief Pure virtual getter for the native (GLFW) Window handle
 		 *
 		 * @since Karma 1.0.0
 		 */
 		virtual void* GetNativeWindow() const = 0;
-
+		
 		/**
 		 * @brief Platform based, implemented function for Window creation.
 		 *

@@ -43,6 +43,11 @@ namespace Karma
 		GlfwInput
 	};
 
+	/**
+	 * @brief Base class for Input relevant data for the variety of platforms Karma supports
+	 *
+	 * @see LinuxInputData
+	 */
 	struct InputData
 	{
 	};
@@ -279,8 +284,8 @@ namespace Karma
 		/**
 		 * @brief Set the event callback for the Input
 		 *
-		 * @param callback						The function to be called when Input event is receieved from GLFW
-		 * 										Usually Application::OnEvent(), which dispatches the Events, is fed into as lambda for instance in glfwSetJoystickCallback
+		 * @param callback						The function to be called when Input event is receieved from GLFW.
+		 * 										Usually Application::OnEvent(), which dispatches the Events, is fed into as lambda for instance in glfwSetJoystickCallback.
 		 * @param window						The handle of GLFW window
 		 *
 		 * @since Karma 1.0.0
@@ -292,7 +297,7 @@ namespace Karma
 		 * 	The mapping is done by taking XBox controller as a reference. For the need of such mapping please see https://www.glfw.org/docs/3.3/input_guide.html#gamepad_mapping
 		 *
 		 * 	@code{}
-		 * 	The joystick functions provide unlabeled axes, buttons and hats, with no indication of where they are located on the device.
+		 * 	The joystick functions provide unlabeled axes, buttons, and hats, with no indication of where they are located on the device.
 		 * 	Their order may also vary between platforms even with the same device.
 		 *
 		 * 	To solve this problem the SDL community crowdsourced the SDL_GameControllerDB project, a database of mappings from many
@@ -321,7 +326,7 @@ namespace Karma
 
 	protected:
 		/**
-		 * @brief Declaration of IsKeyPressed function implementation
+		 * @brief Declaration of IsKeyPressed function to be implemented
 		 *
 		 * @param keycode						GLFW defined code for keys, for instance GLFW_KEY_SPACE macro
 		 * 										https://www.glfw.org/docs/3.3/group__keys.html
@@ -330,28 +335,28 @@ namespace Karma
 		virtual bool IsKeyPressedImpl(int keycode) = 0;
 
 		/**
-		 * @brief Declaration of IsMouseButtonPressed function implementation
+		 * @brief Declaration of IsMouseButtonPressed function to be implemeted
 		 *
 		 * @param button						The integer corresponding to mouse button.
-		 * 										For instance GLFW_MOUSE_BUTTON_1 macro
+		 * 										For instance GLFW_MOUSE_BUTTON_1 macro.
 		 * @since Karma 1.0.0
 		 */
 		virtual bool IsMouseButtonPressedImpl(int button) = 0;
 
 		/**
-		 * @brief Declaration of IsMouseButtonReleased function implementation
+		 * @brief Declaration of IsMouseButtonReleased function to be implemented
 		 *
 		 * @param button						The integer corresponding to mouse button.
-		 * 										For instance GLFW_MOUSE_BUTTON_1 macro
+		 * 										For instance GLFW_MOUSE_BUTTON_1 macro.
 		 * @since Karma 1.0.0
 		 */
 		virtual bool IsMouseButtonReleasedImpl(int button) = 0;
 
 		/**
-		 * @brief Declaration of IsControllerButtonPressed function implementation
+		 * @brief Declaration of IsControllerButtonPressed function to be implemented
 		 *
-		 * @param button						The integer corresponding to gamepad controller button
-		 * 										For instance GLFW_GAMEPAD_BUTTON_A macro
+		 * @param button						The integer corresponding to gamepad controller button.
+		 * 										For instance GLFW_GAMEPAD_BUTTON_A macro.
 		 * @param cID							The controller device ID, defined in GLFW
 		 *
 		 * @since Karma 1.0.0
@@ -359,10 +364,10 @@ namespace Karma
 		virtual bool IsControllerButtonPressedImpl(int button, int cID) = 0;
 
 		/**
-		 * @brief Declaration of ControllerAxisPivotVal function implementation
+		 * @brief Declaration of ControllerAxisPivotVal function to be implemented
 		 *
 		 * @param axis						The horizontal/vertical directional deflection of the axis (GLFW axes).
-		 * 									GLFW_GAMEPAD_AXIS_LEFT_Y is an example
+		 * 									GLFW_GAMEPAD_AXIS_LEFT_Y is an example.
 		 * @param cID						The ID of the attached controller, defined in GLFW
 		 *
 		 * @since Karma 1.0.0
@@ -370,21 +375,21 @@ namespace Karma
 		virtual float ControllerAxisPivotValImpl(int axis, int cID) = 0;
 
 		/**
-		 * @brief Declaration of GetMousePosition function implementation
+		 * @brief Declaration of GetMousePosition function to be implemented
 		 *
 		 * @since Karma 1.0.0
 		 */
 		virtual std::pair<float, float> GetMousePositionImpl() = 0;
 
 		/**
-		 * @brief Declaration of GetMouseX function implementation
+		 * @brief Declaration of GetMouseX function to be implemented
 		 *
 		 * @since Karma 1.0.0
 		 */
 		virtual float GetMouseXImpl() = 0;
 
 		/**
-		 * @brief Declaration of GetMouseY function implementation
+		 * @brief Declaration of GetMouseY function to be implemented
 		 *
 		 * @since Karma 1.0.0
 		 */
