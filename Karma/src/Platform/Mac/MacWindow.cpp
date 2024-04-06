@@ -35,6 +35,11 @@ namespace Karma
 		ShutDown();
 	}
 
+	bool MacWindow::OnResize(WindowResizeEvent& event)
+	{
+		return m_Context->OnWindowResize(event);
+	}
+
 	void MacWindow::Init(const WindowProps& props)
 	{
 		m_Data.Title = props.Title;

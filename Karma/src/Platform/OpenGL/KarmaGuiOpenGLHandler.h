@@ -385,6 +385,7 @@ namespace Karma
 		 * @param fileName						The path to the file containing texture
 		 * @param label							The name of the texture for identification purpose
 		 *
+		 * @see OpenGLImageBuffer::SetUpImageBuffer
 		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplOpenGL3_CreateTexture(char const* fileName, const std::string& label = "");

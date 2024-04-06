@@ -70,11 +70,32 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static std::shared_ptr<Mesh> ProcessTheRawMesh(aiMesh* meshToProcess, const std::string& mName = "NoName");
+
+		/**
+		 * @brief Routine for gauging the vertexbuffer data
+		 *
+		 * @param vertexData										Reference to float array containing the vertexbuffer data
+		 * @param vertexDataSize									Reference to the size (in bytes) of the vertex buffer (number of mesh vertices * each vertex attribute's size)
+		 * @param indexData											Reference to the float containing the index buffer data
+		 * @param indexDataLength									Reference to the total number of face indices of all the faces of the geometry
+		 * @param meshToProcess										Reference to the mesh to be processed
+		 * @param buffLayout										Reference to the buffer layout to be gauged (@see Mesh::GaugeVertexDataLayout)
+		 *
+		 * @since Karma 1.0.0
+		 */
 		static void DealVertexIndexBufferData(float*& vertexData, uint32_t& vertexDataSize, uint32_t*& indexData, uint32_t& indexDataLength,
 			aiMesh* meshToProcess, BufferLayout& buffLayout);
 
 		void ProcessNode(aiNode* nodeToProcess, const aiScene* theScene);
 
+		/**
+		 * @brief Routine for extracting the format (BufferLayout) of vertexbuffer
+		 *
+		 * @param meshToProcess						The mesh being analyzed
+		 * @param buffLayout						Reference to the format
+		 *
+		 * @since Karma 1.0.0
+		 */
 		static void GaugeVertexDataLayout(aiMesh* meshToProcess, BufferLayout& buffLayout);
 
 		std::shared_ptr<VertexBuffer> GetVertexBuffer() const { return m_VertexBuffer; }

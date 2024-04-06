@@ -89,7 +89,7 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static Shader* Create(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo,
-			bool bIsFile, const std::string& shaderName = "NoNamedShader");
+			const std::string& shaderName = "NoNamedShader");
 
 		// Getters
 		/**

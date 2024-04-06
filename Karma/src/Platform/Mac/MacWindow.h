@@ -51,7 +51,7 @@ namespace Karma
 		 *
 		 * @since Karma 1.0.0
 		 */
-		virtual bool OnResize(WindowResizeEvent& event) override { return true; }
+		virtual bool OnResize(WindowResizeEvent& event) override;
 
 		/**
 		 * @brief Getter for the Mac Window width.

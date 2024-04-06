@@ -48,7 +48,7 @@ namespace Karma
 			std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
 			shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 
-			m_ModelShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true, "CylinderShader"));
+			m_ModelShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, "CylinderShader"));
 
 			m_ModelMaterial->AddShader(m_ModelShader);
 		}

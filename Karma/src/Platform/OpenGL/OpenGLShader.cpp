@@ -109,7 +109,7 @@ namespace Karma
 		glDetachShader(program, fragmentShader);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo, bool bIsFile,
+	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo,
 		const std::string& shaderName) : Shader(ubo)
 	{
 		m_ShaderName = shaderName;
