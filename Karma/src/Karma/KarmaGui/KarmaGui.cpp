@@ -8519,7 +8519,7 @@ void Karma::KarmaGuiInternal::ErrorCheckNewFrameSanityChecks()
 	KR_CORE_ASSERT((g.IO.DeltaTime > 0.0f || g.FrameCount == 0), "Need a positive DeltaTime!");
 	KR_CORE_ASSERT((g.FrameCount == 0 || g.FrameCountEnded == g.FrameCount), "Forgot to call Render() or EndFrame() at the end of the previous frame?");
 	KR_CORE_ASSERT(g.IO.DisplaySize.x >= 0.0f && g.IO.DisplaySize.y >= 0.0f, "Invalid DisplaySize value!");
-	KR_CORE_ASSERT(g.IO.Fonts->IsBuilt(), "Font Atlas not built! Make sure you called ImGui_ImplXXXX_NewFrame() function for renderer backend, which should call io.Fonts->GetTexDataAsRGBA32() / GetTexDataAsAlpha8()");
+	KR_CORE_ASSERT(g.IO.Fonts->IsBuilt(), "Font Atlas not built! Make sure you called KarmaGui_ImplXXXX_NewFrame() function for renderer backend, which should call io.Fonts->GetTexDataAsRGBA32() / GetTexDataAsAlpha8()");
 	KR_CORE_ASSERT(g.Style.CurveTessellationTol > 0.0f, "Invalid style setting!");
 	KR_CORE_ASSERT(g.Style.CircleTessellationMaxError > 0.0f, "Invalid style setting!");
 	KR_CORE_ASSERT(g.Style.Alpha >= 0.0f && g.Style.Alpha <= 1.0f, "Invalid style setting!"); // Allows us to avoid a few clamps in color computations

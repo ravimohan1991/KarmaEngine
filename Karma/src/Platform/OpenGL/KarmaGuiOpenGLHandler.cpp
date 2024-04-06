@@ -96,6 +96,7 @@ namespace Karma
 
 		// Detect extensions we support
 		bd->HasClipOrigin = (bd->GlVersion >= 450);
+        bd->ShaderHandle = 0;
 
 #ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_EXTENSIONS
 		GLint num_extensions = 0;
@@ -135,7 +136,7 @@ namespace Karma
 	void KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_NewFrame()
 	{
 		KarmaGui_ImplOpenGL3_Data* bd = KarmaGuiRenderer::GetBackendRendererUserData();
-		KR_CORE_ASSERT(bd != NULL, "Did you call ImGui_ImplOpenGL3_Init()?");
+		KR_CORE_ASSERT(bd != NULL, "Did you call KarmaGui_ImplOpenGL3_Init()?");
 
 		if (!bd->ShaderHandle)
 		{
@@ -241,9 +242,9 @@ namespace Karma
 		GLenum last_active_texture;
 		glGetIntegerv(GL_ACTIVE_TEXTURE, (GLint*)&last_active_texture);
 		glActiveTexture(GL_TEXTURE0);
-		GLuint last_program; 
+		GLuint last_program;
 		glGetIntegerv(GL_CURRENT_PROGRAM, (GLint*)&last_program);
-		GLuint last_texture; 
+		GLuint last_texture;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint*)&last_texture);
 
 #ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_BIND_SAMPLER
