@@ -43,7 +43,7 @@ namespace Karma
 		void OnUpdate();
 
 		/**
-		 * @brief Process for various things belonging to the material before submitting the VertexArray. Includes uploading uniforms to GPU.
+		 * @brief Process for various things belonging to the material before submitting the VertexArray (or issuing draw call via RenderCommand::DrawIndexed). Includes uploading uniforms to GPU.
 		 *
 		 * @see VertexArray::UpdateProcessAndSetReadyForSubmission()
 		 * @since Karma 1.0.0

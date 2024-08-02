@@ -3,7 +3,7 @@
  * @author Ravi Mohan (the_cowboy)
  * @brief This file contains KarmaGuiOpenGLHandler class and relevant data structures.
  * @version 1.0
- * @date December 15, 2023
+ * @date January 1, 2023
  *
  * @copyright 2014-2023 Omar Cornut
  */
@@ -37,12 +37,15 @@ namespace Karma
 	/**
 	 * @brief A data structure for holding information about Mesa texture. For instance, file and folder icons of Content Browser.
 	 *
+	 * Similar to KarmaGui_ImplVulkan_Image_TextureData in KarmaGuiVulkanHandler.
+	 *
 	 * @since Karma 1.0.0
 	 */
 	struct MesaDecalData
 	{
 		/**
 		 * @brief An array in which the generated texture names, for decals, are stored.
+		 *
 		 *
 		 * @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenTextures.xhtml
 		 * @since Karma 1.0.0

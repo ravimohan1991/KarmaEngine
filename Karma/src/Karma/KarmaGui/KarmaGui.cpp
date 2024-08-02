@@ -13244,7 +13244,7 @@ void Karma::KarmaGui::UpdatePlatformWindows()
 			viewport->PlatformWindowCreated = true;
 		}
 
-		// Apply Position and Size (from ImGui to Platform/Renderer backends)
+		// Apply Position and Size (from KarmaGui to Platform/Renderer backends)
 		if ((viewport->LastPlatformPos.x != viewport->Pos.x || viewport->LastPlatformPos.y != viewport->Pos.y) && !viewport->PlatformRequestMove)
 			g.PlatformIO.Platform_SetWindowPos(viewport, viewport->Pos);
 		if ((viewport->LastPlatformSize.x != viewport->Size.x || viewport->LastPlatformSize.y != viewport->Size.y) && !viewport->PlatformRequestResize)

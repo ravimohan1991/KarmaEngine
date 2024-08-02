@@ -2461,7 +2461,7 @@ struct KARMA_API KGDrawCmd
 {
     KGVec4          ClipRect;           // 4*4  // Clipping rectangle (x1, y1, x2, y2). Subtract KGDrawData->DisplayPos to get clipping rectangle in "viewport" coordinates
     KGTextureID     TextureId;          // 4-8  // User-provided texture ID. Set by user in ImfontAtlas::SetTexID() for fonts or passed to Image*() functions. Ignore if never using images or multiple fonts atlas.
-    unsigned int    VtxOffset;          // 4    // Start offset in vertex buffer. KGGuiBackendFlags_RendererHasVtxOffset: always 0, otherwise may be >0 to support meshes larger than 64K vertices with 16-bit indices.
+    unsigned int    VtxOffset;          // 4    // Start offset in vertex buffer. KGGuiBackendFlags_RendererHasVtxOffset: always 0, otherwise may be > 0 to support meshes larger than 64K vertices with 16-bit indices.
     unsigned int    IdxOffset;          // 4    // Start offset in index buffer.
     unsigned int    ElemCount;          // 4    // Number of indices (multiple of 3) to be rendered as triangles. Vertices are stored in the callee KGDrawList's vtx_buffer[] array, indices in idx_buffer[].
     KGDrawCallback  UserCallback;       // 4-8  // If != NULL, call the function instead of rendering the vertices. clip_rect and texture_id will be set normally.
@@ -2988,7 +2988,7 @@ enum KGGuiViewportFlags_
 };
 
 /**
- * @brief A Platform Window (always 1 unless multi-viewport are enabled. One per platform window to output to). In the future may represent Platform Monitor
+ * @brief A Platform Window (always 1 unless multi-viewport are enabled. One per platform window to output to). In the future, may represent Platform Monitor
  *
  * Currently represents the Platform Window created by the application which is hosting our KarmaGui windows.
  * With multi-viewport enabled, we extend this concept to have multiple active viewports.
@@ -3049,7 +3049,7 @@ struct KARMA_API KarmaGuiViewport
 // See Thread https://github.com/ocornut/imgui/issues/1542 for gifs, news and questions about this evolving feature.
 //
 // About the coordinates system:
-// - When multi-viewports are enabled, all Dear ImGui coordinates become absolute coordinates (same as OS coordinates!)
+// - When multi-viewports are enabled, all KarmaGui coordinates become absolute coordinates (same as OS coordinates!)
 // - So e.g. ImGui::SetNextWindowPos(KGVec2(0,0)) will position a window relative to your primary monitor!
 // - If you want to position windows relative to your main application viewport, use ImGui::GetMainViewport()->Pos as a base position.
 //
@@ -3126,14 +3126,29 @@ struct KARMA_API KarmaGuiPlatformIO
 
     // (Optional) Renderer functions (e.g. DirectX, OpenGL, Vulkan)
     void    (*Renderer_CreateWindow)(KarmaGuiViewport* vp);                    // . . U . .  // Create swap chain, frame buffers etc. (called after Platform_CreateWindow)
+	/**
+	 * @brief
+	 */
     void    (*Renderer_DestroyWindow)(KarmaGuiViewport* vp);                   // N . U . D  // Destroy swap chain, frame buffers etc. (called before Platform_DestroyWindow)
+	/**
+	 * @brief Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
+	 *
+	 *
+	 * @since Karma 1.0.0
+	 */
     void    (*Renderer_SetWindowSize)(KarmaGuiViewport* vp, KGVec2 size);      // . . U . .  // Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
-    void    (*Renderer_RenderWindow)(KarmaGuiViewport* vp, void* render_arg);  // . . . R .  // (Optional) Clear framebuffer, setup render target, then render the viewport->DrawData. 'render_arg' is the value passed to RenderPlatformWindowsDefault().
+	/**
+	 * @brief (Optional) Clear framebuffer, setup render target, then render the viewport->DrawData. 'render_arg' is the value passed to RenderPlatformWindowsDefault()
+	 *
+	 * @param vp								The viewport to be rendered
+	 * @since Karma 1.0.0
+	 */
+    void    (*Renderer_RenderWindow)(KarmaGuiViewport* vp, void* render_arg);  // . . . R .  //
     void    (*Renderer_SwapBuffers)(KarmaGuiViewport* vp, void* render_arg);   // . . . R .  // (Optional) Call Present/SwapBuffers. 'render_arg' is the value passed to RenderPlatformWindowsDefault().
 
     // (Optional) Monitor list
-    // - Updated by: app/backend. Update every frame to dynamically support changing monitor or DPI configuration.
-    // - Used by: dear imgui to query DPI info, clamp popups/tooltips within same monitor and not have them straddle monitors.
+    // - Updated by: application/backend. Update every frame to dynamically support changing monitor or DPI configuration.
+    // - Used by: KarmaGui to query DPI info, clamp popups/tooltips within same monitor and not have them straddle monitors.
     KGVector<KarmaGuiPlatformMonitor>  Monitors;
 
     //------------------------------------------------------------------

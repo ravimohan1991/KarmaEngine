@@ -22,7 +22,6 @@ namespace Karma
 
 		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
 		{
-			// Exposing Karma's Vulkan components to Dear ImGui
 			KarmaGui_ImplGlfw_InitForVulkan(window, true);
 
 			KarmaGui_ImplVulkan_InitInfo initInfo = {};
@@ -32,14 +31,18 @@ namespace Karma
 			initInfo.Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
 			initInfo.QueueFamily = VulkanHolder::GetVulkanContext()->FindQueueFamilies(initInfo.PhysicalDevice).graphicsFamily.value();
 			initInfo.Queue = VulkanHolder::GetVulkanContext()->GetGraphicsQueue();
+			initInfo.PipelineCache = VK_NULL_HANDLE;
 			initInfo.MinImageCount = VulkanHolder::GetVulkanContext()->GetMinImageCount();
 			initInfo.ImageCount = VulkanHolder::GetVulkanContext()->GetImageCount();
 			initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-			// Stuff created and dedicated to Dear ImGUI
+			// Stuff created and dedicated to KarmaGui
 			CreateDescriptorPool();
 			initInfo.DescriptorPool = m_KarmaGuiDescriptorPool;
 			initInfo.RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
+
+			// Not sure about the use of Subpass so setting to 0
+			initInfo.Subpass = 0;
 
 			// Settingup backend in KarmaGui
 			// KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(&initInfo);
@@ -243,7 +246,7 @@ namespace Karma
 		KR_CORE_ASSERT(info->Device != VK_NULL_HANDLE, "No device found");
 		KR_CORE_ASSERT(info->Queue != VK_NULL_HANDLE, "No queue assigned");
 		KR_CORE_ASSERT(info->DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
-		KR_CORE_ASSERT(info->MinImageCount <= 2, "Minimum image count exceeding limit");
+		KR_CORE_ASSERT(info->MinImageCount >= 2, "Minimum image count exceeding limit");
 		KR_CORE_ASSERT(info->ImageCount >= info->MinImageCount, "Not enough pitch for ImageCount");
 		KR_CORE_ASSERT(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
 
@@ -493,7 +496,7 @@ namespace Karma
 		vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		{
-			// Record dear imgui primitives into command buffer
+			// Record KarmaGui primitives into command buffer
 			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData(drawData, frameOnFlightData->CommandBuffer, VK_NULL_HANDLE, windowData->SemaphoreIndex);
 		}
 

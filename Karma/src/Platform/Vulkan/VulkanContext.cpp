@@ -526,7 +526,7 @@ namespace Karma
 	{
 		SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(m_physicalDevice);
 
-		// Dear ImGui may have, MAY, different requirements.
+		// KarmaGui may have, MAY, different requirements.
 		m_surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
 		m_presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);// Analogous to v-sync
 
