@@ -163,6 +163,17 @@ set(MACOSX_BUNDLE_INFO_STRING ${APP_BUNDLE_IDENTIFIER})
 set(MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_BUNDLE_IDENTIFIER})
 set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_BUNDLE_IDENTIFIER})
 
+#https://discourse.cmake.org/t/code-signing-macos-application/7275/3
+# Ravi Mohan (GH5U7RL23W)
+set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "Personal Team")
+set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "2T9J536PAB")
+#set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_STYLE "Manual")
+
+#set_target_properties(AssImp BiosReader Glad glfw GlSlang KarmaEngine SDL2 spdlogging stbimage
+#                      PROPERTIES
+#                      XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${DEVELOPMENT_TEAM_ID}
+#                      )
+
 # CMake invokes the toolchain file twice during the first build, but only once during subsequent rebuilds.
 if(DEFINED ENV{_IOS_TOOLCHAIN_HAS_RUN})
   return()
