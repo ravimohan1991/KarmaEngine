@@ -941,7 +941,7 @@ namespace Karma
 		/**
 		 * @brief A routine to create the shader modules (KarmaGui_ImplVulkan_Data.ShaderModuleVert and KarmaGui_ImplVulkan_Data.ShaderModuleFrag) for the backend GraphicsPipeline (KarmaGui_ImplVulkan_Data.Pipeline).
 		 *
-		 * @param device										A logical device handle. See KarmaGui_ImplVulkan_InitInfo.Device
+		 * @param device										A logical device handle. See KarmaGui_ImplVulkan_InitInfo::Device
 		 * @param allocator										The controller of host memory allocation as described in the Memory Allocation chapter. See KarmaGui_ImplVulkan_InitInfo.Allocator
 		 *
 		 * @since Karma 1.0.0
@@ -951,7 +951,7 @@ namespace Karma
 		/**
 		 * @brief Bilinear sampling object is created for font and stored in KarmaGui_ImplVulkan_Data.FontSampler if not done already in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects().
 		 *
-		 * @param device										A logical device handle. See KarmaGui_ImplVulkan_InitInfo.Device
+		 * @param device										A logical device handle. See KarmaGui_ImplVulkan_InitInfo::Device
 		 * @param allocator										The controller of host memory allocation as described in the Memory Allocation chapter. See KarmaGui_ImplVulkan_InitInfo.Allocator
 		 *
 		 *  @since Karma 1.0.0
@@ -961,7 +961,7 @@ namespace Karma
 		/**
 		 * @brief Creates KarmaGui_ImplVulkan_Data.DescriptorSetLayout if not already in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects()
 		 *
-		 * @param device										A logical device handle. See KarmaGui_ImplVulkan_InitInfo.Device
+		 * @param device										A logical device handle. See KarmaGui_ImplVulkan_InitInfo::Device
 		 * @param allocator										The controller of host memory allocation as described in the Memory Allocation chapter. See KarmaGui_ImplVulkan_InitInfo.Allocator
 		 *
 		 *  @since Karma 1.0.0
@@ -971,7 +971,7 @@ namespace Karma
 		/**
 		 * @brief Creates KarmaGui_ImplVulkan_Data.PipelineLayout (if not already in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects()).
 		 *
-		 * @param device										A logical device handle. See KarmaGui_ImplVulkan_InitInfo.Device
+		 * @param device										A logical device handle. See KarmaGui_ImplVulkan_InitInfo::Device
 		 * @param allocator										The controller of host memory allocation as described in the Memory Allocation chapter. See KarmaGui_ImplVulkan_InitInfo.Allocator
 		 *
 		 *  @since Karma 1.0.0
@@ -985,9 +985,9 @@ namespace Karma
 		 * @param allocator										The controller of host memory allocation as described in the Memory Allocation chapter. See KarmaGui_ImplVulkan_InitInfo.Allocator
 		 * @param pipelineCache									Usually this cache (KarmaGui_ImplVulkan_InitInfo.PipelineCache) is set to VK_NULL_HANDLE, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that cache is enabled for the duration of the command.
 		 * @param renderPass									A render pass object (KarmaGui_ImplVulkan_Data.RenderPass) represents a collection of attachments, subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses.
-		 * @param MSAASamples									KarmaGui_ImplVulkan_InitInfo.MSAASamples
-		 * @param pipeline										KarmaGui_ImplVulkan_Data.Pipeline
-		 * @param subpass										KarmaGui_ImplVulkan_Data.subpass
+		 * @param MSAASamples									KarmaGui_ImplVulkan_InitInfo::MSAASamples
+		 * @param pipeline										KarmaGui_ImplVulkan_Data::Pipeline
+		 * @param subpass										KarmaGui_ImplVulkan_Data::subpass
 		 *
 		 *  @since Karma 1.0.0
 		 */
@@ -1038,6 +1038,32 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_RenderWindow(KarmaGuiViewport* viewport, void*);
+
+		/**
+		 * @brief Record KarmaGui primitives into command buffer. Frame rendering relevant buffers and resources are set. They include:
+		 *
+		 *	1. drawData->OwnerViewport->RendererUserData->RenderBuffers (KarmaGui_ImplVulkan_ViewportData::RenderBuffers)
+		 *	2. drawData->OwnerViewport->RendererUserData->RenderBuffers->FrameRenderBuffers (KarmaGui_ImplVulkanH_WindowRenderBuffers::FrameRenderBuffers)
+		 *	3. FrameRenderBuffers::VertexBuffer and FrameRenderBuffers::IndexBuffer and corresponding sizes
+		 *	4. Commandbuffer is filled with scissor, KarmaGui_ImplVulkan_SetupRenderState, and drawing primitives commands
+		 *
+		 * Also any callback routines, usually related to rendering in KarmaGui's window (3D scene data atm), are processed here.
+		 *
+		 * @param drawData														All draw data to render a KarmaGui frame
+		 * @param commandBuffer													The buffer of commands to be filled with primitive drawing  and relevant commands
+		 * @param pipeline														KarmaGui_ImplVulkan_Data::Pipeline
+		 * @param imageFrameIndex												The frame counter (KarmaGui_ImplVulkanH_Window::SemaphoreIndex)
+		 *
+		 * @note Called by KarmaGuiRenderer::FrameRender between vkCmdBeginRenderPass and vkCmdEndRenderPass like so
+		 * 	@code{.cpp}
+		 *		vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		 *		{
+		 *		 // Record KarmaGui primitives into command buffer
+		 *		 KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData(drawData, frameOnFlightData->CommandBuffer, VK_NULL_HANDLE, windowData->SemaphoreIndex);
+		 *		}
+		 *		vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
+		 * 	@endcode
+		 */
 		static void KarmaGui_ImplVulkan_RenderDrawData(KGDrawData* drawData, VkCommandBuffer commandBuffer, VkPipeline pipeline, uint32_t imageFrameIndex);
 		static void KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*);
 		static void ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
