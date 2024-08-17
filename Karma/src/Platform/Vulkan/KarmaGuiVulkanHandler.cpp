@@ -1697,7 +1697,6 @@ namespace Karma
 		}
 	}
 
-	// Need reconsideration because of the same decoupling
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();

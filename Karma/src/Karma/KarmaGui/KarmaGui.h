@@ -3124,26 +3124,37 @@ struct KARMA_API KarmaGuiPlatformIO
     void    (*Platform_OnChangedViewport)(KarmaGuiViewport* vp);               // . F . . .  // (Optional) [BETA] FIXME-DPI: DPI handling: Called during Begin() every time the viewport we are outputting into changes, so backend has a chance to swap fonts to adjust style.
     int     (*Platform_CreateVkSurface)(KarmaGuiViewport* vp, KGU64 vk_inst, const void* vk_allocators, KGU64* out_vk_surface); // (Optional) For a Vulkan Renderer to call into Platform code (since the surface creation needs to tie them both).
 
-    // (Optional) Renderer functions (e.g. DirectX, OpenGL, Vulkan)
-    void    (*Renderer_CreateWindow)(KarmaGuiViewport* vp);                    // . . U . .  // Create swap chain, frame buffers etc. (called after Platform_CreateWindow)
+	// (Optional) Renderer functions (e.g. DirectX, OpenGL, Vulkan)
+	void    (*Renderer_CreateWindow)(KarmaGuiViewport* vp);                    // . . U . .  // Create swap chain, frame buffers etc. (called after Platform_CreateWindow)
 	/**
 	 * @brief
 	 */
-    void    (*Renderer_DestroyWindow)(KarmaGuiViewport* vp);                   // N . U . D  // Destroy swap chain, frame buffers etc. (called before Platform_DestroyWindow)
+	void    (*Renderer_DestroyWindow)(KarmaGuiViewport* vp);                   // N . U . D  // Destroy swap chain, frame buffers etc. (called before Platform_DestroyWindow)
 	/**
 	 * @brief Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
 	 *
 	 *
 	 * @since Karma 1.0.0
 	 */
-    void    (*Renderer_SetWindowSize)(KarmaGuiViewport* vp, KGVec2 size);      // . . U . .  // Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
+	void    (*Renderer_SetWindowSize)(KarmaGuiViewport* vp, KGVec2 size);      // . . U . .  // Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
 	/**
-	 * @brief (Optional) Clear framebuffer, setup render target, then render the viewport->DrawData. 'render_arg' is the value passed to RenderPlatformWindowsDefault()
+	 * @brief (Optional) Clear framebuffer, setup render target, then render the viewport->DrawData. 'render_arg' is the value passed to Karma::KarmaGui::RenderPlatformWindowsDefault
 	 *
 	 * @param vp								The viewport to be rendered
+	 * @param render_arg						The 'render_arg' is the value passed to Karma::KarmaGui::RenderPlatformWindowsDefault, usually void pointer is accepted in this case.
+	 *
 	 * @since Karma 1.0.0
 	 */
-    void    (*Renderer_RenderWindow)(KarmaGuiViewport* vp, void* render_arg);  // . . . R .  //
+	void    (*Renderer_RenderWindow)(KarmaGuiViewport* vp, void* render_arg);  // . . . R .  //
+
+	/**
+	 * @brief (Optional) Call Present/SwapBuffers. 'render_arg' is the value passed to Karma::KarmaGui::RenderPlatformWindowsDefault.
+	 * 
+	 * @param vp								The viewport to be rendered
+	 * @param render_arg						The 'render_arg' is the value passed to Karma::KarmaGui::RenderPlatformWindowsDefault, usually void pointer is accepted in this case.
+	 *
+	 * @since Karma 1.0.0
+	 */
     void    (*Renderer_SwapBuffers)(KarmaGuiViewport* vp, void* render_arg);   // . . . R .  // (Optional) Call Present/SwapBuffers. 'render_arg' is the value passed to RenderPlatformWindowsDefault().
 
     // (Optional) Monitor list

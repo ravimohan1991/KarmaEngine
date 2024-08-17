@@ -173,7 +173,7 @@ namespace Karma
 	// ImageCount, which decides the number of SwapChainImages, framebuffer, and so on (contained within
 	// ImGui_ImplVulkanH_ImageFrame structure).
 	// (https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Swap_chain#page_Retrieving-the-swap-chain-images)
-	// and MAX_FRAMES_IN_FLIGHT, which is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore, fence, and commandbuffer size.
+	// and SemaphoreIndex MAX_FRAMES_IN_FLIGHT, which is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore, fence, and commandbuffer size.
 	// https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Frames_in_flight
 	// The argument is elicited by the comment line https://github.com/ravimohan1991/imgui/blob/e4967701b67edd491e884632f239ab1f38867d86/backends/imgui_impl_vulkan.h#L144
 
@@ -184,9 +184,10 @@ namespace Karma
 	 * ImageCount, which decides the number of SwapChainImages, framebuffer, and so on (contained within
 	 * KarmaGui_ImplVulkanH_ImageFrame structure)
 	 * (https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Swap_chain#page_Retrieving-the-swap-chain-images)
-	 * and MAX_FRAMES_IN_FLIGHT, which is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore, fence, and commandbuffer size.
-	 * https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Frames_in_flight
+	 * and SemaphoreIndex (upto MAX_FRAMES_IN_FLIGHT), which is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore, fence, and commandbuffer size.
+	 * https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Frames_in_flight.
 	 * The argument is elicited by the comment line https://github.com/ravimohan1991/imgui/blob/e4967701b67edd491e884632f239ab1f38867d86/backends/imgui_impl_vulkan.h#L144
+	 * 
 	 * @since Karma 1.0.0
 	 */
 	struct KarmaGui_Vulkan_Frame_On_Flight
@@ -1034,6 +1035,8 @@ namespace Karma
 		/**
 		 * @brief A set of instructions for rendering a viewport of KarmaGui window (called each loop for realtime Vulkan rendering). A bird's eye overview can be experienced in the wikipedia page https://github.com/ravimohan1991/KarmaEngine/wiki/Vulkan-Creative-Pipeline-(vCP)-II. Set to KarmaGuiPlatformIO::Renderer_RenderWindow in the function KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_InitPlatformInterface(). Called in the routine KarmaGuiRenderer::OnKarmaGuiLayerEnd(), via KarmaGui::RenderPlatformWindowsDefault()->platform_io.Renderer_RenderWindow, if multiviewports (KGGuiConfigFlags_ViewportsEnable) are supported.
 		 *
+		 * @param viewport										The viewport to be rendered
+		 *
 		 * @note Engine is not supporting multiviewports in the current state.
 		 * @since Karma 1.0.0
 		 */
@@ -1063,13 +1066,43 @@ namespace Karma
 		 *		}
 		 *		vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
 		 * 	@endcode
+		 * 
+		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_RenderDrawData(KGDrawData* drawData, VkCommandBuffer commandBuffer, VkPipeline pipeline, uint32_t imageFrameIndex);
+
+		/**
+		 * @brief Called in KarmaGui_ImplVulkan_InitPlatformInterface for setting the field KarmaGuiPlatformIO::Renderer_SwapBuffers. Based upon the present
+		 * conditions, does the following
+		 * 
+		 * 1. Calls the routine KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateOrResizeWindow if vkQueuePresentKHR returns VK_ERROR_OUT_OF_DATE_KHR or VK_SUBOPTIMAL_KHR.
+		 * 2. Update the KarmaGui_ImplVulkanH_Window::SemaphoreIndex for graceful asynchronous (https://www.geeksforgeeks.org/semaphores-in-process-synchronization/) type of work. A semaphore is used to add order between queue operations. Queue operations refer to the work we submit to a queue, either in a command buffer or from within a function. Examples of queues are the graphics queue and the presentation queue. Semaphores are used both to order work inside the same queue and between different queues. 
+		 * 
+		 * @param viewport										The viewport to be rendered
+		 * 
+		 * @note Not used in the current state of single viewport only condition of Engine.
+		 * @note Needs reconsideration because of the same decoupling (see KarmaGui_Vulkan_Frame_On_Flight notes). Seems like we have taken those considerations and resoved the decoupling issue.
+		 * @note A core design philosophy in Vulkan is that synchronization of execution on the GPU is explicit. The order of operations is up to us to define using various synchronization primitives which tell the driver the order we want things to run in. This means that many Vulkan API calls which start executing work on the GPU are asynchronous, the functions will return before the operation has finished.
+		 * Retrieved from https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation#page_Synchronization
+		 * 
+		 * @see KarmaGui_Vulkan_Frame_On_Flight
+		 * @since Karma 1.0.0
+		 */
 		static void KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*);
 		static void ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
 		static void ClearVulkanWindowData(KarmaGui_ImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity = false);
 		static void DestroyWindowDataFrame(KarmaGui_ImplVulkanH_ImageFrame* frame);
 		static void DestroyFramesOnFlightData(KarmaGui_Vulkan_Frame_On_Flight* frameSyncronicityData);
+
+		/**
+		 * @brief KarmaGui_ImplVulkan_CreateOrResizeWindow
+		 * 
+		 * @param windowData
+		 * @param bCreateSyncronicity
+		 * @param bRecreateSwapChainAndCommandBuffers
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		static void KarmaGui_ImplVulkan_CreateOrResizeWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity, bool bRecreateSwapChainAndCommandBuffers);
 		static void KarmaGui_ImplVulkan_DestroyAllViewportsRenderBuffers(VkDevice device, const VkAllocationCallbacks* allocator);
 		static void KarmaGui_ImplVulkan_ShivaWindowRenderBuffers(VkDevice device, KarmaGui_ImplVulkanH_WindowRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
