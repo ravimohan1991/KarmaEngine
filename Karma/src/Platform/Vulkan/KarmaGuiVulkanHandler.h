@@ -1089,7 +1089,36 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*);
+
+		/**
+		 * @brief The purpose of the routine is two-fold
+		 * 
+		 * - Share the Vulkan resources, including Swapchain, Renderpass, CommandPool, Framebuffer, and all that, of MainWindow (stored in VulkanContext of VulkanHolder, initialized during VulkanContext::Init() which gets called
+		 *  on Platform(Windows, Mac, and Linux)Window during their specific creation implementation, for instance LinuxWindow::Init) to KarmaGui's backend, after appropriate clearence.
+		 * - Ground work for establishing syncronicity, in GPU side functions' execution, by creating semaphores for (https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation#page_Synchronization)
+		 *      -# to signal that image has been acquired from the swapchain and ready for rendering
+		 *      -# to signal that rendering has finished and presentation (the last step of drawing a frame is submitting the result back to the swap chain to have it eventually show up on the screen) can happen
+		 * The set number of semaphores (we are using two types of them) are for number of "frames in flight" which represent the number of frames which can be processed on CPU whilst rendering is done on GPU
+		 * 
+		 * @param windowData											The datastructure to hold all the data needed by one rendering Vulkan context.
+		 * @param bCreateSyncronicity									Should we allocate semaphores and fences. For instance true during KarmaGuiRenderer::SetUpKarmaGuiRenderer and false during KarmaGuiRenderer::GiveLoopBeginControlToVulkan
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		static void ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
+
+		/**
+		 * @brief Clears appropriate buffers which are used for KarmaGui's rendering. They include:
+		 * 
+		 * - KarmaGui_ImplVulkanH_Window::ImageFrames
+		 * - KarmaGui_ImplVulkanH_Window::FramesOnFlight if bDestroySyncronicity is set to true
+		 * 
+		 * @param vulkanWindowData										The datastructure containing the buffers to be cleared
+		 * @param bDestroySyncronicity									FramesOnFlight buffers are cleared if set to true, for instance KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow.
+		 * 																Else, when set to false, for instance swapchain is recreated and similar things in KarmaGuiRenderer::GiveLoopBeginControlToVulkan (see KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, false)), they aren't touched.
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		static void ClearVulkanWindowData(KarmaGui_ImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity = false);
 		static void DestroyWindowDataFrame(KarmaGui_ImplVulkanH_ImageFrame* frame);
 		static void DestroyFramesOnFlightData(KarmaGui_Vulkan_Frame_On_Flight* frameSyncronicityData);
@@ -1097,8 +1126,8 @@ namespace Karma
 		/**
 		 * @brief KarmaGui_ImplVulkan_CreateOrResizeWindow
 		 * 
-		 * @param windowData
-		 * @param bCreateSyncronicity
+		 * @param windowData														The datastructure object containing the buffers to be manipulated
+		 * @param bCreateSyncronicity												
 		 * @param bRecreateSwapChainAndCommandBuffers
 		 * 
 		 * @since Karma 1.0.0
