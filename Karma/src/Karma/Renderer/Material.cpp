@@ -1,8 +1,9 @@
 #include "Karma/Renderer/Material.h"
+#include "glm/glm.hpp"
 
 namespace Karma
 {
-	Material::Material() : m_MainCamera(nullptr)
+	Material::Material() : m_MainCamera(nullptr), m_ModelScale(glm::vec3(1.f, 1.f, 1.f))
 	{
 	}
 
@@ -10,8 +11,13 @@ namespace Karma
 	{
 		if (m_MainCamera != nullptr)
 		{
-			UBODataPointer uProjection(&m_MainCamera->GetProjectionMatrix());
-			UBODataPointer uView(&m_MainCamera->GetViewMatirx());
+            m_MaterialProjectionMatrix = m_MainCamera->GetProjectionMatrix();
+            m_MaterialViewMatrix       = glm::scale(m_MainCamera->GetViewMatirx(), m_ModelScale);
+            
+            // Apply GuizmoTransform
+            
+			UBODataPointer uProjection(&m_MaterialProjectionMatrix);
+			UBODataPointer uView(&m_MaterialViewMatrix);
 
 			// Hack for now
 			for (const auto& elem : m_Shaders)
@@ -28,6 +34,9 @@ namespace Karma
 	void Material::AttatchMainCamera(std::shared_ptr<Camera> mCamera)
 	{
 		m_MainCamera = mCamera;
+        
+        m_MaterialProjectionMatrix = m_MainCamera->GetProjectionMatrix();
+        m_MaterialViewMatrix       = m_MainCamera->GetViewMatirx(); 
 	}
 
 	void Material::ProcessForSubmission()

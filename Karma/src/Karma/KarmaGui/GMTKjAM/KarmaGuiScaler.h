@@ -157,10 +157,12 @@ namespace Karma
 	void DrawCubes(const float* view, const float* projection, const float* matrices, int matrixCount);
 	void DrawGrid(const float* view, const float* projection, const float* matrix, const float gridSize);
 
-	// call it when you want a gizmo
-	// Needs view and projection matrices. 
-	// matrix parameter is the source matrix (where will be gizmo be drawn) and might be transformed by the function. Return deltaMatrix is optional
-	// translation is applied in world space
+	/**
+	 * @brief call it when you want a gizmo
+	 * Needs view and projection matrices. 
+	 * matrix parameter is the source matrix (where will be gizmo be drawn) and might be transformed by the function. Return deltaMatrix is optional
+	 * translation is applied in world space
+	 */ 
 	enum OPERATION
 	{
 		TRANSLATE_X      = (1u << 0),
@@ -195,7 +197,21 @@ namespace Karma
 		LOCAL,
 		WORLD
 	};
-
+    
+    /**
+     * @brief Manipulate: A routine to apply the appropriate transform(s)
+     * 
+	 * @param view                                      4x4 view matrix
+	 * @param projection                                4x4 projection matrix
+	 * @param operation                                 Karma::OPERATION enum
+	 * @param mode                                      Karma::MODE, including LOCAL and WORLD
+	 * @param matrix                            
+	 * @param deltaMatrix
+	 * @param snap
+	 * @param localBounds
+	 * @param boundsSnap
+	 * @return 
+	 */
 	bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix = NULL, const float* snap = NULL, const float* localBounds = NULL, const float* boundsSnap = NULL);
 	//
 	// Please note that this cubeview is patented by Autodesk : https://patents.google.com/patent/US7782319B2/en

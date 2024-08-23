@@ -17,6 +17,7 @@
 // Experimental
 //#include "Karma/Core/UObjectAllocator.h"
 #include "Karma/Ganit/KarmaMath.h"
+#include "KarmaGuiScaler.h"
 
 namespace Karma
 {
@@ -102,7 +103,7 @@ namespace Karma
 			DrawKarmaSceneHierarchyPanelMesa();
 		}
 
-		// 5. A window for 3D rendering part
+		// 5. A window for 3D rendering part. Experimental with single model scene.
 		{
 			Draw3DModelExhibitorMesa(scene);
 		}
@@ -486,6 +487,12 @@ namespace Karma
 	{
 		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoScrollWithMouse | KGGuiWindowFlags_NoScrollbar;
 		KarmaGui::Begin("3D Exhibitor", nullptr, windowFlags);
+        
+        // KarmaGui's Guizmo stuff
+        Karma::SetOrthographic(false);
+        Karma::BeginFrame();
+        Karma::IsUsing();
+        
 		KarmaGui::SetNextWindowSize(KGVec2(400, 400), KGGuiCond_FirstUseEver);
 
 		KGVec4 bgColor;

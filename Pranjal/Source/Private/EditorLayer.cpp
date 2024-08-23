@@ -228,6 +228,16 @@ namespace Karma
 			{
 				m_EditorCamera->MoveForward(-cameraTranslationSpeed * deltaTime);
 			}
+            
+            if(Input::IsKeyPressed(GLFW_KEY_L))
+            {
+                m_ModelMaterial->SetModelScale(m_ModelMaterial->GetModelScale() * 0.8f);
+            }
+            
+            if(Input::IsKeyPressed(GLFW_KEY_P))
+            {
+                m_ModelMaterial->SetModelScale(m_ModelMaterial->GetModelScale() * 10.0f / 8.f);
+            }
 		}
 		static uint32_t testControllerID = 0;
 

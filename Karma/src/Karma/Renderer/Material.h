@@ -106,6 +106,18 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		std::shared_ptr<Texture> GetTexture(int index);
+        
+        // Transform relevant
+        
+        /**
+         * @brief Set the scale of the model
+         * 
+         * @param scale                                     The appropriate scale of the model in x, y, and z directions
+         * @since Karma 1.0.0
+         */
+        inline void SetModelScale(const glm::vec3& scale) { m_ModelScale = scale;}
+        
+        const glm::vec3& GetModelScale() const { return m_ModelScale; }
 
 		// May add Physics-relevant features in future.
 
@@ -115,5 +127,9 @@ namespace Karma
 		std::list<std::shared_ptr<Texture>> m_Textures;
 
 		std::shared_ptr<Camera> m_MainCamera;
+        
+        glm::mat4 m_MaterialProjectionMatrix;
+        glm::mat4 m_MaterialViewMatrix;
+        glm::vec3 m_ModelScale;
 	};
 }
