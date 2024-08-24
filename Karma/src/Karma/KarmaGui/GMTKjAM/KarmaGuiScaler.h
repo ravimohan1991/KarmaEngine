@@ -198,6 +198,24 @@ namespace Karma
 		WORLD
 	};
     
+    struct Context;
+    
+    static Context* GetTranformGuizmoContext();
+    
+    void DrawTransformVisuals(/*OPERATION op, int type*/);
+    
+    /**
+     * @brief ComputeContext basically sets the value of global static Context gContext in KarmaGuiScaler.cpp
+     * 
+     * @note This is experimental and subject to major changes in future
+     * 
+     * @param view                                      4x4 view matrix
+	 * @param projection                                4x4 projection matrix
+     * @param matrix                                    The orthonormalized model
+     * @param mode                                      Karma::MODE, including LOCAL and WORLD
+     */
+    static void ComputeContext(const float* view, const float* projection, float* matrix, MODE mode);
+    
     /**
      * @brief Manipulate: A routine to apply the appropriate transform(s)
      * 

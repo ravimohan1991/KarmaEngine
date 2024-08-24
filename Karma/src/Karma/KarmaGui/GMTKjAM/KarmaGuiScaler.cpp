@@ -785,7 +785,12 @@ namespace Karma
    static int GetMoveType(OPERATION op, vec_t* gizmoHitProportion);
    static int GetRotateType(OPERATION op);
    static int GetScaleType(OPERATION op);
-
+   
+   static Context* GetTranformGuizmoContext()
+   {
+       return &gContext;
+   }
+   
    Style& GetStyle()
    {
       return gContext.mStyle;
@@ -2529,6 +2534,17 @@ namespace Karma
          DrawScaleUniveralGizmo(operation, type);
       }
       return manipulated;
+   }
+   
+   void DrawTransformVisuals(OPERATION operation, int type)
+   {
+       //DrawRotationGizmo(operation, type);
+       
+       //DrawTranslationGizmo(operation, type);
+       
+       DrawScaleGizmo(operation, type);
+       
+       //DrawScaleUniveralGizmo(operation, type); 
    }
 
    void SetGizmoSizeClipSpace(float value)

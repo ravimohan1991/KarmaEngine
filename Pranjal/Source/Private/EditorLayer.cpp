@@ -308,6 +308,16 @@ namespace Karma
 		{
 			m_EditorCamera->RotateAboutXAxis(-1.f * val * cameraRotationSpeed * deltaTime);
 		}
+        
+        if(Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_LEFT_BUMPER, testControllerID))
+        {
+            m_ModelMaterial->SetModelScale(m_ModelMaterial->GetModelScale() * 0.8f);
+        }
+        
+        if(Input::IsControllerButtonPressed(GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER, testControllerID))
+        {
+            m_ModelMaterial->SetModelScale(m_ModelMaterial->GetModelScale() * 10.0f / 8.f);
+        }
 		// Controller context ends
 	}
 
