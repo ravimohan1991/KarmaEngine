@@ -13,11 +13,8 @@ namespace Karma
 	// Subject to change based on available hardware scrutiny
 	std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-#ifdef KR_DEBUG
-	bool VulkanContext::bEnableValidationLayers = true;
-#else
 	bool VulkanContext::bEnableValidationLayers = false;
-#endif
+
 
 	VulkanContext::VulkanContext(GLFWwindow* windowHandle)
 		: m_windowHandle(windowHandle)

@@ -9,6 +9,7 @@
  */
 #pragma once
 
+#include "glm/gtx/euler_angles.hpp"
 #include "krpch.h"
 
 #include "Karma/Renderer/Shader.h"
@@ -106,18 +107,43 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		std::shared_ptr<Texture> GetTexture(int index);
-        
-        // Transform relevant
-        
-        /**
-         * @brief Set the scale of the model
-         * 
-         * @param scale                                     The appropriate scale of the model in x, y, and z directions
-         * @since Karma 1.0.0
-         */
-        inline void SetModelScale(const glm::vec3& scale) { m_ModelScale = scale;}
-        
-        const glm::vec3& GetModelScale() const { return m_ModelScale; }
+		
+		// Transform relevant
+		
+		/**
+		 * @brief Set the scale of the model
+		 * 
+		 * @param scale                                     The appropriate scale parameters of the model in x, y, and z directions
+		 * @since Karma 1.0.0
+		 */
+		inline void SetModelScale(const glm::vec3& scale) { m_ModelScale = scale;}
+
+		/**
+		 * @brief Set the rotation parameters of the model
+		 * 
+		 * @param rotation                                  The appropriate rotation parameters of the model in terms of euler angles
+		 */
+		inline void SetModelRotation(const glm::vec3& rotation) { m_ModelRotation = rotation; }
+
+		/**
+		 * @brief Set the translation parameters of the model
+		 * 
+		 * @param translation                               The appropriate translation parameters of the model in x, y, and z directions
+		 */
+		inline void SetModelTranslation(const glm::vec3& translation) { m_ModelTranslation = translation; }
+		
+		const glm::vec3& GetModelScale() const { return m_ModelScale; }
+
+		/**
+		 * Generate model's transform 4 x 4 matrix by equation Rotation Matix X Translation Matrix. To be used with 
+		 * m_MainCamera->GetViewMatirx().
+		 * 
+		 * Order: Scaling followed by rotation followed by translation
+		 * 
+		 * @return 
+		 */
+		glm::mat4 GetModelTransformMatrix() const { return glm::translate(glm::mat4(1.f), m_ModelTranslation) *
+                                                           glm::eulerAngleXYZ(m_ModelRotation.x, m_ModelRotation.y, m_ModelRotation.z) * glm::scale(glm::mat4(1.f), m_ModelScale); }
 
 		// May add Physics-relevant features in future.
 
@@ -127,9 +153,13 @@ namespace Karma
 		std::list<std::shared_ptr<Texture>> m_Textures;
 
 		std::shared_ptr<Camera> m_MainCamera;
-        
-        glm::mat4 m_MaterialProjectionMatrix;
-        glm::mat4 m_MaterialViewMatrix;
-        glm::vec3 m_ModelScale;
+		
+		glm::mat4 m_MaterialProjectionMatrix;
+		glm::mat4 m_MaterialViewMatrix;
+		
+		// Experimental
+		glm::vec3 m_ModelTranslation;
+		glm::vec3 m_ModelRotation;
+		glm::vec3 m_ModelScale;
 	};
 }

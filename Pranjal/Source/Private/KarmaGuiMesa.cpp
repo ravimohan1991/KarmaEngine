@@ -40,6 +40,9 @@ namespace Karma
 	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
 	WindowManipulationGaugeData	KarmaGuiMesa::m_MemoryExhibitor;
 
+	float* KarmaGuiMesa::m_ModelTransformMatrix = nullptr;
+	std::shared_ptr<Scene> KarmaGuiMesa::m_CurrentScene = nullptr;
+
 	KarmaGuiDockPreviewData::KarmaGuiDockPreviewData() : FutureNode(0)
 	{
 		IsDropAllowed = IsCenterAvailable = IsSidesAvailable = IsSplitDirExplicit = false;
@@ -50,7 +53,7 @@ namespace Karma
 			DropRectsDraw[n] = KGRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX);
 		}
 	}
-
+	
 	void KarmaGuiMesa::RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
 	{
 		// The MM (Main Menu) menu bar
@@ -89,6 +92,94 @@ namespace Karma
 
 			if (payloadWindow)
 				KarmaGui::Text("Karma: Log window is of dimension width = %f und height = %f", payloadWindow->Size.x, payloadWindow->Size.y);
+			
+			
+			KarmaGui::Separator();
+			
+			// Transform Guizmo
+			KarmaGui::Text("Transform Gadget");
+			static Karma::OPERATION mCurrentGizmoOperation(Karma::NONE);
+			static Karma::MODE mCurrentGizmoMode(Karma::WORLD);
+
+			mCurrentGizmoOperation = Karma::NONE;
+            
+            static glm::vec3 rightPTranslate(0.f);
+            if (KarmaGui::IsKeyDown(KGGuiKey_Z) && KarmaGui::IsKeyPressed(KarmaGuiKey(KGGuiKey_Minus)))
+            {
+                rightPTranslate -= glm::vec3(0.f, 0.2f, 0.f);
+                mCurrentGizmoOperation = Karma::TRANSLATE;
+            }
+            else if(KarmaGui::IsKeyDown(KGGuiKey_Z) && KarmaGui::IsKeyPressed(KarmaGuiKey(KGGuiKey_Equal)))
+            {
+                rightPTranslate += glm::vec3(0.f, 0.2f, 0.f);
+                mCurrentGizmoOperation = Karma::TRANSLATE;
+            }
+			
+			if (KarmaGui::IsKeyPressed(KGGuiKey_E))
+				mCurrentGizmoOperation = Karma::ROTATE;
+			
+			if (KarmaGui::IsKeyPressed(KGGuiKey_R)) // r Key
+				mCurrentGizmoOperation = Karma::SCALE;
+			
+			/*if (KarmaGui::RadioButton("Translate", mCurrentGizmoOperation == Karma::TRANSLATE))
+				mCurrentGizmoOperation = Karma::TRANSLATE;
+			
+			KarmaGui::SameLine();
+			
+			if (KarmaGui::RadioButton("Rotate", mCurrentGizmoOperation == Karma::ROTATE))
+				mCurrentGizmoOperation = Karma::ROTATE;
+			
+			KarmaGui::SameLine();
+			
+			if (KarmaGui::RadioButton("Scale", mCurrentGizmoOperation == Karma::SCALE))
+				mCurrentGizmoOperation = Karma::SCALE;*/
+			
+			float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+			//Karma::DecomposeMatrixToComponents(m_ModelTransformMatrix, matrixTranslation, matrixRotation, matrixScale);
+			
+			KarmaGui::InputFloat3("Translate", matrixTranslation, "%.2f", KarmaGuiInputTextFlags(3));
+			KarmaGui::InputFloat3("Rotate", matrixRotation, "%.2f", KarmaGuiInputTextFlags(3));
+			KarmaGui::InputFloat3("Scale", matrixScale, "%.2f", KarmaGuiInputTextFlags(3));
+			
+			//Karma::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, m_ModelTransformMatrix);
+			
+			if (mCurrentGizmoOperation != Karma::SCALE)
+			{
+				if (KarmaGui::RadioButton("Local", mCurrentGizmoMode == Karma::LOCAL))
+					mCurrentGizmoMode = Karma::LOCAL;
+				
+				KarmaGui::SameLine();
+				
+				if (KarmaGui::RadioButton("World", mCurrentGizmoMode == Karma::WORLD))
+					mCurrentGizmoMode = Karma::WORLD;
+			}
+			
+			static bool useSnap(false);
+			
+			if (KarmaGui::IsKeyPressed(KGGuiKey_S))
+				useSnap = !useSnap;
+			
+			KarmaGui::Checkbox("##", &useSnap);
+			KarmaGui::SameLine();
+			
+			/*vec_t snap;*/
+			
+			switch (mCurrentGizmoOperation)
+			{
+			case Karma::TRANSLATE:
+                if(m_CurrentScene != nullptr)
+                {
+                    m_CurrentScene->GetRenderableVertexArray()->GetMaterial()->SetModelTranslation(rightPTranslate);
+                }
+			break;
+			}
+			
+			KarmaGuiIO& io = KarmaGui::GetIO();
+			Karma::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+			
+			// material 
+			//Karma::Manipulate(camera.mView.m16, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
+
 			KarmaGui::End();
 		}
 
@@ -487,12 +578,7 @@ namespace Karma
 	{
 		KarmaGuiWindowFlags windowFlags = KGGuiWindowFlags_NoScrollWithMouse | KGGuiWindowFlags_NoScrollbar;
 		KarmaGui::Begin("3D Exhibitor", nullptr, windowFlags);
-        
-        // KarmaGui's Guizmo stuff
-        Karma::SetOrthographic(false);
-        Karma::BeginFrame();
-        Karma::IsUsing();
-        
+
 		KarmaGui::SetNextWindowSize(KGVec2(400, 400), KGGuiCond_FirstUseEver);
 
 		KGVec4 bgColor;
@@ -585,6 +671,9 @@ namespace Karma
 			scene->SetWindowToRenderWithinResize(true);
 			m_RefreshRenderingResources = false;
 		}
+		
+		//m_ModelTransformMatrix = &scene->GetRenderableVertexArray()->GetMaterial()->GetModelTransformMatrix()[0].x;
+		m_CurrentScene = scene;
 
 		KarmaGui::PopStyleColor();
 		KarmaGui::End();

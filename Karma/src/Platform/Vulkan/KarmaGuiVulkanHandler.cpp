@@ -1127,7 +1127,7 @@ namespace Karma
 			}
 			if (elem->TextureSampler)
 			{
-				vkDestroySampler(vulkanInfo->Device, elem->TextureSampler, vulkanInfo->Allocator);
+				vkDestroySampler(vulkanInfo->Device, elem->TextureSampler, nullptr);
 				elem->TextureSampler = VK_NULL_HANDLE;
 			}
 			if (elem->TextureDescriptorSet)

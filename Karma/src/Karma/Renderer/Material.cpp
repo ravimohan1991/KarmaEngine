@@ -3,7 +3,8 @@
 
 namespace Karma
 {
-	Material::Material() : m_MainCamera(nullptr), m_ModelScale(glm::vec3(1.f, 1.f, 1.f))
+	Material::Material() : m_MainCamera(nullptr), m_ModelTranslation(glm::vec3(0.f, 0.f, 0.f)), m_ModelRotation(glm::vec3(0.f, 0.f, 0.f)),
+    m_ModelScale(glm::vec3(1.f, 1.f, 1.f))
 	{
 	}
 
@@ -11,11 +12,11 @@ namespace Karma
 	{
 		if (m_MainCamera != nullptr)
 		{
-            m_MaterialProjectionMatrix = m_MainCamera->GetProjectionMatrix();
-            m_MaterialViewMatrix       = glm::scale(m_MainCamera->GetViewMatirx(), m_ModelScale);
-            
-            // Apply GuizmoTransform
-            
+			m_MaterialProjectionMatrix = m_MainCamera->GetProjectionMatrix();
+			m_MaterialViewMatrix       = glm::scale(m_MainCamera->GetViewMatirx() * GetModelTransformMatrix(), m_ModelScale);
+			
+			// Apply GuizmoTransform
+			
 			UBODataPointer uProjection(&m_MaterialProjectionMatrix);
 			UBODataPointer uView(&m_MaterialViewMatrix);
 

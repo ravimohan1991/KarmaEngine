@@ -255,7 +255,7 @@ namespace Karma
 		std::string cpuThreadCount;
 		std::string cpuTheCharacterstics;
 
-		// The Cpu ID field contains processor - specific information that describes the processor’s features.
+		// The Cpu ID field contains processor - specific information that describes the processorï¿½s features.
 		std::string cpuid; // in the context of motherboard components
 		std::string cpuSignature;
 
@@ -374,6 +374,10 @@ namespace Karma
 		// Need agnostic naming scheme
 		static uint32_t m_DirectoryIcon;
 		static uint32_t m_FileIcon;
+		
+		// Experimental Guizmo 
+		static float* m_ModelTransformMatrix;
+		static std::shared_ptr<Scene> m_CurrentScene;
 
 		// UObjects statistics
 		static KarmaVector<UObjectsStatistics> m_UObjectStatistics;

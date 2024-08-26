@@ -206,7 +206,7 @@ PRINT_LIST(ESSENTIAL_LIBS)
 message(STATUS "########################")
 
 # Set the project name and version
-project(KarmaEngine VERSION 1.0) # Versioning shall change to something more appropriate
+project(KarmaEngine) # Versioning shall change to something more appropriate
 
 # Handling MSVC static class members for dynamic linkage. I know!
 if(MSVC AND BUILD_SHARED_LIBS)

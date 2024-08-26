@@ -2536,13 +2536,13 @@ namespace Karma
       return manipulated;
    }
    
-   void DrawTransformVisuals(OPERATION operation, int type)
+   void DrawTransformVisuals(/*OPERATION operation, int type*/)
    {
        //DrawRotationGizmo(operation, type);
        
        //DrawTranslationGizmo(operation, type);
        
-       DrawScaleGizmo(operation, type);
+       DrawScaleGizmo(Karma::OPERATION::SCALE, Karma::MODE::LOCAL);
        
        //DrawScaleUniveralGizmo(operation, type); 
    }
