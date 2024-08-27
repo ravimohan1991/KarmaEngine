@@ -2,9 +2,9 @@
 <area shape="rect" id="Node000001" title=" " alt="" coords="170,390,326,416"/>
 <area shape="rect" id="Node000002" href="$structKarma_1_1KarmaLogMesa.html" title=" " alt="" coords="169,301,327,327"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="251,343,251,390,245,390,245,343"/>
-<area shape="rect" id="Node000003" href="$structKarmaGuiTextBuffer.html" title=" " alt="" coords="12,213,151,238"/>
+<area shape="rect" id="Node000003" href="$structKarmaGuiTextBuffer.html" title=" " alt="" coords="12,213,150,238"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="119,244,226,298,223,303,117,248"/>
-<area shape="rect" id="Node000004" href="$structKGVector.html" title=" " alt="" coords="5,117,131,142"/>
+<area shape="rect" id="Node000004" href="$structKGVector.html" title=" " alt="" coords="5,116,131,142"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="74,157,82,212,77,213,69,158"/>
 <area shape="rect" id="Node000005" href="$structKarmaGuiTextFilter.html" title=" " alt="" coords="181,213,315,238"/>
 <area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="251,254,251,301,245,301,245,254"/>

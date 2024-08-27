@@ -1,6 +1,6 @@
 <map id="KGFontConfig" name="KGFontConfig">
-<area shape="rect" id="Node000001" title=" " alt="" coords="303,147,405,172"/>
-<area shape="rect" id="Node000003" href="$structKGFont.html" title=" " alt="" coords="585,255,651,280"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="303,146,405,172"/>
+<area shape="rect" id="Node000003" href="$structKGFont.html" title=" " alt="" coords="585,254,651,280"/>
 <area shape="poly" id="edge20_Node000003_Node000001" title=" " alt="" coords="421,169,501,188,562,209,589,230,609,252,605,256,586,234,560,214,500,193,420,174"/>
 <area shape="rect" id="Node000012" href="$structKGVector.html" title=" " alt="" coords="675,124,857,150"/>
 <area shape="poly" id="edge17_Node000012_Node000001" title=" " alt="" coords="421,153,675,139,675,144,421,158"/>
@@ -11,10 +11,10 @@
 <area shape="rect" id="Node000011" href="$structKGFontAtlasCustomRect.html" title=" " alt="" coords="881,84,1049,110"/>
 <area shape="poly" id="edge14_Node000011_Node000002" title=" " alt="" coords="106,84,880,93,880,98,106,89"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="569,260,519,247,466,229,414,202,372,175,375,170,417,197,468,224,520,242,570,255"/>
-<area shape="rect" id="Node000009" href="$structKGVector.html" title=" " alt="" coords="1073,199,1226,224"/>
+<area shape="rect" id="Node000009" href="$structKGVector.html" title=" " alt="" coords="1073,198,1226,224"/>
 <area shape="poly" id="edge11_Node000009_Node000003" title=" " alt="" coords="665,248,675,246,782,229,890,218,1072,209,1073,214,891,223,783,234,676,251,667,253"/>
 <area shape="poly" id="edge15_Node000011_Node000003" title=" " alt="" coords="633,240,650,217,674,198,700,187,723,181,764,181,806,182,830,179,856,171,883,157,908,140,948,108,951,112,911,145,885,162,858,175,831,184,807,187,764,186,723,186,701,192,677,203,654,221,637,243"/>
-<area shape="rect" id="Node000004" href="$structKGVector.html" title=" " alt="" coords="292,415,416,440"/>
+<area shape="rect" id="Node000004" href="$structKGVector.html" title=" " alt="" coords="292,414,416,440"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="432,432,464,430,498,425,530,414,559,398,583,371,599,338,608,306,613,280,618,281,614,307,604,340,588,374,563,402,532,419,499,430,465,436,432,437"/>
 <area shape="rect" id="Node000005" href="$structKGVector.html" title=" " alt="" coords="276,365,432,391"/>
 <area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="447,379,505,370,534,361,560,348,577,333,591,315,610,279,614,282,596,318,581,337,562,353,536,366,507,375,448,384"/>
@@ -31,6 +31,6 @@
 <area shape="poly" id="edge16_Node000008_Node000012" title=" " alt="" coords="873,135,1011,139,1185,147,1376,162,1567,186,1591,191,1590,196,1566,191,1375,168,1184,153,1011,144,872,140"/>
 <area shape="rect" id="Node000013" href="$structKGVec4.html" title=" " alt="" coords="1320,305,1390,331"/>
 <area shape="poly" id="edge18_Node000008_Node000013" title=" " alt="" coords="1405,322,1442,324,1484,322,1526,314,1565,299,1588,282,1606,260,1630,218,1634,221,1610,263,1591,285,1568,303,1528,319,1484,327,1442,329,1405,328"/>
-<area shape="rect" id="Node000014" href="$structKGFontBuilderIO.html" title=" " alt="" coords="1295,355,1415,380"/>
+<area shape="rect" id="Node000014" href="$structKGFontBuilderIO.html" title=" " alt="" coords="1295,354,1415,380"/>
 <area shape="poly" id="edge19_Node000008_Node000014" title=" " alt="" coords="1430,373,1464,373,1499,369,1534,359,1565,343,1593,315,1613,280,1626,246,1632,219,1638,220,1631,248,1618,283,1597,318,1568,347,1536,364,1500,374,1465,378,1430,379"/>
 </map>
