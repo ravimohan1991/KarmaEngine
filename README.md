@@ -1,3 +1,9 @@
+<div align="center"> अहं सर्वस्य प्रभवो मत्त: सर्वं प्रवर्तते | </div>
+
+<div align="center"> इति मत्वा भजन्ते मां बुधा भावसमन्विता: || 8 || </div>
+
+Geta: [Chapter 10, Verse 8](https://www.holy-bhagavad-gita.org/chapter/10/verse/8)
+
 KarmaEngine
 ===========
 <img width="1440" alt="Screenshot 2023-02-15 at 15 45 40" src="https://user-images.githubusercontent.com/2173654/218999401-fe78d0e1-7bff-45ca-a0ab-cb6ab2ce31aa.png">
