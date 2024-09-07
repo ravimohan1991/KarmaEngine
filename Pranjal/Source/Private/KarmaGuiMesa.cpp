@@ -675,6 +675,34 @@ namespace Karma
 		//m_ModelTransformMatrix = &scene->GetRenderableVertexArray()->GetMaterial()->GetModelTransformMatrix()[0].x;
 		m_CurrentScene = scene;
 
+
+		// Draw appropriate guizmos
+		Karma::SetDrawlist();				// Obtain the KarmaGui's drawlist for our rendering
+		//Karma::ComputeContext();
+		//Karma::DrawTransformVisuals();
+		{
+			float viewManipulateRight = io.DisplaySize.x;
+			float viewManipulateTop = 0;
+			float windowWidth = (float)KarmaGui::GetWindowWidth();
+			float windowHeight = (float)KarmaGui::GetWindowHeight();
+			viewManipulateRight = KarmaGui::GetWindowPos().x + windowWidth;
+			viewManipulateTop = KarmaGui::GetWindowPos().y;
+
+			const float* temp = &scene->GetSceneCamera()->GetViewMatirx()[0].x;
+			const float* tempa = glm::value_ptr(scene->GetSceneCamera()->GetViewMatirx());
+
+			Karma::ViewManipulate(const_cast<float*>(tempa), 0.8f, KGVec2(viewManipulateRight - 128, viewManipulateTop), KGVec2(128, 128), 0x10101010);
+		}
+		{
+			float* projmatrix = const_cast<float*>(glm::value_ptr(scene->GetSceneCamera()->GetProjectionMatrix()));
+			float* viewmatrix = const_cast<float*>(glm::value_ptr(scene->GetSceneCamera()->GetViewMatirx()));
+
+			const float* identity = glm::value_ptr(glm::mat4(1.f));
+
+			Karma::ComputeContext(viewmatrix, projmatrix, const_cast<float*>(identity), MODE::LOCAL);
+			Karma::DrawTransformVisuals();
+		}
+
 		KarmaGui::PopStyleColor();
 		KarmaGui::End();
 	}

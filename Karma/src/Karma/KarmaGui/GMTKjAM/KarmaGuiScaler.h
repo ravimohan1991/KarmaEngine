@@ -216,7 +216,7 @@ namespace Karma
      * @param matrix                                    The orthonormalized model
      * @param mode                                      Karma::MODE, including LOCAL and WORLD
      */
-    static void ComputeContext(const float* view, const float* projection, float* matrix, MODE mode);
+     void ComputeContext(const float* view, const float* projection, float* matrix, MODE mode);
     
     /**
      * @brief Manipulate: A routine to apply the appropriate transform(s)
