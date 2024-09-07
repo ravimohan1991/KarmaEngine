@@ -243,6 +243,7 @@ namespace Karma
 	 * (Used by multi-viewport features. We gonna just use this.). The number of frames is MinImageCount = m_MinImageCount + 1.
 	 *
 	 * @note Please zero-clear before use!
+	 * @see KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow
 	 *
 	 * @since Karma 1.0.0
 	 */
@@ -882,7 +883,7 @@ namespace Karma
 		/**
 		 * @brief Reports memory relevant type information for the specified physical device (the GPU, represented by KarmaGui_ImplVulkan_InitInfo.PhysicalDevice), based on supplied properties and type_bits (not exceeding a valid limit).
 		 *
-		 * Device memory is memory that is visible to the device — for example the contents of the image or buffer objects, which can be natively used by the device.
+		 * @note Device memory is memory that is visible to the device for example the contents of the image or buffer objects, which can be natively used by the device.
 		 *
 		 * @param properties								The memory properties to be queried. This is a bitmask type for setting a mask of zero or more VkMemoryPropertyFlagBits.
 		 * @param type_bits									This is a bitmask and contains one bit set for every supported memory type (obtained from vkGetBufferMemoryRequirements, for instance) for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
@@ -1120,7 +1121,22 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void ClearVulkanWindowData(KarmaGui_ImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity = false);
+
+		/**
+		 * @brief Clears KarmaGui_ImplVulkanH_ImageFrame::BackBuffer and KarmaGui_ImplVulkanH_ImageFrame::Framebuffer
+		 * and called by KarmaGuiVulkanHandler::ClearVulkanWindowData.
+		 * 
+		 * @param frame													The ImageFrame data to be cleared
+		 * @since Karma 1.0.0
+		 */
 		static void DestroyWindowDataFrame(KarmaGui_ImplVulkanH_ImageFrame* frame);
+
+		/**
+		 * @brief Clears all the synchronization primitives (semaphores and fences) associated with the rendering
+		 * 
+		 * @param frameSyncronicityData									The pointer to datastructure object holding rendering relevant syncronicity data
+		 * @since Karma 1.0.0
+		 */
 		static void DestroyFramesOnFlightData(KarmaGui_Vulkan_Frame_On_Flight* frameSyncronicityData);
 
 		/**
@@ -1133,7 +1149,23 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_CreateOrResizeWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity, bool bRecreateSwapChainAndCommandBuffers);
+
+		/**
+		 * @brief Clears the KarmaGui_ImplVulkan_ViewportData::RenderBuffers associated with the single KarmaGui viewport
+		 * 
+		 * @note Engine is not supporting multiviewports in the current state.
+		 * 
+		 * @since Karma 1.0.0
+		 */ 
 		static void KarmaGui_ImplVulkan_DestroyAllViewportsRenderBuffers(VkDevice device, const VkAllocationCallbacks* allocator);
+
+		/**
+		 * @brief KarmaGui_ImplVulkan_ShivaWindowRenderBuffers
+		 * 
+		 * @param device
+		 * @param buffers
+		 * @param allocator
+		 */
 		static void KarmaGui_ImplVulkan_ShivaWindowRenderBuffers(VkDevice device, KarmaGui_ImplVulkanH_WindowRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
 		static void KarmaGui_ImplVulkan_ShivaFrameRenderBuffers(VkDevice device, KarmaGui_ImplVulkanH_ImageFrameRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
 
