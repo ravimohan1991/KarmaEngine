@@ -136,7 +136,7 @@ namespace Karma
 	void Enable(bool enable);
 	
 	// helper functions for manualy editing translation/rotation/scale with an input float
-	// translation, rotation and scale float points to 3 floats each
+	// translation, rotation, and scale float points to 3 floats each
 	// Angles are in degrees (more suitable for human editing)
 	// example:
 	// float matrixTranslation[3], matrixRotation[3], matrixScale[3];

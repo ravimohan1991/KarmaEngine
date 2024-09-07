@@ -102,18 +102,18 @@ namespace Karma
 			static Karma::MODE mCurrentGizmoMode(Karma::WORLD);
 
 			mCurrentGizmoOperation = Karma::NONE;
-            
-            static glm::vec3 rightPTranslate(0.f);
-            if (KarmaGui::IsKeyDown(KGGuiKey_Z) && KarmaGui::IsKeyPressed(KarmaGuiKey(KGGuiKey_Minus)))
-            {
-                rightPTranslate -= glm::vec3(0.f, 0.2f, 0.f);
-                mCurrentGizmoOperation = Karma::TRANSLATE;
-            }
-            else if(KarmaGui::IsKeyDown(KGGuiKey_Z) && KarmaGui::IsKeyPressed(KarmaGuiKey(KGGuiKey_Equal)))
-            {
-                rightPTranslate += glm::vec3(0.f, 0.2f, 0.f);
-                mCurrentGizmoOperation = Karma::TRANSLATE;
-            }
+
+			static glm::vec3 rightPTranslate(0.f);
+			if (KarmaGui::IsKeyDown(KGGuiKey_Z) && KarmaGui::IsKeyPressed(KarmaGuiKey(KGGuiKey_Minus)))
+			{
+				rightPTranslate -= glm::vec3(0.f, 0.2f, 0.f);
+				mCurrentGizmoOperation = Karma::TRANSLATE;
+			}
+			else if(KarmaGui::IsKeyDown(KGGuiKey_Z) && KarmaGui::IsKeyPressed(KarmaGuiKey(KGGuiKey_Equal)))
+			{
+				rightPTranslate += glm::vec3(0.f, 0.2f, 0.f);
+				mCurrentGizmoOperation = Karma::TRANSLATE;
+			}
 			
 			if (KarmaGui::IsKeyPressed(KGGuiKey_E))
 				mCurrentGizmoOperation = Karma::ROTATE;
@@ -167,10 +167,10 @@ namespace Karma
 			switch (mCurrentGizmoOperation)
 			{
 			case Karma::TRANSLATE:
-                if(m_CurrentScene != nullptr)
-                {
-                    m_CurrentScene->GetRenderableVertexArray()->GetMaterial()->SetModelTranslation(rightPTranslate);
-                }
+					if(m_CurrentScene != nullptr)
+					{
+						m_CurrentScene->GetRenderableVertexArray()->GetMaterial()->SetModelTranslation(rightPTranslate);
+					}
 			break;
 			}
 			
