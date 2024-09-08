@@ -175,7 +175,7 @@ namespace Karma
 			}
 			
 			KarmaGuiIO& io = KarmaGui::GetIO();
-			Karma::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+			//Karma::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 			
 			// material 
 			//Karma::Manipulate(camera.mView.m16, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
@@ -687,6 +687,9 @@ namespace Karma
 			float windowHeight = (float)KarmaGui::GetWindowHeight();
 			viewManipulateRight = KarmaGui::GetWindowPos().x + windowWidth;
 			viewManipulateTop = KarmaGui::GetWindowPos().y;
+
+			Karma::SetRect(KarmaGui::GetWindowPos().x, KarmaGui::GetWindowPos().y, windowWidth, windowHeight);
+
 
 			const float* temp = &scene->GetSceneCamera()->GetViewMatirx()[0].x;
 			const float* tempa = glm::value_ptr(scene->GetSceneCamera()->GetViewMatirx());
