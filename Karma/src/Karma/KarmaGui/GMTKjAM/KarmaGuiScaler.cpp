@@ -2538,7 +2538,7 @@ void ComputeContext(const float* view, const float* projection, float* matrix, M
    
    void DrawTransformVisuals(/*OPERATION operation, int type*/)
    {
-       //DrawRotationGizmo(operation, type);
+       DrawRotationGizmo(Karma::OPERATION::ROTATE, Karma::MODE::LOCAL);
        
        //DrawTranslationGizmo(operation, type);
        

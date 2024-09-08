@@ -111,7 +111,7 @@ namespace Karma
 
 	// call inside your own window and before Manipulate() in order to draw gizmo to that window.
 	// Or pass a specific ImDrawList to draw to (e.g. ImGui::GetForegroundDrawList()).
-	void SetDrawlist(KGDrawList* drawlist = nullptr);
+	KARMA_API void SetDrawlist(KGDrawList* drawlist = nullptr);
 	
 	// call BeginFrame right after ImGui_XXXX_NewFrame();
 	void BeginFrame();
@@ -150,7 +150,7 @@ namespace Karma
 	void DecomposeMatrixToComponents(const float* matrix, float* translation, float* rotation, float* scale);
 	void RecomposeMatrixFromComponents(const float* translation, const float* rotation, const float* scale, float* matrix);
 	
-	void SetRect(float x, float y, float width, float height);
+	KARMA_API void SetRect(float x, float y, float width, float height);
 	// default is false
 	void SetOrthographic(bool isOrthographic);
 	
@@ -204,7 +204,7 @@ namespace Karma
     
     static Context* GetTranformGuizmoContext();
     
-    void DrawTransformVisuals(/*OPERATION op, int type*/);
+    KARMA_API void DrawTransformVisuals(/*OPERATION op, int type*/);
     
     /**
      * @brief ComputeContext basically sets the value of global static Context gContext in KarmaGuiScaler.cpp
@@ -216,7 +216,7 @@ namespace Karma
      * @param matrix                                    The orthonormalized model
      * @param mode                                      Karma::MODE, including LOCAL and WORLD
      */
-     void ComputeContext(const float* view, const float* projection, float* matrix, MODE mode);
+     KARMA_API void ComputeContext(const float* view, const float* projection, float* matrix, MODE mode);
     
     /**
      * @brief Manipulate: A routine to apply the appropriate transform(s)
@@ -238,7 +238,7 @@ namespace Karma
 	// It seems to be a defensive patent in the US. I don't think it will bring troubles using it as
 	// other software are using the same mechanics. But just in case, you are now warned!
 	//
-	void ViewManipulate(float* view, float length, KGVec2 position, KGVec2 size, KGU32 backgroundColor);
+	KARMA_API void ViewManipulate(float* view, float length, KGVec2 position, KGVec2 size, KGU32 backgroundColor);
 
 	// use this version if you did not call Manipulate before and you are just using ViewManipulate
 	void ViewManipulate(float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float length, KGVec2 position, KGVec2 size, KGU32 backgroundColor);
