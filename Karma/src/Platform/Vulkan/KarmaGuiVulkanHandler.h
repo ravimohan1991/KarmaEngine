@@ -1160,35 +1160,132 @@ namespace Karma
 		static void KarmaGui_ImplVulkan_DestroyAllViewportsRenderBuffers(VkDevice device, const VkAllocationCallbacks* allocator);
 
 		/**
-		 * @brief KarmaGui_ImplVulkan_ShivaWindowRenderBuffers
-		 * 
-		 * @param device
-		 * @param buffers
-		 * @param allocator
+		 * @brief Destroys and clears the frame buffers, KarmaGui_ImplVulkanH_WindowRenderBuffers::FrameRenderBuffers, using KarmaGui_ImplVulkan_ShivaFrameRenderBuffers.
+		 *
+		 * @param device										A logical device handle. See KarmaGui_ImplVulkan_InitInfo.Device
+		 * @param buffers										The rendering buffers allocated for a in-flight ImageFrame (KarmaGui_ImplVulkanH_ImageFrameRenderBuffers)
+		 * @param allocator										The controller of host memory allocation as described in the Memory Allocation chapter. See KarmaGui_ImplVulkan_InitInfo.Allocator
+		 *
+		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_ShivaWindowRenderBuffers(VkDevice device, KarmaGui_ImplVulkanH_WindowRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
+
+		/**
+		 * @brief Destroys and clears the following buffers
+		 *
+		 *	1. KarmaGui_ImplVulkanH_ImageFrameRenderBuffers::VertexBuffer
+		 *	2. KarmaGui_ImplVulkanH_ImageFrameRenderBuffers::VertexBufferMemory
+		 *	3. KarmaGui_ImplVulkanH_ImageFrameRenderBuffers::IndexBuffer
+		 *	4. KarmaGui_ImplVulkanH_ImageFrameRenderBuffers::IndexBufferMemory
+		 *	5. Zeroing KarmaGui_ImplVulkanH_ImageFrameRenderBuffers::IndexBufferSize, KarmaGui_ImplVulkanH_ImageFrameRenderBuffers::VertexBufferSize
+		 *
+		 * @since Karma 1.0.0
+		 */
 		static void KarmaGui_ImplVulkan_ShivaFrameRenderBuffers(VkDevice device, KarmaGui_ImplVulkanH_ImageFrameRenderBuffers* buffers, const VkAllocationCallbacks* allocator);
 
+		/**
+		 * @brief Creates fonts' texture for KarmaGui
+		 *
+		 * @param commandBuffer								The buffer of commands to be filled with primitive drawing  and relevant commands
+		 * @since Karma 1.0.0
+		 */
 		static bool KarmaGui_ImplVulkan_CreateFontsTexture(VkCommandBuffer commandBuffer);
+
+		/**
+		 * @brief Routine to create Image vulkan texture
+		 *
+		 * @param commandBuffer								The buffer of commands to be filled with primitive drawing  and relevant commands
+		 * @param fileName									The relative path to the file containing Image (for instance "../Resources/Textures/The_Source_Wall.jpg")
+		 * @param label										The texture lable for internal use or identification (KarmaGui_ImplVulkan_Image_TextureData::TextureLable)
+		 * @since Karma 1.0.0
+		 */
 		static bool KarmaGui_ImplVulkan_CreateTexture(VkCommandBuffer commandBuffer, char const* fileName, const std::string& lable = "");
 
 		/**
-		 * @brief Some stuff
+		 * @brief Generates or creates the following objects
+		 *
+		 *	1. KarmaGui_ImplVulkan_Data::FontSampler
+		 *	2. KarmaGui_ImplVulkan_Data::DescriptorSetLayout
+		 *	3. KarmaGui_ImplVulkan_Data::PipelineLayout
+		 *	4. KarmaGui_ImplVulkan_Data::Pipeline
 		 *
 		 * @since Karma 1.0.0
 		 */
 		static bool KarmaGui_ImplVulkan_CreateDeviceObjects();
+
+		/**
+		 * @brief Function to destroy the fonts (created by KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateFontsTexture) by clearing the following buffers
+		 *
+		 *	1. KarmaGui_ImplVulkan_Data::UploadBuffer
+		 *	2. KarmaGui_ImplVulkan_Data::UploadBufferMemory
+		 *
+		 * @since Karma 1.0.0
+		 */
 		static void KarmaGui_ImplVulkan_DestroyFontUploadObjects();
+
+		/**
+		 * @brief The following objects are destroyed
+		 *
+		 *	1. KarmaGui_ImplVulkan_Data::ShaderModuleVert
+		 *	2. KarmaGui_ImplVulkan_Data::ShaderModuleFrag
+		 *	3. KarmaGui_ImplVulkan_Data::FontView
+		 *	4. KarmaGui_ImplVulkan_Data::FontImage
+		 *	5. KarmaGui_ImplVulkan_Data::FontMemory
+		 *	6. KarmaGui_ImplVulkan_Data::FontSampler
+		 *	7. KarmaGui_ImplVulkan_Data::DescriptorSetLayout
+		 *	8. KarmaGui_ImplVulkan_Data::PipelineLayout
+		 *	9. KarmaGui_ImplVulkan_Data::Pipeline
+		 *	10. KarmaGui_ImplVulkan_Image_TextureData of KarmaGui_ImplVulkan_Data::vulkanMesaDecalDataList
+		 *
+		 * @since Karma 1.0.0
+		 */
 		static void KarmaGui_ImplVulkan_DestroyDeviceObjects();
 
-		//static bool KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* info);
+		/**
+		 * @brief Called in the KarmaGuiRenderer::GracefulVulkanShutDown(). Basically does the following
+		 *
+		 * 1. KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyDeviceObjects // (destroy object in viewport(s))
+		 * 2. KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_ShutdownPlatformInterface()
+		 * 3. Delete KarmaGuiBackendRendererUserData
+		 *
+		 * @since Karma 1.0.0
+		 */
 		static void KarmaGui_ImplVulkan_Shutdown();
+
+		/**
+		 * @brief No clue what this does. Legacy?
+		 *
+		 * @todo Ponder over
+		 * @since Karma 1.0.0
+		 */
 		static void KarmaGui_ImplVulkan_NewFrame();
 
 		// Register a texture (VkDescriptorSet == ImTextureID)
 		// FIXME: This is experimental in the sense that we are unsure how to best design/tackle this problem, please post to 	https://github.com/ocornut/imgui/pull/914 if you have suggestions.
+		/**
+		 * @brief Register a texture by creation of descriptor set from preallocated descriptor pool
+		 *
+		 * @param sampler								The sampler handle used in descriptor updates for type VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER if the binding being updated does not use immutable samplers.
+		 * @param imageView								An image view handle, and is used in descriptor updates for type VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER. The image view representing contiguous ranges of the image subresources and containing additional metadata which are used by pipeline shaders for reading or writing image data.
+		 * @param imageLayout							The layout that the image subresources accessible from imageView will be in at the time this descriptor is accessed
+		 * @since Karma 1.0.0
+		 */
 		static VkDescriptorSet KarmaGui_ImplVulkan_AddTexture(VkSampler sampler, VkImageView imageView, VkImageLayout imageLayout);
+
+		/**
+		 * @brief Called in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init, during the initialization of Vulkan backend for KarmaGui, if Vulkan is the chosen renderer (RendererAPI::GetAPI() == RendererAPI::API::Vulkan).
+		 * @note Setting up KarmaGui's window operations (create, resize, and all that)
+		 *
+		 * @since Karma 1.0.0
+		 */
 		static void KarmaGui_ImplVulkan_InitPlatformInterface();
+
+		/**
+		 * @brief Calls KarmaGui::DestroyPlatformWindows, which further calls KarmaGuiInternal::DestroyPlatformWindow on each viewport window (main viewport in current state).
+		 * Clears the RendererUserData and calls KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow
+		 *
+		 * @since Karma 1.0.0
+		 */
 		static void KarmaGui_ImplVulkan_ShutdownPlatformInterface();
 	};
 }

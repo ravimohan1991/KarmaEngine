@@ -266,7 +266,7 @@ namespace Karma
 
 		if (io.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
 		{
-			// Setting up Dear ImGUI's window operations (create, resize, and all that)
+			// Setting up KarmaGui's window operations (create, resize, and all that)
 			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_InitPlatformInterface();
 		}
 	}
