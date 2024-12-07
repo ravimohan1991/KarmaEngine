@@ -34,6 +34,13 @@ namespace Karma
 		std::vector<VkPresentModeKHR> presentModes;
 	};
 
+	/**
+	 * @brief Vulkan API has the following concepts
+	 * 1. Physical Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Physical_devices_and_queue_families): The software counterpart (VkPhysicalDevice) of a graphics card (GPU). Logical device is created from physical device.
+	 * 2. Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues): The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device.
+	 *
+	 * Host : is CPU the host?
+	 */
 	class KARMA_API VulkanContext : public GraphicsContext
 	{
 	public:

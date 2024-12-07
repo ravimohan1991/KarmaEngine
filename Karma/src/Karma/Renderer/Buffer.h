@@ -368,7 +368,11 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Abstract class for UBO (uniform buffer object)
+	 * @brief Abstract class for UBO. A UBO is mostly used for shader variables, for instance projection or view matrices, which can be updated in
+	 * GPU each frame.
+	 *
+	 * @see VulkanUniformBuffer object
+	 * @since Karma 1.0.0
 	 */
 	struct KARMA_API UniformBufferObject
 	{

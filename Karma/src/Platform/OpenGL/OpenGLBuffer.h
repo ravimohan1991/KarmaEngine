@@ -36,6 +36,7 @@ namespace Karma
 		 * 										will have size = 3 * (7 * sizeof(float)).
 		 *
 		 * @see Mesh::DealVertexIndexBufferData
+		 * @since Karma 1.0.0
 		 */
 		OpenGLVertexBuffer(float* vertices, uint32_t size);
 
@@ -101,14 +102,14 @@ namespace Karma
 		 * Initializes the relevant buffers and uploads them to GPU.
 		 *
 		 * @param indices						The array of floats containing indexbuffer data
-		 * @param count							The length os the indexbuffer array
+		 * @param count							The length of the indexbuffer array
 		 *
 		 * @since Karma 1.0.0
 		 */
 		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
 
 		/**
-		 * @brief Delets the buffers and cleans up
+		 * @brief Deletes the buffers and cleans up
 		 *
 		 * @since Karma 1.0.0
 		 */
