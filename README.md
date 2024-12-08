@@ -1,3 +1,6 @@
+A variation for GMTK [Game Jam](https://itch.io/jam/gmtk-2024) titled "Built To Scale".
+Press keyboard key 'L' to zoom in and 'P' to zoom out. 
+
 KarmaEngine
 ===========
 <img width="1440" alt="Screenshot 2023-02-15 at 15 45 40" src="https://user-images.githubusercontent.com/2173654/218999401-fe78d0e1-7bff-45ca-a0ab-cb6ab2ce31aa.png">
