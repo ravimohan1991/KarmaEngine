@@ -1,3 +1,12 @@
+/**
+ * @file VulkanContext.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains VulkanContext class
+ * @version 1.0
+ * @date Jan 1, 2021
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
@@ -11,26 +20,100 @@
 
 namespace Karma
 {
+    /**
+     * @brief Forward declaration
+     */
 	class RendererAPI;
-	//class VulkanRendererAPI;
+
+    /**
+     * @brief Forward declaration
+     */
 	class VulkanVertexArray;
+
+    /**
+     * @brief Forward declaration
+     */
 	struct VulkanUniformBuffer;
 
+    /**
+     * @brief A structure for graphics and present queuefamilies
+     *
+     * Most operations performed with Vulkan, like draw commands and memory operations, are
+     * asynchronously executed by submitting them to a VkQueue. Queues are allocated from queue
+     * families, where each queue family supports a specific set of operations in its queues. For example,
+     * there could be separate queue families for graphics, compute and memory transfer operations.
+     *
+     * Used for creating logical device, swapchain, and commandpool
+     *
+     * @see VulkanContext::FindQueueFamilies
+     * @since Karma 1.0.0
+     */
 	struct QueueFamilyIndices
 	{
+        /**
+         * @brief The queues in this queue family support graphics operations.
+         *
+         * @note The optional is used to make the query of availibility easier
+         * @since Karma 1.0.0
+         */
 		std::optional<uint32_t> graphicsFamily;
+        
+        /**
+         * @brief The queues in this queue family support image presentation
+         *
+         * The image is presented to the surface
+         *
+         * @note The optional is used to make the query of availibility easier
+         * @see VulkanContext::CreateSurface()
+         *
+         * @since Karma 1.0.0
+         */
 		std::optional<uint32_t> presentFamily;
 
+        /**
+         * @brief Routine for querying if appropriate queue families (graphicsFamily and presentFamily) are available.
+         *
+         * @see VulkanContext::IsDeviceSuitable
+         * @since Karma 1.0.0
+         */
 		bool IsComplete()
 		{
 			return graphicsFamily.has_value() && presentFamily.has_value();
 		}
 	};
 
+    /**
+     * @brief Structure with data required for appropriate creation and working of swapchain.
+     *
+     * Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own
+     * the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain
+     * and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be
+     * presented to the screen.
+     *
+     * @since Karma 1.0.0
+     */
 	struct SwapChainSupportDetails
 	{
+        /**
+         * @brief Basic surface capabilities (min/max number of images in swap chain, min/max width
+         * and height of images)
+         *
+         * @since Karma 1.0.0
+         */
 		VkSurfaceCapabilitiesKHR capabilities;
+        
+        /**
+         * @brief Surface formats (pixel format, color space)
+         *
+         * @since Karma 1.0.0
+         */
 		std::vector<VkSurfaceFormatKHR> formats;
+        
+        /**
+         * @brief Available presentation modes
+         *
+         * @since Karma 1.0.0
+         */
 		std::vector<VkPresentModeKHR> presentModes;
 	};
 
