@@ -20,6 +20,11 @@ namespace Karma
 		virtual void DrawIndexed(std::shared_ptr<VertexArray> vertexArray) override;
 		virtual void EndScene() override;
 
+		/**
+		 * @brief Allocates resources for command buffers.
+		 * Command buffers are objects used to record commands which can be subsequently submitted to a device queue for execution.
+		 * For instance the graphics and presentation queues.
+		 */
 		void AllocateCommandBuffers();
 		void RecordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 		void SubmitCommandBuffers();
