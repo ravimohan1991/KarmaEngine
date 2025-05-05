@@ -1,9 +1,9 @@
 <map id="KGGuiInputEvent" name="KGGuiInputEvent">
 <area shape="rect" id="Node000001" title=" " alt="" coords="359,153,481,179"/>
 <area shape="rect" id="Node000002" href="$structKGGuiInputEventMousePos.html" title=" " alt="" coords="19,5,204,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="220,25,279,40,336,65,362,85,384,109,413,151,409,154,380,112,358,89,333,70,278,45,219,30"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="220,23,279,37,336,63,362,83,384,107,414,151,409,154,380,110,359,87,333,67,278,42,219,28"/>
 <area shape="rect" id="Node000003" href="$structKGGuiInputEventMouseWheel.html" title=" " alt="" coords="13,55,210,80"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="226,80,281,92,336,110,373,130,403,151,400,155,370,134,334,115,280,98,225,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="226,79,281,91,336,109,373,129,404,151,401,155,371,134,334,114,280,96,225,84"/>
 <area shape="rect" id="Node000004" href="$structKGGuiInputEventMouseButton.html" title=" " alt="" coords="12,104,211,130"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="227,127,335,144,366,150,365,155,334,149,226,132"/>
 <area shape="rect" id="Node000005" href="$structKGGuiInputEventMouseViewport.html" title=" " alt="" coords="5,153,218,179"/>

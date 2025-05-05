@@ -8,5 +8,6 @@ var searchData=
   ['renderer_5',['Renderer',['../classKarma_1_1Renderer.html',1,'Karma']]],
   ['rendererapi_6',['RendererAPI',['../classKarma_1_1RendererAPI.html',1,'Karma']]],
   ['reset_7',['Reset',['../classKarmaVector.html#ae5e9df07563a38837d836291d9e0484f',1,'KarmaVector::Reset()'],['../structFUrlConfig.html#a66bbb00e91116a81d98680bb3e699437',1,'FUrlConfig::Reset()']]],
-  ['residesinpermanentpool_8',['ResidesInPermanentPool',['../classKarma_1_1FUObjectAllocator.html#aba5e829ed5b33ac77a217c8b0dd10242',1,'Karma::FUObjectAllocator']]]
+  ['residesinpermanentpool_8',['ResidesInPermanentPool',['../classKarma_1_1FUObjectAllocator.html#aba5e829ed5b33ac77a217c8b0dd10242',1,'Karma::FUObjectAllocator']]],
+  ['result_9',['Result',['../classKarma_1_1TChooseClass.html',1,'Karma::Result&lt; IsDerived, FField, UObject &gt;'],['../classKarma_1_1TChooseClass.html',1,'Karma::Result&lt; IsDerived, FFieldClass, UClass &gt;']]]
 ];

@@ -1,35 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classKarma_1_1UObjectBase.html" title="Low level implementation of UObject, should not be used directly in game code Taken from UE&#39;s UObject..." alt="" coords="5,203,149,228"/>
-<area shape="rect" id="Node000001" href="$classKarma_1_1UObject.html" title="The base class of all the game code relevant objects." alt="" coords="197,203,310,228"/>
-<area shape="poly" id="edge51_Node000000_Node000001" title=" " alt="" coords="164,213,196,213,196,218,164,218"/>
-<area shape="rect" id="Node000002" href="$classKarma_1_1AActor.html" title=" " alt="" coords="402,5,508,31"/>
-<area shape="poly" id="edge52_Node000001_Node000002" title=" " alt="" coords="261,187,275,153,295,113,322,73,356,40,378,28,402,21,403,26,380,33,360,44,326,77,299,116,280,155,266,189"/>
-<area shape="rect" id="Node000004" href="$classKarma_1_1KEngine.html" title=" " alt="" coords="398,55,512,80"/>
-<area shape="poly" id="edge54_Node000001_Node000004" title=" " alt="" coords="267,188,303,137,328,111,357,89,397,73,399,78,359,94,332,115,308,141,272,191"/>
-<area shape="rect" id="Node000005" href="$classKarma_1_1UActorComponent.html" title=" " alt="" coords="369,104,541,130"/>
-<area shape="poly" id="edge55_Node000001_Node000005" title=" " alt="" coords="278,191,314,163,357,138,385,128,387,133,359,143,317,168,282,195"/>
-<area shape="rect" id="Node000009" href="$classKarma_1_1UField.html" title=" " alt="" coords="404,153,507,179"/>
-<area shape="poly" id="edge59_Node000001_Node000009" title=" " alt="" coords="323,196,402,176,404,181,325,201"/>
-<area shape="rect" id="Node000012" href="$classKarma_1_1UGameInstance.html" title=" " alt="" coords="375,203,535,228"/>
-<area shape="poly" id="edge62_Node000001_Node000012" title=" " alt="" coords="325,213,374,213,374,218,325,218"/>
-<area shape="rect" id="Node000013" href="$classKarma_1_1UGameViewportClient.html" title=" " alt="" coords="358,252,552,278"/>
-<area shape="poly" id="edge63_Node000001_Node000013" title=" " alt="" coords="324,230,400,249,399,254,323,235"/>
-<area shape="rect" id="Node000014" href="$classKarma_1_1ULevel.html" title=" " alt="" coords="402,301,509,327"/>
-<area shape="poly" id="edge64_Node000001_Node000014" title=" " alt="" coords="282,236,317,263,359,288,402,302,400,307,357,293,314,268,278,240"/>
-<area shape="rect" id="Node000015" href="$classKarma_1_1UPackage.html" title=" " alt="" coords="392,351,518,376"/>
-<area shape="poly" id="edge65_Node000001_Node000015" title=" " alt="" coords="272,240,308,290,332,316,359,337,393,352,391,356,357,342,328,320,303,294,267,243"/>
-<area shape="rect" id="Node000016" href="$classKarma_1_1UWorld.html" title=" " alt="" coords="401,400,509,426"/>
-<area shape="poly" id="edge66_Node000001_Node000016" title=" " alt="" coords="266,242,280,276,299,315,326,354,360,387,379,398,401,405,400,410,377,403,356,391,322,358,295,318,275,278,261,244"/>
-<area shape="rect" id="Node000003" href="$classKarma_1_1AWorldSettings.html" title=" " alt="" coords="612,5,767,31"/>
-<area shape="poly" id="edge53_Node000002_Node000003" title=" " alt="" coords="524,16,611,16,611,21,524,21"/>
-<area shape="rect" id="Node000006" href="$classKarma_1_1USceneComponent.html" title=" " alt="" coords="600,104,779,130"/>
-<area shape="poly" id="edge56_Node000005_Node000006" title=" " alt="" coords="557,114,600,114,600,120,557,120"/>
-<area shape="rect" id="Node000007" href="$classKarma_1_1UChildActorComponent.html" title=" " alt="" coords="827,55,1028,80"/>
-<area shape="poly" id="edge57_Node000006_Node000007" title=" " alt="" coords="769,98,861,78,862,84,770,103"/>
-<area shape="rect" id="Node000008" href="$classKarma_1_1UPrimitiveComponent.html" title=" " alt="" coords="831,104,1024,130"/>
-<area shape="poly" id="edge58_Node000006_Node000008" title=" " alt="" coords="794,114,831,114,831,120,794,120"/>
-<area shape="rect" id="Node000010" href="$classKarma_1_1UStruct.html" title=" " alt="" coords="634,153,745,179"/>
-<area shape="poly" id="edge60_Node000009_Node000010" title=" " alt="" coords="522,164,634,164,634,169,522,169"/>
-<area shape="rect" id="Node000011" href="$classKarma_1_1UClass.html" title=" " alt="" coords="873,153,982,179"/>
-<area shape="poly" id="edge61_Node000010_Node000011" title=" " alt="" coords="760,164,873,164,873,169,760,169"/>
+<area shape="rect" id="Node000000" href="$structKarma_1_1UWorld_1_1InitializationValues.html" title=" " alt="" coords="5,5,188,46"/>
 </map>
