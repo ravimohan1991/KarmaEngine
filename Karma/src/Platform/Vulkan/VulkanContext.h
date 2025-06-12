@@ -152,9 +152,35 @@ namespace Karma
 		 * 11. Destroy validation layers for debug messages (SetupDebugMessenger())
 		 * 12. Destroy surface (CreateSurface())
 		 * 13. Destroy instance (CreateInstance())
+		 * 14. Destroy glslang memory resources for cleanup
+		 *
+		 * @see Init()
+		 * @since Karma 1.0.0
 		 */
 		virtual ~VulkanContext() override;
 
+		/**
+		 * @brief Initializes VulkanContext by creating appropriate Vulkan and glslang specific
+		 * instruments and allocating resources accordingly.
+		 *
+		 * 1. Create Instance;
+		 * 2. Setup Debug Messenger
+		 * 3. Create Surface
+		 * 4. Pick PhysicalDevice
+		 * 5. Create Logical Device
+		 * 6. Create Swap Chain
+		 * 7. Create ImageViews
+		 * 8. Create RenderPass
+		 * 9. Create CommandPool
+		 * 10. Create DepthResources
+		 * 11. Create FrameBuffers
+		 * 12. VulkanHolder::SetVulkanContext(this) (VulkanHolder::m_VulkanContext)
+		 * 13. m_vulkanRendererAPI->CreateSynchronicity()
+		 * 14. Initialize glslang()
+		 *
+		 * @see ~VulkanContext()
+		 * @since Karma 1.0.0
+		 */
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
 		virtual bool OnWindowResize(WindowResizeEvent& event) override {/*No need for Vulkan for now.*/ return true; }
