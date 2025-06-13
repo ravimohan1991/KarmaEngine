@@ -17,7 +17,7 @@ This repository contains submodules, therefore use ``` git clone --recurse-submo
 Developing
 -----------------------
 
-Karma rocks on ```Linux```, ```MacOS```, and ```Windows```.  The architecture is liberal enough to support Mobile, perhaps, in the future (I won't count stars for that though). 
+Karma rocks on ```Linux```, ```MacOS```(no longer maintained atm because I am busy elsewhere), and ```Windows```.  The architecture is liberal enough to support Mobile, perhaps, in the future (I won't count stars for that though). 
 
 Make sure to install [CMake](https://cmake.org/) for null nuiances.
 
