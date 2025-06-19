@@ -272,7 +272,7 @@ else()
 endif()
 
 if(BUILD_SHARED_LIBS)
-    set_property(TARGET glm_shared PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+    set_property(TARGET glm PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 #[[
 else()
     set_property(TARGET glm_static PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
