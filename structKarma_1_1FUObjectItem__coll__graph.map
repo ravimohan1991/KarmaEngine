@@ -1,5 +1,0 @@
-<map id="Karma::FUObjectItem" name="Karma::FUObjectItem">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,94,153,120"/>
-<area shape="rect" id="Node000002" href="$classKarma_1_1UObjectBase.html" title="Low level implementation of UObject, should not be used directly in game code Taken from UE&#39;s UObject..." alt="" coords="7,5,151,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="82,47,82,94,76,94,76,47"/>
-</map>

@@ -1,0 +1,34 @@
+<map id="Karma/src/Karma/KarmaGui/KarmaGui.h" name="Karma/src/Karma/KarmaGui/KarmaGui.h">
+<area shape="rect" id="Node000001" title="This file constains KarmaGui class. The chief class for our UI needs.." alt="" coords="207,5,393,46"/>
+<area shape="rect" id="Node000002" href="$_karma_8h_source.html" title=" " alt="" coords="128,434,261,459"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="193,42,127,62,96,77,67,96,40,119,22,141,11,167,8,202,8,293,12,319,23,343,40,364,61,382,109,411,156,431,154,436,107,416,58,386,36,367,19,346,7,321,3,293,3,202,6,166,17,139,36,116,64,92,93,72,125,57,191,37"/>
+<area shape="rect" id="Node000006" href="$_karma_gui_internal_8h.html" title="This file contains helper routines for UI drawing and relevant data structures." alt="" coords="77,94,262,135"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="259,57,200,96,197,91,256,53"/>
+<area shape="rect" id="Node000007" href="$_karma_gui_vulkan_handler_8h.html" title="This file contains KarmaGuiVulkanHandler class and relevant data structures." alt="" coords="93,183,315,223"/>
+<area shape="poly" id="edge20_Node000001_Node000007" title=" " alt="" coords="300,62,292,99,277,136,256,163,233,184,229,180,253,159,272,133,287,97,294,61"/>
+<area shape="rect" id="Node000011" href="$imgui__impl__glfw_8h.html" title="This file contains GLFW renderer backend." alt="" coords="483,94,669,135"/>
+<area shape="poly" id="edge15_Node000001_Node000011" title=" " alt="" coords="378,48,514,91,513,96,376,54"/>
+<area shape="rect" id="Node000012" href="$_karma_gui_open_g_l_handler_8h.html" title="This file contains KarmaGuiOpenGLHandler class and relevant data structures." alt="" coords="340,183,580,223"/>
+<area shape="poly" id="edge17_Node000001_Node000012" title=" " alt="" coords="330,56,444,180,440,184,326,59"/>
+<area shape="rect" id="Node000003" href="$_entry_point_8h.html" title="This file contains the main() routine with multiplatform support." alt="" coords="96,515,293,540"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="197,475,197,514,192,514,192,475"/>
+<area shape="rect" id="Node000004" href="$_editor_layer_8h_source.html" title=" " alt="" coords="54,596,200,637"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="137,468,108,485,86,509,81,530,85,553,97,575,111,594,106,597,92,578,80,555,75,530,82,506,105,481,134,463"/>
+<area shape="rect" id="Node000005" href="$_karma_gui_mesa_8h.html" title="This file contains the classes for Editor." alt="" coords="318,507,464,548"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="240,463,343,504,341,509,238,468"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="178,554,144,598,140,594,174,551"/>
+<area shape="poly" id="edge7_Node000006_Node000002" title=" " alt="" coords="119,145,99,163,84,184,66,215,57,233,50,254,48,279,52,308,63,343,85,384,98,400,113,413,150,431,147,435,111,417,94,404,80,387,59,345,47,309,43,279,45,253,52,231,61,212,79,181,95,159,115,141"/>
+<area shape="poly" id="edge8_Node000006_Node000007" title=" " alt="" coords="185,148,199,181,194,183,180,150"/>
+<area shape="rect" id="Node000008" href="$_karma_gui_layer_8h.html" title="This file contains the class KarmaGuiLayer, a Layer between Engine and KarmaGui." alt="" coords="123,271,309,312"/>
+<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="211,239,216,271,211,271,206,239"/>
+<area shape="rect" id="Node000010" href="$_karma_gui_renderer_8h.html" title="This file contains the renderer for Karma&#39;s UI." alt="" coords="355,271,541,312"/>
+<area shape="poly" id="edge13_Node000007_Node000010" title=" " alt="" coords="274,226,393,268,392,273,272,231"/>
+<area shape="poly" id="edge10_Node000008_Node000002" title=" " alt="" coords="274,318,293,332,308,348,315,367,310,387,297,404,280,417,243,435,241,431,277,413,293,400,306,384,310,367,304,351,290,336,271,322"/>
+<area shape="rect" id="Node000009" href="$_application_8h.html" title="This file contains the main Application class for Editor + Game." alt="" coords="94,360,295,386"/>
+<area shape="poly" id="edge11_Node000008_Node000009" title=" " alt="" coords="209,328,201,360,195,359,204,326"/>
+<area shape="poly" id="edge12_Node000009_Node000002" title=" " alt="" coords="197,401,197,433,192,433,192,401"/>
+<area shape="poly" id="edge14_Node000010_Node000002" title=" " alt="" coords="417,324,377,356,331,388,278,415,229,436,227,431,276,410,328,383,374,352,414,320"/>
+<area shape="poly" id="edge16_Node000011_Node000010" title=" " alt="" coords="594,148,603,186,602,206,594,225,566,254,531,273,528,268,563,249,590,222,596,205,598,187,589,149"/>
+<area shape="poly" id="edge18_Node000012_Node000008" title=" " alt="" coords="392,231,272,273,271,268,390,226"/>
+<area shape="poly" id="edge19_Node000012_Node000010" title=" " alt="" coords="458,239,453,271,448,271,453,239"/>
+</map>

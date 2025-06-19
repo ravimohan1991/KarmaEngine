@@ -1,0 +1,5 @@
+<map id="Karma::VulkanVertexBuffer" name="Karma::VulkanVertexBuffer">
+<area shape="rect" id="Node000001" title="Vulkan&#39;s vertex buffer class. Vertex buffer is used in agnostic Mesh instance." alt="" coords="5,79,182,105"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_vertex_buffer.html" title="An abstract class for vertex buffer." alt="" coords="25,5,162,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="96,46,96,79,91,79,91,46"/>
+</map>

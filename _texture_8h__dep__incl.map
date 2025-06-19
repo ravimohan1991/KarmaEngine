@@ -1,0 +1,68 @@
+<map id="Karma/src/Karma/Renderer/Texture.h" name="Karma/src/Karma/Renderer/Texture.h">
+<area shape="rect" id="Node000001" title="This file contains the SkeletalMesh class." alt="" coords="1581,5,1760,46"/>
+<area shape="rect" id="Node000002" href="$_karma_8h_source.html" title=" " alt="" coords="757,626,891,652"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1673,61,1673,202,1673,471,1667,500,1647,525,1617,547,1578,566,1531,582,1477,596,1356,617,1226,630,1098,638,891,641,891,636,1097,632,1226,625,1356,612,1476,591,1529,577,1576,561,1615,543,1644,521,1662,497,1668,470,1668,202,1668,61"/>
+<area shape="rect" id="Node000006" href="$_material_8h.html" title="This file contains the Material class." alt="" coords="326,94,506,135"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="1566,37,506,109,506,104,1565,32"/>
+<area shape="rect" id="Node000025" href="$_vulkan_texutre_8h_source.html" title=" " alt="" coords="1708,94,1870,135"/>
+<area shape="poly" id="edge41_Node000001_Node000025" title=" " alt="" coords="1711,53,1764,91,1761,96,1708,57"/>
+<area shape="rect" id="Node000003" href="$_entry_point_8h.html" title="This file contains the main() routine with multiplatform support." alt="" coords="590,707,786,733"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="792,662,710,709,708,704,789,657"/>
+<area shape="rect" id="Node000004" href="$_editor_layer_8h_source.html" title=" " alt="" coords="683,788,829,829"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="822,668,814,703,801,741,773,789,769,786,796,739,809,702,817,667"/>
+<area shape="rect" id="Node000005" href="$_karma_gui_mesa_8h.html" title="This file contains the classes for Editor." alt="" coords="862,700,1008,740"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="855,659,909,697,906,701,852,663"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="709,743,743,787,739,790,705,747"/>
+<area shape="poly" id="edge7_Node000006_Node000002" title=" " alt="" coords="311,119,212,131,161,143,113,159,71,181,38,210,16,246,10,267,8,290,8,470,10,492,15,509,23,524,35,536,65,556,105,576,159,594,233,608,320,619,415,627,605,634,757,635,757,641,605,639,415,632,319,624,232,614,158,599,103,580,63,561,31,540,19,527,10,512,5,493,3,470,3,290,5,266,11,244,34,207,68,177,111,154,160,137,211,126,310,114"/>
+<area shape="rect" id="Node000007" href="$_vertex_array_8h.html" title="This file contains the VertexArray class." alt="" coords="326,183,506,223"/>
+<area shape="poly" id="edge8_Node000006_Node000007" title=" " alt="" coords="419,150,419,182,413,182,413,150"/>
+<area shape="poly" id="edge9_Node000007_Node000002" title=" " alt="" coords="311,216,244,224,177,237,120,253,98,263,83,273,65,297,58,320,59,379,59,470,64,495,80,517,106,536,140,554,229,583,337,604,453,618,569,627,757,634,757,640,568,633,453,623,336,609,228,588,138,559,103,541,77,520,59,497,53,471,53,379,53,319,60,294,79,269,96,258,118,248,175,231,243,219,310,210"/>
+<area shape="rect" id="Node000008" href="$_renderer_a_p_i_8h.html" title="This file contains the class RendererAPI." alt="" coords="533,271,712,312"/>
+<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="478,227,577,268,575,273,476,232"/>
+<area shape="rect" id="Node000015" href="$_scene_8h.html" title="This file contains the class Scene." alt="" coords="908,271,1087,312"/>
+<area shape="poly" id="edge19_Node000007_Node000015" title=" " alt="" coords="522,217,908,274,907,280,521,223"/>
+<area shape="rect" id="Node000023" href="$_open_g_l_vertex_array_8h.html" title="This file contains OpenGLVertexArray class." alt="" coords="94,271,298,312"/>
+<area shape="poly" id="edge39_Node000007_Node000023" title=" " alt="" coords="353,232,247,273,245,268,351,227"/>
+<area shape="rect" id="Node000024" href="$_vulkan_vertex_array_8h_source.html" title=" " alt="" coords="323,271,509,312"/>
+<area shape="poly" id="edge40_Node000007_Node000024" title=" " alt="" coords="419,239,419,271,413,271,413,239"/>
+<area shape="rect" id="Node000009" href="$_render_command_8h.html" title="This file contains the class RenderCommand." alt="" coords="546,360,726,401"/>
+<area shape="poly" id="edge11_Node000008_Node000009" title=" " alt="" coords="631,327,636,359,630,360,625,328"/>
+<area shape="rect" id="Node000011" href="$_open_g_l_renderer_a_p_i_8h.html" title="This file contains OpenGLRendererAPI class." alt="" coords="93,360,304,401"/>
+<area shape="poly" id="edge15_Node000008_Node000011" title=" " alt="" coords="519,317,296,362,295,357,518,312"/>
+<area shape="rect" id="Node000012" href="$_vulkan_renderer_a_p_i_8h_source.html" title=" " alt="" coords="329,360,522,401"/>
+<area shape="poly" id="edge16_Node000008_Node000012" title=" " alt="" coords="565,321,471,362,469,357,563,316"/>
+<area shape="poly" id="edge12_Node000009_Node000002" title=" " alt="" coords="601,413,585,430,573,449,568,469,573,488,592,515,615,539,669,577,726,605,778,623,776,628,724,610,666,582,611,543,588,518,568,490,563,469,568,447,581,427,597,409"/>
+<area shape="rect" id="Node000010" href="$_renderer_8h.html" title="This file contains the class Renderer." alt="" coords="582,449,762,489"/>
+<area shape="poly" id="edge13_Node000009_Node000010" title=" " alt="" coords="652,414,666,447,661,449,648,416"/>
+<area shape="poly" id="edge14_Node000010_Node000002" title=" " alt="" coords="702,499,815,624,811,627,698,503"/>
+<area shape="rect" id="Node000013" href="$_vulkan_context_8h.html" title="This file contains VulkanContext class." alt="" coords="344,449,507,489"/>
+<area shape="poly" id="edge17_Node000012_Node000013" title=" " alt="" coords="428,416,428,448,423,448,423,416"/>
+<area shape="rect" id="Node000014" href="$_vulkan_holder_8h_source.html" title=" " alt="" coords="347,537,504,578"/>
+<area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="428,505,428,537,423,537,423,505"/>
+<area shape="poly" id="edge20_Node000015_Node000002" title=" " alt="" coords="895,321,865,338,842,362,824,395,813,432,807,471,806,509,813,578,823,625,818,626,808,579,801,509,802,470,807,431,819,393,838,358,862,334,892,316"/>
+<area shape="poly" id="edge31_Node000015_Node000010" title=" " alt="" coords="900,319,847,338,796,362,765,383,736,406,691,450,687,446,733,402,762,379,793,358,845,333,898,314"/>
+<area shape="rect" id="Node000016" href="$_application_8h.html" title="This file contains the main Application class for Editor + Game." alt="" coords="921,545,1122,570"/>
+<area shape="poly" id="edge21_Node000015_Node000016" title=" " alt="" coords="1024,323,1071,389,1092,422,1104,448,1109,469,1104,490,1092,508,1078,524,1046,546,1043,542,1074,520,1088,505,1099,488,1104,469,1099,450,1087,425,1067,392,1019,326"/>
+<area shape="rect" id="Node000017" href="$_karma_gui_layer_8h.html" title="This file contains the class KarmaGuiLayer, a Layer between Engine and KarmaGui." alt="" coords="1165,449,1350,489"/>
+<area shape="poly" id="edge23_Node000015_Node000017" title=" " alt="" coords="1033,320,1081,359,1136,398,1219,446,1216,450,1133,403,1078,363,1030,324"/>
+<area shape="rect" id="Node000018" href="$_layer_8h.html" title="This file contains the Layer class." alt="" coords="851,368,1021,393"/>
+<area shape="poly" id="edge26_Node000015_Node000018" title=" " alt="" coords="977,326,947,369,942,366,972,323"/>
+<area shape="rect" id="Node000020" href="$_karma_gui_open_g_l_handler_8h.html" title="This file contains KarmaGuiOpenGLHandler class and relevant data structures." alt="" coords="1393,360,1634,401"/>
+<area shape="poly" id="edge32_Node000015_Node000020" title=" " alt="" coords="1103,308,1396,357,1395,362,1102,313"/>
+<area shape="rect" id="Node000022" href="$_karma_gui_vulkan_handler_8h.html" title="This file contains KarmaGuiVulkanHandler class and relevant data structures." alt="" coords="1146,360,1368,401"/>
+<area shape="poly" id="edge36_Node000015_Node000022" title=" " alt="" coords="1072,315,1199,357,1197,362,1070,320"/>
+<area shape="poly" id="edge22_Node000016_Node000002" title=" " alt="" coords="978,579,855,628,853,623,976,574"/>
+<area shape="poly" id="edge24_Node000017_Node000002" title=" " alt="" coords="1233,503,1190,544,1164,564,1136,580,1074,605,1008,622,946,632,891,637,891,632,945,627,1007,616,1072,600,1134,576,1161,559,1187,540,1229,499"/>
+<area shape="poly" id="edge25_Node000017_Node000016" title=" " alt="" coords="1191,497,1056,547,1054,542,1189,492"/>
+<area shape="poly" id="edge27_Node000018_Node000002" title=" " alt="" coords="913,406,893,426,877,450,856,499,841,549,828,626,823,625,836,548,851,497,872,447,889,423,909,402"/>
+<area shape="poly" id="edge28_Node000018_Node000017" title=" " alt="" coords="997,395,1185,446,1184,451,995,400"/>
+<area shape="rect" id="Node000019" href="$_layer_stack_8h.html" title="This file contains the LayerStack class." alt="" coords="886,456,1090,482"/>
+<area shape="poly" id="edge29_Node000018_Node000019" title=" " alt="" coords="953,405,983,454,979,457,949,408"/>
+<area shape="poly" id="edge30_Node000019_Node000016" title=" " alt="" coords="1000,495,1019,544,1014,545,996,497"/>
+<area shape="poly" id="edge33_Node000020_Node000017" title=" " alt="" coords="1442,408,1316,451,1315,446,1440,403"/>
+<area shape="rect" id="Node000021" href="$_karma_gui_renderer_8h.html" title="This file contains the renderer for Karma&#39;s UI." alt="" coords="1374,449,1559,489"/>
+<area shape="poly" id="edge34_Node000020_Node000021" title=" " alt="" coords="1498,416,1480,450,1475,447,1493,413"/>
+<area shape="poly" id="edge35_Node000021_Node000002" title=" " alt="" coords="1410,498,1306,540,1183,581,1106,599,1027,614,892,633,891,628,1026,608,1105,594,1182,575,1304,535,1408,493"/>
+<area shape="poly" id="edge37_Node000022_Node000017" title=" " alt="" coords="1260,416,1260,448,1255,448,1255,416"/>
+<area shape="poly" id="edge38_Node000022_Node000021" title=" " alt="" coords="1320,405,1420,446,1418,451,1318,409"/>
+</map>

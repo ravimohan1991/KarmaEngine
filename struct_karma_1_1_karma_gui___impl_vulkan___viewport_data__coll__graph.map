@@ -1,0 +1,13 @@
+<map id="Karma::KarmaGui_ImplVulkan_ViewportData" name="Karma::KarmaGui_ImplVulkan_ViewportData">
+<area shape="rect" id="Node000001" title="Data relevant to rendering of a Mesa viewport." alt="" coords="699,104,894,145"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_vulkan_h___window.html" title="Helper structure to hold the data needed by one rendering context (Vulkan) of one OS window (Windows,..." alt="" coords="371,71,566,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="582,100,699,112,699,117,581,105"/>
+<area shape="rect" id="Node000003" href="$struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame.html" title="Helper structure to hold the data needed by one rendering ImageFrame (different from the FRAME_IN_FLI..." alt="" coords="5,5,201,46"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="217,43,371,71,370,76,216,48"/>
+<area shape="rect" id="Node000004" href="$struct_karma_1_1_karma_gui___vulkan___frame___on___flight.html" title="Data structure for synchronous operations (relevant to rendering in this context)." alt="" coords="18,71,188,111"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="203,88,371,88,371,94,203,94"/>
+<area shape="rect" id="Node000005" href="$struct_karma_1_1_karma_gui___impl_vulkan_h___window_render_buffers.html" title="A data structure for packaging of rendering buffers allocated for a current in&#45;flight ImageFrame." alt="" coords="371,136,566,177"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="581,146,675,138,699,135,699,141,675,143,582,152"/>
+<area shape="rect" id="Node000006" href="$struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame_render_buffers.html" title="Reusable buffers used for rendering 1 current in&#45;flight ImageFrame, for KarmaGui_ImplVulkan_RenderDra..." alt="" coords="5,136,201,177"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="216,154,371,154,371,159,216,159"/>
+</map>

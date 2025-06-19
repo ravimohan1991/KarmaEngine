@@ -1,0 +1,7 @@
+<map id="KGStb::STB_TexteditState" name="KGStb::STB_TexteditState">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,183,182,208"/>
+<area shape="rect" id="Node000002" href="$struct_k_g_stb_1_1_stb_undo_state.html" title=" " alt="" coords="19,94,168,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="96,135,96,182,91,182,91,135"/>
+<area shape="rect" id="Node000003" href="$struct_k_g_stb_1_1_stb_undo_record.html" title=" " alt="" coords="14,5,173,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="96,47,96,94,91,94,91,47"/>
+</map>

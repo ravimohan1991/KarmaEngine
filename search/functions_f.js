@@ -1,8 +1,19 @@
 var searchData=
 [
-  ['uclass_0',['UClass',['../classKarma_1_1UClass.html#a0885e309d30d5e20d0abbb0b73b633ea',1,'Karma::UClass::UClass()'],['../classKarma_1_1UClass.html#a7792b350cabe845a189a154085b2e188',1,'Karma::UClass::UClass(const std::string &amp;name, size_t size, size_t alignment, ClassConstructorType inClassConstructor)']]],
-  ['uninitializecomponent_1',['UninitializeComponent',['../classKarma_1_1UActorComponent.html#abd2f7337b09d06cd766b1f19cbc828a2',1,'Karma::UActorComponent']]],
-  ['uobject_2',['UObject',['../classKarma_1_1UObject.html#aa22288f8334533600337d9dd2cb4fe5c',1,'Karma::UObject']]],
-  ['uobjectbase_3',['UObjectBase',['../classKarma_1_1UObjectBase.html#ae5443b9f74f6f118535129f1b5e87955',1,'Karma::UObjectBase']]],
-  ['upackage_4',['UPackage',['../classKarma_1_1UPackage.html#a2040755a5496b30804cdf7f1ed930a3b',1,'Karma::UPackage']]]
+  ['readfiletospitstring_0',['ReadFileToSpitString',['../class_karma_1_1_karma_utilities.html#ade054da1750d9e96cab8784e644edbcb',1,'Karma::KarmaUtilities']]],
+  ['registeruobjectsstatisticscallback_1',['RegisterUObjectsStatisticsCallback',['../class_karma_1_1_f_u_object_allocator.html#a3e3e4ebe18909ee3136a4f1e7315fac9',1,'Karma::FUObjectAllocator']]],
+  ['remove_2',['Remove',['../class_karma_vector.html#a8ee0ebbf20ee399ba22c934f66043bc8',1,'KarmaVector']]],
+  ['removeactor_3',['RemoveActor',['../class_karma_1_1_u_world.html#a3aff72d4b31e41c11de23e86e07d8aa8',1,'Karma::UWorld']]],
+  ['removeownedcomponent_4',['RemoveOwnedComponent',['../class_karma_1_1_a_actor.html#ababf85c7b5f319ba0d8164b380e5f110',1,'Karma::AActor']]],
+  ['removeref_5',['RemoveRef',['../struct_karma_1_1_f_world_context.html#a017d70c9178b814d0138f100b10f2b9b',1,'Karma::FWorldContext']]],
+  ['removeshader_6',['RemoveShader',['../class_karma_1_1_material.html#ad5a1bb1e950f3a01d0ab4b7db360d8f8',1,'Karma::Material']]],
+  ['removetexture_7',['RemoveTexture',['../class_karma_1_1_material.html#a8611b12541eada5d42b77a25d334fb83',1,'Karma::Material']]],
+  ['rename_8',['Rename',['../class_karma_1_1_f_field.html#a1637eab0b544c7b9590a7d7892ce4498',1,'Karma::FField']]],
+  ['render_9',['Render',['../class_karma_1_1_karma_gui.html#a1d9b26de2cde7a601f7ed184e90e177c',1,'Karma::KarmaGui']]],
+  ['renderplatformwindowsdefault_10',['RenderPlatformWindowsDefault',['../class_karma_1_1_karma_gui.html#a4cfd4ebcfdaaec822b80b7805d288e36',1,'Karma::KarmaGui']]],
+  ['reset_11',['Reset',['../class_karma_vector.html#ae5e9df07563a38837d836291d9e0484f',1,'KarmaVector::Reset()'],['../struct_f_url_config.html#a66bbb00e91116a81d98680bb3e699437',1,'FUrlConfig::Reset()']]],
+  ['residesinpermanentpool_12',['ResidesInPermanentPool',['../class_karma_1_1_f_u_object_allocator.html#aba5e829ed5b33ac77a217c8b0dd10242',1,'Karma::FUObjectAllocator']]],
+  ['rotateaboutxaxis_13',['RotateAboutXAxis',['../class_karma_1_1_camera.html#a62512b5d6934cd9adc5f30c38b9daa50',1,'Karma::Camera']]],
+  ['rotateaboutyaxis_14',['RotateAboutYAxis',['../class_karma_1_1_camera.html#a9fa70ac8f381202e21151a04e2c11c4f',1,'Karma::Camera']]],
+  ['run_15',['Run',['../class_karma_1_1_application.html#a4504dac1b5a332057fb3011dd69aa7da',1,'Karma::Application']]]
 ];

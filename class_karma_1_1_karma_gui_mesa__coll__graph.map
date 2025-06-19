@@ -1,0 +1,17 @@
+<map id="Karma::KarmaGuiMesa" name="Karma::KarmaGuiMesa">
+<area shape="rect" id="Node000001" title=" " alt="" coords="170,390,326,416"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_log_mesa.html" title=" " alt="" coords="169,301,327,327"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="251,343,251,390,245,390,245,343"/>
+<area shape="rect" id="Node000003" href="$struct_karma_gui_text_buffer.html" title=" " alt="" coords="12,213,150,238"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="119,244,226,298,223,303,117,248"/>
+<area shape="rect" id="Node000004" href="$struct_k_g_vector.html" title=" " alt="" coords="5,116,131,142"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="74,157,82,212,77,213,69,158"/>
+<area shape="rect" id="Node000005" href="$struct_karma_gui_text_filter.html" title=" " alt="" coords="181,213,315,238"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="251,254,251,301,245,301,245,254"/>
+<area shape="rect" id="Node000006" href="$struct_k_g_vector.html" title=" " alt="" coords="155,109,357,150"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="256,165,252,213,246,212,250,165"/>
+<area shape="rect" id="Node000007" href="$struct_karma_gui_text_filter_1_1_im_gui_text_range.html" title=" " alt="" coords="189,5,323,46"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="259,62,259,109,253,109,253,62"/>
+<area shape="rect" id="Node000008" href="$struct_k_g_vector.html" title=" " alt="" coords="339,213,453,238"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="364,249,312,280,271,303,268,298,309,275,362,244"/>
+</map>

@@ -1,0 +1,18 @@
+<map id="Karma/src/Karma/Core/UObjectAllocator.h" name="Karma/src/Karma/Core/UObjectAllocator.h">
+<area shape="rect" id="Node000001" title="This file contains the class FUObjectAllocator along with the global variable declaration and several..." alt="" coords="114,5,268,46"/>
+<area shape="rect" id="Node000002" href="$_karma_memory_8h.html" title="This file contains the class FMemory.." alt="" coords="5,94,182,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="159,58,117,96,114,92,156,54"/>
+<area shape="rect" id="Node000003" href="$_karma_smriti_8h.html" title="This file contains the class KarmaSmriti, an agnostic memory manager." alt="" coords="206,94,370,135"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="226,54,268,92,264,96,222,58"/>
+<area shape="rect" id="Node000004" href="$_application_8h.html" title="This file contains the main Application class for Editor + Game." alt="" coords="188,183,389,208"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="291,150,291,182,286,182,286,150"/>
+<area shape="rect" id="Node000005" href="$_karma_8h_source.html" title=" " alt="" coords="222,256,355,282"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="291,224,291,256,286,256,286,224"/>
+<area shape="rect" id="Node000006" href="$_entry_point_8h.html" title="This file contains the main() routine with multiplatform support." alt="" coords="54,338,250,363"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="256,292,174,339,172,335,253,288"/>
+<area shape="rect" id="Node000007" href="$_editor_layer_8h_source.html" title=" " alt="" coords="147,419,293,459"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="286,298,278,334,265,372,237,419,233,417,260,370,273,332,281,297"/>
+<area shape="rect" id="Node000008" href="$_karma_gui_mesa_8h.html" title="This file contains the classes for Editor." alt="" coords="326,330,472,371"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="319,289,373,327,370,332,316,293"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="173,374,207,417,203,420,169,377"/>
+</map>

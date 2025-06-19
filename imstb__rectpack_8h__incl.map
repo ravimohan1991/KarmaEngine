@@ -1,0 +1,7 @@
+<map id="Karma/src/Karma/KarmaGui/imstb_rectpack.h" name="Karma/src/Karma/KarmaGui/imstb_rectpack.h">
+<area shape="rect" id="Node000001" title="Useful for e.g. packing rectangular textures into an atlas. Does not do rotation." alt="" coords="5,5,191,46"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="23,94,85,120"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="89,48,70,82,66,79,85,45"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="110,94,177,120"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="112,45,131,79,126,82,107,48"/>
+</map>

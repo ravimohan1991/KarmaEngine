@@ -1,0 +1,36 @@
+<map id="KGFontAtlasCustomRect" name="KGFontAtlasCustomRect">
+<area shape="rect" id="Node000001" title=" " alt="" coords="195,153,363,179"/>
+<area shape="rect" id="Node000010" href="$struct_k_g_vector.html" title=" " alt="" coords="510,230,719,270"/>
+<area shape="poly" id="edge13_Node000010_Node000001" title=" " alt="" coords="349,181,531,227,530,232,348,186"/>
+<area shape="rect" id="Node000002" href="$struct_k_g_vec2.html" title=" " alt="" coords="5,153,76,179"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,163,194,163,194,169,91,169"/>
+<area shape="rect" id="Node000008" href="$struct_k_g_font_atlas.html" title=" " alt="" coords="920,350,1017,376"/>
+<area shape="poly" id="edge9_Node000008_Node000002" title=" " alt="" coords="84,184,162,218,266,261,386,303,511,335,625,353,739,361,841,364,920,363,920,368,841,369,739,367,624,358,509,341,385,308,264,266,160,223,82,188"/>
+<area shape="rect" id="Node000012" href="$struct_k_g_font_config.html" title=" " alt="" coords="1406,213,1508,239"/>
+<area shape="poly" id="edge16_Node000012_Node000002" title=" " alt="" coords="64,140,102,107,153,72,212,44,245,36,277,33,1234,33,1274,39,1312,55,1345,78,1375,106,1423,165,1451,212,1446,214,1418,169,1371,110,1342,82,1309,59,1273,44,1234,38,278,38,246,41,214,49,155,77,105,111,67,144"/>
+<area shape="rect" id="Node000003" href="$struct_k_g_font.html" title=" " alt="" coords="1200,226,1266,252"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1211,216,1195,199,1174,184,1144,172,1119,167,1058,165,863,154,669,153,496,157,363,163,363,158,496,152,669,148,863,149,1058,159,1119,162,1146,167,1177,180,1198,195,1215,212"/>
+<area shape="rect" id="Node000009" href="$struct_k_g_vector.html" title=" " alt="" coords="1380,330,1533,356"/>
+<area shape="poly" id="edge11_Node000009_Node000003" title=" " alt="" coords="1268,258,1291,271,1360,302,1421,327,1419,332,1357,307,1289,275,1266,263"/>
+<area shape="poly" id="edge17_Node000012_Node000003" title=" " alt="" coords="1281,231,1290,230,1405,224,1405,230,1290,235,1282,236"/>
+<area shape="rect" id="Node000004" href="$struct_k_g_vector.html" title=" " alt="" coords="906,288,1031,314"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1046,295,1110,287,1175,271,1213,250,1215,255,1177,275,1111,292,1047,300"/>
+<area shape="rect" id="Node000005" href="$struct_k_g_vector.html" title=" " alt="" coords="890,73,1047,99"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="1063,79,1122,89,1151,100,1177,116,1201,141,1217,172,1232,225,1227,227,1212,174,1196,144,1174,120,1149,105,1121,94,1062,84"/>
+<area shape="rect" id="Node000006" href="$struct_k_g_vector.html" title=" " alt="" coords="879,174,1058,200"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="1074,198,1176,218,1200,225,1199,230,1175,223,1072,203"/>
+<area shape="rect" id="Node000007" href="$struct_k_g_font_glyph.html" title=" " alt="" coords="565,178,664,204"/>
+<area shape="poly" id="edge7_Node000003_Node000007" title=" " alt="" coords="680,199,774,213,880,225,1060,235,1199,237,1199,242,1060,240,879,230,774,218,679,205"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="680,188,879,186,879,191,680,193"/>
+<area shape="poly" id="edge8_Node000003_Node000008" title=" " alt="" coords="1031,351,1114,334,1150,323,1174,312,1190,299,1204,283,1223,251,1228,254,1208,286,1194,302,1177,317,1151,328,1115,339,1032,356"/>
+<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="1365,350,1017,364,1017,359,1365,344"/>
+<area shape="poly" id="edge12_Node000008_Node000010" title=" " alt="" coords="735,270,796,287,856,309,881,324,934,348,931,352,878,328,854,314,794,292,734,276"/>
+<area shape="rect" id="Node000011" href="$struct_k_g_vector.html" title=" " alt="" coords="1611,390,1793,416"/>
+<area shape="poly" id="edge14_Node000008_Node000011" title=" " alt="" coords="1596,400,1017,369,1017,363,1596,395"/>
+<area shape="poly" id="edge20_Node000003_Node000012" title=" " alt="" coords="1396,246,1356,253,1323,255,1290,253,1266,249,1267,244,1290,248,1323,250,1356,248,1395,240"/>
+<area shape="poly" id="edge15_Node000011_Node000012" title=" " alt="" coords="1490,246,1684,388,1681,392,1486,250"/>
+<area shape="rect" id="Node000013" href="$struct_k_g_vec4.html" title=" " alt="" coords="580,300,650,326"/>
+<area shape="poly" id="edge18_Node000008_Node000013" title=" " alt="" coords="666,317,920,354,920,359,665,322"/>
+<area shape="rect" id="Node000014" href="$struct_k_g_font_builder_i_o.html" title=" " alt="" coords="554,401,675,427"/>
+<area shape="poly" id="edge19_Node000008_Node000014" title=" " alt="" coords="690,410,770,405,855,394,929,374,931,379,856,400,770,411,690,416"/>
+</map>

@@ -1,7 +1,0 @@
-<map id="KarmaGuiStyle" name="KarmaGuiStyle">
-<area shape="rect" id="Node000001" title=" " alt="" coords="73,244,181,270"/>
-<area shape="rect" id="Node000002" href="$structKGVec2.html" title=" " alt="" coords="5,5,76,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="35,47,26,84,22,129,26,176,33,198,44,218,57,232,74,241,71,246,54,236,39,222,28,200,21,177,17,129,21,83,29,46"/>
-<area shape="rect" id="Node000003" href="$structKGVec4.html" title=" " alt="" coords="179,5,249,31"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="219,47,221,84,218,129,207,177,187,221,174,236,158,246,155,241,170,231,182,219,202,175,212,128,215,83,214,47"/>
-</map>

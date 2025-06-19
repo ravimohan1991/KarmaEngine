@@ -1,0 +1,7 @@
+<map id="Karma::MouseButtonReleasedEvent" name="Karma::MouseButtonReleasedEvent">
+<area shape="rect" id="Node000001" title="Event triggered when the mouse button is released." alt="" coords="5,153,202,193"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_mouse_button_event.html" title="Base class for mouse button press and release events." alt="" coords="16,79,191,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,120,106,152,101,152,101,120"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_event.html" title="The base class of all the events for Karma." alt="" coords="54,5,153,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="106,46,106,79,101,79,101,46"/>
+</map>

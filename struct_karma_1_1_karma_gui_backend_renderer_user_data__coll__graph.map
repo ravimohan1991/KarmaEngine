@@ -1,0 +1,9 @@
+<map id="Karma::KarmaGuiBackendRendererUserData" name="Karma::KarmaGuiBackendRendererUserData">
+<area shape="rect" id="Node000001" title="A multiply inherited class for supporting both OpenGL and Vulkan API&#39;s." alt="" coords="5,199,232,240"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_open_g_l3___data.html" title="A data structure for KarmaGui&#39;s OpenGL backend renderer." alt="" coords="9,109,196,150"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="111,164,118,198,112,199,106,165"/>
+<area shape="rect" id="Node000003" href="$struct_karma_1_1_karma_gui___impl_vulkan___data.html" title="Backend data containing stuff for Vulkan renderer for KarmaGui." alt="" coords="220,116,449,142"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="292,151,168,201,166,196,290,146"/>
+<area shape="rect" id="Node000004" href="$struct_karma_1_1_karma_gui___impl_vulkan___init_info.html" title="A data structure for Vulkan&#39;s initialization done in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init()" alt="" coords="237,5,432,46"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="337,61,337,116,332,116,332,61"/>
+</map>

@@ -1,9 +1,0 @@
-<map id="Karma::InputData" name="Karma::InputData">
-<area shape="rect" id="Node000001" title=" " alt="" coords="194,5,316,31"/>
-<area shape="rect" id="Node000002" href="$structKarma_1_1LinuxInputData.html" title=" " alt="" coords="5,79,158,105"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="212,40,112,81,110,76,210,35"/>
-<area shape="rect" id="Node000003" href="$structKarma_1_1MacInputData.html" title=" " alt="" coords="182,79,328,105"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="258,46,258,79,252,79,252,46"/>
-<area shape="rect" id="Node000004" href="$structKarma_1_1WindowsInputData.html" title=" " alt="" coords="352,79,526,105"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="301,34,408,76,407,81,299,39"/>
-</map>

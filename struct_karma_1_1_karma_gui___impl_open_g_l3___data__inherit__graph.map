@@ -1,0 +1,5 @@
+<map id="Karma::KarmaGui_ImplOpenGL3_Data" name="Karma::KarmaGui_ImplOpenGL3_Data">
+<area shape="rect" id="Node000001" title="A data structure for KarmaGui&#39;s OpenGL backend renderer." alt="" coords="25,5,212,46"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui_backend_renderer_user_data.html" title="A multiply inherited class for supporting both OpenGL and Vulkan API&#39;s." alt="" coords="5,94,232,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="121,62,121,94,116,94,116,62"/>
+</map>

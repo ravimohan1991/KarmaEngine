@@ -1,3 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$structKarma_1_1KarmaGui__ImplVulkan__Image__TextureData.html" title=" " alt="" coords="5,5,201,46"/>
+<area shape="rect" id="Node000000" href="$struct_karma_1_1_karma_gui___impl_open_g_l3___data.html" title="A data structure for KarmaGui&#39;s OpenGL backend renderer." alt="" coords="27,5,213,46"/>
+<area shape="rect" id="Node000001" href="$struct_karma_1_1_karma_gui_backend_renderer_user_data.html" title="A multiply inherited class for supporting both OpenGL and Vulkan API&#39;s." alt="" coords="283,35,509,75"/>
+<area shape="poly" id="edge36_Node000000_Node000001" title=" " alt="" coords="229,35,283,40,282,46,229,40"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_vulkan___data.html" title="Backend data containing stuff for Vulkan renderer for KarmaGui." alt="" coords="5,70,235,96"/>
+<area shape="poly" id="edge37_Node000002_Node000001" title=" " alt="" coords="250,67,282,64,282,69,250,72"/>
 </map>

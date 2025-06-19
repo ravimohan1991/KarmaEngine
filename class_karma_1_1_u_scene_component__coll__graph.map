@@ -1,0 +1,9 @@
+<map id="Karma::USceneComponent" name="Karma::USceneComponent">
+<area shape="rect" id="Node000001" title="A SceneComponent has a transform and supports attachment, but has no rendering or collision capabilit..." alt="" coords="5,226,184,252"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_u_actor_component.html" title="ActorComponent is the base class for components that define reusable behavior that can be added to di..." alt="" coords="8,153,181,178"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,194,97,226,92,226,92,194"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects." alt="" coords="38,79,151,105"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="97,120,97,152,92,152,92,120"/>
+<area shape="rect" id="Node000004" href="$class_karma_1_1_u_object_base.html" title="Low level implementation of UObject, should not be used directly in game code." alt="" coords="23,5,166,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="97,46,97,79,92,79,92,46"/>
+</map>

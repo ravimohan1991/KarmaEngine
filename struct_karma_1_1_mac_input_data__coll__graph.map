@@ -1,0 +1,5 @@
+<map id="Karma::MacInputData" name="Karma::MacInputData">
+<area shape="rect" id="Node000001" title="MacInput specific data structure." alt="" coords="5,79,152,105"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_input_data.html" title="Base class for Input relevant data for the variety of platforms Karma supports." alt="" coords="18,5,139,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,46,81,79,76,79,76,46"/>
+</map>

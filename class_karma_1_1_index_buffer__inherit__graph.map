@@ -1,0 +1,7 @@
+<map id="Karma::IndexBuffer" name="Karma::IndexBuffer">
+<area shape="rect" id="Node000001" title="An abstract class for index buffer." alt="" coords="128,5,259,31"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_open_g_l_index_buffer.html" title="OpenGL&#39;s index buffer class, used in agnostic Mesh instance." alt="" coords="5,79,185,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,43,113,81,110,76,163,38"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_vulkan_index_buffer.html" title="Vulkan&#39;s index buffer class, used in agnostic Mesh instance." alt="" coords="208,79,379,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="225,38,278,76,275,81,221,42"/>
+</map>

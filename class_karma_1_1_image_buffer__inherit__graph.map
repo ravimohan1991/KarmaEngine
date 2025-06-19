@@ -1,0 +1,7 @@
+<map id="Karma::ImageBuffer" name="Karma::ImageBuffer">
+<area shape="rect" id="Node000001" title="Abstract class for image buffer." alt="" coords="131,5,266,31"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_open_g_l_image_buffer.html" title="OpenGL&#39;s image buffer, used in agnostic Texture instance." alt="" coords="5,79,190,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,43,116,81,113,76,168,38"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_vulkan_image_buffer.html" title="Vulkan specific implemetation of ImageBuffer class." alt="" coords="214,79,389,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="230,38,286,76,282,81,227,42"/>
+</map>

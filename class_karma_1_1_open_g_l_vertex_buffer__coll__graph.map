@@ -1,0 +1,5 @@
+<map id="Karma::OpenGLVertexBuffer" name="Karma::OpenGLVertexBuffer">
+<area shape="rect" id="Node000001" title="OpenGL&#39;s vertex buffer class, used in agnostic Mesh instance." alt="" coords="5,79,191,105"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_vertex_buffer.html" title="An abstract class for vertex buffer." alt="" coords="30,5,166,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,46,101,79,95,79,95,46"/>
+</map>

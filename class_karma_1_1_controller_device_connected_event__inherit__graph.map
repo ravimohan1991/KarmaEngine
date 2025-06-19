@@ -1,0 +1,5 @@
+<map id="Karma::ControllerDeviceConnectedEvent" name="Karma::ControllerDeviceConnectedEvent">
+<area shape="rect" id="Node000001" title="Event triggered when the constroller device is connected." alt="" coords="5,79,228,120"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_event.html" title="The base class of all the events for Karma." alt="" coords="67,5,166,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,46,119,79,114,79,114,46"/>
+</map>

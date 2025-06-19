@@ -1,0 +1,7 @@
+<map id="Karma::VertexArray" name="Karma::VertexArray">
+<area shape="rect" id="Node000001" title="A class, comprising of Mesh and Material substances along with relevant setup, for a renderable unit." alt="" coords="130,5,262,31"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_open_g_l_vertex_array.html" title="OpenGL&#39;s vertex array class." alt="" coords="5,79,187,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="168,42,115,81,112,76,165,38"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_vulkan_vertex_array.html" title=" " alt="" coords="211,79,384,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="227,38,282,76,279,81,224,43"/>
+</map>

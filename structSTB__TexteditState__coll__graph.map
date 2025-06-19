@@ -1,7 +1,0 @@
-<map id="STB_TexteditState" name="STB_TexteditState">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,183,137,208"/>
-<area shape="rect" id="Node000002" href="$structStbUndoState.html" title=" " alt="" coords="19,94,123,120"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="74,135,74,182,68,182,68,135"/>
-<area shape="rect" id="Node000003" href="$structStbUndoRecord.html" title=" " alt="" coords="14,5,128,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="74,47,74,94,68,94,68,47"/>
-</map>

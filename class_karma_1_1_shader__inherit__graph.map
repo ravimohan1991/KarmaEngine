@@ -1,0 +1,7 @@
+<map id="Karma::Shader" name="Karma::Shader">
+<area shape="rect" id="Node000001" title="Base class of vertex + fragment shaders (for Vulkan and OpenGL)" alt="" coords="116,5,223,31"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_open_g_l_shader.html" title="OpenGL variant of Karma&#39;s Shader." alt="" coords="5,79,161,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="145,43,99,81,96,77,142,39"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_vulkan_shader.html" title=" " alt="" coords="184,79,331,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="198,39,245,77,241,81,195,43"/>
+</map>

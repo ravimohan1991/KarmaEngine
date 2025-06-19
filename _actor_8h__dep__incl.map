@@ -1,0 +1,40 @@
+<map id="Karma/src/Karma/GameFramework/Actor.h" name="Karma/src/Karma/GameFramework/Actor.h">
+<area shape="rect" id="Node000001" title="This file contains the class AActor." alt="" coords="266,5,493,46"/>
+<area shape="rect" id="Node000002" href="$_karma_8h_source.html" title=" " alt="" coords="173,434,306,459"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="302,54,254,77,211,108,193,126,179,146,169,169,166,194,166,278,173,324,191,368,213,405,232,431,227,435,208,408,186,370,168,326,161,278,161,194,164,168,174,144,189,123,207,104,252,72,299,50"/>
+<area shape="rect" id="Node000006" href="$_world_settings_8h.html" title="This file contains the class AWorldSettings." alt="" coords="266,94,493,135"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="382,62,382,94,377,94,377,62"/>
+<area shape="rect" id="Node000007" href="$_karma_utilities_8h.html" title="This file contains various classes and functions for various Karma&#39;s utilities." alt="" coords="420,183,640,208"/>
+<area shape="poly" id="edge21_Node000001_Node000007" title=" " alt="" coords="454,51,482,69,507,92,520,115,528,140,533,182,528,183,522,141,515,117,503,96,479,73,451,55"/>
+<area shape="rect" id="Node000003" href="$_entry_point_8h.html" title="This file contains the main() routine with multiplatform support." alt="" coords="5,515,202,540"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="207,470,126,517,123,512,204,465"/>
+<area shape="rect" id="Node000004" href="$_editor_layer_8h_source.html" title=" " alt="" coords="98,596,245,637"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="238,476,230,511,217,549,189,597,184,594,212,547,224,510,232,474"/>
+<area shape="rect" id="Node000005" href="$_karma_gui_mesa_8h.html" title="This file contains the classes for Editor." alt="" coords="277,507,423,548"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="270,466,324,505,321,509,267,471"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="124,551,158,594,154,598,120,554"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="432,140,508,180,506,184,429,145"/>
+<area shape="poly" id="edge8_Node000007_Node000002" title=" " alt="" coords="406,211,311,229,274,242,251,258,238,279,229,302,225,352,230,399,238,433,233,434,225,400,219,352,224,301,233,276,247,254,272,237,310,224,405,206"/>
+<area shape="rect" id="Node000008" href="$_actor_iterator_8h.html" title="This file contains the class UActorComponent." alt="" coords="260,256,488,297"/>
+<area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="494,218,414,258,412,253,491,213"/>
+<area shape="rect" id="Node000009" href="$_input_8h.html" title="This file contains input class and relevant data structures." alt="" coords="512,264,679,290"/>
+<area shape="poly" id="edge10_Node000007_Node000009" title=" " alt="" coords="552,219,588,262,583,265,548,222"/>
+<area shape="rect" id="Node000014" href="$_open_g_l_shader_8h.html" title="This file contains OpenGLShader class." alt="" coords="880,256,1058,297"/>
+<area shape="poly" id="edge17_Node000007_Node000014" title=" " alt="" coords="613,209,880,257,879,262,612,214"/>
+<area shape="rect" id="Node000016" href="$_vulkan_shader_8h_source.html" title=" " alt="" coords="1183,256,1344,297"/>
+<area shape="poly" id="edge19_Node000007_Node000016" title=" " alt="" coords="656,208,1183,264,1183,269,655,213"/>
+<area shape="poly" id="edge11_Node000009_Node000002" title=" " alt="" coords="520,296,377,326,293,347,274,367,260,391,245,434,240,432,255,388,270,364,290,343,376,320,519,290"/>
+<area shape="rect" id="Node000010" href="$_application_8h.html" title="This file contains the main Application class for Editor + Game." alt="" coords="303,352,504,378"/>
+<area shape="poly" id="edge12_Node000009_Node000010" title=" " alt="" coords="556,299,432,354,429,349,553,294"/>
+<area shape="rect" id="Node000011" href="$_linux_input_8h.html" title="This file contains LinuxInput class and relevant data structures." alt="" coords="528,345,663,386"/>
+<area shape="poly" id="edge14_Node000009_Node000011" title=" " alt="" coords="598,305,598,345,593,345,593,305"/>
+<area shape="rect" id="Node000012" href="$_mac_input_8h.html" title="This file contains MacInput class and relevant data structures." alt="" coords="687,345,821,386"/>
+<area shape="poly" id="edge15_Node000009_Node000012" title=" " alt="" coords="633,295,720,342,717,347,630,300"/>
+<area shape="rect" id="Node000013" href="$_windows_input_8h_source.html" title=" " alt="" coords="846,345,1020,386"/>
+<area shape="poly" id="edge16_Node000009_Node000013" title=" " alt="" coords="658,291,857,342,856,347,657,296"/>
+<area shape="poly" id="edge13_Node000010_Node000002" title=" " alt="" coords="366,388,266,436,263,431,363,383"/>
+<area shape="rect" id="Node000015" href="$_open_g_l_vertex_array_8h.html" title="This file contains OpenGLVertexArray class." alt="" coords="1044,345,1248,386"/>
+<area shape="poly" id="edge18_Node000014_Node000015" title=" " alt="" coords="1024,302,1107,342,1105,347,1021,306"/>
+<area shape="rect" id="Node000017" href="$_vulkan_vertex_array_8h_source.html" title=" " alt="" coords="1273,345,1459,386"/>
+<area shape="poly" id="edge20_Node000016_Node000017" title=" " alt="" coords="1300,305,1345,343,1341,347,1297,309"/>
+</map>

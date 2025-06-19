@@ -1,0 +1,5 @@
+<map id="Karma::LinuxInputData" name="Karma::LinuxInputData">
+<area shape="rect" id="Node000001" title="LinuxInput specific data structure." alt="" coords="5,79,158,105"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_input_data.html" title="Base class for Input relevant data for the variety of platforms Karma supports." alt="" coords="21,5,142,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="84,46,84,79,79,79,79,46"/>
+</map>

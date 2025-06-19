@@ -1,0 +1,17 @@
+<map id="Karma/src/Karma/Events/MouseEvent.h" name="Karma/src/Karma/Events/MouseEvent.h">
+<area shape="rect" id="Node000001" title="This file contains the classes concerned with the movement and activity of mouse." alt="" coords="156,5,323,46"/>
+<area shape="rect" id="Node000002" href="$_karma_gui_layer_8h.html" title="This file contains the class KarmaGuiLayer, a Layer between Engine and KarmaGui." alt="" coords="147,94,332,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="242,62,242,94,237,94,237,62"/>
+<area shape="rect" id="Node000003" href="$_karma_8h_source.html" title=" " alt="" coords="173,256,306,282"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="214,148,199,177,196,192,198,208,212,234,229,254,225,258,207,237,193,209,191,192,194,176,209,146"/>
+<area shape="rect" id="Node000007" href="$_application_8h.html" title="This file contains the main Application class for Editor + Game." alt="" coords="208,183,410,208"/>
+<area shape="poly" id="edge7_Node000002_Node000007" title=" " alt="" coords="269,145,300,180,296,184,265,148"/>
+<area shape="rect" id="Node000004" href="$_entry_point_8h.html" title="This file contains the main() routine with multiplatform support." alt="" coords="5,338,202,363"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,292,126,339,123,335,204,288"/>
+<area shape="rect" id="Node000005" href="$_editor_layer_8h_source.html" title=" " alt="" coords="98,419,245,459"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="238,298,230,334,217,372,189,419,184,417,212,370,224,332,232,297"/>
+<area shape="rect" id="Node000006" href="$_karma_gui_mesa_8h.html" title="This file contains the classes for Editor." alt="" coords="277,330,423,371"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="270,289,324,327,321,332,267,293"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="124,374,158,417,154,420,120,377"/>
+<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="289,221,253,258,249,254,285,217"/>
+</map>

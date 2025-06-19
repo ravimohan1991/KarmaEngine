@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['editorlayer_0',['EditorLayer',['../classKarma_1_1EditorLayer.html',1,'Karma']]],
-  ['event_1',['Event',['../classKarma_1_1Event.html',1,'Karma']]],
-  ['eventdispatcher_2',['EventDispatcher',['../classKarma_1_1EventDispatcher.html',1,'Karma']]],
-  ['examplelayer_3',['ExampleLayer',['../classExampleLayer.html',1,'']]]
+  ['editorlayer_0',['EditorLayer',['../class_karma_1_1_editor_layer.html',1,'Karma']]],
+  ['event_1',['Event',['../class_karma_1_1_event.html',1,'Karma']]],
+  ['eventdispatcher_2',['EventDispatcher',['../class_karma_1_1_event_dispatcher.html',1,'Karma']]],
+  ['examplelayer_3',['ExampleLayer',['../class_example_layer.html',1,'']]]
 ];

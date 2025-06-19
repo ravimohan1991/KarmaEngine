@@ -1,0 +1,10 @@
+<map id="Karma::UGameViewportClient" name="Karma::UGameViewportClient">
+<area shape="rect" id="Node000001" title="A game viewport (FViewport) is a high&#45;level abstract interface for the platform specific rendering,..." alt="" coords="5,244,200,270"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects." alt="" coords="40,80,154,106"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,122,105,244,99,244,95,122"/>
+<area shape="rect" id="Node000004" href="$class_karma_1_1_u_world.html" title="The World is the top level object representing a map or a sandbox in which Actors and Components will..." alt="" coords="119,155,227,181"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="122,115,163,153,159,157,119,119"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_u_object_base.html" title="Low level implementation of UObject, should not be used directly in game code." alt="" coords="26,5,169,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="100,46,100,80,94,80,94,46"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="156,195,114,245,110,242,152,191"/>
+</map>

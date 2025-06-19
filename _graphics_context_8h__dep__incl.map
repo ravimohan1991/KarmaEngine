@@ -1,0 +1,9 @@
+<map id="Karma/src/Karma/Renderer/GraphicsContext.h" name="Karma/src/Karma/Renderer/GraphicsContext.h">
+<area shape="rect" id="Node000001" title="This file contains base class GraphicsContext." alt="" coords="104,5,283,46"/>
+<area shape="rect" id="Node000002" href="$_open_g_l_context_8h.html" title="This file contains OpenGLContext class." alt="" coords="5,94,187,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="162,58,120,96,116,92,158,54"/>
+<area shape="rect" id="Node000003" href="$_vulkan_context_8h.html" title="This file contains VulkanContext class." alt="" coords="210,94,374,135"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="229,54,271,92,268,96,225,58"/>
+<area shape="rect" id="Node000004" href="$_vulkan_holder_8h_source.html" title=" " alt="" coords="213,183,371,223"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="295,150,295,182,289,182,289,150"/>
+</map>

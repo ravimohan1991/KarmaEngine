@@ -1,0 +1,7 @@
+<map id="Karma::KarmaGui_ImplVulkanH_Window" name="Karma::KarmaGui_ImplVulkanH_Window">
+<area shape="rect" id="Node000001" title="Helper structure to hold the data needed by one rendering context (Vulkan) of one OS window (Windows,..." alt="" coords="108,109,303,150"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame.html" title="Helper structure to hold the data needed by one rendering ImageFrame (different from the FRAME_IN_FLI..." alt="" coords="5,5,201,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,55,188,107,184,110,131,59"/>
+<area shape="rect" id="Node000003" href="$struct_karma_1_1_karma_gui___vulkan___frame___on___flight.html" title="Data structure for synchronous operations (relevant to rendering in this context)." alt="" coords="224,5,395,46"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="281,59,228,110,224,107,277,55"/>
+</map>

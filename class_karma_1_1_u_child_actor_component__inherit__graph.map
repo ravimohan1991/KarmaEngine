@@ -1,0 +1,11 @@
+<map id="Karma::UChildActorComponent" name="Karma::UChildActorComponent">
+<area shape="rect" id="Node000001" title="A component that spawns an Actor when registered, and destroys it when unregistered." alt="" coords="5,300,207,326"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_u_scene_component.html" title="A SceneComponent has a transform and supports attachment, but has no rendering or collision capabilit..." alt="" coords="17,226,195,252"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,267,109,300,103,300,103,267"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_u_actor_component.html" title="ActorComponent is the base class for components that define reusable behavior that can be added to di..." alt="" coords="20,153,192,178"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="109,194,109,226,103,226,103,194"/>
+<area shape="rect" id="Node000004" href="$class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects." alt="" coords="49,79,163,105"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="109,120,109,152,103,152,103,120"/>
+<area shape="rect" id="Node000005" href="$class_karma_1_1_u_object_base.html" title="Low level implementation of UObject, should not be used directly in game code." alt="" coords="34,5,178,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="109,46,109,79,103,79,103,46"/>
+</map>

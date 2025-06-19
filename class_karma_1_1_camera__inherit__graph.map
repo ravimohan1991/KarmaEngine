@@ -1,0 +1,7 @@
+<map id="Karma::Camera" name="Karma::Camera">
+<area shape="rect" id="Node000001" title="Base class of Camera." alt="" coords="145,5,255,31"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_orthographic_camera.html" title="Class for OrthographicCamera meaning Camera without depth scaling." alt="" coords="5,79,190,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="172,42,117,81,113,76,169,38"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_perspective_camera.html" title="Class for PerspectiveCamera, meaning Camera with depth scaling." alt="" coords="213,79,392,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="231,38,287,76,284,81,228,42"/>
+</map>

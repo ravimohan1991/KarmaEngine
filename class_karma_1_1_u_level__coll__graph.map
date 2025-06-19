@@ -1,0 +1,16 @@
+<map id="Karma::ULevel" name="Karma::ULevel">
+<area shape="rect" id="Node000001" title="A Level is a collection of Actors (lights, volumes, mesh instances etc.). Multiple Levels can be load..." alt="" coords="123,273,231,298"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects." alt="" coords="20,80,134,106"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="65,121,51,164,49,187,55,209,70,230,91,247,136,270,134,275,88,251,67,233,51,211,44,187,45,163,60,119"/>
+<area shape="rect" id="Node000007" href="$class_karma_1_1_u_world.html" title="The World is the top level object representing a map or a sandbox in which Actors and Components will..." alt="" coords="66,176,174,202"/>
+<area shape="poly" id="edge7_Node000007_Node000002" title=" " alt="" coords="91,119,117,175,112,177,86,121"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_u_object_base.html" title="Low level implementation of UObject, should not be used directly in game code." alt="" coords="5,5,149,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="80,46,80,80,74,80,74,46"/>
+<area shape="rect" id="Node000004" href="$struct_f_u_r_l.html" title="URL structure." alt="" coords="209,176,265,202"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="231,218,215,250,194,274,190,270,211,247,226,216"/>
+<area shape="rect" id="Node000005" href="$struct_f_url_config.html" title="Helper for obtaining the default Url configuration." alt="" coords="196,80,278,106"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="240,122,240,176,234,176,234,122"/>
+<area shape="rect" id="Node000006" href="$class_karma_vector.html" title=" " alt="" coords="289,169,436,210"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="325,221,276,251,218,274,216,270,273,246,323,217"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="114,218,113,233,117,247,129,260,144,270,141,275,125,264,113,250,108,234,109,217"/>
+</map>

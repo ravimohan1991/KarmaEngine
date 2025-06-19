@@ -1,0 +1,5 @@
+<map id="Karma::AppTickEvent" name="Karma::AppTickEvent">
+<area shape="rect" id="Node000001" title="Event triggered on each game tick (called in game loop)" alt="" coords="5,79,152,105"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_event.html" title="The base class of all the events for Karma." alt="" coords="29,5,128,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,46,81,79,76,79,76,46"/>
+</map>

@@ -1,0 +1,21 @@
+<map id="Karma/src/Karma/Input.h" name="Karma/src/Karma/Input.h">
+<area shape="rect" id="Node000001" title="This file contains input class and relevant data structures." alt="" coords="418,5,584,31"/>
+<area shape="rect" id="Node000002" href="$_karma_8h_source.html" title=" " alt="" coords="173,168,306,193"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="403,28,341,35,280,46,229,61,210,70,198,81,192,91,191,101,198,125,213,148,229,166,225,169,208,151,193,127,185,102,187,89,193,77,207,66,227,56,278,40,340,30,402,23"/>
+<area shape="rect" id="Node000006" href="$_application_8h.html" title="This file contains the main Application class for Editor + Game." alt="" coords="208,86,410,112"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="458,40,339,88,337,84,456,35"/>
+<area shape="rect" id="Node000007" href="$_linux_input_8h.html" title="This file contains LinuxInput class and relevant data structures." alt="" coords="434,79,568,120"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="504,46,504,79,498,79,498,46"/>
+<area shape="rect" id="Node000008" href="$_mac_input_8h.html" title="This file contains MacInput class and relevant data structures." alt="" coords="592,79,727,120"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="540,36,621,76,619,81,538,41"/>
+<area shape="rect" id="Node000009" href="$_windows_input_8h_source.html" title=" " alt="" coords="751,79,925,120"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="568,32,755,76,753,81,567,38"/>
+<area shape="rect" id="Node000003" href="$_entry_point_8h.html" title="This file contains the main() routine with multiplatform support." alt="" coords="5,249,202,274"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="207,204,126,251,123,246,204,199"/>
+<area shape="rect" id="Node000004" href="$_editor_layer_8h_source.html" title=" " alt="" coords="98,330,245,371"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="238,210,230,245,217,283,189,331,184,328,212,281,224,244,232,208"/>
+<area shape="rect" id="Node000005" href="$_karma_gui_mesa_8h.html" title="This file contains the classes for Editor." alt="" coords="277,241,423,282"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="270,200,324,239,321,243,267,205"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="124,285,158,328,154,332,120,288"/>
+<area shape="poly" id="edge7_Node000006_Node000002" title=" " alt="" coords="290,126,252,169,248,165,286,122"/>
+</map>

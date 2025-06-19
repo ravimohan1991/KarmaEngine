@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.13.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Karma Engine: Todo List</title>
+<title>KarmaEngine: Todo List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,8 +25,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Karma Engine
+   <div id="projectname">KarmaEngine
    </div>
+   <div id="projectbrief">Game Engine for practical learning and research purposes</div>
   </td>
  </tr>
  </tbody>
@@ -88,18 +89,172 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt>Member <a class="el" href="classKarma_1_1KarmaClassObjectMap.html#a196a5c7cd18623087af56b471672ae53">Karma::KarmaClassObjectMap::FindClassObjects</a>  (const <a class="el" href="classKarma_1_1UClass.html">UClass</a> *Key)</dt>
-<dd><a class="anchor" id="_todo000009"></a>write class registration system for comparing <a class="el" href="classKarma_1_1UClass.html">UClass</a>  </dd>
-<dt>Member <a class="el" href="classKarma_1_1UObject.html#add7a5c2d46c62ab98edb91bec3e2d448">Karma::UObject::BeginDestroy</a>  ()</dt>
-<dd><a class="anchor" id="_todo000005"></a>To be written with Shiva logic for <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects.">UObject</a> destruction. </dd>
-<dt>Member <a class="el" href="classKarma_1_1UObject.html#a12d23b4ef1a935c31572e76a8e793ed7">Karma::UObject::FinishDestroy</a>  ()</dt>
-<dd><a class="anchor" id="_todo000003"></a>To be written with Shiva logic for <a class="el" href="classKarma_1_1UObject.html" title="The base class of all the game code relevant objects.">UObject</a> destruction. </dd>
-<dt>Member <a class="el" href="classKarma_1_1UObject.html#a79cd8eb1f2579df9484a42c12d3a9ace">Karma::UObject::GetDesc</a>  ()</dt>
-<dd><a class="anchor" id="_todo000004"></a>Place holder for now. Plan to rewrite once Editor reaches that stage </dd>
-<dt>Member <a class="el" href="classKarma_1_1UObject.html#afa4c5fbf1ee70624094244573d7c3470">Karma::UObject::IsSelected</a>  () const</dt>
-<dd><a class="anchor" id="_todo000006"></a>UE this doesn't belong here, but it doesn't belong anywhere else any better. To be written after Editor is functional with UObjects </dd>
-<dt>Member <a class="el" href="classKarma_1_1UStruct.html#a18b589ab718767ea3c78367bdcf6b760">Karma::UStruct::IsChildOf</a>  (const <a class="el" href="classKarma_1_1UStruct.html">UStruct</a> *SomeBase) const</dt>
-<dd><a class="anchor" id="_todo000001"></a>write class registration system for comparing <a class="el" href="classKarma_1_1UClass.html">UClass</a></dd>
+<dt>Member <a class="el" href="class_karma_1_1_a_actor.html#ababf85c7b5f319ba0d8164b380e5f110">Karma::AActor::RemoveOwnedComponent</a>  (std::shared_ptr&lt; UActorComponent &gt; Component)</dt>
+<dd><a class="anchor" id="_todo000047"></a>Not functional yet  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_application.html#a204c531d69157ccc48bf3874eea41805">Karma::Application::DecommisionApplicationEngine</a>  ()</dt>
+<dd><a class="anchor" id="_todo000003"></a>Need to think how this should be written with GC in mind  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_application.html#a7eb05769a2849fb30f4db778247e9ca7">Karma::Application::HookInputSystem</a>  (std::shared_ptr&lt; Input &gt; input)</dt>
+<dd><a class="anchor" id="_todo000001"></a>Think about the need to uplift to more abstract implementation  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_application.html#ae5e45be7e0a60535722faaa2530cdcbe">Karma::Application::InitializeApplicationEngine</a>  ()</dt>
+<dd><a class="anchor" id="_todo000002"></a>Ponder over the usage of <a class="el" href="class_karma_1_1_k_engine.html" title="Base class of all Engine classes, responsible for management of systems critical to editor or game sy...">KEngine</a> type instances for Editor and Game  </dd>
+<dt>Member <a class="el" href="struct_karma_1_1_buffer_element.html#ae2a1c94193b7d6a5bb3df83b0f42880e">Karma::BufferElement::BufferElement</a>  (<a class="el" href="_buffer_8h.html#a6772a8a24de3acd9480e516faf861c89" title="A C++ data structure for shader language (GLSL or HLSL) data, like uniforms for instance and datatype...">ShaderDataType</a> type, const std::string &amp;name, bool normalized=false, uint64_t offset=0)</dt>
+<dd><a class="anchor" id="_todo000061"></a>Think about vulkan needs of normalized parameter, with opengl in context, and try to abstract accordingly. Also may need to think about the custom default offsets  </dd>
+<dt>Class <a class="el" href="class_karma_1_1_camera.html">Karma::Camera</a>  </dt>
+<dd><a class="anchor" id="_todo000063"></a>This class needs major revamp with reparenting(?) with <a class="el" href="class_karma_1_1_a_actor.html" title="Actor is the base class for an object that can be placed or spawned in a level.">AActor</a>, just like Unreal Engine's CameraActor  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_camera.html#a1b3b527e35897dcacde4f968aeb395e9">Karma::Camera::GetPosition</a>  () const</dt>
+<dd><a class="anchor" id="_todo000064"></a>Use different data structure, provided in <a class="el" href="_transform_8h.html" title="This file contains the math specific for transforms.">Ganit/Transform.h</a> </dd>
+<dt>Member <a class="el" href="_u_object_globals_8h.html#a2adae4bb37bf4ef96a7108bd7f09755c">Karma::CastChecked</a>  (const U &amp;Src, <a class="el" href="namespace_karma_1_1_e_cast_checked_type.html#a1aea65c853198139f3ad10c212f53a86">ECastCheckedType::Type</a> CheckType=<a class="el" href="namespace_karma_1_1_e_cast_checked_type.html#a1aea65c853198139f3ad10c212f53a86ad59a2598053c94329fc661e0a4c46a6d">ECastCheckedType::NullChecked</a>)</dt>
+<dd><a class="anchor" id="_todo000034"></a>static_cast may require more addition depending on the usage  </dd>
+<dt>Member <a class="el" href="_u_object_globals_8h.html#a73cd381d052c3b0af8f554897d403c54">Karma::EnumHasAnyFlags</a>  (Enum Flags, Enum Contains)</dt>
+<dd><a class="anchor" id="_todo000033"></a>may need to write in seperate file  </dd>
+<dt>Member <a class="el" href="struct_karma_1_1_f_actor_spawn_parameters.html#ab46c437446441d08d72790745f9731da">Karma::FActorSpawnParameters::m_Name</a>  </dt>
+<dd><a class="anchor" id="_todo000050"></a>Need to write auto naming mechanism  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_field_class.html#a4e8a676f89f50619c1240e77e48f57cc">Karma::FFieldClass::GetAllFieldClasses</a>  ()</dt>
+<dd><a class="anchor" id="_todo000014"></a>Write function definition when required  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_field_class.html#a38bcba4521b5f4f1b544baee5572a3c7">Karma::FFieldClass::GetNameToFieldClassMap</a>  ()</dt>
+<dd><a class="anchor" id="_todo000015"></a>Write function definition when requreid  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_field_class.html#a3a03a91cb6900774f4dc3397be9477cb">Karma::FFieldClass::IsChildOf</a>  (const <a class="el" href="class_karma_1_1_f_field_class.html" title="Object representing a type of an FField struct. Mimics a subset of UObject reflection functions.">FFieldClass</a> *InClass) const</dt>
+<dd><a class="anchor" id="_todo000016"></a>Need to try with various cases for intended purpose  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_field_variant.html#a9dfdf4098a809baa06dfe6dd3181efb7">Karma::FFieldVariant::GetRawPointer</a>  () const</dt>
+<dd><a class="anchor" id="_todo000013"></a>Ponder how this is different from previous similar function  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_field_variant.html#a5dbb8893827030e67c74ee495fceb8b2">Karma::FFieldVariant::IsA</a>  (const <a class="el" href="class_karma_1_1_u_class.html" title="An object class.">UClass</a> *InClass) const</dt>
+<dd><a class="anchor" id="_todo000010"></a>Function definition is missing  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_field_variant.html#a9dc6b5cf6ee6bd0920914cc64a9376ce">Karma::FFieldVariant::IsA</a>  (const <a class="el" href="class_karma_1_1_f_field_class.html" title="Object representing a type of an FField struct. Mimics a subset of UObject reflection functions.">FFieldClass</a> *InClass) const</dt>
+<dd><a class="anchor" id="_todo000011"></a>Function definition is missing  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_field_variant.html#a92446831b779fdbe84ea47a6533f0077">Karma::FFieldVariant::IsValid</a>  () const</dt>
+<dd><a class="anchor" id="_todo000008"></a>Ponder over the routine  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_field_variant.html#a6ad06363dd11947ff933f7650ce32ac3">Karma::FFieldVariant::IsValidLowLevel</a>  () const</dt>
+<dd><a class="anchor" id="_todo000009"></a>Function definition is missing  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_field_variant.html#a89aefeed91349ed26bf3c9b7591563d9">Karma::FFieldVariant::ToFieldUnsafe</a>  () const</dt>
+<dd><a class="anchor" id="_todo000012"></a>Ponder  </dd>
+<dt>Member <a class="el" href="struct_karma_1_1_f_math.html#a6b6b52f963a89868edfe829f057695b3">Karma::FMath::CountTrailingZeros</a>  (uint32_t Value)</dt>
+<dd><a class="anchor" id="_todo000055"></a>Not yet functional because no clear  </dd>
+<dt>Member <a class="el" href="struct_karma_1_1_f_memory.html#ab4f5238fa60d254c49ecd60ec3386d42">Karma::FMemory::MallocZeroed</a>  (SIZE_T Count, <a class="el" href="_karma_memory_8h.html#a179c407dcc4918c1531af24ecb773e80" title="32-bit unsigned integer">uint32</a> Alignment=DEFAULT_ALIGNMENT)</dt>
+<dd><a class="anchor" id="_todo000024"></a>Make Alignment functional in Malloc  </dd>
+<dt>Member <a class="el" href="struct_karma_1_1_f_static_construct_object_parameters.html#a6d7c69a9e22d79f7f9d01e72929d4c92">Karma::FStaticConstructObjectParameters::m_Name</a>  </dt>
+<dd><a class="anchor" id="_todo000041"></a>If no value (NAME_None) is specified, the object will be given a unique name in the form of ClassName_#.  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_u_object_array.html#a1494f241c8f12846d7c4d4802e946f3f">Karma::FUObjectArray::AddUObject</a>  (<a class="el" href="class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects.">UObject</a> *Object)</dt>
+<dd><a class="anchor" id="_todo000037"></a>Benchmark if this is bottle neck for SpawnActor </dd>
+<dt>Member <a class="el" href="class_karma_1_1_f_u_object_array_1_1_t_iterator.html#adbc014ac090db77039b72cd54bd7045f">Karma::FUObjectArray::TIterator::TIterator</a>  (const <a class="el" href="class_karma_1_1_f_u_object_array.html" title="A class for managing the collection of UObjects (all or some?)">FUObjectArray</a> &amp;InArray, bool bOnlyGCedObjects=false)</dt>
+<dd><a class="anchor" id="_todo000038"></a>Garbage collection may require some changes here </dd>
+<dt>Member <a class="el" href="class_karma_1_1_graphics_context.html#a640d5490f3704ff4f928c5e749e99fbd">Karma::GraphicsContext::OnWindowResize</a>  (<a class="el" href="class_karma_1_1_window_resize_event.html" title="Event triggered when Window is resized.">WindowResizeEvent</a> &amp;event)=0</dt>
+<dd><a class="anchor" id="_todo000066"></a>Seems OpenGL specific. Either think about usage in Vulkan or re design  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_graphics_context.html#a482b398d69ae42ffb618b470b25daa21">Karma::GraphicsContext::SwapBuffers</a>  ()=0</dt>
+<dd><a class="anchor" id="_todo000065"></a>This seems to be an OpenGL specific call. Need to design api accordingly  </dd>
+<dt>Member <a class="el" href="_u_object_globals_8h.html#afdfdb23af19f0600b036dd46bc0aa6d8">Karma::int32</a>  </dt>
+<dd><a class="anchor" id="_todo000032"></a>find or write appropriate class for such type </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_class_object_map.html#a196a5c7cd18623087af56b471672ae53">Karma::KarmaClassObjectMap::FindClassObjects</a>  (const <a class="el" href="class_karma_1_1_u_class.html" title="An object class.">UClass</a> *Key)</dt>
+<dd><a class="anchor" id="_todo000039"></a>write class registration system for comparing <a class="el" href="class_karma_1_1_u_class.html" title="An object class.">UClass</a> </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_class_object_map.html#a1ad7dda67f9cf9259d325ef155c021b5">Karma::KarmaClassObjectMap::FindOrAddClass</a>  (const <a class="el" href="class_karma_1_1_u_class.html" title="An object class.">UClass</a> *Key)</dt>
+<dd><a class="anchor" id="_todo000040"></a><b>Priority based:</b> memory management needed, especially since new is used to allocate <a class="el" href="class_karma_vector.html" title="Karma&#39;s std::vector wrapper.">KarmaVector&lt;UObject*&gt;</a> on heap  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_gui.html#add22ff556b27cf4c1bc6e9a9c7e00cde">Karma::KarmaGui::MemAlloc</a>  (size_t size)</dt>
+<dd><a class="anchor" id="_todo000056"></a>Make use of Karma's memory management (<a class="el" href="class_karma_1_1_karma_smriti.html" title="Karma&#39;s memory management. Heavily influenced from https://github.com/ravimohan1991/cppGameMemorySyst...">KarmaSmriti</a>) class, with modifications, just like that for <a class="el" href="class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects.">UObject</a>.  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_gui.html#a0ddd6ef6b8e9962fefadd92b192dba68">Karma::KarmaGui::MemFree</a>  (void *ptr)</dt>
+<dd><a class="anchor" id="_todo000057"></a>Make use of Karma's memory management (<a class="el" href="class_karma_1_1_karma_smriti.html" title="Karma&#39;s memory management. Heavily influenced from https://github.com/ravimohan1991/cppGameMemorySyst...">KarmaSmriti</a>) class, with modifications, just like that for <a class="el" href="class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects.">UObject</a>.  </dd>
+<dt>Struct <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html">Karma::KarmaGui_ImplVulkan_Data</a>  </dt>
+<dd><a class="anchor" id="_todo000083"></a>Ponder upon the fatness. </dd>
+<dt>Member <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html#a5b444633145dd5dd0ed01a67c9f75603">Karma::KarmaGui_ImplVulkanH_Window::RenderArea</a>  </dt>
+<dd><a class="anchor" id="_todo000084"></a>Ponder, how to implement the context switch from Editor rendering to Game rendering. </dd>
+<dt>Struct <a class="el" href="struct_karma_1_1_karma_gui_backend_renderer_user_data.html">Karma::KarmaGuiBackendRendererUserData</a>  </dt>
+<dd><a class="anchor" id="_todo000058"></a>This just fattens the KarmaBackendRendererUserData with disregard to I (Interface seggregation principle) of SOLID principles. Try using polymorphism by wormbo's "other way round" phrase and making OpenGL3_Data and Vulkan_Data child classes of <a class="el" href="struct_karma_1_1_karma_gui_backend_renderer_user_data.html" title="A multiply inherited class for supporting both OpenGL and Vulkan API&#39;s.">KarmaGuiBackendRendererUserData</a>. </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_gui_open_g_l_handler.html#ae092dd6c4db37e0f995150b2fc9b4370">Karma::KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState</a>  (<a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> *draw_data, int fb_width, int fb_height, GLuint vertex_array_object)</dt>
+<dd><a class="anchor" id="_todo000079"></a>An amature work: try using math GLM's projection matrix for orthographic view  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_gui_open_g_l_handler.html#a70d4d69bfc1d268274263585327e2e49">Karma::KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_ShutdownPlatformInterface</a>  ()</dt>
+<dd><a class="anchor" id="_todo000078"></a><a class="el" href="class_karma_1_1_karma_gui_open_g_l_handler.html" title="The chief class for KarmaGui&#39;s OpenGL based backend renderer.">KarmaGuiOpenGLHandler</a> seems to be not doing the right form of cleaning of resources because Renderer_Destroy_Window is not set like that in <a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html" title="A class for required Vulkan routines for KarmaGui Vulkan backend.">KarmaGuiVulkanHandler</a>. Try to find a way.  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a9b480e660f6873323cbdc9b93c3d2211">Karma::KarmaGuiRenderer::KarmaGui_ImplVulkan_Init</a>  (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___init_info.html" title="A data structure for Vulkan&#39;s initialization done in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init()">KarmaGui_ImplVulkan_InitInfo</a> *initInfo)</dt>
+<dd><a class="anchor" id="_todo000060"></a>Think about using moving the function to KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init instead (for better keeping IDK?)  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a5cb4f523b4ab2e3580247d7cac491467">Karma::KarmaGuiRenderer::SetUpKarmaGuiRenderer</a>  (GLFWwindow *window)</dt>
+<dd><a class="anchor" id="_todo000059"></a>Move the Vulkan part to <a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html" title="A class for required Vulkan routines for KarmaGui Vulkan backend.">KarmaGuiVulkanHandler</a> for instance KarmaGui_ImplVulkan_Init. Or maybe just ponder first since I seem to have attempted that.  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#a4ff694292f77f635db29dd1804c13bda">Karma::KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_NewFrame</a>  ()</dt>
+<dd><a class="anchor" id="_todo000087"></a>Ponder over  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#ac989f0dd29c02b3489ff33a31c0b261b">Karma::KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetupRenderState</a>  (<a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> *drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame_render_buffers.html" title="Reusable buffers used for rendering 1 current in-flight ImageFrame, for KarmaGui_ImplVulkan_RenderDra...">KarmaGui_ImplVulkanH_ImageFrameRenderBuffers</a> *remderingBufferData, int width, int height)</dt>
+<dd><a class="anchor" id="_todo000085"></a>Ponder over the commandBuffer usage (should backend have seperate commandbuffer?)  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#a09e6fbd79125a5759c82f87aaa7eed33">Karma::KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering</a>  (<a class="el" href="class_karma_1_1_scene.html" title="Class for organizing and containing Scene relevant data.">Scene</a> *sceneToDraw, VkCommandBuffer commandBuffer, <a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> *drawData)</dt>
+<dd><a class="anchor" id="_todo000086"></a>Ponder over the commandBuffer usage (should backend have seperate commandbuffer?)  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_k_engine.html#ac67ce8fbc910203594f2fcfb68922698">Karma::KEngine::CleanupGameViewport</a>  ()</dt>
+<dd><a class="anchor" id="_todo000044"></a>Write the logic once viewport is implemented  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_k_engine.html#aa4eeed55a238c02c31d360cf26976904">Karma::KEngine::WorldAdded</a>  (<a class="el" href="class_karma_1_1_u_world.html" title="The World is the top level object representing a map or a sandbox in which Actors and Components will...">UWorld</a> *World)</dt>
+<dd><a class="anchor" id="_todo000045"></a>Not functional  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_k_engine.html#a0bc6a39b004e6477509b0334654a47e1">Karma::KEngine::WorldDestroyed</a>  (<a class="el" href="class_karma_1_1_u_world.html" title="The World is the top level object representing a map or a sandbox in which Actors and Components will...">UWorld</a> *InWorld)</dt>
+<dd><a class="anchor" id="_todo000046"></a>Not functional  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_open_g_l_shader.html#a03178124ea3c4c466ea909f728e7c7d8">Karma::OpenGLShader::Bind</a>  () const override</dt>
+<dd><a class="anchor" id="_todo000080"></a>See to remove the "texSampler" and make generic  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_open_g_l_shader.html#ade8ed368bdd1f811e2bca166cf57d343">Karma::OpenGLShader::Bind</a>  (const std::string &amp;texShaderName) const override</dt>
+<dd><a class="anchor" id="_todo000081"></a>Maybe make arrangements for list of uniforms and rename texShaderName  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_open_g_l_shader.html#a74958ed24f8185b7c9d0434fcf7d0ae6">Karma::OpenGLShader::UnBind</a>  () const override</dt>
+<dd><a class="anchor" id="_todo000082"></a>Ponder about uniform unbinding  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_render_command.html#a58bbbdf7bfbbb2b4cc3393f9946444a1">Karma::RenderCommand::Clear</a>  ()</dt>
+<dd><a class="anchor" id="_todo000067"></a>Seems like <a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html">VulkanRendererAPI</a> is not using this function call for clearing. </dd>
+<dt>Member <a class="el" href="class_karma_1_1_renderer_a_p_i.html#a573e3e054970498200c116a853602934a6adf97f83acf6453d4a6a4b1070f3754">Karma::RendererAPI::None</a>  </dt>
+<dd><a class="anchor" id="_todo000068"></a>None rendering could be supported in future  </dd>
+<dt>Member <a class="el" href="_u_object_globals_8h.html#a76fa055fd82e7c09a3fe62befdc8e5d5aff93a39f9810ed1f0280a8b68ed57fdf">Karma::RF_Dynamic</a>  </dt>
+<dd><a class="anchor" id="_todo000036"></a>: BP2CPP_remove  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_shader.html#a13ae58e739972571c81d8c2cb99c911e">Karma::Shader::Bind</a>  () const</dt>
+<dd><a class="anchor" id="_todo000069"></a>For OpenGL only. Vulkan <a class="el" href="class_karma_1_1_shader.html#a13ae58e739972571c81d8c2cb99c911e" title="Installs a shader (vertex + fragment) and uniform program object as part of current rendering state.">Bind()</a> is empty and may need abstract thinking  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_shader.html#a77bd6ac96fe8db4df7faaf7f261d1bc4">Karma::Shader::Bind</a>  (const std::string &amp;texShaderNames) const</dt>
+<dd><a class="anchor" id="_todo000070"></a>Think with the previous binding routiine  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_shader.html#a2d20fa79716ec91a2f188b985be3b615">Karma::Shader::UnBind</a>  () const</dt>
+<dd><a class="anchor" id="_todo000071"></a>Only OpenGL uses this, that too, for shader and not uniform. May need pondering over.  </dd>
+<dt>Class <a class="el" href="class_karma_1_1_texture.html">Karma::Texture</a>  </dt>
+<dd><a class="anchor" id="_todo000073"></a>Need to integrate <a class="el" href="class_karma_1_1_vulkan_texture.html">VulkanTexture</a> in abstract way (vulkantexture shouldn't be explicit in this class, violation of SRP?)  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_texture.html#adbd156d787c300078567ff6158c0c435">Karma::Texture::GetVulkanTexture</a>  () const</dt>
+<dd><a class="anchor" id="_todo000074"></a>Needs to be abstracted (no rendering API specific functionality in this class)  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_t_subclass_of.html#a831d7aacc69678ecba721a3e8c4fb83d">Karma::TSubclassOf&lt; TClass &gt;::TSubclassOf</a>  (U &amp;&amp;From)</dt>
+<dd><a class="anchor" id="_todo000023"></a>Definition for ImplicitConv needs to be provided  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_class.html#a81eebb0d1e60fb7ed97461de984e65a8">Karma::UClass::GetDefaultObject</a>  (bool bCreateIfNeeded=true) const</dt>
+<dd><a class="anchor" id="_todo000007"></a>Will be completely written once the scope of defaultobject is needed  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_class.html#ab809a3270e0bd5caf80efe3f67563301">Karma::UClass::SetupObjectInitializer</a>  (<a class="el" href="class_karma_1_1_f_object_initializer.html" title="Internal class to finalize UObject creation (initialize properties) after the real C++ constructor is...">FObjectInitializer</a> &amp;ObjectInitializer) const</dt>
+<dd><a class="anchor" id="_todo000006"></a>Placeholder for the moment.  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_level.html#ac18def52742d5d02e5e76582a348b071">Karma::ULevel::Initialize</a>  (const <a class="el" href="struct_f_u_r_l.html" title="URL structure.">FURL</a> &amp;InURL)</dt>
+<dd><a class="anchor" id="_todo000048"></a>Empty at the moment. Shall be filled in future with enough context.  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_level.html#a9b12be5c0116f57621ec2b4a6ef54326">Karma::ULevel::SetWorldSettings</a>  (<a class="el" href="class_karma_1_1_a_world_settings.html" title="Actor containing all script accessible world properties.">AWorldSettings</a> *NewWorldSettings)</dt>
+<dd><a class="anchor" id="_todo000049"></a>not completely functional yet </dd>
+<dt>Member <a class="el" href="struct_karma_1_1_uniform_buffer_object.html#a7d017124c9ff73008207e6fdca1482f8">Karma::UniformBufferObject::UploadUniformBuffer</a>  (size_t frameIndex=0)=0</dt>
+<dd><a class="anchor" id="_todo000062"></a>Need to rewrite implementation of this virtual function because <a class="el" href="class_karma_1_1_material.html#af63ac13ca8bbbea9727c1cb421212580" title="Process for various things belonging to the material before submitting the VertexArray (or issuing dr...">Material::ProcessForSubmission()</a> makes agnostic call and VulkanContext::UploadUBO also makes call to upload uniform which is seperate from <a class="el" href="class_karma_1_1_material.html#af63ac13ca8bbbea9727c1cb421212580" title="Process for various things belonging to the material before submitting the VertexArray (or issuing dr...">Material::ProcessForSubmission</a>. </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_object.html#add7a5c2d46c62ab98edb91bec3e2d448">Karma::UObject::BeginDestroy</a>  ()</dt>
+<dd><a class="anchor" id="_todo000021"></a>To be written with Shiva logic for <a class="el" href="class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects.">UObject</a> destruction. </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_object.html#a12d23b4ef1a935c31572e76a8e793ed7">Karma::UObject::FinishDestroy</a>  ()</dt>
+<dd><a class="anchor" id="_todo000019"></a>To be written with Shiva logic for <a class="el" href="class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects.">UObject</a> destruction. </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_object.html#a79cd8eb1f2579df9484a42c12d3a9ace">Karma::UObject::GetDesc</a>  ()</dt>
+<dd><a class="anchor" id="_todo000020"></a>Place holder for now. Plan to rewrite once Editor reaches that stage </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_object.html#afa4c5fbf1ee70624094244573d7c3470">Karma::UObject::IsSelected</a>  () const</dt>
+<dd><a class="anchor" id="_todo000022"></a>UE this doesn't belong here, but it doesn't belong anywhere else any better. To be written after Editor is functional with UObjects </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_object_base.html#adc46e5c274d8b1ca65b8880bb5e5ee13">Karma::UObjectBase::AddToRoot</a>  ()</dt>
+<dd><a class="anchor" id="_todo000031"></a>To be implemented when garbage collection system is finished  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_object_base.html#a89929690b0167f37ede01b9fdd9d4bb9">Karma::UObjectBase::ClearGarbage</a>  ()</dt>
+<dd><a class="anchor" id="_todo000028"></a>Not functional  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_object_base.html#a14d3b9ddbe2a2d5cdfa1d444837fb27a">Karma::UObjectBase::FixGarbageOrPendingKillInternalObjectFlags</a>  (const <a class="el" href="_u_object_globals_8h.html#a934ef016d169a5af50d3cf77f9931cc1" title="Objects flags for internal use (GC, low level UObject code)">EInternalObjectFlags</a> InFlags)</dt>
+<dd><a class="anchor" id="_todo000030"></a>Need to write decent garbage collection system. Then this may become useful.  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_object_base.html#a8b8c087dfd7858a9eefd6b67ffb9ef1a">Karma::UObjectBase::IsValidLowLevel</a>  () const</dt>
+<dd><a class="anchor" id="_todo000029"></a>Not functional </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_object_base.html#a7f92ffd840071cd70864526b33bd880b">Karma::UObjectBase::MarkAsGarbage</a>  ()</dt>
+<dd><a class="anchor" id="_todo000027"></a>Not functional  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_struct.html#a18b589ab718767ea3c78367bdcf6b760">Karma::UStruct::IsChildOf</a>  (const <a class="el" href="class_karma_1_1_u_struct.html" title="Base class for all UObject types that contain fields.">UStruct</a> *SomeBase) const</dt>
+<dd><p class="startdd"><a class="anchor" id="_todo000004"></a>write class registration system for comparing <a class="el" href="class_karma_1_1_u_class.html" title="An object class.">UClass</a></p>
+<p class="enddd"><a class="anchor" id="_todo000005"></a>Need to write a decent class registration code for class comparison </p>
+</dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_world.html#a2a9afd2072e292f0c3223aa5199e0792">Karma::UWorld::AddOnActorSpawnedHandler</a>  () const</dt>
+<dd><a class="anchor" id="_todo000053"></a>Not functional  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_world.html#af860d736772c6415e40a600316aa993f">Karma::UWorld::InitializeActorsForPlay</a>  (const <a class="el" href="struct_f_u_r_l.html" title="URL structure.">FURL</a> &amp;InURL, bool bResetTime=true)</dt>
+<dd><a class="anchor" id="_todo000051"></a>See if actor iteration is required  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_world.html#a6ac16714430ca2b6f0d0d2641efe7456">Karma::UWorld::ModifyLevel</a>  (<a class="el" href="class_karma_1_1_u_level.html" title="A Level is a collection of Actors (lights, volumes, mesh instances etc.). Multiple Levels can be load...">ULevel</a> *Level) const</dt>
+<dd><a class="anchor" id="_todo000052"></a>Not functional. Should be completed once we delve into game logic and sorts while making actual game?  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_u_world.html#a394860bd2d1ad419e9805e94e364a96b">Karma::UWorld::OnActorSpawned</a>  ()</dt>
+<dd><a class="anchor" id="_todo000054"></a>Not functional  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_vertex_array.html#a05c14b5484aa2c48a81b0d15595f7e0a">Karma::VertexArray::Bind</a>  () const =0</dt>
+<dd><a class="anchor" id="_todo000075"></a>Seems only specific to OpenGL. Need to think the abstraction with Vulkan in mind  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_vertex_array.html#a4f0e20e0868c9b492eb7dc5f70407378">Karma::VertexArray::SetMaterial</a>  (std::shared_ptr&lt; Material &gt; material)=0</dt>
+<dd><a class="anchor" id="_todo000077"></a>a seperate setting of shader may be redundant </dd>
+<dt>Member <a class="el" href="class_karma_1_1_vertex_array.html#a42c31e274895671a55d38e3a191ab7c6">Karma::VertexArray::UnBind</a>  () const =0</dt>
+<dd><a class="anchor" id="_todo000076"></a>Again, need to think the abstraction  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_vulkan_index_buffer.html#a0bdad8132af89631e06fad8b17ddc0ce">Karma::VulkanIndexBuffer::Bind</a>  () const override</dt>
+<dd><a class="anchor" id="_todo000090"></a>Ponder over Vulkan equivalent of glBindBuffer  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_vulkan_index_buffer.html#a8871b0a826e6c80c15fcc009b5b70e71">Karma::VulkanIndexBuffer::UnBind</a>  () const override</dt>
+<dd><a class="anchor" id="_todo000091"></a>Ponder over Vulkan equivalent of glBindBuffer  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_vulkan_vertex_buffer.html#a5deeed8db4d0d37609c33272b51b5906">Karma::VulkanVertexBuffer::Bind</a>  () const override</dt>
+<dd><a class="anchor" id="_todo000088"></a>Ponder over Vulkan equivalent of glBindBuffer  </dd>
+<dt>Member <a class="el" href="class_karma_1_1_vulkan_vertex_buffer.html#ae79e34ba01a77d8bf89f783363c0b076">Karma::VulkanVertexBuffer::UnBind</a>  () const override</dt>
+<dd><a class="anchor" id="_todo000089"></a>Ponder over Vulkan equivalent of glBindBuffer(GL_ARRAY_BUFFER, 0); </dd>
 </dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

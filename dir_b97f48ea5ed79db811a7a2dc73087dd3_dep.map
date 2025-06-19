@@ -1,5 +1,15 @@
 <map id="Karma/src/Karma/Core" name="Karma/src/Karma/Core">
-<area shape="rect" id="node2" href="dir_e80f514e524eb463109b318080f2dd5b.html" title="TrueCore" alt="" coords="110,63,184,89"/>
-<area shape="rect" id="clust2" href="dir_b97f48ea5ed79db811a7a2dc73087dd3.html" alt="" coords="27,52,195,99"/>
-<area shape="rect" id="clust1" href="dir_c2cc37fe09132ac847ead816896c02db.html" title="Karma" alt="" coords="16,16,205,110"/>
+<area shape="rect" id="node1" href="dir_36a5e789be97b491b02517c73d77ee03.html" title="GameFramework" alt="" coords="135,137,257,162"/>
+<area shape="rect" id="node2" href="dir_d0a570607d060784a4a2a95e653309be.html" title="Ganit" alt="" coords="139,210,192,236"/>
+<area shape="poly" id="edge1" href="dir_000003_000009.html" alt="" coords="107,86,167,126,164,130,104,91"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000003_000009.html" title="1" alt="" coords="164,112,171,127"/>
+<area shape="poly" id="edge2" href="dir_000003_000010.html" alt="" coords="112,74,149,77,193,86,236,104,255,118,272,135,279,155,272,174,259,190,242,201,207,216,205,211,240,197,255,186,267,172,273,155,267,138,252,122,234,108,191,91,148,82,112,80"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000003_000010.html" title="3" alt="" coords="208,214,215,229"/>
+<area shape="rect" id="node4" href="dir_e80f514e524eb463109b318080f2dd5b.html" title="TrueCore" alt="" coords="38,137,112,162"/>
+<area shape="poly" id="edge3" href="dir_000003_000031.html" alt="" coords="89,89,82,122,77,121,83,88"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000003_000031.html" title="4" alt="" coords="85,113,92,128"/>
+<area shape="poly" id="edge4" href="dir_000031_000010.html" alt="" coords="92,161,140,199,137,203,88,165"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000031_000010.html" title="1" alt="" coords="138,185,145,200"/>
+<area shape="rect" id="clust2" href="dir_b97f48ea5ed79db811a7a2dc73087dd3.html" alt="" coords="27,52,123,173"/>
+<area shape="rect" id="clust1" href="dir_c2cc37fe09132ac847ead816896c02db.html" title="Karma" alt="" coords="16,16,295,247"/>
 </map>

@@ -1,0 +1,18 @@
+<map id="Karma::FWorldContext" name="Karma::FWorldContext">
+<area shape="rect" id="Node000001" title="A context for dealing with UWorlds at the engine level. As the engine brings up and destroys world,..." alt="" coords="127,348,278,373"/>
+<area shape="rect" id="Node000006" href="$class_karma_1_1_u_game_instance.html" title="A high&#45;level manager object for an instance of the running game." alt="" coords="230,436,391,462"/>
+<area shape="poly" id="edge8_Node000006_Node000001" title=" " alt="" coords="257,378,283,395,299,415,309,435,304,437,294,418,279,399,254,382"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_u_game_viewport_client.html" title="A game viewport (FViewport) is a high&#45;level abstract interface for the platform specific rendering,..." alt="" coords="5,252,200,277"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="111,291,118,307,128,322,145,335,164,345,161,350,142,339,124,325,113,310,106,293"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects." alt="" coords="138,80,251,106"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="196,122,187,170,178,197,165,222,148,240,128,253,125,249,144,236,160,218,173,195,182,169,190,121"/>
+<area shape="rect" id="Node000005" href="$class_karma_1_1_u_world.html" title="The World is the top level object representing a map or a sandbox in which Actors and Components will..." alt="" coords="48,155,157,181"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="169,118,119,157,116,153,166,114"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="267,100,322,109,375,123,415,141,427,153,432,166,432,362,425,389,406,411,381,427,355,438,353,433,379,422,403,407,420,387,427,361,427,167,423,156,412,146,373,128,320,115,266,105"/>
+<area shape="rect" id="Node000004" href="$class_karma_1_1_u_object_base.html" title="Low level implementation of UObject, should not be used directly in game code." alt="" coords="123,5,266,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="197,46,197,80,192,80,192,46"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="105,197,105,251,100,251,100,197"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="214,442,163,432,143,424,129,414,125,400,131,388,161,371,164,376,135,392,130,401,133,411,145,419,164,427,215,437"/>
+<area shape="rect" id="Node000007" href="$class_karma_vector.html" title=" " alt="" coords="224,244,370,285"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="269,297,216,349,212,346,265,294"/>
+</map>

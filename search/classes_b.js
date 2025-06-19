@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['perspectivecamera_0',['PerspectiveCamera',['../classKarma_1_1PerspectiveCamera.html',1,'Karma']]]
+  ['perspectivecamera_0',['PerspectiveCamera',['../class_karma_1_1_perspective_camera.html',1,'Karma']]]
 ];

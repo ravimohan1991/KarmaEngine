@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['karma_5fapi_0',['KARMA_API',['../_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4',1,'Core.h']]],
+  ['kr_5fassert_1',['KR_ASSERT',['../_core_8h.html#aa1ec71e8b97d939f75e13db3a94b5409',1,'Core.h']]],
+  ['kr_5fbind_5fevent_5ffn_2',['KR_BIND_EVENT_FN',['../_core_8h.html#a32ecba5b2ab37e1478d0fdfe3799ee1c',1,'Core.h']]],
+  ['kr_5fcore_5ferror_3',['KR_CORE_ERROR',['../_log_8h.html#ae1ee8a439091a055d52359b3e4c2c5b4',1,'Log.h']]],
+  ['kr_5fcore_5ffatal_4',['KR_CORE_FATAL',['../_log_8h.html#ac83dbc5a47efc56921284077e4f711de',1,'Log.h']]],
+  ['kr_5fcore_5finfo_5',['KR_CORE_INFO',['../_log_8h.html#aa7b294e14dcb4b1488d3e87f5bf410a7',1,'Log.h']]],
+  ['kr_5fcore_5ftrace_6',['KR_CORE_TRACE',['../_log_8h.html#aefe78a9de92fd065e4c81f6c25d1ae9a',1,'Log.h']]],
+  ['kr_5fcore_5fwarn_7',['KR_CORE_WARN',['../_log_8h.html#aa32b050a0e32d8248352ee8c878c2de1',1,'Log.h']]],
+  ['kr_5ferror_8',['KR_ERROR',['../_log_8h.html#ab34b15cfb6e5b7c04d17112c60316707',1,'Log.h']]],
+  ['kr_5ffatal_9',['KR_FATAL',['../_log_8h.html#a7364ceddebd7acb05eb1c01328370a7a',1,'Log.h']]],
+  ['kr_5finfo_10',['KR_INFO',['../_log_8h.html#a0b299bde6f6f2b70720aa07a1383d1cc',1,'Log.h']]],
+  ['kr_5fmax_11',['KR_MAX',['../_karma_gui_vulkan_handler_8h.html#a456916e2b388805759c35f0ed74aabd2',1,'KarmaGuiVulkanHandler.h']]],
+  ['kr_5fmemalign_12',['KR_MEMALIGN',['../_karma_gui_vulkan_handler_8h.html#af9dbc91d84709fec90b4f29b91cdb5f7',1,'KarmaGuiVulkanHandler.h']]],
+  ['kr_5fnoncopyable_13',['KR_NONCOPYABLE',['../_core_8h.html#a0c5af3f446de340dae52d68adf0055df',1,'Core.h']]],
+  ['kr_5ftrace_14',['KR_TRACE',['../_log_8h.html#a9a2e0ae0c73f91f2c2d2b4902379e47c',1,'Log.h']]],
+  ['kr_5fwarn_15',['KR_WARN',['../_log_8h.html#a34750d29da5f0b16ea59f2122d276ec6',1,'Log.h']]]
+];

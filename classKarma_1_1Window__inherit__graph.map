@@ -1,9 +1,0 @@
-<map id="Karma::Window" name="Karma::Window">
-<area shape="rect" id="Node000001" title=" " alt="" coords="185,5,296,31"/>
-<area shape="rect" id="Node000002" href="$classKarma_1_1LinuxWindow.html" title=" " alt="" coords="5,79,148,105"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="200,40,106,81,103,76,198,35"/>
-<area shape="rect" id="Node000003" href="$classKarma_1_1MacWindow.html" title=" " alt="" coords="172,79,309,105"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="243,46,243,79,238,79,238,46"/>
-<area shape="rect" id="Node000004" href="$classKarma_1_1WindowsWindow.html" title=" " alt="" coords="333,79,497,105"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="285,35,386,76,384,81,283,40"/>
-</map>

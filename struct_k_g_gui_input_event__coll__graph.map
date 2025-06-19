@@ -1,0 +1,17 @@
+<map id="KGGuiInputEvent" name="KGGuiInputEvent">
+<area shape="rect" id="Node000001" title=" " alt="" coords="359,153,481,179"/>
+<area shape="rect" id="Node000002" href="$struct_k_g_gui_input_event_mouse_pos.html" title=" " alt="" coords="19,5,204,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="220,23,279,37,336,63,362,83,384,107,414,151,409,154,380,110,359,87,333,67,278,42,219,28"/>
+<area shape="rect" id="Node000003" href="$struct_k_g_gui_input_event_mouse_wheel.html" title=" " alt="" coords="13,55,210,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="226,79,281,91,336,109,373,129,404,151,401,155,371,134,334,114,280,96,225,84"/>
+<area shape="rect" id="Node000004" href="$struct_k_g_gui_input_event_mouse_button.html" title=" " alt="" coords="12,104,211,130"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="227,127,335,144,366,150,365,155,334,149,226,132"/>
+<area shape="rect" id="Node000005" href="$struct_k_g_gui_input_event_mouse_viewport.html" title=" " alt="" coords="5,153,218,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="233,164,358,164,358,169,233,169"/>
+<area shape="rect" id="Node000006" href="$struct_k_g_gui_input_event_key.html" title=" " alt="" coords="39,203,184,228"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="198,204,334,184,366,177,367,182,335,189,199,209"/>
+<area shape="rect" id="Node000007" href="$struct_k_g_gui_input_event_text.html" title=" " alt="" coords="38,252,185,278"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="200,253,267,240,334,219,371,199,401,177,404,182,373,203,336,224,268,245,201,258"/>
+<area shape="rect" id="Node000008" href="$struct_k_g_gui_input_event_app_focused.html" title=" " alt="" coords="14,301,209,327"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="224,303,280,289,333,266,359,246,380,222,409,178,414,181,384,225,362,250,336,270,282,294,225,308"/>
+</map>

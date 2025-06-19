@@ -1,0 +1,9 @@
+<map id="Karma::Layer" name="Karma::Layer">
+<area shape="rect" id="Node000001" title="Base class of all Karma&#39;s Layers. For instance KarmaGuiLayer." alt="" coords="148,5,245,31"/>
+<area shape="rect" id="Node000002" href="$class_example_layer.html" title=" " alt="" coords="5,79,108,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="161,41,82,81,79,76,158,36"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_editor_layer.html" title=" " alt="" coords="131,79,262,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="199,46,199,79,194,79,194,46"/>
+<area shape="rect" id="Node000004" href="$class_karma_1_1_karma_gui_layer.html" title=" " alt="" coords="286,79,441,105"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="240,35,336,76,334,81,238,40"/>
+</map>

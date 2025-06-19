@@ -1,0 +1,5 @@
+<map id="Karma::KarmaGui_ImplVulkan_Data" name="Karma::KarmaGui_ImplVulkan_Data">
+<area shape="rect" id="Node000001" title="Backend data containing stuff for Vulkan renderer for KarmaGui." alt="" coords="5,109,235,135"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_vulkan___init_info.html" title="A data structure for Vulkan&#39;s initialization done in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init()" alt="" coords="22,5,218,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,61,123,109,117,109,117,61"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="Karma::FField" name="Karma::FField">
+<area shape="rect" id="Node000001" title="Base class of reflection data objects." alt="" coords="26,94,127,120"/>
+<area shape="poly" id="edge2_Node000001_Node000001" title=" " alt="" coords="144,98,154,107,146,115,128,118,127,112,143,110,149,107,141,103"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_f_field_variant.html" title="Special container that can hold either UObject or FField." alt="" coords="5,5,148,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="79,47,79,94,74,94,74,47"/>
+</map>

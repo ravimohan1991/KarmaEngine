@@ -1,0 +1,20 @@
+<map id="Karma/src/Platform/OpenGL/KarmaGuiOpenGLHandler.h" name="Karma/src/Platform/OpenGL/KarmaGuiOpenGLHandler.h">
+<area shape="rect" id="Node000001" title="This file contains KarmaGuiOpenGLHandler class and relevant data structures." alt="" coords="185,5,425,46"/>
+<area shape="rect" id="Node000002" href="$_karma_gui_layer_8h.html" title="This file contains the class KarmaGuiLayer, a Layer between Engine and KarmaGui." alt="" coords="147,94,332,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="283,60,256,95,252,92,279,57"/>
+<area shape="rect" id="Node000008" href="$_karma_gui_renderer_8h.html" title="This file contains the renderer for Karma&#39;s UI." alt="" coords="364,183,550,223"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="333,56,442,180,438,184,329,59"/>
+<area shape="rect" id="Node000003" href="$_karma_8h_source.html" title=" " alt="" coords="173,271,306,297"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="171,144,147,162,128,184,122,203,129,222,141,238,157,250,193,268,191,273,154,255,137,241,124,225,117,203,124,181,143,158,168,140"/>
+<area shape="rect" id="Node000007" href="$_application_8h.html" title="This file contains the main Application class for Editor + Game." alt="" coords="139,190,340,216"/>
+<area shape="poly" id="edge7_Node000002_Node000007" title=" " alt="" coords="242,150,242,190,237,190,237,150"/>
+<area shape="rect" id="Node000004" href="$_entry_point_8h.html" title="This file contains the main() routine with multiplatform support." alt="" coords="5,352,202,378"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,307,126,354,123,350,204,303"/>
+<area shape="rect" id="Node000005" href="$_editor_layer_8h_source.html" title=" " alt="" coords="98,434,245,474"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="238,313,230,349,217,387,189,434,184,432,212,385,224,347,232,312"/>
+<area shape="rect" id="Node000006" href="$_karma_gui_mesa_8h.html" title="This file contains the classes for Editor." alt="" coords="277,345,423,386"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="270,304,324,342,321,347,267,308"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="124,389,158,432,154,435,120,392"/>
+<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="242,232,242,271,237,271,237,232"/>
+<area shape="poly" id="edge10_Node000008_Node000003" title=" " alt="" coords="389,232,274,273,272,268,387,227"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="KGGuiStackTool" name="KGGuiStackTool">
+<area shape="rect" id="Node000001" title=" " alt="" coords="43,198,162,223"/>
+<area shape="rect" id="Node000002" href="$struct_k_g_vector.html" title=" " alt="" coords="5,94,200,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,150,105,197,100,197,100,150"/>
+<area shape="rect" id="Node000003" href="$struct_k_g_gui_stack_level_info.html" title=" " alt="" coords="28,5,177,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="105,46,105,93,100,93,100,46"/>
+</map>

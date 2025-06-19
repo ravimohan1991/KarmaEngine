@@ -1,0 +1,135 @@
+<map id="Karma/src/Karma/Application.h" name="Karma/src/Karma/Application.h">
+<area shape="rect" id="Node000001" title="This file contains the main Application class for Editor + Game." alt="" coords="1675,5,1876,31"/>
+<area shape="rect" id="Node000002" href="$krpch_8h_source.html" title=" " alt="" coords="1317,404,1380,429"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1808,29,1891,67,1939,94,1985,126,2024,161,2050,200,2056,220,2057,241,2053,262,2042,284,2023,303,1998,320,1929,350,1842,372,1744,389,1643,401,1547,409,1396,417,1396,412,1546,404,1643,396,1743,384,1841,367,1927,345,1995,316,2020,299,2037,280,2048,260,2052,241,2051,221,2045,202,2020,165,1982,130,1936,99,1888,72,1805,34"/>
+<area shape="rect" id="Node000037" href="$_window_8h.html" title="This file contains the Window class." alt="" coords="1716,160,1835,186"/>
+<area shape="poly" id="edge33_Node000001_Node000037" title=" " alt="" coords="1778,31,1778,145,1773,145,1773,31"/>
+<area shape="rect" id="Node000039" href="$_application_event_8h.html" title="This file contains the classes concerned with activity of Window." alt="" coords="1528,241,1700,282"/>
+<area shape="poly" id="edge41_Node000001_Node000039" title=" " alt="" coords="1770,33,1638,230,1633,227,1765,30"/>
+<area shape="rect" id="Node000040" href="$_controller_device_event_8h.html" title="This file contains the classes concerned with activity of game controller device." alt="" coords="1825,241,2027,282"/>
+<area shape="poly" id="edge42_Node000001_Node000040" title=" " alt="" coords="1785,30,1908,227,1904,229,1780,33"/>
+<area shape="rect" id="Node000041" href="$_layer_stack_8h.html" title="This file contains the LayerStack class." alt="" coords="784,79,924,105"/>
+<area shape="poly" id="edge45_Node000001_Node000041" title=" " alt="" coords="1674,30,939,87,939,81,1674,25"/>
+<area shape="rect" id="Node000043" href="$_scene_8h.html" title="This file contains the class Scene." alt="" coords="894,249,1019,274"/>
+<area shape="poly" id="edge80_Node000001_Node000043" title=" " alt="" coords="1674,24,1433,31,1142,43,892,60,810,70,786,76,774,81,763,99,758,123,766,153,791,192,809,210,832,224,881,244,878,249,829,229,806,214,787,195,761,155,753,123,758,97,771,77,784,71,810,65,891,55,1142,38,1433,26,1674,19"/>
+<area shape="rect" id="Node000057" href="$_karma_gui_layer_8h.html" title="This file contains the class KarmaGuiLayer, a Layer between Engine and KarmaGui." alt="" coords="1319,79,1544,105"/>
+<area shape="poly" id="edge56_Node000001_Node000057" title=" " alt="" coords="1717,34,1505,78,1504,73,1716,29"/>
+<area shape="rect" id="Node000066" href="$_input_8h.html" title="This file contains input class and relevant data structures." alt="" coords="2083,79,2185,105"/>
+<area shape="poly" id="edge73_Node000001_Node000066" title=" " alt="" coords="1837,29,2068,75,2067,80,1836,34"/>
+<area shape="rect" id="Node000084" href="$_karma_smriti_8h.html" title="This file contains the class KarmaSmriti, an agnostic memory manager." alt="" coords="2350,79,2542,105"/>
+<area shape="poly" id="edge81_Node000001_Node000084" title=" " alt="" coords="1877,28,2335,76,2335,81,1876,33"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="1764,477,1835,503"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1381,419,1538,441,1745,475,1749,475,1748,481,1744,480,1537,447,1380,425"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="1859,477,1926,503"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="1381,418,1574,436,1706,452,1844,474,1843,480,1705,458,1573,441,1381,423"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="1950,477,2027,503"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="1381,417,1608,435,1768,451,1935,474,1934,480,1767,457,1608,440,1381,422"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="2052,477,2131,503"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="1381,416,1647,432,1838,450,2036,474,2036,480,1837,455,1647,438,1381,422"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="2155,477,2209,503"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="1381,415,1502,417,1688,425,1910,443,2026,457,2140,475,2140,480,2025,462,1909,448,1687,430,1502,422,1381,420"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="2233,477,2302,503"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="1381,415,1513,418,1717,426,1962,444,2091,458,2218,475,2218,480,2090,463,1962,449,1717,432,1512,423,1381,421"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="5,477,55,503"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="1317,421,1089,425,734,435,358,453,197,465,70,480,70,475,196,460,358,447,734,429,1089,420,1317,416"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="79,477,189,503"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="1317,421,1149,424,879,432,549,450,205,480,205,474,549,445,878,427,1149,418,1317,415"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="213,477,316,503"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="1316,421,1166,425,926,434,635,452,332,480,332,474,635,446,926,429,1165,419,1316,416"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="341,477,404,503"/>
+<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="1317,420,1177,422,958,429,694,447,556,461,420,480,419,475,556,456,694,442,958,424,1177,416,1317,415"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="428,477,488,503"/>
+<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="1316,421,1188,423,990,431,751,448,627,462,503,480,503,475,626,457,751,443,989,425,1188,417,1316,415"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="512,477,551,503"/>
+<area shape="poly" id="edge13_Node000002_Node000014" title=" " alt="" coords="1317,422,959,440,738,457,642,468,566,480,565,475,642,463,737,452,958,435,1316,416"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="1170,558,1221,584"/>
+<area shape="poly" id="edge14_Node000002_Node000015" title=" " alt="" coords="1381,416,1458,419,1555,428,1645,445,1680,459,1703,476,1709,490,1703,505,1678,518,1632,529,1501,548,1354,562,1237,570,1237,565,1353,557,1500,543,1631,524,1676,513,1699,501,1704,490,1699,479,1677,463,1644,450,1555,433,1458,424,1381,421"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="776,477,815,503"/>
+<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="1317,422,1115,436,976,453,831,480,830,475,975,448,1114,431,1316,416"/>
+<area shape="rect" id="Node000017" title=" " alt="" coords="840,477,906,503"/>
+<area shape="poly" id="edge16_Node000002_Node000017" title=" " alt="" coords="1317,424,1151,443,1039,459,922,479,921,474,1038,454,1150,438,1316,418"/>
+<area shape="rect" id="Node000018" title=" " alt="" coords="929,477,995,503"/>
+<area shape="poly" id="edge17_Node000002_Node000018" title=" " alt="" coords="1317,425,1187,446,1010,480,1009,474,1186,441,1316,420"/>
+<area shape="rect" id="Node000019" title=" " alt="" coords="1019,477,1081,503"/>
+<area shape="poly" id="edge18_Node000002_Node000019" title=" " alt="" coords="1317,428,1097,479,1096,474,1316,422"/>
+<area shape="rect" id="Node000020" title=" " alt="" coords="1106,477,1168,503"/>
+<area shape="poly" id="edge19_Node000002_Node000020" title=" " alt="" coords="1317,431,1183,476,1182,471,1316,426"/>
+<area shape="rect" id="Node000021" title=" " alt="" coords="1192,477,1254,503"/>
+<area shape="poly" id="edge20_Node000002_Node000021" title=" " alt="" coords="1329,432,1259,472,1256,467,1326,428"/>
+<area shape="rect" id="Node000022" title=" " alt="" coords="1278,477,1334,503"/>
+<area shape="poly" id="edge21_Node000002_Node000022" title=" " alt="" coords="1344,431,1323,465,1319,462,1339,428"/>
+<area shape="rect" id="Node000023" title=" " alt="" coords="1358,477,1425,503"/>
+<area shape="poly" id="edge22_Node000002_Node000023" title=" " alt="" coords="1358,428,1379,462,1374,465,1353,431"/>
+<area shape="rect" id="Node000024" title=" " alt="" coords="1450,477,1517,503"/>
+<area shape="poly" id="edge23_Node000002_Node000024" title=" " alt="" coords="1373,428,1448,467,1446,472,1370,432"/>
+<area shape="rect" id="Node000025" title=" " alt="" coords="1541,477,1604,503"/>
+<area shape="poly" id="edge24_Node000002_Node000025" title=" " alt="" coords="1382,425,1527,472,1525,477,1380,431"/>
+<area shape="rect" id="Node000026" title=" " alt="" coords="1628,477,1688,503"/>
+<area shape="poly" id="edge25_Node000002_Node000026" title=" " alt="" coords="1382,422,1613,474,1612,479,1380,427"/>
+<area shape="rect" id="Node000027" href="$_core_8h.html" title="This file contains the macros for Karma&#39;s classes&#39; general purpose use, including assertions and stor..." alt="" coords="2325,477,2426,503"/>
+<area shape="poly" id="edge26_Node000002_Node000027" title=" " alt="" coords="1381,416,1751,429,2025,446,2310,474,2309,480,2024,452,1751,434,1381,421"/>
+<area shape="rect" id="Node000028" href="$_log_8h.html" title="This file contains the Log class. I want to imagine the Log pronounciation match with that of that ht..." alt="" coords="2449,477,2544,503"/>
+<area shape="poly" id="edge27_Node000002_Node000028" title=" " alt="" coords="1381,415,1541,418,1798,426,2109,443,2273,457,2434,474,2433,480,2272,462,2109,449,1797,431,1541,423,1381,421"/>
+<area shape="rect" id="Node000032" href="$_karma_types_8h.html" title="This file contains the types used in game logic." alt="" coords="575,477,752,503"/>
+<area shape="poly" id="edge31_Node000002_Node000032" title=" " alt="" coords="1317,424,768,480,767,474,1317,418"/>
+<area shape="rect" id="Node000029" title=" " alt="" coords="2294,558,2406,584"/>
+<area shape="poly" id="edge28_Node000028_Node000029" title=" " alt="" coords="2476,506,2387,553,2385,548,2473,501"/>
+<area shape="rect" id="Node000030" title=" " alt="" coords="2430,551,2564,592"/>
+<area shape="poly" id="edge29_Node000028_Node000030" title=" " alt="" coords="2499,503,2499,536,2494,536,2494,503"/>
+<area shape="rect" id="Node000031" title=" " alt="" coords="2588,558,2706,584"/>
+<area shape="poly" id="edge30_Node000028_Node000031" title=" " alt="" coords="2521,501,2612,549,2610,553,2518,506"/>
+<area shape="poly" id="edge32_Node000032_Node000015" title=" " alt="" coords="746,501,1155,561,1154,567,745,506"/>
+<area shape="poly" id="edge34_Node000037_Node000002" title=" " alt="" coords="1777,187,1768,231,1760,258,1748,283,1719,327,1702,343,1677,358,1641,375,1604,388,1527,406,1455,415,1396,418,1396,413,1455,410,1526,401,1602,383,1639,370,1674,353,1699,338,1715,324,1744,281,1755,256,1763,229,1771,186"/>
+<area shape="poly" id="edge35_Node000037_Node000027" title=" " alt="" coords="1836,180,1934,201,1988,218,2040,239,2137,294,2227,357,2302,418,2354,465,2350,469,2298,422,2224,361,2135,298,2038,244,1986,223,1932,206,1835,185"/>
+<area shape="rect" id="Node000038" href="$_event_8h.html" title="This file contains the base class Event for Karma&#39;s events." alt="" coords="1514,330,1664,356"/>
+<area shape="poly" id="edge36_Node000037_Node000038" title=" " alt="" coords="1773,187,1752,233,1734,260,1713,284,1679,309,1642,326,1640,322,1676,304,1710,280,1730,257,1747,230,1769,185"/>
+<area shape="poly" id="edge38_Node000037_Node000039" title=" " alt="" coords="1754,189,1665,236,1663,231,1751,184"/>
+<area shape="poly" id="edge37_Node000038_Node000002" title=" " alt="" coords="1549,359,1396,404,1395,399,1547,354"/>
+<area shape="poly" id="edge39_Node000039_Node000002" title=" " alt="" coords="1581,285,1384,398,1381,393,1579,280"/>
+<area shape="poly" id="edge40_Node000039_Node000038" title=" " alt="" coords="1610,283,1600,316,1595,314,1605,282"/>
+<area shape="poly" id="edge43_Node000040_Node000002" title=" " alt="" coords="1909,284,1866,323,1837,342,1807,358,1772,369,1726,379,1612,395,1396,415,1396,410,1611,390,1725,374,1771,364,1805,353,1835,338,1862,319,1906,280"/>
+<area shape="poly" id="edge44_Node000040_Node000038" title=" " alt="" coords="1842,285,1656,328,1655,323,1841,280"/>
+<area shape="poly" id="edge46_Node000041_Node000002" title=" " alt="" coords="835,107,811,127,791,154,787,173,791,193,804,245,818,286,840,320,879,353,912,369,959,382,1076,399,1201,408,1302,412,1301,417,1200,414,1076,404,958,387,911,374,877,358,836,324,813,288,799,247,786,194,782,173,786,152,807,123,832,103"/>
+<area shape="rect" id="Node000042" href="$_layer_8h.html" title="This file contains the Layer class." alt="" coords="801,160,907,186"/>
+<area shape="poly" id="edge47_Node000041_Node000042" title=" " alt="" coords="857,105,857,144,851,144,851,105"/>
+<area shape="poly" id="edge48_Node000042_Node000002" title=" " alt="" coords="856,186,856,220,862,266,877,314,890,336,906,354,936,370,978,383,1088,401,1205,410,1302,412,1302,418,1205,415,1087,406,977,389,933,375,903,358,885,339,872,316,856,268,851,221,851,186"/>
+<area shape="poly" id="edge49_Node000042_Node000038" title=" " alt="" coords="907,181,1244,239,1295,259,1346,279,1433,304,1515,324,1514,329,1432,309,1344,285,1293,264,1243,244,907,186"/>
+<area shape="poly" id="edge50_Node000042_Node000043" title=" " alt="" coords="870,184,933,237,930,241,867,188"/>
+<area shape="poly" id="edge51_Node000043_Node000002" title=" " alt="" coords="946,277,932,294,919,315,913,336,915,345,920,354,946,372,985,387,1035,397,1090,405,1206,412,1301,413,1301,419,1205,418,1090,410,1034,402,984,392,943,377,916,357,910,347,908,335,914,312,927,291,942,273"/>
+<area shape="rect" id="Node000044" href="$_camera_8h.html" title="This file contains Camera class." alt="" coords="930,330,1007,356"/>
+<area shape="poly" id="edge52_Node000043_Node000044" title=" " alt="" coords="961,275,967,314,962,315,956,275"/>
+<area shape="rect" id="Node000046" href="$_vertex_array_8h.html" title="This file contains the VertexArray class." alt="" coords="1032,330,1130,356"/>
+<area shape="poly" id="edge54_Node000043_Node000046" title=" " alt="" coords="977,273,1050,319,1048,324,974,277"/>
+<area shape="poly" id="edge53_Node000044_Node000002" title=" " alt="" coords="1008,351,1020,353,1302,405,1301,410,1019,358,1007,356"/>
+<area shape="poly" id="edge55_Node000046_Node000002" title=" " alt="" coords="1127,354,1303,400,1301,405,1125,359"/>
+<area shape="poly" id="edge57_Node000057_Node000002" title=" " alt="" coords="1435,105,1433,147,1427,172,1416,195,1399,212,1379,219,1362,226,1347,243,1335,280,1332,319,1336,357,1343,388,1338,389,1331,358,1327,319,1330,279,1342,240,1358,222,1377,214,1396,207,1412,192,1422,170,1427,146,1429,105"/>
+<area shape="poly" id="edge66_Node000057_Node000037" title=" " alt="" coords="1485,103,1708,154,1707,159,1484,108"/>
+<area shape="poly" id="edge65_Node000057_Node000039" title=" " alt="" coords="1446,103,1498,151,1584,229,1580,233,1495,155,1443,107"/>
+<area shape="poly" id="edge58_Node000057_Node000042" title=" " alt="" coords="1319,105,1134,124,926,155,911,159,910,153,926,150,1133,119,1318,99"/>
+<area shape="poly" id="edge72_Node000057_Node000043" title=" " alt="" coords="1319,95,1220,99,1117,108,1028,126,995,139,972,155,960,172,955,192,954,233,949,233,949,191,956,170,968,151,992,134,1027,121,1116,103,1220,93,1318,90"/>
+<area shape="rect" id="Node000058" href="$_key_event_8h.html" title="This file contains the classes concerned with activity of keyboard." alt="" coords="1101,249,1231,274"/>
+<area shape="poly" id="edge59_Node000057_Node000058" title=" " alt="" coords="1431,106,1415,149,1401,174,1382,195,1357,210,1321,224,1237,247,1235,242,1319,219,1355,205,1379,191,1397,171,1411,147,1426,104"/>
+<area shape="rect" id="Node000059" href="$_mouse_event_8h.html" title="This file contains the classes concerned with the movement and activity of mouse." alt="" coords="1356,249,1504,274"/>
+<area shape="poly" id="edge62_Node000057_Node000059" title=" " alt="" coords="1446,103,1463,124,1478,152,1482,173,1478,194,1467,218,1453,238,1449,235,1463,215,1473,193,1477,173,1473,154,1459,127,1442,107"/>
+<area shape="rect" id="Node000060" href="$_karma_gui_vulkan_handler_8h.html" title="This file contains KarmaGuiVulkanHandler class and relevant data structures." alt="" coords="1192,153,1369,193"/>
+<area shape="poly" id="edge67_Node000057_Node000060" title=" " alt="" coords="1410,107,1333,148,1330,143,1407,103"/>
+<area shape="rect" id="Node000065" href="$_karma_gui_open_g_l_handler_8h.html" title="This file contains KarmaGuiOpenGLHandler class and relevant data structures." alt="" coords="983,153,1168,193"/>
+<area shape="poly" id="edge70_Node000057_Node000065" title=" " alt="" coords="1377,108,1180,151,1178,146,1376,103"/>
+<area shape="poly" id="edge60_Node000058_Node000002" title=" " alt="" coords="1177,273,1208,311,1252,354,1313,394,1310,398,1248,358,1204,315,1173,277"/>
+<area shape="poly" id="edge61_Node000058_Node000038" title=" " alt="" coords="1232,272,1509,324,1508,329,1231,278"/>
+<area shape="poly" id="edge63_Node000059_Node000002" title=" " alt="" coords="1426,276,1365,391,1360,389,1421,274"/>
+<area shape="poly" id="edge64_Node000059_Node000038" title=" " alt="" coords="1456,273,1552,320,1550,325,1453,277"/>
+<area shape="poly" id="edge68_Node000060_Node000002" title=" " alt="" coords="1196,196,1131,218,1106,230,1091,243,1084,261,1091,281,1104,296,1124,311,1180,343,1245,373,1304,396,1302,401,1243,378,1177,348,1121,316,1100,299,1086,283,1079,261,1086,240,1103,226,1129,213,1194,191"/>
+<area shape="poly" id="edge69_Node000060_Node000043" title=" " alt="" coords="1207,197,1018,247,1016,242,1206,191"/>
+<area shape="poly" id="edge71_Node000065_Node000043" title=" " alt="" coords="1050,196,987,242,984,237,1047,192"/>
+<area shape="poly" id="edge74_Node000066_Node000002" title=" " alt="" coords="2141,104,2157,151,2170,218,2172,256,2168,292,2156,327,2136,358,2120,368,2095,376,2021,390,1921,401,1807,408,1572,416,1396,418,1396,413,1572,411,1807,403,1921,396,2020,385,2094,371,2118,363,2132,354,2152,325,2163,291,2167,255,2165,219,2152,152,2136,106"/>
+<area shape="poly" id="edge75_Node000066_Node000028" title=" " alt="" coords="2156,103,2208,137,2279,188,2355,253,2390,290,2423,328,2445,363,2464,399,2490,462,2485,464,2459,401,2441,365,2419,332,2386,293,2351,257,2275,192,2205,141,2153,108"/>
+<area shape="poly" id="edge77_Node000066_Node000037" title=" " alt="" coords="2083,107,1846,159,1845,154,2082,102"/>
+<area shape="poly" id="edge76_Node000066_Node000038" title=" " alt="" coords="2135,106,2126,141,2109,191,2082,242,2063,265,2041,284,2013,298,1976,310,1882,327,1776,337,1680,342,1679,337,1776,332,1881,321,1975,305,2011,293,2038,280,2059,261,2077,239,2104,188,2121,140,2129,104"/>
+<area shape="rect" id="Node000067" href="$_karma_utilities_8h.html" title="This file contains various classes and functions for various Karma&#39;s utilities." alt="" coords="2254,330,2409,356"/>
+<area shape="poly" id="edge78_Node000066_Node000067" title=" " alt="" coords="2146,103,2187,151,2315,316,2311,319,2183,154,2142,107"/>
+<area shape="poly" id="edge79_Node000067_Node000002" title=" " alt="" coords="2254,353,2185,358,1396,415,1396,409,2184,353,2253,348"/>
+<area shape="poly" id="edge82_Node000084_Node000002" title=" " alt="" coords="2452,104,2462,151,2469,220,2467,257,2460,294,2445,328,2422,358,2406,365,2375,371,2273,382,1970,400,1636,411,1396,417,1396,412,1636,406,1970,394,2273,377,2374,366,2404,360,2419,354,2441,325,2454,292,2462,257,2463,220,2457,152,2447,105"/>
+<area shape="rect" id="Node000085" href="$_u_object_allocator_8h.html" title="This file contains the class FUObjectAllocator along with the global variable declaration and several..." alt="" coords="2484,160,2645,186"/>
+<area shape="poly" id="edge83_Node000084_Node000085" title=" " alt="" coords="2465,103,2535,149,2532,153,2463,107"/>
+</map>

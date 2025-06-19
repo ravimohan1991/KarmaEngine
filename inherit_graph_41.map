@@ -1,9 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$structKarma_1_1InputData.html" title=" " alt="" coords="5,55,127,80"/>
-<area shape="rect" id="Node000001" href="$structKarma_1_1LinuxInputData.html" title=" " alt="" coords="186,5,338,31"/>
-<area shape="poly" id="edge33_Node000000_Node000001" title=" " alt="" coords="134,48,207,29,208,34,136,53"/>
-<area shape="rect" id="Node000002" href="$structKarma_1_1MacInputData.html" title=" " alt="" coords="189,55,335,80"/>
-<area shape="poly" id="edge34_Node000000_Node000002" title=" " alt="" coords="142,65,188,65,188,70,142,70"/>
-<area shape="rect" id="Node000003" href="$structKarma_1_1WindowsInputData.html" title=" " alt="" coords="175,104,349,130"/>
-<area shape="poly" id="edge35_Node000000_Node000003" title=" " alt="" coords="136,82,208,101,207,106,134,87"/>
+<area shape="rect" id="Node000000" href="$class_karma_1_1_input.html" title="Basic input class for game devices." alt="" coords="5,55,100,80"/>
+<area shape="rect" id="Node000001" href="$class_karma_1_1_linux_input.html" title="Input class for Linux based OS." alt="" coords="159,5,284,31"/>
+<area shape="poly" id="edge30_Node000000_Node000001" title=" " alt="" coords="113,47,174,29,175,34,114,52"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_mac_input.html" title="Input class for MacOS." alt="" coords="162,55,281,80"/>
+<area shape="poly" id="edge31_Node000000_Node000002" title=" " alt="" coords="115,65,161,65,161,70,115,70"/>
+<area shape="rect" id="Node000003" href="$class_karma_1_1_windows_input.html" title=" " alt="" coords="148,104,295,130"/>
+<area shape="poly" id="edge32_Node000000_Node000003" title=" " alt="" coords="114,83,175,101,174,106,113,88"/>
 </map>

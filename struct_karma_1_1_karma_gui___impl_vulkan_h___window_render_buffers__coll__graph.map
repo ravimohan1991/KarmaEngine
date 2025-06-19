@@ -1,0 +1,5 @@
+<map id="Karma::KarmaGui_ImplVulkanH_WindowRenderBuffers" name="Karma::KarmaGui_ImplVulkanH_WindowRenderBuffers">
+<area shape="rect" id="Node000001" title="A data structure for packaging of rendering buffers allocated for a current in&#45;flight ImageFrame." alt="" coords="5,109,201,150"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame_render_buffers.html" title="Reusable buffers used for rendering 1 current in&#45;flight ImageFrame, for KarmaGui_ImplVulkan_RenderDra..." alt="" coords="5,5,201,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,62,106,109,100,109,100,62"/>
+</map>

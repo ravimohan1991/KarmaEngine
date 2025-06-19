@@ -1,0 +1,9 @@
+<map id="Karma::WindowsInput" name="Karma::WindowsInput">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,169,153,195"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_input.html" title="Basic input class for game devices." alt="" coords="10,80,105,106"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="67,121,79,168,73,169,62,122"/>
+<area shape="rect" id="Node000003" href="$struct_karma_1_1_windows_input_data.html" title=" " alt="" coords="129,80,304,106"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="186,117,100,171,97,166,183,112"/>
+<area shape="rect" id="Node000004" href="$struct_karma_1_1_input_data.html" title="Base class for Input relevant data for the variety of platforms Karma supports." alt="" coords="156,5,277,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="219,46,219,80,214,80,214,46"/>
+</map>

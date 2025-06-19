@@ -1,0 +1,5 @@
+<map id="Karma::VulkanContext" name="Karma::VulkanContext">
+<area shape="rect" id="Node000001" title="Vulkan API has the following concepts." alt="" coords="11,79,161,105"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_graphics_context.html" title="An abstract class for creating a context for Renderer and provide graphics API." alt="" coords="5,5,167,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="89,46,89,79,83,79,83,46"/>
+</map>

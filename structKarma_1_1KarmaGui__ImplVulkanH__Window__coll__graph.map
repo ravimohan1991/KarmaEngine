@@ -1,7 +1,0 @@
-<map id="Karma::KarmaGui_ImplVulkanH_Window" name="Karma::KarmaGui_ImplVulkanH_Window">
-<area shape="rect" id="Node000001" title=" " alt="" coords="108,109,303,150"/>
-<area shape="rect" id="Node000002" href="$structKarma_1_1KarmaGui__ImplVulkanH__ImageFrame.html" title=" " alt="" coords="5,5,201,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,55,188,107,184,110,131,59"/>
-<area shape="rect" id="Node000003" href="$structKarma_1_1KarmaGui__Vulkan__Frame__On__Flight.html" title=" " alt="" coords="224,5,395,46"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="281,59,228,110,224,107,277,55"/>
-</map>

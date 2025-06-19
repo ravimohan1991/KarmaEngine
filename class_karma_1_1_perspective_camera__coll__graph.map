@@ -1,0 +1,5 @@
+<map id="Karma::PerspectiveCamera" name="Karma::PerspectiveCamera">
+<area shape="rect" id="Node000001" title="Class for PerspectiveCamera, meaning Camera with depth scaling." alt="" coords="5,79,185,105"/>
+<area shape="rect" id="Node000002" href="$class_karma_1_1_camera.html" title="Base class of Camera." alt="" coords="40,5,150,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,46,98,79,92,79,92,46"/>
+</map>
