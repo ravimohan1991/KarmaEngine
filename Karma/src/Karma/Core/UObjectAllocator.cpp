@@ -8,11 +8,6 @@ namespace Karma
 	/** Global UObjectBase allocator							*/
 	FUObjectAllocator GUObjectAllocator;
 
-	/**
-	 * Allocates and initializes the permanent object pool
-	 *
-	 * @param InPermanentObjectPoolSize size of permanent object pool
-	 */
 	void FUObjectAllocator::AllocatePermanentObjectPool(int32_t InPermanentObjectPoolSize)
 	{
 		m_PermanentObjectPoolSize = InPermanentObjectPoolSize;
@@ -34,9 +29,6 @@ namespace Karma
 		KR_CORE_INFO("Prepared a memory pool of {0} bytes for {1} UObjects' allocation", m_PermanentObjectPoolSize, numberOfElemets);
 	}
 
-	/**
-	 * Prints a debugf message to allow tuning
-	 */
 	void FUObjectAllocator::BootMessage()
 	{
 		if (m_PermanentObjectPoolSize && m_PermanentObjectPoolExceededTail - m_PermanentObjectPool > m_PermanentObjectPoolSize)

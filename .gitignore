@@ -26,6 +26,7 @@ Karma.txt
 
 # Linux specific directories
 .build-debug/
+build
 
 # Xcode files
 *.xcodeproj
@@ -40,3 +41,7 @@ DearImGuiEditor.ini
 
 # SPIR-V bytecode
 *.spv
+
+Pragmatics/qtNativeStyle.xml
+
+Resources/Misc/KarmaGuiEditor.ini

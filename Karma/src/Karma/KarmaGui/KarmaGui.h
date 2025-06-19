@@ -1,4 +1,15 @@
-// Dear ImGui (1.89.2) is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
+/**
+ * @file KarmaGui.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file constains KarmaGui class. The chief class for our UI needs..
+ * @version 1.0
+ * @date January 10, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
+// Dear ImGui (1.89.2) is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context, with minor modifications of course!!
+
 #pragma once
 
 #if(defined(__clang__) || defined(__GNUC__))
@@ -177,7 +188,13 @@ namespace Karma
 		static KarmaGuiStyle&   GetStyle();                                 // access the Style structure (colors, sizes). Always use PushStyleCol(), PushStyleVar() to modify style mid-frame!
 		static void          NewFrame();                                 // start a new Dear ImGui frame, you can submit any command from this point until Render()/EndFrame().
 		static void          EndFrame();                                 // ends the Dear ImGui frame. automatically called by Render(). If you don't need to render data (skipping rendering) you may call EndFrame() without Render()... but you'll have wasted CPU already! If you don't need to render, better to not create any windows and not call NewFrame() at all!
-		static void          Render();                                   // ends the Dear ImGui frame, finalize the draw data. You can then get call GetDrawData().
+		/**
+		 * @brief Function to fill the KGDrawData instance of KarmaGui
+		 *
+		 * @note Ends the KarmaGui frame and finalizes the draw data. The GetDrawData() becomes functional after this.
+		 * @since Karma 1.0.0
+		 */
+		static void          Render();
 		static KGDrawData*   GetDrawData();                              // valid after Render() and until the next call to NewFrame(). this is what you have to render.
 
 		// Demo, Debug, Information
@@ -398,6 +415,11 @@ namespace Karma
 		// Widgets: Images
 		// - Read about KGTextureID here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
 		static void          Image(KGTextureID user_texture_id, const KGVec2& size, const KGVec2& uv0 = KGVec2(0, 0), const KGVec2& uv1 = KGVec2(1, 1), const KGVec4& tint_col = KGVec4(1, 1, 1, 1), const KGVec4& border_col = KGVec4(0, 0, 0, 0));
+		/**
+		 * @brief Function for drawing button with specified image.
+		 *
+		 * @since Karma 1.0.0
+		 */
 		static bool          ImageButton(const char* str_id, KGTextureID user_texture_id, const KGVec2& size, const KGVec2& uv0 = KGVec2(0, 0), const KGVec2& uv1 = KGVec2(1, 1), const KGVec4& bg_col = KGVec4(0, 0, 0, 0), const KGVec4& tint_col = KGVec4(1, 1, 1, 1));
 
 		// Widgets: Combo Box (Dropdown)
@@ -864,7 +886,23 @@ namespace Karma
 		//   for each static/DLL boundary you are calling from. Read "Context and Memory Allocators" section of imgui.cpp for more details.
 		static void          SetAllocatorFunctions(KarmaGuiMemAllocFunc alloc_func, KarmaGuiMemFreeFunc free_func, void* user_data = NULL);
 		static void          GetAllocatorFunctions(KarmaGuiMemAllocFunc* p_alloc_func, KarmaGuiMemFreeFunc* p_free_func, void** p_user_data);
+		/**
+		 * @brief A legacy function brought from ImGui for UI relevant memory allocation.
+		 *
+		 * @param size					The size (in bytes) of the UI object to be allocated in memory
+		 *
+		 * @todo Make use of Karma's memory management (KarmaSmriti) class, with modifications, just like that for UObject.
+		 * @since Karma 1.0.0
+		 */
 		static void*         MemAlloc(size_t size);
+		/**
+		 * @brief A legacy function brought from ImGui for UI relevant memory deallocation.
+		 *
+		 * @param ptr					The pointer to the object to be cleared, in already allocated context
+		 *
+		 * @todo Make use of Karma's memory management (KarmaSmriti) class, with modifications, just like that for UObject.
+		 * @since Karma 1.0.0
+		 */
 		static void          MemFree(void* ptr);
 
 		// (Optional) Platform/OS interface for multi-viewport support
@@ -872,7 +910,15 @@ namespace Karma
 		// Note: You may use GetWindowViewport() to get the current viewport of the current window.
 		static KarmaGuiPlatformIO&  GetPlatformIO();                                                // platform/renderer functions, for backend to setup + viewports list.
 		static void              UpdatePlatformWindows();                                        // call in main loop. will call CreateWindow/ResizeWindow/etc. platform functions for each secondary viewport, and DestroyWindow for each inactive viewport.
-		static void              RenderPlatformWindowsDefault(void* platform_render_arg = NULL, void* renderer_render_arg = NULL); // call in main loop. will call RenderWindow/SwapBuffers platform functions for each secondary viewport which doesn't have the KGGuiViewportFlags_Minimized flag set. May be reimplemented by user for custom rendering needs.
+		/**
+		 * @brief Call in main loop. Will call RenderWindow/SwapBuffers platform functions for each secondary viewport which doesn't have the KGGuiViewportFlags_Minimized flag set. May be reimplemented by user for custom rendering needs.
+		 *
+		 * @param platform_render_arg						
+		 * @param renderer_render_arg
+		 *
+		 * @since Karma 1.0.0
+		 */
+		static void              RenderPlatformWindowsDefault(void* platform_render_arg = NULL, void* renderer_render_arg = NULL);
 		static void              DestroyPlatformWindows();                                       // call DestroyWindow platform functions for all viewports. call from backend Shutdown() if you need to close platform windows before imgui shutdown. otherwise will be called by DestroyContext().
 		static KarmaGuiViewport*    FindViewportByID(KGGuiID id);                                   // this is a helper for backends.
 		static KarmaGuiViewport*    FindViewportByPlatformHandle(void* platform_handle);            // this is a helper for backends. the type platform_handle is decided by the backend (e.g. HWND, MyWindow*, GLFWwindow* etc.)
@@ -1489,7 +1535,7 @@ enum KGGuiConfigFlags_
 
     // [BETA] Viewports
     // When using viewports it is recommended that your default value for KGGuiCol_WindowBg is opaque (Alpha=1.0) so transition to a viewport won't be noticeable.
-    KGGuiConfigFlags_ViewportsEnable        = 1 << 10,  // Viewport enable flags (require both KGGuiBackendFlags_PlatformHasViewports + KGGuiBackendFlags_RendererHasViewports set by the respective backends)
+	KGGuiConfigFlags_ViewportsEnable        = 1 << 10,  // Viewport enable flags (require both KGGuiBackendFlags_PlatformHasViewports + KGGuiBackendFlags_RendererHasViewports set by the respective backends)
     KGGuiConfigFlags_DpiEnableScaleViewports= 1 << 14,  // [BETA: Don't use] FIXME-DPI: Reposition and resize imgui windows when the DpiScale of a viewport changed (mostly useful for the main viewport hosting other window). Note that resizing the main window itself is up to your application.
     KGGuiConfigFlags_DpiEnableScaleFonts    = 1 << 15,  // [BETA: Don't use] FIXME-DPI: Request bitmap-scaled fonts to match DpiScale. This is a very low-quality workaround. The correct way to handle DPI is _currently_ to replace the atlas and/or fonts in the Platform_OnChangedViewport callback, but this is all early work in progress.
 
@@ -2415,7 +2461,7 @@ struct KARMA_API KGDrawCmd
 {
     KGVec4          ClipRect;           // 4*4  // Clipping rectangle (x1, y1, x2, y2). Subtract KGDrawData->DisplayPos to get clipping rectangle in "viewport" coordinates
     KGTextureID     TextureId;          // 4-8  // User-provided texture ID. Set by user in ImfontAtlas::SetTexID() for fonts or passed to Image*() functions. Ignore if never using images or multiple fonts atlas.
-    unsigned int    VtxOffset;          // 4    // Start offset in vertex buffer. KGGuiBackendFlags_RendererHasVtxOffset: always 0, otherwise may be >0 to support meshes larger than 64K vertices with 16-bit indices.
+    unsigned int    VtxOffset;          // 4    // Start offset in vertex buffer. KGGuiBackendFlags_RendererHasVtxOffset: always 0, otherwise may be > 0 to support meshes larger than 64K vertices with 16-bit indices.
     unsigned int    IdxOffset;          // 4    // Start offset in index buffer.
     unsigned int    ElemCount;          // 4    // Number of indices (multiple of 3) to be rendered as triangles. Vertices are stored in the callee KGDrawList's vtx_buffer[] array, indices in idx_buffer[].
     KGDrawCallback  UserCallback;       // 4-8  // If != NULL, call the function instead of rendering the vertices. clip_rect and texture_id will be set normally.
@@ -2507,16 +2553,20 @@ enum KGDrawListFlags_
     KGDrawListFlags_AntiAliasedFill         = 1 << 2,  // Enable anti-aliased edge around filled shapes (rounded rectangles, circles).
     KGDrawListFlags_AllowVtxOffset          = 1 << 3,  // Can emit 'VtxOffset > 0' to allow large meshes. Set when 'KGGuiBackendFlags_RendererHasVtxOffset' is enabled.
 };
-
-// Draw command list
-// This is the low-level list of polygons that KarmaGui:: functions are filling. At the end of the frame,
-// all command lists are passed to your KarmaGuiIO::RenderDrawListFn function for rendering.
-// Each dear imgui window contains its own KGDrawList. You can use ImGui::GetWindowDrawList() to
-// access the current window draw list and draw custom primitives.
-// You can interleave normal KarmaGui:: calls and adding primitives to the current draw list.
-// In single viewport mode, top-left is == GetMainViewport()->Pos (generally 0,0), bottom-right is == GetMainViewport()->Pos+Size (generally io.DisplaySize).
-// You are totally free to apply whatever transformation matrix to want to the data (depending on the use of the transformation you may want to apply it to ClipRect as well!)
-// Important: Primitives are always added to the list and not culled (culling is done at higher-level by KarmaGui:: functions), if you use this API a lot consider coarse culling your drawn objects.
+/**
+ * @brief Draw command list
+ * 
+ * This is the low-level list of polygons that KarmaGui:: functions are filling. At the end of the frame,
+ * all command lists are passed to your KarmaGuiIO::RenderDrawListFn function for rendering.
+ * Each KarmaGui window contains its own KGDrawList. You can use ImGui::GetWindowDrawList() to
+ * access the current window draw list and draw custom primitives.
+ * You can interleave normal KarmaGui:: calls and adding primitives to the current draw list.
+ * In single viewport mode, top-left is == GetMainViewport()->Pos (generally 0,0), bottom-right is == GetMainViewport()->Pos+Size (generally io.DisplaySize).
+ * You are totally free to apply whatever transformation matrix to want to the data (depending on the use of the transformation you may want to apply it to ClipRect as well!)
+ *
+ * @note Primitives are always added to the list and not culled (culling is done at higher-level by KarmaGui:: functions), if you use this API a lot consider coarse culling your drawn objects.
+ * @since Karma 1.0.0
+ */
 struct KARMA_API KGDrawList
 {
     // This is what you have to render
@@ -2937,13 +2987,20 @@ enum KGGuiViewportFlags_
     KGGuiViewportFlags_CanHostOtherWindows      = 1 << 12,  // Main viewport: can host multiple imgui windows (secondary viewports are associated to a single window).
 };
 
-// - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
-// - With multi-viewport enabled, we extend this concept to have multiple active viewports.
-// - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
-// - About Main Area vs Work Area:
-//   - Main Area = entire viewport.
-//   - Work Area = entire viewport minus sections used by main menu bars (for platform windows), or by task bar (for platform monitor).
-//   - Windows are generally trying to stay within the Work Area of their host viewport.
+/**
+ * @brief A Platform Window (always 1 unless multi-viewport are enabled. One per platform window to output to). In the future, may represent Platform Monitor
+ *
+ * Currently represents the Platform Window created by the application which is hosting our KarmaGui windows.
+ * With multi-viewport enabled, we extend this concept to have multiple active viewports.
+ *
+ * In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
+ * About Main Area vs Work Area:
+ *  - Main Area = entire viewport.
+ *  - Work Area = entire viewport minus sections used by main menu bars (for platform windows), or by task bar (for platform monitor).
+ *  - Windows are generally trying to stay within the Work Area of their host viewport.
+ *
+ * @since Karma 1.0.0
+ */
 struct KARMA_API KarmaGuiViewport
 {
     KGGuiID             ID;                     // Unique identifier for the viewport
@@ -2992,7 +3049,7 @@ struct KARMA_API KarmaGuiViewport
 // See Thread https://github.com/ocornut/imgui/issues/1542 for gifs, news and questions about this evolving feature.
 //
 // About the coordinates system:
-// - When multi-viewports are enabled, all Dear ImGui coordinates become absolute coordinates (same as OS coordinates!)
+// - When multi-viewports are enabled, all KarmaGui coordinates become absolute coordinates (same as OS coordinates!)
 // - So e.g. ImGui::SetNextWindowPos(KGVec2(0,0)) will position a window relative to your primary monitor!
 // - If you want to position windows relative to your main application viewport, use ImGui::GetMainViewport()->Pos as a base position.
 //
@@ -3015,7 +3072,7 @@ struct KARMA_API KarmaGuiViewport
 //                 You may skip calling RenderPlatformWindowsDefault() if its API is not convenient for your needs. Read comments below.
 // - Application:  Fix absolute coordinates used in ImGui::SetWindowPos() or ImGui::SetNextWindowPos() calls.
 //
-// About ImGui::RenderPlatformWindowsDefault():
+// About KarmaGui::RenderPlatformWindowsDefault():
 // - This function is a mostly a _helper_ for the common-most cases, and to facilitate using default backends.
 // - You can check its simple source code to understand what it does.
 //   It basically iterates secondary viewports and call 4 functions that are setup in KarmaGuiPlatformIO, if available:
@@ -3027,7 +3084,7 @@ struct KARMA_API KarmaGuiViewport
 //   or you may decide to never setup those pointers and call your code directly. They are a convenience, not an obligatory interface.
 //-----------------------------------------------------------------------------
 
-// (Optional) Access via ImGui::GetPlatformIO()
+// (Optional) Access via KarmaGui::GetPlatformIO()
 struct KARMA_API KarmaGuiPlatformIO
 {
     //------------------------------------------------------------------
@@ -3067,16 +3124,42 @@ struct KARMA_API KarmaGuiPlatformIO
     void    (*Platform_OnChangedViewport)(KarmaGuiViewport* vp);               // . F . . .  // (Optional) [BETA] FIXME-DPI: DPI handling: Called during Begin() every time the viewport we are outputting into changes, so backend has a chance to swap fonts to adjust style.
     int     (*Platform_CreateVkSurface)(KarmaGuiViewport* vp, KGU64 vk_inst, const void* vk_allocators, KGU64* out_vk_surface); // (Optional) For a Vulkan Renderer to call into Platform code (since the surface creation needs to tie them both).
 
-    // (Optional) Renderer functions (e.g. DirectX, OpenGL, Vulkan)
-    void    (*Renderer_CreateWindow)(KarmaGuiViewport* vp);                    // . . U . .  // Create swap chain, frame buffers etc. (called after Platform_CreateWindow)
-    void    (*Renderer_DestroyWindow)(KarmaGuiViewport* vp);                   // N . U . D  // Destroy swap chain, frame buffers etc. (called before Platform_DestroyWindow)
-    void    (*Renderer_SetWindowSize)(KarmaGuiViewport* vp, KGVec2 size);      // . . U . .  // Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
-    void    (*Renderer_RenderWindow)(KarmaGuiViewport* vp, void* render_arg);  // . . . R .  // (Optional) Clear framebuffer, setup render target, then render the viewport->DrawData. 'render_arg' is the value passed to RenderPlatformWindowsDefault().
+	// (Optional) Renderer functions (e.g. DirectX, OpenGL, Vulkan)
+	void    (*Renderer_CreateWindow)(KarmaGuiViewport* vp);                    // . . U . .  // Create swap chain, frame buffers etc. (called after Platform_CreateWindow)
+	/**
+	 * @brief
+	 */
+	void    (*Renderer_DestroyWindow)(KarmaGuiViewport* vp);                   // N . U . D  // Destroy swap chain, frame buffers etc. (called before Platform_DestroyWindow)
+	/**
+	 * @brief Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
+	 *
+	 *
+	 * @since Karma 1.0.0
+	 */
+	void    (*Renderer_SetWindowSize)(KarmaGuiViewport* vp, KGVec2 size);      // . . U . .  // Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize)
+	/**
+	 * @brief (Optional) Clear framebuffer, setup render target, then render the viewport->DrawData. 'render_arg' is the value passed to Karma::KarmaGui::RenderPlatformWindowsDefault
+	 *
+	 * @param vp								The viewport to be rendered
+	 * @param render_arg						The 'render_arg' is the value passed to Karma::KarmaGui::RenderPlatformWindowsDefault, usually void pointer is accepted in this case.
+	 *
+	 * @since Karma 1.0.0
+	 */
+	void    (*Renderer_RenderWindow)(KarmaGuiViewport* vp, void* render_arg);  // . . . R .  //
+
+	/**
+	 * @brief (Optional) Call Present/SwapBuffers. 'render_arg' is the value passed to Karma::KarmaGui::RenderPlatformWindowsDefault.
+	 * 
+	 * @param vp								The viewport to be rendered
+	 * @param render_arg						The 'render_arg' is the value passed to Karma::KarmaGui::RenderPlatformWindowsDefault, usually void pointer is accepted in this case.
+	 *
+	 * @since Karma 1.0.0
+	 */
     void    (*Renderer_SwapBuffers)(KarmaGuiViewport* vp, void* render_arg);   // . . . R .  // (Optional) Call Present/SwapBuffers. 'render_arg' is the value passed to RenderPlatformWindowsDefault().
 
     // (Optional) Monitor list
-    // - Updated by: app/backend. Update every frame to dynamically support changing monitor or DPI configuration.
-    // - Used by: dear imgui to query DPI info, clamp popups/tooltips within same monitor and not have them straddle monitors.
+    // - Updated by: application/backend. Update every frame to dynamically support changing monitor or DPI configuration.
+    // - Used by: KarmaGui to query DPI info, clamp popups/tooltips within same monitor and not have them straddle monitors.
     KGVector<KarmaGuiPlatformMonitor>  Monitors;
 
     //------------------------------------------------------------------

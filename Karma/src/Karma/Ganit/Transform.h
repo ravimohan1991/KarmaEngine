@@ -1,3 +1,12 @@
+/**
+ * @file Transform.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the math specific for transforms.
+ * @version 1.0
+ * @date February 27, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #include "krpch.h"

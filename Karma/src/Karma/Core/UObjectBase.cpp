@@ -14,15 +14,6 @@ namespace Karma
 
 	UObjectBase::UObjectBase()
 	{
-		// This constructor is itentionally left blank because of multiple use
-		// invoked by before and after placement new.
-		/*m_ObjectFlags = RF_NoFlags;
-		m_InternalIndex = INDEX_NONE;
-		m_ClassPrivate = nullptr;
-		m_OuterPrivate = nullptr;
-		m_NamePrivate = "NoName";*/
-
-		// Not adding to GUObjectStore
 	}
 
 	// This constructor is called by StaticAllocateObject
@@ -38,11 +29,6 @@ namespace Karma
 		AddObject(inName, inInternalFlags);
 	}
 
-	/**
-	 * Walks up the list of outers until it finds a package directly associated with the object.
-	 *
-	 * @return the package the object is in.
-	 */
 	UPackage* UObjectBase::GetPackage() const
 	{
 		const UObject* Top = static_cast<const UObject*>(this);
@@ -76,11 +62,6 @@ namespace Karma
 		return ExternalPackage;
 	}
 
-	/**
-	 * Add a newly created object to the name hash tables (for now no hashtables for Karma) and the object array
-	 *
-	 * @param Name name to assign to this uobject
-	 */
 	void UObjectBase::AddObject(const std::string& inName, EInternalObjectFlags inSetInternalFlags)
 	{
 		m_NamePrivate = inName;
@@ -116,10 +97,6 @@ namespace Karma
 		return !!(m_ObjectFlags & int32_t(EInternalObjectFlags::Unreachable));
 	}
 
-	/**
-	 * Checks to see if the object appears to be valid
-	 * @return true if this appears to be a valid object
-	 */
 	bool UObjectBase::IsValidLowLevel() const
 	{
 		if (this == nullptr)
@@ -133,7 +110,7 @@ namespace Karma
 			return false;
 		}
 
-		return true;// GUObjectArray.IsValid(this);
+		return GUObjectStore.IsValid(this);
 	}
 
 	void UObjectBase::MarkAsGarbage()
@@ -144,12 +121,6 @@ namespace Karma
 	{
 	}
 
-	/**
-	 * Traverses the outer chain searching for the next object of a certain type.  (T must be derived from UObject)
-	 *
-	 * @param	Target class to search for
-	 * @return	a pointer to the first object in this object's Outer chain which is of the correct type.
-	 */
 	UObject* UObjectBase::GetTypedOuter(UClass* Target) const
 	{
 		UObject* Result = nullptr;

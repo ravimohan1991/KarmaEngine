@@ -93,12 +93,21 @@ namespace Karma
 	{
 		KarmaGuiBackendRendererUserData* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* v = &bd->VulkanInitInfo;
+
 		VkPhysicalDeviceMemoryProperties prop;
 		vkGetPhysicalDeviceMemoryProperties(v->PhysicalDevice, &prop);
-		for (uint32_t i = 0; i < prop.memoryTypeCount; i++)
+
+		for (uint32_t i = 0; i < prop.memoryTypeCount; i++)// prop.memoryTypeCount is the number of valid elements in the memoryTypes (VkMemoryType) array.
 			if ((prop.memoryTypes[i].propertyFlags & properties) == properties && type_bits & (1 << i))
 				return i;
+		
 		return 0xFFFFFFFF; // Unable to find memoryType
+	}
+
+	// Same as KR_MEMALIGN(). 'alignment' must be a power of two.
+	static inline VkDeviceSize AlignBufferSize(VkDeviceSize size, VkDeviceSize alignment)
+	{
+		return (size + alignment - 1) & ~(alignment - 1);
 	}
 
 	void KarmaGuiVulkanHandler::CreateOrResizeBuffer(VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkDeviceSize& bufferSize, size_t newSize, VkBufferUsageFlagBits usage)
@@ -117,8 +126,8 @@ namespace Karma
 
 		VkResult result;
 
-		VkDeviceSize vertexBufferSizeAligned = ((newSize - 1) / backendData->BufferMemoryAlignment + 1) * backendData->BufferMemoryAlignment;
-
+		VkDeviceSize vertexBufferSizeAligned = AlignBufferSize(KR_MAX(1024*1024, newSize), backendData->BufferMemoryAlignment);
+		
 		VkBufferCreateInfo bufferInfo = {};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = vertexBufferSizeAligned;
@@ -150,7 +159,7 @@ namespace Karma
 	{
 		std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
 
-		// Bind 3D Vertex And Index Buffer:
+		// Bind 3D Vertex And Index Buffers:
 		{
 			VkBuffer vertexBuffers[1] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
 			VkDeviceSize vertexOffset[1] = { 0 };
@@ -210,7 +219,7 @@ namespace Karma
 
 		// Cowboy's Note: May need to use uniform buffer objects.
 		// Setup scale and translation:
-		// Our visible imgui space lies from drawData->DisplayPps (top left) to drawData->DisplayPos + darawData->DisplaySize (bottom right). DisplayPos is (0,0) for single viewport apps.
+		// Our visible KarmaGui space lies from drawData->DisplayPps (top left) to drawData->DisplayPos + darawData->DisplaySize (bottom right). DisplayPos is (0,0) for single viewport apps.
 		{
 			float scale[2];
 			scale[0] = 2.0f / drawData->DisplaySize.x;
@@ -352,8 +361,8 @@ namespace Karma
 				const KGDrawCmd* drawCommand = &commandList->CmdBuffer[commandCounter];
 				if (drawCommand->UserCallback != nullptr)
 				{
-					// User callback, registered via ImDrawList::AddCallback()
-					// (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
+					// User callback, registered via KarmaDrawList::AddCallback()
+					// (KGDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
 					if (drawCommand->UserCallback == KGDrawCallback_ResetRenderState)
 					{
 						//sceneToDraw->SetWindowToRenderWithinResize(true);
@@ -434,7 +443,7 @@ namespace Karma
 
 		// Note: at this point both vkCmdSetViewport() and vkCmdSetScissor() have been called.
 		// Our last values will leak into user/application rendering IF:
-		// - Your app uses a pipeline with VK_DYNAMIC_STATE_VIEWPORT or VK_DYNAMIC_STATE_SCISSOR dynamic state
+		// - Your application uses a pipeline with VK_DYNAMIC_STATE_VIEWPORT or VK_DYNAMIC_STATE_SCISSOR dynamic state
 		// - And you forgot to call vkCmdSetViewport() and vkCmdSetScissor() yourself to explicitely set that state.
 		// If you use VK_DYNAMIC_STATE_VIEWPORT or VK_DYNAMIC_STATE_SCISSOR you are responsible for setting the values before rendering.
 		// In theory we should aim to backup/restore those values but I am not sure this is possible.
@@ -792,7 +801,7 @@ namespace Karma
 			return;
 		}
 
-		// Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 	'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
+		// Bilinear sampling is required by default. Set 'io.Fonts->Flags |= KGFontAtlasFlags_NoBakedLines' or 	'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
 		VkSamplerCreateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		info.magFilter = VK_FILTER_LINEAR;
@@ -1197,7 +1206,7 @@ namespace Karma
 	}
 
 	// Seems like used for initializing the Vulkan relevant variables
-	bool KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* info)
+	/*bool KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* info)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		KR_CORE_ASSERT(io.BackendRendererUserData == nullptr, "Already initialized a renderer backend!");
@@ -1210,7 +1219,7 @@ namespace Karma
 
 		io.BackendRendererUserData = (void*)backendData;
 		io.BackendRendererName = "Vulkan_Got_Back";
-		io.BackendFlags |= KGGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
+		io.BackendFlags |= KGGuiBackendFlags_RendererHasVtxOffset;  // We can honor the KGDrawCmd::VtxOffset field, allowing for large meshes.
 
 		// Maybe chore for toofani mood!
 		// io.BackendFlags |= KarmaGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
@@ -1220,7 +1229,7 @@ namespace Karma
 		KR_CORE_ASSERT(info->Device != VK_NULL_HANDLE, "No device found");
 		KR_CORE_ASSERT(info->Queue != VK_NULL_HANDLE, "No queue assigned");
 		KR_CORE_ASSERT(info->DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
-		KR_CORE_ASSERT(info->MinImageCount <= 2, "Minimum image count exceeding limit");
+		KR_CORE_ASSERT(info->MinImageCount >= 2, "Minimum image count exceeding limit");
 		KR_CORE_ASSERT(info->ImageCount >= info->MinImageCount, "Not enough pitch for ImageCount");
 		KR_CORE_ASSERT(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
 
@@ -1243,7 +1252,7 @@ namespace Karma
 		}
 
 		return true;
-	}
+	}*/
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Shutdown()
 	{
@@ -1318,9 +1327,6 @@ namespace Karma
 		return descriptorSet;
 	}
 
-	// This function is called, in multi-viewport context, when new view-port is instantiated
-	// and KarmaGui::UpdatePlatformWindows() is called.
-	// https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/imgui.cpp#L13451
 	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
 	{
 		// Still need to address bRecreateSwapChainAndCommandBuffers?
@@ -1576,8 +1582,6 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGuiViewport* viewport)
 	{
-		// The main viewport (owned by the application) will always have RendererUserData == NULL since we didn't create the data for it.
-		// See KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init and it seems not true
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		if (KarmaGui_ImplVulkan_ViewportData* viewportData = (KarmaGui_ImplVulkan_ViewportData*)viewport->RendererUserData)
 		{
@@ -1607,6 +1611,7 @@ namespace Karma
 	}
 
 	// May need extra scrutiny especially when we decoupled imageIndex and FrameOnFlightIndex.
+	// In the current state of Engine, this function is not called because multiport rendering is not supported.
 	void KarmaGuiVulkanHandler::KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderWindow(KarmaGuiViewport* viewport, void*)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
@@ -1692,7 +1697,6 @@ namespace Karma
 		}
 	}
 
-	// Need reconsideration because of the same decoupling
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();

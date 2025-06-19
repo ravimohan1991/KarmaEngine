@@ -40,6 +40,7 @@ namespace Karma
 		}
 		case TextureType::DiffusionMap:
 		case TextureType::LightMap:
+
 		case TextureType::None:
 			KR_CORE_ASSERT(false, "Other maps not supported yet.");
 			break;

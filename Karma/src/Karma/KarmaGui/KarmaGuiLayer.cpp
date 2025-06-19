@@ -34,7 +34,7 @@ namespace Karma
 		(void)io;
 		io.ConfigFlags |= KGGuiConfigFlags_NavEnableKeyboard;	// Enable Keyboard Controls
 		io.ConfigFlags |= KGGuiConfigFlags_DockingEnable;		// Enable Docking
-		io.ConfigFlags |= KGGuiConfigFlags_ViewportsEnable;		// Enable Multi-Viewport / Platform Windows
+		//io.ConfigFlags |= KGGuiConfigFlags_ViewportsEnable;		// Enable Multi-Viewport / Platform Windows
 
 		// Setup KarmaGui color style
 		KarmaGui::StyleColorsKarma();
@@ -59,7 +59,7 @@ namespace Karma
 	void KarmaGuiLayer::OnDetach()
 	{
 		KarmaGuiRenderer::OnKarmaGuiLayerDetach();
-		KR_CORE_INFO("Shutting down ImGuiLayer");
+		KR_CORE_INFO("Shutting down KarmaGuiLayer");
 	}
 
 	// The KarmaGuiLayer sequence begins
@@ -69,7 +69,7 @@ namespace Karma
 		KarmaGui::NewFrame();
 	}
 
-	void KarmaGuiLayer::ImGuiRender(float deltaTime)
+	void KarmaGuiLayer::KarmaGuiRender(float deltaTime)
 	{
 	}
 

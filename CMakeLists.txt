@@ -4,7 +4,8 @@
     But Abstractions don't care and Models can't understand!!
                                             - Lul, Practicality
  ]]
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 4.0)
+cmake_policy(VERSION 4.0)
 
 # This is the top level CMakeList file having single responsibility of
 # generating enough context for entire Software (Engine + Application).

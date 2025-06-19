@@ -1,3 +1,13 @@
+/**
+ * @file KarmaSTBTextEdit.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains helper functions for isntance mouse relevant operations
+ * @version 1.0
+ * @date January 12, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
 // [DEAR IMGUI]
 // This is a slightly modified version of stb_textedit.h 1.14.
 // Those changes would need to be pushed into nothings/stb:

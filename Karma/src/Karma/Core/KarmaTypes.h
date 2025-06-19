@@ -1,3 +1,13 @@
+/**
+ * @file KarmaTypes.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the types used in game logic
+ * @version 1.0
+ * @date March 30, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
 #pragma once
 
 #include <vector>
@@ -6,7 +16,7 @@
 #include <utility>
 #include <algorithm>
 
-/** Specifies why an actor is being deleted/removed from a level */
+/** @brief Specifies why an actor is being deleted/removed from a level */
 namespace EEndPlayReason
 {
 	enum Type : int
@@ -24,7 +34,13 @@ namespace EEndPlayReason
 	};
 }
 
-/** Specifies the goal/source of a UWorld object */
+/**
+ * @brief euphemism for no index situations
+ * @todo usage hasn't caught on in usual engine routines
+ */
+enum { INDEX_NONE = -1 };
+
+/** @brief Specifies the goal/source of a UWorld object */
 namespace EWorldType
 {
 	enum Type
@@ -50,14 +66,14 @@ namespace EWorldType
 		/** A minimal RPC world for a game */
 		GameRPC,
 
-		/* An editor world that was loaded but not currently being edited in the level editor */
+		/** An editor world that was loaded but not currently being edited in the level editor */
 		Inactive
 	};
 }
 
-/// <summary>
-/// Karma's std::map wrapper
-/// </summary>
+/**
+ * @brief Karma's std::map wrapper
+ */
 template <typename KeyType, typename ValueType>
 class KarmaMap
 {
@@ -65,19 +81,25 @@ public:
 	typedef std::map<KeyType, ValueType> AMap;
 	typedef typename AMap::iterator AnIterator;
 
+	/**
+	 * @brief Constructor
+	 *
+	 * @since Karma 1.0.0
+	 */
 	KarmaMap()
 	{
-
 	}
 
 	/**
-	 * Find the value associated with a specified key, or if none exists,
+	 * @brief Find the value associated with a specified key, or if none exists,
 	 * adds a value using the default constructor.
 	 *
 	 * Algorithm courtsey: https://stackoverflow.com/a/1409465
 	 *
-	 * @param Key The key to search for.
-	 * @return A reference to the value associated with the specified key.
+	 * @param Key 				The key to search for.
+	 * @return A reference to the value associated with the specified key
+	 *
+	 * @since Karma 1.0.0
 	 */
 	ValueType& FindOrAdd(const KeyType& Key)
 	{
@@ -98,11 +120,13 @@ public:
 	}
 
 	/**
-	 * Find the value associated with a specified key.
+	 * @brief Find the value associated with a specified key.
 	 *
 	 * @param Key The key to search for.
 	 * @return A pointer to the value associated with the specified key, or nullptr if the key isn't contained in this map.  The pointer
 	 *			is only valid until the next change to any key in the map.
+	 *
+	 * @since Karma 1.0.0
 	 */
 
 	ValueType* Find(const KeyType& Key)
@@ -120,21 +144,37 @@ protected:
 	AMap m_KeyValuePair;
 };
 
-/// <summary>
-/// Karma's std::vector wrapper
-/// </summary>
+/**
+ * @brief Karma's std::vector wrapper
+ */
 template<typename BuildingBlock>
 class KarmaVector
 {
 public:
+	/**
+	 * @brief Constructor
+	 *
+	 * @since Karma 1.0.0
+	 */
 	KarmaVector()
 	{
 	}
 
+	/**
+	 * @brief Destructor
+	 *
+	 * @since Karma 1.0.0
+	 */
 	~KarmaVector()
 	{
 	}
 
+	/**
+	 * @brief Removes an element from the vector
+	 *
+	 * @param aBlock	The element to be removed
+	 * @since Karma 1.0.0
+	 */
 	uint32_t Remove(BuildingBlock aBlock)
 	{
 		uint32_t occurences = 0;
@@ -156,6 +196,12 @@ public:
 		return occurences;
 	}
 
+	/**
+	 * @brief Add an element to the vector
+	 *
+	 * @aBlock	The element to be added
+	 * @since Karma 1.0.0
+	 */
 	void Add(BuildingBlock aBlock)
 	{
 		m_Elements.push_back(aBlock);
@@ -170,6 +216,7 @@ public:
 	 * @returns Index of the element in the array.
 	 *
 	 * @see Add, AddDefaulted, AddZeroed, Append, Insert
+	 * @since Karma 1.0.0
 	 */
 	FORCEINLINE int32_t AddUnique(const BuildingBlock& Item)
 	{
@@ -194,6 +241,8 @@ public:
 	 *
 	 * @see FindLast, FindLastByPredicate
 	 * @see https://www.techiedelight.com/find-index-element-vector-cpp/
+	 *
+	 * @since Karma 1.0.0
 	 */
 	int32_t Find(const BuildingBlock& Item) const
 	{
@@ -215,10 +264,17 @@ public:
 			return returnIndex;
 		}
 
-		// Make an enum with name INDEX_NONE and value -1
-		return -1;
+		return INDEX_NONE;
 	}
 
+	/**
+	 * @brief Sees if the vector contains the specified element
+	 *
+	 * @param aBlock	The element to be see in the vector
+	 * @returns true if the element exists in the vector
+	 *
+	 * @since Karam 1.0.0
+	 */
 	bool Contains(BuildingBlock aBlock) const
 	{
 		typename std::vector<BuildingBlock>::const_iterator iterator = m_Elements.begin();
@@ -238,18 +294,26 @@ public:
 		return false;
 	}
 
+	/**
+	 * @brief Returns the total number of elements in a vector
+	 *
+	 * @since Karma 1.0.0
+	 */
 	uint32_t Num() const
 	{
 		return (uint32_t) m_Elements.size();
 	}
 
 	/**
-	 * We just reset the vector. UE has the following implementation
+	 * @brief We just reset the vector. UE has the following implementation
 	 *
 	 * Same as empty, but doesn't change memory allocations, unless the new size is larger than
 	 * the current array. It calls the destructors on held items if needed and then zeros the ArrayNum.
 	 *
 	 * @param NewSize The expected usage size after calling this function.
+	 * @warning Included deletion of possible UObjects. Hence needs rewriting once ShivaActor is functional
+	 *
+	 * @since Karma 1.0.0
 	 */
 	void Reset()
 	{
@@ -274,26 +338,61 @@ public:
 	}
 
 	/**
-	 * Assuming the use of smart pointers
+	 * @brief Just clear the elements
+	 *
+	 * @remark Assuming the use of smart pointers
+	 * @warning Still need to think deletion of UObjects
+	 *
+	 * @since Karma 1.0.0
 	 */
 	void SmartReset()
 	{
 		m_Elements.clear();
 	}
 
+	/**
+	 * @brief Set the element of a vector using the vector index
+	 *
+	 * @param Index					The index of the vector element to be set
+	 * @param Value					The value to be assigned to the element
+	 *
+	 * @since Karma 1.0.0
+	 */
 	void SetVectorElementByIndex(int32_t Index, BuildingBlock Value)
 	{
 		m_Elements[Index] = Value;
 	}
 
+	/**
+	 * @brief Getter for the elements of vector
+	 *
+	 * @since Karma 1.0.0
+	 */
 	inline const std::vector<BuildingBlock>& GetElements() const { return m_Elements; }
+
+	/**
+	 * @brief Getter for elements of vector for modification in appropriate way
+	 *
+	 * @remark A modifyable reference is returned
+	 * @since Karma 1.0.0
+	 */
 	inline std::vector<BuildingBlock>& ModifyElements() { return m_Elements; }
 
+	/**
+	 * @brief Getter for first vector element
+	 *
+	 * @since Karma 1.0.0
+	 */
 	typename std::vector<BuildingBlock>::iterator begin()
 	{
 		return m_Elements.begin();
 	}
 
+	/**
+	 * @brief Getter for the last vector element
+	 *
+	 * @since Karma 1.0.0
+	 */
 	typename std::vector<BuildingBlock>::iterator end()
 	{
 		return m_Elements.end();
@@ -304,10 +403,13 @@ public:
 	 *
 	 * @param Index				index of object to return
 	 * @return Object at this index
+	 *
+	 * @since Karma 1.0.0
 	 */
 	FORCEINLINE BuildingBlock& IndexToObject(int32_t Index)
 	{
 		KR_CORE_ASSERT(Index >= 0, "");
+		
 		if(Index < m_Elements.size())
 		{
 			return m_Elements.at(Index);
@@ -324,6 +426,8 @@ public:
 	 *
 	 * @param Index Index to test.
 	 * @returns True if index is valid. False otherwise.
+	 *
+	 * @since Karma 1.0.0
 	 */
 	FORCEINLINE bool IsValidIndex(int32_t Index) const
 	{
@@ -335,7 +439,9 @@ protected:
 	std::vector<BuildingBlock> m_Elements;
 };
 
-// Traveling from server to server.
+/**
+ * @brief Traveling from server to server.
+ */
 enum ETravelType
 {
 	/** Absolute URL. */
@@ -347,11 +453,12 @@ enum ETravelType
 	/** Relative URL. */
 	TRAVEL_Relative,
 
+	/** No clue. */
 	TRAVEL_MAX,
 };
 
 /**
- * Helper for obtaining the default Url configuration
+ * @brief Helper for obtaining the default Url configuration
  */
 struct KARMA_API FUrlConfig
 {
@@ -373,33 +480,35 @@ struct KARMA_API FUrlConfig
 	void Reset();
 };
 
-//URL structure.
+/**
+ * @brief URL structure.
+ */
 struct KARMA_API FURL
 {
-	// Protocol, i.e. "karma" or "http".
+	/** Protocol, i.e. "karma" or "http".*/
 	std::string m_Protocol;
 
-	// Optional hostname, i.e. "204.157.115.40" or "unreal.epicgames.com", blank if local.
+	/** Optional hostname, i.e. "204.157.115.40" or "unreal.epicgames.com", blank if local.*/
 	std::string m_Host;
 
-	// Optional host port.
+	/** Optional host port.*/
 	int32_t m_Port;
 
 	int32_t m_Valid;
 
-	// Map name, i.e. "SkyCity", default is "Entry".
+	/** Map name, i.e. "SkyCity", default is "Entry".*/
 	std::string m_Map;
 
-	// Optional place to download Map if client does not possess it
+	/** Optional place to download Map if client does not possess it*/
 	std::string m_RedirectURL;
 
 	// Options.
 	//TArray<FString> Op;
 
-	// Portal to enter through, default is "".
+	/** Portal to enter through, default is "".*/
 	std::string m_Portal;
 
-	// Statics.
+	/** Statics.*/
 	static FUrlConfig UrlConfig;
 	static bool m_bDefaultsInitialized;
 

@@ -1,3 +1,12 @@
+/**
+ * @file VulkanContext.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains VulkanContext class
+ * @version 1.0
+ * @date Jan 1, 2021
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
@@ -11,35 +20,167 @@
 
 namespace Karma
 {
+	/**
+	 * @brief Forward declaration
+	 */
 	class RendererAPI;
-	//class VulkanRendererAPI;
+
+	/**
+	 * @brief Forward declaration
+	 */
 	class VulkanVertexArray;
+
+	/**
+	 * @brief Forward declaration
+	 */
 	struct VulkanUniformBuffer;
 
+	/**
+	 * @brief A structure for graphics and present queuefamilies
+	 *
+	 * Most operations performed with Vulkan, like draw commands and memory operations, are
+	 * asynchronously executed by submitting them to a VkQueue. Queues are allocated from queue
+	 * families, where each queue family supports a specific set of operations in its queues. For example,
+	 * there could be separate queue families for graphics, compute and memory transfer operations.
+	 *
+	 * Used for creating logical device, swapchain, and commandpool
+	 *
+	 * @see VulkanContext::FindQueueFamilies
+	 * @since Karma 1.0.0
+	 */
 	struct QueueFamilyIndices
 	{
+		/**
+		 * @brief The queues in this queue family support graphics operations.
+		 *
+		 * @note The optional is used to make the query of availibility easier
+		 * @since Karma 1.0.0
+		 */
 		std::optional<uint32_t> graphicsFamily;
+
+		/**
+		 * @brief The queues in this queue family support image presentation
+		 *
+		 * The image is presented to the surface
+		 *
+		 * @note The optional is used to make the query of availibility easier
+		 * @see VulkanContext::CreateSurface()
+		 *
+		 * @since Karma 1.0.0
+		 */
 		std::optional<uint32_t> presentFamily;
 
+		/**
+		 * @brief Routine for querying if appropriate queue families (graphicsFamily and presentFamily) are available.
+		 *
+		 * @see VulkanContext::IsDeviceSuitable
+		 * @since Karma 1.0.0
+		 */
 		bool IsComplete()
 		{
 			return graphicsFamily.has_value() && presentFamily.has_value();
 		}
 	};
 
+	/**
+	 * @brief Structure with data required for appropriate creation and working of swapchain.
+	 *
+	 * Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own
+	 * the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain
+	 * and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be
+	 * presented to the screen.
+	 *
+	 * @since Karma 1.0.0
+	 */
 	struct SwapChainSupportDetails
 	{
+		/**
+		 * @brief Basic surface capabilities (min/max number of images in swap chain, min/max width
+		 * and height of images)
+		 *
+		 * @since Karma 1.0.0
+		 */
 		VkSurfaceCapabilitiesKHR capabilities;
+
+		/**
+		 * @brief Surface formats (pixel format, color space)
+		 *
+		 * @since Karma 1.0.0
+		 */
 		std::vector<VkSurfaceFormatKHR> formats;
+
+		/**
+		 * @brief Available presentation modes
+		 *
+		 * @since Karma 1.0.0
+		 */
 		std::vector<VkPresentModeKHR> presentModes;
 	};
 
+	/**
+	 * @brief Vulkan API has the following concepts
+	 * 1. Physical Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Physical_devices_and_queue_families): The software counterpart (VkPhysicalDevice) of a graphics card (GPU). Logical device is created from physical device.
+	 * 2. Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues): The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device.
+	 *
+	 * Host : is CPU the host?
+	 */
 	class KARMA_API VulkanContext : public GraphicsContext
 	{
 	public:
+		/**
+		 * @brief A constructor to set the m_vulkanRendererAPI (using static_cast, or compilet time cast).
+		 * Also checks the validity of windowHandle.
+		 *
+		 * @param windowHandle								The glfw window handle
+		 *
+		 * @since Karma 1.0.0
+		 */
 		VulkanContext(GLFWwindow* windowHandle);
+		
+		/**
+		 * @brief Destructor of vulkan context. Does the following
+		 * 1. Free the commandbuffers (VulkanRendererAPI::AllocateCommandBuffers()) and removes synchronicity
+		 * 2. Destroy the framebuffers (CreateFrameBuffers())
+		 * 3. Destroy depth imageview (CreateDepthResources())
+		 * 4. Destroy image (CreateDepthResources())
+		 * 5. Free up depthimagememory (CreateDepthResources())
+		 * 6. Destroy command pool (CreateCommandPool())
+		 * 7. Destroy render pass (CreateRenderPass())
+		 * 8. Destroy swapchain imageview (CreateImageViews())
+		 * 9. Destroy swapchain (CreateSwapChain())
+		 * 10. Destroy the vulkan m_device (CreateLogicalDevice())
+		 * 11. Destroy validation layers for debug messages (SetupDebugMessenger())
+		 * 12. Destroy surface (CreateSurface())
+		 * 13. Destroy instance (CreateInstance())
+		 * 14. Destroy glslang memory resources for cleanup
+		 *
+		 * @see Init()
+		 * @since Karma 1.0.0
+		 */
 		virtual ~VulkanContext() override;
 
+		/**
+		 * @brief Initializes VulkanContext by creating appropriate Vulkan and glslang specific
+		 * instruments and allocating resources accordingly.
+		 *
+		 * 1. Create Instance;
+		 * 2. Setup Debug Messenger
+		 * 3. Create Surface
+		 * 4. Pick PhysicalDevice
+		 * 5. Create Logical Device
+		 * 6. Create Swap Chain
+		 * 7. Create ImageViews
+		 * 8. Create RenderPass
+		 * 9. Create CommandPool
+		 * 10. Create DepthResources
+		 * 11. Create FrameBuffers
+		 * 12. VulkanHolder::SetVulkanContext(this) (VulkanHolder::m_VulkanContext)
+		 * 13. m_vulkanRendererAPI->CreateSynchronicity()
+		 * 14. Initialize glslang()
+		 *
+		 * @see ~VulkanContext()
+		 * @since Karma 1.0.0
+		 */
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
 		virtual bool OnWindowResize(WindowResizeEvent& event) override {/*No need for Vulkan for now.*/ return true; }
@@ -76,9 +217,18 @@ namespace Karma
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 
 		// Logical device
+		/**
+		 * @brief The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device.
+		 * @since Karma 1.0.0
+		 */
 		void CreateLogicalDevice();
 
 		// Swapchain
+		/**
+		 * @brief Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be presented to the screen. Our backend will acquire such an image to draw to it, and then return it to the queue.
+		 *
+		 * @brief Karma 1.0.0
+		 */
 		void CreateSwapChain();
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
@@ -88,15 +238,35 @@ namespace Karma
 		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 		// Image views
+		/**
+		 * @brief An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels.
+		 *
+		 * @note Here we are creating depth images ?
+		 * @since Karma 1.0.0
+		 */
 		void CreateImageViews();
 
 		//  Renderer pass
+		/**
+		 * @brief A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to.
+		 * @since Karma 1.0.0
+		 */
 		void CreateRenderPass();
 
 		// Framebuffers
+		/**
+		 * @brief A framebuffer represents a collection of specific memory attachments that a render pass instance uses.
+		 *
+		 * @see KarmaGui_ImplVulkanH_ImageFrame::Framebuffer
+		 */
 		void CreateFrameBuffers();
 
 		// CommandPool
+		/**
+		 * @brief Command pools are opaque objects that command buffer memory is allocated from, and which allow the implementation to amortize the cost of resource creation.
+		 *
+		 * @since Karma 1.0.0
+		 */
 		void CreateCommandPool();
 
 		// DepthImage

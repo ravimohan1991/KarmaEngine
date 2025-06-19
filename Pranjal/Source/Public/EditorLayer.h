@@ -14,7 +14,7 @@ namespace Karma
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 		virtual void OnUpdate(float deltaTime) override;
-		virtual void ImGuiRender(float deltaTime) override;
+		virtual void KarmaGuiRender(float deltaTime) override;
 
 		void OpenScene(const std::string& objFileName);
 		virtual void OnEvent(Event& event) override;

@@ -48,7 +48,7 @@ namespace Karma
 			std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
 			shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 
-			m_ModelShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true, "CylinderShader"));
+			m_ModelShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, "CylinderShader"));
 
 			m_ModelMaterial->AddShader(m_ModelShader);
 		}
@@ -111,7 +111,7 @@ namespace Karma
 	}
 
 	// Rename to KarmaGuiRender for uniformity
-	void EditorLayer::ImGuiRender(float deltaTime)
+	void EditorLayer::KarmaGuiRender(float deltaTime)
 	{
 		KGGuiID dockspaceID;
 		// 1. Show the big demo window. For debug purpose!!
@@ -326,6 +326,15 @@ namespace Karma
 
 		KR_INFO("-----> Spawning {0}", testSParameters.m_Name);
 		AActor* someActor = testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
+
+		KR_INFO("AActor is derived from UObject {0}", TIsDerivedFrom<AActor, UObject>::Value);
+		KR_INFO("UObject is derived from AActor {0}", TIsDerivedFrom<UObject, AActor>::Value);
+
+		/*char str[80];
+		snprintf(str, 10, "%x", someActor);
+		KR_INFO("actor address: {0}, size: {1}", str, sizeof(*someActor));
+		snprintf(str, 10, "%x", (UObjectBase*)someActor);
+		KR_INFO("uobjectbase address: {0}", str);*/
 
 		// Shouldn't we be using Shivasomething?
 		// delete testWorld;

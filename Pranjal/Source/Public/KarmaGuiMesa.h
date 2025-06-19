@@ -1,3 +1,12 @@
+/**
+ * @file KarmaGuiMesa.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the classes for Editor
+ * @version 1.0
+ * @date October 1, 2022
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #include "Karma.h"
@@ -341,8 +350,8 @@ namespace Karma
 		// Helpers
 		static int ImStrlenW(const KGWchar* str);
 		static void QueryForTuringMachineElectronics();
-		static uint32_t ChernUint32FromString(const std::string& ramString);
-		static std::string ChernDimensionsFromString(const std::string& ramString);
+		static uint32_t ChurnUint32FromString(const std::string& ramString);
+		static std::string ChurnDimensionsFromString(const std::string& ramString);
 		static double HexStringToDecimal(const std::string& hexString);
 
 		// Statistics

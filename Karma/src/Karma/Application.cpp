@@ -109,12 +109,12 @@ namespace Karma
 				layer->OnUpdate(deltaTime);
 			}
 
-			// ImGui rendering sequence cue trickling through stack
+			// KarmaGui rendering sequence cue trickling through stack
 			m_KarmaGuiLayer->Begin();
 
 			for (auto layer : *m_LayerStack)
 			{
-				layer->ImGuiRender(deltaTime);
+				layer->KarmaGuiRender(deltaTime);
 			}
 
 			m_KarmaGuiLayer->End();

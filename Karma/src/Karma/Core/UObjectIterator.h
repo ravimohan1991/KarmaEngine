@@ -1,3 +1,13 @@
+/**
+ * @file UObjectIterator.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the class FRawObjectIterator.
+ * @version 1.0
+ * @date September 10, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
 #pragma once
 
 #include "krpch.h"
@@ -5,25 +15,29 @@
 
 namespace Karma
 {
-
 	/**
-	 * Class for iterating through all objects, including class default objects, unreachable objects...all UObjects
+	 * @brief Class for iterating through all objects, including class default objects, unreachable objects...all UObjects
 	 */
 	class FRawObjectIterator : public FUObjectArray::TIterator
 	{
 	public:
 		/**
 		 * Constructor
+		 *
 		 * @param	bOnlyGCedObjects	if true, skip all of the permanent objects
+		 * @since Karma 1.0.0
 		 */
 		FRawObjectIterator(bool bOnlyGCedObjects = false) :
 			FUObjectArray::TIterator(GUObjectStore, bOnlyGCedObjects)
 		{
 		}
+
 		/**
-		* Iterator dereference
-		* @return	the object pointer pointed at by the iterator
-		*/
+		 * Iterator dereference
+		 *
+		 * @return	the object pointer pointed at by the iterator
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE FUObjectItem* operator*() const
 		{
 			// casting UObjectBase to UObject for clients
@@ -32,7 +46,9 @@ namespace Karma
 
 		/**
 		 * Iterator dereference
+		 *
 		 * @return	the object pointer pointed at by the iterator
+		 * @since Karma 1.0.0
 		 */
 		FORCEINLINE FUObjectItem* operator->() const
 		{

@@ -1,3 +1,13 @@
+/**
+ * @file Field.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the class FField and relevant helpers.
+ * @version 1.0
+ * @date April 13, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
 #pragma once
 
 #include "krpch.h"
@@ -11,12 +21,19 @@ namespace Karma
 	class FFieldClass;
 
 	/**
-	 * Special container that can hold either UObject or FField.
+	 * @brief Special container that can hold either UObject or FField.
+	 *
 	 * Exposes common interface of FFields and UObjects for easier transition from UProperties to FProperties.
 	 * DO NOT ABUSE. IDEALLY THIS SHOULD ONLY BE FFIELD INTERNAL STRUCTURE FOR HOLDING A POINTER TO THE OWNER OF AN FFIELD.
+	 *
+	 * @remark Seems like data structure for reflection system
 	 */
 	class KARMA_API FFieldVariant
 	{
+		/**
+		 * A union is a special class type that can hold only one of its non-static data members at a time.
+		 * https://en.cppreference.com/w/cpp/language/union
+		 */
 		union FFieldObjectUnion
 		{
 			FField* Field;
@@ -27,18 +44,35 @@ namespace Karma
 
 	public:
 
+		/**
+		 * @brief Constructor
+		 *
+		 * @since Karma 1.0.0
+		 */
 		FFieldVariant()
 			: bIsUObject(false)
 		{
 			Container.Field = nullptr;
 		}
 
+		/**
+		 * @brief Overloaded constructor (FField)
+		 *
+		 * @param InField				The FField to initialize the union Container with
+		 * @since Karma 1.0.0
+		 */
 		FFieldVariant(const FField* InField)
 			: bIsUObject(false)
 		{
 			Container.Field = const_cast<FField*>(InField);
 		}
 
+		/**
+		 * @brief Overloaded template constructor (UObject)
+		 *
+		 * @param InObject				The UObject to initialize the union Container with
+		 * @since Karma 1.0.0
+		 */
 		template <
 			typename T,
 			decltype(ImplicitConv<const UObject*>(std::declval<T>()))* = nullptr
@@ -49,21 +83,57 @@ namespace Karma
 			Container.Object = const_cast<UObject*>(ImplicitConv<const UObject*>(InObject));
 		}
 
+		/**
+		 * @brief Getter for bIsUobject
+		 *
+		 * @return true if Container holds UObject only
+		 * @since Karma 1.0.0
+		 */
 		inline bool IsUObject() const
 		{
 			return bIsUObject;
 		}
+
+		/**
+		 * @brief Maybe sees if UObject is being held
+		 *
+		 * @todo Ponder over the routine
+		 * @since Karma 1.0.0
+		 */
 		inline bool IsValid() const
 		{
 			return !!Container.Object;
 		}
+
+		/**
+		 * No clue
+		 * @warning May result in linking error because function not defined
+		 *
+		 * @todo Function definition is missing
+		 */
 		bool IsValidLowLevel() const;
+
+		/**
+		 * @brief A boolean conversion operator for the class
+		 * https://en.cppreference.com/w/cpp/language/cast_operator
+		 *
+		 * @since Karma 1.0.0
+		 */
 		inline operator bool() const
 		{
 			return IsValid();
 		}
+
+		/**
+		 * @todo Function definition is missing
+		 */
 		bool IsA(const UClass* InClass) const;
+
+		/**
+		 * @todo Function definition is missing
+		 */
 		bool IsA(const FFieldClass* InClass) const;
+
 		template <typename T>
 		bool IsA() const
 		{
@@ -95,6 +165,12 @@ namespace Karma
 		}
 		*/
 
+		/**
+		 * @brief Getter for UObject if possible
+		 *
+		 * @return UObject reference
+		 * @since Karma 1.0.0
+		 */
 		UObject* ToUObject() const
 		{
 			if (bIsUObject)
@@ -106,6 +182,13 @@ namespace Karma
 				return nullptr;
 			}
 		}
+
+		/**
+		 * @brief Getter for FField if possible
+		 *
+		 * @return FField reference
+		 * @since Karma 1.0.0
+		 */
 		FField* ToField() const
 		{
 			if (!bIsUObject)
@@ -117,21 +200,38 @@ namespace Karma
 				return nullptr;
 			}
 		}
-		/** FOR INTERNAL USE ONLY: Function that returns the owner as FField without checking if it's actually an FField */
+
+		/** 
+		 * FOR INTERNAL USE ONLY: Function that returns the owner as FField without checking if it's actually an FField
+		 *
+		 * @todo Ponder
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE FField* ToFieldUnsafe() const
 		{
 			return Container.Field;
 		}
-		/** FOR INTERNAL USE ONLY: Function that returns the owner as UObject without checking if it's actually a UObject */
+
+		/**
+		 * FOR INTERNAL USE ONLY: Function that returns the owner as UObject without checking if it's actually a UObject
+		 *
+		 * @since Karma 1.0.0
+		 */
 		FORCEINLINE UObject* ToUObjectUnsafe() const
 		{
 			return Container.Object;
 		}
 
+		/**
+		 * Seems like ToFieldUnsafe.
+		 *
+		 * @todo Ponder how this is different from previous similar function
+		 */
 		void* GetRawPointer() const
 		{
 			return Container.Field;
 		}
+
 		FFieldVariant GetOwnerVariant() const;
 		UClass* GetOwnerClass() const;
 		const std::string& GetFullName() const;
@@ -146,6 +246,7 @@ namespace Karma
 		{
 			return Container.Field == Other.Container.Field;
 		}
+		
 		bool operator!=(const FFieldVariant& Other) const
 		{
 			return Container.Field != Other.Container.Field;
@@ -165,7 +266,7 @@ namespace Karma
 	};
 
 	/**
-	 * Object representing a type of an FField struct.
+	 * @brief Object representing a type of an FField struct.
 	 * Mimics a subset of UObject reflection functions.
 	 */
 	class KARMA_API FFieldClass
@@ -200,24 +301,61 @@ namespace Karma
 	public:
 		KR_NONCOPYABLE(FFieldClass);
 
-		/** Gets the list of all field classes in existance */
+		/**
+		 * Gets the list of all field classes in existance
+		 *
+		 * @todo Write function definition when required
+		 * @since Karma 1.0.0
+		 */
 		static KarmaVector<FFieldClass*>& GetAllFieldClasses();
 
-		/** Gets a mapping of all field class names to the actual class objects */
+		/**
+		 * Gets a mapping of all field class names to the actual class objects
+		 *
+		 * @todo Write function definition when requreid
+		 * @since Karma 1.0.0
+		 */
 		static std::unordered_map<std::string, FFieldClass*>& GetNameToFieldClassMap();
 
+		/**
+		 * Constructor
+		 *
+		 * @brief Initialize various data members of the class
+		 */
 		explicit FFieldClass(const char* InCPPName, uint64_t InId, uint64_t InCastFlags, FFieldClass* InSuperClass, FField* (*ConstructFnPtr)(const FFieldVariant&, const std::string&, EObjectFlags));
+
+		/**
+		 * Destructor
+		 *
+		 * @since Karma 1.0.0
+		 */
 		~FFieldClass();
 
+		/**
+		 * Getter for m_Name
+		 *
+		 * @since Karma 1.0.0
+		 */
 		inline const std::string& GetName() const
 		{
 			return m_Name;
 		}
 		
+		/**
+		 * Getter for m_Id
+		 *
+		 * @since Karma 1.0.0
+		 */
 		inline uint64_t GetId() const
 		{
 			return m_Id;
 		}
+
+		/**
+		 * Getter for m_CastFlags
+		 *
+		 * @since Karma 1.0.0
+		 */
 		inline uint64_t GetCastFlags() const
 		{
 			return m_CastFlags;
@@ -230,11 +368,21 @@ namespace Karma
 		{
 			return (m_CastFlags & InCastFlags) == InCastFlags;
 		}
+
+		/**
+		 * @brief See if the class is child of a class
+		 *
+		 * @todo Need to try with various cases for intended purpose
+		 * @see FFieldClass::IsChildOf_Walk
+		 *
+		 * @since Karma 1.0.0
+		 */
 		inline bool IsChildOf(const FFieldClass* InClass) const
 		{
 			const uint64_t OtherClassId = InClass->GetId();
 			return OtherClassId ? !!(m_CastFlags & OtherClassId) : IsChildOf_Walk(InClass);
 		}
+
 		const std::string& GetDescription() const;
 		const std::string& GetDisplayNameText() const;
 
@@ -248,6 +396,11 @@ namespace Karma
 			return SuperClass;
 		}
 
+		/**
+		 * Getter for DefaultObject.
+		 *
+		 * @since Karma 1.0.0
+		 */
 		FField* GetDefaultObject()
 		{
 			if (!DefaultObject)
@@ -291,7 +444,7 @@ namespace Karma
 	};
 
 	/**
-	 * Base class of reflection data objects.
+	 * @brief Base class of reflection data objects.
 	 */
 	class KARMA_API FField
 	{
@@ -319,6 +472,11 @@ namespace Karma
 		EObjectFlags m_FlagsPrivate;
 
 	public:
+		/**
+		 * @brief Rename the FField object
+		 *
+		 * @since Karma 1.0.0
+		 */
 		void Rename(const std::string& NewName);
 
 		//static FFieldClass* StaticClass();

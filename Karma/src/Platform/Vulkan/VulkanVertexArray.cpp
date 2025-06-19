@@ -295,6 +295,8 @@ namespace Karma
 		uint32_t index = 0;
 		const auto& layout = vertexBuffer->GetLayout();
 
+		m_bindingDescription = {};
+		m_attributeDescriptions.clear();
 		m_bindingDescription.binding = 0;
 		m_bindingDescription.stride = layout.GetStride();
 		m_bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;

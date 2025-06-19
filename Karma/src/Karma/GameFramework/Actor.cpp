@@ -509,7 +509,6 @@ namespace Karma
 		//MARK_PROPERTY_DIRTY_FROM_NAME(AActor, Instigator, this);
 	}
 
-	/** Util that sets up the actor's component hierarchy (when users forget to do so, in their native ctor) */
 	USceneComponent* AActor::FixupNativeActorComponents(AActor* Actor)
 	{
 		USceneComponent* SceneRootComponent = Actor->GetRootComponent();

@@ -23,7 +23,7 @@ namespace Karma
 			{
 				if (event == GLFW_DISCONNECTED)
 				{
-			//WindowsInputData& data = *static_cast<WindowsInputData*>(glfwGetJoystickUserPointer(cID)); returns null after disconnection so no use
+					//WindowsInputData& data = *static_cast<WindowsInputData*>(glfwGetJoystickUserPointer(cID)); returns null after disconnection so no use
 
 					ControllerDeviceDisconnectedEvent eve(cID, event);
 					//data.EventCallback(eve);
@@ -37,7 +37,7 @@ namespace Karma
 				}
 				else if (event == GLFW_CONNECTED)
 				{
-			//void* test = glfwGetJoystickUserPointer(cID);// how to call application function when pointer is not set?
+					//void* test = glfwGetJoystickUserPointer(cID);// how to call application function when pointer is not set?
 
 					//WindowsInputData& data = *static_cast<WindowsInputData*>(test);
 

@@ -38,6 +38,7 @@ namespace Karma
 	{
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
+		
 		m_Data.Height = props.Height;
 
 		KR_CORE_INFO("Creating Linux window {0} ({1}, {2})", props.Title, props.Width, props.Height);
@@ -64,6 +65,7 @@ namespace Karma
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 			glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+			
 			glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		}
 
@@ -98,10 +100,10 @@ namespace Karma
 		stbi_image_free(karmaEQ.pixels);
 	}
 
-		bool LinuxWindow::OnResize(WindowResizeEvent& event)
-		{
-			return m_Context->OnWindowResize(event);
-		}
+	bool LinuxWindow::OnResize(WindowResizeEvent& event)
+	{
+		return m_Context->OnWindowResize(event);
+	}
 
 	void LinuxWindow::SetGLFWCallbacks(GLFWwindow* glfwWindow)
 	{

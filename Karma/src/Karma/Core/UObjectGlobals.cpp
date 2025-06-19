@@ -421,6 +421,7 @@ namespace Karma
 
 		KR_CORE_ASSERT(InClass->m_ClassConstructor, "No default constructor found");
 
+		// Calls another placement new with the specific UObject (or derived) object class constructor call
 		(*InClass->m_ClassConstructor)(FObjectInitializer(Result, /*InTemplate*/nullptr, Params.m_bCopyTransientsFromClassDefaults, true, /*Params.InstanceGraph*/nullptr));
 
 		{
@@ -457,7 +458,7 @@ namespace Karma
 			KR_CORE_WARN("Attempting to create UObject with empty name string. Defaulting to NoName");
 		}
 
-		// see if object already exists in GUObjectStore. Maybe not functional
+		// see if object already exists in GUObjectStore
 		Object = StaticFindObjectFastInternal(nullptr, inOuter, objectName, true);
 
 		size_t totalSize = inClass->GetPropertiesSize();
@@ -466,7 +467,7 @@ namespace Karma
 
 		if (Object == nullptr)
 		{
-			size_t Alignment = FMath::Max<size_t>(4, inClass->GetMinAlignment());
+			size_t Alignment = inClass->GetMinAlignment();//FMath::Max<size_t>(4, inClass->GetMinAlignment());
 
 			// Following corresponds to the instantiation of UObjects
 			// from Karma's memory system known by the name Smriti.
@@ -478,7 +479,8 @@ namespace Karma
 
 			FMemory::Memzero(aPtr, totalSize);
 
-			ObjectBase = (UObjectBase*)aPtr;
+			//ObjectBase = (UObjectBase*)aPtr; deviation from ue's implementation
+			Object = (UObject*)aPtr;
 		}
 		else
 		{
@@ -488,10 +490,15 @@ namespace Karma
 
 		EObjectFlags relevantFlags = EObjectFlags (inFlags | RF_NeedInitialization);
 
+		ObjectBase = (UObjectBase*)Object;
+
 		// Following UE, we first call the UObjectBase constructor
 		new (ObjectBase) UObjectBase(const_cast<UClass*>(inClass), relevantFlags, internalSetFlags, inOuter, inName);
 
-		Object = (UObject*)ObjectBase;
+		// 8 bytes offset is introduced, https://ravimohan.net/2023/06/14/c-typecasts-an-assembly-pov/
+		// which interfares with the previous allocation, so we are not doing this way.
+		// May see how ue comes about this issue.
+		//Object = (UObject*)ObjectBase;
 
 		return Object;
 	}
@@ -536,7 +543,7 @@ namespace Karma
 
 		if (InName != "")
 		{
-			//Result = FindObject<UPackage>(nullptr, *InName);
+			Result = FindObject<UPackage>(nullptr, InName);
 
 			if (Result == NULL)
 			{
@@ -575,6 +582,18 @@ namespace Karma
 		ObjectItem->m_Object = Object;
 
 		Add(ObjectItem);
+	}
+
+	bool FUObjectArray::IsValid(const UObjectBase* Object) const
+	{
+		int32 Index = Object->GetInternalIndex();
+		if(Index == INDEX_NONE)
+		{
+			KR_CORE_WARN("Object is not in global object array");
+			return false;
+		}
+		
+		return true;
 	}
 
 	void GetObjectsOfClass(const UClass* ClassToLookFor, KarmaVector<UObject *>& Results, bool bIncludeDerivedClasses, EObjectFlags ExclusionFlags, EInternalObjectFlags ExclusionInternalFlags)

@@ -28,8 +28,6 @@
 #include "Karma/Renderer/Material.h"
 #include "Karma/Renderer/Texture.h"
 #include "Karma/Renderer/Scene.h"
-#include "Karma/Renderer/SceneModel.h"
-
 #include "Karma/KarmaUtilities.h"
 
 #include "Karma/Input.h"

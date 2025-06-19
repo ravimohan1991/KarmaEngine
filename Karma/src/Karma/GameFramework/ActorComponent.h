@@ -1,3 +1,12 @@
+/**
+ * @file ActorComponent.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the class UActorComponent.
+ * @version 1.0
+ * @date February 27, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #include "krpch.h"
@@ -8,6 +17,9 @@ class AActor;
 
 namespace Karma
 {
+	/**
+	 * @brief Enum for UActorComponent instance creation method
+	 */
 	enum class EComponentCreationMethod : uint8_t
 	{
 		/** A component that is part of a native class. */
@@ -21,7 +33,7 @@ namespace Karma
 	};
 
 	/**
-	 * ActorComponent is the base class for components that define reusable behavior that can be added to different types of Actors.
+	 * @brief ActorComponent is the base class for components that define reusable behavior that can be added to different types of Actors.
 	 * ActorComponents that have a transform are known as SceneComponents and those that can be rendered are PrimitiveComponents.
 	 * Components are a special type of Object that Actors can attach to themselves as sub-objects.
 	 * Components are useful for sharing common behaviors
@@ -58,12 +70,18 @@ namespace Karma
 		UWorld* m_WorldPrivate;
 
 	public:
+		/**
+		 * @brief A constructor
+		 *
+		 * @since Karma 1.0.0
+		 */
 		UActorComponent();
 
 		/**
-		 * Function called every frame on this ActorComponent. Override this function to implement custom logic to be executed every frame.
+		 * @brief Function called every frame on this ActorComponent. Override this function to implement custom logic to be executed every frame.
 		 * Only executes if the component is registered, and also PrimaryComponentTick.bCanEverTick must be set to true.
 		 *
+		 * @note Not functional yet this seems
 		 * @param deltaTime - The time since the last tick.
 		 * Rest of the params shall be functionla later
 		 * @param TickType - The kind of tick this is, for example, are we paused, or 'simulating' in the editor
@@ -72,78 +90,119 @@ namespace Karma
 		virtual void TickComponent(float deltaTime);//, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
 		/**
-		 * Begins Play for the component.
+		 * @brief Begins Play for the component.
 		 * Called when the owning Actor begins play or when the component is created if the Actor has already begun play.
 		 * Actor BeginPlay normally happens right after PostInitializeComponents but can be delayed for networked or child actors.
 		 * Requires component to be registered and initialized.
+		 *
+		 * @see AActor::BeginPlay()
+		 * @since Karma 1.0.0
 		 */
 		virtual void BeginPlay();
 
 		/**
-		 * Ends gameplay for this component.
-		 * Called from AActor::EndPlay only if bHasBegunPlay is true
+		 * @brief Ends gameplay for this component.
+		 * //Called from AActor::EndPlay only if bHasBegunPlay is true// <- not quite sure about the call
+		 *
+		 * @see UActorComponent::BeginDestroy()
+		 * @since Karma 1.0.0
 		 */
 		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 
-		/** Follow the Outer chain to get the  AActor  that 'Owns' this component */
+		/** 
+		 * @brief Follow the Outer chain to get the  AActor  that 'Owns' this component
+		 *
+		 * @since Karma 1.0.0
+		 */
 		AActor* GetOwner() const;
 
-		/** Indicates that OnCreatedComponent has been called, but OnDestroyedComponent has not yet */
+		/** 
+		 * @brief Indicates that OnCreatedComponent has been called, but OnDestroyedComponent has not yet
+		 *
+		 * @since Karma 1.0.0
+		 */
 		bool HasBeenCreated() const { return m_bHasBeenCreated; }
 
-		/** Called when a component is created (not loaded). This can happen in the editor or during gameplay */
+		/** 
+		 * @brief Called when a component is created (not loaded). This can happen in the editor or during gameplay.
+		 *
+		 * @since Karma 1.0.0
+		 */
 		virtual void OnComponentCreated();
 
-		/** See if this component is currently registered */
+		/** 
+		 * @brief See if this component is currently registered
+		 *
+		 * @since Karma 1.0.0
+		 */
 		inline bool IsRegistered() const { return m_bRegistered; }
 
 		/**
-		 * Returns whether the component is active or not
+		 * @brief Returns whether the component is active or not
+		 *
 		 * @return - The active state of the component.
+		 * @since Karma 1.0.0
 		 */
 		bool IsActive() const { return m_bIsActive; }
 
 		/**
-		 * Activates the SceneComponent, should be overridden by native child classes.
+		 * @brief Activates the SceneComponent, should be overridden by native child classes.
+		 *
 		 * @param bReset - Whether the activation should happen even if ShouldActivate returns false.
+		 * @since Karma 1.0.0
 		 */
 		virtual void Activate(bool bReset = false);
 
 		/**
-		 * Sets the value of bIsActive without causing other side effects to this instance.
+		 * @brief Sets the value of bIsActive without causing other side effects to this instance.
 		 *
 		 * Activate, Deactivate, and SetActive are preferred in most cases because they respect virtual behavior.
+		 *
+		 * @since Karma 1.0.0
 		 */
 		void SetActiveFlag(const bool bNewIsActive);
 
-		/** Indicates that InitializeComponent has been called, but UninitializeComponent has not yet */
+		/** 
+		 * @brief Indicates that InitializeComponent has been called, but UninitializeComponent has not yet
+		 *
+		 * @since Karma 1.0.0
+		 */
 		bool HasBeenInitialized() const { return m_bHasBeenInitialized; }
 
 		/**
-		 * Initializes the component.  Occurs at level startup or actor spawn. This is before BeginPlay (Actor or Component).
+		 * @brief Initializes the component.  Occurs at level startup or actor spawn. This is before BeginPlay (Actor or Component).
 		 * All Components in the level will be Initialized on load before any Actor/Component gets BeginPlay
 		 * Requires component to be registered, and bWantsInitializeComponent to be true.
+		 *
+		 * @since Karma 1.0.0
 		 */
 		virtual void InitializeComponent();
 
 		/** 
-		 * Indicates that BeginPlay has been called, but EndPlay has not yet 
+		 * @brief Indicates that BeginPlay has been called, but EndPlay has not yet
+		 *
+		 * @since Karma 1.0.0
 		 */
 		bool HasBegunPlay() const { return m_bHasBegunPlay; }
 
 		//~ Begin UObject Interface.
+		/**
+		 * @brief Overridden BeginDestroy() for UActorComponent
+		 *
+		 * @see UObject::BeginDestroy()
+		 */
 		virtual void BeginDestroy() override;
 		//~ End UObject Interface.
 
 		/**
-		 * Handle this component being Uninitialized.
-		 * 
+		 * @brief Handle this component being Uninitialized.
+		 *
 		 * @see Called from AActor::EndPlay only if bHasBeenInitialized is true
 		 */
 		virtual void UninitializeComponent();
 
 		/**
-		 * Called when a component is destroyed
+		 * @brief Called when a component is destroyed
 		 *
 		 * @param	bDestroyingHierarchy  - True if the entire component hierarchy is being torn down, allows avoiding expensive operations
 		 */

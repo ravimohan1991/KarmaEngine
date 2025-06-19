@@ -4,7 +4,7 @@ namespace Karma
 {
 	void UChildActorComponent::BeginDestroy()
 	{
-		USceneComponent::BeginDestroy();
+		Super::BeginDestroy();
 
 		/*
 		if (m_CachedInstanceData)
