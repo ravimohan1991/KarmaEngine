@@ -51,6 +51,11 @@
  */
 #define BIT(x) (1 << x)
 
+// https://github.com/gabime/spdlog/issues/3251
+#ifdef KR_WINDOWS_PLATFORM
+	#define FMT_UNICODE 0
+#endif
+
 // Assertions
 /**
  * @brief Karma's Assertion
