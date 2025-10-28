@@ -359,38 +359,6 @@ namespace Karma
 			for (int commandCounter = 0; commandCounter < commandList->CmdBuffer.Size; commandCounter++)
 			{
 				const KGDrawCmd* drawCommand = &commandList->CmdBuffer[commandCounter];
-				if (drawCommand->UserCallback != nullptr)
-				{
-					// User callback, registered via KarmaDrawList::AddCallback()
-					// (KGDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
-					if (drawCommand->UserCallback == KGDrawCallback_ResetRenderState)
-					{
-						//sceneToDraw->SetWindowToRenderWithinResize(true);
-					}
-					else
-					{
-						drawCommand->UserCallback(commandList, drawCommand);
-						sceneToDraw = static_cast<Scene*>(drawCommand->UserCallbackData);
-						if (sceneToDraw)
-						{
-							// Assuming only one such callback
-							KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer, drawData);
-							bDoneSettingRenderState = false;
-
-							std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
-
-							// Hmm
-							vulkanVA->UpdateProcessAndSetReadyForSubmission();
-							vulkanVA->Bind();
-
-							VulkanHolder::GetVulkanContext()->UploadUBO(frameIndex);
-
-							vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[frameIndex], 0, nullptr);
-							vkCmdDrawIndexed(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
-						}
-					}
-				}
-				else
 				{
 					// Setup desired Vulkan state
 					// vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdBindIndexBuffer, setup display viewport, and upload pushconstants or UBOs
@@ -439,6 +407,49 @@ namespace Karma
 			}
 			globalIndexOffset += commandList->IdxBuffer.Size;
 			globalVertexOffset += commandList->VtxBuffer.Size;
+		}
+		
+		for (int n = 0; n < drawData->CmdListsCount; n++)
+		{
+			// Pointer to primitive drawing resources
+			const KGDrawList* commandList = drawData->CmdLists[n];
+			for (int commandCounter = 0; commandCounter < commandList->CmdBuffer.Size; commandCounter++)
+			{
+				const KGDrawCmd* drawCommand = &commandList->CmdBuffer[commandCounter];
+				{
+					if (drawCommand->UserCallback != nullptr)
+					{
+						// User callback, registered via KarmaDrawList::AddCallback()
+						// (KGDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
+						if (drawCommand->UserCallback == KGDrawCallback_ResetRenderState)
+						{
+							//sceneToDraw->SetWindowToRenderWithinResize(true);
+						}
+						else
+						{
+							drawCommand->UserCallback(commandList, drawCommand);
+							sceneToDraw = static_cast<Scene*>(drawCommand->UserCallbackData);
+							if (sceneToDraw)
+							{
+								// Assuming only one such callback
+								KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer, drawData);
+								bDoneSettingRenderState = false;
+								
+								std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
+								
+								// Hmm
+								vulkanVA->UpdateProcessAndSetReadyForSubmission();
+								vulkanVA->Bind();
+								
+								VulkanHolder::GetVulkanContext()->UploadUBO(frameIndex);
+								
+								vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[frameIndex], 0, nullptr);
+								vkCmdDrawIndexed(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
+							}
+						}
+					}
+				}
+			}
 		}
 
 		// Note: at this point both vkCmdSetViewport() and vkCmdSetScissor() have been called.
