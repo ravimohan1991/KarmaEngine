@@ -78,6 +78,12 @@ namespace Karma
 		static void GiveLoopEndControlToVulkan();
 		static void FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData);
 		static void FramePresent(KarmaGui_ImplVulkanH_Window* windowData);
+		
+		static KGTextureID Convert3DSceneTo2DTexture(std::shared_ptr<Scene> scene, KGVec2 dimensions);
+		
+		// Getters
+		static VkImageView GetOffScreenTextureImageView() { return m_3DTo2DImageView; }
+		static VkImageView GetOffScreenDepthImageView() { return m_3DTo2DDepthImageView; }
 
 	private:
 
@@ -87,6 +93,15 @@ namespace Karma
 		// Vulkan specific members
 		static VkDescriptorPool m_KarmaGuiDescriptorPool;
 		static KarmaGui_ImplVulkanH_Window m_VulkanWindowData;
+		static VkImage m_3DScene2DTexture;
+		static VkImage m_3DScene2DDepth;
+		static VkDeviceMemory m_3DSceneDM;
+		static VkDeviceMemory m_3DSceneDepthDM;
+		static VkImageView m_3DTo2DImageView;
+		static VkImageView m_3DTo2DDepthImageView;
+		static VkRenderPass m_3DTo2DRenderPass;
+		static VkFramebuffer m_3DTo2DFB;
+		static VkSampler m_3DTo2DSampler;
 
 		static bool m_SwapChainRebuild;
 	};

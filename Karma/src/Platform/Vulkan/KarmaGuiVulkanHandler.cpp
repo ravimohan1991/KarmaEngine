@@ -359,6 +359,40 @@ namespace Karma
 			for (int commandCounter = 0; commandCounter < commandList->CmdBuffer.Size; commandCounter++)
 			{
 				const KGDrawCmd* drawCommand = &commandList->CmdBuffer[commandCounter];
+				
+				if (drawCommand->UserCallback != nullptr)
+				{
+					// User callback, registered via KarmaDrawList::AddCallback()
+					// (KGDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
+					if (drawCommand->UserCallback == KGDrawCallback_ResetRenderState)
+					{
+						//sceneToDraw->SetWindowToRenderWithinResize(true);
+					}
+					else
+					{
+						drawCommand->UserCallback(commandList, drawCommand);
+						//sceneToDraw = static_cast<Scene*>(drawCommand->UserCallbackData);
+						if (sceneToDraw)
+						{
+							// Assuming only one such callback
+							KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer, drawData);
+							bDoneSettingRenderState = false;
+							
+							std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
+							
+							// Hmm
+							vulkanVA->UpdateProcessAndSetReadyForSubmission();
+							vulkanVA->Bind();
+							
+							VulkanHolder::GetVulkanContext()->UploadUBO(frameIndex);
+							
+							vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[frameIndex], 0, nullptr);
+							vkCmdDrawIndexed(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
+							//vkCmdDraw(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0);
+						}
+					}
+				}
+				else
 				{
 					// Setup desired Vulkan state
 					// vkCmdBindPipeline, vkCmdBindVertexBuffers, vkCmdBindIndexBuffer, setup display viewport, and upload pushconstants or UBOs
@@ -407,49 +441,6 @@ namespace Karma
 			}
 			globalIndexOffset += commandList->IdxBuffer.Size;
 			globalVertexOffset += commandList->VtxBuffer.Size;
-		}
-		
-		for (int n = 0; n < drawData->CmdListsCount; n++)
-		{
-			// Pointer to primitive drawing resources
-			const KGDrawList* commandList = drawData->CmdLists[n];
-			for (int commandCounter = 0; commandCounter < commandList->CmdBuffer.Size; commandCounter++)
-			{
-				const KGDrawCmd* drawCommand = &commandList->CmdBuffer[commandCounter];
-				{
-					if (drawCommand->UserCallback != nullptr)
-					{
-						// User callback, registered via KarmaDrawList::AddCallback()
-						// (KGDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
-						if (drawCommand->UserCallback == KGDrawCallback_ResetRenderState)
-						{
-							//sceneToDraw->SetWindowToRenderWithinResize(true);
-						}
-						else
-						{
-							drawCommand->UserCallback(commandList, drawCommand);
-							sceneToDraw = static_cast<Scene*>(drawCommand->UserCallbackData);
-							if (sceneToDraw)
-							{
-								// Assuming only one such callback
-								KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer, drawData);
-								bDoneSettingRenderState = false;
-								
-								std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
-								
-								// Hmm
-								vulkanVA->UpdateProcessAndSetReadyForSubmission();
-								vulkanVA->Bind();
-								
-								VulkanHolder::GetVulkanContext()->UploadUBO(frameIndex);
-								
-								vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[frameIndex], 0, nullptr);
-								vkCmdDrawIndexed(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
-							}
-						}
-					}
-				}
-			}
 		}
 
 		// Note: at this point both vkCmdSetViewport() and vkCmdSetScissor() have been called.
@@ -527,7 +518,7 @@ namespace Karma
 			info.subresourceRange.layerCount = 1;
 
 			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &imageData->TextureView);
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create image view");
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
 		}
 
 		// Create the Descriptor Set:
@@ -684,7 +675,7 @@ namespace Karma
 			info.subresourceRange.layerCount = 1;
 
 			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &backendData->FontView);
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create image view");
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
 		}
 
 		// Create the Descriptor Set:
@@ -983,7 +974,7 @@ namespace Karma
 		info.subpass = subpass;
 
 		VkResult result = vkCreateGraphicsPipelines(device, pipelineCache, 1, &info, allocator, pipeline);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create graphics pipelines");
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create graphics pipelines");
 	}
 
 	bool KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects()
@@ -1006,7 +997,7 @@ namespace Karma
 			info.maxLod = 1000;
 			info.maxAnisotropy = 1.0f;
 			result = vkCreateSampler(vulkanInfo->Device, &info, vulkanInfo->Allocator, &backendData->FontSampler);
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create sampler");
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
 		}
 
 		if (!backendData->DescriptorSetLayout)
@@ -1338,6 +1329,259 @@ namespace Karma
 		return descriptorSet;
 	}
 
+	void KarmaGuiVulkanHandler::CreateOffScreenImageViews()
+	{
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		
+		// Actually already created in KarmaGuiRenderer
+		//backendData->OffScreenColorImageView.TextureView = KarmaGuiRenderer::GetOffScreenTextureImageView();
+		//backendData->OffScreenDepthImageView.TextureView = KarmaGuiRenderer::GetOffScreenDepthImageView();
+		
+		VkImage m_3DScene2DTexture;
+		VkImage m_3DScene2DDepth;
+		VkDeviceMemory m_3DSceneDM;
+		VkDeviceMemory m_3DSceneDepthDM;
+		VkImageView m_3DTo2DImageView;
+		VkImageView m_3DTo2DDepthImageView;
+		
+		KGVec2 dimensions = KGVec2(600, 800);
+		VkResult result;
+		
+		// Create the Image:
+		{
+			VkImageCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			info.imageType = VK_IMAGE_TYPE_2D;
+			info.format = VK_FORMAT_R8G8B8A8_UNORM;
+			info.extent.width = dimensions.x;
+			info.extent.height = dimensions.y;
+			info.extent.depth = 1;
+			info.mipLevels = 1;
+			info.arrayLayers = 1;
+			info.samples = VK_SAMPLE_COUNT_1_BIT;
+			info.tiling = VK_IMAGE_TILING_OPTIMAL;
+			info.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+			result = vkCreateImage(vulkanInfo->Device, &info, vulkanInfo->Allocator, &m_3DScene2DTexture);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
+
+			VkMemoryRequirements req;
+			vkGetImageMemoryRequirements(vulkanInfo->Device, m_3DScene2DTexture, &req);
+			VkMemoryAllocateInfo allocInfo = {};
+			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			allocInfo.allocationSize = req.size;
+			allocInfo.memoryTypeIndex = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
+
+			result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &m_3DSceneDM);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
+
+			result = vkBindImageMemory(vulkanInfo->Device, m_3DScene2DTexture, m_3DSceneDM, 0);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind image memory");
+		}
+					
+		// Create the Image View:
+		{
+			VkImageViewCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			info.image = m_3DScene2DTexture;
+			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			info.format = VK_FORMAT_R8G8B8A8_UNORM;
+			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			info.subresourceRange.levelCount = 1;
+			info.subresourceRange.layerCount = 1;
+			
+			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &m_3DTo2DImageView);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
+		}
+		
+		// Create depth image
+		{
+			VkImageCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			info.imageType = VK_IMAGE_TYPE_2D;
+			info.format = VulkanHolder::GetVulkanContext()->FindDepthFormat();
+			info.extent.width = dimensions.x;
+			info.extent.height = dimensions.y;
+			info.extent.depth = 1;
+			info.mipLevels = 1;
+			info.arrayLayers = 1;
+			info.samples = VK_SAMPLE_COUNT_1_BIT;
+			info.tiling = VK_IMAGE_TILING_OPTIMAL;
+			info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+			result = vkCreateImage(vulkanInfo->Device, &info, vulkanInfo->Allocator, &m_3DScene2DDepth);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
+
+			VkMemoryRequirements req;
+			vkGetImageMemoryRequirements(vulkanInfo->Device, m_3DScene2DDepth, &req);
+			VkMemoryAllocateInfo allocInfo = {};
+			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			allocInfo.allocationSize = req.size;
+			allocInfo.memoryTypeIndex = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
+
+			result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &m_3DSceneDepthDM);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
+
+			result = vkBindImageMemory(vulkanInfo->Device, m_3DScene2DDepth, m_3DSceneDepthDM, 0);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind image memory");
+		}
+		
+		// Create depth image view
+		{
+			VkImageViewCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			info.image = m_3DScene2DDepth;
+			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			info.format = VulkanHolder::GetVulkanContext()->FindDepthFormat();
+			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+			info.subresourceRange.levelCount = 1;
+			info.subresourceRange.layerCount = 1;
+			info.subresourceRange.baseMipLevel = 0;
+			info.subresourceRange.baseArrayLayer = 0;
+			
+			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &m_3DTo2DDepthImageView);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
+		}
+		
+		{
+			VkSamplerCreateInfo samplerInfo = {};
+			samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+			// When the texture is large on screen
+			samplerInfo.magFilter = VK_FILTER_LINEAR; // Smooth filtering
+			// samplerInfo.magFilter = VK_FILTER_NEAREST; // Pixelated filtering
+			
+			// When the texture is small on screen
+			samplerInfo.minFilter = VK_FILTER_LINEAR; // Smooth filtering
+			// samplerInfo.minFilter = VK_FILTER_NEAREST; // Pixelated filtering
+			samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // U coordinate (X)
+			samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // V coordinate (Y)
+			samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // W coordinate (Z, rarely used for 2D)
+			// Alternatives: VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT
+			samplerInfo.anisotropyEnable = VK_TRUE;
+			// You must query the max limit from your physical device properties
+			// (e.g., physicalDeviceProperties.limits.maxSamplerAnisotropy)
+			samplerInfo.maxAnisotropy = 16.0f; // Use a reasonable value like 4, 8, or 16
+			samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+			samplerInfo.unnormalizedCoordinates = VK_FALSE; // Coordinates are expected to be [0, 1]
+			
+			// Mipmap configuration
+			samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR; // Linear interpolation between mip levels
+			samplerInfo.mipLodBias = 0.0f;
+			samplerInfo.minLod = 0.0f;
+			samplerInfo.maxLod = 1.0f; // Set to 1.0f if you only have one mip level (common for real-time offscreen rendering)
+			
+			result = vkCreateSampler(vulkanInfo->Device, &samplerInfo, vulkanInfo->Allocator, &backendData->OffScreenSampler);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
+		}
+		
+		backendData->OffScreenColorImageView.TextureView = m_3DTo2DImageView;
+		backendData->OffScreenDepthImageView.TextureView = m_3DTo2DDepthImageView;
+	}
+
+	void KarmaGuiVulkanHandler::CreateOffScreenRenderPass()
+	{
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		
+		// Color Attachment
+		VkAttachmentDescription colorAttachment{};
+		colorAttachment.format = VK_FORMAT_R8G8B8A8_UNORM;
+		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;       // Clear the image at start
+		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;     // Store the result for sampling later
+		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;  // Layout when render pass starts
+		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL; // Layout when render pass ends (we transition *after* the pass)
+		
+		// Depth Attachment
+		VkAttachmentDescription depthAttachment{};
+		depthAttachment.format = VulkanHolder::GetVulkanContext()->FindDepthFormat();
+		depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE; // No need to store depth buffer data
+		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		// --- Subpass and References ---
+
+		// Reference for the color attachment in the subpass
+		VkAttachmentReference colorAttachmentRef{};
+		colorAttachmentRef.attachment = 0; // Index 0 in the pAttachments array
+		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		
+		// Reference for the depth attachment in the subpass
+		VkAttachmentReference depthAttachmentRef{};
+		depthAttachmentRef.attachment = 1; // Index 1 in the pAttachments array
+		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		
+		// The subpass itself
+		VkSubpassDescription subpass{};
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpass.colorAttachmentCount = 1;
+		subpass.pColorAttachments = &colorAttachmentRef;
+		subpass.pDepthStencilAttachment = &depthAttachmentRef;
+		
+		// --- Render Pass Creation ---
+		
+		std::vector<VkAttachmentDescription> attachments = {colorAttachment, depthAttachment};
+		VkRenderPassCreateInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		renderPassInfo.pAttachments = attachments.data();
+		renderPassInfo.subpassCount = 1;
+		renderPassInfo.pSubpasses = &subpass;
+		
+		// Subpass dependencies for synchronization could be added here,
+		// but the manual pipeline barrier after the pass is generally cleaner for this use case.
+
+		VkResult result = vkCreateRenderPass(vulkanInfo->Device, &renderPassInfo, nullptr, &backendData->OffScreenRenderPass);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't off screen render pass");
+	}
+
+	void KarmaGuiVulkanHandler::CreateOffScreenFrameBuffer()
+	{
+		KarmaGuiIO& io = KarmaGui::GetIO();
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		
+		std::vector<VkImageView> attachments = {
+			   backendData->OffScreenColorImageView.TextureView,
+			   backendData->OffScreenDepthImageView.TextureView
+		};
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = backendData->OffScreenRenderPass;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferInfo.pAttachments = attachments.data();
+		
+		if(backendData->OffScreenExtent.x == 0)
+		{
+			backendData->OffScreenExtent.x = 600;
+		}
+		
+		if(backendData->OffScreenExtent.y == 0)
+		{
+			backendData->OffScreenExtent.y = 800;
+		}
+		framebufferInfo.width = backendData->OffScreenExtent.x;
+		framebufferInfo.height = backendData->OffScreenExtent.y;
+		framebufferInfo.layers = 1;
+
+		VkResult result = vkCreateFramebuffer(vulkanInfo->Device, &framebufferInfo, nullptr, &backendData->OffScreenFrameBuffer);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create off screen frame buffer");
+	}
+
 	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
 	{
 		// Still need to address bRecreateSwapChainAndCommandBuffers?
@@ -1659,6 +1903,109 @@ namespace Karma
 				result = vkBeginCommandBuffer(frameFlightData->CommandBuffer, &info);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't begin commandbuffer recording");
 			}
+			
+			{
+				VkRenderPassBeginInfo renderPassInfo{};
+				renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+				renderPassInfo.renderPass = backendData->OffScreenRenderPass;
+				renderPassInfo.framebuffer = backendData->OffScreenFrameBuffer;
+				renderPassInfo.renderArea.offset = {0, 0};
+				renderPassInfo.renderArea.extent.width = backendData->OffScreenExtent.x;
+				renderPassInfo.renderArea.extent.height = backendData->OffScreenExtent.y;
+				
+				// Define clear values for the color and depth attachments
+				std::vector<VkClearValue> clearValues(2);
+				clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}}; // Clear color to black
+				clearValues[1].depthStencil = {1.0f, 0};           // Clear depth to 1.0 (farthest)
+				
+				
+				renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+				renderPassInfo.pClearValues = clearValues.data();
+				
+				// The pass starts here and all commands until vkCmdEndRenderPass are recorded into it
+				vkCmdBeginRenderPass(frameFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+				
+				VkViewport viewport{};
+				viewport.x = 0.0f;
+				viewport.y = 0.0f;
+				viewport.width = (float) backendData->OffScreenExtent.x;
+				viewport.height = (float) backendData->OffScreenExtent.y;
+				viewport.minDepth = 0.0f;
+				viewport.maxDepth = 1.0f;
+				vkCmdSetViewport(frameFlightData->CommandBuffer, 0, 1, &viewport);
+				
+				// Scissor must also match the extent to render to the whole image
+				VkRect2D scissor{};
+				scissor.offset = {0, 0};
+				scissor.extent.width = backendData->OffScreenExtent.x;
+				scissor.extent.height = backendData->OffScreenExtent.y;
+				vkCmdSetScissor(frameFlightData->CommandBuffer, 0, 1, &scissor);
+				
+				std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(backendData->OffScreenScene->GetRenderableVertexArray());
+				
+				// Bind 3D Vertex And Index Buffers:
+				{
+					VkBuffer vertexBuffers[1] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
+					VkDeviceSize vertexOffset[1] = { 0 };
+					vkCmdBindVertexBuffers(frameFlightData->CommandBuffer, 0, 1, vertexBuffers, vertexOffset);
+					vkCmdBindIndexBuffer(frameFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+				}
+				
+				vkCmdBindPipeline(frameFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipeline());
+				
+				vulkanVA->UpdateProcessAndSetReadyForSubmission();
+				vulkanVA->Bind();
+				
+				VulkanHolder::GetVulkanContext()->UploadUBO(windowData->ImageFrameIndex);
+				
+				// Bind descriptor sets (e.g., uniforms for MVP matrices, lighting)
+				// Assumes layout compatibility between pipeline and descriptor set
+				vkCmdBindDescriptorSets(frameFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[windowData->ImageFrameIndex], 0, nullptr);
+
+				// --- 4. Issue Draw Commands ---
+				
+				// Draw your scene geometry
+				vkCmdDrawIndexed(frameFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
+				
+				// --- 5. End the Offscreen Render Pass ---
+				
+				vkCmdEndRenderPass(frameFlightData->CommandBuffer);
+			}
+			
+			{
+				// --- IMAGE LAYOUT TRANSITION BARRIER ---
+
+				VkImageMemoryBarrier imageMemoryBarrier = {};
+				imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;     // Start layout
+				imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;    // End layout
+				imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				imageMemoryBarrier.image = backendData->OffScreenColorImageView.TextureImage;    // The specific image you are transitioning
+				imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
+				imageMemoryBarrier.subresourceRange.levelCount = 1;
+				imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
+				imageMemoryBarrier.subresourceRange.layerCount = 1;
+				
+				// Define synchronization:
+				// The SOURCE stage/access mask is where the previous commands happened (writing color).
+				imageMemoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+				// The DESTINATION stage/access mask is where the future commands will happen (reading in fragment shader).
+				imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+				// Record the barrier into the command buffer
+				vkCmdPipelineBarrier(
+					frameFlightData->CommandBuffer,
+					VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // Wait for this stage to complete
+					VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,        // Before allowing this stage to start
+					0,                                            // Dependencies flags (0 for this case)
+					0, nullptr,                                   // Memory barriers (none needed here)
+					0, nullptr,                                   // Buffer barriers (none needed here)
+					1, &imageMemoryBarrier                        // Image barriers (our transition command)
+				);
+			}
+			
 			{
 				KGVec4 clearColor = KGVec4(0.0f, 0.0f, 0.0f, 1.0f);
 				memcpy(&windowData->ClearValue.color.float32[0], &clearColor, 4 * sizeof(float));

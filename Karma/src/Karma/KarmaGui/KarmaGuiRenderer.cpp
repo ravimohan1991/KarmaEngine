@@ -2,6 +2,9 @@
 #include "Renderer/RendererAPI.h"
 #include "Vulkan/VulkanHolder.h"
 #include "Renderer/RenderCommand.h"
+#include "Renderer/Renderer.h"
+
+#include "Platform/Vulkan/VulkanVertexArray.h"
 
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"
@@ -9,6 +12,15 @@
 namespace Karma
 {
 	VkDescriptorPool KarmaGuiRenderer::m_KarmaGuiDescriptorPool;
+	VkImage KarmaGuiRenderer::m_3DScene2DTexture;
+	VkImage KarmaGuiRenderer::m_3DScene2DDepth;
+	VkDeviceMemory KarmaGuiRenderer::m_3DSceneDM;
+	VkDeviceMemory KarmaGuiRenderer::m_3DSceneDepthDM;
+	VkImageView KarmaGuiRenderer::m_3DTo2DImageView;
+	VkImageView KarmaGuiRenderer::m_3DTo2DDepthImageView;
+	VkRenderPass KarmaGuiRenderer::m_3DTo2DRenderPass;
+	VkFramebuffer KarmaGuiRenderer::m_3DTo2DFB;
+	VkSampler KarmaGuiRenderer::m_3DTo2DSampler;
 	KarmaGui_ImplVulkanH_Window KarmaGuiRenderer::m_VulkanWindowData;
 	bool KarmaGuiRenderer::m_SwapChainRebuild;
 	GLFWwindow* KarmaGuiRenderer::m_GLFWwindow = nullptr;
@@ -255,6 +267,13 @@ namespace Karma
 
 		backendData->RenderPass = info->RenderPass;
 		backendData->Subpass = info->Subpass;
+		
+		// OffScreen texture
+		
+		KarmaGuiVulkanHandler::CreateOffScreenImageViews();
+		
+		KarmaGuiVulkanHandler::CreateOffScreenRenderPass();
+		KarmaGuiVulkanHandler::CreateOffScreenFrameBuffer();
 
 		// Font, descriptor, and pipeline
 		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
@@ -557,6 +576,30 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 
 		windowData->SemaphoreIndex = (windowData->SemaphoreIndex + 1) % windowData->MAX_FRAMES_IN_FLIGHT; // Now we can use the next set of semaphores
+	}
+
+	KGTextureID KarmaGuiRenderer::Convert3DSceneTo2DTexture(std::shared_ptr<Scene> scene, KGVec2 dimensions)
+	{
+		if(RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		{
+			KarmaGui_ImplVulkan_Data* backendData = GetBackendRendererUserData();
+			KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+			VkResult result;
+			
+			std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(scene->GetRenderableVertexArray());
+			
+			VulkanRendererAPI* vulkanAPI = static_cast<VulkanRendererAPI*>(RenderCommand::GetRendererAPI());
+			
+			//vulkanAPI->AllocateCommandBuffers();
+
+			backendData->OffScreenExtent = dimensions;
+			backendData->OffScreenScene = scene;
+			
+			VkDescriptorSet descriptorSet = (VkDescriptorSet)KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_AddTexture(backendData->OffScreenSampler, backendData->OffScreenColorImageView.TextureView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			
+			return descriptorSet;
+		}
+		return nullptr;
 	}
 
 	KGTextureID KarmaGuiBackendRendererUserData::GetTextureIDAtIndex(uint32_t index)

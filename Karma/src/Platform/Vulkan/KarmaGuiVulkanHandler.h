@@ -725,6 +725,55 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		VkRenderPass                RenderPass;
+		
+		/**
+		 * @brief Renderpass for the 2D texture of 3D scene
+		 *
+		 * @since Karma 1.0.0
+		 */
+		VkRenderPass				OffScreenRenderPass;
+		
+		/**
+		 * @brief Color attachment texture data for off screen 3D to 2D rendering
+		 *
+		 * @since Karma 1.0.0
+		 */
+		KarmaGui_ImplVulkan_Image_TextureData	OffScreenColorImageView;
+		
+		/**
+		 * @brief Depth attachment texture data for off screen 3D to 2D rendering
+		 *
+		 * @since Karma 1.0.0
+		 */
+		KarmaGui_ImplVulkan_Image_TextureData	OffScreenDepthImageView;
+		
+		/**
+		 * @brief VkSampler for off screen 3D to 2D rendering
+		 *
+		 * @since Karma 1.0.0
+		 */
+		VkSampler OffScreenSampler;
+		
+		/**
+		 * @brief Framebuffer for 3D scene to 2D texture rendering
+		 *
+		 * @since Karma 1.0.0
+		 */
+		VkFramebuffer				OffScreenFrameBuffer;
+		
+		/**
+		 * @brief The width and height of offscreen rendertarget (color texture perhaps)
+		 *
+		 * @since Karma 1.0.0
+		 */
+		KGVec2						OffScreenExtent;
+		
+		/**
+		 * @brief The 3D scene to be rendered in 2D texture
+		 *
+		 * @since Karma 1.0.0
+		 */
+		std::shared_ptr<Scene>		OffScreenScene;
 
 		/**
 		 * @brief The value for default alignment for index and vertex buffers. The value is set to 256 by DearImgui authors, so we do in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init.
@@ -1107,6 +1156,27 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
+		
+		/**
+		 * @brief Makes ImageView of color and depth textures
+		 *
+		 * @since Karma 1.0.0
+		 */
+		static void CreateOffScreenImageViews();
+		
+		/**
+		 * @brief Makes renderpass for offscreen 2D texture of 3D scene
+		 *
+		 * @since Karma 1.0.0
+		 */
+		static void CreateOffScreenRenderPass();
+		
+		/**
+		 * @brief Creates vulkan framebuffer for 2D texture rendering (from 3D scene)
+		 *
+		 * @since Karma 1.0.0
+		 */
+		static void CreateOffScreenFrameBuffer();
 
 		/**
 		 * @brief Clears appropriate buffers which are used for KarmaGui's rendering. They include:

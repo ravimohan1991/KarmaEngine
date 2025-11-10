@@ -525,7 +525,9 @@ namespace Karma
 		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
 		width = backendData->GetTextureWidthAtIndex(1);
 		height = backendData->GetTextureHeightAtIndex(1);
-
+		
+		KGTextureID TextureID3D = KarmaGuiRenderer::Convert3DSceneTo2DTexture(scene, KGVec2(600, 800));//KGVec2(window->Size.x, window->Size.y));
+		KarmaGui::Image(TextureID3D, KGVec2(window->Size.x, window->Size.y));
 
 		//ImGui::GetCurrentWindow()->DrawList->SetWindowBackgroundColor(bgColor);
 
@@ -571,7 +573,7 @@ namespace Karma
 			scene->SetWindowToRenderWithinResize(false);
 		}
 
-		KarmaGuiInternal::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
+		//KarmaGui::GetWindowDrawList()->AddCallback(sceneCallBack, (void*)scene.get());
 
 		if (m_RefreshRenderingResources)
 		{
