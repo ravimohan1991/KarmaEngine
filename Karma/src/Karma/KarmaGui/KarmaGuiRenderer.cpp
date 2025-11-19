@@ -356,13 +356,13 @@ namespace Karma
 		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
-		vkDeviceWaitIdle(vulkanInfo->Device);
+        //vkDeviceWaitIdle(vulkanInfo->Device);
 
-		for (size_t i = 0; i < m_VulkanWindowData.MAX_FRAMES_IN_FLIGHT; i++)
+        /*for (size_t i = 0; i < m_VulkanWindowData.MAX_FRAMES_IN_FLIGHT; i++)
 		{
-			vkResetCommandBuffer(m_VulkanWindowData.OffScreenCommandBuffers[i], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+            vkResetCommandBuffer(m_VulkanWindowData.OffScreenCommandBuffers[i], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 			vkResetCommandBuffer(m_VulkanWindowData.FramesOnFlight[i].CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
-		}
+        }*/
 	}
 
 	void KarmaGuiRenderer::OnKarmaGuiLayerDetach()
@@ -460,8 +460,9 @@ namespace Karma
 		KarmaGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		VkResult result;
 
-		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
+        //vkDeviceWaitIdle(vulkanInfo->Device);
+        result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
+        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
 
 		// ImageAcquiredSemaphore is m_ImageAvailableSemaphores equivalent
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
@@ -471,6 +472,13 @@ namespace Karma
 
 		// Pointer to the container of CommandPool, swapchainImages und views
 		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
+
+        result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
+        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
+
+        vkResetCommandBuffer(m_VulkanWindowData.OffScreenCommandBuffers[windowData->SemaphoreIndex], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+        vkResetCommandBuffer(m_VulkanWindowData.FramesOnFlight[windowData->SemaphoreIndex].CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+
 
 		// May be try to free resources here
 		//ImGuiVulkanHandler::ImGui_KarmaImplVulkan_ClearUndFreeResources(drawData, windowData->ImageFrameIndex);
@@ -624,12 +632,11 @@ namespace Karma
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &renderCompleteSemaphore;
 
-		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
-
 		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
-	}
+
+        //vkDeviceWaitIdle(vulkanInfo->Device);
+    }
 
 	void KarmaGuiRenderer::FramePresent(KarmaGui_ImplVulkanH_Window* windowData)
 	{
