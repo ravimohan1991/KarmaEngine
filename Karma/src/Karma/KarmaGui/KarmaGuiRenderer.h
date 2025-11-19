@@ -79,7 +79,18 @@ namespace Karma
 		static void FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData);
 		static void FramePresent(KarmaGui_ImplVulkanH_Window* windowData);
 		
+		/**
+		 * @brief Convertes a given 3D scene to 2D texture
+		 *
+		 * @param scene								The 3D scene to be converted to 2D texture
+		 * @param dimensions						The width and height of the 2D texture
+		 */
 		static KGTextureID Convert3DSceneTo2DTexture(std::shared_ptr<Scene> scene, KGVec2 dimensions);
+		
+		/**
+		 * To be discarded soon
+		 */
+		static KGTextureID Add3DSceneFor2DRendering(std::shared_ptr<Scene> scene, KGVec2 dimensions);
 		
 		// Getters
 		static VkImageView GetOffScreenTextureImageView() { return m_3DTo2DImageView; }

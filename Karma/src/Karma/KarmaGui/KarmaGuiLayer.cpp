@@ -47,7 +47,7 @@ namespace Karma
 			style.Colors[KGGuiCol_WindowBg].w = 1.0f;
 		}
 
-		// Setting Dear ImGui ini file
+		// Setting KarmaGui ini file
 		io.IniFilename = "../Resources/Misc/KarmaGuiEditor.ini";//"yeehaw!";
 
 		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
