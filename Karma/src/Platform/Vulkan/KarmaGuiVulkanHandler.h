@@ -310,20 +310,6 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		VkCommandPool       CommandPool;
-		
-		/**
-		 * @brief Commandpool for KarmaGui_Vulkan_Frame_On_Flight.OffScreenCommandBuffers
-		 *
-		 * @since Karma 1.0.0
-		 */
-		VkCommandPool       OffScreenCommandPool;
-		
-		/**
-		 * @brief This commandbuffer is used for offscreen rendering of 3D scene to 2D texture
-		 *
-		 * @since Karma 1.0.0
-		 */
-		std::vector<VkCommandBuffer>     OffScreenCommandBuffers;
 
 		/**
 		 * @brief The surface is a cross-platform abstraction over windows to render to and is generally instantiated by providing a reference to the native window handle
@@ -1200,34 +1186,6 @@ namespace Karma
 		 * @brief Creates appropriate frame buffer for off screen texture rendering
 		 */
 		static void CreateOffScreenTextureFrameBufferResource(KarmaGui_3DScene_To_2DTexture_Data* textureData);
-		
-		/**
-		 * @brief Atm the command pool for offscreen commandbuffers is created
-		 *
-		 * @param windowData											The datastructure to hold all the data needed by one rendering Vulkan context.
-		 */
-		static void CreateRestOfTheOffScreenTextureResources(KarmaGui_ImplVulkanH_Window* windowData);
-		
-		/**
-		 * @brief Makes ImageView of color and depth textures
-		 *
-		 * @since Karma 1.0.0
-		 */
-		static void CreateOffScreenFrame();
-		
-		/**
-		 * @brief Makes renderpass for offscreen 2D texture of 3D scene
-		 *
-		 * @since Karma 1.0.0
-		 */
-		static void CreateOffScreenRenderPass();
-		
-		/**
-		 * @brief Creates vulkan framebuffer for 2D texture rendering (from 3D scene)
-		 *
-		 * @since Karma 1.0.0
-		 */
-		static void CreateOffScreenFrameBuffer();
 
 		/**
 		 * @brief Clears appropriate buffers which are used for KarmaGui's rendering. They include:

@@ -66,7 +66,6 @@ namespace Karma
 			
 			// OffScreen texture (3D scene to 2D texture) resources
 			KarmaGuiVulkanHandler::CreateOffScreenTextureResources();
-			KarmaGuiVulkanHandler::CreateRestOfTheOffScreenTextureResources(&m_VulkanWindowData);// commandpool, commandbuffers
 
 			// Load default font
 			KGFontConfig fontConfig;
@@ -600,15 +599,13 @@ namespace Karma
 		// Submit command buffer
 		VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
-        std::vector<VkCommandBuffer> submitCommandBuffers =
-						{windowData->OffScreenCommandBuffers[windowData->SemaphoreIndex], frameOnFlightData->CommandBuffer};
-		VkSubmitInfo submitInfo = {};
+        VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.waitSemaphoreCount = 1;
 		submitInfo.pWaitSemaphores = &imageAcquiredSemaphore;
 		submitInfo.pWaitDstStageMask = &waitStage;
-        submitInfo.commandBufferCount = 1;//static_cast<uint32_t>(submitCommandBuffers.size());
-        submitInfo.pCommandBuffers = &frameOnFlightData->CommandBuffer;//submitCommandBuffers.data();
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &frameOnFlightData->CommandBuffer;
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &renderCompleteSemaphore;
 
@@ -708,7 +705,6 @@ namespace Karma
                     VkImageCreateInfo imageCreateCI{};
                     imageCreateCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
                     imageCreateCI.imageType = VK_IMAGE_TYPE_2D;
-                    // Note that vkCmdBlitImage (if supported) will also do format conversions if the swapchain color format would differ
                     imageCreateCI.format = VK_FORMAT_R8G8B8A8_UNORM;
                     imageCreateCI.extent.width = dimensions.x;
                     imageCreateCI.extent.height = dimensions.y;
