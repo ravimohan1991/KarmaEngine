@@ -716,13 +716,13 @@ namespace Karma
 	{
 		std::shared_ptr<Scene> Scene3D;
 		
-		KGVec2				Size;
-		KGTextureID			KarmaGui_Texture;
+        KGVec2                              Size;
+        std::vector<KGTextureID>			KarmaGui_Textures;
 		
-		VkImage				Image;
-		VkDeviceMemory		DeviceMemory;
-		VkImageView			Image_View;
-		VkSampler			Sampler;
+        std::vector<VkImage>				Images;
+        std::vector<VkDeviceMemory>         DeviceMemory;
+        std::vector<VkImageView>			Image_Views;
+        VkSampler                           Sampler;
 		
 		// Depth resources
 		VkImage				DepthImage;
@@ -731,7 +731,7 @@ namespace Karma
 		VkImageView			DepthImage_View;
 		
 		VkRenderPass		RenderPass;
-		VkFramebuffer		FrameBuffer;
+        std::vector<VkFramebuffer>		FrameBuffers;
 	};
 
 	/**
@@ -1012,24 +1012,7 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_SetupRenderState(KGDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, KarmaGui_ImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height);
-		
-		// Experimental
-		/**
-		 * @brief A routine to bind index/vertex buffers, setup a external viewport, and bind pipeline. Specifically for 3D rendering in KarmaGUI's window for (experimental) 3D exhibition.
-		 *
-		 * @param drawData										All draw data to render a KarmaGui frame
-		 * @param pipeline										The vulkan pipeline (created in KarmaGui_ImplVulkan_CreatePipeline) being used by the backend
-		 * @param commandBuffer									The vulkan commandbuffer (taken from VulkanRendererAPI.m_CommandBuffer) being used by the backend, see todo list.
-		 * @param remderingBufferData							The set of buffers relevant to current frame (in flight?)
-		 * @param width											The viewport width size
-		 * @param height										The viewport height size
-		 *
-		 *
-		 * @todo Ponder over the commandBuffer usage (should backend have seperate commandbuffer?)
-		 * @since Karma 1.0.0
-		 */
-		static void KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer, KGDrawData* drawData);
-		
+				
 		/**
 		 * @brief A routine to create the shader modules (KarmaGui_ImplVulkan_Data.ShaderModuleVert and KarmaGui_ImplVulkan_Data.ShaderModuleFrag) for the backend GraphicsPipeline (KarmaGui_ImplVulkan_Data.Pipeline).
 		 *

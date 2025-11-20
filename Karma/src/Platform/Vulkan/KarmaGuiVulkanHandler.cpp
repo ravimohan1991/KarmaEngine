@@ -155,38 +155,6 @@ namespace Karma
 		bufferSize = requirements.size;
 	}
 
-	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer, KGDrawData* drawData)
-	{
-		std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
-
-		// Bind 3D Vertex And Index Buffers:
-		{
-			VkBuffer vertexBuffers[1] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
-			VkDeviceSize vertexOffset[1] = { 0 };
-			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, vertexOffset);
-			vkCmdBindIndexBuffer(commandBuffer, vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-		}
-
-		// Setup viewport:
-		{
-			if(sceneToDraw->GetWindowToRenderWithinResizeStatus())
-			{
-				KGGuiWindow* windowToRenderWithin = static_cast<KGGuiWindow*>(sceneToDraw->GetRenderingWindow());
-
-				vulkanVA->CreateExternalViewPort(windowToRenderWithin->Pos.x * drawData->FramebufferScale.x, (windowToRenderWithin->Pos.y + windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y , windowToRenderWithin->Size.x * drawData->FramebufferScale.x , (windowToRenderWithin->Size.y - windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y);
-				vulkanVA->CleanupPipeline();
-				vulkanVA->RecreateVulkanVA();
-				sceneToDraw->SetWindowToRenderWithinResize(false);
-			}
-		}
-
-		// Bind pipeline:
-		{
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->GetGraphicsPipeline());
-		}
-
-	}
-
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetupRenderState(KGDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, KarmaGui_ImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
@@ -371,25 +339,6 @@ namespace Karma
 					else
 					{
 						drawCommand->UserCallback(commandList, drawCommand);
-						//sceneToDraw = static_cast<Scene*>(drawCommand->UserCallbackData);
-						if (sceneToDraw)
-						{
-							// Assuming only one such callback
-							KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer, drawData);
-							bDoneSettingRenderState = false;
-							
-							std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
-							
-							// Hmm
-							vulkanVA->UpdateProcessAndSetReadyForSubmission();
-							vulkanVA->Bind();
-							
-							VulkanHolder::GetVulkanContext()->UploadUBO(frameIndex);
-							
-							vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[frameIndex], 0, nullptr);
-							vkCmdDrawIndexed(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
-							//vkCmdDraw(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0);
-						}
 					}
 				}
 				else
@@ -1332,7 +1281,6 @@ namespace Karma
 	void KarmaGuiVulkanHandler::CreateOffScreenTextureResources()
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
-		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 		
 		// need to find appropriate way for feeding dimensions, should match with the window
 		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
@@ -1365,8 +1313,8 @@ namespace Karma
 		depthAttachment.format = VulkanHolder::GetVulkanContext()->FindDepthFormat();
 		depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE; // No need to store depth buffer data
-		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -1392,12 +1340,24 @@ namespace Karma
 		
 		// Subpass dependencies for layout transitions ########## seems IMPORTANT for layout transitions ################
 		// https://github.com/1111mp/Vulkan/blob/7e65729c9782d00ee87e70fb25b711ccc0b71b64/src/Application.cpp#L1627
-		VkSubpassDependency dependency{};
-		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-		dependency.dstSubpass = 0;
-		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        std::array<VkSubpassDependency, 2> dependencies;
+
+        dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependencies[0].dstSubpass = 0;
+        dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+        dependencies[1].srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependencies[1].dstSubpass = 0;
+        dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+        dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
 		
 		// --- Render Pass Creation ---
 		
@@ -1408,8 +1368,8 @@ namespace Karma
 		renderPassInfo.pAttachments = attachments.data();
 		renderPassInfo.subpassCount = 1;
 		renderPassInfo.pSubpasses = &subpass;
-		renderPassInfo.dependencyCount = 1;
-		renderPassInfo.pDependencies = &dependency;
+        renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
+        renderPassInfo.pDependencies = dependencies.data();
 		
 		// Subpass dependencies for synchronization could be added here,
 		// but the manual pipeline barrier after the pass is generally cleaner for this use case.
@@ -1423,23 +1383,30 @@ namespace Karma
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
-		std::vector<VkImageView> attachments = {
-			textureData->Image_View,
-			textureData->DepthImage_View
-		};
 
-		VkFramebufferCreateInfo framebufferInfo{};
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = textureData->RenderPass;
-		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-		framebufferInfo.pAttachments = attachments.data();
-		framebufferInfo.width = textureData->Size.x;
-		framebufferInfo.height = textureData->Size.y;
-		framebufferInfo.layers = 1;
+        uint32_t numberOfSwapchainImages = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
 
-		VkResult result = vkCreateFramebuffer(vulkanInfo->Device, &framebufferInfo, nullptr, &textureData->FrameBuffer);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create off screen frame buffer");
+        textureData->FrameBuffers.resize(numberOfSwapchainImages);
+
+        for(uint32_t i = 0; i < numberOfSwapchainImages; i++)
+        {
+            std::vector<VkImageView> attachments ={
+                textureData->Image_Views[i],//VulkanHolder::GetVulkanContext()->GetSwapChainImageViews()[i],
+                textureData->DepthImage_View
+            };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();//textureData->RenderPass;
+            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            framebufferInfo.pAttachments = attachments.data();
+            framebufferInfo.width = textureData->Size.x;
+            framebufferInfo.height = textureData->Size.y;
+            framebufferInfo.layers = 1;
+
+            VkResult result = vkCreateFramebuffer(vulkanInfo->Device, &framebufferInfo, nullptr, &textureData->FrameBuffers[i]);
+            KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create off screen frame buffer");
+        }
 	}
 
 	void KarmaGuiVulkanHandler::CreateOffScreenTextureDepthResource(KarmaGui_3DScene_To_2DTexture_Data* textureData)
@@ -1466,7 +1433,8 @@ namespace Karma
 			info.tiling = VK_IMAGE_TILING_OPTIMAL;
 			info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            //info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            info.samples = VK_SAMPLE_COUNT_1_BIT;
 
 			result = vkCreateImage(vulkanInfo->Device, &info, vulkanInfo->Allocator, &textureData->DepthImage);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
@@ -1476,7 +1444,7 @@ namespace Karma
 			VkMemoryAllocateInfo allocInfo = {};
 			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			allocInfo.allocationSize = req.size;
-			allocInfo.memoryTypeIndex = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
+            allocInfo.memoryTypeIndex = VulkanHolder::GetVulkanContext()->FindMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);//KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
 
 			result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &textureData->DepthDeviceMemory);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
