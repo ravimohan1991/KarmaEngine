@@ -1299,7 +1299,7 @@ namespace Karma
 		
 		// Color Attachment
 		VkAttachmentDescription colorAttachment{};
-		colorAttachment.format = VulkanHolder::GetVulkanContext()->GetSwapChainImageFormat();
+        colorAttachment.format = VK_FORMAT_R8G8B8A8_UNORM;
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;       // Clear the image at start
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;     // Store the result for sampling later
@@ -1391,13 +1391,13 @@ namespace Karma
         for(uint32_t i = 0; i < numberOfSwapchainImages; i++)
         {
             std::vector<VkImageView> attachments ={
-                textureData->Image_Views[i],//VulkanHolder::GetVulkanContext()->GetSwapChainImageViews()[i],
+                textureData->Image_Views[i],
                 textureData->DepthImage_View
             };
 
             VkFramebufferCreateInfo framebufferInfo{};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();//textureData->RenderPass;
+            framebufferInfo.renderPass = textureData->RenderPass;
             framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             framebufferInfo.pAttachments = attachments.data();
             framebufferInfo.width = textureData->Size.x;
@@ -1470,6 +1470,17 @@ namespace Karma
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
 		}
 	}
+
+    void KarmaGuiVulkanHandler::PrepareVertexArrayaForKarmaGuiWindowRendering()
+    {
+        KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+
+        for(auto textureData = backendData->Elements3DTo2D.begin(); textureData != backendData->Elements3DTo2D.end(); ++textureData)
+        {
+            std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(textureData->Scene3D->GetRenderableVertexArray());
+            vulkanVA->CreateKarmaGuiGraphicsPipeline(textureData->RenderPass, textureData->Size.x, textureData->Size.y);
+        }
+    }
 
 	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
 	{

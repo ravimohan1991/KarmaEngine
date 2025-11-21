@@ -489,9 +489,6 @@ namespace Karma
 			return;
 		}
 
-		//result = vkResetCommandPool(m_Device, frameData->CommandPool, 0);
-		//KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset command pool");
-
         {
             VkCommandBufferBeginInfo info = {};
             info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -506,8 +503,8 @@ namespace Karma
             {
                 VkRenderPassBeginInfo renderPassInfo{};
                 renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-                renderPassInfo.renderPass = windowData->RenderPass;//it->RenderPass;
-                renderPassInfo.framebuffer = /*frameData->Framebuffer;*/it->FrameBuffers[windowData->ImageFrameIndex];
+                renderPassInfo.renderPass = it->RenderPass;
+                renderPassInfo.framebuffer = it->FrameBuffers[windowData->ImageFrameIndex];
                 renderPassInfo.renderArea.offset = {0, 0};
                 renderPassInfo.renderArea.extent.width = it->Size.x;
                 renderPassInfo.renderArea.extent.height = it->Size.y;
@@ -525,7 +522,7 @@ namespace Karma
 
                 std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
 
-                vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipeline());
+                vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetKarmaGuiGraphicsPipeline());
 
                 // Bind 3D Vertex And Index Buffers:
                 {
@@ -766,6 +763,9 @@ namespace Karma
             // for the SceneToTexture element. We may be creating some resources again when not required, when new element is added
             // resources for previous elements are also created. So take care of that.
 			KarmaGuiVulkanHandler::CreateOffScreenTextureResources();
+
+            // Set the renderpass for vulkanvertexarrays because graphicspipeline needs rebuilt (or be of different use)
+            KarmaGuiVulkanHandler::PrepareVertexArrayaForKarmaGuiWindowRendering();
 			
             return SceneToTexture.KarmaGui_Textures[m_VulkanWindowData.ImageFrameIndex];
 		}

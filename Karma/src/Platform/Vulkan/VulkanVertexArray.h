@@ -29,6 +29,7 @@ namespace Karma
 		void CreateDescriptorSetLayout();
 		void CreatePipelineLayout();
 		void CreateGraphicsPipeline();
+        void CreateKarmaGuiGraphicsPipeline(VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight);
 		void CreateDescriptorPool();
 		void CreateDescriptorSets();
 
@@ -46,6 +47,7 @@ namespace Karma
 
 		// Getters
 		VkPipeline GetGraphicsPipeline() const { return m_graphicsPipeline; }
+        VkPipeline GetKarmaGuiGraphicsPipeline() const { return m_graphicsPipelineKGWindow; }
 		VkPipelineLayout GetGraphicsPipelineLayout() const { return m_pipelineLayout; }
 		const std::shared_ptr<VulkanShader>& GetShader() const { return m_Shader; }
 		//const std::vector<VkDescriptorSet>& GetUBDescriptorSets() const { return m_descriptorSets; }
@@ -79,6 +81,7 @@ namespace Karma
 		VkDescriptorSetLayout m_descriptorSetLayout;
 
 		VkPipeline m_graphicsPipeline;
+        VkPipeline m_graphicsPipelineKGWindow;
 		VkDescriptorPool m_descriptorPool;
 		std::vector<VkDescriptorSet> m_descriptorSets;
 
