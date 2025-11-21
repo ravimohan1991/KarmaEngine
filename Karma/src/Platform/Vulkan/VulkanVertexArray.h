@@ -42,6 +42,8 @@ namespace Karma
 		void RecreateVulkanVA();
 		void CleanupPipeline();
 
+        void CleanupKarmaGuiGraphicsPipeline();
+
 		// Helper functions
 		VkShaderModule CreateShaderModule(const std::vector<uint32_t>& code);
 

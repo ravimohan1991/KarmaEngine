@@ -470,6 +470,24 @@ namespace Karma
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
 		}
 
+        // Imgui basically make one sampler for all textures
+        {
+            VkSamplerCreateInfo info = {};
+            info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+            info.magFilter = VK_FILTER_LINEAR;
+            info.minFilter = VK_FILTER_LINEAR;
+            info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+            info.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            info.minLod = -1000;
+            info.maxLod = 1000;
+            info.maxAnisotropy = 1.0f;
+
+            result = vkCreateSampler(vulkanInfo->Device, &info, vulkanInfo->Allocator, &imageData->TextureSampler);
+            KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
+        }
+
 		// Create the Descriptor Set:
 		imageData->TextureDescriptorSet = (VkDescriptorSet)KarmaGui_ImplVulkan_AddTexture(imageData->TextureSampler, imageData->TextureView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -1683,6 +1701,36 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
+        KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+        KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+
+        uint32_t numberOfSwapchainImages = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+
+        // Clear vulkan resources from KarmaGui_3DScene_To_2DTexture_Data
+        for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
+        {
+            // Order of destruction to be taken in account
+
+            vkDestroySampler(vulkanInfo->Device, it->Sampler, nullptr);
+            vkDestroyImageView(vulkanInfo->Device, it->DepthImage_View, nullptr);
+
+            vkDestroyImage(vulkanInfo->Device, it->DepthImage, nullptr);
+            vkFreeMemory(vulkanInfo->Device, it->DepthDeviceMemory, nullptr);
+
+            for(uint32_t i = 0; i < numberOfSwapchainImages; i++)
+            {
+                vkDestroyImageView(vulkanInfo->Device, it->Image_Views[i], nullptr);
+                vkDestroyImage(vulkanInfo->Device, it->Images[i], nullptr);
+                vkFreeMemory(vulkanInfo->Device, it->DeviceMemory[i], nullptr);
+                vkDestroyFramebuffer(vulkanInfo->Device, it->FrameBuffers[i], nullptr);
+            }
+
+            std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
+            vulkanVA->CleanupKarmaGuiGraphicsPipeline();
+
+            vkDestroyRenderPass(vulkanInfo->Device, it->RenderPass, nullptr);
+        }
+
 		ClearVulkanWindowData(windowData, true);
 	}
 

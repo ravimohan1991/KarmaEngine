@@ -38,6 +38,11 @@ namespace Karma
 		vkDestroyDescriptorPool(m_device, m_descriptorPool, nullptr);// Descriptorsets get automatically get freed
 	}
 
+    void VulkanVertexArray::CleanupKarmaGuiGraphicsPipeline()
+    {
+        vkDestroyPipeline(m_device, m_graphicsPipelineKGWindow, nullptr);
+    }
+
 	void VulkanVertexArray::SetShader(std::shared_ptr<Shader> shader)
 	{
 		m_Shader = std::static_pointer_cast<VulkanShader>(shader);

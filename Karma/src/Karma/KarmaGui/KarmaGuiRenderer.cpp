@@ -2,7 +2,6 @@
 #include "Renderer/RendererAPI.h"
 #include "Vulkan/VulkanHolder.h"
 #include "Renderer/RenderCommand.h"
-#include "Renderer/Renderer.h"
 
 #include "Platform/Vulkan/VulkanVertexArray.h"
 
@@ -348,8 +347,6 @@ namespace Karma
 		// Present Main Platform Window
 		if (!mainIsMinimized)
 			FramePresent(&m_VulkanWindowData);
-
-		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
 	}
 
 	void KarmaGuiRenderer::OnKarmaGuiLayerDetach()

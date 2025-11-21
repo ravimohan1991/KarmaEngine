@@ -11,7 +11,7 @@
 
 #include "KarmaGuiMesa.h"
 #include "Karma/Application.h"
-#include "Karma/Renderer/RendererAPI.h"
+
 #include "spdlog/sinks/callback_sink.h"
 
 // Experimental
@@ -523,8 +523,8 @@ namespace Karma
 
 		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
-		width = backendData->GetTextureWidthAtIndex(1);
-		height = backendData->GetTextureHeightAtIndex(1);
+        //width = backendData->GetTextureWidthAtIndex(1);
+        //height = backendData->GetTextureHeightAtIndex(1);
 				
 		KGTextureID TextureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
 		KarmaGui::Image(TextureID3D, KGVec2(window->Size.x, window->Size.y));
