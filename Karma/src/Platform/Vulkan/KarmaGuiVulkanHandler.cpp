@@ -1683,21 +1683,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
-		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-
-		//vkDeviceWaitIdle(vulkanInfo->Device); // FIXME: We could wait on the Queue if we had the queue in windowData-> (otherwise VulkanH functions can't use globals)
-
 		ClearVulkanWindowData(windowData, true);
-
-		// Seems like each window has seperate instantiation of the resources below
-		// Ponder over them
-		/*
-		vkDestroyPipeline(device, wd->Pipeline, allocator);
-		vkDestroyRenderPass(device, wd->RenderPass, allocator);
-		vkDestroySwapchainKHR(device, wd->Swapchain, allocator);
-		vkDestroySurfaceKHR(instance, wd->Surface, allocator);
-		*/
 	}
 
 	//--------------------------------------------------------------------------------------------------------
@@ -1754,13 +1740,13 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetWindowSize(KarmaGuiViewport* viewport, KGVec2 size)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+        //KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_ViewportData* viewportData = (KarmaGui_ImplVulkan_ViewportData*)viewport->RendererUserData;
 		if (viewportData == nullptr) // This is NULL for the main viewport (which is left to the user/app to handle)
 		{
 			return;
 		}
-		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+
 		viewportData->Window.ClearEnable = (viewport->Flags & KGGuiViewportFlags_NoRendererClear) ? false : true;
 		KarmaGui_ImplVulkan_CreateOrResizeWindow(&viewportData->Window, false, true);
 	}
@@ -1782,7 +1768,9 @@ namespace Karma
 		{
 			{
 				result = vkAcquireNextImageKHR(vulkanInfo->Device, windowData->Swapchain, UINT64_MAX, frameFlightData->ImageAcquiredSemaphore, VK_NULL_HANDLE, &windowData->ImageFrameIndex);
-				frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
+                KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image from swapchain");
+
+                frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
 			}
 			for (;;)
 			{
@@ -1861,8 +1849,7 @@ namespace Karma
 		KarmaGui_ImplVulkanH_Window* windowData = &viewportData->Window;
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
-		KarmaGuiViewport* mainViewPort = KarmaGui::GetMainViewport();
-		KarmaGui_ImplVulkan_ViewportData* mainViewPortData = static_cast<KarmaGui_ImplVulkan_ViewportData*>(mainViewPort->RendererUserData);
+        //KarmaGuiViewport* mainViewPort = KarmaGui::GetMainViewport();
 
 		VkResult result;
 		uint32_t presentIndex = windowData->ImageFrameIndex;

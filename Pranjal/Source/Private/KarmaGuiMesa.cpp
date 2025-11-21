@@ -525,9 +525,7 @@ namespace Karma
 		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
 		width = backendData->GetTextureWidthAtIndex(1);
 		height = backendData->GetTextureHeightAtIndex(1);
-		
-		//KGTextureID TextureID3D = KarmaGuiRenderer::Convert3DSceneTo2DTexture(scene, KGVec2(600, 800));//KGVec2(window->Size.x, window->Size.y));
-		
+				
 		KGTextureID TextureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
 		KarmaGui::Image(TextureID3D, KGVec2(window->Size.x, window->Size.y));
 
@@ -752,7 +750,7 @@ namespace Karma
 		height = backendData->GetTextureHeightAtIndex(0);
 
 		{
-			KGVec2 position = KarmaGui::GetCursorScreenPos();
+            //KGVec2 position = KarmaGui::GetCursorScreenPos();
 
 			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
 			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
@@ -793,7 +791,7 @@ namespace Karma
 			KarmaGuiIO& io = KarmaGui::GetIO();
 			KarmaGuiStyle& style = KarmaGui::GetStyle();
 
-			bool copy_to_clipboard = KarmaGui::Button("Copy to clipboard");
+            /*bool copy_to_clipboard =*/ KarmaGui::Button("Copy to clipboard");
 		}
 
 		KarmaGui::Separator();
