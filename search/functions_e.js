@@ -9,10 +9,11 @@ var searchData=
   ['postspawninitialize_6',['PostSpawnInitialize',['../class_karma_1_1_a_actor.html#a9d3da289baa27da5d8b36907979195fd',1,'Karma::AActor']]],
   ['prepareapplicationforrun_7',['PrepareApplicationForRun',['../class_karma_1_1_application.html#a87c6c2ca6bcb2b30f7dedcbcc5e9025d',1,'Karma::Application']]],
   ['preparememorysoftbed_8',['PrepareMemorySoftBed',['../class_karma_1_1_application.html#afa3dac9fd809d467250ae3cc19264c4f',1,'Karma::Application']]],
-  ['processforsubmission_9',['ProcessForSubmission',['../class_karma_1_1_material.html#af63ac13ca8bbbea9727c1cb421212580',1,'Karma::Material']]],
-  ['processmesh_10',['ProcessMesh',['../class_karma_1_1_skeletal_mesh.html#a717ca0331cd06a3f0f9066f9f9ec333e',1,'Karma::SkeletalMesh']]],
-  ['processtherawmesh_11',['ProcessTheRawMesh',['../class_karma_1_1_mesh.html#a2e8b8d9d2da65fa60628d1672c195cf6',1,'Karma::Mesh']]],
-  ['pushelement_12',['PushElement',['../class_karma_1_1_buffer_layout.html#ae14b9933b28a809129b68a7fb96a3609',1,'Karma::BufferLayout']]],
-  ['pushlayer_13',['PushLayer',['../class_karma_1_1_application.html#a6589eb8c60df9c2aef44797b6312b791',1,'Karma::Application::PushLayer()'],['../class_karma_1_1_layer_stack.html#afcd0c5aa5db544ba01604bb29431d932',1,'Karma::LayerStack::PushLayer()']]],
-  ['pushoverlay_14',['PushOverlay',['../class_karma_1_1_application.html#ac178a7207c76f2e70cca0b01298a9d29',1,'Karma::Application::PushOverlay()'],['../class_karma_1_1_layer_stack.html#af36c8034ef94706042fc415ac9541845',1,'Karma::LayerStack::PushOverlay()']]]
+  ['preparevertexarrayaforkarmaguiwindowrendering_9',['PrepareVertexArrayaForKarmaGuiWindowRendering',['../class_karma_1_1_karma_gui_vulkan_handler.html#af8135fcc339a8e07031d716405f440e0',1,'Karma::KarmaGuiVulkanHandler']]],
+  ['processforsubmission_10',['ProcessForSubmission',['../class_karma_1_1_material.html#af63ac13ca8bbbea9727c1cb421212580',1,'Karma::Material']]],
+  ['processmesh_11',['ProcessMesh',['../class_karma_1_1_skeletal_mesh.html#a717ca0331cd06a3f0f9066f9f9ec333e',1,'Karma::SkeletalMesh']]],
+  ['processtherawmesh_12',['ProcessTheRawMesh',['../class_karma_1_1_mesh.html#a2e8b8d9d2da65fa60628d1672c195cf6',1,'Karma::Mesh']]],
+  ['pushelement_13',['PushElement',['../class_karma_1_1_buffer_layout.html#ae14b9933b28a809129b68a7fb96a3609',1,'Karma::BufferLayout']]],
+  ['pushlayer_14',['PushLayer',['../class_karma_1_1_application.html#a6589eb8c60df9c2aef44797b6312b791',1,'Karma::Application::PushLayer()'],['../class_karma_1_1_layer_stack.html#afcd0c5aa5db544ba01604bb29431d932',1,'Karma::LayerStack::PushLayer()']]],
+  ['pushoverlay_15',['PushOverlay',['../class_karma_1_1_application.html#ac178a7207c76f2e70cca0b01298a9d29',1,'Karma::Application::PushOverlay()'],['../class_karma_1_1_layer_stack.html#af36c8034ef94706042fc415ac9541845',1,'Karma::LayerStack::PushOverlay()']]]
 ];

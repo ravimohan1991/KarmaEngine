@@ -36,8 +36,13 @@ var searchData=
   ['createimageviews_33',['CreateImageViews',['../class_karma_1_1_vulkan_context.html#a3b84cc1c4edf52881d495e34104f9e7f',1,'Karma::VulkanContext']]],
   ['createlogicaldevice_34',['CreateLogicalDevice',['../class_karma_1_1_vulkan_context.html#ada1f0e963dfe33514587e524c6ec973d',1,'Karma::VulkanContext']]],
   ['createnewworldcontext_35',['CreateNewWorldContext',['../class_karma_1_1_k_engine.html#ae3379b73f1b5aa0e4db2a05ce1fc8dca',1,'Karma::KEngine']]],
-  ['createorresizebuffer_36',['CreateOrResizeBuffer',['../class_karma_1_1_karma_gui_vulkan_handler.html#a56fe3b6d98631be363c0d4a3990c4b8f',1,'Karma::KarmaGuiVulkanHandler']]],
-  ['createrenderpass_37',['CreateRenderPass',['../class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9',1,'Karma::VulkanContext']]],
-  ['createswapchain_38',['CreateSwapChain',['../class_karma_1_1_vulkan_context.html#a2d367e332d968a2c5ba25c3759bff2b5',1,'Karma::VulkanContext']]],
-  ['createworld_39',['CreateWorld',['../class_karma_1_1_u_world.html#ad415334de4aa3b8c5aecfa3c03489db8',1,'Karma::UWorld']]]
+  ['createoffscreentexturedepthresource_36',['CreateOffScreenTextureDepthResource',['../class_karma_1_1_karma_gui_vulkan_handler.html#aeaf1e648a9734d3ffdd5cf885265d298',1,'Karma::KarmaGuiVulkanHandler']]],
+  ['createoffscreentextureframebufferresource_37',['CreateOffScreenTextureFrameBufferResource',['../class_karma_1_1_karma_gui_vulkan_handler.html#a2769529c7d82f3f31c292c42b733c834',1,'Karma::KarmaGuiVulkanHandler']]],
+  ['createoffscreentexturerenderpassresource_38',['CreateOffScreenTextureRenderpassResource',['../class_karma_1_1_karma_gui_vulkan_handler.html#aeb4d85960f9c16c8071392c2aa9b8207',1,'Karma::KarmaGuiVulkanHandler']]],
+  ['createoffscreentextureresources_39',['CreateOffScreenTextureResources',['../class_karma_1_1_karma_gui_vulkan_handler.html#a9b7c3ec2c2a44fc69ab47b0c42c0c9cd',1,'Karma::KarmaGuiVulkanHandler']]],
+  ['createorresizebuffer_40',['CreateOrResizeBuffer',['../class_karma_1_1_karma_gui_vulkan_handler.html#a56fe3b6d98631be363c0d4a3990c4b8f',1,'Karma::KarmaGuiVulkanHandler']]],
+  ['createrenderpass_41',['CreateRenderPass',['../class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9',1,'Karma::VulkanContext']]],
+  ['createsurface_42',['CreateSurface',['../class_karma_1_1_vulkan_context.html#acbb00492d6e134b605a00ed599b2a6c4',1,'Karma::VulkanContext']]],
+  ['createswapchain_43',['CreateSwapChain',['../class_karma_1_1_vulkan_context.html#a2d367e332d968a2c5ba25c3759bff2b5',1,'Karma::VulkanContext']]],
+  ['createworld_44',['CreateWorld',['../class_karma_1_1_u_world.html#ad415334de4aa3b8c5aecfa3c03489db8',1,'Karma::UWorld']]]
 ];

@@ -138,7 +138,8 @@ var searchData=
   ['global_20software_20requirements_135',['Global Software Requirements',['../md__r_e_a_d_m_e.html#autotoc_md3',1,'']]],
   ['glslversionstring_136',['GlslVersionString',['../struct_karma_1_1_karma_gui___impl_open_g_l3___data.html#a7b34dc17a1f603f13ab7de16a935e4ec',1,'Karma::KarmaGui_ImplOpenGL3_Data']]],
   ['glversion_137',['GlVersion',['../struct_karma_1_1_karma_gui___impl_open_g_l3___data.html#adaaf6989956c7f067d0d08d503597cf6',1,'Karma::KarmaGui_ImplOpenGL3_Data']]],
-  ['graphicscontext_138',['GraphicsContext',['../class_karma_1_1_graphics_context.html',1,'Karma']]],
-  ['graphicscontext_2eh_139',['GraphicsContext.h',['../_graphics_context_8h.html',1,'']]],
-  ['graphicsfamily_140',['graphicsFamily',['../struct_karma_1_1_queue_family_indices.html#abbe9ab3530443b0b9b726b055378cd20',1,'Karma::QueueFamilyIndices']]]
+  ['gracefulvulkanshutdown_138',['GracefulVulkanShutDown',['../class_karma_1_1_karma_gui_renderer.html#a1d92aad06b89e34a7f4f6c45f1b8c3d3',1,'Karma::KarmaGuiRenderer']]],
+  ['graphicscontext_139',['GraphicsContext',['../class_karma_1_1_graphics_context.html',1,'Karma']]],
+  ['graphicscontext_2eh_140',['GraphicsContext.h',['../_graphics_context_8h.html',1,'']]],
+  ['graphicsfamily_141',['graphicsFamily',['../struct_karma_1_1_queue_family_indices.html#abbe9ab3530443b0b9b726b055378cd20',1,'Karma::QueueFamilyIndices']]]
 ];

@@ -123,5 +123,6 @@ var searchData=
   ['getx_120',['GetX',['../class_karma_1_1_mouse_moved_event.html#ae79c948546b092cdc2d3232c29816205',1,'Karma::MouseMovedEvent']]],
   ['getxoffset_121',['GetXOffset',['../class_karma_1_1_mouse_scrolled_event.html#a229f2301ba41650e9fb7009b04938251',1,'Karma::MouseScrolledEvent']]],
   ['gety_122',['GetY',['../class_karma_1_1_mouse_moved_event.html#a6f520f77024db115a98026acd11771da',1,'Karma::MouseMovedEvent']]],
-  ['getyoffset_123',['GetYOffset',['../class_karma_1_1_mouse_scrolled_event.html#a2f95aff3828b0e32431cf25ce066195b',1,'Karma::MouseScrolledEvent']]]
+  ['getyoffset_123',['GetYOffset',['../class_karma_1_1_mouse_scrolled_event.html#a2f95aff3828b0e32431cf25ce066195b',1,'Karma::MouseScrolledEvent']]],
+  ['gracefulvulkanshutdown_124',['GracefulVulkanShutDown',['../class_karma_1_1_karma_gui_renderer.html#a1d92aad06b89e34a7f4f6c45f1b8c3d3',1,'Karma::KarmaGuiRenderer']]]
 ];

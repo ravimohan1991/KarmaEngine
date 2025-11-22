@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['windowcloseevent_0',['WindowCloseEvent',['../class_karma_1_1_window_close_event.html#a9ea5404eb63658368f0d9bcd54c63ff1',1,'Karma::WindowCloseEvent']]],
-  ['windowprops_1',['WindowProps',['../struct_karma_1_1_window_props.html#ace80607c053452d5fd2766f52821ffed',1,'Karma::WindowProps']]],
-  ['windowresizeevent_2',['WindowResizeEvent',['../class_karma_1_1_window_resize_event.html#a1b31ecac2df46dc1cf2a68bcfd0f5f38',1,'Karma::WindowResizeEvent']]],
-  ['world_3',['World',['../struct_karma_1_1_f_world_context.html#a305aa2e8cfd4666907b74da6821c5399',1,'Karma::FWorldContext']]],
-  ['worldadded_4',['WorldAdded',['../class_karma_1_1_k_engine.html#aa4eeed55a238c02c31d360cf26976904',1,'Karma::KEngine']]],
-  ['worlddestroyed_5',['WorldDestroyed',['../class_karma_1_1_k_engine.html#a0bc6a39b004e6477509b0334654a47e1',1,'Karma::KEngine']]]
+  ['vulkancontext_0',['VulkanContext',['../class_karma_1_1_vulkan_context.html#a583612ff1cb505434affe692d444168f',1,'Karma::VulkanContext']]],
+  ['vulkanimagebuffer_1',['VulkanImageBuffer',['../class_karma_1_1_vulkan_image_buffer.html#a2c470d05be31569217e1cd5f09defd65',1,'Karma::VulkanImageBuffer']]],
+  ['vulkanindexbuffer_2',['VulkanIndexBuffer',['../class_karma_1_1_vulkan_index_buffer.html#aa5fe4525a8439eaaa921148a2403fe9c',1,'Karma::VulkanIndexBuffer']]],
+  ['vulkanuniformbuffer_3',['VulkanUniformBuffer',['../struct_karma_1_1_vulkan_uniform_buffer.html#a3091b8a3e9999badc71ab963b54ffb50',1,'Karma::VulkanUniformBuffer']]],
+  ['vulkanvertexbuffer_4',['VulkanVertexBuffer',['../class_karma_1_1_vulkan_vertex_buffer.html#a81f9008265022a7b7e4a4ef2620ae9af',1,'Karma::VulkanVertexBuffer']]]
 ];

@@ -97,7 +97,7 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 
-<p>Helper structure to hold the data needed by one rendering context (Vulkan) of one OS window (Windows, Mac, or Linux).  
+<p>Helper structure to hold the data needed by entire <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> primitive rendering including commandpools, renderpass, commandbuffers, ImageFrameCount (swapchain), and SemaphoreIndex etc.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_karma_gui_vulkan_handler_8h_source.html">KarmaGuiVulkanHandler.h</a>&gt;</code></p>
@@ -106,7 +106,7 @@ Collaboration diagram for Karma::KarmaGui_ImplVulkanH_Window:</div>
 <div class="dyncontent">
 <div class="center"><img src="struct_karma_1_1_karma_gui___impl_vulkan_h___window__coll__graph.png" border="0" usemap="#a_karma_1_1_karma_gui___impl_vulkan_h___window_coll__map" alt="Collaboration graph"/></div>
 <map name="a_karma_1_1_karma_gui___impl_vulkan_h___window_coll__map" id="a_karma_1_1_karma_gui___impl_vulkan_h___window_coll__map">
-<area shape="rect" title="Helper structure to hold the data needed by one rendering context (Vulkan) of one OS window (Windows,..." alt="" coords="108,109,303,150"/>
+<area shape="rect" title="Helper structure to hold the data needed by entire KarmaGui primitive rendering including commandpool..." alt="" coords="108,109,303,150"/>
 <area shape="rect" href="struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame.html" title="Helper structure to hold the data needed by one rendering ImageFrame (different from the FRAME_IN_FLI..." alt="" coords="5,5,201,46"/>
 <area shape="poly" title=" " alt="" coords="135,55,188,107,184,110,131,59"/>
 <area shape="rect" href="struct_karma_1_1_karma_gui___vulkan___frame___on___flight.html" title="Data structure for synchronous operations (relevant to rendering in this context)." alt="" coords="224,5,395,46"/>
@@ -174,11 +174,12 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a4e83a6e76e046beb3704892784f58fc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data for synchronous operations of in-flight rendering frames.  <br /></td></tr>
 <tr class="separator:a4e83a6e76e046beb3704892784f58fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b444633145dd5dd0ed01a67c9f75603" id="r_a5b444633145dd5dd0ed01a67c9f75603"><td class="memItemLeft" align="right" valign="top">VkRect2D&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b444633145dd5dd0ed01a67c9f75603">RenderArea</a></td></tr>
-<tr class="memdesc:a5b444633145dd5dd0ed01a67c9f75603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most likely the glfw window size, set from VulkanHolder::GetVulkanContext()-&gt;GetSwapChainExtent(). Used for setting renderPassInfo.renderArea.extent in KarmaGuiRenderer::FrameRender.  <br /></td></tr>
+<tr class="memdesc:a5b444633145dd5dd0ed01a67c9f75603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most likely the glfw window size, set from VulkanHolder::GetVulkanContext()-&gt;GetSwapChainExtent(). Used for setting renderPassInfo.renderArea.extent in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>.  <br /></td></tr>
 <tr class="separator:a5b444633145dd5dd0ed01a67c9f75603"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Helper structure to hold the data needed by one rendering context (Vulkan) of one OS window (Windows, Mac, or Linux). </p>
+<div class="textblock"><p>Helper structure to hold the data needed by entire <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> primitive rendering including commandpools, renderpass, commandbuffers, ImageFrameCount (swapchain), and SemaphoreIndex etc. </p>
+<p>ATM commandpools, swapchain, renderpass, commandbuffers etc are shared from vulkan context (<a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#ac2c93fab4bd1c3b354b46485db32a8d6" title="The purpose of the routine is two-fold.">KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow</a>)</p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a194b19fa100ff3c1f8399110f43d1346" name="a194b19fa100ff3c1f8399110f43d1346"></a>
@@ -394,7 +395,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Most likely the glfw window size, set from VulkanHolder::GetVulkanContext()-&gt;GetSwapChainExtent(). Used for setting renderPassInfo.renderArea.extent in KarmaGuiRenderer::FrameRender. </p>
+<p>Most likely the glfw window size, set from VulkanHolder::GetVulkanContext()-&gt;GetSwapChainExtent(). Used for setting renderPassInfo.renderArea.extent in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>. </p>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000084">Todo</a></b></dt><dd>Ponder, how to implement the context switch from Editor rendering to Game rendering.</dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
@@ -447,7 +448,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The surface is a cross-platform abstraction over windows to render to and is generally instantiated by providing a reference to the native window handle. </p>
-<dl class="section note"><dt>Note</dt><dd>The vulkan backend, in current stance, is not using the surface created in VulkanContext::CreateSurface() since all the surface relevant operations have already been done in <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a>.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The vulkan backend, in current stance, is not using the surface created in <a class="el" href="class_karma_1_1_vulkan_context.html#acbb00492d6e134b605a00ed599b2a6c4" title="Platform agnostic creation of surface to present rendered images to. Typically they are backed by the...">VulkanContext::CreateSurface()</a> since all the surface relevant operations have already been done in <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a>.</dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

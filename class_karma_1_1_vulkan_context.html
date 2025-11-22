@@ -166,8 +166,8 @@ VkResult&#160;</td><td class="memItemRight" valign="bottom"><b>CreateDebugUtilsM
 <tr class="memitem:a2a76d97839249db5109d6105c9f497b2" id="r_a2a76d97839249db5109d6105c9f497b2"><td class="memItemLeft" align="right" valign="top"><a id="a2a76d97839249db5109d6105c9f497b2" name="a2a76d97839249db5109d6105c9f497b2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DestroyDebugUtilsMessengerEXT</b> (VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks *pAllocator)</td></tr>
 <tr class="separator:a2a76d97839249db5109d6105c9f497b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbb00492d6e134b605a00ed599b2a6c4" id="r_acbb00492d6e134b605a00ed599b2a6c4"><td class="memItemLeft" align="right" valign="top"><a id="acbb00492d6e134b605a00ed599b2a6c4" name="acbb00492d6e134b605a00ed599b2a6c4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CreateSurface</b> ()</td></tr>
+<tr class="memitem:acbb00492d6e134b605a00ed599b2a6c4" id="r_acbb00492d6e134b605a00ed599b2a6c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acbb00492d6e134b605a00ed599b2a6c4">CreateSurface</a> ()</td></tr>
+<tr class="memdesc:acbb00492d6e134b605a00ed599b2a6c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Platform agnostic creation of surface to present rendered images to. Typically they are backed by the category of glfw windows (on Linux, MacOS, and Windows).  <br /></td></tr>
 <tr class="separator:acbb00492d6e134b605a00ed599b2a6c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afad165c3848ece8a475fce66ea2023cc" id="r_afad165c3848ece8a475fce66ea2023cc"><td class="memItemLeft" align="right" valign="top"><a id="afad165c3848ece8a475fce66ea2023cc" name="afad165c3848ece8a475fce66ea2023cc"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>PickPhysicalDevice</b> ()</td></tr>
@@ -175,20 +175,20 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>PickPhysicalDevice</b
 <tr class="memitem:aa75221e66d5cd1a6b93c3d8be3571500" id="r_aa75221e66d5cd1a6b93c3d8be3571500"><td class="memItemLeft" align="right" valign="top"><a id="aa75221e66d5cd1a6b93c3d8be3571500" name="aa75221e66d5cd1a6b93c3d8be3571500"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsDeviceSuitable</b> (VkPhysicalDevice device)</td></tr>
 <tr class="separator:aa75221e66d5cd1a6b93c3d8be3571500"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3de5ebe667dc946ef303d6e42eb41edc" id="r_a3de5ebe667dc946ef303d6e42eb41edc"><td class="memItemLeft" align="right" valign="top"><a id="a3de5ebe667dc946ef303d6e42eb41edc" name="a3de5ebe667dc946ef303d6e42eb41edc"></a>
-<a class="el" href="struct_karma_1_1_queue_family_indices.html">QueueFamilyIndices</a>&#160;</td><td class="memItemRight" valign="bottom"><b>FindQueueFamilies</b> (VkPhysicalDevice device)</td></tr>
+<tr class="memitem:a3de5ebe667dc946ef303d6e42eb41edc" id="r_a3de5ebe667dc946ef303d6e42eb41edc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_queue_family_indices.html">QueueFamilyIndices</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3de5ebe667dc946ef303d6e42eb41edc">FindQueueFamilies</a> (VkPhysicalDevice device)</td></tr>
+<tr class="memdesc:a3de5ebe667dc946ef303d6e42eb41edc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries the graphics card for available queue families and compares against the availability of graphics and presentation queues.  <br /></td></tr>
 <tr class="separator:a3de5ebe667dc946ef303d6e42eb41edc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada1f0e963dfe33514587e524c6ec973d" id="r_ada1f0e963dfe33514587e524c6ec973d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada1f0e963dfe33514587e524c6ec973d">CreateLogicalDevice</a> ()</td></tr>
-<tr class="memdesc:ada1f0e963dfe33514587e524c6ec973d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device.  <br /></td></tr>
+<tr class="memdesc:ada1f0e963dfe33514587e524c6ec973d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. Following is done:  <br /></td></tr>
 <tr class="separator:ada1f0e963dfe33514587e524c6ec973d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d367e332d968a2c5ba25c3759bff2b5" id="r_a2d367e332d968a2c5ba25c3759bff2b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5">CreateSwapChain</a> ()</td></tr>
-<tr class="memdesc:a2d367e332d968a2c5ba25c3759bff2b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be presented to the screen. Our backend will acquire such an image to draw to it, and then return it to the queue.  <br /></td></tr>
+<tr class="memdesc:a2d367e332d968a2c5ba25c3759bff2b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be presented to the screen. Our backend will acquire such an image to draw to it, and then return it to the queue. Then swapchain will have to sync the presentation of image with refresh rate of the monitor.  <br /></td></tr>
 <tr class="separator:a2d367e332d968a2c5ba25c3759bff2b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19eac2cedd2049cb443f426fadf9e79c" id="r_a19eac2cedd2049cb443f426fadf9e79c"><td class="memItemLeft" align="right" valign="top"><a id="a19eac2cedd2049cb443f426fadf9e79c" name="a19eac2cedd2049cb443f426fadf9e79c"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>CheckDeviceExtensionSupport</b> (VkPhysicalDevice device)</td></tr>
 <tr class="separator:a19eac2cedd2049cb443f426fadf9e79c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b62af69e4d46e385abfb9b998bd0c81" id="r_a0b62af69e4d46e385abfb9b998bd0c81"><td class="memItemLeft" align="right" valign="top"><a id="a0b62af69e4d46e385abfb9b998bd0c81" name="a0b62af69e4d46e385abfb9b998bd0c81"></a>
-<a class="el" href="struct_karma_1_1_swap_chain_support_details.html">SwapChainSupportDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><b>QuerySwapChainSupport</b> (VkPhysicalDevice device)</td></tr>
+<tr class="memitem:a0b62af69e4d46e385abfb9b998bd0c81" id="r_a0b62af69e4d46e385abfb9b998bd0c81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_swap_chain_support_details.html">SwapChainSupportDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81">QuerySwapChainSupport</a> (VkPhysicalDevice device)</td></tr>
+<tr class="memdesc:a0b62af69e4d46e385abfb9b998bd0c81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data.  <br /></td></tr>
 <tr class="separator:a0b62af69e4d46e385abfb9b998bd0c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8989c5787a77aa8363f64f9dc8deae1f" id="r_a8989c5787a77aa8363f64f9dc8deae1f"><td class="memItemLeft" align="right" valign="top"><a id="a8989c5787a77aa8363f64f9dc8deae1f" name="a8989c5787a77aa8363f64f9dc8deae1f"></a>
 VkSurfaceFormatKHR&#160;</td><td class="memItemRight" valign="bottom"><b>ChooseSwapSurfaceFormat</b> (const std::vector&lt; VkSurfaceFormatKHR &gt; &amp;availableFormats)</td></tr>
@@ -203,10 +203,10 @@ VkExtent2D&#160;</td><td class="memItemRight" valign="bottom"><b>ChooseSwapExten
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>FindMemoryType</b> (uint32_t typeFilter, VkMemoryPropertyFlags properties)</td></tr>
 <tr class="separator:abbf0e5158292b8ee2294b9d61544d832"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b84cc1c4edf52881d495e34104f9e7f" id="r_a3b84cc1c4edf52881d495e34104f9e7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b84cc1c4edf52881d495e34104f9e7f">CreateImageViews</a> ()</td></tr>
-<tr class="memdesc:a3b84cc1c4edf52881d495e34104f9e7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels.  <br /></td></tr>
+<tr class="memdesc:a3b84cc1c4edf52881d495e34104f9e7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels. ImageView is a wrapper around render target.  <br /></td></tr>
 <tr class="separator:a3b84cc1c4edf52881d495e34104f9e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab653bd5254de11636e5f52bd59aa57c9" id="r_ab653bd5254de11636e5f52bd59aa57c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab653bd5254de11636e5f52bd59aa57c9">CreateRenderPass</a> ()</td></tr>
-<tr class="memdesc:ab653bd5254de11636e5f52bd59aa57c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to.  <br /></td></tr>
+<tr class="memdesc:ab653bd5254de11636e5f52bd59aa57c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to. The "targets" are also known as render targets and include the attachments like colorattachment and depthattachment that describe where the rendering output will go to.  <br /></td></tr>
 <tr class="separator:ab653bd5254de11636e5f52bd59aa57c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba8af4361e52a385ff692a1a0696ddb8" id="r_aba8af4361e52a385ff692a1a0696ddb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba8af4361e52a385ff692a1a0696ddb8">CreateFrameBuffers</a> ()</td></tr>
 <tr class="memdesc:aba8af4361e52a385ff692a1a0696ddb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">A framebuffer represents a collection of specific memory attachments that a render pass instance uses.  <br /></td></tr>
@@ -295,6 +295,9 @@ VkQueue&#160;</td><td class="memItemRight" valign="bottom"><b>GetPresentQueue</b
 <tr class="memitem:a4d4e4c35ec219ac85abf5170b7707818" id="r_a4d4e4c35ec219ac85abf5170b7707818"><td class="memItemLeft" align="right" valign="top"><a id="a4d4e4c35ec219ac85abf5170b7707818" name="a4d4e4c35ec219ac85abf5170b7707818"></a>
 VkCommandPool&#160;</td><td class="memItemRight" valign="bottom"><b>GetCommandPool</b> () const</td></tr>
 <tr class="separator:a4d4e4c35ec219ac85abf5170b7707818"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0803fd663e3b7440e219c24e668666a" id="r_aa0803fd663e3b7440e219c24e668666a"><td class="memItemLeft" align="right" valign="top"><a id="aa0803fd663e3b7440e219c24e668666a" name="aa0803fd663e3b7440e219c24e668666a"></a>
+VkImageView&#160;</td><td class="memItemRight" valign="bottom"><b>GetDepthImageView</b> () const</td></tr>
+<tr class="separator:aa0803fd663e3b7440e219c24e668666a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa922b3622d90f76d7c7fd7ed45d7b5e5" id="r_aa922b3622d90f76d7c7fd7ed45d7b5e5"><td class="memItemLeft" align="right" valign="top"><a id="aa922b3622d90f76d7c7fd7ed45d7b5e5" name="aa922b3622d90f76d7c7fd7ed45d7b5e5"></a>
 const VkPhysicalDeviceFeatures &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetSupportedDeviceFeatures</b> () const</td></tr>
 <tr class="separator:aa922b3622d90f76d7c7fd7ed45d7b5e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -394,7 +397,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <li>Destroy swapchain (<a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">CreateSwapChain()</a>)</li>
 <li>Destroy the vulkan m_device (<a class="el" href="#ada1f0e963dfe33514587e524c6ec973d" title="The so called logical device for interfacing with the physical device. All the machinery (swapchain,...">CreateLogicalDevice()</a>)</li>
 <li>Destroy validation layers for debug messages (SetupDebugMessenger())</li>
-<li>Destroy surface (CreateSurface())</li>
+<li>Destroy surface (<a class="el" href="#acbb00492d6e134b605a00ed599b2a6c4" title="Platform agnostic creation of surface to present rendered images to. Typically they are backed by the...">CreateSurface()</a>)</li>
 <li>Destroy instance (CreateInstance())</li>
 <li>Destroy glslang memory resources for cleanup</li>
 </ol>
@@ -459,8 +462,8 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
       </table>
 </div><div class="memdoc">
 
-<p>An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels. </p>
-<dl class="section note"><dt>Note</dt><dd>Here we are creating depth images ? </dd></dl>
+<p>An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels. ImageView is a wrapper around render target. </p>
+<dl class="section note"><dt>Note</dt><dd>Here we are creating depth images ? Basically depth is taken care of by depth attachment render target (created in <a class="el" href="#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a>) </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -480,7 +483,13 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
       </table>
 </div><div class="memdoc">
 
-<p>The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. </p>
+<p>The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. Following is done: </p>
+<ol type="1">
+<li>Inquires the graphics card for available queue families (FindQueueFamilies)</li>
+<li>Create queues from both graphics and presentation families The logical device (VkDevice) m_device is created with the above features</li>
+</ol>
+<dl class="section note"><dt>Note</dt><dd>Various Vulkan operations from graphics to compute are asynchronously executed by submitting them to the queues having different cababilities depending on the queue family they are derived from.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a3de5ebe667dc946ef303d6e42eb41edc" title="Queries the graphics card for available queue families and compares against the availability of graph...">VulkanContext::FindQueueFamilies()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -500,7 +509,27 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
       </table>
 </div><div class="memdoc">
 
-<p>A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to. </p>
+<p>A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to. The "targets" are also known as render targets and include the attachments like colorattachment and depthattachment that describe where the rendering output will go to. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="acbb00492d6e134b605a00ed599b2a6c4" name="acbb00492d6e134b605a00ed599b2a6c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbb00492d6e134b605a00ed599b2a6c4">&#9670;&#160;</a></span>CreateSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CreateSurface </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Platform agnostic creation of surface to present rendered images to. Typically they are backed by the category of glfw windows (on Linux, MacOS, and Windows). </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -520,8 +549,40 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
       </table>
 </div><div class="memdoc">
 
-<p>Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be presented to the screen. Our backend will acquire such an image to draw to it, and then return it to the queue. </p>
-<p>Karma 1.0.0 </p>
+<p>Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be presented to the screen. Our backend will acquire such an image to draw to it, and then return it to the queue. Then swapchain will have to sync the presentation of image with refresh rate of the monitor. </p>
+<ol type="1">
+<li>Sets the size of m_swapChainImages based on supported number of images by the graphics card</li>
+<li>Sets m_surfaceFormat and m_presentMode</li>
+</ol>
+<dl class="section note"><dt>Note</dt><dd></dd></dl>
+<dl class="section see"><dt>See also</dt><dd>VulkanContext::ChooseSwapExtent(), <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">VulkanContext::QuerySwapChainSupport()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a3de5ebe667dc946ef303d6e42eb41edc" name="a3de5ebe667dc946ef303d6e42eb41edc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3de5ebe667dc946ef303d6e42eb41edc">&#9670;&#160;</a></span>FindQueueFamilies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_karma_1_1_queue_family_indices.html">QueueFamilyIndices</a> Karma::VulkanContext::FindQueueFamilies </td>
+          <td>(</td>
+          <td class="paramtype">VkPhysicalDevice</td>          <td class="paramname"><span class="paramname"><em>device</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries the graphics card for available queue families and compares against the availability of graphics and presentation queues. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">device</td><td>The graphics card to be queired for queue family </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
@@ -600,6 +661,27 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="class_karma_1_1_graphics_context.html#a640d5490f3704ff4f928c5e749e99fbd">Karma::GraphicsContext</a>.</p>
+
+</div>
+</div>
+<a id="a0b62af69e4d46e385abfb9b998bd0c81" name="a0b62af69e4d46e385abfb9b998bd0c81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b62af69e4d46e385abfb9b998bd0c81">&#9670;&#160;</a></span>QuerySwapChainSupport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_karma_1_1_swap_chain_support_details.html">SwapChainSupportDetails</a> Karma::VulkanContext::QuerySwapChainSupport </td>
+          <td>(</td>
+          <td class="paramtype">VkPhysicalDevice</td>          <td class="paramname"><span class="paramname"><em>device</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data. </p>
+<dl class="section see"><dt>See also</dt><dd>VulkanContext::IsDeviceSuitable(), and <a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>

@@ -1,6 +1,6 @@
 <map id="Karma::KarmaGui_ImplVulkan_ViewportData" name="Karma::KarmaGui_ImplVulkan_ViewportData">
 <area shape="rect" id="Node000001" title="Data relevant to rendering of a Mesa viewport." alt="" coords="699,104,894,145"/>
-<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_vulkan_h___window.html" title="Helper structure to hold the data needed by one rendering context (Vulkan) of one OS window (Windows,..." alt="" coords="371,71,566,111"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_vulkan_h___window.html" title="Helper structure to hold the data needed by entire KarmaGui primitive rendering including commandpool..." alt="" coords="371,71,566,111"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="582,100,699,112,699,117,581,105"/>
 <area shape="rect" id="Node000003" href="$struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame.html" title="Helper structure to hold the data needed by one rendering ImageFrame (different from the FRAME_IN_FLI..." alt="" coords="5,5,201,46"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="217,43,371,71,370,76,216,48"/>

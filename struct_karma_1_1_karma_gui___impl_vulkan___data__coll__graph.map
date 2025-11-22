@@ -1,5 +1,9 @@
 <map id="Karma::KarmaGui_ImplVulkan_Data" name="Karma::KarmaGui_ImplVulkan_Data">
-<area shape="rect" id="Node000001" title="Backend data containing stuff for Vulkan renderer for KarmaGui." alt="" coords="5,109,235,135"/>
-<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_vulkan___init_info.html" title="A data structure for Vulkan&#39;s initialization done in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init()" alt="" coords="22,5,218,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,61,123,109,117,109,117,61"/>
+<area shape="rect" id="Node000001" title="Backend data containing stuff for Vulkan renderer for KarmaGui." alt="" coords="406,78,635,104"/>
+<area shape="rect" id="Node000002" href="$struct_karma_1_1_karma_gui___impl_vulkan___init_info.html" title="A data structure for Vulkan&#39;s initialization done in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init()" alt="" coords="5,5,201,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="216,31,298,40,382,52,475,75,474,80,381,58,297,45,216,36"/>
+<area shape="rect" id="Node000003" href="$struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html" title="Data structure containing the Mesa image texture relevant data. For instance, file and folder icons o..." alt="" coords="5,71,201,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="216,88,405,88,405,94,216,94"/>
+<area shape="rect" id="Node000004" href="$struct_k_g_vec2.html" title=" " alt="" coords="68,136,138,161"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="153,139,381,109,429,102,430,107,382,114,154,145"/>
 </map>
