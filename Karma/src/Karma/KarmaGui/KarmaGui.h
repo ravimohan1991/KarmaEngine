@@ -2558,7 +2558,7 @@ enum KGDrawListFlags_
  * 
  * This is the low-level list of polygons that KarmaGui:: functions are filling. At the end of the frame,
  * all command lists are passed to your KarmaGuiIO::RenderDrawListFn function for rendering.
- * Each KarmaGui window contains its own KGDrawList. You can use ImGui::GetWindowDrawList() to
+ * Each KarmaGui window contains its own KGDrawList. You can use KarmaGui::GetWindowDrawList() to
  * access the current window draw list and draw custom primitives.
  * You can interleave normal KarmaGui:: calls and adding primitives to the current draw list.
  * In single viewport mode, top-left is == GetMainViewport()->Pos (generally 0,0), bottom-right is == GetMainViewport()->Pos+Size (generally io.DisplaySize).

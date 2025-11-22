@@ -21,7 +21,14 @@ namespace Karma
 {	
 	enum class MeshType
 	{
+		/**
+		 * @brief Static mesh
+		 */
 		Mesh = 0,
+		
+		/**
+		 * @brief Skeletal mesh
+		 */
 		SkeletalMesh
 	};
 

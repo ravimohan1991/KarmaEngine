@@ -10614,7 +10614,7 @@ void Karma::KarmaGuiInternal::NavInitWindow(KGGuiWindow* window, bool force_rein
 	bool init_for_nav = false;
 	if (window == window->RootWindow || (window->Flags & KGGuiWindowFlags_Popup) || (window->NavLastIds[0] == 0) || force_reinit)
 		init_for_nav = true;
-	KR_CORE_INFO("[nav] NavInitRequest: from NavInitWindow(), init_for_nav={0}, window=\"{1}\", layer={2}", init_for_nav, window->Name, g.NavLayer);
+    KR_CORE_INFO("[nav] NavInitRequest: from NavInitWindow(), init_for_nav={0}, window=\"{1}\"", init_for_nav, window->Name);
 	if (init_for_nav)
 	{
 		SetNavID(0, g.NavLayer, window->NavRootFocusScopeId, KGRect());
@@ -10858,7 +10858,7 @@ void Karma::KarmaGuiInternal::NavInitRequestApplyResult()
 
 	// Apply result from previous navigation init request (will typically select the first item, unless SetItemDefaultFocus() has been called)
 	// FIXME-NAV: On _NavFlattened windows, g.NavWindow will only be updated during subsequent frame. Not a problem currently.
-	KR_CORE_INFO("[nav] NavInitRequest: ApplyResult: NavID {0} in Layer {1} Window \"{2}\"", g.NavInitResultId, g.NavLayer, g.NavWindow->Name);
+    KR_CORE_INFO("[nav] NavInitRequest: ApplyResult: NavID {0} Window \"{1}\"", g.NavInitResultId, g.NavWindow->Name);
 	SetNavID(g.NavInitResultId, g.NavLayer, 0, g.NavInitResultRectRel);
 	g.NavIdIsAlive = true; // Mark as alive from previous frame as we got a result
 	if (g.NavInitRequestFromMove)
@@ -10929,7 +10929,7 @@ void Karma::KarmaGuiInternal::NavUpdateCreateMoveRequest()
 	// Moving with no reference triggers an init request (will be used as a fallback if the direction fails to find a match)
 	if (g.NavMoveSubmitted && g.NavId == 0)
 	{
-		KR_CORE_INFO("[nav] NavInitRequest: from move, window \"{0}\", layer={1}", window ? window->Name : "<NULL>", g.NavLayer);
+        KR_CORE_INFO("[nav] NavInitRequest: from move, window \"{0}\"", window ? window->Name : "<NULL>");
 		g.NavInitRequest = g.NavInitRequestFromMove = true;
 		g.NavInitResultId = 0;
 		g.NavDisableHighlight = false;
@@ -11068,7 +11068,7 @@ void Karma::KarmaGuiInternal::NavMoveRequestApplyResult()
 	}
 
 	// Focus
-	KR_CORE_INFO("[nav] NavMoveRequest: result NavID {0} in Layer {1} Window \"{1}\"", result->ID, g.NavLayer, g.NavWindow->Name);
+    KR_CORE_INFO("[nav] NavMoveRequest: result NavID {0} Window \"{1}\"", result->ID, g.NavWindow->Name);
 	SetNavID(result->ID, g.NavLayer, result->FocusScopeId, result->RectRel);
 
 	// Tabbing: Activates Inputable or Focus non-Inputable

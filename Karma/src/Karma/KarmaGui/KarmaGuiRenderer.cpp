@@ -3,6 +3,8 @@
 #include "Vulkan/VulkanHolder.h"
 #include "Renderer/RenderCommand.h"
 
+#include "Platform/Vulkan/VulkanVertexArray.h"
+
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"
 
@@ -78,7 +80,7 @@ namespace Karma
 				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateFontsTexture(commandBuffer);
 
 				// Load Images
-				// No images to load yet
+				// Images are loaded via KarmaGuiRenderer::AddImageTexture
 
 				VkSubmitInfo endInfo = {};
 				endInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -336,16 +338,6 @@ namespace Karma
 		// Present Main Platform Window
 		if (!mainIsMinimized)
 			FramePresent(&m_VulkanWindowData);
-
-		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
-		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-
-		vkDeviceWaitIdle(vulkanInfo->Device);
-
-		for (size_t i = 0; i < m_VulkanWindowData.MAX_FRAMES_IN_FLIGHT; i++)
-		{
-			vkResetCommandBuffer(m_VulkanWindowData.FramesOnFlight[i].CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
-		}
 	}
 
 	void KarmaGuiRenderer::OnKarmaGuiLayerDetach()
@@ -432,7 +424,7 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool for KarmaGui");
 	}
 
-	// Helper taken from https://github.com/TheCherno/Walnut/blob/cc26ee1cc875db50884fe244e0a3195dd730a1ef/Walnut/src/Walnut/Application.cpp#L270 who probably took help from official example https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/examples/example_glfw_vulkan/main.cpp#L261, with chiefly naming modifications and entire restructuring of KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData.
+	// Helper taken from https://github.com/TheCherno/Walnut/blob/cc26ee1cc875db50884fe244e0a3195dd730a1ef/Walnut/src/Walnut/Application.cpp#L270 who probably took help from official example https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/examples/example_glfw_vulkan/main.cpp#L261, with chiefly naming modifications and drawing of 3D scene on 2D render target
 	void KarmaGuiRenderer::FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData)
 	{
 		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
@@ -443,42 +435,93 @@ namespace Karma
 		KarmaGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		VkResult result;
 
+		// Pointer to the container of framebuffers (based on number of swapchain images)
+		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
+
 		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
+
+		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
 
 		// ImageAcquiredSemaphore is m_ImageAvailableSemaphores equivalent
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
 		VkSemaphore renderCompleteSemaphore = frameOnFlightData->RenderCompleteSemaphore;
 
 		result = vkAcquireNextImageKHR(vulkanInfo->Device, windowData->Swapchain, UINT64_MAX, imageAcquiredSemaphore, VK_NULL_HANDLE, &windowData->ImageFrameIndex);
-
-		// Pointer to the container of CommandPool, swapchainImages und views
-		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
-
-		// May be try to free resources here
-		//ImGuiVulkanHandler::ImGui_KarmaImplVulkan_ClearUndFreeResources(drawData, windowData->ImageFrameIndex);
-
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
 			return;
 		}
 
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image from swapchain");
+        vkResetCommandBuffer(frameOnFlightData->CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
-		//result = vkResetCommandPool(m_Device, frameData->CommandPool, 0);
-		//KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset command pool");
+		// recording begins:
+        {
+            VkCommandBufferBeginInfo info = {};
+            info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+            info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 
-		VkCommandBufferBeginInfo info = {};
-		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+            result = vkBeginCommandBuffer(frameOnFlightData->CommandBuffer, &info);
+            KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't begin commandbuffer recording");
+        }
 
-		// Recording begins:
-		result = vkBeginCommandBuffer(frameOnFlightData->CommandBuffer, &info);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin command buffer");
+        for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
+        {
+            {
+                VkRenderPassBeginInfo renderPassInfo{};
+                renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+                renderPassInfo.renderPass = it->RenderPass;
+                renderPassInfo.framebuffer = it->FrameBuffers[windowData->ImageFrameIndex];
+                renderPassInfo.renderArea.offset = {0, 0};
+                renderPassInfo.renderArea.extent.width = it->Size.x;
+                renderPassInfo.renderArea.extent.height = it->Size.y;
+
+                // Define clear values for the color and depth attachments
+                std::vector<VkClearValue> clearValues(2);
+                clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}}; // Clear color to black
+                clearValues[1].depthStencil = {1.0f, 0};           // Clear depth to 1.0 (farthest)
+
+                renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+                renderPassInfo.pClearValues = clearValues.data();
+
+                // The pass starts here and all commands until vkCmdEndRenderPass are recorded into it
+                vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+                std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
+
+                vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetKarmaGuiGraphicsPipeline());
+
+                // Bind 3D Vertex And Index Buffers:
+                {
+                    VkBuffer vertexBuffers[1] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
+                    VkDeviceSize vertexOffset[1] = { 0 };
+                    vkCmdBindVertexBuffers(frameOnFlightData->CommandBuffer, 0, 1, vertexBuffers, vertexOffset);
+                    vkCmdBindIndexBuffer(frameOnFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+                }
+
+                vulkanVA->UpdateProcessAndSetReadyForSubmission();
+                vulkanVA->Bind();
+
+                VulkanHolder::GetVulkanContext()->UploadUBO(windowData->SemaphoreIndex);
+
+                // Bind descriptor sets (e.g., uniforms for MVP matrices, lighting)
+                // Assumes layout compatibility between pipeline and descriptor set
+                vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[windowData->SemaphoreIndex], 0, nullptr);
+
+                // --- 4. Issue Draw Commands ---
+
+                // Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)
+                vkCmdDrawIndexed(frameOnFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
+
+                // --- 5. End the Offscreen Render Pass ---
+
+                vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
+            }
+        }
 
 		// Render Pass
-		// Ponder over here for UI and 3D model depth stuff
 		VkRenderPassBeginInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 
@@ -497,34 +540,32 @@ namespace Karma
 
 		{
 			// Record KarmaGui primitives into command buffer
-			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData(drawData, frameOnFlightData->CommandBuffer, VK_NULL_HANDLE, windowData->SemaphoreIndex);
-		}
+            KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData(drawData, frameOnFlightData->CommandBuffer, VK_NULL_HANDLE, windowData->SemaphoreIndex);
+        }
 
 		vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
 
 		result = vkEndCommandBuffer(frameOnFlightData->CommandBuffer);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end command buffer");
 		// Recording ends:
+		// command buffer can be submitted to the queue for execution
 
 		// Submit command buffer
 		VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
-		VkSubmitInfo submitInfo = {};
+        VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.waitSemaphoreCount = 1;
 		submitInfo.pWaitSemaphores = &imageAcquiredSemaphore;
 		submitInfo.pWaitDstStageMask = &waitStage;
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &(frameOnFlightData->CommandBuffer);
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &frameOnFlightData->CommandBuffer;
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &renderCompleteSemaphore;
 
-		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
-
 		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
-	}
+    }
 
 	void KarmaGuiRenderer::FramePresent(KarmaGui_ImplVulkanH_Window* windowData)
 	{
@@ -548,15 +589,133 @@ namespace Karma
 
 		VkResult result = vkQueuePresentKHR(vulkanInfo->Queue, &info);
 
-		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
-		{
-			m_SwapChainRebuild = true;
-			return;
-		}
-
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 
 		windowData->SemaphoreIndex = (windowData->SemaphoreIndex + 1) % windowData->MAX_FRAMES_IN_FLIGHT; // Now we can use the next set of semaphores
+	}
+
+	KGTextureID KarmaGuiRenderer::Add3DSceneFor2DRendering(std::shared_ptr<Scene> scene, KGVec2 dimensions)
+	{
+		if(RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		{
+			KarmaGui_ImplVulkan_Data* backendData = GetBackendRendererUserData();
+			KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+			
+			for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
+			{
+				if(it->Scene3D == scene)
+				{
+                    return it->KarmaGui_Textures[m_VulkanWindowData.ImageFrameIndex];
+				}
+			}
+			
+			KarmaGui_3DScene_To_2DTexture_Data SceneToTexture;
+			
+			SceneToTexture.Size = dimensions;
+			SceneToTexture.Scene3D = scene;
+			
+			VkSamplerCreateInfo samplerInfo{};
+			samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+			samplerInfo.magFilter = VK_FILTER_LINEAR;
+			samplerInfo.minFilter = VK_FILTER_LINEAR;
+			samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+			samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+			samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+			samplerInfo.anisotropyEnable = VK_FALSE;
+			samplerInfo.maxAnisotropy = 1.0f;
+			samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+			samplerInfo.unnormalizedCoordinates = VK_FALSE;
+			samplerInfo.compareEnable = VK_FALSE;
+			samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+			samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+			samplerInfo.mipLodBias = 0.0f;
+			samplerInfo.minLod = 0.0f;
+			samplerInfo.maxLod = 0.0f;
+			
+			VkResult result;
+			
+			result = vkCreateSampler(vulkanInfo->Device, &samplerInfo, vulkanInfo->Allocator, &SceneToTexture.Sampler);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
+
+            uint32_t numberOfSwapChainImages = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+
+            SceneToTexture.Images.resize(numberOfSwapChainImages);
+            SceneToTexture.DeviceMemory.resize(numberOfSwapChainImages);
+            SceneToTexture.Image_Views.resize(numberOfSwapChainImages);
+            SceneToTexture.KarmaGui_Textures.resize(numberOfSwapChainImages);
+
+            for(uint32_t i = 0; i < numberOfSwapChainImages; i++)
+            {
+                // Create images (along with appropriate memory)
+                {
+                    VkImageCreateInfo imageCreateCI{};
+                    imageCreateCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+                    imageCreateCI.imageType = VK_IMAGE_TYPE_2D;
+                    imageCreateCI.format = VK_FORMAT_R8G8B8A8_UNORM;
+                    imageCreateCI.extent.width = dimensions.x;
+                    imageCreateCI.extent.height = dimensions.y;
+                    imageCreateCI.extent.depth = 1;
+                    imageCreateCI.arrayLayers = 1;
+                    imageCreateCI.mipLevels = 1;
+                    imageCreateCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+                    imageCreateCI.samples = VK_SAMPLE_COUNT_1_BIT;
+                    imageCreateCI.tiling = VK_IMAGE_TILING_OPTIMAL;
+                    imageCreateCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                    imageCreateCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+                    result = vkCreateImage(vulkanInfo->Device, &imageCreateCI, vulkanInfo->Allocator, &SceneToTexture.Images[i]);
+                    KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
+
+                    VkMemoryRequirements req;
+                    vkGetImageMemoryRequirements(vulkanInfo->Device, SceneToTexture.Images[i], &req);
+                    VkMemoryAllocateInfo allocInfo = {};
+                    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+                    allocInfo.allocationSize = req.size;
+                    allocInfo.memoryTypeIndex = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
+
+                    result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &SceneToTexture.DeviceMemory[i]);
+                    KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
+
+                    result = vkBindImageMemory(vulkanInfo->Device, SceneToTexture.Images[i], SceneToTexture.DeviceMemory[i], 0);
+                    KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind image memory");
+                }
+
+                // insert image memory barrier for VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL?
+
+                // Create image view:
+                {
+                    VkImageViewCreateInfo viewInfo{};
+                    viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+                    viewInfo.image = SceneToTexture.Images[i];
+                    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+                    viewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+                    viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                    viewInfo.subresourceRange.baseMipLevel = 0;
+                    viewInfo.subresourceRange.levelCount = 1;
+                    viewInfo.subresourceRange.baseArrayLayer = 0;
+                    viewInfo.subresourceRange.layerCount = 1;
+
+                    result = vkCreateImageView(vulkanInfo->Device, &viewInfo, vulkanInfo->Allocator, &SceneToTexture.Image_Views[i]);
+                    KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
+                }
+
+                SceneToTexture.KarmaGui_Textures[i] = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_AddTexture(SceneToTexture.Sampler, SceneToTexture.Image_Views[i], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            }
+						
+			backendData->Elements3DTo2D.push_back(SceneToTexture);
+			
+			// OffScreen texture (3D scene to 2D texture) resources like renderpass, framebuffers, and depth resources
+            // for the SceneToTexture element. We may be creating some resources again when not required, when new element is added
+            // resources for previous elements are also created. So take care of that.
+			KarmaGuiVulkanHandler::CreateOffScreenTextureResources();
+
+            // Set the renderpass for vulkanvertexarrays because graphicspipeline needs rebuilt (or be of different use)
+            KarmaGuiVulkanHandler::PrepareVertexArrayaForKarmaGuiWindowRendering();
+			
+            return SceneToTexture.KarmaGui_Textures[m_VulkanWindowData.ImageFrameIndex];
+		}
+
+        return nullptr;
 	}
 
 	KGTextureID KarmaGuiBackendRendererUserData::GetTextureIDAtIndex(uint32_t index)

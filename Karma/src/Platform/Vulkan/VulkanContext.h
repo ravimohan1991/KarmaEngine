@@ -45,7 +45,7 @@ namespace Karma
 	 *
 	 * Used for creating logical device, swapchain, and commandpool
 	 *
-	 * @see VulkanContext::FindQueueFamilies
+	 * @see VulkanContext::FindQueueFamilies()
 	 * @since Karma 1.0.0
 	 */
 	struct QueueFamilyIndices
@@ -208,29 +208,58 @@ namespace Karma
 
 		void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 
-		// Surface
+		/**
+		 * @brief Platform agnostic creation of surface to present rendered images to. Typically they are backed by the category of glfw windows (on Linux, MacOS, and Windows).
+		 *
+		 * @since Karma 1.0.0
+		 */
 		void CreateSurface();
 
 		// Physical device
 		void PickPhysicalDevice();
 		bool IsDeviceSuitable(VkPhysicalDevice device);
+		
+		/**
+		 * @brief Queries the graphics card for available queue families and compares against the availability of graphics and presentation queues
+		 *
+		 * @param device						The graphics card to be queired for queue family
+		 * @since Karma 1.0.0
+		 */
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
 
-		// Logical device
 		/**
-		 * @brief The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device.
+		 * @brief The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. Following is done:
+		 * 1. Inquires the graphics card for available queue families (FindQueueFamilies)
+		 * 2. Create queues from both graphics and presentation families
+		 * The logical device (VkDevice) m_device is created with the above features
+		 *
+		 * @note Various Vulkan operations from graphics to compute are asynchronously executed by submitting them to the queues having different cababilities depending on the queue family they are derived from.
+		 *
+		 * @see VulkanContext::FindQueueFamilies()
 		 * @since Karma 1.0.0
 		 */
 		void CreateLogicalDevice();
 
-		// Swapchain
 		/**
-		 * @brief Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be presented to the screen. Our backend will acquire such an image to draw to it, and then return it to the queue.
+		 * @brief Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be presented to the screen. Our backend will acquire such an image to draw to it, and then return it to the queue. Then swapchain will have to sync the presentation of image with refresh rate of the monitor.
 		 *
-		 * @brief Karma 1.0.0
+		 * 1. Sets the size of m_swapChainImages based on supported number of images by the graphics card
+		 * 2. Sets m_surfaceFormat and m_presentMode
+		 *
+		 * @note 
+		 *
+		 * @see VulkanContext::ChooseSwapExtent(), VulkanContext::QuerySwapChainSupport()
+		 * @since Karma 1.0.0
 		 */
 		void CreateSwapChain();
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+		
+		/**
+		 * @brief Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data.
+		 *
+		 * @see VulkanContext::IsDeviceSuitable(), and VulkanContext::CreateSwapChain()
+		 * @since Karma 1.0.0
+		 */
 		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -239,16 +268,16 @@ namespace Karma
 
 		// Image views
 		/**
-		 * @brief An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels.
+		 * @brief An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels. ImageView is a wrapper around render target.
 		 *
-		 * @note Here we are creating depth images ?
+		 * @note Here we are creating depth images ? Basically depth is taken care of by depth attachment render target (created in VulkanContext::CreateRenderPass())
 		 * @since Karma 1.0.0
 		 */
 		void CreateImageViews();
 
 		//  Renderer pass
 		/**
-		 * @brief A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to.
+		 * @brief A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to. The "targets" are also known as render targets and include the attachments like colorattachment and depthattachment that describe where the rendering output will go to.
 		 * @since Karma 1.0.0
 		 */
 		void CreateRenderPass();
@@ -309,6 +338,7 @@ namespace Karma
 		VkCommandPool GetCommandPool() const { return m_commandPool; }
 		//VkImageView GetTextureImageView() const { return m_TextureImageView; }
 		//VkSampler GetTextureSampler() const { return m_TextureSampler; }
+		VkImageView GetDepthImageView() const { return m_DepthImageView; }
 		const VkPhysicalDeviceFeatures& GetSupportedDeviceFeatures() const { return m_SupportedDeviceFeatures; }
 		VkInstance GetInstance() const { return m_Instance; }
 		uint32_t GetImageCount() const { return uint32_t(m_swapChainImages.size()); }

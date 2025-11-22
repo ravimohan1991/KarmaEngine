@@ -11,7 +11,7 @@
 
 #include "KarmaGuiMesa.h"
 #include "Karma/Application.h"
-#include "Karma/Renderer/RendererAPI.h"
+
 #include "spdlog/sinks/callback_sink.h"
 
 // Experimental
@@ -523,9 +523,11 @@ namespace Karma
 
 		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
-		width = backendData->GetTextureWidthAtIndex(1);
-		height = backendData->GetTextureHeightAtIndex(1);
-
+        //width = backendData->GetTextureWidthAtIndex(1);
+        //height = backendData->GetTextureHeightAtIndex(1);
+				
+		KGTextureID TextureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
+		KarmaGui::Image(TextureID3D, KGVec2(window->Size.x, window->Size.y));
 
 		//ImGui::GetCurrentWindow()->DrawList->SetWindowBackgroundColor(bgColor);
 
@@ -571,7 +573,7 @@ namespace Karma
 			scene->SetWindowToRenderWithinResize(false);
 		}
 
-		KarmaGuiInternal::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
+		//KarmaGui::GetWindowDrawList()->AddCallback(sceneCallBack, (void*)scene.get());
 
 		if (m_RefreshRenderingResources)
 		{
@@ -748,7 +750,7 @@ namespace Karma
 		height = backendData->GetTextureHeightAtIndex(0);
 
 		{
-			KGVec2 position = KarmaGui::GetCursorScreenPos();
+            //KGVec2 position = KarmaGui::GetCursorScreenPos();
 
 			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
 			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
@@ -789,7 +791,7 @@ namespace Karma
 			KarmaGuiIO& io = KarmaGui::GetIO();
 			KarmaGuiStyle& style = KarmaGui::GetStyle();
 
-			bool copy_to_clipboard = KarmaGui::Button("Copy to clipboard");
+            /*bool copy_to_clipboard =*/ KarmaGui::Button("Copy to clipboard");
 		}
 
 		KarmaGui::Separator();

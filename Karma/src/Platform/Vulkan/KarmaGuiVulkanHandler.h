@@ -231,7 +231,7 @@ namespace Karma
 		VkSemaphore         RenderCompleteSemaphore;
 
 		/**
-		 * @brief Object used to record commands which can be subsequently submitted to a device queue for execution.
+		 * @brief Object used to record commands which can be subsequently submitted to a device queue for execution. This command buffer is used for rendering KarmaGUI's windows etc.
 		 *
 		 * @since Karma 1.0.0
 		 */
@@ -273,7 +273,11 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Helper structure to hold the data needed by one rendering context (Vulkan) of one OS window (Windows, Mac, or Linux).
+	 * @brief Helper structure to hold the data needed by entire KarmaGui primitive rendering including commandpools, renderpass, commandbuffers, 
+	 * ImageFrameCount (swapchain), and SemaphoreIndex etc.
+	 * 
+	 * ATM commandpools, swapchain, renderpass, commandbuffers etc are shared from vulkan context 
+	 * (KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow)
 	 *
 	 * @since Karma 1.0.0
 	 */
@@ -698,6 +702,28 @@ namespace Karma
 		}
 	};
 
+	struct KarmaGui_3DScene_To_2DTexture_Data
+	{
+		std::shared_ptr<Scene> Scene3D;
+		
+        KGVec2                              Size;
+        std::vector<KGTextureID>			KarmaGui_Textures;
+		
+        std::vector<VkImage>				Images;
+        std::vector<VkDeviceMemory>         DeviceMemory;
+        std::vector<VkImageView>			Image_Views;
+        VkSampler                           Sampler;
+		
+		// Depth resources
+		VkImage				DepthImage;
+		VkDeviceMemory		DepthDeviceMemory;
+		
+		VkImageView			DepthImage_View;
+		
+		VkRenderPass		RenderPass;
+        std::vector<VkFramebuffer>		FrameBuffers;
+	};
+
 	/**
 	 * @brief Backend data containing stuff for Vulkan renderer for KarmaGui.
 	 *
@@ -725,6 +751,62 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		VkRenderPass                RenderPass;
+		
+		/**
+		 * @brief Renderpass for the 2D texture of 3D scene
+		 *
+		 * @since Karma 1.0.0
+		 */
+		VkRenderPass				OffScreenRenderPass;
+		
+		/**
+		 * @brief Color attachment texture data for off screen 3D to 2D rendering
+		 * // To be removed
+		 * @since Karma 1.0.0
+		 */
+		KarmaGui_ImplVulkan_Image_TextureData	OffScreenColorImageView;
+		
+		/**
+		 * @brief Depth attachment texture data for off screen 3D to 2D rendering
+		 *
+		 * @since Karma 1.0.0
+		 */
+		KarmaGui_ImplVulkan_Image_TextureData	OffScreenDepthImageView;
+		
+		/**
+		 * @brief VkSampler for off screen 3D to 2D rendering
+		 *
+		 * @since Karma 1.0.0
+		 */
+		VkSampler OffScreenSampler;
+		
+		/**
+		 * @brief Framebuffer for 3D scene to 2D texture rendering
+		 *
+		 * @since Karma 1.0.0
+		 */
+		VkFramebuffer				OffScreenFrameBuffer;
+		
+		/**
+		 * @brief The width and height of offscreen rendertarget (color texture perhaps)
+		 *
+		 * @since Karma 1.0.0
+		 */
+		KGVec2						OffScreenExtent;
+		
+		/**
+		 * @brief The 3D scene to be rendered in 2D texture
+		 *
+		 * @since Karma 1.0.0
+		 */
+		std::shared_ptr<Scene>		OffScreenScene;
+		
+		/**
+		 * @brief 3D scene to 2d texture elements on display by KarmaGui
+		 * 
+		 * @see KarmaGuiRenderer::FrameRender
+		 */
+		std::vector<KarmaGui_3DScene_To_2DTexture_Data>		Elements3DTo2D;
 
 		/**
 		 * @brief The value for default alignment for index and vertex buffers. The value is set to 256 by DearImgui authors, so we do in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init.
@@ -922,24 +1004,7 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_SetupRenderState(KGDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, KarmaGui_ImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height);
-		
-		// Experimental
-		/**
-		 * @brief A routine to bind index/vertex buffers, setup a external viewport, and bind pipeline. Specifically for 3D rendering in KarmaGUI's window for (experimental) 3D exhibition.
-		 *
-		 * @param drawData										All draw data to render a KarmaGui frame
-		 * @param pipeline										The vulkan pipeline (created in KarmaGui_ImplVulkan_CreatePipeline) being used by the backend
-		 * @param commandBuffer									The vulkan commandbuffer (taken from VulkanRendererAPI.m_CommandBuffer) being used by the backend, see todo list.
-		 * @param remderingBufferData							The set of buffers relevant to current frame (in flight?)
-		 * @param width											The viewport width size
-		 * @param height										The viewport height size
-		 *
-		 *
-		 * @todo Ponder over the commandBuffer usage (should backend have seperate commandbuffer?)
-		 * @since Karma 1.0.0
-		 */
-		static void KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer, KGDrawData* drawData);
-		
+				
 		/**
 		 * @brief A routine to create the shader modules (KarmaGui_ImplVulkan_Data.ShaderModuleVert and KarmaGui_ImplVulkan_Data.ShaderModuleFrag) for the backend GraphicsPipeline (KarmaGui_ImplVulkan_Data.Pipeline).
 		 *
@@ -1107,6 +1172,44 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
+		
+		/**
+		 * @brief Creates framebuffers, renderpass, and commandbuffers(?) for 2D texture creation from 3D scene
+         *
+         * @since Karma 1.0.0
+		 */
+		static void CreateOffScreenTextureResources();
+		
+		/**
+		 * @brief Creates depth resource for off screen texture (3D scene to 2D texture)
+         *
+         * @param textureData                               Container for information required for offscreen texture rendering
+         * @since Karma 1.0.0
+		 */
+		static void CreateOffScreenTextureDepthResource(KarmaGui_3DScene_To_2DTexture_Data* textureData);
+		
+		/**
+		 * @brief Creates renderpass for off screen texture (3D scene to 2D texture)
+         *
+         * @param textureData                               Container for information required for offscreen texture rendering
+         * @since Karma 1.0.0
+		 */
+		static void CreateOffScreenTextureRenderpassResource(KarmaGui_3DScene_To_2DTexture_Data* textureData);
+		
+		/**
+		 * @brief Creates appropriate frame buffer for off screen texture rendering
+         *
+         * @param textureData                               Container for information required for offscreen texture rendering
+         * @since Karma 1.0.0
+		 */
+		static void CreateOffScreenTextureFrameBufferResource(KarmaGui_3DScene_To_2DTexture_Data* textureData);
+
+        /**
+         * @brief Function to prepare vulkan vertex arrays for KarmaGui's window rendering
+         *
+         * @since Karma 1.0.0
+         */
+        static void PrepareVertexArrayaForKarmaGuiWindowRendering();
 
 		/**
 		 * @brief Clears appropriate buffers which are used for KarmaGui's rendering. They include:
