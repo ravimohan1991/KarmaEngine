@@ -181,6 +181,7 @@ add_subdirectory(vendor/assimp)
 add_subdirectory(vendor/glslang)
 add_subdirectory(vendor/stb)
 add_subdirectory(vendor/BiosReader)
+add_subdirectory(vendor/hwinfo)
 
 list(APPEND ESSENTIAL_LIBS Glad)
 list(APPEND ESSENTIAL_LIBS GLFW)
@@ -190,13 +191,14 @@ if(BUILD_SHARED_LIBS AND NOT MSVC)
 else()
 	list(APPEND ESSENTIAL_LIBS SDL2-static)
 endif()
-# list(APPEND ESSENTIAL_LIBS ImGUI)
 list(APPEND ESSENTIAL_LIBS spdlog)
 list(APPEND ESSENTIAL_LIBS AssImp)
 list(APPEND ESSENTIAL_LIBS ${Vulkan_LIBRARY})
 list(APPEND ESSENTIAL_LIBS GlSlang)
 list(APPEND ESSENTIAL_LIBS stbimage)
 list(APPEND ESSENTIAL_LIBS BiosReader)
+list(APPEND ESSENTIAL_LIBS hwinfo)
+
 
 # Print Karma's libraries
 message(STATUS "########################")
@@ -250,18 +252,17 @@ if(BUILD_SHARED_LIBS AND NOT MSVC)
 else()
 	target_link_libraries(KarmaEngine PUBLIC SDL2-static)
 endif()
-# target_link_libraries(KarmaEngine PUBLIC ImGUI)
 target_link_libraries(KarmaEngine PUBLIC spdlogging)
 target_link_libraries(KarmaEngine PUBLIC AssImp)
 target_link_libraries(KarmaEngine PUBLIC ${Vulkan_LIBRARY})
 target_link_libraries(KarmaEngine PUBLIC GlSlang)
 target_link_libraries(KarmaEngine PUBLIC stbimage)
 target_link_libraries(KarmaEngine PUBLIC BiosReader)
+target_link_libraries(KarmaEngine PUBLIC hwinfo)
 
 # Cluster Karma's libraries into a single folder for project/solution visualization
 set_property(TARGET Glad PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 set_property(TARGET AssImp PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
-# set_property(TARGET ImGUI PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 set_property(TARGET GlSlang PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 set_property(TARGET spdlogging PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 set_property(TARGET stbimage PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
@@ -280,6 +281,7 @@ else()
 endif()
 
 set_property(TARGET BiosReader PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
+set_property(TARGET hwinfo PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 
 # INTERFACE (Something that Consumers require but Producers don't)
 # Since I am a library coder here, I am the Producer
@@ -293,6 +295,7 @@ target_include_directories(KarmaEngine
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/assimp/contrib
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/assimp/include
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/BiosReader/src/public
+        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/hwinfo/include
         ${Vulkan_INCLUDE_DIR}
     PUBLIC
         # where top-level project will look for the library's public headers
