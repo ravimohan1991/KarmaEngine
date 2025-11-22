@@ -170,12 +170,14 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_compile_definitions(KR_DEBUG)
 endif()
 
+# Telling hwinfo to output library dll to our KarmaBin folder
+set(HWINFO_CMAKE_BINARY_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+
 # Involved libraries and essentials
 add_subdirectory(vendor/Glad)
 add_subdirectory(vendor/GLFW)
 add_subdirectory(vendor/GLM)
 add_subdirectory(vendor/SDL)
-# add_subdirectory(vendor/ImGui)
 add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/assimp)
 add_subdirectory(vendor/glslang)
