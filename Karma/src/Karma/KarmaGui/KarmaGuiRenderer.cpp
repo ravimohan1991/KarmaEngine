@@ -433,7 +433,7 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool for KarmaGui");
 	}
 
-	// Helper taken from https://github.com/TheCherno/Walnut/blob/cc26ee1cc875db50884fe244e0a3195dd730a1ef/Walnut/src/Walnut/Application.cpp#L270 who probably took help from official example https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/examples/example_glfw_vulkan/main.cpp#L261, with chiefly naming modifications and entire restructuring of KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData.
+	// Helper taken from https://github.com/TheCherno/Walnut/blob/cc26ee1cc875db50884fe244e0a3195dd730a1ef/Walnut/src/Walnut/Application.cpp#L270 who probably took help from official example https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/examples/example_glfw_vulkan/main.cpp#L261, with chiefly naming modifications and drawing of 3D scene on 2D render target
 	void KarmaGuiRenderer::FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData)
 	{
 		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
@@ -444,36 +444,30 @@ namespace Karma
 		KarmaGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		VkResult result;
 
-        //vkDeviceWaitIdle(vulkanInfo->Device);
-        result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
-        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
-
 		// ImageAcquiredSemaphore is m_ImageAvailableSemaphores equivalent
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
 		VkSemaphore renderCompleteSemaphore = frameOnFlightData->RenderCompleteSemaphore;
 
 		result = vkAcquireNextImageKHR(vulkanInfo->Device, windowData->Swapchain, UINT64_MAX, imageAcquiredSemaphore, VK_NULL_HANDLE, &windowData->ImageFrameIndex);
-        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image from swapchain");
-
-        // Pointer to the container of framebuffers (based on number of swapchain images)
-		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
-
-        result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
-        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
-
-        //vkResetCommandBuffer(m_VulkanWindowData.OffScreenCommandBuffers[windowData->SemaphoreIndex], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
-        vkResetCommandBuffer(frameOnFlightData->CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
-
-
-		// May be try to free resources here
-		//ImGuiVulkanHandler::ImGui_KarmaImplVulkan_ClearUndFreeResources(drawData, windowData->ImageFrameIndex);
-
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
 			return;
 		}
 
+        // Pointer to the container of framebuffers (based on number of swapchain images)
+		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
+
+		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
+
+
+        result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
+        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
+
+        vkResetCommandBuffer(frameOnFlightData->CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+
+		// recording begins:
         {
             VkCommandBufferBeginInfo info = {};
             info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -528,29 +522,16 @@ namespace Karma
 
                 // --- 4. Issue Draw Commands ---
 
-                // Draw your scene geometry
+                // Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)
                 vkCmdDrawIndexed(frameOnFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
 
                 // --- 5. End the Offscreen Render Pass ---
 
                 vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
             }
-
-            {
-                //vkEndCommandBuffer(windowData->OffScreenCommandBuffers[windowData->SemaphoreIndex]);
-            }
         }
 
-		VkCommandBufferBeginInfo info = {};
-		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-
-		// Recording begins:
-        //result = vkBeginCommandBuffer(frameOnFlightData->CommandBuffer, &info);
-        //KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to begin command buffer");
-
 		// Render Pass
-		// Ponder over here for UI and 3D model depth stuff
 		VkRenderPassBeginInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 
@@ -577,6 +558,7 @@ namespace Karma
 		result = vkEndCommandBuffer(frameOnFlightData->CommandBuffer);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end command buffer");
 		// Recording ends:
+		// command buffer can be submitted to the queue for execution
 
 		// Submit command buffer
 		VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -593,8 +575,6 @@ namespace Karma
 
 		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
-
-        //vkDeviceWaitIdle(vulkanInfo->Device);
     }
 
 	void KarmaGuiRenderer::FramePresent(KarmaGui_ImplVulkanH_Window* windowData)
