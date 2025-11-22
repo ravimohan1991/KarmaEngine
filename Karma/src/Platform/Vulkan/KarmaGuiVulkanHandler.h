@@ -273,7 +273,11 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Helper structure to hold the data needed by one rendering context (Vulkan) of one OS window (Windows, Mac, or Linux).
+	 * @brief Helper structure to hold the data needed by entire KarmaGui primitive rendering including commandpools, renderpass, commandbuffers, 
+	 * ImageFrameCount (swapchain), and SemaphoreIndex etc.
+	 * 
+	 * ATM commandpools, swapchain, renderpass, commandbuffers etc are shared from vulkan context 
+	 * (KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow)
 	 *
 	 * @since Karma 1.0.0
 	 */
@@ -799,6 +803,8 @@ namespace Karma
 		
 		/**
 		 * @brief 3D scene to 2d texture elements on display by KarmaGui
+		 * 
+		 * @see KarmaGuiRenderer::FrameRender
 		 */
 		std::vector<KarmaGui_3DScene_To_2DTexture_Data>		Elements3DTo2D;
 

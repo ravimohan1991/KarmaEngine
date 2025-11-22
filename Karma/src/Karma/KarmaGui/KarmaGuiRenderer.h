@@ -34,6 +34,11 @@ namespace Karma
 		uint32_t GetTextureHeightAtIndex(uint32_t index);
 	};
 
+	/**
+	 * @brief Renderer for the KarmaGui
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	class KARMA_API KarmaGuiRenderer
 	{
 	public:
@@ -57,7 +62,7 @@ namespace Karma
 		static KarmaGuiBackendRendererUserData* GetBackendRendererUserData();
 		static void AddImageTexture(char const* fileName, const std::string& label);
 
-		// Vulkan specific functions
+		////////////////////////////// Vulkan specific functions //////////////////////////////
 		/**
 		 * @brief Initialize Vulkan backend renderer
 		 *
@@ -66,6 +71,12 @@ namespace Karma
 		 */
 		static void KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* initInfo);
 		static void CreateDescriptorPool();
+
+		/**
+		 * @brief Calls CleanUpVulkanAndWindowData() and does the shutting of GLFW and KarmaGui (KarmaGui::DestroyContext)
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		static void GracefulVulkanShutDown();
 
 		/**
@@ -76,17 +87,40 @@ namespace Karma
 		static void CleanUpVulkanAndWindowData();
 		static void GiveLoopBeginControlToVulkan();
 		static void GiveLoopEndControlToVulkan();
+
+		/**
+		 * @brief Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in 
+		 * KarmaGui_ImplVulkan_Data::Elements3DTo2D and submission to vulkan queue
+		 * 
+		 * @param windowData						The data required for recording the commandbuffer for KarmaGui primitives
+		 * @param drawData							KarmaGui primitives, basically containing KGDrawList, total vertex and index counts
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		static void FrameRender(KarmaGui_ImplVulkanH_Window* windowData, KGDrawData* drawData);
+
+		/**
+		 * @brief Issues vkQueuePresentKHR to present graphics on screen
+		 * 
+		 * @param windowData						The data required for the frames_in_flight tracking, swapchain presenting, and semaphore signalling
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		static void FramePresent(KarmaGui_ImplVulkanH_Window* windowData);
+
+		////////////////////////////// End of Vulkan specific functions //////////////////////////////
 				
 		/**
-		 * To be discarded soon
+		 * @brief Creates the vulkan resources for 2D texture (render target) from 3D meshes or scene
+		 * 
+		 * @param scene								The 3D scene to be rendered to 2D texture
+		 * @param dimensions						The dimensions of KarmaGui window in which 2D texture is displayed
+		 * 
+		 * @see texture id being used in KarmaGuiMesa::Draw3DModelExhibitorMesa
+		 * 
+		 * @since Karma 1.0.0 
 		 */
 		static KGTextureID Add3DSceneFor2DRendering(std::shared_ptr<Scene> scene, KGVec2 dimensions);
-		
-		// Getters
-		static VkImageView GetOffScreenTextureImageView() { return m_3DTo2DImageView; }
-		static VkImageView GetOffScreenDepthImageView() { return m_3DTo2DDepthImageView; }
 
 	private:
 
@@ -96,15 +130,6 @@ namespace Karma
 		// Vulkan specific members
 		static VkDescriptorPool m_KarmaGuiDescriptorPool;
 		static KarmaGui_ImplVulkanH_Window m_VulkanWindowData;
-		static VkImage m_3DScene2DTexture;
-		static VkImage m_3DScene2DDepth;
-		static VkDeviceMemory m_3DSceneDM;
-		static VkDeviceMemory m_3DSceneDepthDM;
-		static VkImageView m_3DTo2DImageView;
-		static VkImageView m_3DTo2DDepthImageView;
-		static VkRenderPass m_3DTo2DRenderPass;
-		static VkFramebuffer m_3DTo2DFB;
-		static VkSampler m_3DTo2DSampler;
 
 		static bool m_SwapChainRebuild;
 	};

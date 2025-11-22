@@ -11,15 +11,6 @@
 namespace Karma
 {
 	VkDescriptorPool KarmaGuiRenderer::m_KarmaGuiDescriptorPool;
-	VkImage KarmaGuiRenderer::m_3DScene2DTexture;
-	VkImage KarmaGuiRenderer::m_3DScene2DDepth;
-	VkDeviceMemory KarmaGuiRenderer::m_3DSceneDM;
-	VkDeviceMemory KarmaGuiRenderer::m_3DSceneDepthDM;
-	VkImageView KarmaGuiRenderer::m_3DTo2DImageView;
-	VkImageView KarmaGuiRenderer::m_3DTo2DDepthImageView;
-	VkRenderPass KarmaGuiRenderer::m_3DTo2DRenderPass;
-	VkFramebuffer KarmaGuiRenderer::m_3DTo2DFB;
-	VkSampler KarmaGuiRenderer::m_3DTo2DSampler;
 	KarmaGui_ImplVulkanH_Window KarmaGuiRenderer::m_VulkanWindowData;
 	bool KarmaGuiRenderer::m_SwapChainRebuild;
 	GLFWwindow* KarmaGuiRenderer::m_GLFWwindow = nullptr;
@@ -444,6 +435,15 @@ namespace Karma
 		KarmaGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		VkResult result;
 
+		// Pointer to the container of framebuffers (based on number of swapchain images)
+		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
+
+		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
+
+		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
+
 		// ImageAcquiredSemaphore is m_ImageAvailableSemaphores equivalent
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
 		VkSemaphore renderCompleteSemaphore = frameOnFlightData->RenderCompleteSemaphore;
@@ -454,16 +454,6 @@ namespace Karma
 			m_SwapChainRebuild = true;
 			return;
 		}
-
-        // Pointer to the container of framebuffers (based on number of swapchain images)
-		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
-
-		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
-
-
-        result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
-        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
 
         vkResetCommandBuffer(frameOnFlightData->CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
@@ -599,12 +589,6 @@ namespace Karma
 
 		VkResult result = vkQueuePresentKHR(vulkanInfo->Queue, &info);
 
-		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
-		{
-			m_SwapChainRebuild = true;
-			return;
-		}
-
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 
 		windowData->SemaphoreIndex = (windowData->SemaphoreIndex + 1) % windowData->MAX_FRAMES_IN_FLIGHT; // Now we can use the next set of semaphores
@@ -705,10 +689,6 @@ namespace Karma
                     viewInfo.image = SceneToTexture.Images[i];
                     viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
                     viewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
-                    /*viewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-                    viewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-                    viewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-                    viewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;*/
                     viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                     viewInfo.subresourceRange.baseMipLevel = 0;
                     viewInfo.subresourceRange.levelCount = 1;
