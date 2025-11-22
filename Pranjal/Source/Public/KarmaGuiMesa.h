@@ -261,8 +261,11 @@ namespace Karma
 
 		// For now, with due respect, let there be enough content with just model number
 		// und vendor. Would be dope to read the GPU just like RAM or CPU, from SMBIOS!!
+		
+		// Ok thanks to shadPS4 emulator, we are using dope library hwinfo 
 		std::string gpuVendor;
 		std::string gpuModelIdentification;
+		
 		std::string gpuVMemory;
 
 		KarmaTuringMachineElectronics()

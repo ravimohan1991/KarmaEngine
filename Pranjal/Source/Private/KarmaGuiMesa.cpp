@@ -11,7 +11,8 @@
 
 #include "KarmaGuiMesa.h"
 #include "Karma/Application.h"
-
+#include "hwinfo/hwinfo.h"
+#include "hwinfo/utils/unit.h"
 #include "spdlog/sinks/callback_sink.h"
 
 // Experimental
@@ -750,8 +751,6 @@ namespace Karma
 		height = backendData->GetTextureHeightAtIndex(0);
 
 		{
-            //KGVec2 position = KarmaGui::GetCursorScreenPos();
-
 			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
 			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
 			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
@@ -791,7 +790,7 @@ namespace Karma
 			KarmaGuiIO& io = KarmaGui::GetIO();
 			KarmaGuiStyle& style = KarmaGui::GetStyle();
 
-            /*bool copy_to_clipboard =*/ KarmaGui::Button("Copy to clipboard");
+			/*bool copy_to_clipboard =*/ KarmaGui::Button("Copy to clipboard");
 		}
 
 		KarmaGui::Separator();
@@ -923,6 +922,7 @@ namespace Karma
 
 			KarmaGui::Text("Manufacturer: %s", electronicsItems.gpuVendor.c_str());
 			KarmaGui::Text("Model: %s", electronicsItems.gpuModelIdentification.c_str());
+			
 			KarmaGui::Text("VRam: %s", electronicsItems.gpuVMemory.c_str());
 
 			KarmaGui::Separator();
@@ -1049,17 +1049,23 @@ namespace Karma
 			KR_WARN("BiosReader isn't behaving normally");
 		}
 
-		catcher = electronics_spit(ps_graphicscard);
-
-		if (graphics_processing_unit* gInfo = static_cast<graphics_processing_unit*>(catcher))
+		auto gpus = hwinfo::getAllGPUs();
+		
+		if(gpus.size() == 0)
 		{
-			electronicsItems.gpuModelIdentification = gInfo->gpuModel != nullptr ? gInfo->gpuModel : notAvailableText;
-			electronicsItems.gpuVendor = gInfo->vendor ? gInfo->vendor : notAvailableText;
-			electronicsItems.gpuVMemory = gInfo->grandtotalvideomemory ? gInfo->grandtotalvideomemory : notAvailableText;
+			electronicsItems.gpuModelIdentification = notAvailableText;
+			electronicsItems.gpuVendor = notAvailableText;
+			
+			electronicsItems.gpuVMemory = notAvailableText;
 		}
-		else
+
+		for(const auto& gpu : gpus)
 		{
-			KR_WARN("BiosReader isn't behaving normally");
+			electronicsItems.gpuModelIdentification = gpu.name() != "" ? gpu.name() : notAvailableText;
+			electronicsItems.gpuVendor = gpu.vendor() != "" ? gpu.vendor() : notAvailableText;
+			
+			electronicsItems.gpuVMemory = gpu.memory_Bytes() != 0 ? std::to_string(hwinfo::unit::bytes_to_MiB(gpu.memory_Bytes())) : notAvailableText;
+			break;
 		}
 
 		electronicsItems.bHasQueried = true;
