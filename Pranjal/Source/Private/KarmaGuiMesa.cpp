@@ -818,15 +818,16 @@ namespace Karma
             KarmaGui::Text("MotherBoard: %s", electronicsItems.biosBoardName.c_str());
             KarmaGui::Text("MotherBoard Serial: %s", electronicsItems.biosSerialNumber.c_str());
             KarmaGui::Text("BIOS Version: %s", electronicsItems.biosVersion.c_str());
-			KarmaGui::Unindent();
 			KarmaGui::Separator();
 
-			KarmaGui::Text("Machine System Memory (RAM and all that)");
+            KarmaGui::Text("Machine System Memory (RAM)");
 			KarmaGui::Separator();
 
-			KarmaGui::Text("Supporting Area: %s", electronicsItems.supportingArea.c_str());
-			KarmaGui::Text("Estimated Capacity: %s", electronicsItems.estimatedCapacity.c_str());
-			KarmaGui::Text("Total such devices (est): %d", electronicsItems.numberOfMemoryDevices);
+            KarmaGui::Text("Total Capacity (MiB): %s", electronicsItems.memoryCapacity.c_str());
+            KarmaGui::Text("Free Memory (MiB): %s", electronicsItems.freeMemory.c_str());
+
+            KarmaGui::Text("Total modules: %d", electronicsItems.numberOfMemoryDevices);
+
 			KarmaGui::Text("Physical devices present:");
 
 			for (uint32_t counter = 0; counter < electronicsItems.ramSoftSlots.size(); counter++)
@@ -865,33 +866,20 @@ namespace Karma
 			KarmaGui::Text("Central Processor Unit");
 			KarmaGui::Separator();
 
-			KarmaGui::Text("Manufacturer: %s", electronicsItems.cpuManufacturer.c_str());
-			KarmaGui::Text("Processor Family: %s", electronicsItems.cpuProcessingfamily.c_str());
-			KarmaGui::Text("Version: %s", electronicsItems.cpuVersion.c_str());
+            KarmaGui::Text("Manufacturer: %s", electronicsItems.cpuInformation.cpuVendor.c_str());
+            KarmaGui::Text("Processor Family: %s", electronicsItems.cpuInformation.cpuModel.c_str());
 			KarmaGui::Text("CPU Conditions");
 			KarmaGui::Indent();
-			KarmaGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.cpuCurrentSpeed.c_str(), electronicsItems.cpuMaximumSpeed.c_str());
-			KarmaGui::Text("External Clock: %s", electronicsItems.cpuExternalClock.c_str());
-			KarmaGui::Text("Cores (Current | Maximum): %s | %s", electronicsItems.cpuEnabledCoresCount.c_str(), electronicsItems.cpuCorescount.c_str());
-			KarmaGui::Text("Threads Count: %s", electronicsItems.cpuThreadCount.c_str());
-			KarmaGui::Text("Operating Voltage: %s", electronicsItems.cpuOperatingVoltage.c_str());
+            KarmaGui::Text("Speed (MHz): %s", electronicsItems.cpuInformation.cpuFrequency.c_str());
+            KarmaGui::Text("Cores (Logical | Physical): %s | %s", electronicsItems.cpuInformation.cpuLogicalCores.c_str(), electronicsItems.cpuInformation.cpuPhysicalCores.c_str());
 			KarmaGui::Unindent();
 			KarmaGui::Text("CPU Tags or Numbers");
 			KarmaGui::Indent();
-			KarmaGui::Text("Signature: %s", electronicsItems.cpuSignature.c_str());
-			KarmaGui::Text("ID: %s", electronicsItems.cpuid.c_str());
-			KarmaGui::Text("Part Number: %s", electronicsItems.cpuPartNumber.c_str());
-			KarmaGui::Text("Serial Number: %s", electronicsItems.cpuSerialNumber.c_str());
-			KarmaGui::Text("Asset Tag: %s", electronicsItems.cpuAssettag.c_str());
-			KarmaGui::Unindent();
-			KarmaGui::Text("CPU Characteristics");
-			KarmaGui::Indent();
-			KarmaGui::Text("%s", electronicsItems.cpuTheCharacterstics.c_str());
-			KarmaGui::Unindent();
-			KarmaGui::Text("Flags:");
-			KarmaGui::Indent();
-			KarmaGui::Text("%s", electronicsItems.cpuFlags.c_str());
-			KarmaGui::Unindent();
+            KarmaGui::Text("Caches (MegaBytes)");
+            KarmaGui::Text("L1 Cache : %s", electronicsItems.cpuInformation.cpuCacheSizeL1.c_str());
+            KarmaGui::Text("L2 Cache: %s", electronicsItems.cpuInformation.cpuCacheSizeL2.c_str());
+            KarmaGui::Text("L3 Cache: %s", electronicsItems.cpuInformation.cpuCacheSizeL3.c_str());
+            KarmaGui::Unindent();
 
 			KarmaGui::Separator();
 
@@ -937,17 +925,23 @@ namespace Karma
         electronicsItems.biosVersion = mainboard.version() != "" ? mainboard.version() : notAvailableText;
         electronicsItems.biosSerialNumber = mainboard.serialNumber() != "" ? mainboard.serialNumber() : notAvailableText;
 
-        //catcher = electronics_spit(pi_systemmemory);
-		if (turing_machine_system_memory* tInfo = static_cast<turing_machine_system_memory*>(catcher))
-		{
-			electronicsItems.estimatedCapacity = tInfo->total_grand_capacity != nullptr ? tInfo->total_grand_capacity : notAvailableText;
-			electronicsItems.numberOfMemoryDevices = tInfo->number_of_ram_or_system_memory_devices != 0 ? tInfo->number_of_ram_or_system_memory_devices : 0;
-			electronicsItems.supportingArea = tInfo->mounting_location != nullptr ? tInfo->mounting_location : notAvailableText;
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally.");
-		}
+        hwinfo::Memory memory;
+
+        electronicsItems.memoryCapacity = std::to_string(hwinfo::unit::bytes_to_MiB(memory.total_Bytes()));
+        electronicsItems.freeMemory = std::to_string(hwinfo::unit::bytes_to_MiB(memory.free_Bytes()));
+
+        electronicsItems.numberOfMemoryDevices = memory.modules().size();
+
+        for(const auto& module : memory.modules())
+        {
+            KR_INFO("ID: {0}", module.id);
+            KR_INFO("Frequencey (Hz): {0}", module.frequency_Hz == -1 ? -1 : static_cast<double>(module.frequency_Hz) / 1e6);
+            KR_INFO("Name: {0}", module.name);
+            KR_INFO("Serial Number: {0}", module.serial_number);
+            KR_INFO("Vendor: {0}", module.vendor);
+            KR_INFO("Model: {0}", module.model);
+            KR_INFO("Capacity: {0}", hwinfo::unit::bytes_to_MiB(module.total_Bytes));
+        }
 
         //catcher = electronics_spit(ps_systemmemory);
 
@@ -981,33 +975,21 @@ namespace Karma
 			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
-        //catcher = electronics_spit(ps_processor);
+        const auto cpus = hwinfo::getAllCPUs();
 
-		if (central_processing_unit* pInfo = static_cast<central_processing_unit*>(catcher))
-		{
-			//electronicsItems.cpuDesignation = pInfo->designation; <----- Please refer to central_processing_unit struct
-			electronicsItems.cpuFlags = pInfo->cpuflags != nullptr ? pInfo->cpuflags : notAvailableText;
-			electronicsItems.cpuid = pInfo->cpuid != nullptr ? pInfo->cpuid : notAvailableText;
-			electronicsItems.cpuManufacturer = pInfo->manufacturer ? pInfo->manufacturer : notAvailableText;
-			electronicsItems.cpuProcessingfamily = pInfo->processingfamily ? pInfo->processingfamily : notAvailableText;
-			electronicsItems.cpuVersion = pInfo->version ? pInfo->version : notAvailableText;
-			electronicsItems.cpuPartNumber = pInfo->partnumber ? pInfo->partnumber : notAvailableText;
-			electronicsItems.cpuSerialNumber = pInfo->serialnumber ? pInfo->serialnumber : notAvailableText;
-			electronicsItems.cpuAssettag = pInfo->assettag ? pInfo->assettag : notAvailableText;
-			electronicsItems.cpuOperatingVoltage = pInfo->operatingvoltage ? pInfo->operatingvoltage : notAvailableText;
-			electronicsItems.cpuCurrentSpeed = pInfo->currentspeed ? pInfo->currentspeed : notAvailableText;
-			electronicsItems.cpuMaximumSpeed = pInfo->maximumspeed ? pInfo->maximumspeed : notAvailableText;
-			electronicsItems.cpuExternalClock = pInfo->externalclock ? pInfo->externalclock : notAvailableText;
-			electronicsItems.cpuCorescount = pInfo->corescount ? pInfo->corescount : notAvailableText;
-			electronicsItems.cpuThreadCount = pInfo->threadcount ? pInfo->threadcount : notAvailableText;
-			electronicsItems.cpuEnabledCoresCount = pInfo->enabledcorescount ? pInfo->enabledcorescount : notAvailableText;
-			electronicsItems.cpuTheCharacterstics = pInfo->characterstics ? pInfo->characterstics : notAvailableText;
-			electronicsItems.cpuSignature = pInfo->signature ? pInfo->signature : notAvailableText;
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally");
-		}
+        for(const auto& cpu : cpus)
+        {
+            electronicsItems.cpuInformation.cpuVendor = cpu.vendor();
+            electronicsItems.cpuInformation.cpuModel = cpu.modelName();
+            electronicsItems.cpuInformation.cpuLogicalCores = std::to_string(cpu.numLogicalCores());
+            electronicsItems.cpuInformation.cpuPhysicalCores = std::to_string(cpu.numPhysicalCores());
+            electronicsItems.cpuInformation.cpuFrequency = std::to_string(cpu.currentClockSpeed_MHz()[0]); // ponder over how to display all frequencies
+            electronicsItems.cpuInformation.cpuCacheSizeL1 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L1CacheSize_Bytes() > 0 ? cpu.L1CacheSize_Bytes() : 0));
+            electronicsItems.cpuInformation.cpuCacheSizeL2 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L2CacheSize_Bytes() > 0 ? cpu.L2CacheSize_Bytes() : 0));
+            electronicsItems.cpuInformation.cpuCacheSizeL3 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L3CacheSize_Bytes() > 0 ? cpu.L3CacheSize_Bytes() : 0));
+
+            break;
+        }
 
 		auto gpus = hwinfo::getAllGPUs();
 		
