@@ -830,16 +830,9 @@ namespace Karma
 			KarmaGui::Separator();
 
 			KarmaGui::Text("Vendor: %s", electronicsItems.biosVendorName.c_str());
-			KarmaGui::Text("Supplied On: %s", electronicsItems.biosReleaseDate.c_str());
-			KarmaGui::Text("ROM Size: %s", electronicsItems.biosROMSize.c_str());
-			KarmaGui::Text("Current Language: %s", electronicsItems.biosCurrentSetLanguage.c_str());
-			KarmaGui::Text("Supported Languages:");
-			KarmaGui::Indent();
-			KarmaGui::Text("%s", electronicsItems.biosRestOfTheSupportedLanguages.c_str());
-			KarmaGui::Unindent();
-			KarmaGui::Text("BIOS Characteristics:");
-			KarmaGui::Indent();
-			KarmaGui::Text("%s", electronicsItems.biosCharacteristics.c_str());
+            KarmaGui::Text("MotherBoard: %s", electronicsItems.biosBoardName.c_str());
+            KarmaGui::Text("MotherBoard Serial: %s", electronicsItems.biosSerialNumber.c_str());
+            KarmaGui::Text("BIOS Version: %s", electronicsItems.biosVersion.c_str());
 			KarmaGui::Unindent();
 			KarmaGui::Separator();
 
@@ -950,34 +943,16 @@ namespace Karma
 		}
 
 		// Catcher rhymes with Hatcher, the Topologist, just for information!
-		void* catcher = electronics_spit(ss_bios);
+        void* catcher = nullptr;// = electronics_spit(ss_bios);
 
-		if (bios_information* bInfo = static_cast<bios_information*>(catcher))
-		{
-			electronicsItems.biosVendorName = bInfo->vendor != nullptr ? bInfo->vendor : notAvailableText;
-			electronicsItems.biosVersion = bInfo->version != nullptr ? bInfo->version : notAvailableText;
-			electronicsItems.biosReleaseDate = bInfo->biosreleasedate != nullptr ? bInfo->biosreleasedate : notAvailableText;
-			electronicsItems.biosROMSize = bInfo->biosromsize != nullptr ? bInfo->biosromsize : notAvailableText;
-			electronicsItems.biosCharacteristics = bInfo->bioscharacteristics[0] != '\0' ? bInfo->bioscharacteristics : notAvailableText;
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally.");
-		}
+        hwinfo::MainBoard mainboard;
 
-		catcher = electronics_spit(pi_bioslanguages);
+        electronicsItems.biosVendorName = mainboard.vendor() != "" ? mainboard.vendor() : notAvailableText;
+        electronicsItems.biosBoardName = mainboard.name() != "" ? mainboard.name() : notAvailableText;
+        electronicsItems.biosVersion = mainboard.version() != "" ? mainboard.version() : notAvailableText;
+        electronicsItems.biosSerialNumber = mainboard.serialNumber() != "" ? mainboard.serialNumber() : notAvailableText;
 
-		if (mb_language_modules* mbLangModules = static_cast<mb_language_modules*>(catcher))
-		{
-			electronicsItems.biosCurrentSetLanguage = mbLangModules->currentactivemodule != nullptr ? mbLangModules->currentactivemodule : notAvailableText;
-			electronicsItems.biosRestOfTheSupportedLanguages = mbLangModules->supportedlanguagemodules != nullptr ? mbLangModules->supportedlanguagemodules : notAvailableText;
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally.");
-		}
-
-		catcher = electronics_spit(pi_systemmemory);
+        //catcher = electronics_spit(pi_systemmemory);
 		if (turing_machine_system_memory* tInfo = static_cast<turing_machine_system_memory*>(catcher))
 		{
 			electronicsItems.estimatedCapacity = tInfo->total_grand_capacity != nullptr ? tInfo->total_grand_capacity : notAvailableText;
@@ -989,7 +964,7 @@ namespace Karma
 			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
-		catcher = electronics_spit(ps_systemmemory);
+        //catcher = electronics_spit(ps_systemmemory);
 
 		// Now since there may be more than one Ram type of electronics, and given that BIOS lies, we need a mechanism
 		// to gauge the true amount of every estimation we obtained earlier
@@ -1021,7 +996,7 @@ namespace Karma
 			KR_WARN("BiosReader isn't behaving normally.");
 		}
 
-		catcher = electronics_spit(ps_processor);
+        //catcher = electronics_spit(ps_processor);
 
 		if (central_processing_unit* pInfo = static_cast<central_processing_unit*>(catcher))
 		{
