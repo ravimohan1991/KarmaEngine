@@ -524,29 +524,16 @@ namespace Karma
 
 		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
-        //width = backendData->GetTextureWidthAtIndex(1);
-        //height = backendData->GetTextureHeightAtIndex(1);
 				
-		KGTextureID TextureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
-		KarmaGui::Image(TextureID3D, KGVec2(window->Size.x, window->Size.y));
-
-		//ImGui::GetCurrentWindow()->DrawList->SetWindowBackgroundColor(bgColor);
-
-		KGDrawCallback sceneCallBack = [](const KGDrawList* parentList, const KGDrawCmd* drawCommand)
-		{
-			//KR_INFO("Scene Callback");
-		};
-
-		//KGGuiWindow* theWindow = KarmaGuiInternal::GetCurrentWindow();
+		KGTextureID textureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
+		
+		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
+		KGVec2 pos = KarmaGui::GetCursorScreenPos();
+		
+		drawList->AddImage((void*)backgroundImageTextureID, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
+		drawList->AddImage((void*)textureID3D, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
+		
 		scene->SetRenderWindow(window);
-
-		{
-			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
-			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
-			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
-			KGVec4 border_col = KGVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
-			KarmaGui::Image(backgroundImageTextureID, KGVec2(window->Size.x, window->Size.y), uvMin, uvMax, tint_col, border_col);
-		}
 
 		if(window->Size.x != m_3DExhibitor.widthCache || window->Size.y != m_3DExhibitor.heightCache)
 		{
@@ -573,8 +560,6 @@ namespace Karma
 		{
 			scene->SetWindowToRenderWithinResize(false);
 		}
-
-		//KarmaGui::GetWindowDrawList()->AddCallback(sceneCallBack, (void*)scene.get());
 
 		if (m_RefreshRenderingResources)
 		{
