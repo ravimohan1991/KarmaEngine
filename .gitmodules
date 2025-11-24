@@ -20,6 +20,6 @@
 	path = Karma/vendor/SDL
 	url = https://github.com/ravimohan1991/SDL.git
 	ignore = dirty
-[submodule "Karma/vendor/BiosReader"]
-	path = Karma/vendor/BiosReader
-	url = https://github.com/ravimohan1991/BiosReader.git
+[submodule "Karma/vendor/hwinfo"]
+	path = Karma/vendor/hwinfo
+	url = https://github.com/ravimohan1991/hwinfo.git

@@ -1489,16 +1489,16 @@ namespace Karma
 		}
 	}
 
-    void KarmaGuiVulkanHandler::PrepareVertexArrayaForKarmaGuiWindowRendering()
-    {
-        KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+	void KarmaGuiVulkanHandler::PrepareVertexArrayaForKarmaGuiWindowRendering()
+	{
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 
-        for(auto textureData = backendData->Elements3DTo2D.begin(); textureData != backendData->Elements3DTo2D.end(); ++textureData)
-        {
-            std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(textureData->Scene3D->GetRenderableVertexArray());
-            vulkanVA->CreateKarmaGuiGraphicsPipeline(textureData->RenderPass, textureData->Size.x, textureData->Size.y);
-        }
-    }
+		for(auto textureData = backendData->Elements3DTo2D.begin(); textureData != backendData->Elements3DTo2D.end(); ++textureData)
+		{
+			std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(textureData->Scene3D->GetRenderableVertexArray());
+			vulkanVA->CreateKarmaGuiGraphicsPipeline(textureData->RenderPass, textureData->Size.x, textureData->Size.y);
+		}
+	}
 
 	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
 	{

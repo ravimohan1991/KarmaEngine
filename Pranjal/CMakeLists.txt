@@ -47,8 +47,6 @@ if(MSVC)
         ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/GLFW/include
         ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/src/Karma/
         ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/SDL/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/ImGui/
-        ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/ImGui/backends
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/Public
     )
 endif()
@@ -73,28 +71,6 @@ elseif(XCODE)
     XCODE_SCHEME_WORKING_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 endif()
 
-
-# Post build commands
-#[[
-if(UNIX AND NOT APPLE)
-	if (BUILD_SHARED_LIBS)
-		set(Library_NAME "libBiosReader.so")
-	else()
-		set(Library_NAME "BiosReader")
-	endif()
-
-	add_custom_command(TARGET Pranjal POST_BUILD
-		COMMAND cd ${REPOSITORYROOT}/KarmaBin
-		COMMAND mkdir temp
-		COMMAND cp ${Library_NAME} temp/${Library_NAME}
-		COMMAND cd temp
-		COMMAND sudo install -o root -g root -m u=rxs,g-rx,o=x -t ${REPOSITORYROOT}/KarmaBin/ ${Library_NAME}
-		COMMAND rm ${Library_NAME}
-		COMMAND cd ${REPOSITORYROOT}/KarmaBin
-		COMMAND sudo rmdir temp
-	)
-endif()
-]]
 #[[
  *                                          /\
  *                                         / /

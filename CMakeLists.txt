@@ -24,6 +24,7 @@ set(KARMALIBRARYFOLDER "CompanionLibraries")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 
 # Set the GameName
@@ -74,9 +75,6 @@ add_subdirectory(Pranjal)
 # Relevant linking of finished Application with the Engine!
 target_link_libraries(SandBox PUBLIC KarmaEngine)
 target_link_libraries(Pranjal PUBLIC KarmaEngine)
-
-# Need to find a way to give access to the resources (assets and whatnot) to the built binaries
-
 
 #[[
  *                                          /\
