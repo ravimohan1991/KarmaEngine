@@ -11,10 +11,6 @@
 
 #include "Karma.h"
 
-extern "C" {
-#include "dmidecode.h"
-}
-
 namespace Karma
 {
 	struct CallbacksFromEditor
@@ -258,17 +254,6 @@ namespace Karma
 
 		~KarmaTuringMachineElectronics();
 
-		// Gauging Ram devices
-		static void GaugeSystemMemoryDevices(random_access_memory* ramCluster);
-
-		// Obtain the real RAM information
-		static void FindRealCapacityOfRam();
-
-		// No-ram conditions. Bit'o hacky stuff
-		static bool IsPhysicalRamPresent(const random_access_memory& ramScam);
-
-		// Filling the SystemRAM structure with relevant information
-		static void FillTheSystemRamStructure(SystemRAM& destinationStructure, random_access_memory& sourceStructure);
 	};
 
 	struct WindowManipulationGaugeData

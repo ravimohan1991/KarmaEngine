@@ -611,8 +611,8 @@ namespace Karma
 			// Should be called when "about" mesa is closed, the first time
 			if (electronicsItems.bHasQueried)
 			{
-				reset_electronics_structures();
 				KarmaGuiMesa::SetElectronicsRamInformationToNull();
+				
 				electronicsItems.ramSoftSlots.clear();
 				electronicsItems.bHasQueried = false;
 			}
@@ -948,7 +948,7 @@ namespace Karma
 		// Now since there may be more than one Ram type of electronics, and given that BIOS lies, we need a mechanism
 		// to gauge the true amount of every estimation we obtained earlier
 		// Please see https://github.com/ravimohan1991/BiosReader/blob/37e1179f876b940b3f483a398091f44a479692ea/src/private/dmidecode.c#L4980
-		if (random_access_memory* rInfo = static_cast<random_access_memory*>(catcher))
+		/*if (random_access_memory* rInfo = static_cast<random_access_memory*>(catcher))
 		{
 			KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(rInfo);
 
@@ -973,23 +973,23 @@ namespace Karma
 		else
 		{
 			KR_WARN("BiosReader isn't behaving normally.");
+		}*/
+
+		const auto cpus = hwinfo::getAllCPUs();
+
+		for(const auto& cpu : cpus)
+		{
+			electronicsItems.cpuInformation.cpuVendor = cpu.vendor();
+			electronicsItems.cpuInformation.cpuModel = cpu.modelName();
+			electronicsItems.cpuInformation.cpuLogicalCores = std::to_string(cpu.numLogicalCores());
+			electronicsItems.cpuInformation.cpuPhysicalCores = std::to_string(cpu.numPhysicalCores());
+			electronicsItems.cpuInformation.cpuFrequency = std::to_string(cpu.currentClockSpeed_MHz()[0]); // ponder over how to display all frequencies
+			electronicsItems.cpuInformation.cpuCacheSizeL1 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L1CacheSize_Bytes() > 0 ? cpu.L1CacheSize_Bytes() : 0));
+			electronicsItems.cpuInformation.cpuCacheSizeL2 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L2CacheSize_Bytes() > 0 ? cpu.L2CacheSize_Bytes() : 0));
+			electronicsItems.cpuInformation.cpuCacheSizeL3 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L3CacheSize_Bytes() > 0 ? cpu.L3CacheSize_Bytes() : 0));
+
+			break;
 		}
-
-        const auto cpus = hwinfo::getAllCPUs();
-
-        for(const auto& cpu : cpus)
-        {
-            electronicsItems.cpuInformation.cpuVendor = cpu.vendor();
-            electronicsItems.cpuInformation.cpuModel = cpu.modelName();
-            electronicsItems.cpuInformation.cpuLogicalCores = std::to_string(cpu.numLogicalCores());
-            electronicsItems.cpuInformation.cpuPhysicalCores = std::to_string(cpu.numPhysicalCores());
-            electronicsItems.cpuInformation.cpuFrequency = std::to_string(cpu.currentClockSpeed_MHz()[0]); // ponder over how to display all frequencies
-            electronicsItems.cpuInformation.cpuCacheSizeL1 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L1CacheSize_Bytes() > 0 ? cpu.L1CacheSize_Bytes() : 0));
-            electronicsItems.cpuInformation.cpuCacheSizeL2 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L2CacheSize_Bytes() > 0 ? cpu.L2CacheSize_Bytes() : 0));
-            electronicsItems.cpuInformation.cpuCacheSizeL3 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L3CacheSize_Bytes() > 0 ? cpu.L3CacheSize_Bytes() : 0));
-
-            break;
-        }
 
 		auto gpus = hwinfo::getAllGPUs();
 		
@@ -1071,75 +1071,6 @@ namespace Karma
 		}
 	}
 
-	void KarmaTuringMachineElectronics::FindRealCapacityOfRam()
-	{
-		uint32_t ramSizeFound = 0;
-
-		// Assumption dimension of memory is GB only
-		for (uint32_t counter = 0; counter < KarmaGuiMesa::GetGatheredElectronicsInformation().ramSoftSlots.size(); counter++)
-		{
-			ramSizeFound += KarmaGuiMesa::ChurnUint32FromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[counter].ramSize);
-		}
-
-		KarmaGuiMesa::GetGatheredElectronicsInformationForModification().totalRamSize = ramSizeFound;
-
-		// Hoping for GB only dimension
-		KarmaGuiMesa::GetGatheredElectronicsInformationForModification().ramSizeDimensions = KarmaGuiMesa::ChurnDimensionsFromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[0].ramSize);
-	}
-
-	void KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(random_access_memory* ramCluster)
-	{
-		if (ramCluster == nullptr)
-		{
-			KR_WARN("Memory devices pointer is null. No Ram(s) shall be detected and reported");
-			return;
-		}
-
-		KarmaTuringMachineElectronics selfRefrentialVariable = KarmaGuiMesa::GetGatheredElectronicsInformationForModification();
-
-		uint32_t biosReportedNumber = selfRefrentialVariable.numberOfMemoryDevices;
-
-		for (uint32_t counter = 0; counter < biosReportedNumber; counter++)
-		{
-			random_access_memory* aMemoryBeingScanned = fetch_access_memory_members(counter);
-
-			if (aMemoryBeingScanned != nullptr && IsPhysicalRamPresent(*aMemoryBeingScanned))
-			{
-				KarmaGuiMesa::GetGatheredElectronicsInformationForModification().ramSoftSlots.push_back(counter);
-			}
-		}
-	}
-
-	void KarmaTuringMachineElectronics::FillTheSystemRamStructure(SystemRAM& destinationStructure, random_access_memory& sourceStructure)
-	{
-		destinationStructure.assetTag = sourceStructure.assettag != nullptr ? sourceStructure.assettag : KarmaGuiMesa::notAvailableText;
-		destinationStructure.bankLocator = sourceStructure.banklocator != nullptr ? sourceStructure.banklocator : KarmaGuiMesa::notAvailableText;
-		destinationStructure.configuredMemorySpeed = sourceStructure.configuredmemoryspeed != nullptr ? sourceStructure.configuredmemoryspeed : KarmaGuiMesa::notAvailableText;
-		destinationStructure.memorySpeed = sourceStructure.memoryspeed != nullptr ? sourceStructure.memoryspeed : KarmaGuiMesa::notAvailableText;
-		destinationStructure.formFactor = sourceStructure.formfactor != nullptr ? sourceStructure.formfactor : KarmaGuiMesa::notAvailableText;
-		destinationStructure.locator = sourceStructure.locator != nullptr ? sourceStructure.locator : KarmaGuiMesa::notAvailableText;
-		destinationStructure.manufacturer = sourceStructure.manufacturer != nullptr ? sourceStructure.manufacturer : KarmaGuiMesa::notAvailableText;
-		destinationStructure.operatingVoltage = sourceStructure.operatingvoltage != nullptr ? sourceStructure.operatingvoltage : KarmaGuiMesa::notAvailableText;
-		destinationStructure.partNumber = sourceStructure.partnumber != nullptr ? sourceStructure.partnumber : KarmaGuiMesa::notAvailableText;
-		destinationStructure.ramSize = sourceStructure.ramsize != nullptr ? sourceStructure.ramsize : KarmaGuiMesa::notAvailableText;
-		destinationStructure.ramType = sourceStructure.ramtype != nullptr ? sourceStructure.ramtype : KarmaGuiMesa::notAvailableText;
-		//destinationStructure.rank = sourceStructure.rank; Not a big fan of rank, reminds me of my JEE AIR 4729
-		destinationStructure.serialNumber = sourceStructure.serialnumber != nullptr ? sourceStructure.serialnumber : KarmaGuiMesa::notAvailableText;
-	}
-
-	bool KarmaTuringMachineElectronics::IsPhysicalRamPresent(const random_access_memory& ramScam)
-	{
-		if (ramScam.memoryspeed == nullptr || ramScam.configuredmemoryspeed == nullptr || ramScam.banklocator == nullptr
-			|| ramScam.formfactor == nullptr || ramScam.operatingvoltage == nullptr)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
-
 	double KarmaGuiMesa::HexStringToDecimal(const std::string& hexString)
 	{
 		return (double)std::stoll(hexString, 0, 16);
@@ -1188,8 +1119,8 @@ namespace Karma
 	{
 		if (electronicsItems.bHasQueried)
 		{
-			reset_electronics_structures();
 			KarmaGuiMesa::SetElectronicsRamInformationToNull();
+			
 			electronicsItems.ramSoftSlots.clear();
 			electronicsItems.bHasQueried = false;
 		}
