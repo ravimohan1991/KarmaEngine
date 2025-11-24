@@ -612,8 +612,6 @@ namespace Karma
 			if (electronicsItems.bHasQueried)
 			{
 				KarmaGuiMesa::SetElectronicsRamInformationToNull();
-				
-				electronicsItems.ramSoftSlots.clear();
 				electronicsItems.bHasQueried = false;
 			}
 		}
@@ -827,40 +825,20 @@ namespace Karma
 			KarmaGui::Text("Free Memory (MiB): %s", electronicsItems.freeMemory.c_str());
 
 			KarmaGui::Text("Total modules: %d", electronicsItems.numberOfMemoryDevices);
-
-			KarmaGui::Text("Physical devices present:");
-
-			for (uint32_t counter = 0; counter < electronicsItems.ramSoftSlots.size(); counter++)
+			
+			for(uint32_t counter = 0; counter < electronicsItems.numberOfMemoryDevices; counter++)
 			{
 				KarmaGui::Text("RAM %d", counter + 1);
-				KarmaGui::Text("Manufacturer: %s", electronicsItems.ramInformation[counter].manufacturer.c_str());
-
-				KarmaGui::Text("Identification Parameters");
-
 				KarmaGui::Indent();
-				KarmaGui::Text("Ram Type: %s", electronicsItems.ramInformation[counter].ramType.c_str());
-				KarmaGui::Text("Part Number: %s", electronicsItems.ramInformation[counter].partNumber.c_str());
-				KarmaGui::Text("Serial Number: %s", electronicsItems.ramInformation[counter].serialNumber.c_str());
-				KarmaGui::Text("(Bank | Device) Locator: %s | %s", electronicsItems.ramInformation[counter].bankLocator.c_str(),
-					electronicsItems.ramInformation[counter].locator.c_str());
-				KarmaGui::Text("Asset Tag: %s", electronicsItems.ramInformation[counter].assetTag.c_str());
-				KarmaGui::Unindent();
-
-				KarmaGui::Text("Ram Conditions");
-				KarmaGui::Indent();
-				KarmaGui::Text("Size: %s", electronicsItems.ramInformation[counter].ramSize.c_str());
-				KarmaGui::Text("Operating Voltage: %s", electronicsItems.ramInformation[counter].operatingVoltage.c_str());
-				KarmaGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.ramInformation[counter].configuredMemorySpeed.c_str(),
-					electronicsItems.ramInformation[counter].memorySpeed.c_str());
-				KarmaGui::Text("Form Factor: %s", electronicsItems.ramInformation[counter].formFactor.c_str());
+				KarmaGui::Text("Vendor: %s", electronicsItems.ramInformation[counter].vendor.c_str());
+				KarmaGui::Text("Name: %s", electronicsItems.ramInformation[counter].vendor.c_str());
+				KarmaGui::Text("Model: %s", electronicsItems.ramInformation[counter].vendor.c_str());
+				KarmaGui::Text("Serial Number: %s", electronicsItems.ramInformation[counter].vendor.c_str());
+				KarmaGui::Text("Frequency (MHz): %s", electronicsItems.ramInformation[counter].vendor.c_str());
+				KarmaGui::Text("Capacity: %s", electronicsItems.ramInformation[counter].vendor.c_str());
 				KarmaGui::Unindent();
 			}
-
-			KarmaGui::Text("RAM Logistics");
-			KarmaGui::Indent();
-			KarmaGui::Text("Total Ram Size: %d %s", electronicsItems.totalRamSize, electronicsItems.ramSizeDimensions.c_str());
-			KarmaGui::Unindent();
-
+			
 			KarmaGui::Separator();
 
 			KarmaGui::Text("Central Processor Unit");
@@ -870,7 +848,7 @@ namespace Karma
 			KarmaGui::Text("Processor Family: %s", electronicsItems.cpuInformation.cpuModel.c_str());
 			KarmaGui::Text("CPU Conditions");
 			KarmaGui::Indent();
-			KarmaGui::Text("Speed (MHz): %s", electronicsItems.cpuInformation.cpuFrequency.c_str());
+			KarmaGui::Text("Speed : %s (MHz) | %s (MHz)", electronicsItems.cpuInformation.cpuCurrentFrequency.c_str(), electronicsItems.cpuInformation.cpuMaximumFrequency.c_str());
 			KarmaGui::Text("Cores (Logical | Physical): %s | %s", electronicsItems.cpuInformation.cpuLogicalCores.c_str(), electronicsItems.cpuInformation.cpuPhysicalCores.c_str());
 			KarmaGui::Unindent();
 			KarmaGui::Text("CPU Tags or Numbers");
@@ -930,7 +908,7 @@ namespace Karma
 		electronicsItems.memoryCapacity = std::to_string(hwinfo::unit::bytes_to_MiB(memory.total_Bytes()));
 		electronicsItems.freeMemory = std::to_string(hwinfo::unit::bytes_to_MiB(memory.free_Bytes() > 0 ? memory.free_Bytes() : 0));
 		
-		electronicsItems.numberOfMemoryDevices = memory.modules().size();
+		electronicsItems.numberOfMemoryDevices = static_cast<uint32_t>(memory.modules().size());
 		
 		for(const auto& module : memory.modules())
 		{
@@ -943,11 +921,21 @@ namespace Karma
 			KR_INFO("Capacity: {0}", hwinfo::unit::bytes_to_MiB(module.total_Bytes));
 		}
 		
-		//catcher = electronics_spit(ps_systemmemory);
+		electronicsItems.ramInformation = new KarmaTuringMachineElectronics::SystemRAM[memory.modules().size()];
+		uint32_t counter = 0;
+		
+		for(const auto& mod : memory.modules())
+		{
+			electronicsItems.ramInformation[counter].name = mod.name;
+			electronicsItems.ramInformation[counter].vendor = mod.vendor;
+			electronicsItems.ramInformation[counter].model = mod.model;
+			electronicsItems.ramInformation[counter].serialNumber = mod.serial_number;
+			electronicsItems.ramInformation[counter].frequency = mod.frequency_Hz == -1 ? -1 : static_cast<double>(mod.frequency_Hz) / 1e6;
+			electronicsItems.ramInformation[counter].id = mod.id;
+			electronicsItems.ramInformation[counter].capacity = std::to_string(hwinfo::unit::bytes_to_MiB(mod.total_Bytes));
+			counter++;
+		}
 
-		// Now since there may be more than one Ram type of electronics, and given that BIOS lies, we need a mechanism
-		// to gauge the true amount of every estimation we obtained earlier
-		// Please see https://github.com/ravimohan1991/BiosReader/blob/37e1179f876b940b3f483a398091f44a479692ea/src/private/dmidecode.c#L4980
 		/*if (random_access_memory* rInfo = static_cast<random_access_memory*>(catcher))
 		{
 			KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(rInfo);
@@ -983,7 +971,18 @@ namespace Karma
 			electronicsItems.cpuInformation.cpuModel = cpu.modelName();
 			electronicsItems.cpuInformation.cpuLogicalCores = std::to_string(cpu.numLogicalCores());
 			electronicsItems.cpuInformation.cpuPhysicalCores = std::to_string(cpu.numPhysicalCores());
-			electronicsItems.cpuInformation.cpuFrequency = std::to_string(cpu.currentClockSpeed_MHz()[0]); // ponder over how to display all frequencies
+			
+			int64_t averageFrequency = 0;
+			for(uint32_t counter = 0; counter < cpu.numLogicalCores(); counter++)
+			{
+				averageFrequency += cpu.currentClockSpeed_MHz()[counter];
+			}
+			
+			averageFrequency = averageFrequency / cpu.numLogicalCores();
+			
+			electronicsItems.cpuInformation.cpuCurrentFrequency = std::to_string(averageFrequency);
+			electronicsItems.cpuInformation.cpuMaximumFrequency = std::to_string(cpu.maxClockSpeed_MHz());
+			KR_INFO("CPU frequency: {0}", cpu.maxClockSpeed_MHz());
 			electronicsItems.cpuInformation.cpuCacheSizeL1 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L1CacheSize_Bytes() > 0 ? cpu.L1CacheSize_Bytes() : 0));
 			electronicsItems.cpuInformation.cpuCacheSizeL2 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L2CacheSize_Bytes() > 0 ? cpu.L2CacheSize_Bytes() : 0));
 			electronicsItems.cpuInformation.cpuCacheSizeL3 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L3CacheSize_Bytes() > 0 ? cpu.L3CacheSize_Bytes() : 0));
@@ -1120,8 +1119,6 @@ namespace Karma
 		if (electronicsItems.bHasQueried)
 		{
 			KarmaGuiMesa::SetElectronicsRamInformationToNull();
-			
-			electronicsItems.ramSoftSlots.clear();
 			electronicsItems.bHasQueried = false;
 		}
 	}

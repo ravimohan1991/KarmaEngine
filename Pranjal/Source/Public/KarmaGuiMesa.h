@@ -187,54 +187,38 @@ namespace Karma
 		std::string biosBoardName;
 
 		// System Memory (RAM) overview
-        uint32_t numberOfMemoryDevices;
+		uint32_t numberOfMemoryDevices;
 
-        std::string memoryCapacity;
-        std::string freeMemory;
+		std::string memoryCapacity;
+		std::string freeMemory;
 
 		struct SystemRAM
 		{
-			std::string formFactor;
-			std::string ramSize;
-			std::string locator;
-			std::string ramType;
-			std::string bankLocator;
-			std::string manufacturer;
-
+			uint32_t	id;
+			std::string vendor;
+			std::string model;
+			std::string name;
 			std::string serialNumber;
-			std::string partNumber;
-			std::string assetTag;
-
-			std::string memorySpeed;
-			std::string configuredMemorySpeed;
-
-			std::string operatingVoltage;
-			std::string rank;
+			std::string frequency;
+			std::string capacity;
 		};
 		SystemRAM* ramInformation;
 
-		// Let me tell the story of naming. Since the physical slots are the ones
-		// present on board, the array slots in software side, getting filled on a query to BIOS,
-		// naturally get the name "...SoftSlots" from BiosReader's allocation POV
-		std::vector<uint32_t> ramSoftSlots;
-
-		uint32_t totalRamSize;
-		std::string ramSizeDimensions;
 
 		// Processor information
-
-        struct CPU
-        {
-            std::string cpuVendor;
-            std::string cpuModel;
-            std::string cpuFrequency;
-            std::string cpuPhysicalCores;
-            std::string cpuLogicalCores;
-            std::string cpuCacheSizeL1;
-            std::string cpuCacheSizeL2;
-            std::string cpuCacheSizeL3;
-        };
-        CPU cpuInformation;
+		struct CPU
+		{
+			std::string cpuVendor;
+			std::string cpuModel;
+			std::string cpuCurrentFrequency;
+			std::string cpuMaximumFrequency;
+			std::string cpuPhysicalCores;
+			std::string cpuLogicalCores;
+			std::string cpuCacheSizeL1;
+			std::string cpuCacheSizeL2;
+			std::string cpuCacheSizeL3;
+		};
+		CPU cpuInformation;
 
 		// For now, with due respect, let there be enough content with just model number
 		// und vendor. Would be dope to read the GPU just like RAM or CPU, from SMBIOS!!
