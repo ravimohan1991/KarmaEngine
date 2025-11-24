@@ -815,18 +815,18 @@ namespace Karma
 			KarmaGui::Separator();
 
 			KarmaGui::Text("Vendor: %s", electronicsItems.biosVendorName.c_str());
-            KarmaGui::Text("MotherBoard: %s", electronicsItems.biosBoardName.c_str());
-            KarmaGui::Text("MotherBoard Serial: %s", electronicsItems.biosSerialNumber.c_str());
-            KarmaGui::Text("BIOS Version: %s", electronicsItems.biosVersion.c_str());
+			KarmaGui::Text("MotherBoard: %s", electronicsItems.biosBoardName.c_str());
+			KarmaGui::Text("MotherBoard Serial: %s", electronicsItems.biosSerialNumber.c_str());
+			KarmaGui::Text("BIOS Version: %s", electronicsItems.biosVersion.c_str());
 			KarmaGui::Separator();
 
-            KarmaGui::Text("Machine System Memory (RAM)");
+			KarmaGui::Text("Machine System Memory (RAM)");
 			KarmaGui::Separator();
 
-            KarmaGui::Text("Total Capacity (MiB): %s", electronicsItems.memoryCapacity.c_str());
-            KarmaGui::Text("Free Memory (MiB): %s", electronicsItems.freeMemory.c_str());
+			KarmaGui::Text("Total Capacity (MiB): %s", electronicsItems.memoryCapacity.c_str());
+			KarmaGui::Text("Free Memory (MiB): %s", electronicsItems.freeMemory.c_str());
 
-            KarmaGui::Text("Total modules: %d", electronicsItems.numberOfMemoryDevices);
+			KarmaGui::Text("Total modules: %d", electronicsItems.numberOfMemoryDevices);
 
 			KarmaGui::Text("Physical devices present:");
 
@@ -866,20 +866,20 @@ namespace Karma
 			KarmaGui::Text("Central Processor Unit");
 			KarmaGui::Separator();
 
-            KarmaGui::Text("Manufacturer: %s", electronicsItems.cpuInformation.cpuVendor.c_str());
-            KarmaGui::Text("Processor Family: %s", electronicsItems.cpuInformation.cpuModel.c_str());
+			KarmaGui::Text("Manufacturer: %s", electronicsItems.cpuInformation.cpuVendor.c_str());
+			KarmaGui::Text("Processor Family: %s", electronicsItems.cpuInformation.cpuModel.c_str());
 			KarmaGui::Text("CPU Conditions");
 			KarmaGui::Indent();
-            KarmaGui::Text("Speed (MHz): %s", electronicsItems.cpuInformation.cpuFrequency.c_str());
-            KarmaGui::Text("Cores (Logical | Physical): %s | %s", electronicsItems.cpuInformation.cpuLogicalCores.c_str(), electronicsItems.cpuInformation.cpuPhysicalCores.c_str());
+			KarmaGui::Text("Speed (MHz): %s", electronicsItems.cpuInformation.cpuFrequency.c_str());
+			KarmaGui::Text("Cores (Logical | Physical): %s | %s", electronicsItems.cpuInformation.cpuLogicalCores.c_str(), electronicsItems.cpuInformation.cpuPhysicalCores.c_str());
 			KarmaGui::Unindent();
 			KarmaGui::Text("CPU Tags or Numbers");
 			KarmaGui::Indent();
-            KarmaGui::Text("Caches (MegaBytes)");
-            KarmaGui::Text("L1 Cache : %s", electronicsItems.cpuInformation.cpuCacheSizeL1.c_str());
-            KarmaGui::Text("L2 Cache: %s", electronicsItems.cpuInformation.cpuCacheSizeL2.c_str());
-            KarmaGui::Text("L3 Cache: %s", electronicsItems.cpuInformation.cpuCacheSizeL3.c_str());
-            KarmaGui::Unindent();
+			KarmaGui::Text("Caches (MegaBytes)");
+			KarmaGui::Text("L1 Cache : %s", electronicsItems.cpuInformation.cpuCacheSizeL1.c_str());
+			KarmaGui::Text("L2 Cache: %s", electronicsItems.cpuInformation.cpuCacheSizeL2.c_str());
+			KarmaGui::Text("L3 Cache: %s", electronicsItems.cpuInformation.cpuCacheSizeL3.c_str());
+			KarmaGui::Unindent();
 
 			KarmaGui::Separator();
 
@@ -916,34 +916,34 @@ namespace Karma
 		}
 
 		// Catcher rhymes with Hatcher, the Topologist, just for information!
-        void* catcher = nullptr;// = electronics_spit(ss_bios);
-
-        hwinfo::MainBoard mainboard;
-
-        electronicsItems.biosVendorName = mainboard.vendor() != "" ? mainboard.vendor() : notAvailableText;
-        electronicsItems.biosBoardName = mainboard.name() != "" ? mainboard.name() : notAvailableText;
-        electronicsItems.biosVersion = mainboard.version() != "" ? mainboard.version() : notAvailableText;
-        electronicsItems.biosSerialNumber = mainboard.serialNumber() != "" ? mainboard.serialNumber() : notAvailableText;
-
-        hwinfo::Memory memory;
-
-        electronicsItems.memoryCapacity = std::to_string(hwinfo::unit::bytes_to_MiB(memory.total_Bytes()));
-        electronicsItems.freeMemory = std::to_string(hwinfo::unit::bytes_to_MiB(memory.free_Bytes()));
-
-        electronicsItems.numberOfMemoryDevices = memory.modules().size();
-
-        for(const auto& module : memory.modules())
-        {
-            KR_INFO("ID: {0}", module.id);
-            KR_INFO("Frequencey (Hz): {0}", module.frequency_Hz == -1 ? -1 : static_cast<double>(module.frequency_Hz) / 1e6);
-            KR_INFO("Name: {0}", module.name);
-            KR_INFO("Serial Number: {0}", module.serial_number);
-            KR_INFO("Vendor: {0}", module.vendor);
-            KR_INFO("Model: {0}", module.model);
-            KR_INFO("Capacity: {0}", hwinfo::unit::bytes_to_MiB(module.total_Bytes));
-        }
-
-        //catcher = electronics_spit(ps_systemmemory);
+		void* catcher = nullptr;// = electronics_spit(ss_bios);
+		
+		hwinfo::MainBoard mainboard;
+		
+		electronicsItems.biosVendorName = mainboard.vendor() != "" ? mainboard.vendor() : notAvailableText;
+		electronicsItems.biosBoardName = mainboard.name() != "" ? mainboard.name() : notAvailableText;
+		electronicsItems.biosVersion = mainboard.version() != "" ? mainboard.version() : notAvailableText;
+		electronicsItems.biosSerialNumber = mainboard.serialNumber() != "" ? mainboard.serialNumber() : notAvailableText;
+		
+		hwinfo::Memory memory;
+		
+		electronicsItems.memoryCapacity = std::to_string(hwinfo::unit::bytes_to_MiB(memory.total_Bytes()));
+		electronicsItems.freeMemory = std::to_string(hwinfo::unit::bytes_to_MiB(memory.free_Bytes() > 0 ? memory.free_Bytes() : 0));
+		
+		electronicsItems.numberOfMemoryDevices = memory.modules().size();
+		
+		for(const auto& module : memory.modules())
+		{
+			KR_INFO("ID: {0}", module.id);
+			KR_INFO("Frequencey (Hz): {0}", module.frequency_Hz == -1 ? -1 : static_cast<double>(module.frequency_Hz) / 1e6);
+			KR_INFO("Name: {0}", module.name);
+			KR_INFO("Serial Number: {0}", module.serial_number);
+			KR_INFO("Vendor: {0}", module.vendor);
+			KR_INFO("Model: {0}", module.model);
+			KR_INFO("Capacity: {0}", hwinfo::unit::bytes_to_MiB(module.total_Bytes));
+		}
+		
+		//catcher = electronics_spit(ps_systemmemory);
 
 		// Now since there may be more than one Ram type of electronics, and given that BIOS lies, we need a mechanism
 		// to gauge the true amount of every estimation we obtained earlier
