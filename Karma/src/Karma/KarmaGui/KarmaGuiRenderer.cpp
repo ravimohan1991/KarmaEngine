@@ -441,8 +441,6 @@ namespace Karma
 		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
 
-		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
 
 		// ImageAcquiredSemaphore is m_ImageAvailableSemaphores equivalent
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
@@ -454,6 +452,8 @@ namespace Karma
 			m_SwapChainRebuild = true;
 			return;
 		}
+
+        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image");
 
 		vkResetCommandBuffer(frameOnFlightData->CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
@@ -513,7 +513,7 @@ namespace Karma
 				// --- 5. End the Offscreen Render Pass ---
 				vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
 			}
-		}
+        }
 
 		// Render Pass
 		VkRenderPassBeginInfo renderPassInfo = {};
@@ -557,6 +557,10 @@ namespace Karma
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &renderCompleteSemaphore;
 
+        // We reset the fence here or else the swapchain rebuild seemingly fails
+        result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
+        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
+
 		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 	}
@@ -582,6 +586,12 @@ namespace Karma
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		VkResult result = vkQueuePresentKHR(vulkanInfo->Queue, &info);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+        {
+            m_SwapChainRebuild = true;
+            return;
+        }
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 
