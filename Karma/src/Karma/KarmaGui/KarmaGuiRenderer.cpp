@@ -453,7 +453,7 @@ namespace Karma
 			return;
 		}
 
-        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image");
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image");
 
 		vkResetCommandBuffer(frameOnFlightData->CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
@@ -477,10 +477,12 @@ namespace Karma
 				renderPassInfo.renderArea.offset = {0, 0};
 				renderPassInfo.renderArea.extent.width = it->Size.x;
 				renderPassInfo.renderArea.extent.height = it->Size.y;
+				
 				// Define clear values for the color and depth attachments
 				std::vector<VkClearValue> clearValues(2);
 				clearValues[0].color = {{0.0f, 0.0f, 0.0f, 0.0f}}; // Clear color to transparent
 				clearValues[1].depthStencil = {1.0f, 0};           // Clear depth to 1.0 (farthest)
+				
 				renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 				renderPassInfo.pClearValues = clearValues.data();
 				
@@ -489,7 +491,7 @@ namespace Karma
 				std::shared_ptr<VulkanVertexArray> vulkanVA =	static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
 				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,	vulkanVA->GetKarmaGuiGraphicsPipeline());
 				
-				// Bind 3D Vertex And Index Buffers:
+				// ---- Bind 3D Vertex And Index Buffers ----
 				{
 					VkBuffer vertexBuffers[1] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
 					VkDeviceSize vertexOffset[1] = { 0 };
@@ -502,18 +504,18 @@ namespace Karma
 				
 				VulkanHolder::GetVulkanContext()->UploadUBO(windowData->SemaphoreIndex);
 				
-				// Bind descriptor sets (e.g., uniforms for MVP matrices, lighting)
+				// ---- Bind descriptor sets (e.g., uniforms for MVP matrices, lighting) ----
 				// Assumes layout compatibility between pipeline and descriptor set
 				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,	vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[windowData->SemaphoreIndex], 0,	nullptr);
 				
-				// --- 4. Issue Draw Commands ---
+				// ---- Issue Draw Commands ----
 				// Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)
 				vkCmdDrawIndexed(frameOnFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
 				
-				// --- 5. End the Offscreen Render Pass ---
+				// ---- End the Offscreen Render Pass ----
 				vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
 			}
-        }
+		}
 
 		// Render Pass
 		VkRenderPassBeginInfo renderPassInfo = {};
@@ -557,9 +559,9 @@ namespace Karma
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &renderCompleteSemaphore;
 
-        // We reset the fence here or else the swapchain rebuild seemingly fails
-        result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
-        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
+		// We reset the fence here or else the swapchain rebuild seemingly fails
+		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
 
 		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
@@ -587,11 +589,11 @@ namespace Karma
 
 		VkResult result = vkQueuePresentKHR(vulkanInfo->Queue, &info);
 
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
-        {
-            m_SwapChainRebuild = true;
-            return;
-        }
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+		{
+			m_SwapChainRebuild = true;
+			return;
+		}
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 
