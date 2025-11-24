@@ -47,8 +47,6 @@ if(MSVC)
         ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/GLFW/include
         ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/src/Karma/
         ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/SDL/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/ImGui/
-        ${CMAKE_CURRENT_SOURCE_DIR}/../Karma/vendor/ImGui/backends
         ${CMAKE_CURRENT_SOURCE_DIR}/Source/Public
     )
 endif()

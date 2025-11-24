@@ -182,7 +182,6 @@ add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/assimp)
 add_subdirectory(vendor/glslang)
 add_subdirectory(vendor/stb)
-add_subdirectory(vendor/BiosReader)
 add_subdirectory(vendor/hwinfo)
 
 list(APPEND ESSENTIAL_LIBS Glad)
@@ -198,7 +197,6 @@ list(APPEND ESSENTIAL_LIBS AssImp)
 list(APPEND ESSENTIAL_LIBS ${Vulkan_LIBRARY})
 list(APPEND ESSENTIAL_LIBS GlSlang)
 list(APPEND ESSENTIAL_LIBS stbimage)
-list(APPEND ESSENTIAL_LIBS BiosReader)
 list(APPEND ESSENTIAL_LIBS hwinfo)
 
 
@@ -257,9 +255,9 @@ endif()
 target_link_libraries(KarmaEngine PUBLIC spdlogging)
 target_link_libraries(KarmaEngine PUBLIC AssImp)
 target_link_libraries(KarmaEngine PUBLIC ${Vulkan_LIBRARY})
+target_link_libraries(KarmaEngine PUBLIC OpenGL::OpenGL)
 target_link_libraries(KarmaEngine PUBLIC GlSlang)
 target_link_libraries(KarmaEngine PUBLIC stbimage)
-target_link_libraries(KarmaEngine PUBLIC BiosReader)
 target_link_libraries(KarmaEngine PUBLIC hwinfo)
 
 # Cluster Karma's libraries into a single folder for project/solution visualization
@@ -281,8 +279,6 @@ else()
     set_property(TARGET glm_static PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 ]]
 endif()
-
-set_property(TARGET BiosReader PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 set_property(TARGET hwinfo PROPERTY FOLDER "${KARMALIBRARYFOLDER}")
 
 # INTERFACE (Something that Consumers require but Producers don't)
@@ -296,7 +292,6 @@ target_include_directories(KarmaEngine
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/spdlog/include
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/assimp/contrib
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/assimp/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/vendor/BiosReader/src/public
         ${CMAKE_CURRENT_SOURCE_DIR}/vendor/hwinfo/include
         ${Vulkan_INCLUDE_DIR}
     PUBLIC
