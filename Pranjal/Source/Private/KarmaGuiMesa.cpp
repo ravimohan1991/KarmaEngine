@@ -831,11 +831,11 @@ namespace Karma
 				KarmaGui::Text("RAM %d", counter + 1);
 				KarmaGui::Indent();
 				KarmaGui::Text("Vendor: %s", electronicsItems.ramInformation[counter].vendor.c_str());
-				KarmaGui::Text("Name: %s", electronicsItems.ramInformation[counter].vendor.c_str());
-				KarmaGui::Text("Model: %s", electronicsItems.ramInformation[counter].vendor.c_str());
-				KarmaGui::Text("Serial Number: %s", electronicsItems.ramInformation[counter].vendor.c_str());
-				KarmaGui::Text("Frequency (MHz): %s", electronicsItems.ramInformation[counter].vendor.c_str());
-				KarmaGui::Text("Capacity: %s", electronicsItems.ramInformation[counter].vendor.c_str());
+				KarmaGui::Text("Name: %s", electronicsItems.ramInformation[counter].name.c_str());
+				KarmaGui::Text("Model: %s", electronicsItems.ramInformation[counter].model.c_str());
+				KarmaGui::Text("Serial Number: %s", electronicsItems.ramInformation[counter].serialNumber.c_str());
+				KarmaGui::Text("Frequency (MHz): %s", electronicsItems.ramInformation[counter].frequency.c_str());
+				KarmaGui::Text("Capacity: %s", electronicsItems.ramInformation[counter].capacity.c_str());
 				KarmaGui::Unindent();
 			}
 			
@@ -930,7 +930,7 @@ namespace Karma
 			electronicsItems.ramInformation[counter].vendor = mod.vendor;
 			electronicsItems.ramInformation[counter].model = mod.model;
 			electronicsItems.ramInformation[counter].serialNumber = mod.serial_number;
-			electronicsItems.ramInformation[counter].frequency = mod.frequency_Hz == -1 ? -1 : static_cast<double>(mod.frequency_Hz) / 1e6;
+			electronicsItems.ramInformation[counter].frequency = std::to_string(mod.frequency_Hz == -1 ? -1 : static_cast<double>(mod.frequency_Hz) / 1e6);
 			electronicsItems.ramInformation[counter].id = mod.id;
 			electronicsItems.ramInformation[counter].capacity = std::to_string(hwinfo::unit::bytes_to_MiB(mod.total_Bytes));
 			counter++;
