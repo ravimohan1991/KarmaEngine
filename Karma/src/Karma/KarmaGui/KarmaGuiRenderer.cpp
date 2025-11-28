@@ -711,12 +711,9 @@ namespace Karma
 			backendData->Elements3DTo2D.push_back(SceneToTexture);
 			
 			// OffScreen texture (3D scene to 2D texture) resources like renderpass, framebuffers, and depth resources
-			// for the SceneToTexture element. We may be creating some resources again when not required, when new element is added
+			// for the SceneToTexture element. We also create different graphics pipeline specifically for KarmaGui window display of the 3D scene. We may be creating some resources again when not required, when new element is added
 			// resources for previous elements are also created. So take care of that.
 			KarmaGuiVulkanHandler::CreateOffScreenTextureResources();
-
-			// Set the renderpass for vulkanvertexarrays because graphicspipeline needs rebuilt (or be of different use)
-			KarmaGuiVulkanHandler::PrepareVertexArrayaForKarmaGuiWindowRendering();
 			
 			return SceneToTexture.KarmaGui_Textures[m_VulkanWindowData.ImageFrameIndex];
 		}
