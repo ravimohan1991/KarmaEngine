@@ -707,21 +707,21 @@ namespace Karma
 		std::shared_ptr<Scene> Scene3D;
 		
 		KGVec2                              Size;
-		std::vector<KGTextureID>			KarmaGui_Textures;
+		KGTextureID                         KarmaGui_Texture;
 		
-		std::vector<VkImage>				Images;
-		std::vector<VkDeviceMemory>         DeviceMemory;
-		std::vector<VkImageView>			Image_Views;
+		VkImage                             Image;
+		VkDeviceMemory                      DeviceMemory;
+		VkImageView                         Image_View;
 		VkSampler                           Sampler;
 		
 		// Depth resources
-		VkImage				DepthImage;
-		VkDeviceMemory		DepthDeviceMemory;
+		VkImage                             DepthImage;
+		VkDeviceMemory                      DepthDeviceMemory;
 		
-		VkImageView			DepthImage_View;
+		VkImageView                         DepthImage_View;
 		
-		VkRenderPass		RenderPass;
-		std::vector<VkFramebuffer>		FrameBuffers;
+		VkRenderPass                        RenderPass;
+		VkFramebuffer                       FrameBuffer;
 	};
 
 	/**
