@@ -883,18 +883,12 @@ namespace Karma
 	}
 
 	// Strings are copied in this not-so-cheap function. Hence the check!!
-	// First copying is done within BiosReader for apporpriate seperation into structures. Prevents multiple queries
-	// at the cost of bulk (pun intended!).
-	// Next copying is done here, in the routine.
 	void KarmaGuiMesa::QueryForTuringMachineElectronics()
 	{
 		if (electronicsItems.bHasQueried)
 		{
 			return;
 		}
-
-		// Catcher rhymes with Hatcher, the Topologist, just for information!
-		void* catcher = nullptr;// = electronics_spit(ss_bios);
 		
 		hwinfo::MainBoard mainboard;
 		
@@ -935,33 +929,6 @@ namespace Karma
 			electronicsItems.ramInformation[counter].capacity = std::to_string(hwinfo::unit::bytes_to_MiB(mod.total_Bytes));
 			counter++;
 		}
-
-		/*if (random_access_memory* rInfo = static_cast<random_access_memory*>(catcher))
-		{
-			KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(rInfo);
-
-			if (electronicsItems.ramInformation == nullptr)
-			{
-				electronicsItems.ramInformation = new KarmaTuringMachineElectronics::SystemRAM[electronicsItems.ramSoftSlots.size()];
-			}
-			else
-			{
-				KR_WARN("ramInformation is already allocated which should have been cleared in the first place.");
-			}
-
-			uint32_t counter = 0;
-
-			for (auto& elem : electronicsItems.ramSoftSlots)
-			{
-				KarmaTuringMachineElectronics::FillTheSystemRamStructure(electronicsItems.ramInformation[counter++], *fetch_access_memory_members(elem));
-			}
-
-			KarmaTuringMachineElectronics::FindRealCapacityOfRam();
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally.");
-		}*/
 
 		const auto cpus = hwinfo::getAllCPUs();
 

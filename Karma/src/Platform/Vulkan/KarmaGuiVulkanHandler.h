@@ -168,15 +168,6 @@ namespace Karma
 	// (The ImGui_ImplVulkanH_XXX functions do not interact with any of the state used by the regular ImGui_ImplVulkan_XXX 	functions)
 	//-------------------------------------------------------------------------
 
-	// Cowboy's confusion clarification concept!
-	// It seems the ImGUI author(s) have mixed and/or confused notion of
-	// ImageCount, which decides the number of SwapChainImages, framebuffer, and so on (contained within
-	// ImGui_ImplVulkanH_ImageFrame structure).
-	// (https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Swap_chain#page_Retrieving-the-swap-chain-images)
-	// and SemaphoreIndex MAX_FRAMES_IN_FLIGHT, which is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore, fence, and commandbuffer size.
-	// https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Frames_in_flight
-	// The argument is elicited by the comment line https://github.com/ravimohan1991/imgui/blob/e4967701b67edd491e884632f239ab1f38867d86/backends/imgui_impl_vulkan.h#L144
-
 	/**
 	 * @brief Data structure for synchronous operations (relevant to rendering in this context).
 	 *
@@ -210,7 +201,7 @@ namespace Karma
 		 * Semaphores are a synchronization primitive that can be used to insert a dependency between queue operations or between a queue operation and the host.
 		 * Binary semaphores have two states - signaled and unsignaled. Timeline semaphores have a strictly increasing 64-bit unsigned integer payload and are signaled with respect
 		 * to a particular reference value. A semaphore can be signaled after execution of a queue operation is completed, and a queue operation can wait for a semaphore to become
-		 * signaled before it begins execution. A timeline semaphore can additionally be signaled from the host with the vkSignalSemaphore command and waited on from the host
+		 * signaled (from unsignaled) before it begins execution. A timeline semaphore can additionally be signaled from the host with the vkSignalSemaphore command and waited on from the host
 		 * with the vkWaitSemaphores command.
 		 *
 		 * @since Karma 1.0.0
@@ -223,7 +214,7 @@ namespace Karma
 		 * Semaphores are a synchronization primitive that can be used to insert a dependency between queue operations or between a queue operation and the host.
 		 * Binary semaphores have two states - signaled and unsignaled. Timeline semaphores have a strictly increasing 64-bit unsigned integer payload and are signaled with respect
 		 * to a particular reference value. A semaphore can be signaled after execution of a queue operation is completed, and a queue operation can wait for a semaphore to become
-		 * signaled before it begins execution. A timeline semaphore can additionally be signaled from the host with the vkSignalSemaphore command and waited on from the host
+		 * signaled (from unsignaled) before it begins execution. A timeline semaphore can additionally be signaled from the host with the vkSignalSemaphore command and waited on from the host
 		 * with the vkWaitSemaphores command.
 		 * 
 		 * @since Karma 1.0.0
@@ -250,8 +241,8 @@ namespace Karma
 	struct KarmaGui_ImplVulkanH_ImageFrame
 	{
 		/**
-		 * @brief VulkanContext m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) recordings on CPU that may happen whilst 
-		 * the rendering is being done on GPU.
+		 * @brief VulkanContext m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) are the images
+		 * contained in the swapchain created in VulkanContext::CreateSwapChain()
 		 *
 		 * @since Karma 1.0.0
 		 */
@@ -267,6 +258,9 @@ namespace Karma
 		/**
 		 * @brief A handle to framebuffer which represents a collection of specific memory attachments that a render pass instance uses.
 		 *
+		 * Framebuffers are taken from SwapchainFrameBuffers created in VulkanContext::CreateFramebuffers() 
+		 * 
+		 * @see KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow
 		 * @since Karma 1.0.0
 		 */
 		VkFramebuffer       Framebuffer;
@@ -340,6 +334,8 @@ namespace Karma
 		/**
 		 * @brief A render pass object represents a collection of attachments, subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses.
 		 *
+		 * 
+		 * @note Taken from VulkanContext::CreateRenderPass() set in KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow()
 		 * @since Karma 1.0.0
 		 */
 		VkRenderPass        RenderPass;
@@ -347,7 +343,7 @@ namespace Karma
 		/**
 		 * @brief A huge object in Vulkan that encompasses the configuration of the entire GPU for the draw. Once a pipeline is built, it can be bound inside a command buffer, and then when you draw anything it will use the bound pipeline.
 		 *
-		 * @note The window pipeline may use a different VkRenderPass than the one passed in ImGui_ImplVulkan_InitInfo. Need to investigate why.
+		 * @note Usually set to the pipeline created in KarmaGui_ImplVulkan_CreatePipeline().
 		 * @since Karma 1.0.0
 		 */
 		VkPipeline          Pipeline;
@@ -395,7 +391,7 @@ namespace Karma
 		uint32_t                 MAX_FRAMES_IN_FLIGHT;
 		
 		/**
-		 * @brief Just a container for buffers and all those sizes depending on  VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+		 * @brief Just a container for buffers (framebuffers, images, and imageviews etc) and all those sizes depending on  VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
 		 *
 		 * @since Karma 1.0.0
 		 */
@@ -404,7 +400,7 @@ namespace Karma
 		// Cowboy's Modification
 
 		/**
-		 * @brief Data for synchronous operations of in-flight rendering frames.
+		 * @brief Data (fences, semaphores, and commandbuffers (taken from VulkanRendererAPI::GetCommandBuffers())) for synchronous operations of in-flight rendering frames.
 		 *
 		 * @since Karma 1.0.0
 		 */
@@ -753,55 +749,6 @@ namespace Karma
 		VkRenderPass                RenderPass;
 		
 		/**
-		 * @brief Renderpass for the 2D texture of 3D scene
-		 *
-		 * @since Karma 1.0.0
-		 */
-		VkRenderPass				OffScreenRenderPass;
-		
-		/**
-		 * @brief Color attachment texture data for off screen 3D to 2D rendering
-		 * // To be removed
-		 * @since Karma 1.0.0
-		 */
-		KarmaGui_ImplVulkan_Image_TextureData	OffScreenColorImageView;
-		
-		/**
-		 * @brief Depth attachment texture data for off screen 3D to 2D rendering
-		 *
-		 * @since Karma 1.0.0
-		 */
-		KarmaGui_ImplVulkan_Image_TextureData	OffScreenDepthImageView;
-		
-		/**
-		 * @brief VkSampler for off screen 3D to 2D rendering
-		 *
-		 * @since Karma 1.0.0
-		 */
-		VkSampler OffScreenSampler;
-		
-		/**
-		 * @brief Framebuffer for 3D scene to 2D texture rendering
-		 *
-		 * @since Karma 1.0.0
-		 */
-		VkFramebuffer				OffScreenFrameBuffer;
-		
-		/**
-		 * @brief The width and height of offscreen rendertarget (color texture perhaps)
-		 *
-		 * @since Karma 1.0.0
-		 */
-		KGVec2						OffScreenExtent;
-		
-		/**
-		 * @brief The 3D scene to be rendered in 2D texture
-		 *
-		 * @since Karma 1.0.0
-		 */
-		std::shared_ptr<Scene>		OffScreenScene;
-		
-		/**
 		 * @brief 3D scene to 2d texture elements on display by KarmaGui
 		 * 
 		 * @see KarmaGuiRenderer::FrameRender
@@ -844,6 +791,9 @@ namespace Karma
 
 		/**
 		 * @brief A huge object in Vulkan that encompasses the configuration of the entire GPU for the draw. Once a pipeline is built, it can be bound inside a command buffer, and then when you draw anything it will use the bound pipeline.
+		 *
+		 * @note Set to the one created in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline()
+		 * @see KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline(), KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects()
 		 *
 		 * @since Karma 1.0.0
 		 */
