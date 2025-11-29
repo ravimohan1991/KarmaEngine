@@ -1116,7 +1116,7 @@ namespace Karma
 		 *	3. FrameRenderBuffers::VertexBuffer and FrameRenderBuffers::IndexBuffer and corresponding sizes
 		 *	4. Commandbuffer is filled with scissor, KarmaGui_ImplVulkan_SetupRenderState, and drawing primitives commands
 		 *
-		 * Also any callback routines, usually related to rendering in KarmaGui's window (3D scene data atm), are processed here.
+		 * Also any callback routines, usually related to rendering in KarmaGui's window (for instance 3D scene data), are processed here.
 		 *
 		 * @param drawData														All draw data to render a KarmaGui frame
 		 * @param commandBuffer													The buffer of commands to be filled with primitive drawing  and relevant commands

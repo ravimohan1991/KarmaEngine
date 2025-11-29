@@ -312,6 +312,17 @@ COLLECTIVEINCLUDES(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_compile_definitions(KarmaEngine PUBLIC KarmaEngine)
 
+
+if (APPLE AND MAC_PACKAGE)
+set_target_properties(Glad glfw glm SDL2 spdlogging AssImp GlSlang stbimage hwinfo KarmaEngine
+    PROPERTIES
+    # Critical for macOS bundles
+    BUILD_WITH_INSTALL_RPATH TRUE
+    INSTALL_RPATH "@executable_path/../Frameworks"
+)
+endif()
+
+
 # Precompiled headers
 target_precompile_headers(KarmaEngine
     PRIVATE
