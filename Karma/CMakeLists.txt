@@ -312,9 +312,9 @@ COLLECTIVEINCLUDES(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_compile_definitions(KarmaEngine PUBLIC KarmaEngine)
 
-
 if (APPLE AND MAC_PACKAGE)
 set_target_properties(Glad glfw glm SDL2 spdlogging AssImp GlSlang stbimage hwinfo KarmaEngine
+	hwinfo hwinfo_battery hwinfo_cpu hwinfo_disk hwinfo_gpu hwinfo_mainboard hwinfo_os hwinfo_ram hwinfo_network
     PROPERTIES
     # Critical for macOS bundles
     BUILD_WITH_INSTALL_RPATH TRUE

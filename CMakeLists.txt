@@ -28,7 +28,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 
 # For MacOS .app packaging
-set(MAC_PACKAGE TRUE)
+set(MAC_PACKAGE FALSE)
 
 # Set custom install prefix inside CMakeLists.txt
 # This is so that .app can be installed in KarmaBin
@@ -110,6 +110,7 @@ install(TARGETS Pranjal
 
 # Install library target inside app bundle (uses target name automatically)
 install(TARGETS Glad glfw glm SDL2 spdlogging AssImp GlSlang stbimage hwinfo KarmaEngine
+    hwinfo hwinfo_battery hwinfo_cpu hwinfo_disk hwinfo_gpu hwinfo_mainboard hwinfo_os hwinfo_ram hwinfo_network
     LIBRARY DESTINATION Pranjal.app/Contents/Frameworks
     COMPONENT Runtime
 )
