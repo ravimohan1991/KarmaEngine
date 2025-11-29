@@ -13,7 +13,7 @@
 // https://github.com/ravimohan1991/imgui/blob/9068fd1afbaba56247aacd452bbadebb286800c7/backends/imgui_impl_vulkan.h
 // Disclaimer:
 // Most of the member variables and function naming in the herein is credited to the author(s) of Dear ImGUI. I take no responsibility
-// of damage caused by short names herein.
+// of damage caused by short names herein (if any).
 
 #pragma once
 
