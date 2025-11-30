@@ -182,12 +182,43 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		virtual void Init() override;
+
+		/**
+		 * @brief In Vulkan there is no default framebuffer, hence we need to explicitly swap the buffers in the swapchain.
+		 * 
+		 * For instance, acquire an image from the swapchain, execute the command buffer with that image as attachment in the framebuffer, and return the image to the swapchain for presentation.
+		 * All these are done in VulkanRendererAPI::SubmitCommandBuffers(). So no need to do anything here.
+		 * 
+		 * @see VulkanRendererAPI::SubmitCommandBuffers()
+		 * @since Karma 1.0.0
+		 */
 		virtual void SwapBuffers() override;
+
 		virtual bool OnWindowResize(WindowResizeEvent& event) override {/*No need for Vulkan for now.*/ return true; }
 
+		/**
+		 * @brief Creates Vulkan Instance which is the connection between application, which is a Game Engine, and Vulkan library.
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		void CreateInstance();
 
+		/**
+		 * @brief Prints all the available extensions supported by the system's Vulkan implementation.
+		 * 
+		 * For instance VK_KHR_Surface or VK_KHR_get_physical_device_properties2.
+		 * 
+		 * @see VulkanContext::CreateInstance()
+		 * @since Karma 1.0.0
+		 */
 		void PrintAvailableExtensions();
+
+		/**
+		 * @brief Prints all the available physical devices (graphics cards) supported by the system's Vulkan implementation.
+		 * 
+		 * @see VulkanContext::CreateInstance()
+		 * @since Karma 1.0.0
+		 */
 		void PrintAvailablePhysicalDevices(const std::vector<VkPhysicalDevice>& physicalDevices);
 
 		// Validation layers
@@ -215,8 +246,24 @@ namespace Karma
 		 */
 		void CreateSurface();
 
-		// Physical device
+		/**
+		 * @brief Picks the appropriate physical device (graphics card) for the Engine to use based on suitability.
+		 * 
+		 * 
+		 * @see VulkanContext::IsDeviceSuitable()
+		 * @since Karma 1.0.0
+		 */
 		void PickPhysicalDevice();
+
+		/**
+		 * @brief Checks if the physical device (graphics card) is suitable for the Engine to use based on
+		 * 
+		 * avaibality of required queue families (graphics and presentation), required device extensions (like VK_KHR_swapchain), sampler anisotropy support (which is 
+		 * anisotropic filtering support in samplers, allowing higher-quality texture sampling at oblique angles to reduce blurring and aliasing artifacts seen in standard bilinear filtering.)
+		 *
+		 * @param device						The graphics card to be checked for suitability
+		 * @since Karma 1.0.0
+		 */
 		bool IsDeviceSuitable(VkPhysicalDevice device);
 		
 		/**
@@ -246,12 +293,22 @@ namespace Karma
 		 * 1. Sets the size of m_swapChainImages based on supported number of images by the graphics card
 		 * 2. Sets m_surfaceFormat and m_presentMode
 		 *
-		 * @note 
+		 * @note Requires the availability of Requires VK_KHR_swapchain extension which is queried in IsDeviceSuitable() (which calls 
+		 * CheckDeviceExtensionSupport()).
 		 *
 		 * @see VulkanContext::ChooseSwapExtent(), VulkanContext::QuerySwapChainSupport()
 		 * @since Karma 1.0.0
 		 */
 		void CreateSwapChain();
+
+		/**
+		 * @brief Looks for extension properties supported by the GPU
+		 * 
+		 * Calls vkEnumerateDeviceExtensionProperties for list of supported extensions for instance VK_KHR_swapchain which is
+		 * required for, well, swapchain
+		 * 
+		 * @
+		 */
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 		
 		/**
@@ -261,12 +318,57 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+
+		/**
+		 * @brief Chooses the best surface format (pixel format and color space) for the swapchain from the available formats.
+		 * 
+		 * Basically looks for VK_FORMAT_B8G8R8A8_SRGB and VK_COLOR_SPACE_SRGB_NONLINEAR_KHR combination.
+		 * 
+		 * VK_FORMAT_B8G8R8A8_SRGB : represents a 32-bit format with 8 bits for each of the blue, green, red, and alpha channels in sRGB color space. 
+		 * This format is widely used for swapchain images and color attachments.
+		 * 
+		 * VK_COLOR_SPACE_SRGB_NONLINEAR_KHR : represents the sRGB color space with a nonlinear gamma curve. This color space is commonly used for displaying images on standard monitors.
+		 * 
+		 * @param availableFormats						The available surface formats (from QuerySwapChainSupport())
+		 * 
+		 * @see VulkanContext::CreateSwapChain()
+		 * @since Karma 1.0.0
+		 */
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+
+		/**
+		 * @brief Chooses the best presentation mode for the swapchain from the available present modes.
+		 * 
+		 * Basically looks for VK_PRESENT_MODE_MAILBOX_KHR (triple buffering) first, then VK_PRESENT_MODE_IMMEDIATE_KHR (tearing possible), and finally defaults to VK_PRESENT_MODE_FIFO_KHR (always available, v-sync)
+		 * 
+		 * @param availablePresentModes				The available presentation modes (from QuerySwapChainSupport())
+		 * 
+		 * @see VulkanContext::CreateSwapChain()
+		 * @since Karma 1.0.0
+		 */
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+		
+		/**
+		 * @brief Chooses the swap extent (resolution of the swapchain images) based on the capabilities of the surface and the actual window size.
+		 * 
+		 * @param capabilities						The surface capabilities (from QuerySwapChainSupport())
+		 * 
+		 * @see VulkanContext::CreateSwapChain()
+		 * @since Karma 1.0.0
+		 */
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+		/**
+		 * @brief Finds a suitable memory type on the physical device (graphics card) based on the type filter and desired properties.
+		 *
+		 * @param typeFilter						Bitmask specifying the acceptable memory types
+		 * @param properties						Desired memory properties (like VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT for CPU access)
+		 *
+		 * @see VulkanBuffer::VulkanBuffer()
+		 * @since Karma 1.0.0
+		 */
 		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
-		// Image views
 		/**
 		 * @brief An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels. ImageView is a wrapper around render target.
 		 *
@@ -275,22 +377,20 @@ namespace Karma
 		 */
 		void CreateImageViews();
 
-		//  Renderer pass
 		/**
 		 * @brief A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to. The "targets" are also known as render targets and include the attachments like colorattachment and depthattachment that describe where the rendering output will go to.
+		 * 
 		 * @since Karma 1.0.0
 		 */
 		void CreateRenderPass();
 
-		// Framebuffers
 		/**
-		 * @brief A framebuffer represents a collection of specific memory attachments that a render pass instance uses.
+		 * @brief Framebuffers are collections of specific memory attachments that a render pass instance uses. They represent the actual memory that the rendering operations will write to.
 		 *
-		 * @see KarmaGui_ImplVulkanH_ImageFrame::Framebuffer
+		 * @since Karma 1.0.0
 		 */
 		void CreateFrameBuffers();
 
-		// CommandPool
 		/**
 		 * @brief Command pools are opaque objects that command buffer memory is allocated from, and which allow the implementation to amortize the cost of resource creation.
 		 *
@@ -298,28 +398,157 @@ namespace Karma
 		 */
 		void CreateCommandPool();
 
-		// DepthImage
+		/**
+		 * @brief Creates the depth resources (image, imageview, and memory) for depth buffering in 3D rendering.
+		 * 
+		 * @note Depth buffering is a technique used in 3D computer graphics to determine the visibility of objects in a scene based on their distance from the viewer. It helps in rendering scenes with proper occlusion, ensuring that closer objects obscure those that are farther away.
+		 * @since Karma 1.0.0
+		 */
 		void CreateDepthResources();
+
+		/**
+		 * @brief Finds a supported format from the list of candidate formats based on the desired tiling and features.
+		 * Used in depth resource creation.
+		 * 
+		 * @see VulkanContext::FindDepthFormat()
+		 * @since Karma 1.0.0
+		 */
 		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+		
+		/**
+		 * @brief Finds a suitable depth format for depth buffering.
+		 * 
+		 * @see VulkanContext::CreateDepthResources()
+		 * @since Karma 1.0.0
+		 */
 		VkFormat FindDepthFormat();
+
+		/**
+		 * @brief Checks if the given format has a stencil component.
+		 * 
+		 * Sees if the format is VK_FORMAT_D32_SFLOAT_S8_UINT or VK_FORMAT_D24_UNORM_S8_UINT
+		 * 
+		 * @param format							The format to be checked
+		 * 
+		 * @see VulkanContext::TransitionImageLayout()
+		 * @since Karma 1.0.0
+		 */
 		bool HasStencilComponent(VkFormat format);
 
-		// Texture relevant
-		//void CreateTextureImage(VulkanImageBuffer* vImageBuffer);
+		/**
+		 * @brief Transitions the layout of an image from oldLayout to newLayout.
+		 * 
+		 * Image layout transitions are crucial in Vulkan to ensure that images are in the correct state for different operations, such as rendering, sampling, or transferring data.
+		 * 
+		 * @param image							The image to be transitioned
+		 * @param format						The format of the image
+		 * @param oldLayout						The current layout of the image
+		 * @param newLayout						The desired layout of the image
+		 * 
+		 * @see VulkanTexture::CreateTextureImage()
+		 * @since Karma 1.0.0
+		 */
 		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+		
+		/**
+		 * @brief Copies data from a buffer to an image.
+		 * 
+		 * This is typically used for uploading texture data from a staging buffer to a Vulkan image.
+		 * 
+		 * @param buffer						The source buffer containing the data
+		 * @param image							The destination image
+		 * @param width							The width of the image
+		 * @param height						The height of the image
+		 * 
+		 * @see VulkanTexture::CreateTextureImage()
+		 * @since Karma 1.0.0
+		 */
 		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-		//void CreateTextureImageView();
-		//void CreateTextureSampler();
 
+		/**
+		 * @brief Recreates the swapchain, typically in response to window resizing or other events that invalidate the current swapchain.
+		 * 
+		 * This involves cleaning up the existing swapchain and its associated resources, and then creating a new swapchain with updated parameters.
+		 * 
+		 * @see VulkanRendererAPI::RecreateCommandBuffersAndSwapChain(), KarmaGuiRenderer::GiveLoopBeginControlToVulkan()
+		 * @since Karma 1.0.0
+		 */
 		void RecreateSwapChain();
+
+		/**
+		 * @brief Cleans up the swapchain and its associated resources.
+		 * 
+		 * This involves destroying the framebuffers, image views, and the swapchain itself.
+		 * 
+		 * @see VulkanContext::RecreateSwapChain()
+		 * @since Karma 1.0.0
+		 */
 		void CleanupSwapChain();
 
+		/**
+		 * @brief Enables or disables vertical synchronization (VSync) for the swapchain.
+		 * 
+		 * VSync synchronizes the frame rate of the application with the refresh rate of the monitor to prevent screen tearing.
+		 * 
+		 * @param bEnable						True to enable VSync, false to disable
+		 * 
+		 * @see WindowsWindow::SetVSync, VulkanContext::ChooseSwapPresentMode()
+		 * @since Karma 1.0.0
+		 */
 		void SetVSync(bool bEnable);
 
+		/**
+		 * @brief Initializes the glslang library for shader compilation and processing.
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		void Initializeglslang();
+		
+		/**
+		 * @brief Registers a VulkanUniformBuffer for management by the VulkanContext.
+		 * 
+		 * @see VulkanContext::m_VulkanUBO
+		 * @since Karma 1.0.0
+		 */
 		void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
+
+		/**
+		 * @brief Clears all registered VulkanUniformBuffers, freeing their resources.
+		 * 
+		 * @see VulkanContext::m_VulkanUBO
+		 * @since Karma 1.0.0
+		 */
 		void ClearUBO();
+
+		/**
+		 * @brief Recreates all registered VulkanUniformBuffers, typically in response to swapchain recreation.
+		 * 
+		 * @see VulkanRendererAPI::RecreateCommandBuffersPipelineSwapchain()
+		 * @since Karma 1.0.0
+		 */
 		void RecreateUBO();
+
+		/**
+		 * @brief Uploads data to the registered VulkanUniformBuffers for the specified frame index.
+		 * 
+		 * Typically called during rendering to update uniform buffer data for the current frame like so
+		 * 
+		 * @code{.cpp}
+		 * vkCmdBeginRenderPass
+		 *	vkCmdBindPipeline
+		 *	vkCmdBindVertexBuffers
+		 *	vkCmdBindIndexBuffer
+		 *  UploadUBO()
+		 *	vkCmdBindDescriptorSets // Descriptor sets include UBOs
+		 *	vkCmdDrawIndexed
+		 * vkCmdEndRenderPass
+		 * @endcode
+		 * 
+		 * @param frameIndex						The index of the frame for which to upload UBO data
+		 * 
+		 * @see KarmaGuiRenderer::FrameRender, VulkanBuffer::UploadUniformBuffer
+		 * @since Karma 1.0.0
+		 */
 		void UploadUBO(size_t frameIndex);
 
 		// Getters
@@ -336,8 +565,6 @@ namespace Karma
 		VkQueue GetGraphicsQueue() const { return m_graphicsQueue; }
 		VkQueue GetPresentQueue() const { return m_presentQueue; }
 		VkCommandPool GetCommandPool() const { return m_commandPool; }
-		//VkImageView GetTextureImageView() const { return m_TextureImageView; }
-		//VkSampler GetTextureSampler() const { return m_TextureSampler; }
 		VkImageView GetDepthImageView() const { return m_DepthImageView; }
 		const VkPhysicalDeviceFeatures& GetSupportedDeviceFeatures() const { return m_SupportedDeviceFeatures; }
 		VkInstance GetInstance() const { return m_Instance; }
@@ -389,12 +616,5 @@ namespace Karma
 		VkImageView m_DepthImageView;
 
 		uint32_t m_MinImageCount = 0;
-
-		//VkImage m_TextureImage;
-		/*
-		VkDeviceMemory m_TextureImageMemory;
-		VkImageView m_TextureImageView;
-		VkSampler m_TextureSampler;
-		 */
 	};
 }

@@ -360,6 +360,14 @@ namespace Karma
 		/**
 		 * @brief Uploads (copies) the data from buffer memory (m_UniformBuffersMemory) to  host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range
 		 *
+		 * Basically copies the data from CPU side (uniforms) to GPU side (m_UniformBuffersMemory).
+		 * 
+		 * In summary, the process of updating uniform buffers in Vulkan involves the following steps:
+		 *	- Uniform data is first stored in a CPU-side structure representing the uniform buffer object.
+		 *	- The memory of the uniform buffer (a VkBuffer) is created with CPU-visible properties and mapped to a CPU pointer.
+		 *	- The updateUniformBuffer function copies the CPU-side data (like transformation matrices) into the mapped GPU buffer memory via a memcpy call.
+		 *	- This allows the GPU to read the fresh uniform data every frame during rendering without needing to re-record command buffers.
+		 * 
 		 * @param frameIndex								The m_CurrentFrame index representing index of MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1)
 		 *
 		 * @see VulkanRendererAPI::SubmitCommandBuffers()
