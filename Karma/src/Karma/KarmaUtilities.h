@@ -35,7 +35,7 @@ namespace Karma
 		 *
 		 * @param filePath						The relative path of the location of the file to be read
 		 *
-		 * @see Input::SetGamepadMapping()
+		 * @see Input::SetGamepadMapping(), VulkanShader::VulkanShader()
 		 * @since Karma 1.0.0
 		 */
 		static std::string ReadFileToSpitString(const std::string& filePath);
