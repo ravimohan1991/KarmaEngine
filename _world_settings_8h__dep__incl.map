@@ -10,7 +10,7 @@
 <area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="624,135,624,175,618,175,618,135"/>
 <area shape="rect" id="Node000013" href="$_open_g_l_shader_8h.html" title="This file contains OpenGLShader class." alt="" coords="905,168,1083,208"/>
 <area shape="poly" id="edge15_Node000002_Node000013" title=" " alt="" coords="694,121,905,165,904,170,693,126"/>
-<area shape="rect" id="Node000015" href="$_vulkan_shader_8h_source.html" title=" " alt="" coords="1209,168,1369,208"/>
+<area shape="rect" id="Node000015" href="$_vulkan_shader_8h.html" title="This file contains VulkanShader class which contains Vulkan specific implementation of Shader class." alt="" coords="1209,168,1369,208"/>
 <area shape="poly" id="edge17_Node000002_Node000015" title=" " alt="" coords="739,119,1209,175,1208,180,739,125"/>
 <area shape="rect" id="Node000004" href="$_entry_point_8h.html" title="This file contains the main() routine with multiplatform support." alt="" coords="5,426,202,452"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="207,381,126,428,123,423,204,376"/>
@@ -26,11 +26,11 @@
 <area shape="poly" id="edge12_Node000008_Node000010" title=" " alt="" coords="608,216,584,258,579,255,604,213"/>
 <area shape="rect" id="Node000011" href="$_mac_input_8h.html" title="This file contains MacInput class and relevant data structures." alt="" coords="662,256,796,297"/>
 <area shape="poly" id="edge13_Node000008_Node000011" title=" " alt="" coords="649,208,706,254,703,258,646,213"/>
-<area shape="rect" id="Node000012" href="$_windows_input_8h_source.html" title=" " alt="" coords="820,256,995,297"/>
+<area shape="rect" id="Node000012" href="$_windows_input_8h.html" title="Windows specific implementation of the Input class." alt="" coords="820,256,995,297"/>
 <area shape="poly" id="edge14_Node000008_Node000012" title=" " alt="" coords="677,203,843,253,842,258,675,208"/>
 <area shape="poly" id="edge11_Node000009_Node000003" title=" " alt="" coords="345,300,262,347,259,342,343,295"/>
 <area shape="rect" id="Node000014" href="$_open_g_l_vertex_array_8h.html" title="This file contains OpenGLVertexArray class." alt="" coords="1019,256,1223,297"/>
 <area shape="poly" id="edge16_Node000013_Node000014" title=" " alt="" coords="1037,215,1094,254,1091,258,1034,219"/>
-<area shape="rect" id="Node000016" href="$_vulkan_vertex_array_8h_source.html" title=" " alt="" coords="1248,256,1434,297"/>
+<area shape="rect" id="Node000016" href="$_vulkan_vertex_array_8h.html" title="This file contains VulkanVertexArray class which contains Vulkan specific implementation of VertexArr..." alt="" coords="1248,256,1434,297"/>
 <area shape="poly" id="edge18_Node000015_Node000016" title=" " alt="" coords="1311,220,1331,255,1327,257,1306,223"/>
 </map>

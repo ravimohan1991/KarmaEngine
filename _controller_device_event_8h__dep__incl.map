@@ -2,7 +2,7 @@
 <area shape="rect" id="Node000001" title="This file contains the classes concerned with activity of game controller device." alt="" coords="261,5,428,46"/>
 <area shape="rect" id="Node000002" href="$_application_8h.html" title="This file contains the main Application class for Editor + Game." alt="" coords="139,102,340,127"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="311,58,256,103,252,99,307,54"/>
-<area shape="rect" id="Node000007" href="$_windows_input_8h_source.html" title=" " alt="" coords="364,94,539,135"/>
+<area shape="rect" id="Node000007" href="$_windows_input_8h.html" title="Windows specific implementation of the Input class." alt="" coords="364,94,539,135"/>
 <area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="382,54,429,91,426,96,379,58"/>
 <area shape="rect" id="Node000003" href="$_karma_8h_source.html" title=" " alt="" coords="173,183,306,208"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="242,143,242,182,237,182,237,143"/>

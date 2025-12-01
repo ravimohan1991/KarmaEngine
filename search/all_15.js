@@ -11,12 +11,15 @@ var searchData=
   ['windowprops_8',['WindowProps',['../struct_karma_1_1_window_props.html',1,'Karma::WindowProps'],['../struct_karma_1_1_window_props.html#ace80607c053452d5fd2766f52821ffed',1,'Karma::WindowProps::WindowProps()']]],
   ['windowresizeevent_9',['WindowResizeEvent',['../class_karma_1_1_window_resize_event.html',1,'Karma::WindowResizeEvent'],['../class_karma_1_1_window_resize_event.html#a1b31ecac2df46dc1cf2a68bcfd0f5f38',1,'Karma::WindowResizeEvent::WindowResizeEvent()']]],
   ['windows_10',['Windows',['../_application_8h.html#a1ec692a3462b14aa9c231094451b2255aaea23489ce3aa9b6406ebb28e0cda430',1,'WindowsKarma'],['../md__r_e_a_d_m_e.html#autotoc_md4',1,'Windows']]],
-  ['windowsinput_11',['WindowsInput',['../class_karma_1_1_windows_input.html',1,'Karma']]],
-  ['windowsinputdata_12',['WindowsInputData',['../struct_karma_1_1_windows_input_data.html',1,'Karma']]],
-  ['windowswindow_13',['WindowsWindow',['../class_karma_1_1_windows_window.html',1,'Karma']]],
-  ['world_14',['World',['../struct_karma_1_1_f_world_context.html#a305aa2e8cfd4666907b74da6821c5399',1,'Karma::FWorldContext']]],
-  ['world_2eh_15',['World.h',['../_world_8h.html',1,'']]],
-  ['worldadded_16',['WorldAdded',['../class_karma_1_1_k_engine.html#aa4eeed55a238c02c31d360cf26976904',1,'Karma::KEngine']]],
-  ['worlddestroyed_17',['WorldDestroyed',['../class_karma_1_1_k_engine.html#a0bc6a39b004e6477509b0334654a47e1',1,'Karma::KEngine']]],
-  ['worldsettings_2eh_18',['WorldSettings.h',['../_world_settings_8h.html',1,'']]]
+  ['windowsinput_11',['WindowsInput',['../class_karma_1_1_windows_input.html',1,'Karma::WindowsInput'],['../class_karma_1_1_windows_input.html#a7424225ce9880858994b870c629300ca',1,'Karma::WindowsInput::WindowsInput()']]],
+  ['windowsinput_2eh_12',['WindowsInput.h',['../_windows_input_8h.html',1,'']]],
+  ['windowsinputdata_13',['WindowsInputData',['../struct_karma_1_1_windows_input_data.html',1,'Karma::WindowsInputData'],['../struct_karma_1_1_windows_input_data.html#a80ebb7d6f5389bec3eac1d25ca219780',1,'Karma::WindowsInputData::WindowsInputData()']]],
+  ['windowsplatformmemory_2eh_14',['WindowsPlatformMemory.h',['../_windows_platform_memory_8h.html',1,'']]],
+  ['windowswindow_15',['WindowsWindow',['../class_karma_1_1_windows_window.html',1,'Karma::WindowsWindow'],['../class_karma_1_1_windows_window.html#a80e973850623093f8a5505e77623056a',1,'Karma::WindowsWindow::WindowsWindow()']]],
+  ['windowswindow_2eh_16',['WindowsWindow.h',['../_windows_window_8h.html',1,'']]],
+  ['world_17',['World',['../struct_karma_1_1_f_world_context.html#a305aa2e8cfd4666907b74da6821c5399',1,'Karma::FWorldContext']]],
+  ['world_2eh_18',['World.h',['../_world_8h.html',1,'']]],
+  ['worldadded_19',['WorldAdded',['../class_karma_1_1_k_engine.html#aa4eeed55a238c02c31d360cf26976904',1,'Karma::KEngine']]],
+  ['worlddestroyed_20',['WorldDestroyed',['../class_karma_1_1_k_engine.html#a0bc6a39b004e6477509b0334654a47e1',1,'Karma::KEngine']]],
+  ['worldsettings_2eh_21',['WorldSettings.h',['../_world_settings_8h.html',1,'']]]
 ];

@@ -65,13 +65,14 @@ var searchData=
   ['touobjectunsafe_62',['ToUObjectUnsafe',['../class_karma_1_1_f_field_variant.html#a09d0bd359d5b405bc74f3043f2bf185d',1,'Karma::FFieldVariant']]],
   ['tquaternion_63',['TQuaternion',['../struct_karma_1_1_t_quaternion.html',1,'Karma']]],
   ['transform_2eh_64',['Transform.h',['../_transform_8h.html',1,'']]],
-  ['travel_5fabsolute_65',['TRAVEL_Absolute',['../_karma_types_8h.html#a9665fe4edde2538fef3bd9972f284988aa64e82f46ae83dd4288ef4c072050578',1,'KarmaTypes.h']]],
-  ['travel_5fmax_66',['TRAVEL_MAX',['../_karma_types_8h.html#a9665fe4edde2538fef3bd9972f284988af8ff98f24475d7f3f013934b7d74fa1c',1,'KarmaTypes.h']]],
-  ['travel_5fpartial_67',['TRAVEL_Partial',['../_karma_types_8h.html#a9665fe4edde2538fef3bd9972f284988a862339630f2f5bd93b66e586c811da53',1,'KarmaTypes.h']]],
-  ['travel_5frelative_68',['TRAVEL_Relative',['../_karma_types_8h.html#a9665fe4edde2538fef3bd9972f284988ab1143a0f0d29ac3603b736d17b3f2dfb',1,'KarmaTypes.h']]],
-  ['trotator_69',['TRotator',['../struct_karma_1_1_t_rotator.html',1,'Karma']]],
-  ['tsubclassof_70',['TSubclassOf',['../class_karma_1_1_t_subclass_of.html',1,'Karma::TSubclassOf&lt; TClass &gt;'],['../class_karma_1_1_t_subclass_of.html#a51ec5524fc62d2c758fbd6232b09d9c7',1,'Karma::TSubclassOf::TSubclassOf()'],['../class_karma_1_1_t_subclass_of.html#a585899f879c5b6482e306a2765fb4e8b',1,'Karma::TSubclassOf::TSubclassOf(TClassType *From)'],['../class_karma_1_1_t_subclass_of.html#a831d7aacc69678ecba721a3e8c4fb83d',1,'Karma::TSubclassOf::TSubclassOf(U &amp;&amp;From)'],['../class_karma_1_1_t_subclass_of.html#a7c6e8f80383cac8e30df2b9ea8b8b71d',1,'Karma::TSubclassOf::TSubclassOf(const TSubclassOf&lt; TClassA &gt; &amp;From)']]],
-  ['tsubclassof_3c_20class_20agamemodebase_20_3e_71',['TSubclassOf&lt; class AGameModeBase &gt;',['../class_karma_1_1_t_subclass_of.html',1,'Karma']]],
-  ['tsubclassof_3c_20karma_3a_3aaactor_20_3e_72',['TSubclassOf&lt; Karma::AActor &gt;',['../class_karma_1_1_t_subclass_of.html',1,'Karma']]],
-  ['type_73',['Type',['../struct_karma_1_1_buffer_element.html#a19f0817ed077839c07acd116f4f156eb',1,'Karma::BufferElement::Type'],['../namespace_e_end_play_reason.html#a8b44c9c9dc5082d57986ffb19ba69a8c',1,'EEndPlayReason::Type'],['../namespace_e_world_type.html#adf8b849b91abff99dbcf77718f83f17a',1,'EWorldType::Type'],['../namespace_karma_1_1_e_cast_checked_type.html#a1aea65c853198139f3ad10c212f53a86',1,'Karma::ECastCheckedType::Type']]]
+  ['transitionimagelayout_65',['TransitionImageLayout',['../class_karma_1_1_vulkan_context.html#a640eafd4350e7dff07615bae04b2910a',1,'Karma::VulkanContext']]],
+  ['travel_5fabsolute_66',['TRAVEL_Absolute',['../_karma_types_8h.html#a9665fe4edde2538fef3bd9972f284988aa64e82f46ae83dd4288ef4c072050578',1,'KarmaTypes.h']]],
+  ['travel_5fmax_67',['TRAVEL_MAX',['../_karma_types_8h.html#a9665fe4edde2538fef3bd9972f284988af8ff98f24475d7f3f013934b7d74fa1c',1,'KarmaTypes.h']]],
+  ['travel_5fpartial_68',['TRAVEL_Partial',['../_karma_types_8h.html#a9665fe4edde2538fef3bd9972f284988a862339630f2f5bd93b66e586c811da53',1,'KarmaTypes.h']]],
+  ['travel_5frelative_69',['TRAVEL_Relative',['../_karma_types_8h.html#a9665fe4edde2538fef3bd9972f284988ab1143a0f0d29ac3603b736d17b3f2dfb',1,'KarmaTypes.h']]],
+  ['trotator_70',['TRotator',['../struct_karma_1_1_t_rotator.html',1,'Karma']]],
+  ['tsubclassof_71',['TSubclassOf',['../class_karma_1_1_t_subclass_of.html',1,'Karma::TSubclassOf&lt; TClass &gt;'],['../class_karma_1_1_t_subclass_of.html#a51ec5524fc62d2c758fbd6232b09d9c7',1,'Karma::TSubclassOf::TSubclassOf()'],['../class_karma_1_1_t_subclass_of.html#a585899f879c5b6482e306a2765fb4e8b',1,'Karma::TSubclassOf::TSubclassOf(TClassType *From)'],['../class_karma_1_1_t_subclass_of.html#a831d7aacc69678ecba721a3e8c4fb83d',1,'Karma::TSubclassOf::TSubclassOf(U &amp;&amp;From)'],['../class_karma_1_1_t_subclass_of.html#a7c6e8f80383cac8e30df2b9ea8b8b71d',1,'Karma::TSubclassOf::TSubclassOf(const TSubclassOf&lt; TClassA &gt; &amp;From)']]],
+  ['tsubclassof_3c_20class_20agamemodebase_20_3e_72',['TSubclassOf&lt; class AGameModeBase &gt;',['../class_karma_1_1_t_subclass_of.html',1,'Karma']]],
+  ['tsubclassof_3c_20karma_3a_3aaactor_20_3e_73',['TSubclassOf&lt; Karma::AActor &gt;',['../class_karma_1_1_t_subclass_of.html',1,'Karma']]],
+  ['type_74',['Type',['../struct_karma_1_1_buffer_element.html#a19f0817ed077839c07acd116f4f156eb',1,'Karma::BufferElement::Type'],['../namespace_e_end_play_reason.html#a8b44c9c9dc5082d57986ffb19ba69a8c',1,'EEndPlayReason::Type'],['../namespace_e_world_type.html#adf8b849b91abff99dbcf77718f83f17a',1,'EWorldType::Type'],['../namespace_karma_1_1_e_cast_checked_type.html#a1aea65c853198139f3ad10c212f53a86',1,'Karma::ECastCheckedType::Type']]]
 ];

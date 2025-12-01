@@ -168,13 +168,13 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a4040e45840d9a92ebcfa7b1252bab0b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore, fence, and commandbuffer size.  <br /></td></tr>
 <tr class="separator:a4040e45840d9a92ebcfa7b1252bab0b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a827c0cf1d334104bdb429ca3030afd76" id="r_a827c0cf1d334104bdb429ca3030afd76"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame.html">KarmaGui_ImplVulkanH_ImageFrame</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a827c0cf1d334104bdb429ca3030afd76">ImageFrames</a></td></tr>
-<tr class="memdesc:a827c0cf1d334104bdb429ca3030afd76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Just a container for buffers and all those sizes depending on VulkanHolder::GetVulkanContext()-&gt;GetSwapChainImages().size();.  <br /></td></tr>
+<tr class="memdesc:a827c0cf1d334104bdb429ca3030afd76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Just a container for buffers (framebuffers, images, and imageviews etc) and all those sizes depending on <a class="el" href="class_karma_1_1_vulkan_holder.html#a525f7ebea87ac0633b6ba0fcb4fab4e1" title="Gets the VulkanContext instance.">VulkanHolder::GetVulkanContext()</a>-&gt;GetSwapChainImages().size();.  <br /></td></tr>
 <tr class="separator:a827c0cf1d334104bdb429ca3030afd76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e83a6e76e046beb3704892784f58fc3" id="r_a4e83a6e76e046beb3704892784f58fc3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_karma_gui___vulkan___frame___on___flight.html">KarmaGui_Vulkan_Frame_On_Flight</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e83a6e76e046beb3704892784f58fc3">FramesOnFlight</a></td></tr>
-<tr class="memdesc:a4e83a6e76e046beb3704892784f58fc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data for synchronous operations of in-flight rendering frames.  <br /></td></tr>
+<tr class="memdesc:a4e83a6e76e046beb3704892784f58fc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data (fences, semaphores, and commandbuffers (taken from VulkanRendererAPI::GetCommandBuffers())) for synchronous operations of in-flight rendering frames.  <br /></td></tr>
 <tr class="separator:a4e83a6e76e046beb3704892784f58fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b444633145dd5dd0ed01a67c9f75603" id="r_a5b444633145dd5dd0ed01a67c9f75603"><td class="memItemLeft" align="right" valign="top">VkRect2D&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b444633145dd5dd0ed01a67c9f75603">RenderArea</a></td></tr>
-<tr class="memdesc:a5b444633145dd5dd0ed01a67c9f75603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most likely the glfw window size, set from VulkanHolder::GetVulkanContext()-&gt;GetSwapChainExtent(). Used for setting renderPassInfo.renderArea.extent in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>.  <br /></td></tr>
+<tr class="memdesc:a5b444633145dd5dd0ed01a67c9f75603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most likely the glfw window size, set from <a class="el" href="class_karma_1_1_vulkan_holder.html#a525f7ebea87ac0633b6ba0fcb4fab4e1" title="Gets the VulkanContext instance.">VulkanHolder::GetVulkanContext()</a>-&gt;GetSwapChainExtent(). Used for setting renderPassInfo.renderArea.extent in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>.  <br /></td></tr>
 <tr class="separator:a5b444633145dd5dd0ed01a67c9f75603"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -274,7 +274,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Data for synchronous operations of in-flight rendering frames. </p>
+<p>Data (fences, semaphores, and commandbuffers (taken from VulkanRendererAPI::GetCommandBuffers())) for synchronous operations of in-flight rendering frames. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -326,7 +326,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Just a container for buffers and all those sizes depending on VulkanHolder::GetVulkanContext()-&gt;GetSwapChainImages().size();. </p>
+<p>Just a container for buffers (framebuffers, images, and imageviews etc) and all those sizes depending on <a class="el" href="class_karma_1_1_vulkan_holder.html#a525f7ebea87ac0633b6ba0fcb4fab4e1" title="Gets the VulkanContext instance.">VulkanHolder::GetVulkanContext()</a>-&gt;GetSwapChainImages().size();. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -361,7 +361,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>A huge object in Vulkan that encompasses the configuration of the entire GPU for the draw. Once a pipeline is built, it can be bound inside a command buffer, and then when you draw anything it will use the bound pipeline. </p>
-<dl class="section note"><dt>Note</dt><dd>The window pipeline may use a different VkRenderPass than the one passed in ImGui_ImplVulkan_InitInfo. Need to investigate why. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Usually set to the pipeline created in KarmaGui_ImplVulkan_CreatePipeline(). </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -395,7 +395,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Most likely the glfw window size, set from VulkanHolder::GetVulkanContext()-&gt;GetSwapChainExtent(). Used for setting renderPassInfo.renderArea.extent in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>. </p>
+<p>Most likely the glfw window size, set from <a class="el" href="class_karma_1_1_vulkan_holder.html#a525f7ebea87ac0633b6ba0fcb4fab4e1" title="Gets the VulkanContext instance.">VulkanHolder::GetVulkanContext()</a>-&gt;GetSwapChainExtent(). Used for setting renderPassInfo.renderArea.extent in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>. </p>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000084">Todo</a></b></dt><dd>Ponder, how to implement the context switch from Editor rendering to Game rendering.</dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
@@ -414,6 +414,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>A render pass object represents a collection of attachments, subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses. </p>
+<dl class="section note"><dt>Note</dt><dd>Taken from <a class="el" href="class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a> set in <a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#ac2c93fab4bd1c3b354b46485db32a8d6" title="The purpose of the routine is two-fold.">KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

@@ -92,49 +92,58 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">VulkanTexutre.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="_texture_8h.html">Karma/Renderer/Texture.h</a>&quot;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_vulkan_buffer_8h.html">VulkanBuffer.h</a>&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>Karma</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
-<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="class_karma_1_1_vulkan_texture.html">    8</a></span>    <span class="keyword">class </span>VulkanTexture : <span class="keyword">public</span> <a class="code hl_function" href="class_karma_1_1_texture.html#ab0dd0354724f9dd07a549b2379b7d072">Texture</a></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    {</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        VulkanTexture();</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        ~VulkanTexture();</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keywordtype">void</span> CreateTextureImage(<a class="code hl_class" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a>* vImageBuffer);</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordtype">void</span> CreateTextureImageView();</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordtype">void</span> CreateTextureSampler();</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="comment">// Upload the VulkanImageBuffer to GPU when Texture is instantiated</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordtype">void</span> GenerateVulkanTexture(<a class="code hl_class" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a>* vImageBuffer);</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="comment">// Getters</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        VkImageView GetImageView()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_TextureImageView; }</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        VkSampler GetImageSampler()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_TextureSampler; }</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="comment">// Vulkan context relevant stuff</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        VkDevice m_Device;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        VkPhysicalDevice m_PhysicalDevice;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="comment">// Texture relevant stuff</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        VkImage m_TextureImage;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        VkDeviceMemory m_TextureImageMemory;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        VkImageView m_TextureImageView;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        VkSampler m_TextureSampler;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    };</div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_texture_8h.html">Karma/Renderer/Texture.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="_vulkan_buffer_8h.html">VulkanBuffer.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>Karma</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="class_karma_1_1_vulkan_texture.html">   27</a></span>    <span class="keyword">class </span><a class="code hl_function" href="class_karma_1_1_vulkan_texture.html#a07c1aab0a9d8d05e0c18763e51a907b1">VulkanTexture</a> : <span class="keyword">public</span> <a class="code hl_function" href="class_karma_1_1_texture.html#ab0dd0354724f9dd07a549b2379b7d072">Texture</a></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <a class="code hl_function" href="class_karma_1_1_vulkan_texture.html#a07c1aab0a9d8d05e0c18763e51a907b1">VulkanTexture</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <a class="code hl_function" href="class_karma_1_1_vulkan_texture.html#a9eba898fd907f21598102f305d214c35">~VulkanTexture</a>();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_karma_1_1_vulkan_texture.html#a1f64de2bf4d111399bbb1405aa0e9fe8">CreateTextureImage</a>(<a class="code hl_class" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a>* vImageBuffer);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_karma_1_1_vulkan_texture.html#a52c6965d8dabd477603824bcaf079769">CreateTextureImageView</a>();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_karma_1_1_vulkan_texture.html#a89150776ceaf0bf41e96b9f57793b907">CreateTextureSampler</a>();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_karma_1_1_vulkan_texture.html#a446af8d20e8532240f4f195314aace3b">GenerateVulkanTexture</a>(<a class="code hl_class" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a>* vImageBuffer);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="comment">// Getters</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        VkImageView GetImageView()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_TextureImageView; }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        VkSampler GetImageSampler()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_TextureSampler; }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="comment">// Vulkan context relevant stuff</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        VkDevice m_Device;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        VkPhysicalDevice m_PhysicalDevice;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="comment">// Texture relevant stuff</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        VkImage m_TextureImage;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        VkDeviceMemory m_TextureImageMemory;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        VkImageView m_TextureImageView;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        VkSampler m_TextureSampler;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    };</div>
 </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
 <div class="ttc" id="a_texture_8h_html"><div class="ttname"><a href="_texture_8h.html">Texture.h</a></div><div class="ttdoc">This file contains the SkeletalMesh class.</div></div>
 <div class="ttc" id="a_vulkan_buffer_8h_html"><div class="ttname"><a href="_vulkan_buffer_8h.html">VulkanBuffer.h</a></div><div class="ttdoc">This file contains VulkanVertex/Index/ImageBuffer classes.</div></div>
 <div class="ttc" id="aclass_karma_1_1_texture_html_ab0dd0354724f9dd07a549b2379b7d072"><div class="ttname"><a href="class_karma_1_1_texture.html#ab0dd0354724f9dd07a549b2379b7d072">Karma::Texture::Texture</a></div><div class="ttdeci">Texture()</div><div class="ttdoc">A constructor.</div><div class="ttdef"><b>Definition</b> Texture.cpp:8</div></div>
-<div class="ttc" id="aclass_karma_1_1_vulkan_image_buffer_html"><div class="ttname"><a href="class_karma_1_1_vulkan_image_buffer.html">Karma::VulkanImageBuffer</a></div><div class="ttdoc">Vulkan specific implemetation of ImageBuffer class.</div><div class="ttdef"><b>Definition</b> VulkanBuffer.h:380</div></div>
+<div class="ttc" id="aclass_karma_1_1_vulkan_image_buffer_html"><div class="ttname"><a href="class_karma_1_1_vulkan_image_buffer.html">Karma::VulkanImageBuffer</a></div><div class="ttdoc">Vulkan specific implemetation of ImageBuffer class.</div><div class="ttdef"><b>Definition</b> VulkanBuffer.h:388</div></div>
+<div class="ttc" id="aclass_karma_1_1_vulkan_texture_html_a07c1aab0a9d8d05e0c18763e51a907b1"><div class="ttname"><a href="class_karma_1_1_vulkan_texture.html#a07c1aab0a9d8d05e0c18763e51a907b1">Karma::VulkanTexture::VulkanTexture</a></div><div class="ttdeci">VulkanTexture()</div><div class="ttdoc">A constructor.</div><div class="ttdef"><b>Definition</b> VulkanTexutre.cpp:6</div></div>
+<div class="ttc" id="aclass_karma_1_1_vulkan_texture_html_a1f64de2bf4d111399bbb1405aa0e9fe8"><div class="ttname"><a href="class_karma_1_1_vulkan_texture.html#a1f64de2bf4d111399bbb1405aa0e9fe8">Karma::VulkanTexture::CreateTextureImage</a></div><div class="ttdeci">void CreateTextureImage(VulkanImageBuffer *vImageBuffer)</div><div class="ttdoc">Creates Vulkan image for the texture and allocates device memory appropriately.</div><div class="ttdef"><b>Definition</b> VulkanTexutre.cpp:27</div></div>
+<div class="ttc" id="aclass_karma_1_1_vulkan_texture_html_a446af8d20e8532240f4f195314aace3b"><div class="ttname"><a href="class_karma_1_1_vulkan_texture.html#a446af8d20e8532240f4f195314aace3b">Karma::VulkanTexture::GenerateVulkanTexture</a></div><div class="ttdeci">void GenerateVulkanTexture(VulkanImageBuffer *vImageBuffer)</div><div class="ttdoc">Generates the Vulkan texture by creating the image, image view, and sampler.</div><div class="ttdef"><b>Definition</b> VulkanTexutre.cpp:20</div></div>
+<div class="ttc" id="aclass_karma_1_1_vulkan_texture_html_a52c6965d8dabd477603824bcaf079769"><div class="ttname"><a href="class_karma_1_1_vulkan_texture.html#a52c6965d8dabd477603824bcaf079769">Karma::VulkanTexture::CreateTextureImageView</a></div><div class="ttdeci">void CreateTextureImageView()</div><div class="ttdoc">Creates the image view for the texture.</div><div class="ttdef"><b>Definition</b> VulkanTexutre.cpp:64</div></div>
+<div class="ttc" id="aclass_karma_1_1_vulkan_texture_html_a89150776ceaf0bf41e96b9f57793b907"><div class="ttname"><a href="class_karma_1_1_vulkan_texture.html#a89150776ceaf0bf41e96b9f57793b907">Karma::VulkanTexture::CreateTextureSampler</a></div><div class="ttdeci">void CreateTextureSampler()</div><div class="ttdoc">Creates the texture sampler.</div><div class="ttdef"><b>Definition</b> VulkanTexutre.cpp:82</div></div>
+<div class="ttc" id="aclass_karma_1_1_vulkan_texture_html_a9eba898fd907f21598102f305d214c35"><div class="ttname"><a href="class_karma_1_1_vulkan_texture.html#a9eba898fd907f21598102f305d214c35">Karma::VulkanTexture::~VulkanTexture</a></div><div class="ttdeci">~VulkanTexture()</div><div class="ttdoc">A destructor.</div><div class="ttdef"><b>Definition</b> VulkanTexutre.cpp:12</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

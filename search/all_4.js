@@ -28,7 +28,7 @@ var searchData=
   ['event_2eh_25',['Event.h',['../_event_8h.html',1,'']]],
   ['event_5fclass_5fcategory_26',['EVENT_CLASS_CATEGORY',['../_event_8h.html#abd52deea587a36ef619e596a0c691839',1,'Event.h']]],
   ['event_5fclass_5ftype_27',['EVENT_CLASS_TYPE',['../_event_8h.html#a80d534fc4d69a68eefd1573fd0ac2f44',1,'Event.h']]],
-  ['eventcallback_28',['EventCallback',['../struct_karma_1_1_linux_input_data.html#a187e6673f511a1cee8cc2ecf0493a8f9',1,'Karma::LinuxInputData::EventCallback'],['../struct_karma_1_1_mac_input_data.html#a025afbf0512ef171bddf82519651835e',1,'Karma::MacInputData::EventCallback']]],
+  ['eventcallback_28',['EventCallback',['../struct_karma_1_1_linux_input_data.html#a187e6673f511a1cee8cc2ecf0493a8f9',1,'Karma::LinuxInputData::EventCallback'],['../struct_karma_1_1_mac_input_data.html#a025afbf0512ef171bddf82519651835e',1,'Karma::MacInputData::EventCallback'],['../struct_karma_1_1_windows_input_data.html#a2a13fb172a2948b4aa46401ea378c2e8',1,'Karma::WindowsInputData::EventCallback']]],
   ['eventcallbackfn_29',['EventCallbackFn',['../class_karma_1_1_window.html#a763ba321193ec19651901bdf693e225a',1,'Karma::Window']]],
   ['eventcategory_30',['EventCategory',['../_event_8h.html#a527d6c4d8e5b79d623fd9efa4914d0cb',1,'Karma']]],
   ['eventcategoryapplication_31',['EventCategoryApplication',['../_event_8h.html#a527d6c4d8e5b79d623fd9efa4914d0cba748134a7f0fe4e8a5440b9aa7711f131',1,'Karma']]],

@@ -266,7 +266,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Destructor. For freeing up UBO resources, use <a class="el" href="#acad49656438832a773b2cf08ec8ed442" title="Frees up the resources by destroying the buffer object(s) and clearing memory.">VulkanUniformBuffer::ClearBuffer()</a> </p>
-<dl class="section see"><dt>See also</dt><dd>VulkanContext::ClearUBO </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_vulkan_context.html#a620cbb199308a721c243793e29e19fac" title="Clears all registered VulkanUniformBuffers, freeing their resources.">VulkanContext::ClearUBO</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -443,13 +443,20 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Uploads (copies) the data from buffer memory (m_UniformBuffersMemory) to host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range. </p>
+<p>Basically copies the data from CPU side (uniforms) to GPU side (m_UniformBuffersMemory).</p>
+<p>In summary, the process of updating uniform buffers in Vulkan involves the following steps:</p><ul>
+<li>Uniform data is first stored in a CPU-side structure representing the uniform buffer object.</li>
+<li>The memory of the uniform buffer (a VkBuffer) is created with CPU-visible properties and mapped to a CPU pointer.</li>
+<li>The updateUniformBuffer function copies the CPU-side data (like transformation matrices) into the mapped GPU buffer memory via a memcpy call.</li>
+<li>This allows the GPU to read the fresh uniform data every frame during rendering without needing to re-record command buffers.</li>
+</ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">frameIndex</td><td>The m_CurrentFrame index representing index of MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1)</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd>VulkanRendererAPI::SubmitCommandBuffers() </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html#afac431c944424a707d442ca9a593a58f" title="Submits the recorded command buffers to the graphics queue for execution.">VulkanRendererAPI::SubmitCommandBuffers()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="struct_karma_1_1_uniform_buffer_object.html#a7d017124c9ff73008207e6fdca1482f8">Karma::UniformBufferObject</a>.</p>

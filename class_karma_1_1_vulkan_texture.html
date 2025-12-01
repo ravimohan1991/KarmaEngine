@@ -95,12 +95,17 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Karma::VulkanTexture Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Vulkan specific implementation of <a class="el" href="class_karma_1_1_texture.html" title="Texture class.">Texture</a> class.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_vulkan_texutre_8h_source.html">VulkanTexutre.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for Karma::VulkanTexture:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_karma_1_1_vulkan_texture__inherit__graph.png" border="0" usemap="#a_karma_1_1_vulkan_texture_inherit__map" alt="Inheritance graph"/></div>
 <map name="a_karma_1_1_vulkan_texture_inherit__map" id="a_karma_1_1_vulkan_texture_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,79,154,105"/>
+<area shape="rect" title="Vulkan specific implementation of Texture class." alt="" coords="5,79,154,105"/>
 <area shape="rect" href="class_karma_1_1_texture.html" title="Texture class." alt="" coords="25,5,134,31"/>
 <area shape="poly" title=" " alt="" coords="82,46,82,79,77,79,77,46"/>
 </map>
@@ -110,7 +115,7 @@ Collaboration diagram for Karma::VulkanTexture:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_karma_1_1_vulkan_texture__coll__graph.png" border="0" usemap="#a_karma_1_1_vulkan_texture_coll__map" alt="Collaboration graph"/></div>
 <map name="a_karma_1_1_vulkan_texture_coll__map" id="a_karma_1_1_vulkan_texture_coll__map">
-<area shape="rect" title=" " alt="" coords="5,79,154,105"/>
+<area shape="rect" title="Vulkan specific implementation of Texture class." alt="" coords="5,79,154,105"/>
 <area shape="rect" href="class_karma_1_1_texture.html" title="Texture class." alt="" coords="25,5,134,31"/>
 <area shape="poly" title=" " alt="" coords="82,46,82,79,77,79,77,46"/>
 </map>
@@ -118,17 +123,23 @@ Collaboration diagram for Karma::VulkanTexture:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1f64de2bf4d111399bbb1405aa0e9fe8" id="r_a1f64de2bf4d111399bbb1405aa0e9fe8"><td class="memItemLeft" align="right" valign="top"><a id="a1f64de2bf4d111399bbb1405aa0e9fe8" name="a1f64de2bf4d111399bbb1405aa0e9fe8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CreateTextureImage</b> (<a class="el" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a> *vImageBuffer)</td></tr>
+<tr class="memitem:a07c1aab0a9d8d05e0c18763e51a907b1" id="r_a07c1aab0a9d8d05e0c18763e51a907b1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07c1aab0a9d8d05e0c18763e51a907b1">VulkanTexture</a> ()</td></tr>
+<tr class="memdesc:a07c1aab0a9d8d05e0c18763e51a907b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constructor.  <br /></td></tr>
+<tr class="separator:a07c1aab0a9d8d05e0c18763e51a907b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eba898fd907f21598102f305d214c35" id="r_a9eba898fd907f21598102f305d214c35"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9eba898fd907f21598102f305d214c35">~VulkanTexture</a> ()</td></tr>
+<tr class="memdesc:a9eba898fd907f21598102f305d214c35"><td class="mdescLeft">&#160;</td><td class="mdescRight">A destructor.  <br /></td></tr>
+<tr class="separator:a9eba898fd907f21598102f305d214c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f64de2bf4d111399bbb1405aa0e9fe8" id="r_a1f64de2bf4d111399bbb1405aa0e9fe8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f64de2bf4d111399bbb1405aa0e9fe8">CreateTextureImage</a> (<a class="el" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a> *vImageBuffer)</td></tr>
+<tr class="memdesc:a1f64de2bf4d111399bbb1405aa0e9fe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates Vulkan image for the texture and allocates device memory appropriately.  <br /></td></tr>
 <tr class="separator:a1f64de2bf4d111399bbb1405aa0e9fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52c6965d8dabd477603824bcaf079769" id="r_a52c6965d8dabd477603824bcaf079769"><td class="memItemLeft" align="right" valign="top"><a id="a52c6965d8dabd477603824bcaf079769" name="a52c6965d8dabd477603824bcaf079769"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CreateTextureImageView</b> ()</td></tr>
+<tr class="memitem:a52c6965d8dabd477603824bcaf079769" id="r_a52c6965d8dabd477603824bcaf079769"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52c6965d8dabd477603824bcaf079769">CreateTextureImageView</a> ()</td></tr>
+<tr class="memdesc:a52c6965d8dabd477603824bcaf079769"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the image view for the texture.  <br /></td></tr>
 <tr class="separator:a52c6965d8dabd477603824bcaf079769"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89150776ceaf0bf41e96b9f57793b907" id="r_a89150776ceaf0bf41e96b9f57793b907"><td class="memItemLeft" align="right" valign="top"><a id="a89150776ceaf0bf41e96b9f57793b907" name="a89150776ceaf0bf41e96b9f57793b907"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CreateTextureSampler</b> ()</td></tr>
+<tr class="memitem:a89150776ceaf0bf41e96b9f57793b907" id="r_a89150776ceaf0bf41e96b9f57793b907"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89150776ceaf0bf41e96b9f57793b907">CreateTextureSampler</a> ()</td></tr>
+<tr class="memdesc:a89150776ceaf0bf41e96b9f57793b907"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the texture sampler.  <br /></td></tr>
 <tr class="separator:a89150776ceaf0bf41e96b9f57793b907"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a446af8d20e8532240f4f195314aace3b" id="r_a446af8d20e8532240f4f195314aace3b"><td class="memItemLeft" align="right" valign="top"><a id="a446af8d20e8532240f4f195314aace3b" name="a446af8d20e8532240f4f195314aace3b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>GenerateVulkanTexture</b> (<a class="el" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a> *vImageBuffer)</td></tr>
+<tr class="memitem:a446af8d20e8532240f4f195314aace3b" id="r_a446af8d20e8532240f4f195314aace3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a446af8d20e8532240f4f195314aace3b">GenerateVulkanTexture</a> (<a class="el" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a> *vImageBuffer)</td></tr>
+<tr class="memdesc:a446af8d20e8532240f4f195314aace3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates the Vulkan texture by creating the image, image view, and sampler.  <br /></td></tr>
 <tr class="separator:a446af8d20e8532240f4f195314aace3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad752a0e9619bc5b81b0027f57f12ed12" id="r_ad752a0e9619bc5b81b0027f57f12ed12"><td class="memItemLeft" align="right" valign="top"><a id="ad752a0e9619bc5b81b0027f57f12ed12" name="ad752a0e9619bc5b81b0027f57f12ed12"></a>
 VkImageView&#160;</td><td class="memItemRight" valign="bottom"><b>GetImageView</b> () const</td></tr>
@@ -153,9 +164,155 @@ VkSampler&#160;</td><td class="memItemRight" valign="bottom"><b>GetImageSampler<
 <tr class="memdesc:a2ea0e39b502e97b049e8414027686039 inherit pub_methods_class_karma_1_1_texture"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for <a class="el" href="class_karma_1_1_texture.html" title="Texture class.">Texture</a> <a class="el" href="class_karma_1_1_shader.html" title="Base class of vertex + fragment shaders (for Vulkan and OpenGL)">Shader</a> name.  <br /></td></tr>
 <tr class="separator:a2ea0e39b502e97b049e8414027686039 inherit pub_methods_class_karma_1_1_texture"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbd156d787c300078567ff6158c0c435 inherit pub_methods_class_karma_1_1_texture" id="r_adbd156d787c300078567ff6158c0c435"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_karma_1_1_vulkan_texture.html">VulkanTexture</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_texture.html#adbd156d787c300078567ff6158c0c435">GetVulkanTexture</a> () const</td></tr>
-<tr class="memdesc:adbd156d787c300078567ff6158c0c435 inherit pub_methods_class_karma_1_1_texture"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for <a class="el" href="class_karma_1_1_vulkan_texture.html">VulkanTexture</a>.  <br /></td></tr>
+<tr class="memdesc:adbd156d787c300078567ff6158c0c435 inherit pub_methods_class_karma_1_1_texture"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for <a class="el" href="class_karma_1_1_vulkan_texture.html" title="Vulkan specific implementation of Texture class.">VulkanTexture</a>.  <br /></td></tr>
 <tr class="separator:adbd156d787c300078567ff6158c0c435 inherit pub_methods_class_karma_1_1_texture"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Vulkan specific implementation of <a class="el" href="class_karma_1_1_texture.html" title="Texture class.">Texture</a> class. </p>
+<p>This class handles the creation and management of Vulkan textures, including image views and samplers.</p>
+<p>A sampler in Vulkan is an object that defines how to sample textures in shaders. It encapsulates sampling parameters such as filtering modes, addressing modes, and mipmapping settings.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a07c1aab0a9d8d05e0c18763e51a907b1" name="a07c1aab0a9d8d05e0c18763e51a907b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07c1aab0a9d8d05e0c18763e51a907b1">&#9670;&#160;</a></span>VulkanTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Karma::VulkanTexture::VulkanTexture </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A constructor. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a9eba898fd907f21598102f305d214c35" name="a9eba898fd907f21598102f305d214c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eba898fd907f21598102f305d214c35">&#9670;&#160;</a></span>~VulkanTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Karma::VulkanTexture::~VulkanTexture </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A destructor. </p>
+<p>Cleans up vulkan resources associated with the texture which includes destroying the image sampler, image view, image, and freeing the image memory.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1f64de2bf4d111399bbb1405aa0e9fe8" name="a1f64de2bf4d111399bbb1405aa0e9fe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f64de2bf4d111399bbb1405aa0e9fe8">&#9670;&#160;</a></span>CreateTextureImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanTexture::CreateTextureImage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a> *</td>          <td class="paramname"><span class="paramname"><em>vImageBuffer</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates Vulkan image for the texture and allocates device memory appropriately. </p>
+<p>There are also transitions of (m_TextureImage) image layouts (from VK_IMAGE_LAYOUT_UNDEFINED -&gt; VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL then copying of vImageBuffer to m_TextureImage followed by transition VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL -&gt; VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) and vkBindImageMemory call to bind the allocated memory to the image.</p>
+<p>Layout transitions are done because different operations in Vulkan require images to be in specific layouts for optimal performance and correctness. <a href="https://vulkan-tutorial.com/Texture_mapping/Images">https://vulkan-tutorial.com/Texture_mapping/Images</a></p>
+<p>VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: Optimal as destination in a transfer operation, like vkCmdCopyBufferToImage VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: Optimal for reading in shaders, used when sampling the texture in a shader.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vImageBuffer</td><td>The <a class="el" href="class_karma_1_1_vulkan_image_buffer.html" title="Vulkan specific implemetation of ImageBuffer class.">VulkanImageBuffer</a> containing the image data to be used for the texture <a class="el" href="class_karma_1_1_vulkan_image_buffer.html" title="Vulkan specific implemetation of ImageBuffer class.">VulkanImageBuffer</a> is expected to have been created and populated with image data prior to this call. See ImageBuffer::Create() </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a446af8d20e8532240f4f195314aace3b" title="Generates the Vulkan texture by creating the image, image view, and sampler.">VulkanTexture::GenerateVulkanTexture()</a>, <a class="el" href="class_karma_1_1_texture.html#ab0dd0354724f9dd07a549b2379b7d072" title="A constructor.">Texture::Texture()</a> </dd></dl>
+
+</div>
+</div>
+<a id="a52c6965d8dabd477603824bcaf079769" name="a52c6965d8dabd477603824bcaf079769"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52c6965d8dabd477603824bcaf079769">&#9670;&#160;</a></span>CreateTextureImageView()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanTexture::CreateTextureImageView </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates the image view for the texture. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a89150776ceaf0bf41e96b9f57793b907" name="a89150776ceaf0bf41e96b9f57793b907"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89150776ceaf0bf41e96b9f57793b907">&#9670;&#160;</a></span>CreateTextureSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanTexture::CreateTextureSampler </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates the texture sampler. </p>
+<p>A sampler in Vulkan defines how to sample textures in shaders, including filtering modes, addressing modes, and mipmapping settings.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a446af8d20e8532240f4f195314aace3b" name="a446af8d20e8532240f4f195314aace3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a446af8d20e8532240f4f195314aace3b">&#9670;&#160;</a></span>GenerateVulkanTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanTexture::GenerateVulkanTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a> *</td>          <td class="paramname"><span class="paramname"><em>vImageBuffer</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generates the Vulkan texture by creating the image, image view, and sampler. </p>
+<p>This function orchestrates the creation of the Vulkan texture by calling CreateTextureImage, CreateTextureImageView, and CreateTextureSampler in sequence.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vImageBuffer</td><td>The <a class="el" href="class_karma_1_1_vulkan_image_buffer.html" title="Vulkan specific implemetation of ImageBuffer class.">VulkanImageBuffer</a> containing the image data to be used for the texture</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a1f64de2bf4d111399bbb1405aa0e9fe8" title="Creates Vulkan image for the texture and allocates device memory appropriately.">VulkanTexture::CreateTextureImage()</a>, <a class="el" href="#a52c6965d8dabd477603824bcaf079769" title="Creates the image view for the texture.">VulkanTexture::CreateTextureImageView()</a>, <a class="el" href="#a89150776ceaf0bf41e96b9f57793b907" title="Creates the texture sampler.">VulkanTexture::CreateTextureSampler()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>Karma/src/Platform/Vulkan/<a class="el" href="_vulkan_texutre_8h_source.html">VulkanTexutre.h</a></li>
 <li>Karma/src/Platform/Vulkan/<b>VulkanTexutre.cpp</b></li>

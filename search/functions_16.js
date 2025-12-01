@@ -29,7 +29,12 @@ var searchData=
   ['_7evulkancontext_26',['~VulkanContext',['../class_karma_1_1_vulkan_context.html#aff051cf28280933d857368847979a6bb',1,'Karma::VulkanContext']]],
   ['_7evulkanimagebuffer_27',['~VulkanImageBuffer',['../class_karma_1_1_vulkan_image_buffer.html#af7e08e2ca33729f0baac761dd7ec6c64',1,'Karma::VulkanImageBuffer']]],
   ['_7evulkanindexbuffer_28',['~VulkanIndexBuffer',['../class_karma_1_1_vulkan_index_buffer.html#a6565e265c120f77da640ecb0ee473f57',1,'Karma::VulkanIndexBuffer']]],
-  ['_7evulkanuniformbuffer_29',['~VulkanUniformBuffer',['../struct_karma_1_1_vulkan_uniform_buffer.html#a72c2868342027bb3a968bec26adcad63',1,'Karma::VulkanUniformBuffer']]],
-  ['_7evulkanvertexbuffer_30',['~VulkanVertexBuffer',['../class_karma_1_1_vulkan_vertex_buffer.html#a9415ecfcd6465e248ca0009614fc2d23',1,'Karma::VulkanVertexBuffer']]],
-  ['_7ewindow_31',['~Window',['../class_karma_1_1_window.html#a7f828b8584213d748158ba8f5d233a22',1,'Karma::Window']]]
+  ['_7evulkanrendererapi_29',['~VulkanRendererAPI',['../class_karma_1_1_vulkan_renderer_a_p_i.html#aad05d0a2b5e38064bfa7ff1d05da2629',1,'Karma::VulkanRendererAPI']]],
+  ['_7evulkanshader_30',['~VulkanShader',['../class_karma_1_1_vulkan_shader.html#abb0b968be426532f6e2310f1446c3752',1,'Karma::VulkanShader']]],
+  ['_7evulkantexture_31',['~VulkanTexture',['../class_karma_1_1_vulkan_texture.html#a9eba898fd907f21598102f305d214c35',1,'Karma::VulkanTexture']]],
+  ['_7evulkanuniformbuffer_32',['~VulkanUniformBuffer',['../struct_karma_1_1_vulkan_uniform_buffer.html#a72c2868342027bb3a968bec26adcad63',1,'Karma::VulkanUniformBuffer']]],
+  ['_7evulkanvertexarray_33',['~VulkanVertexArray',['../class_karma_1_1_vulkan_vertex_array.html#a4873de75a2572261a338aecc5cc82960',1,'Karma::VulkanVertexArray']]],
+  ['_7evulkanvertexbuffer_34',['~VulkanVertexBuffer',['../class_karma_1_1_vulkan_vertex_buffer.html#a9415ecfcd6465e248ca0009614fc2d23',1,'Karma::VulkanVertexBuffer']]],
+  ['_7ewindow_35',['~Window',['../class_karma_1_1_window.html#a7f828b8584213d748158ba8f5d233a22',1,'Karma::Window']]],
+  ['_7ewindowswindow_36',['~WindowsWindow',['../class_karma_1_1_windows_window.html#a3fa42109c2547739370046d3b8d410ef',1,'Karma::WindowsWindow']]]
 ];

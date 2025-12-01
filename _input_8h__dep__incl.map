@@ -8,7 +8,7 @@
 <area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="504,46,504,79,498,79,498,46"/>
 <area shape="rect" id="Node000008" href="$_mac_input_8h.html" title="This file contains MacInput class and relevant data structures." alt="" coords="592,79,727,120"/>
 <area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="540,36,621,76,619,81,538,41"/>
-<area shape="rect" id="Node000009" href="$_windows_input_8h_source.html" title=" " alt="" coords="751,79,925,120"/>
+<area shape="rect" id="Node000009" href="$_windows_input_8h.html" title="Windows specific implementation of the Input class." alt="" coords="751,79,925,120"/>
 <area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="568,32,755,76,753,81,567,38"/>
 <area shape="rect" id="Node000003" href="$_entry_point_8h.html" title="This file contains the main() routine with multiplatform support." alt="" coords="5,249,202,274"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="207,204,126,251,123,246,204,199"/>

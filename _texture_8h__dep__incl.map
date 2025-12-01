@@ -23,13 +23,13 @@
 <area shape="poly" id="edge19_Node000007_Node000015" title=" " alt="" coords="522,217,908,274,907,280,521,223"/>
 <area shape="rect" id="Node000023" href="$_open_g_l_vertex_array_8h.html" title="This file contains OpenGLVertexArray class." alt="" coords="94,271,298,312"/>
 <area shape="poly" id="edge39_Node000007_Node000023" title=" " alt="" coords="353,232,247,273,245,268,351,227"/>
-<area shape="rect" id="Node000024" href="$_vulkan_vertex_array_8h_source.html" title=" " alt="" coords="323,271,509,312"/>
+<area shape="rect" id="Node000024" href="$_vulkan_vertex_array_8h.html" title="This file contains VulkanVertexArray class which contains Vulkan specific implementation of VertexArr..." alt="" coords="323,271,509,312"/>
 <area shape="poly" id="edge40_Node000007_Node000024" title=" " alt="" coords="419,239,419,271,413,271,413,239"/>
 <area shape="rect" id="Node000009" href="$_render_command_8h.html" title="This file contains the class RenderCommand." alt="" coords="546,360,726,401"/>
 <area shape="poly" id="edge11_Node000008_Node000009" title=" " alt="" coords="631,327,636,359,630,360,625,328"/>
 <area shape="rect" id="Node000011" href="$_open_g_l_renderer_a_p_i_8h.html" title="This file contains OpenGLRendererAPI class." alt="" coords="93,360,304,401"/>
 <area shape="poly" id="edge15_Node000008_Node000011" title=" " alt="" coords="519,317,296,362,295,357,518,312"/>
-<area shape="rect" id="Node000012" href="$_vulkan_renderer_a_p_i_8h_source.html" title=" " alt="" coords="329,360,522,401"/>
+<area shape="rect" id="Node000012" href="$_vulkan_renderer_a_p_i_8h.html" title="This file contains VulkanRendererAPI class with Vulkan specific implementation of RendererAPI pure vi..." alt="" coords="329,360,522,401"/>
 <area shape="poly" id="edge16_Node000008_Node000012" title=" " alt="" coords="565,321,471,362,469,357,563,316"/>
 <area shape="poly" id="edge12_Node000009_Node000002" title=" " alt="" coords="601,413,585,430,573,449,568,469,573,488,592,515,615,539,669,577,726,605,778,623,776,628,724,610,666,582,611,543,588,518,568,490,563,469,568,447,581,427,597,409"/>
 <area shape="rect" id="Node000010" href="$_renderer_8h.html" title="This file contains the class Renderer." alt="" coords="582,449,762,489"/>
@@ -37,7 +37,7 @@
 <area shape="poly" id="edge14_Node000010_Node000002" title=" " alt="" coords="702,499,815,624,811,627,698,503"/>
 <area shape="rect" id="Node000013" href="$_vulkan_context_8h.html" title="This file contains VulkanContext class." alt="" coords="344,449,507,489"/>
 <area shape="poly" id="edge17_Node000012_Node000013" title=" " alt="" coords="428,416,428,448,423,448,423,416"/>
-<area shape="rect" id="Node000014" href="$_vulkan_holder_8h_source.html" title=" " alt="" coords="347,537,504,578"/>
+<area shape="rect" id="Node000014" href="$_vulkan_holder_8h.html" title="This file contains VulkanHolder class for holding VulkanContext instance statically." alt="" coords="347,537,504,578"/>
 <area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="428,505,428,537,423,537,423,505"/>
 <area shape="poly" id="edge20_Node000015_Node000002" title=" " alt="" coords="895,321,865,338,842,362,824,395,813,432,807,471,806,509,813,578,823,625,818,626,808,579,801,509,802,470,807,431,819,393,838,358,862,334,892,316"/>
 <area shape="poly" id="edge31_Node000015_Node000010" title=" " alt="" coords="900,319,847,338,796,362,765,383,736,406,691,450,687,446,733,402,762,379,793,358,845,333,898,314"/>

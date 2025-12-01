@@ -134,19 +134,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae07d2db438aac38447337bed1c940713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> by creating appropriate Vulkan and glslang specific instruments and allocating resources accordingly.  <br /></td></tr>
 <tr class="separator:ae07d2db438aac38447337bed1c940713"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97415930a02a69e31cea2ad06d3a3820" id="r_a97415930a02a69e31cea2ad06d3a3820"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97415930a02a69e31cea2ad06d3a3820">SwapBuffers</a> () override</td></tr>
-<tr class="memdesc:a97415930a02a69e31cea2ad06d3a3820"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function swaps the front and back buffers of the specified window. If the swap interval is greater than zero, the GPU driver waits the specified number of screen updates before swapping the buffers.  <br /></td></tr>
+<tr class="memdesc:a97415930a02a69e31cea2ad06d3a3820"><td class="mdescLeft">&#160;</td><td class="mdescRight">In Vulkan there is no default framebuffer, hence we need to explicitly swap the buffers in the swapchain.  <br /></td></tr>
 <tr class="separator:a97415930a02a69e31cea2ad06d3a3820"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bd0d59a1a7c511a0f17aa38887869ee" id="r_a8bd0d59a1a7c511a0f17aa38887869ee"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8bd0d59a1a7c511a0f17aa38887869ee">OnWindowResize</a> (<a class="el" href="class_karma_1_1_window_resize_event.html">WindowResizeEvent</a> &amp;event) override</td></tr>
 <tr class="memdesc:a8bd0d59a1a7c511a0f17aa38887869ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls glViewport function which specifies the affine transformation of x and y from normalized device coordinates to window coordinates.  <br /></td></tr>
 <tr class="separator:a8bd0d59a1a7c511a0f17aa38887869ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56c40b6c0bc689db8130573a39e7bee2" id="r_a56c40b6c0bc689db8130573a39e7bee2"><td class="memItemLeft" align="right" valign="top"><a id="a56c40b6c0bc689db8130573a39e7bee2" name="a56c40b6c0bc689db8130573a39e7bee2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CreateInstance</b> ()</td></tr>
+<tr class="memitem:a56c40b6c0bc689db8130573a39e7bee2" id="r_a56c40b6c0bc689db8130573a39e7bee2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56c40b6c0bc689db8130573a39e7bee2">CreateInstance</a> ()</td></tr>
+<tr class="memdesc:a56c40b6c0bc689db8130573a39e7bee2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates Vulkan Instance which is the connection between application, which is a Game Engine, and Vulkan library.  <br /></td></tr>
 <tr class="separator:a56c40b6c0bc689db8130573a39e7bee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd6cf9f32a7d5bfa50d07ddc7164cd42" id="r_afd6cf9f32a7d5bfa50d07ddc7164cd42"><td class="memItemLeft" align="right" valign="top"><a id="afd6cf9f32a7d5bfa50d07ddc7164cd42" name="afd6cf9f32a7d5bfa50d07ddc7164cd42"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>PrintAvailableExtensions</b> ()</td></tr>
+<tr class="memitem:afd6cf9f32a7d5bfa50d07ddc7164cd42" id="r_afd6cf9f32a7d5bfa50d07ddc7164cd42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd6cf9f32a7d5bfa50d07ddc7164cd42">PrintAvailableExtensions</a> ()</td></tr>
+<tr class="memdesc:afd6cf9f32a7d5bfa50d07ddc7164cd42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints all the available extensions supported by the system's Vulkan implementation.  <br /></td></tr>
 <tr class="separator:afd6cf9f32a7d5bfa50d07ddc7164cd42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec8d03865082465b4b21022f5f3df1d1" id="r_aec8d03865082465b4b21022f5f3df1d1"><td class="memItemLeft" align="right" valign="top"><a id="aec8d03865082465b4b21022f5f3df1d1" name="aec8d03865082465b4b21022f5f3df1d1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>PrintAvailablePhysicalDevices</b> (const std::vector&lt; VkPhysicalDevice &gt; &amp;physicalDevices)</td></tr>
+<tr class="memitem:aec8d03865082465b4b21022f5f3df1d1" id="r_aec8d03865082465b4b21022f5f3df1d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec8d03865082465b4b21022f5f3df1d1">PrintAvailablePhysicalDevices</a> (const std::vector&lt; VkPhysicalDevice &gt; &amp;physicalDevices)</td></tr>
+<tr class="memdesc:aec8d03865082465b4b21022f5f3df1d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints all the available physical devices (graphics cards) supported by the system's Vulkan implementation.  <br /></td></tr>
 <tr class="separator:aec8d03865082465b4b21022f5f3df1d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af04874e82035581abdcf222996281824" id="r_af04874e82035581abdcf222996281824"><td class="memItemLeft" align="right" valign="top"><a id="af04874e82035581abdcf222996281824" name="af04874e82035581abdcf222996281824"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>CheckValidationLayerSupport</b> ()</td></tr>
@@ -169,11 +169,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>DestroyDebugUtilsMess
 <tr class="memitem:acbb00492d6e134b605a00ed599b2a6c4" id="r_acbb00492d6e134b605a00ed599b2a6c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acbb00492d6e134b605a00ed599b2a6c4">CreateSurface</a> ()</td></tr>
 <tr class="memdesc:acbb00492d6e134b605a00ed599b2a6c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Platform agnostic creation of surface to present rendered images to. Typically they are backed by the category of glfw windows (on Linux, MacOS, and Windows).  <br /></td></tr>
 <tr class="separator:acbb00492d6e134b605a00ed599b2a6c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afad165c3848ece8a475fce66ea2023cc" id="r_afad165c3848ece8a475fce66ea2023cc"><td class="memItemLeft" align="right" valign="top"><a id="afad165c3848ece8a475fce66ea2023cc" name="afad165c3848ece8a475fce66ea2023cc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>PickPhysicalDevice</b> ()</td></tr>
+<tr class="memitem:afad165c3848ece8a475fce66ea2023cc" id="r_afad165c3848ece8a475fce66ea2023cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afad165c3848ece8a475fce66ea2023cc">PickPhysicalDevice</a> ()</td></tr>
+<tr class="memdesc:afad165c3848ece8a475fce66ea2023cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Picks the appropriate physical device (graphics card) for the Engine to use based on suitability.  <br /></td></tr>
 <tr class="separator:afad165c3848ece8a475fce66ea2023cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa75221e66d5cd1a6b93c3d8be3571500" id="r_aa75221e66d5cd1a6b93c3d8be3571500"><td class="memItemLeft" align="right" valign="top"><a id="aa75221e66d5cd1a6b93c3d8be3571500" name="aa75221e66d5cd1a6b93c3d8be3571500"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsDeviceSuitable</b> (VkPhysicalDevice device)</td></tr>
+<tr class="memitem:aa75221e66d5cd1a6b93c3d8be3571500" id="r_aa75221e66d5cd1a6b93c3d8be3571500"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa75221e66d5cd1a6b93c3d8be3571500">IsDeviceSuitable</a> (VkPhysicalDevice device)</td></tr>
+<tr class="memdesc:aa75221e66d5cd1a6b93c3d8be3571500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the physical device (graphics card) is suitable for the Engine to use based on.  <br /></td></tr>
 <tr class="separator:aa75221e66d5cd1a6b93c3d8be3571500"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3de5ebe667dc946ef303d6e42eb41edc" id="r_a3de5ebe667dc946ef303d6e42eb41edc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_queue_family_indices.html">QueueFamilyIndices</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3de5ebe667dc946ef303d6e42eb41edc">FindQueueFamilies</a> (VkPhysicalDevice device)</td></tr>
 <tr class="memdesc:a3de5ebe667dc946ef303d6e42eb41edc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries the graphics card for available queue families and compares against the availability of graphics and presentation queues.  <br /></td></tr>
@@ -184,23 +184,23 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>IsDeviceSuitable</b> 
 <tr class="memitem:a2d367e332d968a2c5ba25c3759bff2b5" id="r_a2d367e332d968a2c5ba25c3759bff2b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5">CreateSwapChain</a> ()</td></tr>
 <tr class="memdesc:a2d367e332d968a2c5ba25c3759bff2b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be presented to the screen. Our backend will acquire such an image to draw to it, and then return it to the queue. Then swapchain will have to sync the presentation of image with refresh rate of the monitor.  <br /></td></tr>
 <tr class="separator:a2d367e332d968a2c5ba25c3759bff2b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19eac2cedd2049cb443f426fadf9e79c" id="r_a19eac2cedd2049cb443f426fadf9e79c"><td class="memItemLeft" align="right" valign="top"><a id="a19eac2cedd2049cb443f426fadf9e79c" name="a19eac2cedd2049cb443f426fadf9e79c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>CheckDeviceExtensionSupport</b> (VkPhysicalDevice device)</td></tr>
+<tr class="memitem:a19eac2cedd2049cb443f426fadf9e79c" id="r_a19eac2cedd2049cb443f426fadf9e79c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19eac2cedd2049cb443f426fadf9e79c">CheckDeviceExtensionSupport</a> (VkPhysicalDevice device)</td></tr>
+<tr class="memdesc:a19eac2cedd2049cb443f426fadf9e79c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks for extension properties supported by the GPU.  <br /></td></tr>
 <tr class="separator:a19eac2cedd2049cb443f426fadf9e79c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b62af69e4d46e385abfb9b998bd0c81" id="r_a0b62af69e4d46e385abfb9b998bd0c81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_swap_chain_support_details.html">SwapChainSupportDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81">QuerySwapChainSupport</a> (VkPhysicalDevice device)</td></tr>
 <tr class="memdesc:a0b62af69e4d46e385abfb9b998bd0c81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data.  <br /></td></tr>
 <tr class="separator:a0b62af69e4d46e385abfb9b998bd0c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8989c5787a77aa8363f64f9dc8deae1f" id="r_a8989c5787a77aa8363f64f9dc8deae1f"><td class="memItemLeft" align="right" valign="top"><a id="a8989c5787a77aa8363f64f9dc8deae1f" name="a8989c5787a77aa8363f64f9dc8deae1f"></a>
-VkSurfaceFormatKHR&#160;</td><td class="memItemRight" valign="bottom"><b>ChooseSwapSurfaceFormat</b> (const std::vector&lt; VkSurfaceFormatKHR &gt; &amp;availableFormats)</td></tr>
+<tr class="memitem:a8989c5787a77aa8363f64f9dc8deae1f" id="r_a8989c5787a77aa8363f64f9dc8deae1f"><td class="memItemLeft" align="right" valign="top">VkSurfaceFormatKHR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8989c5787a77aa8363f64f9dc8deae1f">ChooseSwapSurfaceFormat</a> (const std::vector&lt; VkSurfaceFormatKHR &gt; &amp;availableFormats)</td></tr>
+<tr class="memdesc:a8989c5787a77aa8363f64f9dc8deae1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chooses the best surface format (pixel format and color space) for the swapchain from the available formats.  <br /></td></tr>
 <tr class="separator:a8989c5787a77aa8363f64f9dc8deae1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc09c4f580967d940b6c56ee5e3d8985" id="r_adc09c4f580967d940b6c56ee5e3d8985"><td class="memItemLeft" align="right" valign="top"><a id="adc09c4f580967d940b6c56ee5e3d8985" name="adc09c4f580967d940b6c56ee5e3d8985"></a>
-VkPresentModeKHR&#160;</td><td class="memItemRight" valign="bottom"><b>ChooseSwapPresentMode</b> (const std::vector&lt; VkPresentModeKHR &gt; &amp;availablePresentModes)</td></tr>
+<tr class="memitem:adc09c4f580967d940b6c56ee5e3d8985" id="r_adc09c4f580967d940b6c56ee5e3d8985"><td class="memItemLeft" align="right" valign="top">VkPresentModeKHR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc09c4f580967d940b6c56ee5e3d8985">ChooseSwapPresentMode</a> (const std::vector&lt; VkPresentModeKHR &gt; &amp;availablePresentModes)</td></tr>
+<tr class="memdesc:adc09c4f580967d940b6c56ee5e3d8985"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chooses the best presentation mode for the swapchain from the available present modes.  <br /></td></tr>
 <tr class="separator:adc09c4f580967d940b6c56ee5e3d8985"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b7923ffd44b5cd7767c450565d52f75" id="r_a7b7923ffd44b5cd7767c450565d52f75"><td class="memItemLeft" align="right" valign="top"><a id="a7b7923ffd44b5cd7767c450565d52f75" name="a7b7923ffd44b5cd7767c450565d52f75"></a>
-VkExtent2D&#160;</td><td class="memItemRight" valign="bottom"><b>ChooseSwapExtent</b> (const VkSurfaceCapabilitiesKHR &amp;capabilities)</td></tr>
+<tr class="memitem:a7b7923ffd44b5cd7767c450565d52f75" id="r_a7b7923ffd44b5cd7767c450565d52f75"><td class="memItemLeft" align="right" valign="top">VkExtent2D&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b7923ffd44b5cd7767c450565d52f75">ChooseSwapExtent</a> (const VkSurfaceCapabilitiesKHR &amp;capabilities)</td></tr>
+<tr class="memdesc:a7b7923ffd44b5cd7767c450565d52f75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chooses the swap extent (resolution of the swapchain images) based on the capabilities of the surface and the actual window size.  <br /></td></tr>
 <tr class="separator:a7b7923ffd44b5cd7767c450565d52f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbf0e5158292b8ee2294b9d61544d832" id="r_abbf0e5158292b8ee2294b9d61544d832"><td class="memItemLeft" align="right" valign="top"><a id="abbf0e5158292b8ee2294b9d61544d832" name="abbf0e5158292b8ee2294b9d61544d832"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>FindMemoryType</b> (uint32_t typeFilter, VkMemoryPropertyFlags properties)</td></tr>
+<tr class="memitem:abbf0e5158292b8ee2294b9d61544d832" id="r_abbf0e5158292b8ee2294b9d61544d832"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abbf0e5158292b8ee2294b9d61544d832">FindMemoryType</a> (uint32_t typeFilter, VkMemoryPropertyFlags properties)</td></tr>
+<tr class="memdesc:abbf0e5158292b8ee2294b9d61544d832"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a suitable memory type on the physical device (graphics card) based on the type filter and desired properties.  <br /></td></tr>
 <tr class="separator:abbf0e5158292b8ee2294b9d61544d832"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b84cc1c4edf52881d495e34104f9e7f" id="r_a3b84cc1c4edf52881d495e34104f9e7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b84cc1c4edf52881d495e34104f9e7f">CreateImageViews</a> ()</td></tr>
 <tr class="memdesc:a3b84cc1c4edf52881d495e34104f9e7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels. ImageView is a wrapper around render target.  <br /></td></tr>
@@ -209,52 +209,52 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>FindMemoryType</b
 <tr class="memdesc:ab653bd5254de11636e5f52bd59aa57c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to. The "targets" are also known as render targets and include the attachments like colorattachment and depthattachment that describe where the rendering output will go to.  <br /></td></tr>
 <tr class="separator:ab653bd5254de11636e5f52bd59aa57c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba8af4361e52a385ff692a1a0696ddb8" id="r_aba8af4361e52a385ff692a1a0696ddb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba8af4361e52a385ff692a1a0696ddb8">CreateFrameBuffers</a> ()</td></tr>
-<tr class="memdesc:aba8af4361e52a385ff692a1a0696ddb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">A framebuffer represents a collection of specific memory attachments that a render pass instance uses.  <br /></td></tr>
+<tr class="memdesc:aba8af4361e52a385ff692a1a0696ddb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Framebuffers are collections of specific memory attachments that a render pass instance uses. They represent the actual memory that the rendering operations will write to.  <br /></td></tr>
 <tr class="separator:aba8af4361e52a385ff692a1a0696ddb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0919004c0e5350bf6af9cae89b7b0af" id="r_ae0919004c0e5350bf6af9cae89b7b0af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0919004c0e5350bf6af9cae89b7b0af">CreateCommandPool</a> ()</td></tr>
 <tr class="memdesc:ae0919004c0e5350bf6af9cae89b7b0af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Command pools are opaque objects that command buffer memory is allocated from, and which allow the implementation to amortize the cost of resource creation.  <br /></td></tr>
 <tr class="separator:ae0919004c0e5350bf6af9cae89b7b0af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68267886cdd5f06b0944ffb2d4aff319" id="r_a68267886cdd5f06b0944ffb2d4aff319"><td class="memItemLeft" align="right" valign="top"><a id="a68267886cdd5f06b0944ffb2d4aff319" name="a68267886cdd5f06b0944ffb2d4aff319"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CreateDepthResources</b> ()</td></tr>
+<tr class="memitem:a68267886cdd5f06b0944ffb2d4aff319" id="r_a68267886cdd5f06b0944ffb2d4aff319"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a68267886cdd5f06b0944ffb2d4aff319">CreateDepthResources</a> ()</td></tr>
+<tr class="memdesc:a68267886cdd5f06b0944ffb2d4aff319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the depth resources (image, imageview, and memory) for depth buffering in 3D rendering.  <br /></td></tr>
 <tr class="separator:a68267886cdd5f06b0944ffb2d4aff319"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3a9b8ee8cfa0ff2e56fdd2600e17e0c" id="r_aa3a9b8ee8cfa0ff2e56fdd2600e17e0c"><td class="memItemLeft" align="right" valign="top"><a id="aa3a9b8ee8cfa0ff2e56fdd2600e17e0c" name="aa3a9b8ee8cfa0ff2e56fdd2600e17e0c"></a>
-VkFormat&#160;</td><td class="memItemRight" valign="bottom"><b>FindSupportedFormat</b> (const std::vector&lt; VkFormat &gt; &amp;candidates, VkImageTiling tiling, VkFormatFeatureFlags features)</td></tr>
+<tr class="memitem:aa3a9b8ee8cfa0ff2e56fdd2600e17e0c" id="r_aa3a9b8ee8cfa0ff2e56fdd2600e17e0c"><td class="memItemLeft" align="right" valign="top">VkFormat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3a9b8ee8cfa0ff2e56fdd2600e17e0c">FindSupportedFormat</a> (const std::vector&lt; VkFormat &gt; &amp;candidates, VkImageTiling tiling, VkFormatFeatureFlags features)</td></tr>
+<tr class="memdesc:aa3a9b8ee8cfa0ff2e56fdd2600e17e0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a supported format from the list of candidate formats based on the desired tiling and features. Used in depth resource creation.  <br /></td></tr>
 <tr class="separator:aa3a9b8ee8cfa0ff2e56fdd2600e17e0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3db954f21a39acae61674dbfa207d11" id="r_ac3db954f21a39acae61674dbfa207d11"><td class="memItemLeft" align="right" valign="top"><a id="ac3db954f21a39acae61674dbfa207d11" name="ac3db954f21a39acae61674dbfa207d11"></a>
-VkFormat&#160;</td><td class="memItemRight" valign="bottom"><b>FindDepthFormat</b> ()</td></tr>
+<tr class="memitem:ac3db954f21a39acae61674dbfa207d11" id="r_ac3db954f21a39acae61674dbfa207d11"><td class="memItemLeft" align="right" valign="top">VkFormat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3db954f21a39acae61674dbfa207d11">FindDepthFormat</a> ()</td></tr>
+<tr class="memdesc:ac3db954f21a39acae61674dbfa207d11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a suitable depth format for depth buffering.  <br /></td></tr>
 <tr class="separator:ac3db954f21a39acae61674dbfa207d11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25d733eba5be4197f7d1f98a66822863" id="r_a25d733eba5be4197f7d1f98a66822863"><td class="memItemLeft" align="right" valign="top"><a id="a25d733eba5be4197f7d1f98a66822863" name="a25d733eba5be4197f7d1f98a66822863"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>HasStencilComponent</b> (VkFormat format)</td></tr>
+<tr class="memitem:a25d733eba5be4197f7d1f98a66822863" id="r_a25d733eba5be4197f7d1f98a66822863"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a25d733eba5be4197f7d1f98a66822863">HasStencilComponent</a> (VkFormat format)</td></tr>
+<tr class="memdesc:a25d733eba5be4197f7d1f98a66822863"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the given format has a stencil component.  <br /></td></tr>
 <tr class="separator:a25d733eba5be4197f7d1f98a66822863"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a640eafd4350e7dff07615bae04b2910a" id="r_a640eafd4350e7dff07615bae04b2910a"><td class="memItemLeft" align="right" valign="top"><a id="a640eafd4350e7dff07615bae04b2910a" name="a640eafd4350e7dff07615bae04b2910a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>TransitionImageLayout</b> (VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)</td></tr>
+<tr class="memitem:a640eafd4350e7dff07615bae04b2910a" id="r_a640eafd4350e7dff07615bae04b2910a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a640eafd4350e7dff07615bae04b2910a">TransitionImageLayout</a> (VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)</td></tr>
+<tr class="memdesc:a640eafd4350e7dff07615bae04b2910a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transitions the layout of an image from oldLayout to newLayout.  <br /></td></tr>
 <tr class="separator:a640eafd4350e7dff07615bae04b2910a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39020fabab52359ce1286f0e44c9a86d" id="r_a39020fabab52359ce1286f0e44c9a86d"><td class="memItemLeft" align="right" valign="top"><a id="a39020fabab52359ce1286f0e44c9a86d" name="a39020fabab52359ce1286f0e44c9a86d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CopyBufferToImage</b> (VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)</td></tr>
+<tr class="memitem:a39020fabab52359ce1286f0e44c9a86d" id="r_a39020fabab52359ce1286f0e44c9a86d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39020fabab52359ce1286f0e44c9a86d">CopyBufferToImage</a> (VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)</td></tr>
+<tr class="memdesc:a39020fabab52359ce1286f0e44c9a86d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies data from a buffer to an image.  <br /></td></tr>
 <tr class="separator:a39020fabab52359ce1286f0e44c9a86d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b008c73d61c5bb7949ade1729a36b53" id="r_a9b008c73d61c5bb7949ade1729a36b53"><td class="memItemLeft" align="right" valign="top"><a id="a9b008c73d61c5bb7949ade1729a36b53" name="a9b008c73d61c5bb7949ade1729a36b53"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RecreateSwapChain</b> ()</td></tr>
+<tr class="memitem:a9b008c73d61c5bb7949ade1729a36b53" id="r_a9b008c73d61c5bb7949ade1729a36b53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b008c73d61c5bb7949ade1729a36b53">RecreateSwapChain</a> ()</td></tr>
+<tr class="memdesc:a9b008c73d61c5bb7949ade1729a36b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recreates the swapchain, typically in response to window resizing or other events that invalidate the current swapchain.  <br /></td></tr>
 <tr class="separator:a9b008c73d61c5bb7949ade1729a36b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a200a5a48a832dc021af7a0478c21d8df" id="r_a200a5a48a832dc021af7a0478c21d8df"><td class="memItemLeft" align="right" valign="top"><a id="a200a5a48a832dc021af7a0478c21d8df" name="a200a5a48a832dc021af7a0478c21d8df"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CleanupSwapChain</b> ()</td></tr>
+<tr class="memitem:a200a5a48a832dc021af7a0478c21d8df" id="r_a200a5a48a832dc021af7a0478c21d8df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a200a5a48a832dc021af7a0478c21d8df">CleanupSwapChain</a> ()</td></tr>
+<tr class="memdesc:a200a5a48a832dc021af7a0478c21d8df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans up the swapchain and its associated resources.  <br /></td></tr>
 <tr class="separator:a200a5a48a832dc021af7a0478c21d8df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a874bcd49d4121b95a8f95c5507c626d5" id="r_a874bcd49d4121b95a8f95c5507c626d5"><td class="memItemLeft" align="right" valign="top"><a id="a874bcd49d4121b95a8f95c5507c626d5" name="a874bcd49d4121b95a8f95c5507c626d5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetVSync</b> (bool bEnable)</td></tr>
+<tr class="memitem:a874bcd49d4121b95a8f95c5507c626d5" id="r_a874bcd49d4121b95a8f95c5507c626d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a874bcd49d4121b95a8f95c5507c626d5">SetVSync</a> (bool bEnable)</td></tr>
+<tr class="memdesc:a874bcd49d4121b95a8f95c5507c626d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables vertical synchronization (VSync) for the swapchain.  <br /></td></tr>
 <tr class="separator:a874bcd49d4121b95a8f95c5507c626d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfdfa7c10ef2bf92d4f5228b722dd080" id="r_abfdfa7c10ef2bf92d4f5228b722dd080"><td class="memItemLeft" align="right" valign="top"><a id="abfdfa7c10ef2bf92d4f5228b722dd080" name="abfdfa7c10ef2bf92d4f5228b722dd080"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Initializeglslang</b> ()</td></tr>
+<tr class="memitem:abfdfa7c10ef2bf92d4f5228b722dd080" id="r_abfdfa7c10ef2bf92d4f5228b722dd080"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abfdfa7c10ef2bf92d4f5228b722dd080">Initializeglslang</a> ()</td></tr>
+<tr class="memdesc:abfdfa7c10ef2bf92d4f5228b722dd080"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the glslang library for shader compilation and processing.  <br /></td></tr>
 <tr class="separator:abfdfa7c10ef2bf92d4f5228b722dd080"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f8a80f3f98dee0029f19aa917440461" id="r_a6f8a80f3f98dee0029f19aa917440461"><td class="memItemLeft" align="right" valign="top"><a id="a6f8a80f3f98dee0029f19aa917440461" name="a6f8a80f3f98dee0029f19aa917440461"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RegisterUBO</b> (const std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html">VulkanUniformBuffer</a> &gt; &amp;ubo)</td></tr>
+<tr class="memitem:a6f8a80f3f98dee0029f19aa917440461" id="r_a6f8a80f3f98dee0029f19aa917440461"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f8a80f3f98dee0029f19aa917440461">RegisterUBO</a> (const std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html">VulkanUniformBuffer</a> &gt; &amp;ubo)</td></tr>
+<tr class="memdesc:a6f8a80f3f98dee0029f19aa917440461"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html" title="The actual uniform buffer class with implemented function using Vulkan API.">VulkanUniformBuffer</a> for management by the <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a>.  <br /></td></tr>
 <tr class="separator:a6f8a80f3f98dee0029f19aa917440461"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a620cbb199308a721c243793e29e19fac" id="r_a620cbb199308a721c243793e29e19fac"><td class="memItemLeft" align="right" valign="top"><a id="a620cbb199308a721c243793e29e19fac" name="a620cbb199308a721c243793e29e19fac"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearUBO</b> ()</td></tr>
+<tr class="memitem:a620cbb199308a721c243793e29e19fac" id="r_a620cbb199308a721c243793e29e19fac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a620cbb199308a721c243793e29e19fac">ClearUBO</a> ()</td></tr>
+<tr class="memdesc:a620cbb199308a721c243793e29e19fac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all registered VulkanUniformBuffers, freeing their resources.  <br /></td></tr>
 <tr class="separator:a620cbb199308a721c243793e29e19fac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15923c620c5fb6c8cae59a94d57cce99" id="r_a15923c620c5fb6c8cae59a94d57cce99"><td class="memItemLeft" align="right" valign="top"><a id="a15923c620c5fb6c8cae59a94d57cce99" name="a15923c620c5fb6c8cae59a94d57cce99"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RecreateUBO</b> ()</td></tr>
+<tr class="memitem:a15923c620c5fb6c8cae59a94d57cce99" id="r_a15923c620c5fb6c8cae59a94d57cce99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a15923c620c5fb6c8cae59a94d57cce99">RecreateUBO</a> ()</td></tr>
+<tr class="memdesc:a15923c620c5fb6c8cae59a94d57cce99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recreates all registered VulkanUniformBuffers, typically in response to swapchain recreation.  <br /></td></tr>
 <tr class="separator:a15923c620c5fb6c8cae59a94d57cce99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6516fa8d4ba38e2b5fdfc4382cf04bf" id="r_ad6516fa8d4ba38e2b5fdfc4382cf04bf"><td class="memItemLeft" align="right" valign="top"><a id="ad6516fa8d4ba38e2b5fdfc4382cf04bf" name="ad6516fa8d4ba38e2b5fdfc4382cf04bf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>UploadUBO</b> (size_t frameIndex)</td></tr>
+<tr class="memitem:ad6516fa8d4ba38e2b5fdfc4382cf04bf" id="r_ad6516fa8d4ba38e2b5fdfc4382cf04bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6516fa8d4ba38e2b5fdfc4382cf04bf">UploadUBO</a> (size_t frameIndex)</td></tr>
+<tr class="memdesc:ad6516fa8d4ba38e2b5fdfc4382cf04bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uploads data to the registered VulkanUniformBuffers for the specified frame index.  <br /></td></tr>
 <tr class="separator:ad6516fa8d4ba38e2b5fdfc4382cf04bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeacebbf81c74bc923ae7dbf3d6b21038" id="r_aeacebbf81c74bc923ae7dbf3d6b21038"><td class="memItemLeft" align="right" valign="top"><a id="aeacebbf81c74bc923ae7dbf3d6b21038" name="aeacebbf81c74bc923ae7dbf3d6b21038"></a>
 VkDevice&#160;</td><td class="memItemRight" valign="bottom"><b>GetLogicalDevice</b> () const</td></tr>
@@ -386,11 +386,11 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 <p>Destructor of vulkan context. Does the following. </p>
 <ol type="1">
-<li>Free the commandbuffers (<a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html#ad850654cd636fdd986e8478142f7203f" title="Allocates resources for command buffers. Command buffers are objects used to record commands which ca...">VulkanRendererAPI::AllocateCommandBuffers()</a>) and removes synchronicity</li>
-<li>Destroy the framebuffers (<a class="el" href="#aba8af4361e52a385ff692a1a0696ddb8" title="A framebuffer represents a collection of specific memory attachments that a render pass instance uses...">CreateFrameBuffers()</a>)</li>
-<li>Destroy depth imageview (CreateDepthResources())</li>
-<li>Destroy image (CreateDepthResources())</li>
-<li>Free up depthimagememory (CreateDepthResources())</li>
+<li>Free the commandbuffers (<a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html#ad850654cd636fdd986e8478142f7203f" title="Allocates resources for command buffers.">VulkanRendererAPI::AllocateCommandBuffers()</a>) and removes synchronicity</li>
+<li>Destroy the framebuffers (<a class="el" href="#aba8af4361e52a385ff692a1a0696ddb8" title="Framebuffers are collections of specific memory attachments that a render pass instance uses....">CreateFrameBuffers()</a>)</li>
+<li>Destroy depth imageview (<a class="el" href="#a68267886cdd5f06b0944ffb2d4aff319" title="Creates the depth resources (image, imageview, and memory) for depth buffering in 3D rendering.">CreateDepthResources()</a>)</li>
+<li>Destroy image (<a class="el" href="#a68267886cdd5f06b0944ffb2d4aff319" title="Creates the depth resources (image, imageview, and memory) for depth buffering in 3D rendering.">CreateDepthResources()</a>)</li>
+<li>Free up depthimagememory (<a class="el" href="#a68267886cdd5f06b0944ffb2d4aff319" title="Creates the depth resources (image, imageview, and memory) for depth buffering in 3D rendering.">CreateDepthResources()</a>)</li>
 <li>Destroy command pool (<a class="el" href="#ae0919004c0e5350bf6af9cae89b7b0af" title="Command pools are opaque objects that command buffer memory is allocated from, and which allow the im...">CreateCommandPool()</a>)</li>
 <li>Destroy render pass (<a class="el" href="#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">CreateRenderPass()</a>)</li>
 <li>Destroy swapchain imageview (<a class="el" href="#a3b84cc1c4edf52881d495e34104f9e7f" title="An image view is quite literally a view into an image. It describes how to access the image and which...">CreateImageViews()</a>)</li>
@@ -398,7 +398,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <li>Destroy the vulkan m_device (<a class="el" href="#ada1f0e963dfe33514587e524c6ec973d" title="The so called logical device for interfacing with the physical device. All the machinery (swapchain,...">CreateLogicalDevice()</a>)</li>
 <li>Destroy validation layers for debug messages (SetupDebugMessenger())</li>
 <li>Destroy surface (<a class="el" href="#acbb00492d6e134b605a00ed599b2a6c4" title="Platform agnostic creation of surface to present rendered images to. Typically they are backed by the...">CreateSurface()</a>)</li>
-<li>Destroy instance (CreateInstance())</li>
+<li>Destroy instance (<a class="el" href="#a56c40b6c0bc689db8130573a39e7bee2" title="Creates Vulkan Instance which is the connection between application, which is a Game Engine,...">CreateInstance()</a>)</li>
 <li>Destroy glslang memory resources for cleanup</li>
 </ol>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="#ae07d2db438aac38447337bed1c940713" title="Initializes VulkanContext by creating appropriate Vulkan and glslang specific instruments and allocat...">Init()</a> </dd></dl>
@@ -407,6 +407,200 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a19eac2cedd2049cb443f426fadf9e79c" name="a19eac2cedd2049cb443f426fadf9e79c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19eac2cedd2049cb443f426fadf9e79c">&#9670;&#160;</a></span>CheckDeviceExtensionSupport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Karma::VulkanContext::CheckDeviceExtensionSupport </td>
+          <td>(</td>
+          <td class="paramtype">VkPhysicalDevice</td>          <td class="paramname"><span class="paramname"><em>device</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Looks for extension properties supported by the GPU. </p>
+<p>Calls vkEnumerateDeviceExtensionProperties for list of supported extensions for instance VK_KHR_swapchain which is required for, well, swapchain</p>
+<p>@ </p>
+
+</div>
+</div>
+<a id="a7b7923ffd44b5cd7767c450565d52f75" name="a7b7923ffd44b5cd7767c450565d52f75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b7923ffd44b5cd7767c450565d52f75">&#9670;&#160;</a></span>ChooseSwapExtent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VkExtent2D Karma::VulkanContext::ChooseSwapExtent </td>
+          <td>(</td>
+          <td class="paramtype">const VkSurfaceCapabilitiesKHR &amp;</td>          <td class="paramname"><span class="paramname"><em>capabilities</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Chooses the swap extent (resolution of the swapchain images) based on the capabilities of the surface and the actual window size. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">capabilities</td><td>The surface capabilities (from <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">QuerySwapChainSupport()</a>)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="adc09c4f580967d940b6c56ee5e3d8985" name="adc09c4f580967d940b6c56ee5e3d8985"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc09c4f580967d940b6c56ee5e3d8985">&#9670;&#160;</a></span>ChooseSwapPresentMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VkPresentModeKHR Karma::VulkanContext::ChooseSwapPresentMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; VkPresentModeKHR &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>availablePresentModes</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Chooses the best presentation mode for the swapchain from the available present modes. </p>
+<p>Basically looks for VK_PRESENT_MODE_MAILBOX_KHR (triple buffering) first, then VK_PRESENT_MODE_IMMEDIATE_KHR (tearing possible), and finally defaults to VK_PRESENT_MODE_FIFO_KHR (always available, v-sync)</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">availablePresentModes</td><td>The available presentation modes (from <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">QuerySwapChainSupport()</a>)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a8989c5787a77aa8363f64f9dc8deae1f" name="a8989c5787a77aa8363f64f9dc8deae1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8989c5787a77aa8363f64f9dc8deae1f">&#9670;&#160;</a></span>ChooseSwapSurfaceFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VkSurfaceFormatKHR Karma::VulkanContext::ChooseSwapSurfaceFormat </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; VkSurfaceFormatKHR &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>availableFormats</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Chooses the best surface format (pixel format and color space) for the swapchain from the available formats. </p>
+<p>Basically looks for VK_FORMAT_B8G8R8A8_SRGB and VK_COLOR_SPACE_SRGB_NONLINEAR_KHR combination.</p>
+<p>VK_FORMAT_B8G8R8A8_SRGB : represents a 32-bit format with 8 bits for each of the blue, green, red, and alpha channels in sRGB color space. This format is widely used for swapchain images and color attachments.</p>
+<p>VK_COLOR_SPACE_SRGB_NONLINEAR_KHR : represents the sRGB color space with a nonlinear gamma curve. This color space is commonly used for displaying images on standard monitors.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">availableFormats</td><td>The available surface formats (from <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">QuerySwapChainSupport()</a>)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a200a5a48a832dc021af7a0478c21d8df" name="a200a5a48a832dc021af7a0478c21d8df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a200a5a48a832dc021af7a0478c21d8df">&#9670;&#160;</a></span>CleanupSwapChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CleanupSwapChain </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cleans up the swapchain and its associated resources. </p>
+<p>This involves destroying the framebuffers, image views, and the swapchain itself.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a9b008c73d61c5bb7949ade1729a36b53" title="Recreates the swapchain, typically in response to window resizing or other events that invalidate the...">VulkanContext::RecreateSwapChain()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a620cbb199308a721c243793e29e19fac" name="a620cbb199308a721c243793e29e19fac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a620cbb199308a721c243793e29e19fac">&#9670;&#160;</a></span>ClearUBO()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::ClearUBO </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears all registered VulkanUniformBuffers, freeing their resources. </p>
+<dl class="section see"><dt>See also</dt><dd>VulkanContext::m_VulkanUBO </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a39020fabab52359ce1286f0e44c9a86d" name="a39020fabab52359ce1286f0e44c9a86d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39020fabab52359ce1286f0e44c9a86d">&#9670;&#160;</a></span>CopyBufferToImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CopyBufferToImage </td>
+          <td>(</td>
+          <td class="paramtype">VkBuffer</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VkImage</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>width</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>height</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copies data from a buffer to an image. </p>
+<p>This is typically used for uploading texture data from a staging buffer to a Vulkan image.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>The source buffer containing the data </td></tr>
+    <tr><td class="paramname">image</td><td>The destination image </td></tr>
+    <tr><td class="paramname">width</td><td>The width of the image </td></tr>
+    <tr><td class="paramname">height</td><td>The height of the image</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_vulkan_texture.html#a1f64de2bf4d111399bbb1405aa0e9fe8" title="Creates Vulkan image for the texture and allocates device memory appropriately.">VulkanTexture::CreateTextureImage()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="ae0919004c0e5350bf6af9cae89b7b0af" name="ae0919004c0e5350bf6af9cae89b7b0af"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae0919004c0e5350bf6af9cae89b7b0af">&#9670;&#160;</a></span>CreateCommandPool()</h2>
 
@@ -427,6 +621,27 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 </div>
 </div>
+<a id="a68267886cdd5f06b0944ffb2d4aff319" name="a68267886cdd5f06b0944ffb2d4aff319"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68267886cdd5f06b0944ffb2d4aff319">&#9670;&#160;</a></span>CreateDepthResources()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CreateDepthResources </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates the depth resources (image, imageview, and memory) for depth buffering in 3D rendering. </p>
+<dl class="section note"><dt>Note</dt><dd>Depth buffering is a technique used in 3D computer graphics to determine the visibility of objects in a scene based on their distance from the viewer. It helps in rendering scenes with proper occlusion, ensuring that closer objects obscure those that are farther away. </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="aba8af4361e52a385ff692a1a0696ddb8" name="aba8af4361e52a385ff692a1a0696ddb8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aba8af4361e52a385ff692a1a0696ddb8">&#9670;&#160;</a></span>CreateFrameBuffers()</h2>
 
@@ -442,8 +657,8 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
       </table>
 </div><div class="memdoc">
 
-<p>A framebuffer represents a collection of specific memory attachments that a render pass instance uses. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame.html#ae6ab5c377d34dfdd1667da4b95c5f28e" title="A handle to framebuffer which represents a collection of specific memory attachments that a render pa...">KarmaGui_ImplVulkanH_ImageFrame::Framebuffer</a> </dd></dl>
+<p>Framebuffers are collections of specific memory attachments that a render pass instance uses. They represent the actual memory that the rendering operations will write to. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
@@ -464,6 +679,26 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 <p>An image view is quite literally a view into an image. It describes how to access the image and which part of the image to access, for example if it should be treated as a 2D texture depth texture without any mipmapping levels. ImageView is a wrapper around render target. </p>
 <dl class="section note"><dt>Note</dt><dd>Here we are creating depth images ? Basically depth is taken care of by depth attachment render target (created in <a class="el" href="#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a>) </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a56c40b6c0bc689db8130573a39e7bee2" name="a56c40b6c0bc689db8130573a39e7bee2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56c40b6c0bc689db8130573a39e7bee2">&#9670;&#160;</a></span>CreateInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CreateInstance </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates Vulkan Instance which is the connection between application, which is a Game Engine, and Vulkan library. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -554,8 +789,61 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <li>Sets the size of m_swapChainImages based on supported number of images by the graphics card</li>
 <li>Sets m_surfaceFormat and m_presentMode</li>
 </ol>
-<dl class="section note"><dt>Note</dt><dd></dd></dl>
-<dl class="section see"><dt>See also</dt><dd>VulkanContext::ChooseSwapExtent(), <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">VulkanContext::QuerySwapChainSupport()</a> </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Requires the availability of Requires VK_KHR_swapchain extension which is queried in <a class="el" href="#aa75221e66d5cd1a6b93c3d8be3571500" title="Checks if the physical device (graphics card) is suitable for the Engine to use based on.">IsDeviceSuitable()</a> (which calls <a class="el" href="#a19eac2cedd2049cb443f426fadf9e79c" title="Looks for extension properties supported by the GPU.">CheckDeviceExtensionSupport()</a>).</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a7b7923ffd44b5cd7767c450565d52f75" title="Chooses the swap extent (resolution of the swapchain images) based on the capabilities of the surface...">VulkanContext::ChooseSwapExtent()</a>, <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">VulkanContext::QuerySwapChainSupport()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="ac3db954f21a39acae61674dbfa207d11" name="ac3db954f21a39acae61674dbfa207d11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3db954f21a39acae61674dbfa207d11">&#9670;&#160;</a></span>FindDepthFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VkFormat Karma::VulkanContext::FindDepthFormat </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds a suitable depth format for depth buffering. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a68267886cdd5f06b0944ffb2d4aff319" title="Creates the depth resources (image, imageview, and memory) for depth buffering in 3D rendering.">VulkanContext::CreateDepthResources()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="abbf0e5158292b8ee2294b9d61544d832" name="abbf0e5158292b8ee2294b9d61544d832"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbf0e5158292b8ee2294b9d61544d832">&#9670;&#160;</a></span>FindMemoryType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t Karma::VulkanContext::FindMemoryType </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>typeFilter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VkMemoryPropertyFlags</td>          <td class="paramname"><span class="paramname"><em>properties</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds a suitable memory type on the physical device (graphics card) based on the type filter and desired properties. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">typeFilter</td><td>Bitmask specifying the acceptable memory types </td></tr>
+    <tr><td class="paramname">properties</td><td>Desired memory properties (like VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT for CPU access)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd>VulkanBuffer::VulkanBuffer() </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -582,6 +870,64 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
   </table>
   </dd>
 </dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="aa3a9b8ee8cfa0ff2e56fdd2600e17e0c" name="aa3a9b8ee8cfa0ff2e56fdd2600e17e0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3a9b8ee8cfa0ff2e56fdd2600e17e0c">&#9670;&#160;</a></span>FindSupportedFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VkFormat Karma::VulkanContext::FindSupportedFormat </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; VkFormat &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>candidates</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VkImageTiling</td>          <td class="paramname"><span class="paramname"><em>tiling</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VkFormatFeatureFlags</td>          <td class="paramname"><span class="paramname"><em>features</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds a supported format from the list of candidate formats based on the desired tiling and features. Used in depth resource creation. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ac3db954f21a39acae61674dbfa207d11" title="Finds a suitable depth format for depth buffering.">VulkanContext::FindDepthFormat()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a25d733eba5be4197f7d1f98a66822863" name="a25d733eba5be4197f7d1f98a66822863"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25d733eba5be4197f7d1f98a66822863">&#9670;&#160;</a></span>HasStencilComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Karma::VulkanContext::HasStencilComponent </td>
+          <td>(</td>
+          <td class="paramtype">VkFormat</td>          <td class="paramname"><span class="paramname"><em>format</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if the given format has a stencil component. </p>
+<p>Sees if the format is VK_FORMAT_D32_SFLOAT_S8_UINT or VK_FORMAT_D24_UNORM_S8_UINT</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">format</td><td>The format to be checked</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a640eafd4350e7dff07615bae04b2910a" title="Transitions the layout of an image from oldLayout to newLayout.">VulkanContext::TransitionImageLayout()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -633,6 +979,53 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 </div>
 </div>
+<a id="abfdfa7c10ef2bf92d4f5228b722dd080" name="abfdfa7c10ef2bf92d4f5228b722dd080"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfdfa7c10ef2bf92d4f5228b722dd080">&#9670;&#160;</a></span>Initializeglslang()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::Initializeglslang </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes the glslang library for shader compilation and processing. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="aa75221e66d5cd1a6b93c3d8be3571500" name="aa75221e66d5cd1a6b93c3d8be3571500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa75221e66d5cd1a6b93c3d8be3571500">&#9670;&#160;</a></span>IsDeviceSuitable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Karma::VulkanContext::IsDeviceSuitable </td>
+          <td>(</td>
+          <td class="paramtype">VkPhysicalDevice</td>          <td class="paramname"><span class="paramname"><em>device</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if the physical device (graphics card) is suitable for the Engine to use based on. </p>
+<p>avaibality of required queue families (graphics and presentation), required device extensions (like VK_KHR_swapchain), sampler anisotropy support (which is anisotropic filtering support in samplers, allowing higher-quality texture sampling at oblique angles to reduce blurring and aliasing artifacts seen in standard bilinear filtering.)</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">device</td><td>The graphics card to be checked for suitability </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="a8bd0d59a1a7c511a0f17aa38887869ee" name="a8bd0d59a1a7c511a0f17aa38887869ee"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8bd0d59a1a7c511a0f17aa38887869ee">&#9670;&#160;</a></span>OnWindowResize()</h2>
 
@@ -664,6 +1057,70 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 </div>
 </div>
+<a id="afad165c3848ece8a475fce66ea2023cc" name="afad165c3848ece8a475fce66ea2023cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afad165c3848ece8a475fce66ea2023cc">&#9670;&#160;</a></span>PickPhysicalDevice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::PickPhysicalDevice </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Picks the appropriate physical device (graphics card) for the Engine to use based on suitability. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#aa75221e66d5cd1a6b93c3d8be3571500" title="Checks if the physical device (graphics card) is suitable for the Engine to use based on.">VulkanContext::IsDeviceSuitable()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="afd6cf9f32a7d5bfa50d07ddc7164cd42" name="afd6cf9f32a7d5bfa50d07ddc7164cd42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd6cf9f32a7d5bfa50d07ddc7164cd42">&#9670;&#160;</a></span>PrintAvailableExtensions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::PrintAvailableExtensions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prints all the available extensions supported by the system's Vulkan implementation. </p>
+<p>For instance VK_KHR_Surface or VK_KHR_get_physical_device_properties2.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a56c40b6c0bc689db8130573a39e7bee2" title="Creates Vulkan Instance which is the connection between application, which is a Game Engine,...">VulkanContext::CreateInstance()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="aec8d03865082465b4b21022f5f3df1d1" name="aec8d03865082465b4b21022f5f3df1d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec8d03865082465b4b21022f5f3df1d1">&#9670;&#160;</a></span>PrintAvailablePhysicalDevices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::PrintAvailablePhysicalDevices </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; VkPhysicalDevice &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>physicalDevices</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prints all the available physical devices (graphics cards) supported by the system's Vulkan implementation. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a56c40b6c0bc689db8130573a39e7bee2" title="Creates Vulkan Instance which is the connection between application, which is a Game Engine,...">VulkanContext::CreateInstance()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="a0b62af69e4d46e385abfb9b998bd0c81" name="a0b62af69e4d46e385abfb9b998bd0c81"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0b62af69e4d46e385abfb9b998bd0c81">&#9670;&#160;</a></span>QuerySwapChainSupport()</h2>
 
@@ -680,7 +1137,99 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 </div><div class="memdoc">
 
 <p>Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data. </p>
-<dl class="section see"><dt>See also</dt><dd>VulkanContext::IsDeviceSuitable(), and <a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#aa75221e66d5cd1a6b93c3d8be3571500" title="Checks if the physical device (graphics card) is suitable for the Engine to use based on.">VulkanContext::IsDeviceSuitable()</a>, and <a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a9b008c73d61c5bb7949ade1729a36b53" name="a9b008c73d61c5bb7949ade1729a36b53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b008c73d61c5bb7949ade1729a36b53">&#9670;&#160;</a></span>RecreateSwapChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::RecreateSwapChain </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recreates the swapchain, typically in response to window resizing or other events that invalidate the current swapchain. </p>
+<p>This involves cleaning up the existing swapchain and its associated resources, and then creating a new swapchain with updated parameters.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html#a2fc2d0c6f66d2e47d709ea0ba8326c02" title="Recreates command buffers and swapchain when swapchain is recreated (like on window resize when acqui...">VulkanRendererAPI::RecreateCommandBuffersAndSwapChain()</a>, KarmaGuiRenderer::GiveLoopBeginControlToVulkan() </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a15923c620c5fb6c8cae59a94d57cce99" name="a15923c620c5fb6c8cae59a94d57cce99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15923c620c5fb6c8cae59a94d57cce99">&#9670;&#160;</a></span>RecreateUBO()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::RecreateUBO </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recreates all registered VulkanUniformBuffers, typically in response to swapchain recreation. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html#a17b852a4b3cc6a6c3722a26fd925a37a" title="Recreates command buffers, graphics pipelines, and uniform buffer objects when swapchain is recreated...">VulkanRendererAPI::RecreateCommandBuffersPipelineSwapchain()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a6f8a80f3f98dee0029f19aa917440461" name="a6f8a80f3f98dee0029f19aa917440461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f8a80f3f98dee0029f19aa917440461">&#9670;&#160;</a></span>RegisterUBO()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::RegisterUBO </td>
+          <td>(</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html">VulkanUniformBuffer</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>ubo</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers a <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html" title="The actual uniform buffer class with implemented function using Vulkan API.">VulkanUniformBuffer</a> for management by the <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a>. </p>
+<dl class="section see"><dt>See also</dt><dd>VulkanContext::m_VulkanUBO </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a874bcd49d4121b95a8f95c5507c626d5" name="a874bcd49d4121b95a8f95c5507c626d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a874bcd49d4121b95a8f95c5507c626d5">&#9670;&#160;</a></span>SetVSync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::SetVSync </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>bEnable</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables or disables vertical synchronization (VSync) for the swapchain. </p>
+<p>VSync synchronizes the frame rate of the application with the refresh rate of the monitor to prevent screen tearing.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bEnable</td><td>True to enable VSync, false to disable</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_windows_window.html#a27f97770f1b695a7fd7696ef7fa5ef95" title="Sets VSync on or off.">WindowsWindow::SetVSync</a>, <a class="el" href="#adc09c4f580967d940b6c56ee5e3d8985" title="Chooses the best presentation mode for the swapchain from the available present modes.">VulkanContext::ChooseSwapPresentMode()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -708,11 +1257,94 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 </table>
 </div><div class="memdoc">
 
-<p>This function swaps the front and back buffers of the specified window. If the swap interval is greater than zero, the GPU driver waits the specified number of screen updates before swapping the buffers. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000065">Todo</a></b></dt><dd>This seems to be an OpenGL specific call. Need to design api accordingly </dd></dl>
+<p>In Vulkan there is no default framebuffer, hence we need to explicitly swap the buffers in the swapchain. </p>
+<p>For instance, acquire an image from the swapchain, execute the command buffer with that image as attachment in the framebuffer, and return the image to the swapchain for presentation. All these are done in <a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html#afac431c944424a707d442ca9a593a58f" title="Submits the recorded command buffers to the graphics queue for execution.">VulkanRendererAPI::SubmitCommandBuffers()</a>. So no need to do anything here.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html#afac431c944424a707d442ca9a593a58f" title="Submits the recorded command buffers to the graphics queue for execution.">VulkanRendererAPI::SubmitCommandBuffers()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="class_karma_1_1_graphics_context.html#a482b398d69ae42ffb618b470b25daa21">Karma::GraphicsContext</a>.</p>
+
+</div>
+</div>
+<a id="a640eafd4350e7dff07615bae04b2910a" name="a640eafd4350e7dff07615bae04b2910a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a640eafd4350e7dff07615bae04b2910a">&#9670;&#160;</a></span>TransitionImageLayout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::TransitionImageLayout </td>
+          <td>(</td>
+          <td class="paramtype">VkImage</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VkFormat</td>          <td class="paramname"><span class="paramname"><em>format</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VkImageLayout</td>          <td class="paramname"><span class="paramname"><em>oldLayout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VkImageLayout</td>          <td class="paramname"><span class="paramname"><em>newLayout</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transitions the layout of an image from oldLayout to newLayout. </p>
+<p>Image layout transitions are crucial in Vulkan to ensure that images are in the correct state for different operations, such as rendering, sampling, or transferring data.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">image</td><td>The image to be transitioned </td></tr>
+    <tr><td class="paramname">format</td><td>The format of the image </td></tr>
+    <tr><td class="paramname">oldLayout</td><td>The current layout of the image </td></tr>
+    <tr><td class="paramname">newLayout</td><td>The desired layout of the image</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_vulkan_texture.html#a1f64de2bf4d111399bbb1405aa0e9fe8" title="Creates Vulkan image for the texture and allocates device memory appropriately.">VulkanTexture::CreateTextureImage()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="ad6516fa8d4ba38e2b5fdfc4382cf04bf" name="ad6516fa8d4ba38e2b5fdfc4382cf04bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6516fa8d4ba38e2b5fdfc4382cf04bf">&#9670;&#160;</a></span>UploadUBO()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::UploadUBO </td>
+          <td>(</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>frameIndex</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Uploads data to the registered VulkanUniformBuffers for the specified frame index. </p>
+<p>Typically called during rendering to update uniform buffer data for the current frame like so</p>
+<div class="fragment"><div class="line">vkCmdBeginRenderPass</div>
+<div class="line"> vkCmdBindPipeline</div>
+<div class="line"> vkCmdBindVertexBuffers</div>
+<div class="line"> vkCmdBindIndexBuffer</div>
+<div class="line"> <a class="code hl_function" href="#ad6516fa8d4ba38e2b5fdfc4382cf04bf">UploadUBO</a>()</div>
+<div class="line"> vkCmdBindDescriptorSets <span class="comment">// Descriptor sets include UBOs</span></div>
+<div class="line"> vkCmdDrawIndexed</div>
+<div class="line">vkCmdEndRenderPass</div>
+<div class="ttc" id="aclass_karma_1_1_vulkan_context_html_ad6516fa8d4ba38e2b5fdfc4382cf04bf"><div class="ttname"><a href="#ad6516fa8d4ba38e2b5fdfc4382cf04bf">Karma::VulkanContext::UploadUBO</a></div><div class="ttdeci">void UploadUBO(size_t frameIndex)</div><div class="ttdoc">Uploads data to the registered VulkanUniformBuffers for the specified frame index.</div><div class="ttdef"><b>Definition</b> VulkanContext.cpp:68</div></div>
+</div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frameIndex</td><td>The index of the frame for which to upload UBO data</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>, VulkanBuffer::UploadUniformBuffer </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>

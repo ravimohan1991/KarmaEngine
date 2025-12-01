@@ -10,7 +10,7 @@
 <area shape="poly" id="edge43_Node000001_Node000041" title=" " alt="" coords="1745,39,2021,91,2037,95,2036,100,2019,97,1744,44"/>
 <area shape="rect" id="Node000042" href="$_vulkan_buffer_8h.html" title="This file contains VulkanVertex/Index/ImageBuffer classes." alt="" coords="1678,102,1880,127"/>
 <area shape="poly" id="edge44_Node000001_Node000042" title=" " alt="" coords="1691,44,1752,90,1749,95,1687,49"/>
-<area shape="rect" id="Node000047" href="$_vulkan_renderer_a_p_i_8h_source.html" title=" " alt="" coords="1443,94,1653,135"/>
+<area shape="rect" id="Node000047" href="$_vulkan_renderer_a_p_i_8h.html" title="This file contains VulkanRendererAPI class with Vulkan specific implementation of RendererAPI pure vi..." alt="" coords="1443,94,1653,135"/>
 <area shape="poly" id="edge52_Node000001_Node000047" title=" " alt="" coords="1638,49,1588,87,1584,82,1635,44"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="2211,492,2282,518"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1424,431,1547,434,1735,443,1961,461,2196,490,2195,495,1960,466,1735,449,1547,440,1424,436"/>

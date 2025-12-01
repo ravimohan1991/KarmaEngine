@@ -4,7 +4,7 @@
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="395,54,289,96,287,91,393,49"/>
 <area shape="rect" id="Node000008" href="$_open_g_l_renderer_a_p_i_8h.html" title="This file contains OpenGLRendererAPI class." alt="" coords="352,94,564,135"/>
 <area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="461,62,461,94,456,94,456,62"/>
-<area shape="rect" id="Node000009" href="$_vulkan_renderer_a_p_i_8h_source.html" title=" " alt="" coords="588,94,782,135"/>
+<area shape="rect" id="Node000009" href="$_vulkan_renderer_a_p_i_8h.html" title="This file contains VulkanRendererAPI class with Vulkan specific implementation of RendererAPI pure vi..." alt="" coords="588,94,782,135"/>
 <area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="524,49,634,91,632,96,523,54"/>
 <area shape="rect" id="Node000003" href="$_karma_8h_source.html" title=" " alt="" coords="173,279,306,304"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="218,149,203,183,200,203,203,223,216,253,232,277,228,280,212,255,198,224,195,203,198,182,213,147"/>
@@ -20,6 +20,6 @@
 <area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="281,238,250,280,246,277,277,235"/>
 <area shape="rect" id="Node000010" href="$_vulkan_context_8h.html" title="This file contains VulkanContext class." alt="" coords="603,183,766,223"/>
 <area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="688,150,688,182,682,182,682,150"/>
-<area shape="rect" id="Node000011" href="$_vulkan_holder_8h_source.html" title=" " alt="" coords="606,271,764,312"/>
+<area shape="rect" id="Node000011" href="$_vulkan_holder_8h.html" title="This file contains VulkanHolder class for holding VulkanContext instance statically." alt="" coords="606,271,764,312"/>
 <area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="688,239,688,271,682,271,682,239"/>
 </map>

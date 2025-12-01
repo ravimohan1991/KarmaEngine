@@ -95,12 +95,17 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Karma::VulkanShader Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Vulkan specific implementation of <a class="el" href="class_karma_1_1_shader.html" title="Base class of vertex + fragment shaders (for Vulkan and OpenGL)">Shader</a> class.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_vulkan_shader_8h_source.html">VulkanShader.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for Karma::VulkanShader:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_karma_1_1_vulkan_shader__inherit__graph.png" border="0" usemap="#a_karma_1_1_vulkan_shader_inherit__map" alt="Inheritance graph"/></div>
 <map name="a_karma_1_1_vulkan_shader_inherit__map" id="a_karma_1_1_vulkan_shader_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,79,152,105"/>
+<area shape="rect" title="Vulkan specific implementation of Shader class." alt="" coords="5,79,152,105"/>
 <area shape="rect" href="class_karma_1_1_shader.html" title="Base class of vertex + fragment shaders (for Vulkan and OpenGL)" alt="" coords="25,5,132,31"/>
 <area shape="poly" title=" " alt="" coords="81,46,81,79,76,79,76,46"/>
 </map>
@@ -110,7 +115,7 @@ Collaboration diagram for Karma::VulkanShader:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_karma_1_1_vulkan_shader__coll__graph.png" border="0" usemap="#a_karma_1_1_vulkan_shader_coll__map" alt="Collaboration graph"/></div>
 <map name="a_karma_1_1_vulkan_shader_coll__map" id="a_karma_1_1_vulkan_shader_coll__map">
-<area shape="rect" title=" " alt="" coords="5,79,152,105"/>
+<area shape="rect" title="Vulkan specific implementation of Shader class." alt="" coords="5,79,152,105"/>
 <area shape="rect" href="class_karma_1_1_shader.html" title="Base class of vertex + fragment shaders (for Vulkan and OpenGL)" alt="" coords="25,5,132,31"/>
 <area shape="poly" title=" " alt="" coords="81,46,81,79,76,79,76,46"/>
 </map>
@@ -118,20 +123,23 @@ Collaboration diagram for Karma::VulkanShader:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a0a48dadaca199216116dc158548763fa" id="r_a0a48dadaca199216116dc158548763fa"><td class="memItemLeft" align="right" valign="top"><a id="a0a48dadaca199216116dc158548763fa" name="a0a48dadaca199216116dc158548763fa"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>VulkanShader</b> (const std::string &amp;vertexSrc, const std::string &amp;fragmentSrc, std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt; ubo)</td></tr>
+<tr class="memitem:a0a48dadaca199216116dc158548763fa" id="r_a0a48dadaca199216116dc158548763fa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a48dadaca199216116dc158548763fa">VulkanShader</a> (const std::string &amp;vertexSrc, const std::string &amp;fragmentSrc, std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt; ubo)</td></tr>
+<tr class="memdesc:a0a48dadaca199216116dc158548763fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor that compiles vertex and fragment shaders from source code.  <br /></td></tr>
 <tr class="separator:a0a48dadaca199216116dc158548763fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb0b968be426532f6e2310f1446c3752" id="r_abb0b968be426532f6e2310f1446c3752"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb0b968be426532f6e2310f1446c3752">~VulkanShader</a> () override</td></tr>
+<tr class="memdesc:abb0b968be426532f6e2310f1446c3752"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
+<tr class="separator:abb0b968be426532f6e2310f1446c3752"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93a3076977a59eda39c1c08475754a84" id="r_a93a3076977a59eda39c1c08475754a84"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a93a3076977a59eda39c1c08475754a84">Bind</a> () const override</td></tr>
 <tr class="memdesc:a93a3076977a59eda39c1c08475754a84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Installs a shader (vertex + fragment) and uniform program object as part of current rendering state.  <br /></td></tr>
 <tr class="separator:a93a3076977a59eda39c1c08475754a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41e80edf7a94c4cd1d5623684e560140" id="r_a41e80edf7a94c4cd1d5623684e560140"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41e80edf7a94c4cd1d5623684e560140">UnBind</a> () const override</td></tr>
 <tr class="memdesc:a41e80edf7a94c4cd1d5623684e560140"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo the binding of shader program.  <br /></td></tr>
 <tr class="separator:a41e80edf7a94c4cd1d5623684e560140"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8728980f09fe7b7ce4c6459a357aa34a" id="r_a8728980f09fe7b7ce4c6459a357aa34a"><td class="memItemLeft" align="right" valign="top"><a id="a8728980f09fe7b7ce4c6459a357aa34a" name="a8728980f09fe7b7ce4c6459a357aa34a"></a>
-std::vector&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Compile</b> (const std::string &amp;src, const std::string &amp;source, EShLanguage lang)</td></tr>
+<tr class="memitem:a8728980f09fe7b7ce4c6459a357aa34a" id="r_a8728980f09fe7b7ce4c6459a357aa34a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8728980f09fe7b7ce4c6459a357aa34a">Compile</a> (const std::string &amp;src, const std::string &amp;source, EShLanguage lang)</td></tr>
+<tr class="memdesc:a8728980f09fe7b7ce4c6459a357aa34a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compiles GLSL source code to SPIR-V bytecode using GLSLANG.  <br /></td></tr>
 <tr class="separator:a8728980f09fe7b7ce4c6459a357aa34a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3555d054b443577a2341fbeb07bcf47" id="r_ae3555d054b443577a2341fbeb07bcf47"><td class="memItemLeft" align="right" valign="top"><a id="ae3555d054b443577a2341fbeb07bcf47" name="ae3555d054b443577a2341fbeb07bcf47"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>UploadUniformMat4</b> (const std::string &amp;name, const glm::mat4 &amp;matrix)</td></tr>
+<tr class="memitem:ae3555d054b443577a2341fbeb07bcf47" id="r_ae3555d054b443577a2341fbeb07bcf47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3555d054b443577a2341fbeb07bcf47">UploadUniformMat4</a> (const std::string &amp;name, const glm::mat4 &amp;matrix)</td></tr>
+<tr class="memdesc:ae3555d054b443577a2341fbeb07bcf47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uploads a 4x4 matrix uniform to the shader.  <br /></td></tr>
 <tr class="separator:ae3555d054b443577a2341fbeb07bcf47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d3d1f35805b4f5a06b4d940de76204e" id="r_a8d3d1f35805b4f5a06b4d940de76204e"><td class="memItemLeft" align="right" valign="top"><a id="a8d3d1f35805b4f5a06b4d940de76204e" name="a8d3d1f35805b4f5a06b4d940de76204e"></a>
 const std::vector&lt; uint32_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetVertSpirV</b> () const</td></tr>
@@ -173,6 +181,79 @@ Additional Inherited Members</h2></td></tr>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</b></td></tr>
 <tr class="separator:a18f85e40fbde660dcd4f2fbe89fdc1c9 inherit pro_attribs_class_karma_1_1_shader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Vulkan specific implementation of <a class="el" href="class_karma_1_1_shader.html" title="Base class of vertex + fragment shaders (for Vulkan and OpenGL)">Shader</a> class. </p>
+<p>This class handles the compilation of GLSL shader source code to SPIR-V bytecode and manages the associated uniform buffer object.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a0a48dadaca199216116dc158548763fa" name="a0a48dadaca199216116dc158548763fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a48dadaca199216116dc158548763fa">&#9670;&#160;</a></span>VulkanShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Karma::VulkanShader::VulkanShader </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>vertexSrc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>fragmentSrc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>ubo</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor that compiles vertex and fragment shaders from source code. </p>
+<p>GLSLANG is used to compile the GLSL source code into SPIR-V bytecode for Vulkan.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertexSrc</td><td>Path to vertex shader source file </td></tr>
+    <tr><td class="paramname">fragmentSrc</td><td>Path to fragment shader source file </td></tr>
+    <tr><td class="paramname">ubo</td><td>Shared pointer to the uniform buffer object</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_shader.html#a09264c9af35a832d1baa6307678345d2" title="Instantiating shader object according to the programmer chosen API.">Shader::Create()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="abb0b968be426532f6e2310f1446c3752" name="abb0b968be426532f6e2310f1446c3752"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb0b968be426532f6e2310f1446c3752">&#9670;&#160;</a></span>~VulkanShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Karma::VulkanShader::~VulkanShader </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructor. </p>
+<p>Cleans up any allocated resources.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a93a3076977a59eda39c1c08475754a84" name="a93a3076977a59eda39c1c08475754a84"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a93a3076977a59eda39c1c08475754a84">&#9670;&#160;</a></span>Bind()</h2>
@@ -205,6 +286,44 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
 
 </div>
 </div>
+<a id="a8728980f09fe7b7ce4c6459a357aa34a" name="a8728980f09fe7b7ce4c6459a357aa34a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8728980f09fe7b7ce4c6459a357aa34a">&#9670;&#160;</a></span>Compile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; uint32_t &gt; Karma::VulkanShader::Compile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>src</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>source</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EShLanguage</td>          <td class="paramname"><span class="paramname"><em>lang</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compiles GLSL source code to SPIR-V bytecode using GLSLANG. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">src</td><td>Path to the (vertex or fragment) shader GLSL source file </td></tr>
+    <tr><td class="paramname">source</td><td>The actual GLSL source code as a string (read from the file)</td></tr>
+    <tr><td class="paramname">lang</td><td><a class="el" href="class_karma_1_1_shader.html" title="Base class of vertex + fragment shaders (for Vulkan and OpenGL)">Shader</a> stage (vertex or fragment)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector containing the compiled SPIR-V bytecode </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="a41e80edf7a94c4cd1d5623684e560140" name="a41e80edf7a94c4cd1d5623684e560140"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a41e80edf7a94c4cd1d5623684e560140">&#9670;&#160;</a></span>UnBind()</h2>
 
@@ -233,6 +352,31 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_karma_1_1_shader.html#a2d20fa79716ec91a2f188b985be3b615">Karma::Shader</a>.</p>
+
+</div>
+</div>
+<a id="ae3555d054b443577a2341fbeb07bcf47" name="ae3555d054b443577a2341fbeb07bcf47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3555d054b443577a2341fbeb07bcf47">&#9670;&#160;</a></span>UploadUniformMat4()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanShader::UploadUniformMat4 </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;</td>          <td class="paramname"><span class="paramname"><em>matrix</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Uploads a 4x4 matrix uniform to the shader. </p>
+<dl class="section note"><dt>Note</dt><dd>For legacy purposes. Vulkan UBO upload is handled in <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html#a0e480fa1d102bd1e98ef1729b06218d5" title="Uploads (copies) the data from buffer memory (m_UniformBuffersMemory) to host-accessible (CPU) pointe...">VulkanUniformBuffer::UploadUniformBuffer()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>

@@ -104,7 +104,7 @@ $(function(){ initResizable(false); });
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a825a601014632978f618da14d22b343e" id="r_a825a601014632978f618da14d22b343e"><td class="memItemLeft" align="right" valign="top">VkImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a825a601014632978f618da14d22b343e">Backbuffer</a></td></tr>
-<tr class="memdesc:a825a601014632978f618da14d22b343e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) recordings on CPU that may happen whilst the rendering is being done on GPU.  <br /></td></tr>
+<tr class="memdesc:a825a601014632978f618da14d22b343e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) are the images contained in the swapchain created in <a class="el" href="class_karma_1_1_vulkan_context.html#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a>  <br /></td></tr>
 <tr class="separator:a825a601014632978f618da14d22b343e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a4510b126f93b1d6aef81c250e8f455" id="r_a2a4510b126f93b1d6aef81c250e8f455"><td class="memItemLeft" align="right" valign="top">VkImageView&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a4510b126f93b1d6aef81c250e8f455">BackbufferView</a></td></tr>
 <tr class="memdesc:a2a4510b126f93b1d6aef81c250e8f455"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> m_swapChainImageViews equivalent. Again, the number is same.  <br /></td></tr>
@@ -131,7 +131,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) recordings on CPU that may happen whilst the rendering is being done on GPU. </p>
+<p><a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) are the images contained in the swapchain created in <a class="el" href="class_karma_1_1_vulkan_context.html#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a> </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -166,6 +166,8 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>A handle to framebuffer which represents a collection of specific memory attachments that a render pass instance uses. </p>
+<p>Framebuffers are taken from SwapchainFrameBuffers created in VulkanContext::CreateFramebuffers()</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#ac2c93fab4bd1c3b354b46485db32a8d6" title="The purpose of the routine is two-fold.">KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

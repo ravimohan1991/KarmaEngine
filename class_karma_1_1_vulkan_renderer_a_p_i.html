@@ -95,12 +95,17 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">Karma::VulkanRendererAPI Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Vulkan specific implementation of <a class="el" href="class_karma_1_1_renderer_a_p_i.html" title="An abstract class for a renderer.">RendererAPI</a> pure virtual functions.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_vulkan_renderer_a_p_i_8h_source.html">VulkanRendererAPI.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for Karma::VulkanRendererAPI:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_karma_1_1_vulkan_renderer_a_p_i__inherit__graph.png" border="0" usemap="#a_karma_1_1_vulkan_renderer_a_p_i_inherit__map" alt="Inheritance graph"/></div>
 <map name="a_karma_1_1_vulkan_renderer_a_p_i_inherit__map" id="a_karma_1_1_vulkan_renderer_a_p_i_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,79,185,105"/>
+<area shape="rect" title="Vulkan specific implementation of RendererAPI pure virtual functions." alt="" coords="5,79,185,105"/>
 <area shape="rect" href="class_karma_1_1_renderer_a_p_i.html" title="An abstract class for a renderer." alt="" coords="25,5,165,31"/>
 <area shape="poly" title=" " alt="" coords="98,46,98,79,92,79,92,46"/>
 </map>
@@ -110,7 +115,7 @@ Collaboration diagram for Karma::VulkanRendererAPI:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_karma_1_1_vulkan_renderer_a_p_i__coll__graph.png" border="0" usemap="#a_karma_1_1_vulkan_renderer_a_p_i_coll__map" alt="Collaboration graph"/></div>
 <map name="a_karma_1_1_vulkan_renderer_a_p_i_coll__map" id="a_karma_1_1_vulkan_renderer_a_p_i_coll__map">
-<area shape="rect" title=" " alt="" coords="5,79,185,105"/>
+<area shape="rect" title="Vulkan specific implementation of RendererAPI pure virtual functions." alt="" coords="5,79,185,105"/>
 <area shape="rect" href="class_karma_1_1_renderer_a_p_i.html" title="An abstract class for a renderer." alt="" coords="25,5,165,31"/>
 <area shape="poly" title=" " alt="" coords="98,46,98,79,92,79,92,46"/>
 </map>
@@ -118,14 +123,20 @@ Collaboration diagram for Karma::VulkanRendererAPI:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ac7d46027cdb4aa34d6948c864daaeb65" id="r_ac7d46027cdb4aa34d6948c864daaeb65"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac7d46027cdb4aa34d6948c864daaeb65">VulkanRendererAPI</a> ()</td></tr>
+<tr class="memdesc:ac7d46027cdb4aa34d6948c864daaeb65"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constructor.  <br /></td></tr>
+<tr class="separator:ac7d46027cdb4aa34d6948c864daaeb65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad05d0a2b5e38064bfa7ff1d05da2629" id="r_aad05d0a2b5e38064bfa7ff1d05da2629"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad05d0a2b5e38064bfa7ff1d05da2629">~VulkanRendererAPI</a> ()</td></tr>
+<tr class="memdesc:aad05d0a2b5e38064bfa7ff1d05da2629"><td class="mdescLeft">&#160;</td><td class="mdescRight">A destructor.  <br /></td></tr>
+<tr class="separator:aad05d0a2b5e38064bfa7ff1d05da2629"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a772d04c8a201924722b56555cb644f28" id="r_a772d04c8a201924722b56555cb644f28"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a772d04c8a201924722b56555cb644f28">SetClearColor</a> (const glm::vec4 &amp;color) override</td></tr>
-<tr class="memdesc:a772d04c8a201924722b56555cb644f28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the color to be used for clear (rendering) screen.  <br /></td></tr>
+<tr class="memdesc:a772d04c8a201924722b56555cb644f28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the color to be used for clear (rendering) screen.  <br /></td></tr>
 <tr class="separator:a772d04c8a201924722b56555cb644f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ad47ad715a93a2d217adc719b7814d3" id="r_a1ad47ad715a93a2d217adc719b7814d3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ad47ad715a93a2d217adc719b7814d3">Clear</a> () override</td></tr>
-<tr class="memdesc:a1ad47ad715a93a2d217adc719b7814d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the rendering screen.  <br /></td></tr>
+<tr class="memdesc:a1ad47ad715a93a2d217adc719b7814d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the rendering screen. Not much use in Vulkan as such since we record commands in command buffers.  <br /></td></tr>
 <tr class="separator:a1ad47ad715a93a2d217adc719b7814d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1ee653294fe5a79c66e74eb11cf16b3" id="r_af1ee653294fe5a79c66e74eb11cf16b3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1ee653294fe5a79c66e74eb11cf16b3">BeginScene</a> () override</td></tr>
-<tr class="memdesc:af1ee653294fe5a79c66e74eb11cf16b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting up resources for rendering of a scene.  <br /></td></tr>
+<tr class="memdesc:af1ee653294fe5a79c66e74eb11cf16b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting up resources for rendering of a scene which includes allocating command buffers if not already done or when swapchain is rebuilt.  <br /></td></tr>
 <tr class="separator:af1ee653294fe5a79c66e74eb11cf16b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18aa84c1f6bd0f22ea4172d3f9166cdd" id="r_a18aa84c1f6bd0f22ea4172d3f9166cdd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18aa84c1f6bd0f22ea4172d3f9166cdd">DrawIndexed</a> (std::shared_ptr&lt; <a class="el" href="class_karma_1_1_vertex_array.html">VertexArray</a> &gt; vertexArray) override</td></tr>
 <tr class="memdesc:a18aa84c1f6bd0f22ea4172d3f9166cdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Routine for drawing primitives.  <br /></td></tr>
@@ -133,30 +144,29 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab60d130b8998d2edf4b9b2621d5e8157" id="r_ab60d130b8998d2edf4b9b2621d5e8157"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab60d130b8998d2edf4b9b2621d5e8157">EndScene</a> () override</td></tr>
 <tr class="memdesc:ab60d130b8998d2edf4b9b2621d5e8157"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instructions for end of the scene.  <br /></td></tr>
 <tr class="separator:ab60d130b8998d2edf4b9b2621d5e8157"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad850654cd636fdd986e8478142f7203f" id="r_ad850654cd636fdd986e8478142f7203f"><td class="memItemLeft" align="right" valign="top"><a id="ad850654cd636fdd986e8478142f7203f" name="ad850654cd636fdd986e8478142f7203f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AllocateCommandBuffers</b> ()</td></tr>
-<tr class="memdesc:ad850654cd636fdd986e8478142f7203f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates resources for command buffers. Command buffers are objects used to record commands which can be subsequently submitted to a device queue for execution. For instance the graphics and presentation queues. <br /></td></tr>
+<tr class="memitem:ad850654cd636fdd986e8478142f7203f" id="r_ad850654cd636fdd986e8478142f7203f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad850654cd636fdd986e8478142f7203f">AllocateCommandBuffers</a> ()</td></tr>
+<tr class="memdesc:ad850654cd636fdd986e8478142f7203f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates resources for command buffers.  <br /></td></tr>
 <tr class="separator:ad850654cd636fdd986e8478142f7203f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a537e96a1551956707e80d41e5ad5508b" id="r_a537e96a1551956707e80d41e5ad5508b"><td class="memItemLeft" align="right" valign="top"><a id="a537e96a1551956707e80d41e5ad5508b" name="a537e96a1551956707e80d41e5ad5508b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RecordCommandBuffers</b> (VkCommandBuffer commandBuffer, uint32_t imageIndex)</td></tr>
+<tr class="memitem:a537e96a1551956707e80d41e5ad5508b" id="r_a537e96a1551956707e80d41e5ad5508b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a537e96a1551956707e80d41e5ad5508b">RecordCommandBuffers</a> (VkCommandBuffer commandBuffer, uint32_t imageIndex)</td></tr>
+<tr class="memdesc:a537e96a1551956707e80d41e5ad5508b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records the command buffers with rendering commands for a particular image in the swapchain.  <br /></td></tr>
 <tr class="separator:a537e96a1551956707e80d41e5ad5508b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afac431c944424a707d442ca9a593a58f" id="r_afac431c944424a707d442ca9a593a58f"><td class="memItemLeft" align="right" valign="top"><a id="afac431c944424a707d442ca9a593a58f" name="afac431c944424a707d442ca9a593a58f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SubmitCommandBuffers</b> ()</td></tr>
+<tr class="memitem:afac431c944424a707d442ca9a593a58f" id="r_afac431c944424a707d442ca9a593a58f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afac431c944424a707d442ca9a593a58f">SubmitCommandBuffers</a> ()</td></tr>
+<tr class="memdesc:afac431c944424a707d442ca9a593a58f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submits the recorded command buffers to the graphics queue for execution.  <br /></td></tr>
 <tr class="separator:afac431c944424a707d442ca9a593a58f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0a8f780ab01b2f2ca6bc66c82654c3a" id="r_aa0a8f780ab01b2f2ca6bc66c82654c3a"><td class="memItemLeft" align="right" valign="top"><a id="aa0a8f780ab01b2f2ca6bc66c82654c3a" name="aa0a8f780ab01b2f2ca6bc66c82654c3a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>CreateSynchronicity</b> ()</td></tr>
+<tr class="memitem:aa0a8f780ab01b2f2ca6bc66c82654c3a" id="r_aa0a8f780ab01b2f2ca6bc66c82654c3a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0a8f780ab01b2f2ca6bc66c82654c3a">CreateSynchronicity</a> ()</td></tr>
+<tr class="memdesc:aa0a8f780ab01b2f2ca6bc66c82654c3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates synchronization objects like semaphores and fences for coordinating rendering operations.  <br /></td></tr>
 <tr class="separator:aa0a8f780ab01b2f2ca6bc66c82654c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9866aec4c73c1407c773d82057f476e0" id="r_a9866aec4c73c1407c773d82057f476e0"><td class="memItemLeft" align="right" valign="top"><a id="a9866aec4c73c1407c773d82057f476e0" name="a9866aec4c73c1407c773d82057f476e0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearVulkanRendererAPI</b> ()</td></tr>
+<tr class="memitem:a9866aec4c73c1407c773d82057f476e0" id="r_a9866aec4c73c1407c773d82057f476e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9866aec4c73c1407c773d82057f476e0">ClearVulkanRendererAPI</a> ()</td></tr>
+<tr class="memdesc:a9866aec4c73c1407c773d82057f476e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears up <a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html" title="Vulkan specific implementation of RendererAPI pure virtual functions.">VulkanRendererAPI</a> specific resources like command buffers and synchronization objects.  <br /></td></tr>
 <tr class="separator:a9866aec4c73c1407c773d82057f476e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aacbfe2acb9302cdd440b85c56c0a45ea" id="r_aacbfe2acb9302cdd440b85c56c0a45ea"><td class="memItemLeft" align="right" valign="top"><a id="aacbfe2acb9302cdd440b85c56c0a45ea" name="aacbfe2acb9302cdd440b85c56c0a45ea"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveSynchronicity</b> ()</td></tr>
+<tr class="memitem:aacbfe2acb9302cdd440b85c56c0a45ea" id="r_aacbfe2acb9302cdd440b85c56c0a45ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacbfe2acb9302cdd440b85c56c0a45ea">RemoveSynchronicity</a> ()</td></tr>
+<tr class="memdesc:aacbfe2acb9302cdd440b85c56c0a45ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes synchronization objects like semaphores and fences.  <br /></td></tr>
 <tr class="separator:aacbfe2acb9302cdd440b85c56c0a45ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17b852a4b3cc6a6c3722a26fd925a37a" id="r_a17b852a4b3cc6a6c3722a26fd925a37a"><td class="memItemLeft" align="right" valign="top"><a id="a17b852a4b3cc6a6c3722a26fd925a37a" name="a17b852a4b3cc6a6c3722a26fd925a37a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RecreateCommandBuffersPipelineSwapchain</b> ()</td></tr>
+<tr class="memitem:a17b852a4b3cc6a6c3722a26fd925a37a" id="r_a17b852a4b3cc6a6c3722a26fd925a37a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17b852a4b3cc6a6c3722a26fd925a37a">RecreateCommandBuffersPipelineSwapchain</a> ()</td></tr>
+<tr class="memdesc:a17b852a4b3cc6a6c3722a26fd925a37a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recreates command buffers, graphics pipelines, and uniform buffer objects when swapchain is recreated (like on window resize when acquiring next image from swapchain gives VK_ERROR_OUT_OF_DATE_KHR).  <br /></td></tr>
 <tr class="separator:a17b852a4b3cc6a6c3722a26fd925a37a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fc2d0c6f66d2e47d709ea0ba8326c02" id="r_a2fc2d0c6f66d2e47d709ea0ba8326c02"><td class="memItemLeft" align="right" valign="top"><a id="a2fc2d0c6f66d2e47d709ea0ba8326c02" name="a2fc2d0c6f66d2e47d709ea0ba8326c02"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RecreateCommandBuffersAndSwapChain</b> ()</td></tr>
+<tr class="memitem:a2fc2d0c6f66d2e47d709ea0ba8326c02" id="r_a2fc2d0c6f66d2e47d709ea0ba8326c02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2fc2d0c6f66d2e47d709ea0ba8326c02">RecreateCommandBuffersAndSwapChain</a> ()</td></tr>
+<tr class="memdesc:a2fc2d0c6f66d2e47d709ea0ba8326c02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recreates command buffers and swapchain when swapchain is recreated (like on window resize when acquiring next image from swapchain gives VK_ERROR_OUT_OF_DATE_KHR).  <br /></td></tr>
 <tr class="separator:a2fc2d0c6f66d2e47d709ea0ba8326c02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6923d4487c661b868aad91a4bfb67ecd" id="r_a6923d4487c661b868aad91a4bfb67ecd"><td class="memItemLeft" align="right" valign="top"><a id="a6923d4487c661b868aad91a4bfb67ecd" name="a6923d4487c661b868aad91a4bfb67ecd"></a>
 const std::vector&lt; VkCommandBuffer &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetCommandBuffers</b> () const</td></tr>
@@ -199,7 +209,83 @@ Additional Inherited Members</h2></td></tr>
 static glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>m_ClearColor</b> = { 0.0f, 0.0f, 0.0f, 0.0f }</td></tr>
 <tr class="separator:aacddcc1fb20ff9cacd8c48eb39df7c42 inherit pro_static_attribs_class_karma_1_1_renderer_a_p_i"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Vulkan specific implementation of <a class="el" href="class_karma_1_1_renderer_a_p_i.html" title="An abstract class for a renderer.">RendererAPI</a> pure virtual functions. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_renderer_a_p_i.html" title="An abstract class for a renderer.">RendererAPI</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac7d46027cdb4aa34d6948c864daaeb65" name="ac7d46027cdb4aa34d6948c864daaeb65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7d46027cdb4aa34d6948c864daaeb65">&#9670;&#160;</a></span>VulkanRendererAPI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Karma::VulkanRendererAPI::VulkanRendererAPI </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>A constructor. </p>
+<dl class="section note"><dt>Note</dt><dd>Vulkan specific resoures are allocated in <a class="el" href="class_karma_1_1_vulkan_context.html#ae07d2db438aac38447337bed1c940713" title="Initializes VulkanContext by creating appropriate Vulkan and glslang specific instruments and allocat...">VulkanContext::Init()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="aad05d0a2b5e38064bfa7ff1d05da2629" name="aad05d0a2b5e38064bfa7ff1d05da2629"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad05d0a2b5e38064bfa7ff1d05da2629">&#9670;&#160;</a></span>~VulkanRendererAPI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Karma::VulkanRendererAPI::~VulkanRendererAPI </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>A destructor. </p>
+<dl class="section note"><dt>Note</dt><dd>Vulkan specific resources are deallocated in <a class="el" href="class_karma_1_1_vulkan_context.html#aff051cf28280933d857368847979a6bb" title="Destructor of vulkan context. Does the following.">VulkanContext::~VulkanContext()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad850654cd636fdd986e8478142f7203f" name="ad850654cd636fdd986e8478142f7203f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad850654cd636fdd986e8478142f7203f">&#9670;&#160;</a></span>AllocateCommandBuffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanRendererAPI::AllocateCommandBuffers </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocates resources for command buffers. </p>
+<p>Command buffers are objects used to record commands which can be subsequently submitted to a device queue for execution. For instance the graphics and presentation queues.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="af1ee653294fe5a79c66e74eb11cf16b3" name="af1ee653294fe5a79c66e74eb11cf16b3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af1ee653294fe5a79c66e74eb11cf16b3">&#9670;&#160;</a></span>BeginScene()</h2>
 
@@ -223,8 +309,8 @@ static glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>m_ClearCo
 </table>
 </div><div class="memdoc">
 
-<p>Setting up resources for rendering of a scene. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_render_command.html#aa592d59d336537525d4a9b86f35f76c5" title="Setting up resources for rendering of a scene.">RenderCommand::BeginScene</a> </dd></dl>
+<p>Setting up resources for rendering of a scene which includes allocating command buffers if not already done or when swapchain is rebuilt. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_render_command.html#aa592d59d336537525d4a9b86f35f76c5" title="Setting up resources for rendering of a scene.">RenderCommand::BeginScene</a>, <a class="el" href="#a2fc2d0c6f66d2e47d709ea0ba8326c02" title="Recreates command buffers and swapchain when swapchain is recreated (like on window resize when acqui...">VulkanRendererAPI::RecreateCommandBuffersAndSwapChain()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="class_karma_1_1_renderer_a_p_i.html#ad4cceed0fc7a17c6a5dc1ff32729f455">Karma::RendererAPI</a>.</p>
@@ -254,10 +340,52 @@ static glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>m_ClearCo
 </table>
 </div><div class="memdoc">
 
-<p>Clear the rendering screen. </p>
+<p>Clear the rendering screen. Not much use in Vulkan as such since we record commands in command buffers. </p>
+<p>The commandbuffers are reset and begin command recording afresh each frame in <a class="el" href="#a537e96a1551956707e80d41e5ad5508b" title="Records the command buffers with rendering commands for a particular image in the swapchain.">RecordCommandBuffers()</a> which includes clearing the screen.</p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="class_karma_1_1_renderer_a_p_i.html#a4835a3092dd8573b06764d6c8e6feb06">Karma::RendererAPI</a>.</p>
+
+</div>
+</div>
+<a id="a9866aec4c73c1407c773d82057f476e0" name="a9866aec4c73c1407c773d82057f476e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9866aec4c73c1407c773d82057f476e0">&#9670;&#160;</a></span>ClearVulkanRendererAPI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanRendererAPI::ClearVulkanRendererAPI </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears up <a class="el" href="class_karma_1_1_vulkan_renderer_a_p_i.html" title="Vulkan specific implementation of RendererAPI pure virtual functions.">VulkanRendererAPI</a> specific resources like command buffers and synchronization objects. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_vulkan_context.html#aff051cf28280933d857368847979a6bb" title="Destructor of vulkan context. Does the following.">VulkanContext::~VulkanContext()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="aa0a8f780ab01b2f2ca6bc66c82654c3a" name="aa0a8f780ab01b2f2ca6bc66c82654c3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0a8f780ab01b2f2ca6bc66c82654c3a">&#9670;&#160;</a></span>CreateSynchronicity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanRendererAPI::CreateSynchronicity </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates synchronization objects like semaphores and fences for coordinating rendering operations. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
@@ -285,6 +413,13 @@ static glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>m_ClearCo
 </div><div class="memdoc">
 
 <p>Routine for drawing primitives. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vertexArray</td><td>The format and relevant information of the rendrable vertex data</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_vulkan_vertex_array.html" title="Vulkan specific implementation of VertexArray class.">VulkanVertexArray</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="class_karma_1_1_renderer_a_p_i.html#a5d3732a4f2301a7fdd78f4301bee8630">Karma::RendererAPI</a>.</p>
@@ -315,9 +450,106 @@ static glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>m_ClearCo
 </div><div class="memdoc">
 
 <p>Instructions for end of the scene. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_render_command.html#a3fd34aa20ac68536dbaf2838da185d25" title="The clearing of resources, if any, at the end of frame.">RenderCommand::EndScene</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="class_karma_1_1_renderer_a_p_i.html#a808a8338daa79f5b60426e42d394424c">Karma::RendererAPI</a>.</p>
+
+</div>
+</div>
+<a id="a537e96a1551956707e80d41e5ad5508b" name="a537e96a1551956707e80d41e5ad5508b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a537e96a1551956707e80d41e5ad5508b">&#9670;&#160;</a></span>RecordCommandBuffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanRendererAPI::RecordCommandBuffers </td>
+          <td>(</td>
+          <td class="paramtype">VkCommandBuffer</td>          <td class="paramname"><span class="paramname"><em>commandBuffer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>imageIndex</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Records the command buffers with rendering commands for a particular image in the swapchain. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">commandBuffer</td><td>The command buffer to be recorded </td></tr>
+    <tr><td class="paramname">imageIndex</td><td>The index of the swapchain image to record commands for</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#afac431c944424a707d442ca9a593a58f" title="Submits the recorded command buffers to the graphics queue for execution.">VulkanRendererAPI::SubmitCommandBuffers()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a2fc2d0c6f66d2e47d709ea0ba8326c02" name="a2fc2d0c6f66d2e47d709ea0ba8326c02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fc2d0c6f66d2e47d709ea0ba8326c02">&#9670;&#160;</a></span>RecreateCommandBuffersAndSwapChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanRendererAPI::RecreateCommandBuffersAndSwapChain </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recreates command buffers and swapchain when swapchain is recreated (like on window resize when acquiring next image from swapchain gives VK_ERROR_OUT_OF_DATE_KHR). </p>
+<dl class="section note"><dt>Note</dt><dd>Seems like better to calls this than <a class="el" href="#a17b852a4b3cc6a6c3722a26fd925a37a" title="Recreates command buffers, graphics pipelines, and uniform buffer objects when swapchain is recreated...">RecreateCommandBuffersPipelineSwapchain()</a></dd></dl>
+<dl class="section see"><dt>See also</dt><dd>KarmaGuiRenderer::GiveLoopBeginControlToVulkan() </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a17b852a4b3cc6a6c3722a26fd925a37a" name="a17b852a4b3cc6a6c3722a26fd925a37a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17b852a4b3cc6a6c3722a26fd925a37a">&#9670;&#160;</a></span>RecreateCommandBuffersPipelineSwapchain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanRendererAPI::RecreateCommandBuffersPipelineSwapchain </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recreates command buffers, graphics pipelines, and uniform buffer objects when swapchain is recreated (like on window resize when acquiring next image from swapchain gives VK_ERROR_OUT_OF_DATE_KHR). </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#afac431c944424a707d442ca9a593a58f" title="Submits the recorded command buffers to the graphics queue for execution.">VulkanRendererAPI::SubmitCommandBuffers()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="aacbfe2acb9302cdd440b85c56c0a45ea" name="aacbfe2acb9302cdd440b85c56c0a45ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacbfe2acb9302cdd440b85c56c0a45ea">&#9670;&#160;</a></span>RemoveSynchronicity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanRendererAPI::RemoveSynchronicity </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes synchronization objects like semaphores and fences. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a9866aec4c73c1407c773d82057f476e0" title="Clears up VulkanRendererAPI specific resources like command buffers and synchronization objects.">VulkanRendererAPI::ClearVulkanRendererAPI()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
@@ -344,7 +576,7 @@ static glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>m_ClearCo
 </table>
 </div><div class="memdoc">
 
-<p>Set the color to be used for clear (rendering) screen. </p>
+<p>Sets the color to be used for clear (rendering) screen. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">color</td><td>The color to be used for clearing </td></tr>
@@ -354,6 +586,27 @@ static glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>m_ClearCo
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="class_karma_1_1_renderer_a_p_i.html#ad560c21fdb34d3e4d8e1b223859988f8">Karma::RendererAPI</a>.</p>
+
+</div>
+</div>
+<a id="afac431c944424a707d442ca9a593a58f" name="afac431c944424a707d442ca9a593a58f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afac431c944424a707d442ca9a593a58f">&#9670;&#160;</a></span>SubmitCommandBuffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanRendererAPI::SubmitCommandBuffers </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Submits the recorded command buffers to the graphics queue for execution. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a18aa84c1f6bd0f22ea4172d3f9166cdd" title="Routine for drawing primitives.">VulkanRendererAPI::DrawIndexed()</a>, <a class="el" href="#a537e96a1551956707e80d41e5ad5508b" title="Records the command buffers with rendering commands for a particular image in the swapchain.">VulkanRendererAPI::RecordCommandBuffers()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
