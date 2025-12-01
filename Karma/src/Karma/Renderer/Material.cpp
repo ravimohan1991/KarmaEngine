@@ -38,7 +38,7 @@ namespace Karma
 		{
 			// Again hacky way.
 			elem->Bind(m_Textures.front()->GetTextureShaderName());
-			elem->GetUniformBufferObject()->UploadUniformBuffer();
+			//elem->GetUniformBufferObject()->UploadUniformBuffer();
 		}
 	}
 

@@ -473,7 +473,7 @@ namespace Karma
 				VkRenderPassBeginInfo renderPassInfo{};
 				renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 				renderPassInfo.renderPass = it->RenderPass;
-				renderPassInfo.framebuffer = it->FrameBuffers[windowData->ImageFrameIndex];
+				renderPassInfo.framebuffer = it->FrameBuffer;
 				renderPassInfo.renderArea.offset = {0, 0};
 				renderPassInfo.renderArea.extent.width = it->Size.x;
 				renderPassInfo.renderArea.extent.height = it->Size.y;
@@ -611,7 +611,7 @@ namespace Karma
 			{
 				if(it->Scene3D == scene)
 				{
-					return it->KarmaGui_Textures[m_VulkanWindowData.ImageFrameIndex];
+					return it->KarmaGui_Texture;
 				}
 			}
 			
@@ -643,82 +643,70 @@ namespace Karma
 			result = vkCreateSampler(vulkanInfo->Device, &samplerInfo, vulkanInfo->Allocator, &SceneToTexture.Sampler);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
 
-			uint32_t numberOfSwapChainImages = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
-
-			SceneToTexture.Images.resize(numberOfSwapChainImages);
-			SceneToTexture.DeviceMemory.resize(numberOfSwapChainImages);
-			SceneToTexture.Image_Views.resize(numberOfSwapChainImages);
-			SceneToTexture.KarmaGui_Textures.resize(numberOfSwapChainImages);
-
-			for(uint32_t i = 0; i < numberOfSwapChainImages; i++)
+			// Create images (along with appropriate memory)
 			{
-				// Create images (along with appropriate memory)
-				{
-					VkImageCreateInfo imageCreateCI{};
-					imageCreateCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-					imageCreateCI.imageType = VK_IMAGE_TYPE_2D;
-					imageCreateCI.format = VK_FORMAT_R8G8B8A8_UNORM;
-					imageCreateCI.extent.width = dimensions.x;
-					imageCreateCI.extent.height = dimensions.y;
-					imageCreateCI.extent.depth = 1;
-					imageCreateCI.arrayLayers = 1;
-					imageCreateCI.mipLevels = 1;
-					imageCreateCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-					imageCreateCI.samples = VK_SAMPLE_COUNT_1_BIT;
-					imageCreateCI.tiling = VK_IMAGE_TILING_OPTIMAL;
-					imageCreateCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-					imageCreateCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+				VkImageCreateInfo imageCreateCI{};
+				imageCreateCI.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+				imageCreateCI.imageType = VK_IMAGE_TYPE_2D;
+				imageCreateCI.format = VK_FORMAT_R8G8B8A8_UNORM;
+				imageCreateCI.extent.width = dimensions.x;
+				imageCreateCI.extent.height = dimensions.y;
+				imageCreateCI.extent.depth = 1;
+				imageCreateCI.arrayLayers = 1;
+				imageCreateCI.mipLevels = 1;
+				imageCreateCI.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+				imageCreateCI.samples = VK_SAMPLE_COUNT_1_BIT;
+				imageCreateCI.tiling = VK_IMAGE_TILING_OPTIMAL;
+				imageCreateCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+				imageCreateCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-					result = vkCreateImage(vulkanInfo->Device, &imageCreateCI, vulkanInfo->Allocator, &SceneToTexture.Images[i]);
+				result = vkCreateImage(vulkanInfo->Device, &imageCreateCI, vulkanInfo->Allocator, &SceneToTexture.Image);
 					KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
 
-					VkMemoryRequirements req;
-					vkGetImageMemoryRequirements(vulkanInfo->Device, SceneToTexture.Images[i], &req);
-					VkMemoryAllocateInfo allocInfo = {};
-					allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-					allocInfo.allocationSize = req.size;
-					allocInfo.memoryTypeIndex = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
+				VkMemoryRequirements req;
+				vkGetImageMemoryRequirements(vulkanInfo->Device, SceneToTexture.Image, &req);
+				VkMemoryAllocateInfo allocInfo = {};
+				allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+				allocInfo.allocationSize = req.size;
+				allocInfo.memoryTypeIndex = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
 
-					result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &SceneToTexture.DeviceMemory[i]);
-					KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
+				result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &SceneToTexture.DeviceMemory);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
 
-					result = vkBindImageMemory(vulkanInfo->Device, SceneToTexture.Images[i], SceneToTexture.DeviceMemory[i], 0);
-					KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind image memory");
-				}
-
-				// insert image memory barrier for VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL?
-
-				// Create image view:
-				{
-					VkImageViewCreateInfo viewInfo{};
-					viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-					viewInfo.image = SceneToTexture.Images[i];
-					viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-					viewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
-					viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-					viewInfo.subresourceRange.baseMipLevel = 0;
-					viewInfo.subresourceRange.levelCount = 1;
-					viewInfo.subresourceRange.baseArrayLayer = 0;
-					viewInfo.subresourceRange.layerCount = 1;
-
-					result = vkCreateImageView(vulkanInfo->Device, &viewInfo, vulkanInfo->Allocator, &SceneToTexture.Image_Views[i]);
-					KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
-				}
-
-				SceneToTexture.KarmaGui_Textures[i] = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_AddTexture(SceneToTexture.Sampler, SceneToTexture.Image_Views[i], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+				result = vkBindImageMemory(vulkanInfo->Device, SceneToTexture.Image, SceneToTexture.DeviceMemory, 0);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind image memory");
 			}
+
+			// insert image memory barrier for VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL?
+
+			// Create image view:
+			{
+				VkImageViewCreateInfo viewInfo{};
+				viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+				viewInfo.image = SceneToTexture.Image;
+				viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+				viewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+				viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				viewInfo.subresourceRange.baseMipLevel = 0;
+				viewInfo.subresourceRange.levelCount = 1;
+				viewInfo.subresourceRange.baseArrayLayer = 0;
+				viewInfo.subresourceRange.layerCount = 1;
+
+				result = vkCreateImageView(vulkanInfo->Device, &viewInfo, vulkanInfo->Allocator, &SceneToTexture.Image_View);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
+			}
+
+			SceneToTexture.KarmaGui_Texture = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_AddTexture(SceneToTexture.Sampler, SceneToTexture.Image_View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			
 						
 			backendData->Elements3DTo2D.push_back(SceneToTexture);
 			
 			// OffScreen texture (3D scene to 2D texture) resources like renderpass, framebuffers, and depth resources
-			// for the SceneToTexture element. We may be creating some resources again when not required, when new element is added
+			// for the SceneToTexture element. We also create different graphics pipeline specifically for KarmaGui window display of the 3D scene. We may be creating some resources again when not required, when new element is added
 			// resources for previous elements are also created. So take care of that.
 			KarmaGuiVulkanHandler::CreateOffScreenTextureResources();
-
-			// Set the renderpass for vulkanvertexarrays because graphicspipeline needs rebuilt (or be of different use)
-			KarmaGuiVulkanHandler::PrepareVertexArrayaForKarmaGuiWindowRendering();
 			
-			return SceneToTexture.KarmaGui_Textures[m_VulkanWindowData.ImageFrameIndex];
+			return SceneToTexture.KarmaGui_Texture;
 		}
 
 		return nullptr;

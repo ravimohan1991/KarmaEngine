@@ -1300,13 +1300,15 @@ namespace Karma
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		
-		// need to find appropriate way for feeding dimensions, should match with the window
 		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
 			CreateOffScreenTextureDepthResource(&(*it));
 			CreateOffScreenTextureRenderpassResource(&(*it));
 			
 			CreateOffScreenTextureFrameBufferResource(&(*it));
+			
+			std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
+			vulkanVA->CreateKarmaGuiGraphicsPipeline(it->RenderPass, it->Size.x, it->Size.y);
 		}
 	}
 
@@ -1317,22 +1319,22 @@ namespace Karma
 		
 		// Color Attachment
 		VkAttachmentDescription colorAttachment{};
-        colorAttachment.format = VK_FORMAT_R8G8B8A8_UNORM;
+		colorAttachment.format = VK_FORMAT_R8G8B8A8_UNORM;
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;       // Clear the image at start
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;     // Store the result for sampling later
 		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;  // Layout when render pass starts
-        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL; // Layout when render pass ends (we transition *after* the pass)
+		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL; // Layout when render pass ends (we transition *after* the pass)
 		
 		// Depth Attachment
 		VkAttachmentDescription depthAttachment{};
 		depthAttachment.format = VulkanHolder::GetVulkanContext()->FindDepthFormat();
 		depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -1358,23 +1360,23 @@ namespace Karma
 		
 		// Subpass dependencies for layout transitions ########## seems IMPORTANT for layout transitions ################
 		// https://github.com/1111mp/Vulkan/blob/7e65729c9782d00ee87e70fb25b711ccc0b71b64/src/Application.cpp#L1627
-        std::array<VkSubpassDependency, 2> dependencies;
+		std::array<VkSubpassDependency, 2> dependencies;
 
-        dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-        dependencies[0].dstSubpass = 0;
-        dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-        dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-        dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[0].dstSubpass = 0;
+		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-        dependencies[1].srcSubpass = VK_SUBPASS_EXTERNAL;
-        dependencies[1].dstSubpass = 0;
-        dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-        dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-        dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+		dependencies[1].srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[1].dstSubpass = 0;
+		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 		
 		// --- Render Pass Creation ---
@@ -1386,8 +1388,8 @@ namespace Karma
 		renderPassInfo.pAttachments = attachments.data();
 		renderPassInfo.subpassCount = 1;
 		renderPassInfo.pSubpasses = &subpass;
-        renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
-        renderPassInfo.pDependencies = dependencies.data();
+		renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
+		renderPassInfo.pDependencies = dependencies.data();
 		
 		// Subpass dependencies for synchronization could be added here,
 		// but the manual pipeline barrier after the pass is generally cleaner for this use case.
@@ -1396,35 +1398,27 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't off screen render pass");
 	}
 
-	// To be modified later
 	void KarmaGuiVulkanHandler::CreateOffScreenTextureFrameBufferResource(KarmaGui_3DScene_To_2DTexture_Data* textureData)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
-        uint32_t numberOfSwapchainImages = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+		std::vector<VkImageView> attachments ={
+				textureData->Image_View,
+				textureData->DepthImage_View
+		};
 
-        textureData->FrameBuffers.resize(numberOfSwapchainImages);
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = textureData->RenderPass;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferInfo.pAttachments = attachments.data();
+		framebufferInfo.width = textureData->Size.x;
+		framebufferInfo.height = textureData->Size.y;
+		framebufferInfo.layers = 1;
 
-        for(uint32_t i = 0; i < numberOfSwapchainImages; i++)
-        {
-            std::vector<VkImageView> attachments ={
-                textureData->Image_Views[i],
-                textureData->DepthImage_View
-            };
-
-            VkFramebufferCreateInfo framebufferInfo{};
-            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = textureData->RenderPass;
-            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-            framebufferInfo.pAttachments = attachments.data();
-            framebufferInfo.width = textureData->Size.x;
-            framebufferInfo.height = textureData->Size.y;
-            framebufferInfo.layers = 1;
-
-            VkResult result = vkCreateFramebuffer(vulkanInfo->Device, &framebufferInfo, nullptr, &textureData->FrameBuffers[i]);
-            KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create off screen frame buffer");
-        }
+		VkResult result = vkCreateFramebuffer(vulkanInfo->Device, &framebufferInfo, nullptr, &textureData->FrameBuffer);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create off screen frame buffer");
 	}
 
 	void KarmaGuiVulkanHandler::CreateOffScreenTextureDepthResource(KarmaGui_3DScene_To_2DTexture_Data* textureData)
@@ -1451,8 +1445,8 @@ namespace Karma
 			info.tiling = VK_IMAGE_TILING_OPTIMAL;
 			info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            //info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            info.samples = VK_SAMPLE_COUNT_1_BIT;
+			//info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			info.samples = VK_SAMPLE_COUNT_1_BIT;
 
 			result = vkCreateImage(vulkanInfo->Device, &info, vulkanInfo->Allocator, &textureData->DepthImage);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
@@ -1462,7 +1456,7 @@ namespace Karma
 			VkMemoryAllocateInfo allocInfo = {};
 			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			allocInfo.allocationSize = req.size;
-            allocInfo.memoryTypeIndex = VulkanHolder::GetVulkanContext()->FindMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);//KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
+			allocInfo.memoryTypeIndex = VulkanHolder::GetVulkanContext()->FindMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);//KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
 
 			result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &textureData->DepthDeviceMemory);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
@@ -1489,21 +1483,8 @@ namespace Karma
 		}
 	}
 
-	void KarmaGuiVulkanHandler::PrepareVertexArrayaForKarmaGuiWindowRendering()
-	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
-
-		for(auto textureData = backendData->Elements3DTo2D.begin(); textureData != backendData->Elements3DTo2D.end(); ++textureData)
-		{
-			std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(textureData->Scene3D->GetRenderableVertexArray());
-			vulkanVA->CreateKarmaGuiGraphicsPipeline(textureData->RenderPass, textureData->Size.x, textureData->Size.y);
-		}
-	}
-
 	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
 	{
-		// Still need to address bRecreateSwapChainAndCommandBuffers?
-
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
@@ -1701,35 +1682,30 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
-        KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
-        KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
-        uint32_t numberOfSwapchainImages = VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+		// Clear vulkan resources from KarmaGui_3DScene_To_2DTexture_Data
+		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
+		{
+			// Order of destruction to be taken in account
 
-        // Clear vulkan resources from KarmaGui_3DScene_To_2DTexture_Data
-        for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
-        {
-            // Order of destruction to be taken in account
+			vkDestroySampler(vulkanInfo->Device, it->Sampler, nullptr);
+			vkDestroyImageView(vulkanInfo->Device, it->DepthImage_View, nullptr);
 
-            vkDestroySampler(vulkanInfo->Device, it->Sampler, nullptr);
-            vkDestroyImageView(vulkanInfo->Device, it->DepthImage_View, nullptr);
+			vkDestroyImage(vulkanInfo->Device, it->DepthImage, nullptr);
+			vkFreeMemory(vulkanInfo->Device, it->DepthDeviceMemory, nullptr);
 
-            vkDestroyImage(vulkanInfo->Device, it->DepthImage, nullptr);
-            vkFreeMemory(vulkanInfo->Device, it->DepthDeviceMemory, nullptr);
+			vkDestroyImageView(vulkanInfo->Device, it->Image_View, nullptr);
+			vkDestroyImage(vulkanInfo->Device, it->Image, nullptr);
+			vkFreeMemory(vulkanInfo->Device, it->DeviceMemory, nullptr);
+			vkDestroyFramebuffer(vulkanInfo->Device, it->FrameBuffer, nullptr);
 
-            for(uint32_t i = 0; i < numberOfSwapchainImages; i++)
-            {
-                vkDestroyImageView(vulkanInfo->Device, it->Image_Views[i], nullptr);
-                vkDestroyImage(vulkanInfo->Device, it->Images[i], nullptr);
-                vkFreeMemory(vulkanInfo->Device, it->DeviceMemory[i], nullptr);
-                vkDestroyFramebuffer(vulkanInfo->Device, it->FrameBuffers[i], nullptr);
-            }
+			std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
+			vulkanVA->CleanupKarmaGuiGraphicsPipeline();
 
-            std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
-            vulkanVA->CleanupKarmaGuiGraphicsPipeline();
-
-            vkDestroyRenderPass(vulkanInfo->Device, it->RenderPass, nullptr);
-        }
+			vkDestroyRenderPass(vulkanInfo->Device, it->RenderPass, nullptr);
+		}
 
 		ClearVulkanWindowData(windowData, true);
 	}
@@ -1788,7 +1764,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetWindowSize(KarmaGuiViewport* viewport, KGVec2 size)
 	{
-        //KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		//KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_ViewportData* viewportData = (KarmaGui_ImplVulkan_ViewportData*)viewport->RendererUserData;
 		if (viewportData == nullptr) // This is NULL for the main viewport (which is left to the user/app to handle)
 		{

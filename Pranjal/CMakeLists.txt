@@ -34,7 +34,11 @@ file(GLOB_RECURSE CPPFILES ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp)
 file(GLOB_RECURSE HEADERFILES ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.h)
 
 # Finally the runnable file!
-add_executable(Pranjal ${CPPFILES} ${HEADERFILES})
+if(APPLE AND MAC_PACKAGE)
+	add_executable(Pranjal MACOSX_BUNDLE ${CPPFILES} ${HEADERFILES})
+else()
+	add_executable(Pranjal ${CPPFILES} ${HEADERFILES})
+endif()
 
 # MSVC specific extra mile of likning crap
 if(MSVC)
