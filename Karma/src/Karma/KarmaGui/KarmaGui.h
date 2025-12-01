@@ -2491,7 +2491,7 @@ IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT;
 #endif
 
 // [Internal] For use by KGDrawList
-struct ImDrawCmdHeader
+struct KGDrawCmdHeader
 {
     KGVec4          ClipRect;
     KGTextureID     TextureId;
@@ -2584,7 +2584,7 @@ struct KARMA_API KGDrawList
     KGVector<KGVec4>        _ClipRectStack;     // [Internal]
     KGVector<KGTextureID>   _TextureIdStack;    // [Internal]
     KGVector<KGVec2>        _Path;              // [Internal] current path building
-    ImDrawCmdHeader         _CmdHeader;         // [Internal] template of active commands. Fields should match those of CmdBuffer.back().
+    KGDrawCmdHeader         _CmdHeader;         // [Internal] template of active commands. Fields should match those of CmdBuffer.back().
     KGDrawListSplitter      _Splitter;          // [Internal] for channels api (note: prefer using your own persistent instance of KGDrawListSplitter!)
     float                   _FringeScale;       // [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content
 
