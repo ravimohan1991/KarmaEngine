@@ -470,23 +470,23 @@ namespace Karma
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
 		}
 
-        // Imgui basically make one sampler for all textures
-        {
-            VkSamplerCreateInfo info = {};
-            info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-            info.magFilter = VK_FILTER_LINEAR;
-            info.minFilter = VK_FILTER_LINEAR;
-            info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-            info.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-            info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-            info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-            info.minLod = -1000;
-            info.maxLod = 1000;
-            info.maxAnisotropy = 1.0f;
+		// Imgui basically make one sampler for all textures
+		{
+			VkSamplerCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+			info.magFilter = VK_FILTER_LINEAR;
+			info.minFilter = VK_FILTER_LINEAR;
+			info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+			info.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			info.minLod = -1000;
+			info.maxLod = 1000;
+			info.maxAnisotropy = 1.0f;
 
-            result = vkCreateSampler(vulkanInfo->Device, &info, vulkanInfo->Allocator, &imageData->TextureSampler);
-            KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
-        }
+			result = vkCreateSampler(vulkanInfo->Device, &info, vulkanInfo->Allocator, &imageData->TextureSampler);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
+		}
 
 		// Create the Descriptor Set:
 		imageData->TextureDescriptorSet = (VkDescriptorSet)KarmaGui_ImplVulkan_AddTexture(imageData->TextureSampler, imageData->TextureView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

@@ -41,6 +41,7 @@ namespace Karma
 			// Stuff created and dedicated to KarmaGui
 			CreateDescriptorPool();
 			initInfo.DescriptorPool = m_KarmaGuiDescriptorPool;
+			
 			initInfo.RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
 
 			// Not sure about the use of Subpass so setting to 0
@@ -386,7 +387,6 @@ namespace Karma
 	void KarmaGuiRenderer::CleanUpVulkanAndWindowData()
 	{
 		// Clean up Window
-		//ImGuiVulkanHandler::ClearVulkanWindowData(&m_VulkanWindowData, true);
 		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(&m_VulkanWindowData);
 
 		KarmaGuiBackendRendererUserData* backendData = GetBackendRendererUserData();
