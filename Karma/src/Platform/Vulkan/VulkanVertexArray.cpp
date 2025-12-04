@@ -1,6 +1,6 @@
 #include "VulkanVertexArray.h"
 #include "Platform/Vulkan/VulkanHolder.h"
-#include "Platform/Vulkan/VulkanTexutre.h"
+#include "Platform/Vulkan/VulkanTexture.h"
 #include "Karma/Renderer/RenderCommand.h"
 
 namespace Karma

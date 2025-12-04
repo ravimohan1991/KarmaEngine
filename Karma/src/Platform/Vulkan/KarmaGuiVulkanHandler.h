@@ -708,7 +708,7 @@ namespace Karma
 		VkImage                             Image;
 		VkDeviceMemory                      DeviceMemory;
 		VkImageView                         Image_View;
-		VkSampler                           Sampler;
+		//VkSampler                           Sampler;
 		
 		// Depth resources
 		VkImage                             DepthImage;
@@ -716,8 +716,20 @@ namespace Karma
 		
 		VkImageView                         DepthImage_View;
 		
-		VkRenderPass                        RenderPass;
+		//VkRenderPass                        RenderPass;
 		VkFramebuffer                       FrameBuffer;
+	};
+
+	struct KarmaGui_OffScreen_Render_Resources
+	{
+		VkSampler                           Sampler;
+		VkRenderPass                        RenderPass;
+		
+		// Since the resources in here require allocation only once
+		bool                                bAllocationDoneOnce;
+		
+		KarmaGui_OffScreen_Render_Resources() : bAllocationDoneOnce(false)
+		{}
 	};
 
 	/**
@@ -753,8 +765,13 @@ namespace Karma
 		 * 
 		 * @see KarmaGuiRenderer::FrameRender
 		 */
-		std::vector<KarmaGui_3DScene_To_2DTexture_Data>		Elements3DTo2D;
-
+		std::vector<KarmaGui_3DScene_To_2DTexture_Data>     Elements3DTo2D;
+		
+		/**
+		 * @brief Resources (common) required for off screen rendering of Elements3DTo2D
+		 */
+		KarmaGui_OffScreen_Render_Resources                 OffScreenRR;
+		
 		/**
 		 * @brief The value for default alignment for index and vertex buffers. The value is set to 256 by DearImgui authors, so we do in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init.
 		 *
@@ -1133,7 +1150,7 @@ namespace Karma
 		/**
 		 * @brief Creates depth resource for off screen texture (3D scene to 2D texture)
 		 *
-		 * @param textureData                               Container for information required for offscreen texture rendering
+		 * @param textureData                               Container for information required for 3D objects to 2D rendering
 		 * @since Karma 1.0.0
 		 */
 		static void CreateOffScreenTextureDepthResource(KarmaGui_3DScene_To_2DTexture_Data* textureData);
@@ -1141,10 +1158,9 @@ namespace Karma
 		/**
 		 * @brief Creates renderpass for off screen texture (3D scene to 2D texture)
 		 *
-		 * @param textureData                               Container for information required for offscreen texture rendering
 		 * @since Karma 1.0.0
 		 */
-		static void CreateOffScreenTextureRenderpassResource(KarmaGui_3DScene_To_2DTexture_Data* textureData);
+		static void CreateOffScreenTextureRenderpassResource();
 		
 		/**
 		 * @brief Creates appropriate frame buffer for off screen texture rendering
