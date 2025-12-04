@@ -11,9 +11,4 @@ digraph "Karma/src/Karma/Core/TrueCore/KarmaSmriti.h"
   Node3 [id="Node000003",label="Karma/src/Karma.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_karma_8h_source.html",tooltip=" "];
   Node3 -> Node4 [id="edge3_Node000003_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node4 [id="Node000004",label="Karma/src/Karma/EntryPoint.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_entry_point_8h.html",tooltip="This file contains the main() routine with multiplatform support."];
-  Node4 -> Node5 [id="edge4_Node000004_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node5 [id="Node000005",label="Pranjal/Source/Public\l/EditorLayer.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_editor_layer_8h_source.html",tooltip=" "];
-  Node3 -> Node5 [id="edge5_Node000003_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node3 -> Node6 [id="edge6_Node000003_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node6 [id="Node000006",label="Pranjal/Source/Public\l/KarmaGuiMesa.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_karma_gui_mesa_8h.html",tooltip="This file contains the classes for Editor."];
 }

@@ -10,5 +10,5 @@ digraph "Karma/src/Platform/Windows/Core"
   dir_c7a3a4237b07011061ae5c3f6aa6a503 [label="Core", fillcolor="#ede7fc", color="grey25", style="filled,bold", URL="dir_c7a3a4237b07011061ae5c3f6aa6a503.html",tooltip=""];
   }
   dir_c2cc37fe09132ac847ead816896c02db [label="Karma", fillcolor="#ede7fc", color="red", style="filled,dashed", URL="dir_c2cc37fe09132ac847ead816896c02db.html",tooltip=""];
-  dir_c7a3a4237b07011061ae5c3f6aa6a503->dir_c2cc37fe09132ac847ead816896c02db [headlabel="1", labeldistance=1.5 headhref="dir_000006_000015.html" href="dir_000006_000015.html" color="steelblue1" fontcolor="steelblue1"];
+  dir_c7a3a4237b07011061ae5c3f6aa6a503->dir_c2cc37fe09132ac847ead816896c02db [headlabel="1", labeldistance=1.5 headhref="dir_000005_000011.html" href="dir_000005_000011.html" color="steelblue1" fontcolor="steelblue1"];
 }

@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="Karma::KarmaTuringMachine\lElectronics::CPU",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$struct_karma_1_1_karma_turing_machine_electronics_1_1_c_p_u.html",tooltip=" "];
+  Node0 [id="Node000000",label="Karma::SelectIntPointerType\l\< T32BITS, T64BITS, 4 \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$struct_karma_1_1_select_int_pointer_type_3_01_t32_b_i_t_s_00_01_t64_b_i_t_s_00_014_01_4.html",tooltip="For selecting 32 bit type."];
 }

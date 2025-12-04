@@ -10,5 +10,5 @@ digraph "Karma/src/Karma/Core/TrueCore"
   dir_e80f514e524eb463109b318080f2dd5b [label="TrueCore", fillcolor="#ede7fc", color="grey25", style="filled,bold", URL="dir_e80f514e524eb463109b318080f2dd5b.html",tooltip=""];
   }
   dir_d0a570607d060784a4a2a95e653309be [label="Ganit", fillcolor="#ede7fc", color="grey50", style="filled", URL="dir_d0a570607d060784a4a2a95e653309be.html",tooltip=""];
-  dir_e80f514e524eb463109b318080f2dd5b->dir_d0a570607d060784a4a2a95e653309be [headlabel="1", labeldistance=1.5 headhref="dir_000031_000010.html" href="dir_000031_000010.html" color="steelblue1" fontcolor="steelblue1"];
+  dir_e80f514e524eb463109b318080f2dd5b->dir_d0a570607d060784a4a2a95e653309be [headlabel="1", labeldistance=1.5 headhref="dir_000019_000009.html" href="dir_000019_000009.html" color="steelblue1" fontcolor="steelblue1"];
 }

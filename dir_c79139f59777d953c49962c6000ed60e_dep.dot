@@ -10,5 +10,5 @@ digraph "Karma/src/Platform/Linux/Core"
   dir_c79139f59777d953c49962c6000ed60e [label="Core", fillcolor="#ede7fc", color="grey25", style="filled,bold", URL="dir_c79139f59777d953c49962c6000ed60e.html",tooltip=""];
   }
   dir_c2cc37fe09132ac847ead816896c02db [label="Karma", fillcolor="#ede7fc", color="red", style="filled,dashed", URL="dir_c2cc37fe09132ac847ead816896c02db.html",tooltip=""];
-  dir_c79139f59777d953c49962c6000ed60e->dir_c2cc37fe09132ac847ead816896c02db [headlabel="1", labeldistance=1.5 headhref="dir_000004_000015.html" href="dir_000004_000015.html" color="steelblue1" fontcolor="steelblue1"];
+  dir_c79139f59777d953c49962c6000ed60e->dir_c2cc37fe09132ac847ead816896c02db [headlabel="1", labeldistance=1.5 headhref="dir_000003_000011.html" href="dir_000003_000011.html" color="steelblue1" fontcolor="steelblue1"];
 }

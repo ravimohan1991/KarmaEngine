@@ -85,16 +85,14 @@ digraph "Karma/src/Karma/Renderer/Material.h"
   Node38 -> Node39 [id="edge41_Node000038_Node000039",color="steelblue1",style="solid",tooltip=" "];
   Node39 [id="Node000039",label="glm/gtc/type_ptr.hpp",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node38 -> Node40 [id="edge42_Node000038_Node000040",color="steelblue1",style="solid",tooltip=" "];
-  Node40 [id="Node000040",label="stb_image.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stb__image_8h_source.html",tooltip=" "];
-  Node40 -> Node13 [id="edge43_Node000040_Node000013",color="steelblue1",style="solid",tooltip=" "];
-  Node40 -> Node21 [id="edge44_Node000040_Node000021",color="steelblue1",style="solid",tooltip=" "];
-  Node37 -> Node41 [id="edge45_Node000037_Node000041",color="steelblue1",style="solid",tooltip=" "];
+  Node40 [id="Node000040",label="stb_image.h",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
+  Node37 -> Node41 [id="edge43_Node000037_Node000041",color="steelblue1",style="solid",tooltip=" "];
   Node41 [id="Node000041",label="glm/glm.hpp",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
-  Node1 -> Node42 [id="edge46_Node000001_Node000042",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node42 [id="edge44_Node000001_Node000042",color="steelblue1",style="solid",tooltip=" "];
   Node42 [id="Node000042",label="Texture.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_texture_8h.html",tooltip="This file contains the SkeletalMesh class."];
-  Node42 -> Node2 [id="edge47_Node000042_Node000002",color="steelblue1",style="solid",tooltip=" "];
-  Node1 -> Node43 [id="edge48_Node000001_Node000043",color="steelblue1",style="solid",tooltip=" "];
+  Node42 -> Node2 [id="edge45_Node000042_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node43 [id="edge46_Node000001_Node000043",color="steelblue1",style="solid",tooltip=" "];
   Node43 [id="Node000043",label="Camera/Camera.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_camera_8h.html",tooltip="This file contains Camera class."];
-  Node43 -> Node2 [id="edge49_Node000043_Node000002",color="steelblue1",style="solid",tooltip=" "];
-  Node43 -> Node41 [id="edge50_Node000043_Node000041",color="steelblue1",style="solid",tooltip=" "];
+  Node43 -> Node2 [id="edge47_Node000043_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node43 -> Node41 [id="edge48_Node000043_Node000041",color="steelblue1",style="solid",tooltip=" "];
 }

@@ -81,7 +81,5 @@ digraph "Karma/src/Platform/OpenGL/OpenGLBuffer.h"
   Node2 -> Node38 [id="edge38_Node000002_Node000038",color="steelblue1",style="solid",tooltip=" "];
   Node38 [id="Node000038",label="glm/gtc/type_ptr.hpp",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node2 -> Node39 [id="edge39_Node000002_Node000039",color="steelblue1",style="solid",tooltip=" "];
-  Node39 [id="Node000039",label="stb_image.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stb__image_8h_source.html",tooltip=" "];
-  Node39 -> Node14 [id="edge40_Node000039_Node000014",color="steelblue1",style="solid",tooltip=" "];
-  Node39 -> Node22 [id="edge41_Node000039_Node000022",color="steelblue1",style="solid",tooltip=" "];
+  Node39 [id="Node000039",label="stb_image.h",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
 }

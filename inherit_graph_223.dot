@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="KGGuiTableCellData",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$struct_k_g_gui_table_cell_data.html",tooltip=" "];
+  Node0 [id="Node000000",label="KGGuiWindowSettings",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$struct_k_g_gui_window_settings.html",tooltip=" "];
 }

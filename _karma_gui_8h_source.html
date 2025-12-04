@@ -14,6 +14,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -2576,7 +2577,7 @@ $(function() {
 <div class="line"><a id="l02492" name="l02492"></a><span class="lineno"> 2492</span> </div>
 <div class="line"><a id="l02493" name="l02493"></a><span class="lineno"> 2493</span><span class="comment">// [Internal] For use by KGDrawList</span></div>
 <div class="foldopen" id="foldopen02494" data-start="{" data-end="};">
-<div class="line"><a id="l02494" name="l02494"></a><span class="lineno"><a class="line" href="struct_im_draw_cmd_header.html"> 2494</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_im_draw_cmd_header.html">ImDrawCmdHeader</a></div>
+<div class="line"><a id="l02494" name="l02494"></a><span class="lineno"><a class="line" href="struct_k_g_draw_cmd_header.html"> 2494</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_k_g_draw_cmd_header.html">KGDrawCmdHeader</a></div>
 <div class="line"><a id="l02495" name="l02495"></a><span class="lineno"> 2495</span>{</div>
 <div class="line"><a id="l02496" name="l02496"></a><span class="lineno"> 2496</span>    <a class="code hl_struct" href="struct_k_g_vec4.html">KGVec4</a>          ClipRect;</div>
 <div class="line"><a id="l02497" name="l02497"></a><span class="lineno"> 2497</span>    KGTextureID     TextureId;</div>
@@ -2661,7 +2662,7 @@ $(function() {
 <div class="line"><a id="l02584" name="l02584"></a><span class="lineno"> 2584</span>    <a class="code hl_struct" href="struct_k_g_vector.html">KGVector&lt;KGVec4&gt;</a>        _ClipRectStack;     <span class="comment">// [Internal]</span></div>
 <div class="line"><a id="l02585" name="l02585"></a><span class="lineno"> 2585</span>    <a class="code hl_struct" href="struct_k_g_vector.html">KGVector&lt;KGTextureID&gt;</a>   _TextureIdStack;    <span class="comment">// [Internal]</span></div>
 <div class="line"><a id="l02586" name="l02586"></a><span class="lineno"> 2586</span>    <a class="code hl_struct" href="struct_k_g_vector.html">KGVector&lt;KGVec2&gt;</a>        _Path;              <span class="comment">// [Internal] current path building</span></div>
-<div class="line"><a id="l02587" name="l02587"></a><span class="lineno"> 2587</span>    <a class="code hl_struct" href="struct_im_draw_cmd_header.html">ImDrawCmdHeader</a>         _CmdHeader;         <span class="comment">// [Internal] template of active commands. Fields should match those of CmdBuffer.back().</span></div>
+<div class="line"><a id="l02587" name="l02587"></a><span class="lineno"> 2587</span>    <a class="code hl_struct" href="struct_k_g_draw_cmd_header.html">KGDrawCmdHeader</a>         _CmdHeader;         <span class="comment">// [Internal] template of active commands. Fields should match those of CmdBuffer.back().</span></div>
 <div class="line"><a id="l02588" name="l02588"></a><span class="lineno"> 2588</span>    <a class="code hl_struct" href="struct_k_g_draw_list_splitter.html">KGDrawListSplitter</a>      _Splitter;          <span class="comment">// [Internal] for channels api (note: prefer using your own persistent instance of KGDrawListSplitter!)</span></div>
 <div class="line"><a id="l02589" name="l02589"></a><span class="lineno"> 2589</span>    <span class="keywordtype">float</span>                   _FringeScale;       <span class="comment">// [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content</span></div>
 <div class="line"><a id="l02590" name="l02590"></a><span class="lineno"> 2590</span> </div>
@@ -3260,9 +3261,9 @@ $(function() {
 <div class="ttc" id="aclass_karma_1_1_karma_gui_html_a4cfd4ebcfdaaec822b80b7805d288e36"><div class="ttname"><a href="class_karma_1_1_karma_gui.html#a4cfd4ebcfdaaec822b80b7805d288e36">Karma::KarmaGui::RenderPlatformWindowsDefault</a></div><div class="ttdeci">static void RenderPlatformWindowsDefault(void *platform_render_arg=NULL, void *renderer_render_arg=NULL)</div><div class="ttdoc">Call in main loop. Will call RenderWindow/SwapBuffers platform functions for each secondary viewport ...</div><div class="ttdef"><b>Definition</b> KarmaGui.cpp:13339</div></div>
 <div class="ttc" id="aclass_karma_1_1_karma_gui_html_ac377901621df4a3cac7b1ad6a4af1391"><div class="ttname"><a href="class_karma_1_1_karma_gui.html#ac377901621df4a3cac7b1ad6a4af1391">Karma::KarmaGui::AddTextVertical</a></div><div class="ttdeci">static void AddTextVertical(KGDrawList *DrawList, const char *text, KGVec2 pos, KGU32 text_color)</div><div class="ttdef"><b>Definition</b> KarmaGuiWidgets.cpp:297</div></div>
 <div class="ttc" id="aclass_karma_1_1_karma_gui_html_add22ff556b27cf4c1bc6e9a9c7e00cde"><div class="ttname"><a href="class_karma_1_1_karma_gui.html#add22ff556b27cf4c1bc6e9a9c7e00cde">Karma::KarmaGui::MemAlloc</a></div><div class="ttdeci">static void * MemAlloc(size_t size)</div><div class="ttdoc">A legacy function brought from ImGui for UI relevant memory allocation.</div><div class="ttdef"><b>Definition</b> KarmaGui.cpp:3094</div></div>
-<div class="ttc" id="astruct_im_draw_cmd_header_html"><div class="ttname"><a href="struct_im_draw_cmd_header.html">ImDrawCmdHeader</a></div><div class="ttdef"><b>Definition</b> KarmaGui.h:2495</div></div>
 <div class="ttc" id="astruct_k_g_color_html"><div class="ttname"><a href="struct_k_g_color.html">KGColor</a></div><div class="ttdef"><b>Definition</b> KarmaGui.h:2412</div></div>
 <div class="ttc" id="astruct_k_g_draw_channel_html"><div class="ttname"><a href="struct_k_g_draw_channel.html">KGDrawChannel</a></div><div class="ttdef"><b>Definition</b> KarmaGui.h:2503</div></div>
+<div class="ttc" id="astruct_k_g_draw_cmd_header_html"><div class="ttname"><a href="struct_k_g_draw_cmd_header.html">KGDrawCmdHeader</a></div><div class="ttdef"><b>Definition</b> KarmaGui.h:2495</div></div>
 <div class="ttc" id="astruct_k_g_draw_cmd_html"><div class="ttname"><a href="struct_k_g_draw_cmd.html">KGDrawCmd</a></div><div class="ttdef"><b>Definition</b> KarmaGui.h:2461</div></div>
 <div class="ttc" id="astruct_k_g_draw_data_html"><div class="ttname"><a href="struct_k_g_draw_data.html">KGDrawData</a></div><div class="ttdef"><b>Definition</b> KarmaGui.h:2697</div></div>
 <div class="ttc" id="astruct_k_g_draw_list_html"><div class="ttname"><a href="struct_k_g_draw_list.html">KGDrawList</a></div><div class="ttdoc">Draw command list.</div><div class="ttdef"><b>Definition</b> KarmaGui.h:2571</div></div>

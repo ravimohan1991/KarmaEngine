@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="Karma::BufferElement",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$struct_karma_1_1_buffer_element.html",tooltip="A datastructure for creating interleaved data for Mesh with a specifc format (BufferLayout)."];
+  Node0 [id="Node000000",label="Karma::FActorSpawnParameters",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$struct_karma_1_1_f_actor_spawn_parameters.html",tooltip="Struct of optional parameters passed to SpawnActor function(s)."];
 }

@@ -14,6 +14,7 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript" src="darkmode_toggle.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -226,7 +227,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_DebugName</b
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_application.html#a4504dac1b5a332057fb3011dd69aa7da" title="Routine containing the main application loop.">Application::Run()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
-<p>Implemented in <a class="el" href="class_example_layer.html#a5b38153dfdfdd5ab2ff784c70132b471">ExampleLayer</a>, <a class="el" href="class_karma_1_1_editor_layer.html#a3828feabe39100f622d9c255626f8ca0">Karma::EditorLayer</a>, and <a class="el" href="class_karma_1_1_karma_gui_layer.html#a80cc8aad61a5ade3541b05557f21edc4">Karma::KarmaGuiLayer</a>.</p>
+<p>Implemented in <a class="el" href="class_karma_1_1_karma_gui_layer.html#a80cc8aad61a5ade3541b05557f21edc4">Karma::KarmaGuiLayer</a>.</p>
 
 </div>
 </div>
@@ -257,7 +258,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_DebugName</b
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_application.html#a6589eb8c60df9c2aef44797b6312b791" title="Places the Layer in the stack of layers and sends a notification.">Application::PushLayer</a>, <a class="el" href="class_karma_1_1_application.html#ac178a7207c76f2e70cca0b01298a9d29" title="Places the Layer at the front most position, in the sense, after the last inserted layer.">Application::PushOverlay</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
-<p>Implemented in <a class="el" href="class_example_layer.html#a76a1dec09071d78ebf7c0bd6ca204a1d">ExampleLayer</a>, <a class="el" href="class_karma_1_1_editor_layer.html#a317b841d877d308738a436b04cfe7aa5">Karma::EditorLayer</a>, and <a class="el" href="class_karma_1_1_karma_gui_layer.html#aec8b6ae1c6605a9c29f5d54bf3632640">Karma::KarmaGuiLayer</a>.</p>
+<p>Implemented in <a class="el" href="class_karma_1_1_karma_gui_layer.html#aec8b6ae1c6605a9c29f5d54bf3632640">Karma::KarmaGuiLayer</a>.</p>
 
 </div>
 </div>
@@ -288,7 +289,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_DebugName</b
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_layer_stack.html#aa4f2caa1d1ee58486ef35979392ee655" title="Destructor for freeing up the Layer occupied resource and calling Layer::OnDetach function in each La...">LayerStack::~LayerStack()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
-<p>Implemented in <a class="el" href="class_example_layer.html#a39d3db4ef3cb0f27c99671d288fa627f">ExampleLayer</a>, <a class="el" href="class_karma_1_1_editor_layer.html#a191a42bd3d712274cd04372f8cae2f02">Karma::EditorLayer</a>, and <a class="el" href="class_karma_1_1_karma_gui_layer.html#aa3fde7bcc9e5ba8f4699afcf6a37de55">Karma::KarmaGuiLayer</a>.</p>
+<p>Implemented in <a class="el" href="class_karma_1_1_karma_gui_layer.html#aa3fde7bcc9e5ba8f4699afcf6a37de55">Karma::KarmaGuiLayer</a>.</p>
 
 </div>
 </div>
@@ -319,7 +320,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_DebugName</b
 <dl class="section note"><dt>Note</dt><dd>GLFW calls the <a class="el" href="class_karma_1_1_application.html#a39be3483a9dab224dc8a45683b7a0e67" title="For dispatching events and trickling down the call to Layer stack.">Application::OnEvent</a> which further calls the OnEvent function in the subsequent layers and, depending on m_Handled, the depth of the call chain (measured in the sense of for-loop, upon the ordered layers) is determined. </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
-<p>Reimplemented in <a class="el" href="class_example_layer.html#a424267c819d1d830275ff46ddc5c9574">ExampleLayer</a>, <a class="el" href="class_karma_1_1_editor_layer.html#a551f470732b3abdf88010c0489eab04c">Karma::EditorLayer</a>, and <a class="el" href="class_karma_1_1_karma_gui_layer.html#ad4871fea7477a4d502bab974e8703d8b">Karma::KarmaGuiLayer</a>.</p>
+<p>Reimplemented in <a class="el" href="class_karma_1_1_karma_gui_layer.html#ad4871fea7477a4d502bab974e8703d8b">Karma::KarmaGuiLayer</a>.</p>
 
 </div>
 </div>
@@ -356,7 +357,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_DebugName</b
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_application.html#a4504dac1b5a332057fb3011dd69aa7da" title="Routine containing the main application loop.">Application::Run()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
-<p>Implemented in <a class="el" href="class_example_layer.html#ada69b4a0f32e5d3fc04535b65af089d0">ExampleLayer</a>, <a class="el" href="class_karma_1_1_editor_layer.html#afcece0c67f17c37ade594dc54eaf9712">Karma::EditorLayer</a>, and <a class="el" href="class_karma_1_1_karma_gui_layer.html#aa66920bd5918f5de69d1029b73c83b3c">Karma::KarmaGuiLayer</a>.</p>
+<p>Implemented in <a class="el" href="class_karma_1_1_karma_gui_layer.html#aa66920bd5918f5de69d1029b73c83b3c">Karma::KarmaGuiLayer</a>.</p>
 
 </div>
 </div>

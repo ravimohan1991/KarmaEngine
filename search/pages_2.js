@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['channels_0',['Youtube Channels',['../md__r_e_a_d_m_e.html#autotoc_md14',1,'']]],
-  ['clone_1',['Clone',['../md__r_e_a_d_m_e.html#autotoc_md1',1,'']]]
+  ['todo_20list_0',['Todo List',['../todo.html',1,'']]]
 ];

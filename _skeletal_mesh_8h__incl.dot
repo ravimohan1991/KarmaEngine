@@ -85,13 +85,11 @@ digraph "Karma/src/Karma/Renderer/SkeletalMesh.h"
   Node38 -> Node39 [id="edge41_Node000038_Node000039",color="steelblue1",style="solid",tooltip=" "];
   Node39 [id="Node000039",label="glm/gtc/type_ptr.hpp",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node38 -> Node40 [id="edge42_Node000038_Node000040",color="steelblue1",style="solid",tooltip=" "];
-  Node40 [id="Node000040",label="stb_image.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stb__image_8h_source.html",tooltip=" "];
-  Node40 -> Node13 [id="edge43_Node000040_Node000013",color="steelblue1",style="solid",tooltip=" "];
-  Node40 -> Node21 [id="edge44_Node000040_Node000021",color="steelblue1",style="solid",tooltip=" "];
-  Node37 -> Node41 [id="edge45_Node000037_Node000041",color="steelblue1",style="solid",tooltip=" "];
+  Node40 [id="Node000040",label="stb_image.h",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
+  Node37 -> Node41 [id="edge43_Node000037_Node000041",color="steelblue1",style="solid",tooltip=" "];
   Node41 [id="Node000041",label="assimp/Importer.hpp",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
-  Node37 -> Node42 [id="edge46_Node000037_Node000042",color="steelblue1",style="solid",tooltip=" "];
+  Node37 -> Node42 [id="edge44_Node000037_Node000042",color="steelblue1",style="solid",tooltip=" "];
   Node42 [id="Node000042",label="assimp/scene.h",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
-  Node37 -> Node43 [id="edge47_Node000037_Node000043",color="steelblue1",style="solid",tooltip=" "];
+  Node37 -> Node43 [id="edge45_Node000037_Node000043",color="steelblue1",style="solid",tooltip=" "];
   Node43 [id="Node000043",label="assimp/postprocess.h",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
 }

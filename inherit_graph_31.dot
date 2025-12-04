@@ -5,5 +5,9 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="Karma::FStaticConstructObject\lParameters",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$struct_karma_1_1_f_static_construct_object_parameters.html",tooltip="This struct is used for passing parameter values to the StaticConstructObject_Internal() method...."];
+  Node0 [id="Node000000",label="Karma::IndexBuffer",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_karma_1_1_index_buffer.html",tooltip="An abstract class for index buffer."];
+  Node0 -> Node1 [id="edge27_Node000000_Node000001",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 [id="Node000001",label="Karma::OpenGLIndexBuffer",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_karma_1_1_open_g_l_index_buffer.html",tooltip="OpenGL's index buffer class, used in agnostic Mesh instance."];
+  Node0 -> Node2 [id="edge28_Node000000_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="Karma::VulkanIndexBuffer",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_karma_1_1_vulkan_index_buffer.html",tooltip="Vulkan's index buffer class, used in agnostic Mesh instance."];
 }

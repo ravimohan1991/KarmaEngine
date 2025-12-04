@@ -5,7 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="Karma::Mesh",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_karma_1_1_mesh.html",tooltip="An organized collection of vertex and index buffers along with rest of the model specific information..."];
-  Node0 -> Node1 [id="edge41_Node000000_Node000001",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node1 [id="Node000001",label="Karma::SkeletalMesh",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_karma_1_1_skeletal_mesh.html",tooltip="SkeletalMesh class."];
+  Node0 [id="Node000000",label="Karma::TChooseClass\l\< false, TrueClass,\l FalseClass \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_karma_1_1_t_choose_class_3_01false_00_01_true_class_00_01_false_class_01_4.html",tooltip=" "];
 }

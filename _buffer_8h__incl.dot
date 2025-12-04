@@ -79,7 +79,5 @@ digraph "Karma/src/Karma/Renderer/Buffer.h"
   Node1 -> Node37 [id="edge37_Node000001_Node000037",color="steelblue1",style="solid",tooltip=" "];
   Node37 [id="Node000037",label="glm/gtc/type_ptr.hpp",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node1 -> Node38 [id="edge38_Node000001_Node000038",color="steelblue1",style="solid",tooltip=" "];
-  Node38 [id="Node000038",label="stb_image.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$stb__image_8h_source.html",tooltip=" "];
-  Node38 -> Node13 [id="edge39_Node000038_Node000013",color="steelblue1",style="solid",tooltip=" "];
-  Node38 -> Node21 [id="edge40_Node000038_Node000021",color="steelblue1",style="solid",tooltip=" "];
+  Node38 [id="Node000038",label="stb_image.h",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
 }

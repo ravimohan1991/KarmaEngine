@@ -9,7 +9,7 @@ var searchData=
   ['level_2eh_6',['Level.h',['../_level_8h.html',1,'']]],
   ['leveltransition_7',['LevelTransition',['../namespace_e_end_play_reason.html#a8b44c9c9dc5082d57986ffb19ba69a8cad7562d6cb973882acee3d5bf656de223',1,'EEndPlayReason']]],
   ['lightmap_8',['LightMap',['../_texture_8h.html#a0978ccd0c5e2bc0d8dd9f99942c5cd8aad11d63c2b37a0ad6b12295782398fc9c',1,'Karma']]],
-  ['linux_9',['Linux',['../_application_8h.html#a1ec692a3462b14aa9c231094451b2255aedc9f0a5a5d57797bf68e37364743831',1,'LinuxKarma'],['../md__r_e_a_d_m_e.html#autotoc_md6',1,'Linux']]],
+  ['linux_9',['Linux',['../_application_8h.html#a1ec692a3462b14aa9c231094451b2255aedc9f0a5a5d57797bf68e37364743831',1,'Karma']]],
   ['linuxinput_10',['LinuxInput',['../class_karma_1_1_linux_input.html',1,'Karma::LinuxInput'],['../class_karma_1_1_linux_input.html#acb0e4797880c348a2db33e5dbdcad5c2',1,'Karma::LinuxInput::LinuxInput()']]],
   ['linuxinput_2eh_11',['LinuxInput.h',['../_linux_input_8h.html',1,'']]],
   ['linuxinputdata_12',['LinuxInputData',['../struct_karma_1_1_linux_input_data.html',1,'Karma::LinuxInputData'],['../struct_karma_1_1_linux_input_data.html#a3653a6018dc49aad771732b54405c860',1,'Karma::LinuxInputData::LinuxInputData()']]],

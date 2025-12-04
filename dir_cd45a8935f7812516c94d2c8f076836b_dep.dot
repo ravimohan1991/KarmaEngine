@@ -10,5 +10,5 @@ digraph "Karma/src/Platform/Mac/Core"
   dir_cd45a8935f7812516c94d2c8f076836b [label="Core", fillcolor="#ede7fc", color="grey25", style="filled,bold", URL="dir_cd45a8935f7812516c94d2c8f076836b.html",tooltip=""];
   }
   dir_c2cc37fe09132ac847ead816896c02db [label="Karma", fillcolor="#ede7fc", color="red", style="filled,dashed", URL="dir_c2cc37fe09132ac847ead816896c02db.html",tooltip=""];
-  dir_cd45a8935f7812516c94d2c8f076836b->dir_c2cc37fe09132ac847ead816896c02db [headlabel="1", labeldistance=1.5 headhref="dir_000005_000015.html" href="dir_000005_000015.html" color="steelblue1" fontcolor="steelblue1"];
+  dir_cd45a8935f7812516c94d2c8f076836b->dir_c2cc37fe09132ac847ead816896c02db [headlabel="1", labeldistance=1.5 headhref="dir_000004_000011.html" href="dir_000004_000011.html" color="steelblue1" fontcolor="steelblue1"];
 }

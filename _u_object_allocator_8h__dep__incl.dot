@@ -15,9 +15,4 @@ digraph "Karma/src/Karma/Core/UObjectAllocator.h"
   Node5 [id="Node000005",label="Karma/src/Karma.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_karma_8h_source.html",tooltip=" "];
   Node5 -> Node6 [id="edge5_Node000005_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node6 [id="Node000006",label="Karma/src/Karma/EntryPoint.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_entry_point_8h.html",tooltip="This file contains the main() routine with multiplatform support."];
-  Node6 -> Node7 [id="edge6_Node000006_Node000007",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node7 [id="Node000007",label="Pranjal/Source/Public\l/EditorLayer.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_editor_layer_8h_source.html",tooltip=" "];
-  Node5 -> Node7 [id="edge7_Node000005_Node000007",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node5 -> Node8 [id="edge8_Node000005_Node000008",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node8 [id="Node000008",label="Pranjal/Source/Public\l/KarmaGuiMesa.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_karma_gui_mesa_8h.html",tooltip="This file contains the classes for Editor."];
 }

@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="Karma::KarmaUtilities",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_karma_1_1_karma_utilities.html",tooltip="The basic utilities class."];
+  Node0 [id="Node000000",label="Karma::SelectIntPointerType\l\< T32BITS, T64BITS, PointerSize \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$struct_karma_1_1_select_int_pointer_type.html",tooltip="Defaulter for sized different from 4 and 8. Meaning not supporting 16 bit systems."];
 }

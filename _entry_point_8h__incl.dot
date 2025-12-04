@@ -78,7 +78,7 @@ digraph "Karma/src/Karma/EntryPoint.h"
   Node64 -> Node65 [id="edge47_Node000064_Node000065",color="steelblue1",style="solid",tooltip=" "];
   Node65 [id="Node000065",label="glm/gtc/type_ptr.hpp",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node64 -> Node66 [id="edge48_Node000064_Node000066",color="steelblue1",style="solid",tooltip=" "];
-  Node66 [id="Node000066",label="stb_image.h",height=0.2,width=0.4,color="red", fillcolor="#FFF0F0", style="filled",URL="$stb__image_8h_source.html",tooltip=" "];
+  Node66 [id="Node000066",label="stb_image.h",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node63 -> Node67 [id="edge49_Node000063_Node000067",color="steelblue1",style="solid",tooltip=" "];
   Node67 [id="Node000067",label="Karma/Renderer/Shader.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$_shader_8h.html",tooltip="This file contains the Shader class."];
   Node67 -> Node4 [id="edge50_Node000067_Node000004",color="steelblue1",style="solid",tooltip=" "];
