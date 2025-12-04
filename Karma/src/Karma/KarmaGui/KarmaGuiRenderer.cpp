@@ -472,7 +472,7 @@ namespace Karma
 			{
 				VkRenderPassBeginInfo renderPassInfo{};
 				renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-				renderPassInfo.renderPass = it->RenderPass;
+				renderPassInfo.renderPass = backendData->OffScreenRR.RenderPass;
 				renderPassInfo.framebuffer = it->FrameBuffer;
 				renderPassInfo.renderArea.offset = {0, 0};
 				renderPassInfo.renderArea.extent.width = it->Size.x;
@@ -620,28 +620,32 @@ namespace Karma
 			SceneToTexture.Size = dimensions;
 			SceneToTexture.Scene3D = scene;
 			
-			VkSamplerCreateInfo samplerInfo{};
-			samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-			samplerInfo.magFilter = VK_FILTER_LINEAR;
-			samplerInfo.minFilter = VK_FILTER_LINEAR;
-			samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-			samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-			samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-			samplerInfo.anisotropyEnable = VK_FALSE;
-			samplerInfo.maxAnisotropy = 1.0f;
-			samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-			samplerInfo.unnormalizedCoordinates = VK_FALSE;
-			samplerInfo.compareEnable = VK_FALSE;
-			samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-			samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-			samplerInfo.mipLodBias = 0.0f;
-			samplerInfo.minLod = 0.0f;
-			samplerInfo.maxLod = 0.0f;
-			
 			VkResult result;
 			
-			result = vkCreateSampler(vulkanInfo->Device, &samplerInfo, vulkanInfo->Allocator, &SceneToTexture.Sampler);
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
+			// bAllocationDoneOnce is set in KarmaGuiVulkanHandler::CreateOffScreenTextureResources()
+			if(!backendData->OffScreenRR.bAllocationDoneOnce)
+			{
+				VkSamplerCreateInfo samplerInfo{};
+				samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+				samplerInfo.magFilter = VK_FILTER_LINEAR;
+				samplerInfo.minFilter = VK_FILTER_LINEAR;
+				samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+				samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+				samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+				samplerInfo.anisotropyEnable = VK_FALSE;
+				samplerInfo.maxAnisotropy = 1.0f;
+				samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+				samplerInfo.unnormalizedCoordinates = VK_FALSE;
+				samplerInfo.compareEnable = VK_FALSE;
+				samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+				samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+				samplerInfo.mipLodBias = 0.0f;
+				samplerInfo.minLod = 0.0f;
+				samplerInfo.maxLod = 0.0f;
+				
+				result = vkCreateSampler(vulkanInfo->Device, &samplerInfo, vulkanInfo->Allocator, &backendData->OffScreenRR.Sampler);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
+			}
 
 			// Create images (along with appropriate memory)
 			{
@@ -696,7 +700,7 @@ namespace Karma
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
 			}
 
-			SceneToTexture.KarmaGui_Texture = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_AddTexture(SceneToTexture.Sampler, SceneToTexture.Image_View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			SceneToTexture.KarmaGui_Texture = KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_AddTexture(backendData->OffScreenRR.Sampler, SceneToTexture.Image_View, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 			
 						
 			backendData->Elements3DTo2D.push_back(SceneToTexture);

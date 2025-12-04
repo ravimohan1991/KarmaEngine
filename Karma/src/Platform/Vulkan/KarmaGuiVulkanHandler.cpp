@@ -1300,19 +1300,27 @@ namespace Karma
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		
+		if(!backendData->OffScreenRR.bAllocationDoneOnce)
+		{
+			CreateOffScreenTextureRenderpassResource();
+			
+			// This variable is also used to create sampler in KarmaGuiRenderer::Add3DSceneFor2DRendering once
+			backendData->OffScreenRR.bAllocationDoneOnce = true;
+		}
+		
 		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
 			CreateOffScreenTextureDepthResource(&(*it));
-			CreateOffScreenTextureRenderpassResource(&(*it));
+			//CreateOffScreenTextureRenderpassResource(&(*it));
 			
 			CreateOffScreenTextureFrameBufferResource(&(*it));
 			
 			std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
-			vulkanVA->CreateKarmaGuiGraphicsPipeline(it->RenderPass, it->Size.x, it->Size.y);
+			vulkanVA->CreateKarmaGuiGraphicsPipeline(backendData->OffScreenRR.RenderPass, it->Size.x, it->Size.y);
 		}
 	}
 
-	void KarmaGuiVulkanHandler::CreateOffScreenTextureRenderpassResource(KarmaGui_3DScene_To_2DTexture_Data* textureData)
+	void KarmaGuiVulkanHandler::CreateOffScreenTextureRenderpassResource()
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
@@ -1394,7 +1402,7 @@ namespace Karma
 		// Subpass dependencies for synchronization could be added here,
 		// but the manual pipeline barrier after the pass is generally cleaner for this use case.
 
-		VkResult result = vkCreateRenderPass(vulkanInfo->Device, &renderPassInfo, nullptr, &textureData->RenderPass);
+		VkResult result = vkCreateRenderPass(vulkanInfo->Device, &renderPassInfo, nullptr, &backendData->OffScreenRR.RenderPass);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't off screen render pass");
 	}
 
@@ -1410,7 +1418,7 @@ namespace Karma
 
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = textureData->RenderPass;
+		framebufferInfo.renderPass = backendData->OffScreenRR.RenderPass;
 		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 		framebufferInfo.pAttachments = attachments.data();
 		framebufferInfo.width = textureData->Size.x;
@@ -1685,12 +1693,15 @@ namespace Karma
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
+		vkDestroySampler(vulkanInfo->Device, backendData->OffScreenRR.Sampler, nullptr);
+		vkDestroyRenderPass(vulkanInfo->Device, backendData->OffScreenRR.RenderPass, nullptr);
+		
 		// Clear vulkan resources from KarmaGui_3DScene_To_2DTexture_Data
 		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
 			// Order of destruction to be taken in account
 
-			vkDestroySampler(vulkanInfo->Device, it->Sampler, nullptr);
+			//vkDestroySampler(vulkanInfo->Device, it->Sampler, nullptr);
 			vkDestroyImageView(vulkanInfo->Device, it->DepthImage_View, nullptr);
 
 			vkDestroyImage(vulkanInfo->Device, it->DepthImage, nullptr);
@@ -1704,7 +1715,7 @@ namespace Karma
 			std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
 			vulkanVA->CleanupKarmaGuiGraphicsPipeline();
 
-			vkDestroyRenderPass(vulkanInfo->Device, it->RenderPass, nullptr);
+			//vkDestroyRenderPass(vulkanInfo->Device, it->RenderPass, nullptr);
 		}
 
 		ClearVulkanWindowData(windowData, true);
