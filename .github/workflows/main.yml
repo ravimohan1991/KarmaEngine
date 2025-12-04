@@ -22,18 +22,25 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-        
-    - name: Doxygen Action
-      uses: mattnotmitt/doxygen-action@v1.1.0
+    - uses: actions/checkout@v4
+    
+    - name: Cache Doxygen  # Optional: speeds up runs
+      uses: actions/cache@v4
       with:
-        # Path to Doxyfile
-        doxyfile-path: "./Doxyfile" # default is ./Doxyfile
-        # Working directory
-        working-directory: "." # default is .
+        path: /usr/local/bin/doxygen
+        key: doxygen-1.15.0
+
+    - name: Install Doxygen 1.15.0
+      uses: ssciwr/doxygen-install@v1
+      with:
+        version: "1.15.0"
+
+    - name: Generate docs
+      run: doxygen ./Doxyfile  # Manual run with your path
     
     - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'  # Only on main
+      uses: peaceiris/actions-gh-pages@v4  # Minor update
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./html
