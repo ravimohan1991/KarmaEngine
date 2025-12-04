@@ -1,7 +1,7 @@
 #include "Texture.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 #include "Renderer.h"
-#include "Platform/Vulkan/VulkanTexutre.h"
+#include "Platform/Vulkan/VulkanTexture.h"
 
 namespace Karma
 {
