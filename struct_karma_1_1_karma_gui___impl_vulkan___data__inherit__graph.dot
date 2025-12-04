@@ -1,0 +1,10 @@
+digraph "Karma::KarmaGui_ImplVulkan_Data"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  Node1 [id="Node000001",label="Karma::KarmaGui_ImplVulkan_Data",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Backend data containing stuff for Vulkan renderer for KarmaGui."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="Karma::KarmaGuiBackendRenderer\lUserData",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$struct_karma_1_1_karma_gui_backend_renderer_user_data.html",tooltip="A multiply inherited class for supporting both OpenGL and Vulkan API's."];
+}

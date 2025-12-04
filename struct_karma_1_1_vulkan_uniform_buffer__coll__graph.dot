@@ -1,0 +1,10 @@
+digraph "Karma::VulkanUniformBuffer"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  Node1 [id="Node000001",label="Karma::VulkanUniformBuffer",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="The actual uniform buffer class with implemented function using Vulkan API."];
+  Node2 -> Node1 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="Karma::UniformBufferObject",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$struct_karma_1_1_uniform_buffer_object.html",tooltip="Abstract class for UBO. A UBO is mostly used for shader variables, for instance projection or view ma..."];
+}

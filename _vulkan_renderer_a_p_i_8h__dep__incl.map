@@ -1,7 +1,0 @@
-<map id="Karma/src/Platform/Vulkan/VulkanRendererAPI.h" name="Karma/src/Platform/Vulkan/VulkanRendererAPI.h">
-<area shape="rect" id="Node000001" title="This file contains VulkanRendererAPI class with Vulkan specific implementation of RendererAPI pure vi..." alt="" coords="5,5,199,46"/>
-<area shape="rect" id="Node000002" href="$_vulkan_context_8h.html" title="This file contains VulkanContext class." alt="" coords="20,94,184,135"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,62,105,94,99,94,99,62"/>
-<area shape="rect" id="Node000003" href="$_vulkan_holder_8h.html" title="This file contains VulkanHolder class for holding VulkanContext instance statically." alt="" coords="23,183,181,223"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="105,150,105,182,99,182,99,150"/>
-</map>
