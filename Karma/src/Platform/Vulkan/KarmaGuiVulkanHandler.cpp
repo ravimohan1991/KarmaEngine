@@ -253,6 +253,7 @@ namespace Karma
 			windowRenderBuffers->Count = vulkanAPI->GetMaxFramesInFlight();
 
 			// Caution: Need to think about the object instantiation and resource management
+			// Cowboy's Note: delete is done in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_ShivaWindowRenderBuffers
 			windowRenderBuffers->FrameRenderBuffers = new KarmaGui_ImplVulkanH_ImageFrameRenderBuffers[windowRenderBuffers->Count];
 		}
 
@@ -1454,7 +1455,6 @@ namespace Karma
 			info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 			//info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			info.samples = VK_SAMPLE_COUNT_1_BIT;
 
 			result = vkCreateImage(vulkanInfo->Device, &info, vulkanInfo->Allocator, &textureData->DepthImage);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
