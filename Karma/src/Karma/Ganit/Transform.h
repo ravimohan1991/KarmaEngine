@@ -28,6 +28,8 @@ namespace Karma
 	 *
 	 * Example: LocalToWorld = (LocalToWorld * DeltaRotation) will change rotation in local space by DeltaRotation.
 	 * Example: LocalToWorld = (DeltaRotation * LocalToWorld) will change rotation in world space by DeltaRotation.
+	 * 
+	 * @since Karma 1.0.0
 	 */
 	struct KARMA_API TQuaternion
 	{
@@ -58,6 +60,7 @@ namespace Karma
 	 * Note that these conventions differ from quaternion axis/angle. UE Quat always considers a positive angle to be a left-handed rotation,
 	 * whereas Rotator treats yaw as left-handed but pitch and roll as right-handed.
 	 *
+	 * @since Karma 1.0.0
 	 */
 	struct KARMA_API TRotator
 	{
@@ -74,7 +77,7 @@ namespace Karma
 		float m_Roll;
 
 		/**
-		 * Returns the counter of this rotation governed by Yaw, Pitch, and Roll in the
+		 * @brief Returns the counter of this rotation governed by Yaw, Pitch, and Roll in the
 		 * fashion above
 		 */
 		inline TRotator Inverse() const;
@@ -109,6 +112,10 @@ namespace Karma
 	 *
 	 * Example: LocalToWorld = (DeltaRotation * LocalToWorld) will change rotation in local space by DeltaRotation.
 	 * Example: LocalToWorld = (LocalToWorld * DeltaRotation) will change rotation in world space by DeltaRotation.
+	 * 
+	 * @note We will be following Unreal Engine's left handed convention, meaning +X is forward, +Y is right, +Z is up.
+	 * 
+	 * @since Karma 1.0.0
 	 */
 	class KARMA_API FTransform
 	{
@@ -141,22 +148,26 @@ namespace Karma
 		FTransform GetRelativeTransform(const FTransform& RelativeToWhat) const;
 
 		/**
-		 * Return a transform that is the result of this multiplied by another transform.
+		 * @brief Return a transform that is the result of this multiplied by another transform.
 		 * Order matters when composing transforms : C = A * B will yield a transform C that logically first applies A then B to any subsequent transformation.
 		 *
 		 * @param  Other other transform by which to multiply.
 		 * @return new transform: this * Other
+		 * 
+		 * @since Karma 1.0.0
 		 */
 		FTransform operator*(const FTransform& Other) const;
 
 		/**
-		 * Create a new transform: OutTransform = A * B.
+		 * @brief Create a new transform: OutTransform = A * B.
 		 *
 		 * Order matters when composing transforms : A * B will yield a transform that logically first applies A then B to any subsequent transformation.
 		 *
 		 * @param  OutTransform pointer to transform that will store the result of A * B.
 		 * @param  A Transform A.
 		 * @param  B Transform B.
+		 * 
+		 * @since Karma 1.0.0
 		 */
 		inline static void Multiply(FTransform* OutTransform, const FTransform* A, const FTransform* B);
 

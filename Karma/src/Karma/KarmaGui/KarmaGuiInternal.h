@@ -1728,7 +1728,7 @@ struct KGGuiContextHook
 };
 
 //-----------------------------------------------------------------------------
-// [SECTION] KarmaGuiContext (main Dear ImGui context)
+// [SECTION] KarmaGuiContext (main KarmaGui context)
 //-----------------------------------------------------------------------------
 struct KarmaGuiContext
 {

@@ -106,8 +106,8 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
 
 #include "KarmaGui.h"
 
-#ifndef IMGUI_API
-#define IMGUI_API
+#ifndef KARMAGUI_API
+#define KARMAGUI_API
 #endif
 
 #ifndef KARMAGUIZMO_NAMESPACE
@@ -120,34 +120,34 @@ namespace KARMAGUIZMO_NAMESPACE
 {
    // call inside your own window and before Manipulate() in order to draw gizmo to that window.
    // Or pass a specific KGDrawList to draw to (e.g. KarmaGui::GetForegroundDrawList()).
-   IMGUI_API void SetDrawlist(KGDrawList* drawlist = nullptr);
+   KARMAGUI_API void SetDrawlist(KGDrawList* drawlist = nullptr);
 
    // call BeginFrame right after KarmaGui_XXXX_NewFrame();
-   IMGUI_API void BeginFrame();
+   KARMAGUI_API void BeginFrame();
 
    // this is necessary because when imguizmo is compiled into a dll, and imgui into another
    // globals are not shared between them.
    // More details at https://stackoverflow.com/questions/19373061/what-happens-to-global-and-static-variables-in-a-shared-library-when-it-is-dynam
    // expose method to set imgui context
-   IMGUI_API void SetKarmaGuiContext(KarmaGuiContext* ctx);
+   KARMAGUI_API void SetKarmaGuiContext(KarmaGuiContext* ctx);
 
    // return true if mouse cursor is over any gizmo control (axis, plan or screen component)
-   IMGUI_API bool IsOver();
+   KARMAGUI_API bool IsOver();
 
    // return true if mouse IsOver or if the gizmo is in moving state
-   IMGUI_API bool IsUsing();
+   KARMAGUI_API bool IsUsing();
 
    // return true if the view gizmo is in moving state
-   IMGUI_API bool IsUsingViewManipulate();
+   KARMAGUI_API bool IsUsingViewManipulate();
    // only check if your mouse is over the view manipulator - no matter whether it's active or not
-   IMGUI_API bool IsViewManipulateHovered();
+   KARMAGUI_API bool IsViewManipulateHovered();
 
    // return true if any gizmo is in moving state
-   IMGUI_API bool IsUsingAny();
+   KARMAGUI_API bool IsUsingAny();
 
    // enable/disable the gizmo. Stay in the state until next call to Enable.
    // gizmo is rendered with gray half transparent color when disabled
-   IMGUI_API void Enable(bool enable);
+   KARMAGUI_API void Enable(bool enable);
 
    // helper functions for manualy editing translation/rotation/scale with an input float
    // translation, rotation and scale float points to 3 floats each
@@ -161,16 +161,16 @@ namespace KARMAGUIZMO_NAMESPACE
    // KarmaGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, gizmoMatrix.m16);
    //
    // These functions have some numerical stability issues for now. Use with caution.
-   IMGUI_API void DecomposeMatrixToComponents(const float* matrix, float* translation, float* rotation, float* scale);
-   IMGUI_API void RecomposeMatrixFromComponents(const float* translation, const float* rotation, const float* scale, float* matrix);
+   KARMAGUI_API void DecomposeMatrixToComponents(const float* matrix, float* translation, float* rotation, float* scale);
+   KARMAGUI_API void RecomposeMatrixFromComponents(const float* translation, const float* rotation, const float* scale, float* matrix);
 
-   IMGUI_API void SetRect(float x, float y, float width, float height);
+   KARMAGUI_API void SetRect(float x, float y, float width, float height);
    // default is false
-   IMGUI_API void SetOrthographic(bool isOrthographic);
+   KARMAGUI_API void SetOrthographic(bool isOrthographic);
 
    // Render a cube with face color corresponding to face normal. Usefull for debug/tests
-   IMGUI_API void DrawCubes(const float* view, const float* projection, const float* matrices, int matrixCount);
-   IMGUI_API void DrawGrid(const float* view, const float* projection, const float* matrix, const float gridSize);
+   KARMAGUI_API void DrawCubes(const float* view, const float* projection, const float* matrices, int matrixCount);
+   KARMAGUI_API void DrawGrid(const float* view, const float* projection, const float* matrix, const float gridSize);
 
    // call it when you want a gizmo
    // Needs view and projection matrices.
@@ -211,21 +211,21 @@ namespace KARMAGUIZMO_NAMESPACE
       WORLD
    };
 
-   IMGUI_API bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix = NULL, const float* snap = NULL, const float* localBounds = NULL, const float* boundsSnap = NULL);
+   KARMAGUI_API bool Manipulate(const float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float* deltaMatrix = NULL, const float* snap = NULL, const float* localBounds = NULL, const float* boundsSnap = NULL);
    //
    // Please note that this cubeview is patented by Autodesk : https://patents.google.com/patent/US7782319B2/en
    // It seems to be a defensive patent in the US. I don't think it will bring troubles using it as
    // other software are using the same mechanics. But just in case, you are now warned!
    //
-   IMGUI_API void ViewManipulate(float* view, float length, KGVec2 position, KGVec2 size, KGU32 backgroundColor);
+   KARMAGUI_API void ViewManipulate(float* view, float length, KGVec2 position, KGVec2 size, KGU32 backgroundColor);
 
    // use this version if you did not call Manipulate before and you are just using ViewManipulate
-   IMGUI_API void ViewManipulate(float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float length, KGVec2 position, KGVec2 size, KGU32 backgroundColor);
+   KARMAGUI_API void ViewManipulate(float* view, const float* projection, OPERATION operation, MODE mode, float* matrix, float length, KGVec2 position, KGVec2 size, KGU32 backgroundColor);
 
-   IMGUI_API void SetAlternativeWindow(KGGuiWindow* window);
+   KARMAGUI_API void SetAlternativeWindow(KGGuiWindow* window);
 
    [[deprecated("Use PushID/PopID instead.")]]
-   IMGUI_API void SetID(int id);
+   KARMAGUI_API void SetID(int id);
 
 	// ID stack/scopes
 	// Read the FAQ (docs/FAQ.md or http://dearimgui.org/faq) for more details about how ID are handled in dear imgui.
@@ -238,32 +238,32 @@ namespace KARMAGUIZMO_NAMESPACE
 	// - You can also use the "Label##foobar" syntax within widget label to distinguish them from each others.
 	// - In this header file we use the "label"/"name" terminology to denote a string that will be displayed + used as an ID,
 	//   whereas "str_id" denote a string that is only used as an ID and not normally displayed.
-	IMGUI_API void          PushID(const char* str_id);                                     // push string into the ID stack (will hash string).
-	IMGUI_API void          PushID(const char* str_id_begin, const char* str_id_end);       // push string into the ID stack (will hash string).
-	IMGUI_API void          PushID(const void* ptr_id);                                     // push pointer into the ID stack (will hash pointer).
-	IMGUI_API void          PushID(int int_id);                                             // push integer into the ID stack (will hash integer).
-	IMGUI_API void          PopID();                                                        // pop from the ID stack.
-	IMGUI_API KGGuiID       GetID(const char* str_id);                                      // calculate unique ID (hash of whole ID stack + given parameter). e.g. if you want to query into ImGuiStorage yourself
-	IMGUI_API KGGuiID       GetID(const char* str_id_begin, const char* str_id_end);
-	IMGUI_API KGGuiID       GetID(const void* ptr_id);
+	KARMAGUI_API void          PushID(const char* str_id);                                     // push string into the ID stack (will hash string).
+	KARMAGUI_API void          PushID(const char* str_id_begin, const char* str_id_end);       // push string into the ID stack (will hash string).
+	KARMAGUI_API void          PushID(const void* ptr_id);                                     // push pointer into the ID stack (will hash pointer).
+	KARMAGUI_API void          PushID(int int_id);                                             // push integer into the ID stack (will hash integer).
+	KARMAGUI_API void          PopID();                                                        // pop from the ID stack.
+	KARMAGUI_API KGGuiID       GetID(const char* str_id);                                      // calculate unique ID (hash of whole ID stack + given parameter). e.g. if you want to query into ImGuiStorage yourself
+	KARMAGUI_API KGGuiID       GetID(const char* str_id_begin, const char* str_id_end);
+	KARMAGUI_API KGGuiID       GetID(const void* ptr_id);
 
    // return true if the cursor is over the operation's gizmo
-   IMGUI_API bool IsOver(OPERATION op);
-   IMGUI_API void SetGizmoSizeClipSpace(float value);
+   KARMAGUI_API bool IsOver(OPERATION op);
+   KARMAGUI_API void SetGizmoSizeClipSpace(float value);
 
    // Allow axis to flip
    // When true (default), the guizmo axis flip for better visibility
    // When false, they always stay along the positive world/local axis
-   IMGUI_API void AllowAxisFlip(bool value);
+   KARMAGUI_API void AllowAxisFlip(bool value);
 
    // Configure the limit where axis are hidden
-   IMGUI_API void SetAxisLimit(float value);
+   KARMAGUI_API void SetAxisLimit(float value);
    // Set an axis mask to permanently hide a given axis (true -> hidden, false -> shown)
-   IMGUI_API void SetAxisMask(bool x, bool y, bool z);
+   KARMAGUI_API void SetAxisMask(bool x, bool y, bool z);
    // Configure the limit where planes are hiden
-   IMGUI_API void SetPlaneLimit(float value);
+   KARMAGUI_API void SetPlaneLimit(float value);
    // from a x,y,z point in space and using Manipulation view/projection matrix, check if mouse is in pixel radius distance of that projected point
-   IMGUI_API bool IsOver(float* position, float pixelRadius);
+   KARMAGUI_API bool IsOver(float* position, float pixelRadius);
 
    enum COLOR
    {
@@ -287,7 +287,7 @@ namespace KARMAGUIZMO_NAMESPACE
 
    struct Style
    {
-      IMGUI_API Style();
+      KARMAGUI_API Style();
 
       float TranslationLineThickness;   // Thickness of lines for translation gizmo
       float TranslationLineArrowSize;   // Size of arrow at the end of lines for translation gizmo
@@ -301,5 +301,5 @@ namespace KARMAGUIZMO_NAMESPACE
       KGVec4 Colors[COLOR::COUNT];
    };
 
-   IMGUI_API Style& GetStyle();
+   KARMAGUI_API Style& GetStyle();
 }

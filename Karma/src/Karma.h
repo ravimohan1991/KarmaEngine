@@ -14,6 +14,7 @@
 #include "Karma/KarmaGui/KarmaGuiLayer.h"
 #include "Karma/KarmaGui/KarmaGui.h"
 #include "Karma/KarmaGui/KarmaGuiInternal.h"
+#include "Karma/KarmaGui/KarmaGuizmo.h"
 #include "Karma/KarmaGui/KarmaGuiRenderer.h"
 
 #include "Karma/Renderer/Shader.h"
