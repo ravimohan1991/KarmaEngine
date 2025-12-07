@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "Karma/Log.h"
 #include "Karma/Input.h"
 #include "Karma/Renderer/Renderer.h"
 #include "chrono"

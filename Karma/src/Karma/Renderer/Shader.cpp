@@ -1,6 +1,5 @@
 #include "Shader.h"
 #include "Renderer.h"
-#include "Karma/Core.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Platform/Vulkan/VulkanShader.h"
 

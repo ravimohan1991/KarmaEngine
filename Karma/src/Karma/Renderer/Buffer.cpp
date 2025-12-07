@@ -1,5 +1,4 @@
 #include "Buffer.h"
-#include "Karma/Core.h"
 #include "Renderer.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 #include "Platform/Vulkan/VulkanBuffer.h"

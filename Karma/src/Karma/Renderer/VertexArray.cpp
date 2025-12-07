@@ -1,6 +1,5 @@
 #include "VertexArray.h"
 #include "Renderer.h"
-#include "Karma/Core.h"
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
 

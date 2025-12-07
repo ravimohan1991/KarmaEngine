@@ -1,5 +1,4 @@
 #include "WindowsWindow.h"
-#include "Karma/Log.h"
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/Events/KeyEvent.h"
 #include "Karma/Events/MouseEvent.h"
