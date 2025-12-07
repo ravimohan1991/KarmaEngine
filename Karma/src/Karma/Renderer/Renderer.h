@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "RenderCommand.h"
 #include "Karma/Renderer/Camera/Camera.h"
 #include "glm/glm.hpp"

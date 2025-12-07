@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Camera.h"
 #include "VertexArray.h"
 

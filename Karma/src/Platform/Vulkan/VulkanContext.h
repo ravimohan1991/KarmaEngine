@@ -10,7 +10,6 @@
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
-#include "krpch.h"
 
 #include "Karma/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "Buffer.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "glm/glm.hpp"
 #include <glm/gtc/quaternion.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -21,7 +19,7 @@ namespace Karma
 #define KR_SMALL_NUMBER			(1.e-8f)
 
 	/**
-	 * Floating point quaternion that can represent a rotation about an axis in 3-D space.
+	 * @brief Floating point quaternion that can represent a rotation about an axis in 3-D space.
 	 * The X, Y, Z, W components also double as the Axis/Angle format.
 	 *
 	 * Order matters when composing quaternions: C = A * B will yield a quaternion C that logically
@@ -48,7 +46,7 @@ namespace Karma
 	};
 
 	/**
-	 * Implements a container for rotation information.
+	 * @brief Implements a container for rotation information.
 	 *
 	 * All rotation values are stored in degrees.
 	 *
@@ -98,7 +96,7 @@ namespace Karma
 	};
 
 	/**
-	 * Transform composed of Scale, Rotation (as a quaternion), and Translation.
+	 * @brief Transform composed of Scale, Rotation (as a quaternion), and Translation.
 	 *
 	 * Transforms can be used to convert from one space to another, for example by transforming
 	 * positions and directions from local space to world space.

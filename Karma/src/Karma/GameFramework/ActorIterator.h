@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "KarmaUtilities.h"
 
 namespace Karma

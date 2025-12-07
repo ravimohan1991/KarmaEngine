@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Karma/Events/Event.h"
 #include "Renderer/Scene.h"
 

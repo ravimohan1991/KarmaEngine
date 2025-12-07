@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Karma/Window.h"
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/Events/ControllerDeviceEvent.h"

@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "KarmaGui.h"
 #include "KarmaGuiInternal.h"
 #include "Karma/Renderer/Scene.h"

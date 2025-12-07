@@ -10,9 +10,10 @@
 
 #pragma once
 
-#include "krpch.h"
+#include "Karma/Core.h"
+#include "Karma/Log.h"
+#include "Karma/Core/KarmaTypes.h"
 #include "Object.h"
-
 #include "GameFramework/SceneComponent.h"
 
 namespace Karma

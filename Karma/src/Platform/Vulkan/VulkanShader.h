@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Karma/Renderer/Shader.h"
 #include "glslang/Public/ShaderLang.h"
 #include "Karma/KarmaUtilities.h"

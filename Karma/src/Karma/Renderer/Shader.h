@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Karma/Renderer/Buffer.h"
 #include "glm/glm.hpp"
 

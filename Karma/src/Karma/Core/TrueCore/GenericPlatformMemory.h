@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 namespace Karma
 {
 	typedef size_t SIZE_T;

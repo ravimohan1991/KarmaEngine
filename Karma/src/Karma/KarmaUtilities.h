@@ -9,7 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
 #include "SubClassOf.h"
 #include "Actor.h"
 #include "stb_image.h"

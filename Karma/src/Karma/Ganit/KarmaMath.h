@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "glm/common.hpp"
 
 namespace Karma

@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "glm/gtc/type_ptr.hpp"
 #include "stb_image.h"
 

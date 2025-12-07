@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "ActorComponent.h"
 #include "glm/glm.hpp"
 

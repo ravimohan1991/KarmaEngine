@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "Core/UObjectAllocator.h"
 
 namespace Karma

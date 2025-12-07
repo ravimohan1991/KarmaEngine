@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 enum EInternal						{EC_InternalUseOnlyConstructor};
 typedef void		(*ClassConstructorType)				(const Karma::FObjectInitializer&);
 

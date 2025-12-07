@@ -43,7 +43,6 @@ Index of this file:
 
 #pragma once
 
-#include "krpch.h"
 #include "KarmaGui.h"
 
 // Enable stb_truetype by default unless FreeType is enabled.

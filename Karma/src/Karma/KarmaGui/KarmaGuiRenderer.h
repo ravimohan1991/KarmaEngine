@@ -10,9 +10,8 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "imgui_impl_glfw.h"
+
 #include "Platform/Vulkan/KarmaGuiVulkanHandler.h"
 #include "Platform/OpenGL/KarmaGuiOpenGLHandler.h"
 

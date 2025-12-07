@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
 #include "UObjectGlobals.h"
 
 namespace Karma

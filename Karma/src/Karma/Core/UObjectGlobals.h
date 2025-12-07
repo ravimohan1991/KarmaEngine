@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 namespace Karma
 {
 	class UObject;
