@@ -3,8 +3,8 @@
 // To be included in clients
 
 // Game code specific includes
-#include "Karma/GameFramework/Actor.h"
-#include "Karma/GameFramework/World.h"
+#include "GameFramework/Actor.h"
+#include "GameFramework/World.h"
 
 #include "Engine/Level.h"
 
