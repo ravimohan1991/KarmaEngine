@@ -540,6 +540,24 @@ namespace Karma
 		}
 
 		vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
+		
+		// Transition the swapchain image from VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+		// else there'd be validation error
+		// NOTE: We are using VulkanHolder::GetVulkanContext()->GetSwapChainImages() in case we decide to create
+		// different swapchain images for KarmaGui
+		VkImageMemoryBarrier presentBarrier = {};
+		presentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		presentBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		presentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		presentBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		presentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		presentBarrier.image = VulkanHolder::GetVulkanContext()->GetSwapChainImages()[windowData->ImageFrameIndex];  // Swapchain only!
+		presentBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		presentBarrier.subresourceRange.levelCount = 1;
+		presentBarrier.subresourceRange.layerCount = 1;
+
+		vkCmdPipelineBarrier(frameOnFlightData->CommandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+							 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, NULL, 0, NULL, 1, &presentBarrier);
 
 		result = vkEndCommandBuffer(frameOnFlightData->CommandBuffer);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end command buffer");
