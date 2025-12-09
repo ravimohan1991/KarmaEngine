@@ -2,7 +2,7 @@
  * @file StaticMeshActor.h
  * @brief Declaration of the StaticMeshActor class, representing an actor with a static mesh component in the game world.
  * @author Ravi Mohan (the_cowboy)
- * @date December 12, 2025
+ * @date December 7, 2025
  * 
  * @copyright Karma Engine copyright(c) People of India
  */
@@ -20,6 +20,11 @@ namespace Karma
 	 */
 	class KARMA_API AStaticMeshActor : public AActor
 	{
+		DECLARE_KARMA_CLASS(AActor, AStaticMeshActor)
+
+	private:
+
+
 	public:
 		/**
 		 * @brief Constructor for StaticMeshActor

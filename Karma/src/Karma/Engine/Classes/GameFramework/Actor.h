@@ -14,7 +14,7 @@
 #include "Karma/Log.h"
 #include "Karma/Core/KarmaTypes.h"
 #include "Object.h"
-#include "GameFramework/SceneComponent.h"
+#include "Components/SceneComponent.h"
 
 namespace Karma
 {
