@@ -14,7 +14,7 @@
 namespace Karma
 {
 	/**
-	 * @brief An actor that contains a static mesh component, allowing it to be rendered in the game world.
+	 * @brief An actor that contains a static mesh component, allowing the mesh to be rendered in the game world.
 	 * 
 	 * @since Karma 1.0.0
 	 */
@@ -23,7 +23,12 @@ namespace Karma
 		DECLARE_KARMA_CLASS(AActor, AStaticMeshActor)
 
 	private:
-
+		/**
+		 * @brief The static mesh component associated with this actor for rendering
+		 * 
+		 * @note This is analogous to Unreal Engine's AStaticMeshActor::StaticMeshComponent
+		 */
+		std::shared_ptr<class UStaticMeshComponent> m_StaticMeshComponent;
 
 	public:
 		/**

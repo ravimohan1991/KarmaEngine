@@ -10,6 +10,7 @@
 #include "UObjectIterator.h"
 #include "Engine.h"
 #include "GameInstance.h"
+#include "Engine/StaticMeshActor.h"
 
 namespace Karma
 {
@@ -200,6 +201,10 @@ namespace Karma
 		{
 			IterateActors();
 		}
+		else if (e.GetKeyCode() == GLFW_KEY_V)
+		{
+			SpawnStaticMeshActor();
+		}
 
 		return false;
 	}
@@ -338,6 +343,33 @@ namespace Karma
 
 		// Shouldn't we be using Shivasomething?
 		// delete testWorld;
+	}
+
+	void EditorLayer::SpawnStaticMeshActor()
+	{
+		// We are attempting to spawn StaticMeshActor here which will hold the model
+
+		UWorld* currentWorld = GEngine->GetCurrentGameInstance()->GetWorldContext()->World();
+
+		if (currentWorld)
+		{
+			KR_INFO("Current World is : {0}", currentWorld->GetName());
+
+			FTransform smActorTransform = FTransform::m_Identity;
+			
+			FActorSpawnParameters smActorParams;
+			smActorParams.m_Owner = nullptr;
+			smActorParams.m_Name = "StaticMeshActor";
+			smActorParams.m_OverrideLevel = currentWorld->GetCurrentLevel();
+
+
+			AActor* staticMeshActor = currentWorld->SpawnActor(AStaticMeshActor::StaticClass(), &smActorTransform, smActorParams);
+
+			if (staticMeshActor)
+			{
+				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
+			}
+		}
 	}
 
 	void EditorLayer::IterateActors()

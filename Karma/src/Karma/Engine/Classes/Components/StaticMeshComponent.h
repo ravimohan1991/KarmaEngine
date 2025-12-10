@@ -31,7 +31,7 @@ namespace Karma
 		 * 
 		 * @note This is analogous to Unreal Engine's UStaticMeshComponent::StaticMesh
 		 */
-		class Mesh* m_StaticMesh;
+		std::shared_ptr<class Mesh> m_StaticMesh;
 
 	public:
 		/**

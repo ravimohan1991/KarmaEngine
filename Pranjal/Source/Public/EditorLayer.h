@@ -26,6 +26,10 @@ namespace Karma
 		void TentativeTrigger();
 		void IterateActors();
 
+		// Tentative routine for incorporating spawning of full fledged StaticMeshActor (SM actor)
+		// with model
+		void SpawnStaticMeshActor();
+
 	private:
 		std::shared_ptr<Karma::Shader> m_ModelShader;
 		std::shared_ptr<Karma::VertexArray> m_ModelVertexArray;
