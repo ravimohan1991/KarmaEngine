@@ -46,5 +46,13 @@ namespace Karma
 		 */
 		virtual ~UStaticMeshComponent();
 		// Additional methods and members specific to StaticMeshComponent can be added here.
+
+		/**
+		 * @brief Sets the static mesh associated with this component.
+		 * 
+		 * @param staticMesh							The static mesh to associate with this component.
+		 * @since Karma 1.0.0
+		 */
+		void SetStaticMesh(std::shared_ptr<class Mesh> staticMesh) { m_StaticMesh = staticMesh; }
 	};
 }

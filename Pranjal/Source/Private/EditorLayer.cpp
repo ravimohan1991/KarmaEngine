@@ -30,28 +30,28 @@ namespace Karma
 		// First intantiate VertexArray
 		m_ModelVertexArray.reset(Karma::VertexArray::Create());
 
-		{
+		/* {
 			// Get hold of model
 			std::shared_ptr<Karma::Mesh> modelMesh;
 			modelMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
 
 			// Set the mesh in vertex array
 			m_ModelVertexArray->SetMesh(modelMesh);
-		}
+		}*/
 
 		// Next, instantiate material
-		m_ModelMaterial.reset(new Karma::Material());
+		// m_ModelMaterial.reset(new Karma::Material());
 
 		{
 			// Setting shader
 
 			// Uniforms for regular transform uploads
-			std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
+			/*std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
 			shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 
 			m_ModelShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, "CylinderShader"));
 
-			m_ModelMaterial->AddShader(m_ModelShader);
+			m_ModelMaterial->AddShader(m_ModelShader);*/
 		}
 
 		// Then we set texture
@@ -363,11 +363,13 @@ namespace Karma
 			smActorParams.m_OverrideLevel = currentWorld->GetCurrentLevel();
 
 
-			AActor* staticMeshActor = currentWorld->SpawnActor(AStaticMeshActor::StaticClass(), &smActorTransform, smActorParams);
+			AStaticMeshActor* staticMeshActor = currentWorld->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), &smActorTransform, smActorParams);
 
 			if (staticMeshActor)
 			{
 				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
+
+				staticMeshActor->LoadMeshFromFile("../Resources/Models/BonedCylinder.obj");
 			}
 		}
 	}

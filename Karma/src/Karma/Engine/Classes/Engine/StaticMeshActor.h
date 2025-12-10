@@ -28,7 +28,8 @@ namespace Karma
 		 * 
 		 * @note This is analogous to Unreal Engine's AStaticMeshActor::StaticMeshComponent
 		 */
-		std::shared_ptr<class UStaticMeshComponent> m_StaticMeshComponent;
+		//std::shared_ptr<class UStaticMeshComponent> m_StaticMeshComponent;
+		class UStaticMeshComponent* m_StaticMeshComponent;
 
 	public:
 		/**
@@ -37,6 +38,15 @@ namespace Karma
 		 * @param name The name of the static mesh actor.
 		 */
 		AStaticMeshActor(const std::string& name = "StaticMeshActor");
+
+		/**
+		 * @brief Loads a static mesh from a file and assigns it to the static mesh component.
+		 * 
+		 * @param filePath								The file path of the static mesh to load.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void LoadMeshFromFile(const std::string& filePath);
 		
 		/**
 		 * @brief Destructor for StaticMeshActor

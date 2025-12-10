@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "RenderCommand.h"
+#include "Renderer/Material.h"
 
 namespace Karma
 {
@@ -57,6 +58,24 @@ namespace Karma
 		}
 
 		ProcessNode(scene->mRootNode, scene);
+
+		// Set default static material
+		m_StaticMaterial.reset(new Material());
+
+		std::shared_ptr<UniformBufferObject> shaderUniform;
+		shaderUniform.reset(UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
+
+		// We are creating shader here for the static material, but need to find a way to share shaders amongst multiple materials
+		std::shared_ptr<Shader> m_ModelShader;
+		m_ModelShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, "CylinderShader"));
+
+		m_StaticMaterial->AddShader(m_ModelShader);
+
+		// We add default texture to the material
+		std::shared_ptr<Texture> defaultTexture;
+		defaultTexture.reset(new Texture(TextureType::Image, "../Resources/Textures/UnrealGrid.png", "VikingTex", "texSampler"));
+
+		m_StaticMaterial->AddTexture(defaultTexture);
 	}
 
 	void Mesh::ProcessNode(aiNode* nodeToProcess, const aiScene* theScene)
