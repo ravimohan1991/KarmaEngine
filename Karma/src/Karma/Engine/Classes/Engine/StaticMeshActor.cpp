@@ -20,6 +20,13 @@ namespace Karma
 		std::shared_ptr<Mesh> loadedMesh;
 		loadedMesh.reset(new Mesh(filePath));
 
+		// We create uniform buffer object for model's transformation matrix
+		std::shared_ptr<UniformBufferObject> shaderUniform;
+		shaderUniform.reset(UniformBufferObject::Create({ ShaderDataType::Mat4 }, 0));// Binding point 0 and gets registered in VulkanContext during its initialization
+
+		UBODataPointer uModelMatrix(&GetTransform());
+		shaderUniform->UpdateUniforms(uModelMatrix);// set the model matrix (Actor Transform) uniform
+
 		if (!m_StaticMeshComponent)
 		{
 			// need to write code to destroy UObjects later

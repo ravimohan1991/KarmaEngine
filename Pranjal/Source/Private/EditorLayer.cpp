@@ -108,6 +108,9 @@ namespace Karma
 
 	void EditorLayer::OnUpdate(float deltaTime)
 	{
+		// Hacky, need to see if ubos are updated in correct manner (wrt to input etc)
+		m_EditorCamera->OnUpdate(deltaTime);
+
 		InputPolling(deltaTime);
 	}
 

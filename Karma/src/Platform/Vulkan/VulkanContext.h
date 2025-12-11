@@ -27,11 +27,6 @@ namespace Karma
 	/**
 	 * @brief Forward declaration
 	 */
-	class VulkanVertexArray;
-
-	/**
-	 * @brief Forward declaration
-	 */
 	struct VulkanUniformBuffer;
 
 	/**
@@ -117,11 +112,16 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Vulkan API has the following concepts
-	 * 1. Physical Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Physical_devices_and_queue_families): The software counterpart (VkPhysicalDevice) of a graphics card (GPU). Logical device is created from physical device.
-	 * 2. Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues): The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device.
+	 * @brief A class for Vulkan specific graphics context. This class also contains all the common Vulkan resources shared by various
+	 * elements that are rendered, for instance UniformBufferObjects, graphicspipeline etc.
+	 * 
+	 * ATM this class also contains resources like swapchain, commandpool etc which are used by KarmaGui.
 	 *
-	 * Host : is CPU the host?
+	 * @note Vulkan API has the following concepts
+	 * 1. Physical Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Physical_devices_and_queue_families): The software counterpart (VkPhysicalDevice) of a graphics card (GPU). Logical device is created from physical device.
+	 * 2. Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues): The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. 
+	 * @note CPU is always the host in Vulkan and GPU is the device.
+	 * @since Karma 1.0.0
 	 */
 	class KARMA_API VulkanContext : public GraphicsContext
 	{
@@ -545,6 +545,13 @@ namespace Karma
 		 * 
 		 * @param frameIndex						The index of the frame for which to upload UBO data
 		 * 
+		 * @note The frameIndex is used to determine which uniform buffer to update, as multiple buffers 
+		 * may be used for double or triple buffering to avoid synchronization issues between CPU and GPU.
+		 * 
+		 * @note The uniform buffers are resized automatically based on MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) 
+		 * whilst an image is being rendered (GPU side processing)) + 1)
+		 * @see VulkanUniformBuffer::BufferCreation()
+		 * 
 		 * @see KarmaGuiRenderer::FrameRender, VulkanBuffer::UploadUniformBuffer
 		 * @since Karma 1.0.0
 		 */
@@ -607,6 +614,7 @@ namespace Karma
 		VkCommandPool m_commandPool;
 
 		std::set<std::shared_ptr<VulkanUniformBuffer>> m_VulkanUBO;
+
 
 		bool bVSync = false;
 

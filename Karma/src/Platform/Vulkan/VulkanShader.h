@@ -56,7 +56,7 @@ namespace Karma
 		 * @see Shader::Create()
 		 * @since Karma 1.0.0
 		 */
-		VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc, std::shared_ptr<UniformBufferObject> ubo);
+		VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc);
 		
 		/**
 		 * @brief Destructor
@@ -94,12 +94,10 @@ namespace Karma
 		//Getters
 		const std::vector<uint32_t>& GetVertSpirV() const { return vertSpirV; }
 		const std::vector<uint32_t>& GetFragSpirV() const { return fragSpirV; }
-		std::shared_ptr<VulkanUniformBuffer> GetUniformBufferObject() const { return m_UniformBufferObject; }
 
 	private:
 		std::vector<uint32_t> vertSpirV;
 		std::vector<uint32_t> fragSpirV;
-		std::shared_ptr<VulkanUniformBuffer> m_UniformBufferObject;
 	};
 
 }

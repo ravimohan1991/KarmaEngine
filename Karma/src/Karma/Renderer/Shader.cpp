@@ -26,8 +26,7 @@ namespace Karma
 		return nullptr;
 	}
 
-	Shader* Shader::Create(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo,
-		const std::string& shaderName)
+	Shader* Shader::Create(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, const std::string& shaderName)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -35,9 +34,9 @@ namespace Karma
 				KR_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
 				return nullptr;
 			case RendererAPI::API::OpenGL:
-				return new OpenGLShader(vertexSrcFile, fragmentSrcFile, ubo, shaderName);
+				return new OpenGLShader(vertexSrcFile, fragmentSrcFile, shaderName);
 			case RendererAPI::API::Vulkan:
-				return new VulkanShader(vertexSrcFile, fragmentSrcFile, ubo);
+				return new VulkanShader(vertexSrcFile, fragmentSrcFile);
 		}
 
 		KR_CORE_ASSERT(false, "Unknown RendererAPI");

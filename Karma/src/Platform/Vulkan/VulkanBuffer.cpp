@@ -253,6 +253,9 @@ namespace Karma
 	{
 		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
 		BufferCreation();
+
+		std::shared_ptr <VulkanUniformBuffer> uboPtr(this);
+		VulkanHolder::GetVulkanContext()->RegisterUBO(uboPtr);
 	}
 
 	VulkanUniformBuffer::~VulkanUniformBuffer()

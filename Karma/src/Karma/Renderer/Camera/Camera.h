@@ -37,6 +37,13 @@ namespace Karma
 		virtual ~Camera();
 
 		/**
+		 * @brief A hook into the game loop for updating camera position and orientation in the level perhaps
+		 *
+		 * @since Karma 1.0.0
+		 */
+		virtual void OnUpdate(float deltaTime);
+
+		/**
 		 * @brief Getter for current position of the Camers
 		 *
 		 * @return glm::vec3 m_Position
@@ -190,5 +197,8 @@ namespace Karma
 		const float m_Sensitivity = 0.1f;
 		float m_Roll = 0.0f;
 		float m_Pitch = 0.0f;
+
+	private:
+		std::shared_ptr<class UniformBufferObject> m_ViewProjectionUBO;
 	};
 }

@@ -293,6 +293,8 @@ namespace Karma
 	public:
 		/**
 		 * @brief Constructor for Vulkan buffer. Calls VulkanUniformBuffer::BufferCreation().
+		 * 
+		 * Also registers the UBO with VulkanContext so that it can be updated appropriately during rendering.
 		 *
 		 * @param dataTypes						List of data types for uniforms to be uploaded to GPU (like used in shaders),
 		 * 								for instance https://github.com/ravimohan1991/KarmaEngine/blob/138c172ccedf31acfab982af51ae130f9a37d3bb/Application/src/KarmaApp.cpp#L39 where Mat4 are for https://github.com/ravimohan1991/KarmaEngine/blob/138c172ccedf31acfab982af51ae130f9a37d3bb/Resources/Shaders/shader.vert#L9-L13
