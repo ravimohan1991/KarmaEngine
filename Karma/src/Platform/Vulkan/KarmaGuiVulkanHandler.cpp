@@ -1316,8 +1316,11 @@ namespace Karma
 			
 			CreateOffScreenTextureFrameBufferResource(&(*it));
 			
-			std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
-			vulkanVA->CreateKarmaGuiGraphicsPipeline(backendData->OffScreenRR.RenderPass, it->Size.x, it->Size.y);
+			// std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
+			// vulkanVA->CreateKarmaGuiGraphicsPipeline(backendData->OffScreenRR.RenderPass, it->Size.x, it->Size.y);
+			
+			// assuming that all 3D scenes use same pipeline layout. This may change later
+			VulkanHolder::GetVulkanContext()->CreateKarmaGuiGeneralGraphicsPipeline(backendData->OffScreenRR.RenderPass, it->Size.x, it->Size.y);
 		}
 	}
 
@@ -1712,11 +1715,13 @@ namespace Karma
 			vkFreeMemory(vulkanInfo->Device, it->DeviceMemory, nullptr);
 			vkDestroyFramebuffer(vulkanInfo->Device, it->FrameBuffer, nullptr);
 
-			std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
-			vulkanVA->CleanupKarmaGuiGraphicsPipeline();
+			//std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
+			//vulkanVA->CleanupKarmaGuiGraphicsPipeline();
 
 			//vkDestroyRenderPass(vulkanInfo->Device, it->RenderPass, nullptr);
 		}
+		// Assuming only on graphicspipeline
+		VulkanHolder::GetVulkanContext()->CleanUpKarmaGuiGeneralGraphicsPipeline();
 
 		ClearVulkanWindowData(windowData, true);
 	}

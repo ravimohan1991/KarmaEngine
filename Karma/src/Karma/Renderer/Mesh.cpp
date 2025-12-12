@@ -2,6 +2,9 @@
 #include "RenderCommand.h"
 #include "Renderer/Material.h"
 
+// Experimental
+#include "Platform/Vulkan/VulkanHolder.h"
+
 namespace Karma
 {
 	// We initialize the dictionary
@@ -62,11 +65,8 @@ namespace Karma
 		// Set default static material
 		m_StaticMaterial.reset(new Material());
 
-		// We are creating shader here for the static material, but need to find a way to share shaders amongst multiple materials
-		std::shared_ptr<Shader> m_ModelShader;
-		m_ModelShader.reset(Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", "CylinderShader"));
-
-		m_StaticMaterial->AddShader(m_ModelShader);
+		// TODO: Need to abastract this shader addition process. ATM tied to vulkan only
+		// m_StaticMaterial->AddShader(std::static_pointer_cast<Shader>(VulkanHolder::GetVulkanContext()->GetGeneralShader()));
 
 		// We add default texture to the material
 		std::shared_ptr<Texture> defaultTexture;
@@ -195,10 +195,12 @@ namespace Karma
 		}
 	}
 
+	// Checkout VulkanContext::CreateKarmaGuiGeneralGraphicsPipeline if you modify this function
 	void Mesh::GaugeVertexDataLayout(aiMesh* meshToProcess, BufferLayout& buffLayout)
 	{
 		buffLayout.PushElement({ ShaderDataType::Float3, "v_Position" });
 
+		// We check for optional attributes and add them to the layout
 		if (meshToProcess->mTextureCoords[0] != nullptr)
 		{
 			buffLayout.PushElement({ ShaderDataType::Float2, "v_UV" });

@@ -14,6 +14,9 @@
 
 namespace Karma
 {
+
+	class AStaticMeshActor;
+
 	/**
 	 * @brief Class for organizing and containing Scene relevant data
 	 */
@@ -41,6 +44,14 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		void AddVertexArray(std::shared_ptr<VertexArray> vertexArray);
+
+		/**
+		 * @brief Add StaticMeshActor to the scene
+		 *
+		 * @param smActor				The StaticMeshActor to be added
+		 * @since Karma 1.0.0
+		 */
+		void AddStaticMeshActor(std::shared_ptr<AStaticMeshActor> smActor);
 
 		/**
 		 * @brief Add Camera
@@ -83,10 +94,18 @@ namespace Karma
 		// Getters
 		/**
 		 * @brief Getter for the VertexArray
-		 *
+		 * 
+		 * @note to be deprecated
 		 * @since Karma 1.0.0
 		 */
 		std::shared_ptr<VertexArray> GetRenderableVertexArray() const;
+
+		/**
+		 * @brief Get the list of StaticMeshActors in the scene
+		 *
+		 * @since Karma 1.0.0
+		 */
+		const std::vector<std::shared_ptr<AStaticMeshActor>>& GetSMActors() const { return m_SMActors; }
 
 		/**
 		 * @brief Getter for the Camera being used for the scene
@@ -132,6 +151,8 @@ namespace Karma
 
 	private:
 		std::vector<std::shared_ptr<VertexArray>> m_VertexArrays;
+
+		std::vector<std::shared_ptr<AStaticMeshActor>> m_SMActors;
 		std::vector<std::shared_ptr<Camera>> m_Cameras;
 
 		glm::vec4 m_ClearColor;

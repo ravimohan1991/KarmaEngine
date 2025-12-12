@@ -10,6 +10,7 @@
 #pragma once
 
 #include "Components/MeshComponent.h"
+#include "Renderer/Mesh.h"
 
 namespace Karma
 {
@@ -31,7 +32,7 @@ namespace Karma
 		 * 
 		 * @note This is analogous to Unreal Engine's UStaticMeshComponent::StaticMesh
 		 */
-		std::shared_ptr<class Mesh> m_StaticMesh;
+		std::shared_ptr<Mesh> m_StaticMesh;
 
 	public:
 		/**
@@ -53,6 +54,14 @@ namespace Karma
 		 * @param staticMesh							The static mesh to associate with this component.
 		 * @since Karma 1.0.0
 		 */
-		void SetStaticMesh(std::shared_ptr<class Mesh> staticMesh) { m_StaticMesh = staticMesh; }
+		void SetStaticMesh(std::shared_ptr<Mesh> staticMesh) { m_StaticMesh = staticMesh; }
+
+		/**
+		 * @brief Gets the static mesh associated with this component.
+		 * 
+		 * @return std::shared_ptr<class Mesh> The static mesh associated with this component.
+		 * @since Karma 1.0.0
+		 */
+		std::shared_ptr<Mesh> GetStaticMesh() const { return m_StaticMesh; }
 	};
 }

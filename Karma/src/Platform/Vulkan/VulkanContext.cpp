@@ -6,6 +6,7 @@
 #include "Karma/Renderer/RenderCommand.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
+#include "Platform/Vulkan/VulkanTexture.h"
 
 namespace Karma
 {
@@ -19,6 +20,37 @@ namespace Karma
 	bool VulkanContext::bEnableValidationLayers = false;
 #endif
 
+	static VkFormat ShaderDataTypeToVulkanType(ShaderDataType type)
+	{
+		switch (type)
+		{
+		case ShaderDataType::Float:
+			return VK_FORMAT_R32_SFLOAT;
+		case ShaderDataType::Float2:
+			return VK_FORMAT_R32G32_SFLOAT;
+		case ShaderDataType::Float3:
+			return VK_FORMAT_R32G32B32_SFLOAT;
+		case ShaderDataType::Float4:
+			return VK_FORMAT_R32G32B32A32_SFLOAT;
+		case ShaderDataType::None:
+		case ShaderDataType::Mat3:
+		case ShaderDataType::Mat4:
+		case ShaderDataType::Int:
+		case ShaderDataType::Int2:
+		case ShaderDataType::Int3:
+		case ShaderDataType::Int4:
+		case ShaderDataType::Bool:
+			// Refer Mesh::GaugeVertexDataLayout for usual datatype
+			// to be used in the context of vertex buffer
+			KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
+				return VK_FORMAT_UNDEFINED;
+			break;
+		}
+
+		KR_CORE_ASSERT(false, "Vulkan doesn't support this ShaderDatatype");
+		return VK_FORMAT_UNDEFINED;
+	}
+
 	VulkanContext::VulkanContext(GLFWwindow* windowHandle)
 		: m_windowHandle(windowHandle)
 	{
@@ -28,6 +60,14 @@ namespace Karma
 
 	VulkanContext::~VulkanContext()
 	{
+		vkDestroyDescriptorSetLayout(m_device, m_ViewLayout, nullptr);
+		vkDestroyDescriptorSetLayout(m_device, m_TextureLayout, nullptr);
+
+		vkDestroyDescriptorSetLayout(m_device, m_ObjectLayout, nullptr);
+		vkDestroyPipelineLayout(m_device, m_KarmaGuiGeneralPipelineLayout, nullptr);
+
+		vkDestroyDescriptorPool(m_device, m_GeneralDescriptorPool, nullptr);
+
 		m_vulkanRendererAPI->ClearVulkanRendererAPI();
 		ClearUBO();
 
@@ -58,6 +98,11 @@ namespace Karma
 		vkDestroyInstance(m_Instance, nullptr);
 
 		glslang::FinalizeProcess();
+	}
+
+	void VulkanContext::CleanUpKarmaGuiGeneralGraphicsPipeline()
+	{
+		vkDestroyPipeline(m_device, m_KarmaGuiGeneralGraphicsPipeline, nullptr);
 	}
 
 	void VulkanContext::RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo)
@@ -109,6 +154,430 @@ namespace Karma
 
 		// For glslang
 		Initializeglslang();
+
+		CreateGeneralShader();
+		CreateGeneralDescriptorSetLayouts();
+		CreateGeneralDescriptorPool();
+
+	}
+
+	void VulkanContext::CreateGeneralShader()
+	{
+		// We are creating general shader here for the static material (material used as default for meshes)
+		// Ponder how this would look like in OpenGL
+		m_GeneralShader.reset(new VulkanShader("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag"));
+	}
+
+	VkShaderModule VulkanContext::CreateShaderModule(const std::vector<uint32_t>& code)
+	{
+		VkShaderModuleCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		createInfo.codeSize = code.size() * sizeof(uint32_t);
+		createInfo.pCode = code.data();
+
+		VkShaderModule shaderModule;
+		VkResult result = vkCreateShaderModule(m_device, &createInfo, nullptr, &shaderModule);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create shader module!");
+
+		return shaderModule;
+	}
+
+	void VulkanContext::CreateKarmaGuiGeneralGraphicsPipeline(VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight)
+	{
+		std::array<VkDescriptorSetLayout, 3> setLayouts = {
+									m_ViewLayout,    // set = 0
+									m_TextureLayout, // set = 1
+									m_ObjectLayout   // set = 2
+			};
+
+		VkPipelineLayoutCreateInfo plInfo{};
+		plInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		plInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size());
+		plInfo.pSetLayouts = setLayouts.data();
+		plInfo.pushConstantRangeCount = 0;
+		plInfo.pPushConstantRanges = nullptr;
+
+		VkResult result = vkCreatePipelineLayout(m_device, &plInfo, nullptr, &m_KarmaGuiGeneralPipelineLayout);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create pipeline layout!");
+
+		VkShaderModule vertShaderModule = CreateShaderModule(m_GeneralShader->GetVertSpirV());
+		VkShaderModule fragShaderModule = CreateShaderModule(m_GeneralShader->GetFragSpirV());
+
+		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+		vertShaderStageInfo.module = vertShaderModule;
+		vertShaderStageInfo.pName = "main";
+
+		VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+		fragShaderStageInfo.module = fragShaderModule;
+		fragShaderStageInfo.pName = "main";
+
+		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+
+		// Telling vulkan what to expect from vertex data in terms of attributes and their rate of loading
+		uint32_t index = 0;
+
+		// See Mesh::GaugeVertexDataLayout to understand the layout of vertex data we are using
+		BufferLayout layout;
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Position"));
+		layout.PushElement(BufferElement(ShaderDataType::Float2, "v_UV"));
+
+		VkVertexInputBindingDescription bindingDescription = {};
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+		bindingDescription.binding = 0;
+		bindingDescription.stride = layout.GetStride();
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		for (const auto& element : layout)
+		{
+			VkVertexInputAttributeDescription elementAttributeDescription{};
+			elementAttributeDescription.binding = 0;
+			elementAttributeDescription.location = index;
+			elementAttributeDescription.format = ShaderDataTypeToVulkanType(element.Type);
+			elementAttributeDescription.offset = static_cast<uint32_t>(element.Offset);
+
+			attributeDescriptions.push_back(elementAttributeDescription);
+			index++;
+		}
+
+		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+		VkViewport viewport{};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = windowKGWidth;
+		viewport.height = windowKGHeight;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+
+		VkRect2D scissor{};
+		scissor.offset = { 0, 0 };
+		scissor.extent.width = windowKGWidth;
+		scissor.extent.height = windowKGHeight;
+
+		VkPipelineViewportStateCreateInfo viewportState{};
+		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewportState.viewportCount = 1;
+		viewportState.pViewports = &viewport;
+
+		viewportState.scissorCount = 1;
+		viewportState.pScissors = &scissor;
+
+		VkPipelineRasterizationStateCreateInfo rasterizer{};
+		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rasterizer.depthClampEnable = VK_FALSE;
+		rasterizer.rasterizerDiscardEnable = VK_FALSE;
+		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+		rasterizer.lineWidth = 1.0f;
+		rasterizer.cullMode = VK_CULL_MODE_NONE;
+		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		rasterizer.depthBiasEnable = VK_FALSE;
+
+		// Antialiasing
+		VkPipelineMultisampleStateCreateInfo multisampling{};
+		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		multisampling.sampleShadingEnable = VK_FALSE;
+		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+		VkPipelineDepthStencilStateCreateInfo depthStencil{};
+		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.stencilTestEnable = VK_FALSE;
+
+		VkBool32 bLogicalOperationsAllowed = m_SupportedDeviceFeatures.logicOp;
+
+		// Mix the old and new value to produce a final color
+		// finalColor.rgb = newAlpha * newColor + (1 - newAlpha) * oldColor;
+		// finalColor.a = newAlpha.a;
+		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
+			| VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		if (!bLogicalOperationsAllowed)
+		{
+			colorBlendAttachment.blendEnable = VK_TRUE;
+		}
+		else
+		{
+			colorBlendAttachment.blendEnable = VK_FALSE;
+		}
+		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+		// Combine the old and new value using a bitwise operation
+		VkPipelineColorBlendStateCreateInfo colorBlending{};
+		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		if (bLogicalOperationsAllowed)
+		{
+			colorBlending.logicOpEnable = VK_TRUE;
+		}
+		else
+		{
+			colorBlending.logicOpEnable = VK_FALSE;
+		}
+		colorBlending.logicOp = VK_LOGIC_OP_COPY;
+		colorBlending.attachmentCount = 1;
+		colorBlending.pAttachments = &colorBlendAttachment;
+		colorBlending.blendConstants[0] = 0.0f;
+		colorBlending.blendConstants[1] = 0.0f;
+		colorBlending.blendConstants[2] = 0.0f;
+		colorBlending.blendConstants[3] = 0.0f;
+
+		VkGraphicsPipelineCreateInfo pipelineInfo{};
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineInfo.stageCount = 2;
+		pipelineInfo.pStages = shaderStages;
+		pipelineInfo.pVertexInputState = &vertexInputInfo;
+		pipelineInfo.pInputAssemblyState = &inputAssembly;
+		pipelineInfo.pViewportState = &viewportState;
+		pipelineInfo.pRasterizationState = &rasterizer;
+		pipelineInfo.pMultisampleState = &multisampling;
+		pipelineInfo.pColorBlendState = &colorBlending;
+		pipelineInfo.layout = m_KarmaGuiGeneralPipelineLayout;
+		pipelineInfo.renderPass = renderPassKG;
+		pipelineInfo.subpass = 0;
+		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+		pipelineInfo.pDepthStencilState = &depthStencil;
+
+		VkResult resultGP = vkCreateGraphicsPipelines(m_device, VK_NULL_HANDLE,
+			1, &pipelineInfo, nullptr, &m_KarmaGuiGeneralGraphicsPipeline);
+
+		KR_CORE_ASSERT(resultGP == VK_SUCCESS, "Failed to create graphics pipeline!");
+
+
+		vkDestroyShaderModule(m_device, fragShaderModule, nullptr);
+		vkDestroyShaderModule(m_device, vertShaderModule, nullptr);
+	}
+
+	void VulkanContext::CreateGeneralDescriptorSetLayouts()
+	{
+		// ===== Set 0: Camera UBO =====
+		VkDescriptorSetLayoutBinding viewBinding{};
+		viewBinding.binding = 0;
+		viewBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		viewBinding.descriptorCount = 1;
+		viewBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		viewBinding.pImmutableSamplers = nullptr;
+
+		VkDescriptorSetLayoutCreateInfo viewLayoutInfo{};
+		viewLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		viewLayoutInfo.bindingCount = 1;
+		viewLayoutInfo.pBindings = &viewBinding;
+		VkResult result = vkCreateDescriptorSetLayout(m_device, &viewLayoutInfo, nullptr, &m_ViewLayout);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create view descriptor set layout!");
+
+		// === SET 1: MATERIAL UBO + 1 TEXTURE ===
+		/*std::array<VkDescriptorSetLayoutBinding, 2> materialBindings{};
+
+		// Binding 0: Material UBO
+		materialBindings[0].binding = 0;
+		materialBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		materialBindings[0].descriptorCount = 1;
+		materialBindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT;
+
+		// Binding 1: SINGLE Texture
+		materialBindings[1].binding = 1;
+		materialBindings[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		materialBindings[1].descriptorCount = 1;
+		materialBindings[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		VkDescriptorSetLayoutCreateInfo materialLayoutInfo{};
+		materialLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		materialLayoutInfo.bindingCount = 2;  // Only 2 bindings now
+		materialLayoutInfo.pBindings = materialBindings.data();
+		vkCreateDescriptorSetLayout(device, &materialLayoutInfo, nullptr, &materialLayout);
+		
+		GLSLANG USAGE EXAMPLE:
+		// Set 1: Material UBO + 1 Texture
+		layout(set = 1, binding = 0) uniform MaterialUBO {
+					 vec4 baseColor;
+					float metallic;
+					float roughness;
+				} material;
+
+		layout(set = 1, binding = 1) uniform sampler2D albedoTexture;  // Single texture!
+		*/
+
+		// ===== Set 1: Single texture (combined image + sampler) =====
+		VkDescriptorSetLayoutBinding texBinding{};
+		texBinding.binding = 0;
+		texBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		texBinding.descriptorCount = 1;
+		texBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		texBinding.pImmutableSamplers = nullptr;
+
+		VkDescriptorSetLayoutCreateInfo texInfo{};
+		texInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		texInfo.bindingCount = 1;
+		texInfo.pBindings = &texBinding;
+
+		result = vkCreateDescriptorSetLayout(m_device, &texInfo, nullptr, &m_TextureLayout);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create texture descriptor set layout!");
+
+		// ===== Set 2: Per-mesh transform UBO (dynamic so you can pack many) =====
+		VkDescriptorSetLayoutBinding objectBinding{};
+		objectBinding.binding = 0;
+		objectBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+		objectBinding.descriptorCount = 1;
+		objectBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		objectBinding.pImmutableSamplers = nullptr;
+
+		VkDescriptorSetLayoutCreateInfo objInfo{};
+		objInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		objInfo.bindingCount = 1;
+		objInfo.pBindings = &objectBinding;
+
+		result = vkCreateDescriptorSetLayout(m_device, &objInfo, nullptr, &m_ObjectLayout);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create object descriptor set layout!");
+	}
+
+	void VulkanContext::CreateGeneralDescriptorPool()
+	{
+		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
+		VulkanRendererAPI* vulkanRendererAPI = static_cast<VulkanRendererAPI*>(rendererAPI);
+
+		if (!vulkanRendererAPI)
+		{
+			KR_CORE_ASSERT(false, "VulkanRendererAPI is null!");
+			return;
+		}
+
+		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
+		
+		std::array<VkDescriptorPoolSize, 2> poolSizes{};
+
+		// Uniform Buffers : Camera UBO + Object UBO
+		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSizes[0].descriptorCount = 2 * maxFramesInFlight; // 1 for camera UBO + 1 for object UBO
+
+		// Combined Image Samplers : Texture
+		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[1].descriptorCount = 1 * maxFramesInFlight; // 1 for texture
+
+		VkDescriptorPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+		poolInfo.pPoolSizes = poolSizes.data();
+		poolInfo.maxSets = 3 * maxFramesInFlight; // 3 sets per frame
+
+		VkResult result = vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &m_GeneralDescriptorPool);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create general descriptor pool!");
+	}
+
+	void VulkanContext::CreateGeneralDescriptorSets()
+	{
+		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
+		VulkanRendererAPI* vulkanRendererAPI = static_cast<VulkanRendererAPI*>(rendererAPI);
+
+		if (!vulkanRendererAPI)
+		{
+			KR_CORE_ASSERT(false, "VulkanRendererAPI is null!");
+			return;
+		}
+
+		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
+
+		std::vector<std::array<VkDescriptorSet, 3>> m_GeneralDescriptorSets(maxFramesInFlight);
+		for (size_t i = 0; i < maxFramesInFlight; i++)
+		{
+			std::array<VkDescriptorSetLayout, 3> setLayouts = {
+									m_ViewLayout,    // set = 0
+									m_TextureLayout, // set = 1
+									m_ObjectLayout   // set = 2
+				};
+			VkDescriptorSetAllocateInfo allocInfo{};
+			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			allocInfo.descriptorPool = m_GeneralDescriptorPool;
+			allocInfo.descriptorSetCount = static_cast<uint32_t>(setLayouts.size());
+			allocInfo.pSetLayouts = setLayouts.data();
+
+			VkResult result = vkAllocateDescriptorSets(m_device, &allocInfo, m_GeneralDescriptorSets[i].data());
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to allocate general descriptor sets!");
+		}
+	}
+
+	void VulkanContext::UpdateGeneralDescriptorSets(uint32_t frameIndex, VkBuffer viewBuffer, uint32_t viewBufferSize, std::shared_ptr<VulkanTexture> texture, VkBuffer objectBuffer)
+	{
+		FrameDescriptorSets& frameDescriptorSets = m_GeneralDescriptorSets[frameIndex];
+
+		// Update Set 0: Camera UBO
+		{
+			VkDescriptorBufferInfo viewInfo{};
+			viewInfo.buffer = viewBuffer;
+			viewInfo.offset = frameIndex * viewBufferSize;// Try 2 * sizeof(glm::mat4) also
+			viewInfo.range = viewBufferSize;
+
+			VkWriteDescriptorSet viewWrite{};
+			viewWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			viewWrite.dstSet = frameDescriptorSets.viewSet;
+			viewWrite.dstBinding = 0;
+			viewWrite.dstArrayElement = 0;
+			viewWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			viewWrite.pBufferInfo = &viewInfo;
+
+			vkUpdateDescriptorSets(m_device, 1, &viewWrite, 0, nullptr);
+		}
+
+		// Update set 1: Texture
+		{
+			VkDescriptorImageInfo texInfo{};
+			texInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			texInfo.sampler = texture->GetImageSampler();
+			texInfo.imageView = texture->GetImageView();
+
+			VkWriteDescriptorSet texWrite{};
+			texWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			texWrite.dstSet = frameDescriptorSets.textureSet;
+			texWrite.dstBinding = 0;
+			texWrite.dstArrayElement = 0;
+			texWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			texWrite.pImageInfo = &texInfo;
+			texWrite.descriptorCount = 1;
+
+			vkUpdateDescriptorSets(m_device, 1, &texWrite, 0, nullptr);
+		}
+
+		// Update set 2: Per-mesh UBO will be updated during mesh rendering
+		{
+			uint32_t maxObjects = 100;
+
+			VkDescriptorBufferInfo objectInfo{};
+			objectInfo.buffer = objectBuffer;
+			objectInfo.offset = frameIndex * maxObjects * sizeof(glm::mat4); // Assuming each object's transform is a mat4
+			objectInfo.range = maxObjects * sizeof(glm::mat4);
+
+			VkWriteDescriptorSet objectWrite{};
+			objectWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			objectWrite.dstSet = frameDescriptorSets.objectSet;
+			objectWrite.dstBinding = 0;
+			objectWrite.dstArrayElement = 0;
+			objectWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+			objectWrite.pBufferInfo = &objectInfo;
+			objectWrite.descriptorCount = 1;
+
+			vkUpdateDescriptorSets(m_device, 1, &objectWrite, 0, nullptr);
+		}
 	}
 
 	void VulkanContext::Initializeglslang()

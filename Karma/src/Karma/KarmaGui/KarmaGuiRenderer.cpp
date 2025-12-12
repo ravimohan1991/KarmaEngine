@@ -2,7 +2,7 @@
 #include "Renderer/RendererAPI.h"
 #include "Vulkan/VulkanHolder.h"
 #include "Renderer/RenderCommand.h"
-
+#include "StaticMeshActor.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
 
 // Emedded font
@@ -469,6 +469,21 @@ namespace Karma
 
 		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
+			std::shared_ptr<Scene> scene3D = it->Scene3D;
+
+			//scene3D->GetSceneCamera()->GetViewProjectionUBO()->UploadUniformBuffer(windowData->SemaphoreIndex);
+			VulkanHolder::GetVulkanContext()->UploadUBO(windowData->SemaphoreIndex);
+
+			FrameDescriptorSets dSets;
+			if (VulkanHolder::GetVulkanContext()->GetGeneralDescriptorSets().size() > 0)
+			{
+					dSets = VulkanHolder::GetVulkanContext()->GetGeneralDescriptorSets()[windowData->SemaphoreIndex];
+			}
+			else
+			{
+				continue;
+			}
+
 			{
 				VkRenderPassBeginInfo renderPassInfo{};
 				renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -488,29 +503,38 @@ namespace Karma
 				
 				// The pass starts here and all commands until vkCmdEndRenderPass are recorded into it
 				vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-				std::shared_ptr<VulkanVertexArray> vulkanVA =	static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
-				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,	vulkanVA->GetKarmaGuiGraphicsPipeline());
-				
+
+				// ---- Bind Graphics Pipeline ----
+				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralGraphicsPipeline());
+
+				// === BIND GLOBAL DESCRIPTOR SETS (once per frame) ===
+				// Set 0: Camera UBO
+				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 0, 1, &dSets.viewSet, 0, nullptr);
+
+				// Set 1: Texture (shared by all meshes)
+				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 1, 1, &dSets.textureSet, 0, nullptr);
+
+				uint32_t objectIndex = 0;
+
 				// ---- Bind 3D Vertex And Index Buffers ----
+				for(const auto& smActor : scene3D->GetSMActors())
 				{
-					VkBuffer vertexBuffers[1] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
+					std::shared_ptr<Mesh> mesh = smActor->GetStaticMeshComponent()->GetStaticMesh();
+
+					VkBuffer vertexBuffers[1] = { std::static_pointer_cast<VulkanVertexBuffer>(mesh->GetVertexBuffer())->GetVertexBuffer() };
 					VkDeviceSize vertexOffset[1] = { 0 };
 					vkCmdBindVertexBuffers(frameOnFlightData->CommandBuffer, 0, 1, vertexBuffers, vertexOffset);
-					vkCmdBindIndexBuffer(frameOnFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0,	VK_INDEX_TYPE_UINT32);
+					vkCmdBindIndexBuffer(frameOnFlightData->CommandBuffer, std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer())->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+					uint32_t dynamicOffsets[] = { objectIndex * 256 };
+					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 2, 1, &dSets.objectSet, 1, dynamicOffsets);
+
+					// ----Issue Draw Commands----
+					// Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)
+					vkCmdDrawIndexed(frameOnFlightData->CommandBuffer, objectIndex, 1, 0, 0, 0);
+
+					objectIndex++;
 				}
-				
-				vulkanVA->UpdateProcessAndSetReadyForSubmission();
-				vulkanVA->Bind();
-				
-				VulkanHolder::GetVulkanContext()->UploadUBO(windowData->SemaphoreIndex);
-				
-				// ---- Bind descriptor sets (e.g., uniforms for MVP matrices, lighting) ----
-				// Assumes layout compatibility between pipeline and descriptor set
-				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,	vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[windowData->SemaphoreIndex], 0,	nullptr);
-				
-				// ---- Issue Draw Commands ----
-				// Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)
-				vkCmdDrawIndexed(frameOnFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
 				
 				// ---- End the Offscreen Render Pass ----
 				vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);

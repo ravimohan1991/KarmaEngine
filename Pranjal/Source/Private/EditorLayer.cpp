@@ -55,16 +55,16 @@ namespace Karma
 		}
 
 		// Then we set texture
-		m_ModelTexture.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/UnrealGrid.png", "VikingTex", "texSampler"));
+		/*m_ModelTexture.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/UnrealGrid.png", "VikingTex", "texSampler"));
 
 		m_ModelMaterial->AddTexture(m_ModelTexture);
 		m_ModelMaterial->AttatchMainCamera(m_EditorCamera); //Is this needed?
 
-		m_ModelVertexArray->SetMaterial(m_ModelMaterial);
+		m_ModelVertexArray->SetMaterial(m_ModelMaterial);*/
 
 		m_EditorScene.reset(new Karma::Scene());
-		m_EditorScene->AddCamera(m_EditorCamera);
-		m_EditorScene->AddVertexArray(m_ModelVertexArray);
+		//m_EditorScene->AddCamera(m_EditorCamera);
+		//m_EditorScene->AddVertexArray(m_ModelVertexArray);
 		m_EditorScene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 	}
 
@@ -373,6 +373,7 @@ namespace Karma
 				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
 
 				staticMeshActor->LoadMeshFromFile("../Resources/Models/BonedCylinder.obj");
+				m_EditorScene->AddStaticMeshActor(std::shared_ptr<AStaticMeshActor>(staticMeshActor));
 			}
 		}
 	}

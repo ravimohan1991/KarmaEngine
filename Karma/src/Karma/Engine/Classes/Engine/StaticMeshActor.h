@@ -10,9 +10,11 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "Components/StaticMeshComponent.h"
 
 namespace Karma
 {
+
 	/**
 	 * @brief An actor that contains a static mesh component, allowing the mesh to be rendered in the game world.
 	 * 
@@ -29,7 +31,7 @@ namespace Karma
 		 * @note This is analogous to Unreal Engine's AStaticMeshActor::StaticMeshComponent
 		 */
 		//std::shared_ptr<class UStaticMeshComponent> m_StaticMeshComponent;
-		class UStaticMeshComponent* m_StaticMeshComponent;
+		UStaticMeshComponent* m_StaticMeshComponent;
 
 	public:
 		/**
@@ -47,6 +49,15 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		void LoadMeshFromFile(const std::string& filePath);
+
+		/**
+		 * @brief Getter for the static mesh component
+		 * 
+		 * @return UStaticMeshComponent* The static mesh component of this actor.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		UStaticMeshComponent* GetStaticMeshComponent() const { return m_StaticMeshComponent; }
 		
 		/**
 		 * @brief Destructor for StaticMeshActor

@@ -19,6 +19,8 @@
 
 namespace Karma
 {
+	class VulkanShader;
+
 	/**
 	 * @brief Forward declaration
 	 */
@@ -28,6 +30,13 @@ namespace Karma
 	 * @brief Forward declaration
 	 */
 	struct VulkanUniformBuffer;
+
+	struct FrameDescriptorSets 
+	{
+		VkDescriptorSet viewSet;     // Set 0: Camera UBO
+		VkDescriptorSet textureSet;  // Set 1: Texture  
+		VkDescriptorSet objectSet;   // Set 2: Per-mesh UBO (dynamic)
+	};
 
 	/**
 	 * @brief A structure for graphics and present queuefamilies
@@ -528,6 +537,92 @@ namespace Karma
 		void RecreateUBO();
 
 		/**
+		 * @brief Creates a Vulkan shader module from SPIR-V bytecode.
+		 *
+		 * This is specifically used when creating the graphics pipeline to load vertex and fragment shaders.
+		 *
+		 * For instance while creating vertex shader stage info (pipeline creation):
+		 * @code{.cpp}
+		 *		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+		 *		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		 *		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+		 *		vertShaderStageInfo.module = vertShaderModule;
+		 *		vertShaderStageInfo.pName = "main";
+		 * @endcode
+		 *
+		 * @param code					The SPIR-V bytecode as a vector of uint32_t
+		 *
+		 * @return The created VkShaderModule
+		 * @since Karma 1.0.0
+		 */
+		VkShaderModule CreateShaderModule(const std::vector<uint32_t>& code);
+
+		void CreateGeneralShader();
+
+		/**
+		 * @brief Creates general descriptor set layouts for common resources like camera UBO, texture sampler, and object UBO.
+		 * 
+		 * These descriptor set layouts define how shader resources are organized and accessed in the rendering pipeline.
+		 *
+		 * @since Karma 1.0.0
+		 */
+		void CreateGeneralDescriptorSetLayouts();
+
+		/**
+		 * @brief Creates the graphics pipeline for rendering 3D objects in the KarmaGui's exhibitor window.
+		 * 
+		 * @param renderPassKG					The render pass to be used with the Karma GUI graphics pipeline
+		 * @param windowKGWidth					The width of the window for viewport and scissor setup
+		 * @param windowKGHeight				The height of the window for viewport and scissor setup
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CreateKarmaGuiGeneralGraphicsPipeline(VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight);
+
+		/**
+		 * @brief Cleans up the resources associated with the KarmaGui general graphics pipeline.
+		 * 
+		 * This includes destroying the pipeline and pipeline layout is destroyed in destructor.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CleanUpKarmaGuiGeneralGraphicsPipeline();
+
+		/**
+		 * @brief Creates a general descriptor pool for allocating descriptor sets for common resources.
+		 * 
+		 * The descriptor sets are like so
+		 * 1. Camera UBO descriptor set
+		 * 2. Texture sampler descriptor set
+		 * 3. Object UBO descriptor set
+		 * 4. Maybe add more later
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CreateGeneralDescriptorPool();
+
+		/**
+		 * @brief Allocates and writes to general descriptor sets for common resources like camera UBO, texture sampler, and object UBO.
+		 * 
+		 * These descriptor sets are used in the graphics pipeline to bind the appropriate resources for rendering.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CreateGeneralDescriptorSets();
+
+		/**
+		 * @brief Updates the general descriptor sets with the provided view buffer for the specified frame index.
+		 * 
+		 * @note viewbuffer is the vkbuffer of the camera in scene
+		 * 
+		 * @param frameIndex						The index of the frame for which to update the descriptor sets
+		 * @param viewBuffer						The buffer containing view (camera) data
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void UpdateGeneralDescriptorSets(uint32_t frameIndex, VkBuffer viewBuffer, uint32_t viewBufferSize, std::shared_ptr<VulkanTexture> texture, VkBuffer objectBuffer);
+
+		/**
 		 * @brief Uploads data to the registered VulkanUniformBuffers for the specified frame index.
 		 * 
 		 * Typically called during rendering to update uniform buffer data for the current frame like so
@@ -578,6 +673,10 @@ namespace Karma
 		uint32_t GetMinImageCount() const { return m_MinImageCount; }
 		VkSurfaceKHR GetSurface() const { return m_surface; }
 		VkPresentModeKHR GetPresentMode() const { return m_presentMode; }
+		std::shared_ptr<VulkanShader> GetGeneralShader() const { return m_GeneralShader; }
+		VkPipeline GetKarmaGuiGeneralGraphicsPipeline() const { return m_KarmaGuiGeneralGraphicsPipeline; }
+		VkPipelineLayout GetKarmaGuiGeneralPipelineLayout() const { return m_KarmaGuiGeneralPipelineLayout; }
+		const std::vector<FrameDescriptorSets>& GetGeneralDescriptorSets() const { return m_GeneralDescriptorSets; }
 
 	private:
 		// Apologies for little out-of-sync naming convention, was dealing with flood of lines when
@@ -615,6 +714,16 @@ namespace Karma
 
 		std::set<std::shared_ptr<VulkanUniformBuffer>> m_VulkanUBO;
 
+		// General vulkan resources
+		std::shared_ptr<VulkanShader> m_GeneralShader;
+
+		VkPipelineLayout m_KarmaGuiGeneralPipelineLayout;
+		VkPipeline m_KarmaGuiGeneralGraphicsPipeline;
+		VkDescriptorSetLayout m_ViewLayout; // Camera UBO
+		VkDescriptorSetLayout m_TextureLayout; // Material UBO + texture sampler
+		VkDescriptorSetLayout m_ObjectLayout; // Object UBO
+		VkDescriptorPool m_GeneralDescriptorPool;
+		std::vector<FrameDescriptorSets> m_GeneralDescriptorSets;
 
 		bool bVSync = false;
 

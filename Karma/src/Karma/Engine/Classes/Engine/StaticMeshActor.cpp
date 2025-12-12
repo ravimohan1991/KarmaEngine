@@ -1,8 +1,6 @@
 #include "StaticMeshActor.h"
 #include "Mesh.h"
 
-#include "StaticMeshComponent.h"
-
 namespace Karma
 {
 	AStaticMeshActor::AStaticMeshActor(const std::string& name)
@@ -21,17 +19,17 @@ namespace Karma
 		loadedMesh.reset(new Mesh(filePath));
 
 		// We create uniform buffer object for model's transformation matrix
-		std::shared_ptr<UniformBufferObject> shaderUniform;
-		shaderUniform.reset(UniformBufferObject::Create({ ShaderDataType::Mat4 }, 0));// Binding point 0 and gets registered in VulkanContext during its initialization
+		std::shared_ptr<UniformBufferObject> meshTransformUniform;
+		meshTransformUniform.reset(UniformBufferObject::Create({ ShaderDataType::Mat4 }, 2));// Binding point 2 and gets registered in VulkanContext during its initialization
 
 		UBODataPointer uModelMatrix(&GetTransform());
-		shaderUniform->UpdateUniforms(uModelMatrix);// set the model matrix (Actor Transform) uniform
+		meshTransformUniform->UpdateUniforms(uModelMatrix);// set the model matrix (Actor Transform) uniform
 
-		if (!m_StaticMeshComponent)
-		{
+		//if (!m_StaticMeshComponent)
+		//{
 			// need to write code to destroy UObjects later
 			m_StaticMeshComponent = NewObject<UStaticMeshComponent>(nullptr, UStaticMeshComponent::StaticClass(), "StaticMeshComponent");
-		}
+		//}
 
 		m_StaticMeshComponent->SetStaticMesh(loadedMesh);
 	}
