@@ -8,12 +8,12 @@ namespace Karma
 {
 	Camera::Camera(const glm::vec3& initialCameraPosition) : m_Position(initialCameraPosition), m_LastMouseX(0.0f), m_LastMouseY(0.0f)
 	{	
-		//m_ViewProjectionUBO.reset(UniformBufferObject::Create({ ShaderDataType::Mat4, ShaderDataType::Mat4 }, 0));
+		m_ViewProjectionUBO.reset(UniformBufferObject::Create({ ShaderDataType::Mat4, ShaderDataType::Mat4 }, 0));
 		
-		//UBODataPointer uProjection(&m_ProjectionMatrix);
-		//UBODataPointer uView(&m_ViewMatrix);
+		UBODataPointer uProjection(&m_ProjectionMatrix);
+		UBODataPointer uView(&m_ViewMatrix);
 
-		//m_ViewProjectionUBO->UpdateUniforms(uView, uProjection);
+		m_ViewProjectionUBO->UpdateUniforms(uView, uProjection);
 	}
 
 	Camera::~Camera()

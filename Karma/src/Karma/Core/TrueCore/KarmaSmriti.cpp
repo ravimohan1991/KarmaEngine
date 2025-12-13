@@ -35,7 +35,6 @@ namespace Karma
 		{
 			if ((*ObjectItr)->m_Object)
 			{
-				KR_INFO("Attempting to delete UObject: {0} ", (*ObjectItr)->m_Object->GetName());
 				(*ObjectItr)->m_Object->ShivaUObject();
 			}
 			else

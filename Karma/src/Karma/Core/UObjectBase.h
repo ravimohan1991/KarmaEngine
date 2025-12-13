@@ -62,7 +62,7 @@ namespace Karma
 
 	public:
 		/**
-		 * Constructor used by StaticAllocateObject
+		 * @brief Constructor used by StaticAllocateObject
 		 * @param	InClass				non NULL, this gives the class of the new object, if known at this time
 		 * @param	InFlags				RF_Flags to assign
 		 * @param	InOuter				outer for this object (UObject this object resides in, for instance LevelToSpawnIn is outer for AActor)
@@ -75,10 +75,16 @@ namespace Karma
 
 		~UObjectBase() {};
 
+		/**
+		 * @brief One function to destroy them
+		 * 
+		 * @see KarmaSmriti::ShutDown()
+		 * @since Karma 1.0.0
+		 */
 		virtual void ShivaUObject() { this->~UObjectBase(); }
 
 		/**
-		 * Walks up the list of outers until it finds a package directly associated with the object.
+		 * @brief Walks up the list of outers until it finds a package directly associated with the object.
 		 *
 		 * @return the package the object is in
 		 * @since Karma 1.0.0
