@@ -69,7 +69,7 @@ namespace Karma
 		vkDestroyDescriptorPool(m_device, m_GeneralDescriptorPool, nullptr);
 
 		m_vulkanRendererAPI->ClearVulkanRendererAPI();
-		ClearUBO();
+		//ClearUBO();
 
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
@@ -105,7 +105,7 @@ namespace Karma
 		vkDestroyPipeline(m_device, m_KarmaGuiGeneralGraphicsPipeline, nullptr);
 	}
 
-	void VulkanContext::RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo)
+	void VulkanContext::RegisterUBO(std::shared_ptr<VulkanUniformBuffer> ubo)
 	{
 		m_VulkanUBO.insert(ubo);
 	}
@@ -158,7 +158,7 @@ namespace Karma
 		CreateGeneralShader();
 		CreateGeneralDescriptorSetLayouts();
 		CreateGeneralDescriptorPool();
-
+		CreateGeneralDescriptorSets();
 	}
 
 	void VulkanContext::CreateGeneralShader()
@@ -498,7 +498,10 @@ namespace Karma
 
 		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
 
-		std::vector<std::array<VkDescriptorSet, 3>> m_GeneralDescriptorSets(maxFramesInFlight);
+		//std::vector<std::array<VkDescriptorSet, 3>> m_GeneralDescriptorSets(maxFramesInFlight);
+		
+		m_GeneralDescriptorSets.resize(maxFramesInFlight);
+		
 		for (size_t i = 0; i < maxFramesInFlight; i++)
 		{
 			std::array<VkDescriptorSetLayout, 3> setLayouts = {

@@ -22,7 +22,7 @@ namespace Karma
 	 */
 	class KARMA_API AStaticMeshActor : public AActor
 	{
-		DECLARE_KARMA_CLASS(AActor, AStaticMeshActor)
+		DECLARE_KARMA_CLASS(AStaticMeshActor, AActor)
 
 	private:
 		/**
@@ -32,6 +32,8 @@ namespace Karma
 		 */
 		//std::shared_ptr<class UStaticMeshComponent> m_StaticMeshComponent;
 		UStaticMeshComponent* m_StaticMeshComponent;
+		
+		std::shared_ptr<class UniformBufferObject> m_MeshTransformUniform;
 
 	public:
 		/**
@@ -58,11 +60,5 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		UStaticMeshComponent* GetStaticMeshComponent() const { return m_StaticMeshComponent; }
-		
-		/**
-		 * @brief Destructor for StaticMeshActor
-		 */
-		virtual ~AStaticMeshActor();
-		// Additional methods and members specific to StaticMeshActor can be added here.
 	};
 }

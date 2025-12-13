@@ -9,6 +9,11 @@ namespace Karma
 	Camera::Camera(const glm::vec3& initialCameraPosition) : m_Position(initialCameraPosition), m_LastMouseX(0.0f), m_LastMouseY(0.0f)
 	{	
 		m_ViewProjectionUBO.reset(UniformBufferObject::Create({ ShaderDataType::Mat4, ShaderDataType::Mat4 }, 0));
+		
+		UBODataPointer uProjection(&m_ProjectionMatrix);
+		UBODataPointer uView(&m_ViewMatrix);
+
+		m_ViewProjectionUBO->UpdateUniforms(uView, uProjection);
 	}
 
 	Camera::~Camera()
@@ -28,11 +33,6 @@ namespace Karma
 
 	void Camera::OnUpdate(float deltaTime)
 	{
-		UBODataPointer uProjection(&m_ProjectionMatrix);
-		UBODataPointer uView(&m_ViewMatrix);
-
-		// This should work with just updating once in the constructor, may see later
-		m_ViewProjectionUBO->UpdateUniforms(uView, uProjection);
 	}
 
 	void Camera::MoveForward(float amount)

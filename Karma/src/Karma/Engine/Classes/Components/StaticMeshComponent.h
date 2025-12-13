@@ -23,7 +23,7 @@ namespace Karma
 	 */
 	class KARMA_API UStaticMeshComponent : public UMeshComponent
 	{
-		DECLARE_KARMA_CLASS(UMeshComponent, UStaticMeshComponent)
+		DECLARE_KARMA_CLASS(UStaticMeshComponent, UMeshComponent)
 
 	private:
 

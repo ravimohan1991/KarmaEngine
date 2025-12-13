@@ -503,6 +503,8 @@ namespace Karma
 				
 				// The pass starts here and all commands until vkCmdEndRenderPass are recorded into it
 				vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+				
+				// UpdateGeneralDescriptorSets
 
 				// ---- Bind Graphics Pipeline ----
 				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralGraphicsPipeline());

@@ -518,7 +518,7 @@ namespace Karma
 		 * @see VulkanContext::m_VulkanUBO
 		 * @since Karma 1.0.0
 		 */
-		void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
+		void RegisterUBO(std::shared_ptr<VulkanUniformBuffer> ubo);
 
 		/**
 		 * @brief Clears all registered VulkanUniformBuffers, freeing their resources.

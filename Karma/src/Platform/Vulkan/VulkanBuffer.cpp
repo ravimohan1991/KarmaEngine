@@ -260,7 +260,7 @@ namespace Karma
 
 	VulkanUniformBuffer::~VulkanUniformBuffer()
 	{
-		//ClearBuffer();
+		ClearBuffer();
 	}
 
 	void VulkanUniformBuffer::BufferCreation()
