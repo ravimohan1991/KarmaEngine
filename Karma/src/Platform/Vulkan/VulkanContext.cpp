@@ -498,9 +498,9 @@ namespace Karma
 
 		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
 
-		//std::vector<std::array<VkDescriptorSet, 3>> m_GeneralDescriptorSets(maxFramesInFlight);
+		std::vector<std::array<VkDescriptorSet, 3>> m_GeneralDescriptorSets(maxFramesInFlight);
 		
-		m_GeneralDescriptorSets.resize(maxFramesInFlight);
+		//m_GeneralDescriptorSets.resize(maxFramesInFlight);
 		
 		for (size_t i = 0; i < maxFramesInFlight; i++)
 		{
