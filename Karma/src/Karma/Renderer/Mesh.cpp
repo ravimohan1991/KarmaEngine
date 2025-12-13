@@ -63,16 +63,16 @@ namespace Karma
 		ProcessNode(scene->mRootNode, scene);
 
 		// Set default static material
-		m_StaticMaterial.reset(new Material());
+		//m_StaticMaterial.reset(new Material());
 
 		// TODO: Need to abastract this shader addition process. ATM tied to vulkan only
 		// m_StaticMaterial->AddShader(std::static_pointer_cast<Shader>(VulkanHolder::GetVulkanContext()->GetGeneralShader()));
 
 		// We add default texture to the material
-		std::shared_ptr<Texture> defaultTexture;
-		defaultTexture.reset(new Texture(TextureType::Image, "../Resources/Textures/UnrealGrid.png", "VikingTex", "texSampler"));
+		//std::shared_ptr<Texture> defaultTexture;
+		//defaultTexture.reset(new Texture(TextureType::Image, "../Resources/Textures/UnrealGrid.png", "VikingTex", "texSampler"));
 
-		m_StaticMaterial->AddTexture(defaultTexture);
+		//m_StaticMaterial->AddTexture(defaultTexture);
 	}
 
 	void Mesh::ProcessNode(aiNode* nodeToProcess, const aiScene* theScene)

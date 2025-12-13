@@ -73,6 +73,10 @@ namespace Karma
 		 */
 		UObjectBase(UClass* inClass, EObjectFlags inFlags, EInternalObjectFlags inInternalFlags, UObject* inOuter, const std::string& inName);
 
+		~UObjectBase() {};
+
+		virtual void ShivaUObject() { this->~UObjectBase(); }
+
 		/**
 		 * Walks up the list of outers until it finds a package directly associated with the object.
 		 *

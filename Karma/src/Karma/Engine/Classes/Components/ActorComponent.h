@@ -75,6 +75,8 @@ namespace Karma
 		 */
 		UActorComponent();
 
+		virtual void ShivaUObject() { this->~UActorComponent(); }
+
 		/**
 		 * @brief Function called every frame on this ActorComponent. Override this function to implement custom logic to be executed every frame.
 		 * Only executes if the component is registered, and also PrimaryComponentTick.bCanEverTick must be set to true.

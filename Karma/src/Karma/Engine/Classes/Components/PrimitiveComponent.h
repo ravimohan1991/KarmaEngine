@@ -51,6 +51,8 @@ namespace Karma
 		//friend class FPrimitiveSceneInfo;
 
 	public:
+		virtual void ShivaUObject() { this->~UPrimitiveComponent(); }
+
 		/**
 		 * @brief Utility to cache the max draw distance based on cull distance volumes or the desired max draw distance
 		 *

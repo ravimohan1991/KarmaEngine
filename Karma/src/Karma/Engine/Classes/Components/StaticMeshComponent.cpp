@@ -8,6 +8,6 @@ namespace Karma
 	}
 	UStaticMeshComponent::~UStaticMeshComponent()
 	{
-		// Destructor implementation (if any)
+		KR_CORE_INFO("Destroy called on UStaticMeshComponent");
 	}
 } // namespace Karma

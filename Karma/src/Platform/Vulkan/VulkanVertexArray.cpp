@@ -13,7 +13,7 @@ namespace Karma
 	VulkanVertexArray::~VulkanVertexArray()
 	{
 		vkDeviceWaitIdle(m_device);
-		CleanupPipeline();
+		//CleanupPipeline();
 	}
 
 	void VulkanVertexArray::Bind() const

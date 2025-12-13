@@ -538,6 +538,8 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		bool IsValid(const UObjectBase* Object) const;
+
+		~FUObjectArray();
 	};
 
 	/**

@@ -518,7 +518,7 @@ namespace Karma
 		 * @see VulkanContext::m_VulkanUBO
 		 * @since Karma 1.0.0
 		 */
-		void RegisterUBO(std::shared_ptr<VulkanUniformBuffer> ubo);
+		void RegisterUBO(VulkanUniformBuffer* ubo);
 
 		/**
 		 * @brief Clears all registered VulkanUniformBuffers, freeing their resources.
@@ -712,7 +712,7 @@ namespace Karma
 		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 		VkCommandPool m_commandPool;
 
-		std::set<std::shared_ptr<VulkanUniformBuffer>> m_VulkanUBO;
+		std::set<VulkanUniformBuffer*> m_VulkanUBO;
 
 		// General vulkan resources
 		std::shared_ptr<VulkanShader> m_GeneralShader;

@@ -50,6 +50,8 @@ namespace Karma
 		 */
 		USceneComponent();
 
+		virtual void ShivaUObject() { this->~USceneComponent(); }
+
 		/** Returns the transform of the component relative to its parent */
 		//FTransform GetRelativeTransform() const;
 

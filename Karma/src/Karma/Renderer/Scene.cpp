@@ -29,7 +29,7 @@ namespace Karma
 		m_VertexArrays.push_back(vertexArray);
 	}
 
-	void Scene::AddStaticMeshActor(std::shared_ptr<AStaticMeshActor> smActor)
+	void Scene::AddStaticMeshActor(AStaticMeshActor* smActor)
 	{
 		m_SMActors.push_back(smActor);
 	}

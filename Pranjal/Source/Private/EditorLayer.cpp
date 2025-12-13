@@ -373,7 +373,7 @@ namespace Karma
 				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
 
 				staticMeshActor->LoadMeshFromFile("../Resources/Models/BonedCylinder.obj");
-				m_EditorScene->AddStaticMeshActor(std::shared_ptr<AStaticMeshActor>(staticMeshActor));
+				//m_EditorScene->AddStaticMeshActor(staticMeshActor);
 			}
 		}
 	}

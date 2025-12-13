@@ -123,6 +123,8 @@ namespace Karma
 		{
 		}
 
+		~FUObjectAllocator();
+
 		/**
 		 * Allocates and initializes the permanent object pool.
 		 *

@@ -22,6 +22,8 @@ namespace Karma
 	class KARMA_API UMeshComponent : public UPrimitiveComponent
 	{
 		DECLARE_KARMA_CLASS(UPrimitiveComponent, UMeshComponent)
-
+	
+	public:
+		virtual void ShivaUObject() { this->~UMeshComponent(); }
 	};
 }

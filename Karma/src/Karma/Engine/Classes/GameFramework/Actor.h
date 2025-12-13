@@ -144,6 +144,9 @@ namespace Karma
 		uint8_t m_bAutoDestroyWhenFinished : 1;
 
 	public:
+
+		virtual void ShivaUObject() { this->~AActor(); }
+
 		/** 
 		 * Return the ULevel that this Actor is part of.
 		 *

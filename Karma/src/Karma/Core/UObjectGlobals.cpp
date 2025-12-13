@@ -596,6 +596,10 @@ namespace Karma
 		return true;
 	}
 
+	FUObjectArray::~FUObjectArray()
+	{
+	}
+
 	void GetObjectsOfClass(const UClass* ClassToLookFor, KarmaVector<UObject *>& Results, bool bIncludeDerivedClasses, EObjectFlags ExclusionFlags, EInternalObjectFlags ExclusionInternalFlags)
 	{
 		//SCOPE_CYCLE_COUNTER(STAT_Hash_GetObjectsOfClass);

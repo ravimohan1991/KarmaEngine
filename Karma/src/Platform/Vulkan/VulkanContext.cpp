@@ -69,7 +69,9 @@ namespace Karma
 		vkDestroyDescriptorPool(m_device, m_GeneralDescriptorPool, nullptr);
 
 		m_vulkanRendererAPI->ClearVulkanRendererAPI();
-		//ClearUBO();
+		
+		// Tentative for the moment
+		// ClearUBO();
 
 		for (auto framebuffer : m_swapChainFrameBuffers)
 		{
@@ -105,7 +107,7 @@ namespace Karma
 		vkDestroyPipeline(m_device, m_KarmaGuiGeneralGraphicsPipeline, nullptr);
 	}
 
-	void VulkanContext::RegisterUBO(std::shared_ptr<VulkanUniformBuffer> ubo)
+	void VulkanContext::RegisterUBO(VulkanUniformBuffer* ubo)
 	{
 		m_VulkanUBO.insert(ubo);
 	}
