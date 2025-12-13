@@ -129,8 +129,6 @@ namespace Karma
 		 */
 		UObject();
 
-		virtual void ShivaUObject() { this->~UObject(); }
-
 		/**
 		 * A legacy function from UE
 		 */

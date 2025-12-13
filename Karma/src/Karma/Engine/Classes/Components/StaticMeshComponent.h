@@ -47,8 +47,6 @@ namespace Karma
 		 */
 		virtual ~UStaticMeshComponent();
 
-		virtual void ShivaUObject() { this->~UStaticMeshComponent(); }
-
 		// Additional methods and members specific to StaticMeshComponent can be added here.
 
 		/**

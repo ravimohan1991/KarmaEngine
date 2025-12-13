@@ -145,8 +145,6 @@ namespace Karma
 
 	public:
 
-		virtual void ShivaUObject() { this->~AActor(); }
-
 		/** 
 		 * Return the ULevel that this Actor is part of.
 		 *

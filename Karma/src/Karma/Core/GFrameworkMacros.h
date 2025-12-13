@@ -35,12 +35,19 @@ typedef void		(*ClassConstructorType)				(const Karma::FObjectInitializer&);
  * calls default constructor with placement new during UObjectAllocation
  * (*InClass->m_ClassConstructor)(FObjectInitializer)
  * 
+ * Also defines the routine to destroy (call class destructor) accessible from
+ * UObjectBase. See KarmaSmriti::ShutDown() for application.
+ * 
  * @see StaticConstructObject_Internal() in UObjectGlobals.cpp
  * @remark In UE, this is done in ObjectMacros.h, #define DECLARE_CLASS
  * 
  */
 #define DECLARE_KARMA_CLASS(TClass, TSuperClass) \
 public: \
+	 inline virtual void ShivaUObject()\
+	 {\
+		this->~##TClass();\
+	 } \
 	DEFINE_DEFAULT_CONSTRUCTOR_CALL(TClass) \
 	/** Typedef for the base class ({{ typedef-type }}) */ \
 	typedef TSuperClass Super;\
