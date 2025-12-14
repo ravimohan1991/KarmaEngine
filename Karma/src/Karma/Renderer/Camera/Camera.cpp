@@ -13,7 +13,7 @@ namespace Karma
 		UBODataPointer uProjection(&m_ProjectionMatrix);
 		UBODataPointer uView(&m_ViewMatrix);
 
-		m_ViewProjectionUBO->UpdateUniforms(uView, uProjection);
+		m_ViewProjectionUBO->UpdateUniforms(uProjection, uView);
 	}
 
 	Camera::~Camera()

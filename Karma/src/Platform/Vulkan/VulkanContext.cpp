@@ -264,6 +264,11 @@ namespace Karma
 		BufferLayout layout;
 		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Position"));
 		layout.PushElement(BufferElement(ShaderDataType::Float2, "v_UV"));
+		
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Normal"));
+		/*layout.PushElement(BufferElement(ShaderDataType::Float4, "v_Color"));
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Normal"));
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Tangent"));*/
 
 		VkVertexInputBindingDescription bindingDescription = {};
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
