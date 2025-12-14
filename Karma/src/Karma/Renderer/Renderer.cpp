@@ -16,7 +16,7 @@ namespace Karma
 
 	void Renderer::Submit(std::shared_ptr<Scene> scene)
 	{
-		RenderCommand::DrawIndexed(scene->GetRenderableVertexArray());
+		//RenderCommand::DrawIndexed(scene->GetRenderableVertexArray());
 	}
 
 	void Renderer::DeleteData()

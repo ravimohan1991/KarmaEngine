@@ -503,8 +503,6 @@ namespace Karma
 				
 				// The pass starts here and all commands until vkCmdEndRenderPass are recorded into it
 				vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-				
-				// UpdateGeneralDescriptorSets
 
 				// ---- Bind Graphics Pipeline ----
 				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralGraphicsPipeline());
@@ -512,9 +510,6 @@ namespace Karma
 				// === BIND GLOBAL DESCRIPTOR SETS (once per frame) ===
 				// Set 0: Camera UBO
 				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 0, 1, &dSets.viewSet, 0, nullptr);
-
-				// Set 1: Texture (shared by all meshes)
-				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 1, 1, &dSets.textureSet, 0, nullptr);
 
 				uint32_t objectIndex = 0;
 
@@ -528,8 +523,11 @@ namespace Karma
 					vkCmdBindVertexBuffers(frameOnFlightData->CommandBuffer, 0, 1, vertexBuffers, vertexOffset);
 					vkCmdBindIndexBuffer(frameOnFlightData->CommandBuffer, std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer())->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
-					uint32_t dynamicOffsets[] = { objectIndex * 256 };
-					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 2, 1, &dSets.objectSet, 1, dynamicOffsets);
+					// Set 1: Texture
+					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 1, 1, &dSets.textureSet[objectIndex], 0, nullptr);
+					
+					// Set 2: Object UBO
+					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 2, 1, &dSets.objectsSet[objectIndex], 1, nullptr);
 
 					// ----Issue Draw Commands----
 					// Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)

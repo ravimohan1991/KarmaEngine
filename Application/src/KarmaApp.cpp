@@ -31,7 +31,7 @@ public:
 		m_Scene.reset(new Karma::Scene());
 
 		m_Scene->AddCamera(m_Camera);
-		m_Scene->AddVertexArray(m_SquareVA);
+		//m_Scene->AddVertexArray(m_SquareVA);
 
 		m_Scene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 

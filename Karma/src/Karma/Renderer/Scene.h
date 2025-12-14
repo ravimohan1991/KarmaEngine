@@ -93,14 +93,6 @@ namespace Karma
 
 		// Getters
 		/**
-		 * @brief Getter for the VertexArray
-		 * 
-		 * @note to be deprecated
-		 * @since Karma 1.0.0
-		 */
-		std::shared_ptr<VertexArray> GetRenderableVertexArray() const;
-
-		/**
 		 * @brief Get the list of StaticMeshActors in the scene
 		 *
 		 * @since Karma 1.0.0
@@ -120,13 +112,6 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		inline const glm::vec4& GetClearColor() const { return m_ClearColor; }
-
-		/**
-		 * @brief Get the list of VertexArrays
-		 *
-		 * @since Karma 1.0.0
-		 */
-		inline const std::vector<std::shared_ptr<VertexArray>>& GetAllVertexArrays() const { return m_VertexArrays; }
 
 		/**
 		 * @brief Get the list of all Cameras
@@ -150,8 +135,6 @@ namespace Karma
 		inline bool GetWindowToRenderWithinResizeStatus() const { return m_WindowResize; }
 
 	private:
-		std::vector<std::shared_ptr<VertexArray>> m_VertexArrays;
-
 		std::vector<AStaticMeshActor*> m_SMActors;
 		std::vector<std::shared_ptr<Camera>> m_Cameras;
 

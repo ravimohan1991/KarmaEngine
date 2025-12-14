@@ -181,7 +181,7 @@ namespace Karma
 		 *
 		 * @since Karma 1.0.0
 		 */
-		const std::shared_ptr<class UniformBufferObject>& GetViewProjectionUBO() const { return m_ViewProjectionUBO; }
+		std::shared_ptr<class UniformBufferObject>& GetViewProjectionUBO() { return m_ViewProjectionUBO; }
 
 	private:
 		void RecalculateViewMatrix();

@@ -21,6 +21,10 @@ namespace Karma
 {
 	class VulkanShader;
 
+	class Texture;
+
+	class Scene;
+
 	/**
 	 * @brief Forward declaration
 	 */
@@ -34,8 +38,8 @@ namespace Karma
 	struct FrameDescriptorSets 
 	{
 		VkDescriptorSet viewSet;     // Set 0: Camera UBO
-		VkDescriptorSet textureSet;  // Set 1: Texture  
-		VkDescriptorSet objectSet;   // Set 2: Per-mesh UBO (dynamic)
+		std::vector<VkDescriptorSet> textureSet;  // Set 1: Per-mesh Texture  
+		std::vector<VkDescriptorSet> objectsSet;   // Set 2: Per-mesh UBO
 	};
 
 	/**
@@ -557,7 +561,21 @@ namespace Karma
 		 */
 		VkShaderModule CreateShaderModule(const std::vector<uint32_t>& code);
 
+		void CreateVulkanResourcesForScene(std::shared_ptr<Scene> scene3D );
+
+		/**
+		 * @brief Create a default vulkan shader
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		void CreateGeneralShader();
+
+		/**
+		 * @brief Creates a general texture used for default texturing in the KarmaGui exhibitor window.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CreateGeneralTexture();
 
 		/**
 		 * @brief Creates general descriptor set layouts for common resources like camera UBO, texture sampler, and object UBO.
@@ -599,7 +617,7 @@ namespace Karma
 		 * 
 		 * @since Karma 1.0.0
 		 */
-		void CreateGeneralDescriptorPool();
+		void CreateGeneralDescriptorPool(uint32_t smElementsNumber);
 
 		/**
 		 * @brief Allocates and writes to general descriptor sets for common resources like camera UBO, texture sampler, and object UBO.
@@ -608,7 +626,7 @@ namespace Karma
 		 * 
 		 * @since Karma 1.0.0
 		 */
-		void CreateGeneralDescriptorSets();
+		void CreateGeneralDescriptorSets(std::shared_ptr<Scene> scene3D, uint32_t smElementsNumber, uint32_t maxFramesInFlight);
 
 		/**
 		 * @brief Updates the general descriptor sets with the provided view buffer for the specified frame index.
@@ -620,7 +638,7 @@ namespace Karma
 		 * 
 		 * @since Karma 1.0.0
 		 */
-		void UpdateGeneralDescriptorSets(uint32_t frameIndex, VkBuffer viewBuffer, uint32_t viewBufferSize, std::shared_ptr<VulkanTexture> texture, VkBuffer objectBuffer);
+		void UpdateGeneralDescriptorSets(std::shared_ptr<Scene> scene3D, uint32_t frameIndex);
 
 		/**
 		 * @brief Uploads data to the registered VulkanUniformBuffers for the specified frame index.
@@ -716,7 +734,7 @@ namespace Karma
 
 		// General vulkan resources
 		std::shared_ptr<VulkanShader> m_GeneralShader;
-
+		std::shared_ptr<Texture> m_GeneralTexture;
 		VkPipelineLayout m_KarmaGuiGeneralPipelineLayout;
 		VkPipeline m_KarmaGuiGeneralGraphicsPipeline;
 		VkDescriptorSetLayout m_ViewLayout; // Camera UBO

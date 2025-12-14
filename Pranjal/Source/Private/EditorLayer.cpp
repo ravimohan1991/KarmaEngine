@@ -11,6 +11,7 @@
 #include "Engine.h"
 #include "GameInstance.h"
 #include "Engine/StaticMeshActor.h"
+#include <VulkanHolder.h>
 
 namespace Karma
 {
@@ -63,7 +64,7 @@ namespace Karma
 		m_ModelVertexArray->SetMaterial(m_ModelMaterial);*/
 
 		m_EditorScene.reset(new Karma::Scene());
-		//m_EditorScene->AddCamera(m_EditorCamera);
+		m_EditorScene->AddCamera(m_EditorCamera);
 		//m_EditorScene->AddVertexArray(m_ModelVertexArray);
 		m_EditorScene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 	}
@@ -373,7 +374,9 @@ namespace Karma
 				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
 
 				staticMeshActor->LoadMeshFromFile("../Resources/Models/BonedCylinder.obj");
-				//m_EditorScene->AddStaticMeshActor(staticMeshActor);
+				m_EditorScene->AddStaticMeshActor(staticMeshActor);
+
+				Karma::VulkanHolder::GetVulkanContext()->CreateVulkanResourcesForScene(m_EditorScene);
 			}
 		}
 	}

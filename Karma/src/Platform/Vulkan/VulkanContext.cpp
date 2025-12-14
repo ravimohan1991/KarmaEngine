@@ -7,6 +7,8 @@
 #include "Platform/Vulkan/VulkanVertexArray.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
 #include "Platform/Vulkan/VulkanTexture.h"
+#include "Scene.h"
+#include "Engine/StaticMeshActor.h"
 
 namespace Karma
 {
@@ -156,11 +158,41 @@ namespace Karma
 
 		// For glslang
 		Initializeglslang();
+	}
+
+	void VulkanContext::CreateVulkanResourcesForScene(std::shared_ptr<Scene> scene3D)
+	{
+		uint32_t smElementsNumber = 0;
+
+		for (const auto element : scene3D->GetSMActors())
+		{
+			smElementsNumber++;
+		}
+
+		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
+		VulkanRendererAPI* vulkanRendererAPI = static_cast<VulkanRendererAPI*>(rendererAPI);
+
+		if (!vulkanRendererAPI)
+		{
+			KR_CORE_ASSERT(false, "VulkanRendererAPI is null!");
+			return;
+		}
+
+		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
+
 
 		CreateGeneralShader();
+		CreateGeneralTexture();
+
+		CreateGeneralDescriptorPool(smElementsNumber);
 		CreateGeneralDescriptorSetLayouts();
-		CreateGeneralDescriptorPool();
-		CreateGeneralDescriptorSets();
+
+		CreateGeneralDescriptorSets(scene3D, smElementsNumber, maxFramesInFlight);
+		
+		for (uint32_t frameIndex = 0; frameIndex < maxFramesInFlight; frameIndex++)
+		{
+			UpdateGeneralDescriptorSets(scene3D, frameIndex);
+		}
 	}
 
 	void VulkanContext::CreateGeneralShader()
@@ -168,6 +200,11 @@ namespace Karma
 		// We are creating general shader here for the static material (material used as default for meshes)
 		// Ponder how this would look like in OpenGL
 		m_GeneralShader.reset(new VulkanShader("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag"));
+	}
+
+	void VulkanContext::CreateGeneralTexture()
+	{
+		m_GeneralTexture.reset(new Texture(Karma::TextureType::Image, "../Resources/Textures/UnrealGrid.png", "VikingTex", "texSampler"));
 	}
 
 	VkShaderModule VulkanContext::CreateShaderModule(const std::vector<uint32_t>& code)
@@ -372,6 +409,39 @@ namespace Karma
 		vkDestroyShaderModule(m_device, vertShaderModule, nullptr);
 	}
 
+	void VulkanContext::CreateGeneralDescriptorPool(uint32_t smElementsNumber)
+	{
+		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
+		VulkanRendererAPI* vulkanRendererAPI = static_cast<VulkanRendererAPI*>(rendererAPI);
+
+		if (!vulkanRendererAPI)
+		{
+			KR_CORE_ASSERT(false, "VulkanRendererAPI is null!");
+			return;
+		}
+
+		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
+		
+		std::array<VkDescriptorPoolSize, 2> poolSizes{};
+
+		// Uniform Buffers : Camera UBO + per object UBOs
+		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSizes[0].descriptorCount = (1 + smElementsNumber) * maxFramesInFlight; // 1 for camera UBO + 1 for object UBO
+
+		// Combined Image Samplers : Texture
+		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[1].descriptorCount = smElementsNumber * maxFramesInFlight; // 1 for each object texture
+
+		VkDescriptorPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+		poolInfo.pPoolSizes = poolSizes.data();
+		poolInfo.maxSets = 3 * maxFramesInFlight; // 3 sets per frame
+
+		VkResult result = vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &m_GeneralDescriptorPool);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create general descriptor pool!");
+	}
+
 	void VulkanContext::CreateGeneralDescriptorSetLayouts()
 	{
 		// ===== Set 0: Camera UBO =====
@@ -409,7 +479,7 @@ namespace Karma
 		materialLayoutInfo.bindingCount = 2;  // Only 2 bindings now
 		materialLayoutInfo.pBindings = materialBindings.data();
 		vkCreateDescriptorSetLayout(device, &materialLayoutInfo, nullptr, &materialLayout);
-		
+
 		GLSLANG USAGE EXAMPLE:
 		// Set 1: Material UBO + 1 Texture
 		layout(set = 1, binding = 0) uniform MaterialUBO {
@@ -437,10 +507,10 @@ namespace Karma
 		result = vkCreateDescriptorSetLayout(m_device, &texInfo, nullptr, &m_TextureLayout);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create texture descriptor set layout!");
 
-		// ===== Set 2: Per-mesh transform UBO (dynamic so you can pack many) =====
+		// ===== Set 2: Per-mesh transform UBO  =====
 		VkDescriptorSetLayoutBinding objectBinding{};
 		objectBinding.binding = 0;
-		objectBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+		objectBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		objectBinding.descriptorCount = 1;
 		objectBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 		objectBinding.pImmutableSamplers = nullptr;
@@ -454,84 +524,57 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create object descriptor set layout!");
 	}
 
-	void VulkanContext::CreateGeneralDescriptorPool()
-	{
-		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
-		VulkanRendererAPI* vulkanRendererAPI = static_cast<VulkanRendererAPI*>(rendererAPI);
+	void VulkanContext::CreateGeneralDescriptorSets(std::shared_ptr<Scene> scene3D, uint32_t smElementsNumber, uint32_t maxFramesInFlight)
+	{	
+		m_GeneralDescriptorSets.resize(maxFramesInFlight);
 
-		if (!vulkanRendererAPI)
+		for (uint32_t frameIndex = 0; frameIndex < maxFramesInFlight; frameIndex++)
 		{
-			KR_CORE_ASSERT(false, "VulkanRendererAPI is null!");
-			return;
-		}
+			std::array<VkDescriptorSet, 3> frameSets;
 
-		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
-		
-		std::array<VkDescriptorPoolSize, 2> poolSizes{};
+			std::array<VkDescriptorSetLayout, 3> frameLayouts = {
+											m_ViewLayout,     // Set 0
+											m_TextureLayout,  // Set 1  
+											m_ObjectLayout    // Set 2
+			};
 
-		// Uniform Buffers : Camera UBO + Object UBO
-		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[0].descriptorCount = 2 * maxFramesInFlight; // 1 for camera UBO + 1 for object UBO
-
-		// Combined Image Samplers : Texture
-		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		poolSizes[1].descriptorCount = 1 * maxFramesInFlight; // 1 for texture
-
-		VkDescriptorPoolCreateInfo poolInfo{};
-		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-		poolInfo.pPoolSizes = poolSizes.data();
-		poolInfo.maxSets = 3 * maxFramesInFlight; // 3 sets per frame
-
-		VkResult result = vkCreateDescriptorPool(m_device, &poolInfo, nullptr, &m_GeneralDescriptorPool);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create general descriptor pool!");
-	}
-
-	void VulkanContext::CreateGeneralDescriptorSets()
-	{
-		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
-		VulkanRendererAPI* vulkanRendererAPI = static_cast<VulkanRendererAPI*>(rendererAPI);
-
-		if (!vulkanRendererAPI)
-		{
-			KR_CORE_ASSERT(false, "VulkanRendererAPI is null!");
-			return;
-		}
-
-		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
-
-		std::vector<std::array<VkDescriptorSet, 3>> m_GeneralDescriptorSets(maxFramesInFlight);
-		
-		//m_GeneralDescriptorSets.resize(maxFramesInFlight);
-		
-		for (size_t i = 0; i < maxFramesInFlight; i++)
-		{
-			std::array<VkDescriptorSetLayout, 3> setLayouts = {
-									m_ViewLayout,    // set = 0
-									m_TextureLayout, // set = 1
-									m_ObjectLayout   // set = 2
-				};
 			VkDescriptorSetAllocateInfo allocInfo{};
 			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 			allocInfo.descriptorPool = m_GeneralDescriptorPool;
-			allocInfo.descriptorSetCount = static_cast<uint32_t>(setLayouts.size());
-			allocInfo.pSetLayouts = setLayouts.data();
+			allocInfo.descriptorSetCount = 3;
+			allocInfo.pSetLayouts = frameLayouts.data();
 
-			VkResult result = vkAllocateDescriptorSets(m_device, &allocInfo, m_GeneralDescriptorSets[i].data());
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to allocate general descriptor sets!");
+			vkAllocateDescriptorSets(m_device, &allocInfo, frameSets.data());
+
+			// Copy to global struct
+			m_GeneralDescriptorSets[frameIndex].viewSet = frameSets[0];
+			//m_GeneralDescriptorSets[frameIndex].textureSet = frameSets[1];
+			//m_GeneralDescriptorSets[frameIndex].objectSet = frameSets[2];
+
+			m_GeneralDescriptorSets[frameIndex].textureSet.resize(smElementsNumber);
+			m_GeneralDescriptorSets[frameIndex].objectsSet.resize(smElementsNumber);
+
+			uint32_t meshIndex = 0;
+			for (const auto element : scene3D->GetSMActors())
+			{
+				m_GeneralDescriptorSets[frameIndex].textureSet[/*element->GetSMID()*/meshIndex] = frameSets[1];
+				m_GeneralDescriptorSets[frameIndex].objectsSet[/*element->GetSMID()*/meshIndex] = frameSets[2];
+			}
 		}
 	}
 
-	void VulkanContext::UpdateGeneralDescriptorSets(uint32_t frameIndex, VkBuffer viewBuffer, uint32_t viewBufferSize, std::shared_ptr<VulkanTexture> texture, VkBuffer objectBuffer)
+	void VulkanContext::UpdateGeneralDescriptorSets(std::shared_ptr<Scene> scene3D, uint32_t frameIndex)
 	{
 		FrameDescriptorSets& frameDescriptorSets = m_GeneralDescriptorSets[frameIndex];
 
 		// Update Set 0: Camera UBO
 		{
+			std::shared_ptr<VulkanUniformBuffer> vUBO = static_pointer_cast<VulkanUniformBuffer>(scene3D->GetSceneCamera()->GetViewProjectionUBO());
+
 			VkDescriptorBufferInfo viewInfo{};
-			viewInfo.buffer = viewBuffer;
-			viewInfo.offset = frameIndex * viewBufferSize;// Try 2 * sizeof(glm::mat4) also
-			viewInfo.range = viewBufferSize;
+			viewInfo.buffer = vUBO->GetUniformBuffers()[frameIndex];
+			viewInfo.offset = 0;
+			viewInfo.range = vUBO->GetBufferSize();
 
 			VkWriteDescriptorSet viewWrite{};
 			viewWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -544,44 +587,52 @@ namespace Karma
 			vkUpdateDescriptorSets(m_device, 1, &viewWrite, 0, nullptr);
 		}
 
-		// Update set 1: Texture
+		uint32_t smIndex = 0;
+		for (const auto smElement : scene3D->GetSMActors())
 		{
-			VkDescriptorImageInfo texInfo{};
-			texInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			texInfo.sampler = texture->GetImageSampler();
-			texInfo.imageView = texture->GetImageView();
+			// Update set 1: Texture
+			{
+				std::shared_ptr<VulkanTexture> vTexture = m_GeneralTexture->GetVulkanTexture();
 
-			VkWriteDescriptorSet texWrite{};
-			texWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			texWrite.dstSet = frameDescriptorSets.textureSet;
-			texWrite.dstBinding = 0;
-			texWrite.dstArrayElement = 0;
-			texWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			texWrite.pImageInfo = &texInfo;
-			texWrite.descriptorCount = 1;
+				VkDescriptorImageInfo texInfo{};
+				texInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				texInfo.sampler = vTexture->GetImageSampler();
+				texInfo.imageView = vTexture->GetImageView();
 
-			vkUpdateDescriptorSets(m_device, 1, &texWrite, 0, nullptr);
-		}
+				VkWriteDescriptorSet texWrite{};
+				texWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				texWrite.dstSet = frameDescriptorSets.textureSet[smIndex];
+				texWrite.dstBinding = 0;
+				texWrite.dstArrayElement = 0;
+				texWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				texWrite.pImageInfo = &texInfo;
+				texWrite.descriptorCount = 1;
 
-		// Update set 2: Per-mesh UBO will be updated during mesh rendering
-		{
-			uint32_t maxObjects = 100;
+				vkUpdateDescriptorSets(m_device, 1, &texWrite, 0, nullptr);
+			}
 
-			VkDescriptorBufferInfo objectInfo{};
-			objectInfo.buffer = objectBuffer;
-			objectInfo.offset = frameIndex * maxObjects * sizeof(glm::mat4); // Assuming each object's transform is a mat4
-			objectInfo.range = maxObjects * sizeof(glm::mat4);
+			// Update set 2: Per-mesh UBO will be updated during mesh rendering
+			{
+				std::shared_ptr<VulkanUniformBuffer> objectUBO = static_pointer_cast<VulkanUniformBuffer>(smElement->GetMeshTransformUniform());
 
-			VkWriteDescriptorSet objectWrite{};
-			objectWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			objectWrite.dstSet = frameDescriptorSets.objectSet;
-			objectWrite.dstBinding = 0;
-			objectWrite.dstArrayElement = 0;
-			objectWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-			objectWrite.pBufferInfo = &objectInfo;
-			objectWrite.descriptorCount = 1;
+				VkDescriptorBufferInfo objectInfo{};
+				objectInfo.buffer = objectUBO->GetUniformBuffers()[frameIndex];
+				objectInfo.offset = 0;
+				objectInfo.range = objectUBO->GetBufferSize();
 
-			vkUpdateDescriptorSets(m_device, 1, &objectWrite, 0, nullptr);
+				VkWriteDescriptorSet objectWrite{};
+				objectWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				objectWrite.dstSet = frameDescriptorSets.objectsSet[smIndex];
+				objectWrite.dstBinding = 0;
+				objectWrite.dstArrayElement = 0;
+				objectWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+				objectWrite.pBufferInfo = &objectInfo;
+				objectWrite.descriptorCount = 1;
+
+				vkUpdateDescriptorSets(m_device, 1, &objectWrite, 0, nullptr);
+			}
+
+			smIndex++;
 		}
 	}
 

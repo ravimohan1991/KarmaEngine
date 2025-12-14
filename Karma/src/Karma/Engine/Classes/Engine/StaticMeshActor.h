@@ -14,6 +14,7 @@
 
 namespace Karma
 {
+	class UniformBufferObject;
 
 	/**
 	 * @brief An actor that contains a static mesh component, allowing the mesh to be rendered in the game world.
@@ -33,7 +34,12 @@ namespace Karma
 		//std::shared_ptr<class UStaticMeshComponent> m_StaticMeshComponent;
 		UStaticMeshComponent* m_StaticMeshComponent;
 		
-		std::shared_ptr<class UniformBufferObject> m_MeshTransformUniform;
+		/**
+		 * @brief Uniform buffer object for the mesh's transformation matrix
+		 * 
+		 * Used to upload the actor's transform to the GPU for rendering
+		 */
+		std::shared_ptr<UniformBufferObject> m_MeshTransformUniform;
 
 	public:
 		/**
@@ -60,5 +66,14 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		UStaticMeshComponent* GetStaticMeshComponent() const { return m_StaticMeshComponent; }
+
+		/**
+		 * @brief Getter for the mesh transform uniform buffer object
+		 * 
+		 * @return std::shared_ptr<UniformBufferObject> The uniform buffer object for the mesh's transformation matrix.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		std::shared_ptr<UniformBufferObject> GetMeshTransformUniform() const { return m_MeshTransformUniform; }
 	};
 }
