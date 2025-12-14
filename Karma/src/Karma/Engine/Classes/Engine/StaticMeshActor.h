@@ -40,6 +40,9 @@ namespace Karma
 		 * Used to upload the actor's transform to the GPU for rendering
 		 */
 		std::shared_ptr<UniformBufferObject> m_MeshTransformUniform;
+		
+		//tentative
+		glm::mat4 m_ActorTranformUniform;
 
 	public:
 		/**

@@ -16,7 +16,10 @@ namespace Karma
 		// We create uniform buffer object for model's transformation matrix
 		m_MeshTransformUniform.reset(UniformBufferObject::Create({ ShaderDataType::Mat4 }, 2));// Binding point 2 and gets registered in VulkanContext during its initialization
 
-		UBODataPointer uModelMatrix(&GetTransform());
+		m_ActorTranformUniform = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 1.f));
+		m_ActorTranformUniform = glm::scale(m_ActorTranformUniform, glm::vec3(0.05f));
+		
+		UBODataPointer uModelMatrix(&m_ActorTranformUniform);
 		m_MeshTransformUniform->UpdateUniforms(uModelMatrix);// set the model matrix (Actor Transform) uniform
 
 		if (!m_StaticMeshComponent)
