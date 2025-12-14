@@ -471,7 +471,6 @@ namespace Karma
 		{
 			std::shared_ptr<Scene> scene3D = it->Scene3D;
 
-			//scene3D->GetSceneCamera()->GetViewProjectionUBO()->UploadUniformBuffer(windowData->SemaphoreIndex);
 			VulkanHolder::GetVulkanContext()->UploadUBO(windowData->SemaphoreIndex);
 
 			FrameDescriptorSets dSets;
@@ -531,7 +530,7 @@ namespace Karma
 
 					// ----Issue Draw Commands----
 					// Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)
-					vkCmdDrawIndexed(frameOnFlightData->CommandBuffer, objectIndex, 1, 0, 0, 0);
+					vkCmdDrawIndexed(frameOnFlightData->CommandBuffer, std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer())->GetCount(), 1, 0, 0, 0);
 
 					objectIndex++;
 				}

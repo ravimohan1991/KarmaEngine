@@ -161,6 +161,8 @@ namespace Karma
 
 		CreateGeneralShader();
 		CreateGeneralTexture();
+		
+		CreateGeneralDescriptorSetLayouts();
 	}
 
 	void VulkanContext::CreateVulkanResourcesForScene(std::shared_ptr<Scene> scene3D)
@@ -184,7 +186,6 @@ namespace Karma
 		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
 
 		CreateGeneralDescriptorPool(smElementsNumber);
-		CreateGeneralDescriptorSetLayouts();
 
 		CreateGeneralDescriptorSets(scene3D, smElementsNumber, maxFramesInFlight);
 		
