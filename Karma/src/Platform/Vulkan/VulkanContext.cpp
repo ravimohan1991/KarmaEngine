@@ -158,6 +158,9 @@ namespace Karma
 
 		// For glslang
 		Initializeglslang();
+
+		CreateGeneralShader();
+		CreateGeneralTexture();
 	}
 
 	void VulkanContext::CreateVulkanResourcesForScene(std::shared_ptr<Scene> scene3D)
@@ -179,10 +182,6 @@ namespace Karma
 		}
 
 		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
-
-
-		CreateGeneralShader();
-		CreateGeneralTexture();
 
 		CreateGeneralDescriptorPool(smElementsNumber);
 		CreateGeneralDescriptorSetLayouts();
@@ -582,6 +581,7 @@ namespace Karma
 			viewWrite.dstBinding = 0;
 			viewWrite.dstArrayElement = 0;
 			viewWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			viewWrite.descriptorCount = 1;
 			viewWrite.pBufferInfo = &viewInfo;
 
 			vkUpdateDescriptorSets(m_device, 1, &viewWrite, 0, nullptr);
@@ -625,7 +625,7 @@ namespace Karma
 				objectWrite.dstSet = frameDescriptorSets.objectsSet[smIndex];
 				objectWrite.dstBinding = 0;
 				objectWrite.dstArrayElement = 0;
-				objectWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+				objectWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				objectWrite.pBufferInfo = &objectInfo;
 				objectWrite.descriptorCount = 1;
 

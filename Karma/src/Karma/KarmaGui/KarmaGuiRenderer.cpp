@@ -467,7 +467,7 @@ namespace Karma
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't begin commandbuffer recording");
 		}
 
-		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
+		for (auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
 			std::shared_ptr<Scene> scene3D = it->Scene3D;
 
@@ -527,7 +527,7 @@ namespace Karma
 					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 1, 1, &dSets.textureSet[objectIndex], 0, nullptr);
 					
 					// Set 2: Object UBO
-					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 2, 1, &dSets.objectsSet[objectIndex], 1, nullptr);
+					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 2, 1, &dSets.objectsSet[objectIndex], 0, nullptr);
 
 					// ----Issue Draw Commands----
 					// Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)
