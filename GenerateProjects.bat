@@ -8,7 +8,7 @@ set /p Input=Enter y(Yes) or n(No):
 If /I "%Input%"=="y" goto yes
 goto no
 :yes
-KarmaBasedProjectName.sln
+Game_Of_Lands.slnx
 exit
 :no
 echo Suit yourself! Goodbye!
