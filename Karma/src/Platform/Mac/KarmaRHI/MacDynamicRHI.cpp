@@ -1,4 +1,4 @@
-#include "WindowsDynamicRHI.h"
+#include "MacDynamicRHI.h"
 #include "VulkanDynamicRHI.h"
 
 #include "Log.h"
@@ -6,7 +6,7 @@
 namespace Karma
 {
 
-#ifdef KR_WINDOWS_PLATFORM
+#ifdef KR_MAC_PLATFORM
 	FDynamicRHI* PlatformCreateDynamicRHI()
 	{
 		FDynamicRHI* DynamicRHI = FDynamicRHI::Create();
