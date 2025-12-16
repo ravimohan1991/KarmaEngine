@@ -43,6 +43,7 @@ namespace Karma
 		
 		//tentative
 		glm::mat4 m_ActorTranformUniform;
+		float m_RotationAngle;
 
 	public:
 		/**
@@ -78,5 +79,7 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		std::shared_ptr<UniformBufferObject> GetMeshTransformUniform() const { return m_MeshTransformUniform; }
+		
+		virtual void Tick(float DeltaSeconds) override;
 	};
 }

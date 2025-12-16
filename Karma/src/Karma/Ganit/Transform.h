@@ -94,7 +94,11 @@ namespace Karma
 
 			glm::vec3 returnVector(tempResult.x, tempResult.y, tempResult.z);
 			return returnVector;
-			
+		}
+		
+		inline glm::quat ToQuat() const
+		{
+			return glm::quat(glm::vec3(m_Pitch, m_Yaw, m_Roll));
 		}
 	};
 
@@ -235,6 +239,8 @@ namespace Karma
 		{
 			m_Scale3D = Other.GetScale3D();
 		}
+		
+		glm::mat4 ToMatrixWithScale() const;
 
 	public:
 		static FTransform m_Identity;

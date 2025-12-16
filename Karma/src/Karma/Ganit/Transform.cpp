@@ -144,4 +144,16 @@ namespace Karma
 			OutTransform->SetScale3D(glm::vec3(ScaleA.x * ScaleB.x, ScaleA.y * ScaleB.y, ScaleA.z * ScaleB.z));// = VectorMultiply(ScaleA, ScaleB);
 		//}
 	}
+
+	glm::mat4 FTransform::ToMatrixWithScale() const
+	{
+		glm::mat4 ReturnMatrix = glm::mat4(1.0f);
+		
+		ReturnMatrix = glm::scale(ReturnMatrix, m_Scale3D);
+		ReturnMatrix *= glm::mat4_cast(m_Rotation.ToQuat());
+		
+		ReturnMatrix = glm::translate(ReturnMatrix, m_Translation);
+		
+		return ReturnMatrix;
+	}
 }

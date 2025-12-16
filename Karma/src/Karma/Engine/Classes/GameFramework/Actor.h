@@ -352,8 +352,35 @@ namespace Karma
 		{
 			return ActorToWorld();
 		}
+		
+		/**
+		 * Set the Actors transform to the specified one.
+		 * @param NewTransform		The new transform.
+		 * @param bSweep			Whether we sweep to the destination location, triggering overlaps along the way and stopping short of the target if blocked by something.
+		 *							Only the root component is swept and checked for blocking collision, child components move without sweeping. If collision is off, this has no effect.
+		 * @param bTeleport			Whether we teleport the physics state (if physics collision is enabled for this object).
+		 *							If true, physics velocity for this object is unchanged (so ragdoll parts are not affected by change in location).
+		 *							If false, physics velocity is updated based on the change in position (affecting ragdoll parts).
+		 *							If CCD is on and not teleporting, this will affect objects along the entire swept volume.
+		 *                          Note that when teleporting, any child/attached components will be teleported too, maintaining their current offset even if they are being simulated.
+		 *                          Setting the transform without teleporting will not update the transform of simulated child/attached components.
+		 *
+		 * @todo Hit detection when collision system is installed
+		 * @since Karma 1.0.0
+		 */
+		bool SetActorTransform(const FTransform& NewTransform/*, bool bSweep=false, FHitResult* OutSweepHitResult=nullptr, ETeleportType Teleport = ETeleportType::None*/);
 
-		/** 
+		/**
+		 * @brief Move the actor instantly to the specified location.
+		 */
+		bool SetActorLocation(const glm::vec3& NewLocation);
+		
+		bool SetActorRotation(TRotator NewRotation);
+		
+		/** Set the Actor's world-space scale. */
+		void SetActorScale3D(glm::vec3 NewScale3D);
+		
+		/**
 		 * Get the local-to-world transform of the RootComponent. Identical to GetTransform().
 		 *
 		 * @warning Need to test this function rigorously before using

@@ -333,6 +333,17 @@ namespace Karma
 		}
 	}
 
+	bool AActor::SetActorTransform(const FTransform& NewTransform)
+	{
+		if(m_RootComponent)
+		{
+			m_RootComponent->SetWorldTransform(NewTransform);
+			return true;
+		}
+		
+		return false;
+	}
+
 	void AActor::DispatchBeginPlay(bool bFromLevelStreaming)
 	{
 		UWorld* World = (!HasActorBegunPlay() && IsValidChecked(this) ? GetWorld() : nullptr);
@@ -543,6 +554,17 @@ namespace Karma
 
 		return SceneRootComponent;
 	}
+
+	bool AActor::SetActorLocation(const glm::vec3& NewLocation)
+	{
+		
+	}
+
+	bool AActor::SetActorRotation(TRotator NewRotator)
+	{}
+
+	void AActor::SetActorScale3D(glm::vec3 NewScale3D)
+	{}
 
 	bool AActor::SetRootComponent(class USceneComponent* NewRootComponent)
 	{

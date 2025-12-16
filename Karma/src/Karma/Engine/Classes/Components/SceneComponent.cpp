@@ -62,6 +62,9 @@ namespace Karma
 
 	void USceneComponent::SetWorldTransform(const FTransform& NewTransform)
 	{
+		// I couldn't find this in UE code, however perplexity mentions this
+		m_ComponentToWorld = NewTransform;
+		
 		// If attached to something, transform into local space
 		if (GetAttachParent() != nullptr)
 		{
