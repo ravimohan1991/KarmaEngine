@@ -815,6 +815,20 @@ FUNCTION_NON_NULL_RETURN_START*/
 }*/
 
 /**
+ * @brief Create a component or subobject that will be instanced inside all instances of this class.
+ * 
+ * @param	Outer                       outer to construct the subobject in
+ * @param	SubobjectName               name of the new component
+ * @param	ReturnType                  class of return type, all overrides must be of this type
+ * @param	ClassToConstructByDefault   if the derived class has not overridden, create a component of this type
+ * @param	bIsRequired                 true if the component is required and will always be created even if DoNotCreateDefaultSubobject was specified.
+ * @param	bIsTransient                true if the component is being assigned to a transient property
+ * 
+ * @note This is work in progress, not fully functional yet
+ */
+KARMA_API UObject* CreateDefaultSubobject(UObject* Outer, std::string SubobjectFName, const UClass* ReturnType, const UClass* ClassToCreateByDefault, bool bIsRequired = true, bool bIsTransient = false);
+
+/**
  * A routine to find if the object is instantiated already. May need to modify in accordance with thread safety in future
  * UE name StaticFindObjectFastInternal
  *

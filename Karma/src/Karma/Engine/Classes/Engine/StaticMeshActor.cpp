@@ -23,7 +23,7 @@ namespace Karma
 		
 		FTransform AnimTransform = FTransform::Identity();
 		
-		AnimTransform.SetRotation(TRotator(glm::vec3(m_RotationAngle, 0.f, 0.f)));
+		AnimTransform.SetRotation(TRotator(glm::vec3(0.f, 0.f, m_RotationAngle)));
 		
 		SetActorTransform(AnimTransform);
 

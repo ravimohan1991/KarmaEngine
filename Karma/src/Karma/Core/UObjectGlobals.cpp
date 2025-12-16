@@ -503,6 +503,18 @@ namespace Karma
 		return Object;
 	}
 
+	UObject* CreateDefaultSubobject(UObject* Outer, const std::string& SubobjectFName, const UClass* SubobjectClass, bool bIsRequired, bool bIsAbstract)
+	{
+		if (SubobjectFName == "")
+		{
+			KR_CORE_WARN("CreateDefaultSubobject called with invalid name");
+		}
+
+		UObject* Result = nullptr;
+
+		return Result;
+	}
+
 	UPackage* CreatePackage(const std::string& PackageName)
 	{
 		std::string InName;

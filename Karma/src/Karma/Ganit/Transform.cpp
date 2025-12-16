@@ -13,9 +13,9 @@ namespace Karma
 
 	TRotator::TRotator(glm::vec3 eulerAngles)
 	{
-		m_Yaw = eulerAngles.y;
-		m_Pitch = eulerAngles.z;
-		m_Roll = eulerAngles.x;
+		m_Yaw = eulerAngles.x;
+		m_Pitch = eulerAngles.y;
+		m_Roll = eulerAngles.z;
 	}
 
 	TRotator TRotator::Inverse() const
