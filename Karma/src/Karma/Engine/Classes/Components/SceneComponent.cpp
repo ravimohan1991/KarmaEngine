@@ -8,6 +8,8 @@ namespace Karma
 	USceneComponent::USceneComponent() : UActorComponent()
 	{
 		m_AttachParent = nullptr;
+
+		m_ComponentToWorld = FTransform::Identity();
 	}
 
 	void USceneComponent::SetWorldLocation(glm::vec3 newLocation)
@@ -63,6 +65,12 @@ namespace Karma
 	void USceneComponent::SetWorldTransform(const FTransform& NewTransform)
 	{
 		// I couldn't find this in UE code, however perplexity mentions this
+		// Ok in the UE, they first do the computation to get relative transform
+
+		// SetWorldTransform -> SetRelativeTransform -> SetRelativeLocationAndRotation (and Scale) -> MoveComponent
+		// MoveComponentImpl -> ConditionalUpdateComponentToWorld ->UpdateComponentToWorld
+		// -> UpdateComponentToWorldWithParent -> ComponentToWorld = NewTransform;
+		// So we directly set the ComponentToWorld here first since we don't have attach to parent logic yet
 		m_ComponentToWorld = NewTransform;
 		
 		// If attached to something, transform into local space

@@ -457,6 +457,19 @@ enum ETravelType
 	TRAVEL_MAX,
 };
 
+/** Whether to teleport physics body or not */
+enum class ETeleportType : uint8_t
+{
+	/** Do not teleport physics body. This means velocity will reflect the movement between initial and final position, and collisions along the way will occur */
+	None,
+
+	/** Teleport physics body so that velocity remains the same and no collision occurs */
+	TeleportPhysics,
+
+	/** Teleport physics body and reset physics state completely */
+	ResetPhysics,
+};
+
 /**
  * @brief Helper for obtaining the default Url configuration
  */

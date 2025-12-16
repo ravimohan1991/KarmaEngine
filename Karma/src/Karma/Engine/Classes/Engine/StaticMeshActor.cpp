@@ -6,6 +6,15 @@ namespace Karma
 	AStaticMeshActor::AStaticMeshActor(const std::string& name)
 		: AActor()
 	{
+		if (!m_StaticMeshComponent)
+		{
+			// Unreal uses CreateDefaultSubobject for creating components in Actors
+			// may need to implement similar functionality later
+			m_StaticMeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(), "StaticMeshComponent");
+			m_StaticMeshComponent->SetOwner(this);	
+		}
+
+		m_RootComponent = m_StaticMeshComponent;
 	}
 
 	void AStaticMeshActor::Tick(float DeltaSeconds)
@@ -14,11 +23,13 @@ namespace Karma
 		
 		FTransform AnimTransform = FTransform::Identity();
 		
-		AnimTransform.SetRotation(TRotator(glm::vec3(0.f, 0.f, m_RotationAngle)));
+		AnimTransform.SetRotation(TRotator(glm::vec3(m_RotationAngle, 0.f, 0.f)));
 		
-		m_ActorTranformUniform = SetActorTransform(AnimTransform);
+		SetActorTransform(AnimTransform);
+
+		m_ActorTranformUniform = GetTransform().ToMatrixWithScale();
 		
-		m_RotationAngle += 7.8f * DeltaSeconds;
+		m_RotationAngle += 0.78f * DeltaSeconds;
 		
 		if(m_RotationAngle > 360.f)
 		{
@@ -41,12 +52,6 @@ namespace Karma
 		
 		UBODataPointer uModelMatrix(&m_ActorTranformUniform);
 		m_MeshTransformUniform->UpdateUniforms(uModelMatrix);// set the model matrix (Actor Transform) uniform
-
-		if (!m_StaticMeshComponent)
-		{
-			// need to write code to destroy UObjects later
-			m_StaticMeshComponent = NewObject<UStaticMeshComponent>(nullptr, UStaticMeshComponent::StaticClass(), "StaticMeshComponent");
-		}
 
 		m_StaticMeshComponent->SetStaticMesh(loadedMesh);
 	}

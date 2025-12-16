@@ -557,11 +557,13 @@ namespace Karma
 
 	bool AActor::SetActorLocation(const glm::vec3& NewLocation)
 	{
-		
+		return true;
 	}
 
 	bool AActor::SetActorRotation(TRotator NewRotator)
-	{}
+	{
+		return true;
+	}
 
 	void AActor::SetActorScale3D(glm::vec3 NewScale3D)
 	{}
