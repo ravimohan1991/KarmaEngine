@@ -15,9 +15,24 @@ namespace Karma
 	{
 		KR_CORE_INFO("Initializing Vulkan RHI...");
 
-		// create instance
 		CreateInstance();
+
 		// select device
+	}
+
+	bool FVulkanDynamicRHI::Init()
+	{
+		// initialize device
+		KR_CORE_INFO("Vulkan RHI initialized successfully.");
+		return true;
+	}
+
+	void FVulkanDynamicRHI::Shutdown()
+	{
+		// destroy device
+
+		vkDestroyInstance(m_VulkanInstance, nullptr);
+		KR_CORE_INFO("Vulkan RHI shutdown complete by destroying Vulkan Instance.");
 	}
 
 	void FVulkanDynamicRHI::CreateInstance()

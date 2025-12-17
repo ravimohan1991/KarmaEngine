@@ -28,16 +28,21 @@ namespace Karma
 			GDynamicRHI = PlatformCreateDynamicRHI();
 			if (GDynamicRHI)
 			{
-				KR_CORE_INFO("############ Initialized DynamicRHI");
+				GDynamicRHI->Init();
 			}
 		}
 	}
 
 	void RHIExit()
 	{
-		delete GDynamicRHI;
-		GDynamicRHI = nullptr;
+		if (GDynamicRHI != nullptr)
+		{
+			GDynamicRHI->Shutdown();
 
-		KR_CORE_INFO("############ Shutdown DynamicRHI");
+			delete GDynamicRHI;
+			GDynamicRHI = nullptr;
+		}
+
+		KR_CORE_INFO("Deleted DynamicRHI object");
 	}
 }

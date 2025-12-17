@@ -31,13 +31,13 @@ namespace Karma
 		/** Initialization constructor. */
 		FVulkanDynamicRHI();
 
-		virtual bool Init() override { return true; }
+		virtual bool Init() override;
 		/**
 		 * @brief Shuts down the RHI.
 		 *
 		 * Cleans up resources and states used by the RHI.
 		 */
-		virtual void Shutdown() override {}
+		virtual void Shutdown() override;
 
 		/**
 		 * @brief Presents the rendered frame to the display.
