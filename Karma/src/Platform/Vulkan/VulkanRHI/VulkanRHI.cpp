@@ -1,6 +1,8 @@
 #include "VulkanDynamicRHI.h"
 #include "GLFW/glfw3.h"
 
+#include "Application.h"
+
 namespace Karma
 {
 	const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
@@ -16,8 +18,9 @@ namespace Karma
 		KR_CORE_INFO("Initializing Vulkan RHI...");
 
 		CreateInstance();
-
-		// select device
+		SetupDebugMessenger();
+		CreateSurface();
+		SelectDevice();
 	}
 
 	bool FVulkanDynamicRHI::Init()
@@ -30,7 +33,8 @@ namespace Karma
 	void FVulkanDynamicRHI::Shutdown()
 	{
 		// destroy device
-
+		vkDestroySurfaceKHR(m_VulkanInstance, m_Surface, nullptr);
+		DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
 		vkDestroyInstance(m_VulkanInstance, nullptr);
 		KR_CORE_INFO("Vulkan RHI shutdown complete by destroying Vulkan Instance.");
 	}
@@ -93,6 +97,40 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create Vulkan m_Instance.");
 		
 		KR_CORE_INFO("Vulkan Instance created successfully.");
+	}
+
+	void FVulkanDynamicRHI::SetupDebugMessenger()
+	{
+		if (!bEnableValidationLayers)
+		{
+			return;
+		}
+
+		VkDebugUtilsMessengerCreateInfoEXT createInfo;
+		PopulateDebugMessengerCreateInfo(createInfo);
+
+		VkResult result = CreateDebugUtilsMessengerEXT(m_VulkanInstance, &createInfo, nullptr, &m_DebugMessenger);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to set up debug messenger!");
+	}
+
+	void FVulkanDynamicRHI::CreateSurface()
+	{
+		m_WindowHandle = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		VkResult result;
+
+		if (m_WindowHandle != nullptr)
+		{
+			result = glfwCreateWindowSurface(m_VulkanInstance, m_WindowHandle, nullptr, &m_Surface);
+		}
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create window surface");
+	}
+
+	void FVulkanDynamicRHI::SelectDevice()
+	{
+		// Implementation for selecting a physical device (GPU)
+		
 	}
 
 	void FVulkanDynamicRHI::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
@@ -221,5 +259,32 @@ namespace Karma
 		}
 
 		return true;
+	}
+
+	VkResult FVulkanDynamicRHI::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+	{
+		auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+		if (func)
+		{
+			return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+		}
+		else
+		{
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+	}
+
+	void FVulkanDynamicRHI::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
+	{
+		if (!bEnableValidationLayers)
+		{
+			return;
+		}
+
+		auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+		if (func != nullptr)
+		{
+			func(instance, debugMessenger, pAllocator);
+		}
 	}
 }
