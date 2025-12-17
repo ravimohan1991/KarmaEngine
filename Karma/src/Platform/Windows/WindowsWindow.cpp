@@ -76,8 +76,7 @@ namespace Karma
 			break;
 		}
 
-		m_Context->Init();
-		SetVSync(true);
+		//SetVSync(true);
 
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);

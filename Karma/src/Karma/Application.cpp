@@ -5,6 +5,7 @@
 #include "Engine/Engine.h"
 #include "Core/UObjectGlobals.h"// to be bundled appropriately in core.h
 #include "Core/Package.h"
+#include "KarmaRHI/KarmaRHI.h"
 
 namespace Karma
 {
@@ -30,6 +31,9 @@ namespace Karma
 		m_Window = Window::Create();
 		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent)); // Setting the listener
 
+		// Initialize RHI (Render Hardware Interface)
+		RHIInit();
+
 		m_LayerStack = new LayerStack();
 
 		// Graphics API Vulkan or OpenGL should have been completely initialized by here
@@ -47,6 +51,10 @@ namespace Karma
 		// and its context.
 		KR_CORE_INFO("Deleting stacks");
 		delete m_LayerStack;
+
+		// Deinitialize RHI
+		RHIExit();
+
 		KR_CORE_INFO("Deleting window");
 		delete m_Window;
 		s_Instance = nullptr;

@@ -24,7 +24,7 @@ namespace Karma
 	{
 	public:
 
-		static FDynamicRHI* Create();
+		static FDynamicRHI* CreateRHI();
 
 		/**
 		 * @brief Virtual destructor for FDynamicRHI.
@@ -59,7 +59,17 @@ namespace Karma
 	extern KARMA_API FDynamicRHI* GDynamicRHI;
 
 	/**
-	 * @brief	Each platform that utilizes dynamic RHIs should implement this function
+	 * @brief The current RHI interface type in use.
+	 * 
+	 * @remark This variable indicates which graphics API is currently active. Later 
+	 * we can tie this to a configuration system (for instance loading configurable setting from file).
+	 * 
+	 * @since Karma 1.0.0
+	 */
+	extern KARMA_API ERHIInterfaceType GRHIInterfaceType;
+
+	/**
+	 * @brief Each platform that utilizes dynamic RHIs should implement this function
 	 * 
 	 * Called to create the instance of the dynamic RHI.
 	 * 

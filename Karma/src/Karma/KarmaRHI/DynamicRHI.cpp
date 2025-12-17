@@ -5,12 +5,20 @@ namespace Karma
 {
 	// Globals.
 	FDynamicRHI* GDynamicRHI = nullptr;
+	ERHIInterfaceType GRHIInterfaceType = ERHIInterfaceType::Vulkan;
 
-
-	FDynamicRHI* FDynamicRHI::Create()
+	FDynamicRHI* FDynamicRHI::CreateRHI()
 	{
 		// if RHI is ERHIInterfaceType::Vulkan
-		return dynamic_cast<FDynamicRHI*>(new FVulkanDynamicRHI());
+		if (GRHIInterfaceType == ERHIInterfaceType::Vulkan)
+		{
+			return static_cast<FDynamicRHI*>(new FVulkanDynamicRHI());
+		}
+		else
+		{
+			KR_CORE_WARN("RHI Interface Type not recognized!");
+			return nullptr;
+		}
 	}
 
 	void RHIInit()
@@ -18,6 +26,10 @@ namespace Karma
 		if (!GDynamicRHI)
 		{
 			GDynamicRHI = PlatformCreateDynamicRHI();
+			if (GDynamicRHI)
+			{
+				KR_CORE_INFO("############ Initialized DynamicRHI");
+			}
 		}
 	}
 
@@ -25,5 +37,7 @@ namespace Karma
 	{
 		delete GDynamicRHI;
 		GDynamicRHI = nullptr;
+
+		KR_CORE_INFO("############ Shutdown DynamicRHI");
 	}
 }

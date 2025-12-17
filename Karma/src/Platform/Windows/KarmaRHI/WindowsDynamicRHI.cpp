@@ -9,7 +9,7 @@ namespace Karma
 #ifdef KR_WINDOWS_PLATFORM
 	FDynamicRHI* PlatformCreateDynamicRHI()
 	{
-		FDynamicRHI* DynamicRHI = FDynamicRHI::Create();
+		FDynamicRHI* DynamicRHI = FDynamicRHI::CreateRHI();
 		
 		if (DynamicRHI)
 		{

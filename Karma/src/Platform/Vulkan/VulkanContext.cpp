@@ -70,6 +70,9 @@ namespace Karma
 
 		vkDestroyDescriptorPool(m_device, m_GeneralDescriptorPool, nullptr);
 
+		// Tentative
+		static_pointer_cast<VulkanTexture>(m_GeneralTexture)->~VulkanTexture();
+
 		m_vulkanRendererAPI->ClearVulkanRendererAPI();
 		
 		// Tentative for the moment
