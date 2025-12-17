@@ -12,9 +12,9 @@
 
 namespace Karma
 {
-	const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+	const std::vector<const char*> ValidationLayers = { "VK_LAYER_KHRONOS_validation" };
 	// Subject to change based on available hardware scrutiny
-	std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+	std::vector<const char*> DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 #ifdef KR_DEBUG
 	bool VulkanContext::bEnableValidationLayers = true;
@@ -1129,13 +1129,13 @@ namespace Karma
 		createInfo.pQueueCreateInfos = queueCreateInfos.data();
 		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 		createInfo.pEnabledFeatures = &deviceFeatures;
-		createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-		createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+		createInfo.enabledExtensionCount = static_cast<uint32_t>(DeviceExtensions.size());
+		createInfo.ppEnabledExtensionNames = DeviceExtensions.data();
 
 		if (bEnableValidationLayers)
 		{
-			createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-			createInfo.ppEnabledLayerNames = validationLayers.data();
+			createInfo.enabledLayerCount = static_cast<uint32_t>(ValidationLayers.size());
+			createInfo.ppEnabledLayerNames = ValidationLayers.data();
 		}
 		else
 		{
@@ -1231,13 +1231,13 @@ namespace Karma
 		{
 			if (strcmp(anExtention.extensionName, "VK_KHR_portability_subset") != 0)
 			{
-				deviceExtensions.push_back("VK_KHR_portability_subset");
+				DeviceExtensions.push_back("VK_KHR_portability_subset");
 				break;
 			}
 		}
 #endif
 
-		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+		std::set<std::string> requiredExtensions(DeviceExtensions.begin(), DeviceExtensions.end());
 
 		if (bEnableValidationLayers)
 		{
@@ -1365,8 +1365,8 @@ namespace Karma
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 		if (bEnableValidationLayers)
 		{
-			createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-			createInfo.ppEnabledLayerNames = validationLayers.data();
+			createInfo.enabledLayerCount = static_cast<uint32_t>(ValidationLayers.size());
+			createInfo.ppEnabledLayerNames = ValidationLayers.data();
 
 			PopulateDebugMessengerCreateInfo(debugCreateInfo);
 			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)(&debugCreateInfo);
@@ -1414,7 +1414,7 @@ namespace Karma
 		std::vector<VkLayerProperties> availableLayers(layerCount);
 		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-		for (const char* layerName : validationLayers)
+		for (const char* layerName : ValidationLayers)
 		{
 			bool layerFound = false;
 

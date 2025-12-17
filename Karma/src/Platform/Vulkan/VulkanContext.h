@@ -319,7 +319,7 @@ namespace Karma
 		 * Calls vkEnumerateDeviceExtensionProperties for list of supported extensions for instance VK_KHR_swapchain which is
 		 * required for, well, swapchain
 		 * 
-		 * @
+		 * @since Karma 1.0.0
 		 */
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 		

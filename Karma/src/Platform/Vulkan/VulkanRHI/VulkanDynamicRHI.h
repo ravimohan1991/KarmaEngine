@@ -25,6 +25,88 @@ namespace Karma
 		return static_cast<TRHI*>(GDynamicRHI);
 	}
 
+	/**
+	 * @brief A structure for graphics and present queuefamilies
+	 *
+	 * Most operations performed with Vulkan, like draw commands and memory operations, are
+	 * asynchronously executed by submitting them to a VkQueue. Queues are allocated from queue
+	 * families, where each queue family supports a specific set of operations in its queues. For example,
+	 * there could be separate queue families for graphics, compute and memory transfer operations.
+	 *
+	 * Used for creating logical device, swapchain, and commandpool
+	 *
+	 * @see FVulkanDynamicRHI::FindQueueFamilies()
+	 * @since Karma 1.0.0
+	 */
+	struct QueueFamilyIndices
+	{
+		/**
+		 * @brief The queues in this queue family support graphics operations.
+		 *
+		 * @note The optional is used to make the query of availibility easier
+		 * @since Karma 1.0.0
+		 */
+		std::optional<uint32_t> graphicsFamily;
+
+		/**
+		 * @brief The queues in this queue family support image presentation
+		 *
+		 * The image is presented to the surface
+		 *
+		 * @note The optional is used to make the query of availibility easier
+		 * @see VulkanContext::CreateSurface()
+		 *
+		 * @since Karma 1.0.0
+		 */
+		std::optional<uint32_t> presentFamily;
+
+		/**
+		 * @brief Routine for querying if appropriate queue families (graphicsFamily and presentFamily) are available.
+		 *
+		 * @see VulkanContext::IsDeviceSuitable
+		 * @since Karma 1.0.0
+		 */
+		bool IsComplete()
+		{
+			return graphicsFamily.has_value() && presentFamily.has_value();
+		}
+	};
+
+	/**
+	 * @brief Structure with data required for appropriate creation and working of swapchain.
+	 *
+	 * Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own
+	 * the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain
+	 * and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be
+	 * presented to the screen.
+	 *
+	 * @since Karma 1.0.0
+	 */
+	struct SwapChainSupportDetails
+	{
+		/**
+		 * @brief Basic surface capabilities (min/max number of images in swap chain, min/max width
+		 * and height of images)
+		 *
+		 * @since Karma 1.0.0
+		 */
+		VkSurfaceCapabilitiesKHR capabilities;
+
+		/**
+		 * @brief Surface formats (pixel format, color space)
+		 *
+		 * @since Karma 1.0.0
+		 */
+		std::vector<VkSurfaceFormatKHR> formats;
+
+		/**
+		 * @brief Available presentation modes
+		 *
+		 * @since Karma 1.0.0
+		 */
+		std::vector<VkPresentModeKHR> presentModes;
+	};
+
 	class FVulkanDynamicRHI : public IVulkanDynamicRHI
 	{
 	public:
@@ -40,6 +122,8 @@ namespace Karma
 		 * Cleans up resources and states used by the RHI.
 		 */
 		virtual void Shutdown() override;
+
+		void InitInstance();
 
 		/**
 		 * @brief Presents the rendered frame to the display.
@@ -57,6 +141,19 @@ namespace Karma
 		{
 			return m_Device;
 		}
+
+		/**
+		 * @brief Queries the graphics card for available queue families and compares against the availability of graphics and
+		 * presentation queues
+		 *
+		 * @param device						The graphics card to be queired for queue family
+		 * @since Karma 1.0.0
+		 */
+		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+
+		bool GetValidationLayersSetting() const { return bEnableValidationLayers; }
+
+		const VkPhysicalDeviceFeatures& GetGpuDeviceFeatures() const{ return m_SupportedDeviceFeatures; }
 
 	protected:
 		// Vulkan-specific members and methods can be added here
@@ -88,9 +185,50 @@ namespace Karma
 		 */
 		void CreateSurface();
 
+		
 		void SelectDevice();
 
 	private:
+
+		/**
+		 * @brief Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data.
+		 *
+		 * @see VulkanContext::IsDeviceSuitable(), and VulkanContext::CreateSwapChain()
+		 * @since Karma 1.0.0
+		 */
+		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+
+		/**
+		 * @brief Looks for extension properties supported by the GPU
+		 *
+		 * Calls vkEnumerateDeviceExtensionProperties for list of supported extensions for instance VK_KHR_swapchain which is
+		 * required for, well, swapchain
+		 * 
+		 * @note These are different from instance extensions printed in PrintAvailableExtensions()
+		 *
+		 * @since Karma 1.0.0
+		 */
+		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+
+		/**
+		 * @brief Checks if the physical device (graphics card) is suitable for the Engine to use based on
+		 * avaibality of required queue families (graphics and presentation), required device extensions (like VK_KHR_swapchain), sampler anisotropy support (which is
+		 * anisotropic filtering support in samplers, allowing higher-quality texture sampling at oblique angles to reduce blurring and aliasing artifacts seen in standard bilinear filtering.)
+		 *
+		 * @param device						The graphics card to be checked for suitability
+		 * @since Karma 1.0.0
+		 */
+		bool IsDeviceSuitable(VkPhysicalDevice device);
+
+		/**
+		 * @brief Prints all the available physical devices (graphics cards) supported by the system's Vulkan implementation.
+		 *
+		 * @param physicalDevices						The list of GPUs detected
+		 * 
+		 * @see FVulkanDynamicRHI::SelectDevice()
+		 * @since Karma 1.0.0
+		 */
+		void PrintAvailablePhysicalDevices(const std::vector<VkPhysicalDevice>& physicalDevices);
 
 		/**
 		 * @brief Creates a debug utils messenger for Vulkan instance.
@@ -129,7 +267,7 @@ namespace Karma
 			const VkAllocationCallbacks* pAllocator);
 
 		/**
-		 * @brief Prints all the available extensions supported by the system's Vulkan implementation (VkInstance).
+		 * @brief Prints all the available instance extensions supported by the system's Vulkan implementation (VkInstance).
 		 *
 		 * Vulkan extensions provide additional functionality beyond the core Vulkan API.
 		 *
@@ -197,6 +335,10 @@ namespace Karma
 			const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 			void* pUserData);
 
+	public:
+		// To be set manually by coder
+		static std::vector<const char*> deviceExtensions;
+		static const std::vector<const char*> validationLayers;
 
 	protected:
 		// Vulkan instance handle and other Vulkan-specific members can be declared here
@@ -208,5 +350,7 @@ namespace Karma
 		VkDebugUtilsMessengerEXT m_DebugMessenger;
 		GLFWwindow* m_WindowHandle;
 		VkSurfaceKHR m_Surface;
+		VkPhysicalDeviceFeatures m_SupportedDeviceFeatures;
+		VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;// GPU
 	};
 }

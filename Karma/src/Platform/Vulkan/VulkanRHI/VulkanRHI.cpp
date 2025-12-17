@@ -5,7 +5,8 @@
 
 namespace Karma
 {
-	const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
+	const std::vector<const char*> FVulkanDynamicRHI::validationLayers = {"VK_LAYER_KHRONOS_validation"};
+	std::vector<const char*> FVulkanDynamicRHI:: deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 #ifdef KR_DEBUG
 	bool FVulkanDynamicRHI::bEnableValidationLayers = true;
@@ -26,16 +27,27 @@ namespace Karma
 	bool FVulkanDynamicRHI::Init()
 	{
 		// initialize device
+		InitInstance();
+
 		KR_CORE_INFO("Vulkan RHI initialized successfully.");
 		return true;
 	}
 
+	void FVulkanDynamicRHI::InitInstance()
+	{
+		m_Device->InitGPU();
+	}
+
 	void FVulkanDynamicRHI::Shutdown()
 	{
-		// destroy device
+		m_Device->Destroy();
 		vkDestroySurfaceKHR(m_VulkanInstance, m_Surface, nullptr);
 		DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
 		vkDestroyInstance(m_VulkanInstance, nullptr);
+
+		delete m_Device;
+		m_Device = nullptr;
+
 		KR_CORE_INFO("Vulkan RHI shutdown complete by destroying Vulkan Instance.");
 	}
 
@@ -127,10 +139,187 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create window surface");
 	}
 
-	void FVulkanDynamicRHI::SelectDevice()
+	void FVulkanDynamicRHI::SelectDevice()// Pick physical device (GPU) and create Vulkan logical device
 	{
-		// Implementation for selecting a physical device (GPU)
-		
+		uint32_t deviceCount = 0;
+		vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, nullptr);
+
+		if (deviceCount == 0)
+		{
+			KR_CORE_ASSERT(false, "Failed to load GPU with Vulkan support");
+		}
+
+		std::vector<VkPhysicalDevice> devices(deviceCount);
+		vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, devices.data());
+
+		if (bEnableValidationLayers)
+		{
+			PrintAvailablePhysicalDevices(devices);
+		}
+
+		for (const auto& device : devices)
+		{
+			if (IsDeviceSuitable(device))
+			{
+				m_PhysicalDevice = device;
+				break;
+			}
+		}
+
+		if (m_PhysicalDevice == VK_NULL_HANDLE)
+		{
+			KR_CORE_ASSERT(false, "Failed to find a suitable GPU!");
+		}
+
+		m_Device = new FVulkanDevice(this, m_PhysicalDevice);
+	}
+
+	bool FVulkanDynamicRHI::IsDeviceSuitable(VkPhysicalDevice device)
+	{
+		QueueFamilyIndices indices = FindQueueFamilies(device);
+
+		bool bExtensionsSupported = CheckDeviceExtensionSupport(device);
+
+		bool swapChainAdequate = false;
+		if (bExtensionsSupported)
+		{
+			SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+		}
+
+		vkGetPhysicalDeviceFeatures(device, &m_SupportedDeviceFeatures);
+
+		return indices.IsComplete() && bExtensionsSupported && swapChainAdequate && m_SupportedDeviceFeatures.samplerAnisotropy;
+	}
+
+	SwapChainSupportDetails FVulkanDynamicRHI::QuerySwapChainSupport(VkPhysicalDevice device)
+	{
+		SwapChainSupportDetails details;
+
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_Surface, &details.capabilities);
+
+		uint32_t formatCount;
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, nullptr);
+
+		if (formatCount != 0)
+		{
+			details.formats.resize(formatCount);
+			vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, details.formats.data());
+		}
+
+		uint32_t presentModeCount;
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, nullptr);
+
+		if (presentModeCount != 0)
+		{
+			details.presentModes.resize(presentModeCount);
+			vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, details.presentModes.data());
+		}
+
+		return details;
+	}
+
+	// Check if all the required extensions are there
+	bool FVulkanDynamicRHI::CheckDeviceExtensionSupport(VkPhysicalDevice device)
+	{
+		uint32_t extensionCount;
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+		std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+#ifdef KR_MAC_PLATFORM
+		// Case by case query for required extensions
+		// One for MacOS: VK_KHR_portability_subset
+		for (auto anExtention : availableExtensions)
+		{
+			if (strcmp(anExtention.extensionName, "VK_KHR_portability_subset") != 0)
+			{
+				deviceExtensions.push_back("VK_KHR_portability_subset");
+				break;
+			}
+		}
+#endif
+
+		std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+		if (bEnableValidationLayers)
+		{
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("| Available Device (GPU) Extensions:");
+			uint32_t index = 1;
+			for (auto anExtension : availableExtensions)
+			{
+				KR_CORE_INFO("| {0}. {1}", index++, anExtension.extensionName);
+			}
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("+-------------------------------------------------");
+			KR_CORE_INFO("| Required Extensions (shall be enabled...):");
+			index = 1;
+			for (auto swapchainExtension : requiredExtensions)
+			{
+				KR_CORE_INFO("| {0}. {1}", index++, swapchainExtension);
+			}
+			KR_CORE_INFO("+-------------------------------------------------");
+		}
+
+		for (const auto& extension : availableExtensions)
+		{
+			requiredExtensions.erase(extension.extensionName);
+		}
+
+		return requiredExtensions.empty();
+	}
+
+	QueueFamilyIndices FVulkanDynamicRHI::FindQueueFamilies(VkPhysicalDevice device)
+	{
+		QueueFamilyIndices indices;
+
+		uint32_t queueFamilyCount = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+		std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+		int i = 0;
+		for (const auto& queueFamily : queueFamilies)
+		{
+			if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			{
+				indices.graphicsFamily = i;
+			}
+
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_Surface, &presentSupport);
+
+			if (presentSupport)
+			{
+				indices.presentFamily = i;
+			}
+
+			if (indices.IsComplete())
+			{
+				break;
+			}
+
+			i++;
+		}
+
+		return indices;
+	}
+
+	void FVulkanDynamicRHI::PrintAvailablePhysicalDevices(const std::vector<VkPhysicalDevice>& physicalDevices)
+	{
+		uint32_t index = 1;
+		KR_CORE_INFO("+-------------------------------------------------");
+		KR_CORE_INFO("| Available Graphics cards:");
+		for (auto physicalDevice : physicalDevices)
+		{
+			VkPhysicalDeviceProperties deviceProperties;
+			vkGetPhysicalDeviceProperties(physicalDevice, &deviceProperties);
+			KR_CORE_INFO("| {0}. Device Name: {1}", index++, deviceProperties.deviceName);
+		}
+		KR_CORE_INFO("+-------------------------------------------------");
 	}
 
 	void FVulkanDynamicRHI::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)

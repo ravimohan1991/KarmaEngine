@@ -14,6 +14,8 @@
 
 namespace Karma
 {
+	class FVulkanDynamicRHI;
+
 	/**
 	 * @class FVulkanDevice
 	 * @brief Manages Vulkan device resources and operations.
@@ -27,14 +29,13 @@ namespace Karma
 		/**
 		 * @brief Constructor for FVulkanDevice.
 		 * 
-		 * Initializes the Vulkan device with the specified physical device and instance.
+		 *
 		 * 
-		 * @param physicalDevice		The Vulkan physical device to create the logical device from.
-		 * @param instance				The Vulkan instance associated with this device.
+		 * @param 
 		 * 
 		 * @since Karma 1.0.0
 		 */
-		FVulkanDevice(VkPhysicalDevice physicalDevice, VkInstance instance);
+		FVulkanDevice(FVulkanDynamicRHI* InRHI, VkPhysicalDevice InGpu);
 
 		/**
 		 * @brief Destructor for FVulkanDevice.
@@ -45,6 +46,10 @@ namespace Karma
 		 */
 		~FVulkanDevice();
 
+		void InitGPU();
+
+		void Destroy();
+
 		/**
 		 * @brief Retrieves the Vulkan logical device handle.
 		 * 
@@ -54,6 +59,11 @@ namespace Karma
 
 	private:
 		VkDevice m_LogicalDevice; ///< The Vulkan logical device handle.
+		FVulkanDynamicRHI* m_VulkanDynamicRHI;
+
+		VkPhysicalDevice m_GPU;
+		VkQueue m_GraphicsQueue;
+
 		// Additional members for managing queues, command pools, etc. can be added here.
 	};
 }
