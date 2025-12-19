@@ -1,6 +1,8 @@
 #include "VulkanDevice.h"
 #include "VulkanDynamicRHI.h"
 
+#include "Vulkan/VulkanTexture.h"
+
 namespace Karma
 {
 	FVulkanDevice::FVulkanDevice(FVulkanDynamicRHI* InRHI, VkPhysicalDevice InGpu) : m_VulkanDynamicRHI(InRHI),
@@ -17,7 +19,7 @@ namespace Karma
 	void FVulkanDevice::Destroy()
 	{
 		// vkdestroy default buffers etc
-
+		delete m_DefaultTexture;
 		vkDestroyDevice(m_LogicalDevice, nullptr);
 	}
 
@@ -84,5 +86,8 @@ namespace Karma
 
 		vkGetDeviceQueue(m_LogicalDevice, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
 		vkGetDeviceQueue(m_LogicalDevice, indices.presentFamily.value(), 0, &m_GraphicsQueue);
+
+		// Default texture (unreal grid)
+		m_DefaultTexture = new VulkanTexture(this, "../Resources/Textures/UnrealGrid.png");
 	}
 }

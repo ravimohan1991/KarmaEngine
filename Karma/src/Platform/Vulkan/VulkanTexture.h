@@ -14,6 +14,8 @@
 
 namespace Karma
 {
+	class FVulkanDevice;
+
 	/**
 	 * @brief Vulkan specific implementation of Texture class.
 	 * 
@@ -33,6 +35,17 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		VulkanTexture();
+
+		/**
+		 * @brief Constructor with VulkanRHI support
+		 * 
+		 * @brief InDevice						The FVulkanDevice object
+		 * @brief filename						The location of the texture file along with location
+		 * 
+		 * @see FVulkanDevice::InitGPU()
+		 * @since Karma 1.0.0
+		 */
+		VulkanTexture(FVulkanDevice* InDevice, const char* filename);
 
 		/**
 		 * @brief A destructor
@@ -92,6 +105,17 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		void GenerateVulkanTexture(VulkanImageBuffer* vImageBuffer);
+
+		/**
+		 * @brief Finds a suitable memory type on the physical device (graphics card) based on the type filter and desired properties.
+		 *
+		 * @param typeFilter						Bitmask specifying the acceptable memory types
+		 * @param properties						Desired memory properties (like VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT for CPU access)
+		 *
+		 * @see VulkanBuffer::VulkanBuffer()
+		 * @since Karma 1.0.0
+		 */
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		
 		// Getters
 		VkImageView GetImageView() const { return m_TextureImageView; }

@@ -21,7 +21,7 @@ namespace Karma
 		CreateInstance();
 		SetupDebugMessenger();
 		CreateSurface();
-		SelectDevice();
+		SelectDevice();// physical device selection and logical device creation
 	}
 
 	bool FVulkanDynamicRHI::Init()

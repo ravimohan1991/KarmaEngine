@@ -14,6 +14,8 @@
 
 namespace Karma
 {
+	class FVulkanDevice;
+
 	/**
 	 * @brief Vulkan's vertex buffer class. Vertex buffer is used in agnostic Mesh instance
 	 *
@@ -398,6 +400,16 @@ namespace Karma
 		VulkanImageBuffer(const char* filename);
 
 		/**
+		 * @brief Creates GPU memory buffer for storing image texture with VulkanRHI support
+		 * 
+		 * @param InDevice								The FVulkanDevice object
+		 * @param filename								The path to the file, including filename, containing the image texture
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		VulkanImageBuffer(FVulkanDevice* InDevice, const char* filename);
+
+		/**
 		 * @brief Frees up device resources
 		 *
 		 * @since Karma 1.0.0
@@ -454,6 +466,7 @@ namespace Karma
 
 	private:
 		VkDevice m_Device;
+		VkPhysicalDevice m_PhysicalDevice;
 		VkBuffer m_StagingBuffer;
 		VkDeviceMemory m_StagingBufferMemory;
 

@@ -2,6 +2,7 @@
 #include "Platform/Vulkan/VulkanHolder.h"
 #include "Karma/Renderer/RenderCommand.h"
 #include "Karma/KarmaUtilities.h"
+#include "VulkanRHI/VulkanDevice.h"
 
 namespace Karma
 {
@@ -378,6 +379,27 @@ namespace Karma
 		stbi_image_free(pixels);
 	}
 
+	VulkanImageBuffer::VulkanImageBuffer(FVulkanDevice* InDevice, const char* filename)
+	{
+		stbi_uc* pixels = KarmaUtilities::GetImagePixelData(filename, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+		// Need more consideration on image size
+		VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+		KR_CORE_ASSERT(pixels, "Failed to load textures image!");
+
+		m_Device = InDevice->GetLogicalDevice();
+		m_PhysicalDevice = InDevice->GetGPU();
+
+		CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_StagingBuffer, m_StagingBufferMemory);
+		void* data;
+		vkMapMemory(m_Device, m_StagingBufferMemory, 0, imageSize, 0, &data);
+		memcpy(data, pixels, static_cast<size_t>(imageSize));
+		vkUnmapMemory(m_Device, m_StagingBufferMemory);
+
+		stbi_image_free(pixels);
+	}
+
 	VulkanImageBuffer::~VulkanImageBuffer()
 	{
 		vkDestroyBuffer(m_Device, m_StagingBuffer, nullptr);
@@ -414,7 +436,7 @@ namespace Karma
 	uint32_t VulkanImageBuffer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 	{
 		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanHolder::GetVulkanContext()->GetPhysicalDevice(), &memProperties);
+		vkGetPhysicalDeviceMemoryProperties(m_PhysicalDevice, &memProperties);
 
 		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
 		{
