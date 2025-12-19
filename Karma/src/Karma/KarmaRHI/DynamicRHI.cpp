@@ -25,6 +25,8 @@ namespace Karma
 	{
 		if (!GDynamicRHI)
 		{
+			KR_CORE_INFO("Karma RHI initializing");
+
 			GDynamicRHI = PlatformCreateDynamicRHI();
 			if (GDynamicRHI)
 			{
@@ -37,12 +39,13 @@ namespace Karma
 	{
 		if (GDynamicRHI != nullptr)
 		{
+			KR_CORE_INFO("Shutting down the RHI");
 			GDynamicRHI->Shutdown();
 
 			delete GDynamicRHI;
 			GDynamicRHI = nullptr;
-		}
 
-		KR_CORE_INFO("Deleted DynamicRHI object");
+			KR_CORE_INFO("Karma RHI exodus");
+		}
 	}
 }

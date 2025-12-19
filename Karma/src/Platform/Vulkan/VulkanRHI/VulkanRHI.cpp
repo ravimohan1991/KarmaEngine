@@ -48,7 +48,7 @@ namespace Karma
 		delete m_Device;
 		m_Device = nullptr;
 
-		KR_CORE_INFO("Vulkan RHI shutdown complete by destroying Vulkan Instance.");
+		KR_CORE_INFO("Vulkan RHI shutdown complete");
 	}
 
 	void FVulkanDynamicRHI::CreateInstance()
@@ -124,6 +124,7 @@ namespace Karma
 		VkResult result = CreateDebugUtilsMessengerEXT(m_VulkanInstance, &createInfo, nullptr, &m_DebugMessenger);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to set up debug messenger!");
+		KR_CORE_INFO("Vulkan RHI finished setting up Vulkan debug messenger with appropriate logging callback");
 	}
 
 	void FVulkanDynamicRHI::CreateSurface()
@@ -134,9 +135,14 @@ namespace Karma
 		if (m_WindowHandle != nullptr)
 		{
 			result = glfwCreateWindowSurface(m_VulkanInstance, m_WindowHandle, nullptr, &m_Surface);
-		}
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create window surface");
 
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create window surface");
+			KR_CORE_INFO("Vulkan RHI successfully created abstract surface to present rendered images");
+		}
+		else
+		{
+			KR_CORE_ASSERT(false, "No GLFW window handle found for surface creation");
+		}
 	}
 
 	void FVulkanDynamicRHI::SelectDevice()// Pick physical device (GPU) and create Vulkan logical device
@@ -169,6 +175,13 @@ namespace Karma
 		if (m_PhysicalDevice == VK_NULL_HANDLE)
 		{
 			KR_CORE_ASSERT(false, "Failed to find a suitable GPU!");
+		}
+		else
+		{
+			VkPhysicalDeviceProperties deviceProperties;
+			vkGetPhysicalDeviceProperties(m_PhysicalDevice, &deviceProperties);
+
+			KR_CORE_INFO("Physical Device (GPU) {0} has appropriate support for Karma Engine", deviceProperties.deviceName);
 		}
 
 		m_Device = new FVulkanDevice(this, m_PhysicalDevice);

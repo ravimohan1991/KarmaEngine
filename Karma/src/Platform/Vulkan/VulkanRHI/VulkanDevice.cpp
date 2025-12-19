@@ -32,7 +32,7 @@ namespace Karma
 		if (m_VulkanDynamicRHI->GetValidationLayersSetting())
 		{
 			KR_CORE_INFO("+-------------------------------------------------");
-			KR_CORE_INFO("| Available Unique Queue Family Indices (Graphics Card):");
+			KR_CORE_INFO("| Available Unique Queue Family Indices (GPU):");
 			uint32_t index = 1;
 			for (uint32_t queueFamily : uniqueQueueFamilies)
 			{
@@ -80,6 +80,7 @@ namespace Karma
 		VkResult result = vkCreateDevice(m_GPU, &createInfo, nullptr, &m_LogicalDevice);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create logical device!");
+		KR_CORE_INFO("Successfully created a Vulkan logical device");
 
 		vkGetDeviceQueue(m_LogicalDevice, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
 		vkGetDeviceQueue(m_LogicalDevice, indices.presentFamily.value(), 0, &m_GraphicsQueue);
