@@ -76,15 +76,59 @@ namespace Karma
 		 */
 		VkPhysicalDevice GetGPU() const { return m_GPU; }
 
+		///////////////// Utility Functions /////////////////
+		/**
+		 * @brief Transitions the layout of an image from oldLayout to newLayout.
+		 *
+		 * Image layout transitions are crucial in Vulkan to ensure that images are in the correct state for different operations, such as rendering, sampling, or transferring data.
+		 *
+		 * @param image							The image to be transitioned
+		 * @param format						The format of the image
+		 * @param oldLayout						The current layout of the image
+		 * @param newLayout						The desired layout of the image
+		 *
+		 * @see VulkanTexture::CreateTextureImage()
+		 * @since Karma 1.0.0
+		 */
+		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
+		/**
+		 * @brief Copies data from a buffer to a Vulkan image.
+		 *
+		 * This is typically used for uploading texture data from a staging buffer to a Vulkan image.
+		 *
+		 * @param buffer						The source buffer containing the data
+		 * @param image							The destination image
+		 * @param width							The width of the image
+		 * @param height						The height of the image
+		 *
+		 * @see VulkanTexture::CreateTextureImage()
+		 * @since Karma 1.0.0
+		 */
+		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+
+		/**
+		 * @brief Checks if the given format has a stencil component.
+		 *
+		 * Sees if the format is VK_FORMAT_D32_SFLOAT_S8_UINT or VK_FORMAT_D24_UNORM_S8_UINT
+		 *
+		 * @param format							The format to be checked
+		 *
+		 * @see VulkanContext::TransitionImageLayout()
+		 * @since Karma 1.0.0
+		 */
+		bool HasStencilComponent(VkFormat format);
+
 	private:
 		VkDevice m_LogicalDevice; ///< The Vulkan logical device handle.
 		FVulkanDynamicRHI* m_VulkanDynamicRHI;
 
 		VkPhysicalDevice m_GPU;
 		VkQueue m_GraphicsQueue;
-
+		VkQueue m_PresentQueue;
 		VulkanTexture* m_DefaultTexture;
 
 		// Additional members for managing queues, command pools, etc. can be added here.
+		VkCommandPool m_CommandPool;
 	};
 }

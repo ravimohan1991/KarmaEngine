@@ -7,20 +7,17 @@ namespace Karma
 {
 	VulkanTexture::VulkanTexture()
 	{
-		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
-		m_PhysicalDevice = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
+		m_LogicalDevice = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+		m_GPU = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
 	}
 
 	VulkanTexture::VulkanTexture(FVulkanDevice* InDevice, const char* filename) : m_TextureImage(VK_NULL_HANDLE), 
 		m_TextureImageMemory(VK_NULL_HANDLE), m_TextureImageView(VK_NULL_HANDLE), m_TextureSampler(VK_NULL_HANDLE)
 	{
-		m_Device = InDevice->GetLogicalDevice();
-		m_PhysicalDevice = InDevice->GetGPU();
+		m_Device = InDevice;
 
-		/*m_TextureImage = VK_NULL_HANDLE;
-		m_TextureImageMemory = VK_NULL_HANDLE;
-		m_TextureImageView = VK_NULL_HANDLE;
-		m_TextureSampler = VK_NULL_HANDLE;*/
+		m_LogicalDevice = InDevice->GetLogicalDevice();
+		m_GPU = InDevice->GetGPU();
 
 		VulkanImageBuffer* vImageBuffer = new VulkanImageBuffer(InDevice, filename);
 		if (vImageBuffer != nullptr)
@@ -36,10 +33,10 @@ namespace Karma
 
 	VulkanTexture::~VulkanTexture()
 	{
-		vkDestroySampler(m_Device, m_TextureSampler, nullptr);
-		vkDestroyImageView(m_Device, m_TextureImageView, nullptr);
-		vkDestroyImage(m_Device, m_TextureImage, nullptr);
-		vkFreeMemory(m_Device, m_TextureImageMemory, nullptr);
+		vkDestroySampler(m_LogicalDevice, m_TextureSampler, nullptr);
+		vkDestroyImageView(m_LogicalDevice, m_TextureImageView, nullptr);
+		vkDestroyImage(m_LogicalDevice, m_TextureImage, nullptr);
+		vkFreeMemory(m_LogicalDevice, m_TextureImageMemory, nullptr);
 	}
 
 	void VulkanTexture::GenerateVulkanTexture(VulkanImageBuffer* vImageBuffer)
@@ -66,30 +63,30 @@ namespace Karma
 		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 		imageInfo.flags = 0;
 
-		VkResult result = vkCreateImage(m_Device, &imageInfo, nullptr, &m_TextureImage);
+		VkResult result = vkCreateImage(m_LogicalDevice, &imageInfo, nullptr, &m_TextureImage);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create image!");
 
 		VkMemoryRequirements memRequirements;
-		vkGetImageMemoryRequirements(m_Device, m_TextureImage, &memRequirements);
+		vkGetImageMemoryRequirements(m_LogicalDevice, m_TextureImage, &memRequirements);
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		VkResult result1 = vkAllocateMemory(m_Device, &allocInfo, nullptr, &m_TextureImageMemory);
+		VkResult result1 = vkAllocateMemory(m_LogicalDevice, &allocInfo, nullptr, &m_TextureImageMemory);
 		KR_CORE_ASSERT(result1 == VK_SUCCESS, "Failed to allocate image memeory");
 
-		vkBindImageMemory(m_Device, m_TextureImage, m_TextureImageMemory, 0);
+		vkBindImageMemory(m_LogicalDevice, m_TextureImage, m_TextureImageMemory, 0);
 
-		//VulkanHolder::GetVulkanContext()->TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		//VulkanHolder::GetVulkanContext()->CopyBufferToImage(vImageBuffer->GetBuffer(), m_TextureImage, static_cast<uint32_t>(vImageBuffer->GetTextureWidth()), static_cast<uint32_t>(vImageBuffer->GetTextureHeight()));
-		//VulkanHolder::GetVulkanContext()->TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		m_Device->TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		m_Device->CopyBufferToImage(vImageBuffer->GetBuffer(), m_TextureImage, static_cast<uint32_t>(vImageBuffer->GetTextureWidth()), static_cast<uint32_t>(vImageBuffer->GetTextureHeight()));
+		m_Device->TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}
 
 	uint32_t VulkanTexture::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 	{
 		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(m_PhysicalDevice, &memProperties);
+		vkGetPhysicalDeviceMemoryProperties(m_GPU, &memProperties);
 
 		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
 		{
@@ -116,7 +113,7 @@ namespace Karma
 		viewInfo.subresourceRange.baseArrayLayer = 0;
 		viewInfo.subresourceRange.layerCount = 1;
 
-		VkResult result = vkCreateImageView(m_Device, &viewInfo, nullptr, &m_TextureImageView);
+		VkResult result = vkCreateImageView(m_LogicalDevice, &viewInfo, nullptr, &m_TextureImageView);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create texture image view");
 	}
@@ -133,7 +130,7 @@ namespace Karma
 		samplerInfo.anisotropyEnable = VK_TRUE;
 
 		VkPhysicalDeviceProperties properties{};
-		vkGetPhysicalDeviceProperties(m_PhysicalDevice, &properties);
+		vkGetPhysicalDeviceProperties(m_GPU, &properties);
 
 		samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
 		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -145,7 +142,7 @@ namespace Karma
 		samplerInfo.minLod = 0.0f;
 		samplerInfo.maxLod = 0.0f;
 
-		VkResult result = vkCreateSampler(m_Device, &samplerInfo, nullptr, &m_TextureSampler);
+		VkResult result = vkCreateSampler(m_LogicalDevice, &samplerInfo, nullptr, &m_TextureSampler);
 
 		KR_CORE_ASSERT(result == false, "Failed to create texture sampler!");
 	}

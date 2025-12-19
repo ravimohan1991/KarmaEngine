@@ -122,9 +122,12 @@ namespace Karma
 		VkSampler GetImageSampler() const { return m_TextureSampler; }
 		
 	private:
+		// VulkanRHI stuff
+		FVulkanDevice* m_Device;
+
 		// Vulkan context relevant stuff
-		VkDevice m_Device;
-		VkPhysicalDevice m_PhysicalDevice;
+		VkDevice m_LogicalDevice;
+		VkPhysicalDevice m_GPU;
 		
 		// Texture relevant stuff
 		VkImage m_TextureImage;
