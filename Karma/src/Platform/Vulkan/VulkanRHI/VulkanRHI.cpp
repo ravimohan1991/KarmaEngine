@@ -145,6 +145,16 @@ namespace Karma
 		}
 	}
 
+	void FVulkanDynamicRHI::ComputeNumberOfSwapchainImagesSupported()
+	{
+		m_SwapChainImageCount = m_GPUSwapChainSupport.capabilities.minImageCount + 1;
+
+		if (m_GPUSwapChainSupport.capabilities.maxImageCount > 0 && m_SwapChainImageCount > m_GPUSwapChainSupport.capabilities.maxImageCount)
+		{
+			m_SwapChainImageCount = m_GPUSwapChainSupport.capabilities.maxImageCount;
+		}
+	}
+
 	void FVulkanDynamicRHI::SelectDevice()// Pick physical device (GPU) and create Vulkan logical device
 	{
 		uint32_t deviceCount = 0;
@@ -168,6 +178,8 @@ namespace Karma
 			if (IsDeviceSuitable(device))
 			{
 				m_PhysicalDevice = device;
+				ComputeNumberOfSwapchainImagesSupported();
+
 				break;
 			}
 		}
@@ -196,8 +208,8 @@ namespace Karma
 		bool swapChainAdequate = false;
 		if (bExtensionsSupported)
 		{
-			SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
-			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+			m_GPUSwapChainSupport = QuerySwapChainSupport(device);
+			swapChainAdequate = !m_GPUSwapChainSupport.formats.empty() && !m_GPUSwapChainSupport.presentModes.empty();
 		}
 
 		vkGetPhysicalDeviceFeatures(device, &m_SupportedDeviceFeatures);

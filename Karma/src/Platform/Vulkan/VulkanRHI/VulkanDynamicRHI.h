@@ -209,7 +209,7 @@ namespace Karma
 		 * 
 		 * @since Karma 1.0.0
 		 */
-		bool GetValidationLayersSetting() const { return bEnableValidationLayers; }
+		inline bool GetValidationLayersSetting() const { return bEnableValidationLayers; }
 
 		/**
 		 * @brief Getter for m_SupportedDeviceFeatures which contains boolean values for supported features like
@@ -217,7 +217,21 @@ namespace Karma
 		 * 
 		 * @since Karma 1.0.0
 		 */
-		const VkPhysicalDeviceFeatures& GetGpuDeviceFeatures() const{ return m_SupportedDeviceFeatures; }
+		inline const VkPhysicalDeviceFeatures& GetGpuDeviceFeatures() const{ return m_SupportedDeviceFeatures; }
+
+		/**
+		 * @brief Getter for m_GPUSwapChainSupport struct which gets initialized in FVulkanDynamicRHI::IsDeviceSuitable()
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		inline const SwapChainSupportDetails& GetGpuSwapChainSupportDetails() const { return m_GPUSwapChainSupport; }
+
+		/**
+		 * @brief Getter for the number of supported swapchain images
+		 *
+		 * @since Karma 1.0.0
+		 */
+		inline uint32_t SwapChainImageCount() const { return m_SwapChainImageCount; }
 
 	protected:
 		// Vulkan-specific members and methods can be added here
@@ -257,6 +271,16 @@ namespace Karma
 		void SelectDevice();
 
 	private:
+
+		/**
+		 * @brief Computes the number of images supported by the GPU for swapchain creation
+		 * 
+		 * Makes sure that the m_SwapChainImageCount remains is in the interval [capabilities.minImageCount + 1, 
+		 * capabilities.maxImageCount].
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void ComputeNumberOfSwapchainImagesSupported();
 
 		/**
 		 * @brief Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data.
@@ -420,5 +444,7 @@ namespace Karma
 		VkSurfaceKHR m_Surface;
 		VkPhysicalDeviceFeatures m_SupportedDeviceFeatures;
 		VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;// GPU
+		SwapChainSupportDetails m_GPUSwapChainSupport;
+		uint32_t m_SwapChainImageCount;
 	};
 }

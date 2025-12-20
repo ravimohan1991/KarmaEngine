@@ -55,7 +55,7 @@ namespace Karma
 	 * @see VulkanContext::FindQueueFamilies()
 	 * @since Karma 1.0.0
 	 */
-	struct QueueFamilyIndices
+	struct QueueFamilyIndicesDepricated
 	{
 		/**
 		 * @brief The queues in this queue family support graphics operations.
@@ -99,7 +99,7 @@ namespace Karma
 	 *
 	 * @since Karma 1.0.0
 	 */
-	struct SwapChainSupportDetails
+	struct SwapChainSupportDetailsDepricated
 	{
 		/**
 		 * @brief Basic surface capabilities (min/max number of images in swap chain, min/max width
@@ -284,7 +284,7 @@ namespace Karma
 		 * @param device						The graphics card to be queired for queue family
 		 * @since Karma 1.0.0
 		 */
-		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+		QueueFamilyIndicesDepricated FindQueueFamilies(VkPhysicalDevice device);
 
 		/**
 		 * @brief The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. Following is done:
@@ -329,7 +329,7 @@ namespace Karma
 		 * @see VulkanContext::IsDeviceSuitable(), and VulkanContext::CreateSwapChain()
 		 * @since Karma 1.0.0
 		 */
-		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+		SwapChainSupportDetailsDepricated QuerySwapChainSupport(VkPhysicalDevice device);
 
 		/**
 		 * @brief Chooses the best surface format (pixel format and color space) for the swapchain from the available formats.

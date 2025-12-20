@@ -4,6 +4,7 @@
 #include "Renderer/RenderCommand.h"
 #include "StaticMeshActor.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
+#include "VulkanRHI/VulkanDynamicRHI.h"
 
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"
@@ -27,15 +28,14 @@ namespace Karma
 			KarmaGui_ImplGlfw_InitForVulkan(window, true);
 
 			KarmaGui_ImplVulkan_InitInfo initInfo = {};
-			// An inter-class communication
-			initInfo.Instance = VulkanHolder::GetVulkanContext()->GetInstance();
-			initInfo.PhysicalDevice = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
-			initInfo.Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
-			initInfo.QueueFamily = VulkanHolder::GetVulkanContext()->FindQueueFamilies(initInfo.PhysicalDevice).graphicsFamily.value();
-			initInfo.Queue = VulkanHolder::GetVulkanContext()->GetGraphicsQueue();
+			initInfo.Instance = FVulkanDynamicRHI::Get().GetInstance();
+			initInfo.PhysicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetGPU();
+			initInfo.Device = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+			initInfo.QueueFamily = FVulkanDynamicRHI::Get().FindQueueFamilies(initInfo.PhysicalDevice).graphicsFamily.value();
+			initInfo.Queue = FVulkanDynamicRHI::Get().GetDevice()->GetGraphicsQueue();
 			initInfo.PipelineCache = VK_NULL_HANDLE;
-			initInfo.MinImageCount = VulkanHolder::GetVulkanContext()->GetMinImageCount();
-			initInfo.ImageCount = VulkanHolder::GetVulkanContext()->GetImageCount();
+			initInfo.MinImageCount = FVulkanDynamicRHI::Get().GetGpuSwapChainSupportDetails().capabilities.minImageCount;
+			initInfo.ImageCount = FVulkanDynamicRHI::Get().SwapChainImageCount();
 			initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
 			// Stuff created and dedicated to KarmaGui

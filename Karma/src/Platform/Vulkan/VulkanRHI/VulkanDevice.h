@@ -119,6 +119,15 @@ namespace Karma
 		 */
 		bool HasStencilComponent(VkFormat format);
 
+		///////////////// Getters /////////////////
+
+		/**
+		 * @brief Getter for the graphics queue created in FVulkanDevice::InitGPU()
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		inline VkQueue GetGraphicsQueue() const { return m_GraphicsQueue; }
+
 	private:
 		VkDevice m_LogicalDevice; ///< The Vulkan logical device handle.
 		FVulkanDynamicRHI* m_VulkanDynamicRHI;

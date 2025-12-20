@@ -915,7 +915,7 @@ namespace Karma
 
 	void VulkanContext::CreateCommandPool()
 	{
-		QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(m_physicalDevice);
+		QueueFamilyIndicesDepricated queueFamilyIndices = FindQueueFamilies(m_physicalDevice);
 
 		VkCommandPoolCreateInfo poolInfo{};
 		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -971,7 +971,7 @@ namespace Karma
 
 	void VulkanContext::CreateSwapChain()
 	{
-		SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(m_physicalDevice);
+		SwapChainSupportDetailsDepricated swapChainSupport = QuerySwapChainSupport(m_physicalDevice);
 
 		// KarmaGui may have, MAY, different requirements.
 		m_surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -997,7 +997,7 @@ namespace Karma
 		createInfo.imageArrayLayers = 1;
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
+		QueueFamilyIndicesDepricated indices = FindQueueFamilies(m_physicalDevice);
 		uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(),
 			indices.presentFamily.value() };
 
@@ -1068,7 +1068,7 @@ namespace Karma
 
 	void VulkanContext::CreateLogicalDevice()
 	{
-		QueueFamilyIndices indices = FindQueueFamilies(m_physicalDevice);
+		QueueFamilyIndicesDepricated indices = FindQueueFamilies(m_physicalDevice);
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 		std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(),
@@ -1179,14 +1179,14 @@ namespace Karma
 
 	bool VulkanContext::IsDeviceSuitable(VkPhysicalDevice device)
 	{
-		QueueFamilyIndices indices = FindQueueFamilies(device);
+		QueueFamilyIndicesDepricated indices = FindQueueFamilies(device);
 
 		bool bExtensionsSupported = CheckDeviceExtensionSupport(device);
 
 		bool swapChainAdequate = false;
 		if (bExtensionsSupported)
 		{
-			SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+			SwapChainSupportDetailsDepricated swapChainSupport = QuerySwapChainSupport(device);
 			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 		}
 
@@ -1247,9 +1247,9 @@ namespace Karma
 		return requiredExtensions.empty();
 	}
 
-	QueueFamilyIndices VulkanContext::FindQueueFamilies(VkPhysicalDevice device)
+	QueueFamilyIndicesDepricated VulkanContext::FindQueueFamilies(VkPhysicalDevice device)
 	{
-		QueueFamilyIndices indices;
+		QueueFamilyIndicesDepricated indices;
 
 		uint32_t queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
@@ -1284,9 +1284,9 @@ namespace Karma
 		return indices;
 	}
 
-	SwapChainSupportDetails VulkanContext::QuerySwapChainSupport(VkPhysicalDevice device)
+	SwapChainSupportDetailsDepricated VulkanContext::QuerySwapChainSupport(VkPhysicalDevice device)
 	{
-		SwapChainSupportDetails details;
+		SwapChainSupportDetailsDepricated details;
 
 		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface, &details.capabilities);
 
