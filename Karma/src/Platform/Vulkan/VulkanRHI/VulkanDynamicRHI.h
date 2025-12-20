@@ -174,6 +174,14 @@ namespace Karma
 		virtual void Present() override {}
 
 		/**
+		 * @brief Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data.
+		 *
+		 * @see VulkanContext::IsDeviceSuitable(), and VulkanContext::CreateSwapChain()
+		 * @since Karma 1.0.0
+		 */
+		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+
+		/**
 		 * @brief Getter for Vulkan instance
 		 * 
 		 * @since Karma 1.0.0
@@ -233,6 +241,10 @@ namespace Karma
 		 */
 		inline uint32_t SwapChainImageCount() const { return m_SwapChainImageCount; }
 
+		inline GLFWwindow* GetSurfaceWindow() const { return m_WindowHandle; }
+
+		inline VkSurfaceKHR GetSurface() const { return m_Surface; }
+
 	protected:
 		// Vulkan-specific members and methods can be added here
 
@@ -281,14 +293,6 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		void ComputeNumberOfSwapchainImagesSupported();
-
-		/**
-		 * @brief Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data.
-		 *
-		 * @see VulkanContext::IsDeviceSuitable(), and VulkanContext::CreateSwapChain()
-		 * @since Karma 1.0.0
-		 */
-		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 
 		/**
 		 * @brief Looks for extension properties supported by the GPU
