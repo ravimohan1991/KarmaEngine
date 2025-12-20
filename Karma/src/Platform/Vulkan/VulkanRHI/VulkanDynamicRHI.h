@@ -110,19 +110,60 @@ namespace Karma
 	class FVulkanDynamicRHI : public IVulkanDynamicRHI
 	{
 	public:
+		/**
+		 * @brief Getter for the FVulkanDynamicRHI instance
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		static FVulkanDynamicRHI& Get() { return *GetDynamicRHI<FVulkanDynamicRHI>(); }
 
-		/** Initialization constructor. */
+		/**
+		 * @brief Initialization constructor.
+		 * 
+		 * Does the following
+		 *		1. Creates vkInstance
+		 *		2. Sets up debug messenger (with Karma's logging callback function)
+		 *		3. Creates a Vulkan surface to interface with the Engine's window (Editor window for instance)
+		 *		4. Selects a physical device (GPU) based upon the availability of device extensions, swapchain support, 
+		 *		   and samplerAnisotropy
+		 *		5. Creates Vulkan logical device
+		 * 
+		 * @note Smapler anisotorpy is a technique that makes textures on surfaces viewed at steep angles (like roads or floors
+		 * stretching into the distance) look clearer and sharper, preventing blurriness by taking multiple samples along the 
+		 * texture's axis of elongation rather than a single one.
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FVulkanDynamicRHI();
 
+		/**
+		 * @brief For initializing VulkanDynamic RHI
+		 * 
+		 * Called from RHIInit() declared in KarmaRHI.h and defined in DynamicRHI.cpp
+		 * 
+		 * @see FVulkanDynamicRHI::InitInstance()
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		virtual bool Init() override;
+
 		/**
 		 * @brief Shuts down the RHI.
-		 *
+		 * 
+		 * Called from RHIExit() declared in KarmaRHI.h and defined in DynamicRHI.cpp
+		 * 
 		 * Cleans up resources and states used by the RHI.
+		 * @since Karma 1.0.0
 		 */
 		virtual void Shutdown() override;
 
+		/**
+		 * @brief Calls FVulkanDevice::InitGPU() to create Vulkan logical device from 
+		 * selected GPU, and created appropriate resources (commandpool, default texture etc).
+		 * 
+		 * @see FVulkanDevice::InitGPU()
+		 * @since Karma 1.0.0
+		 */
 		void InitInstance();
 
 		/**
@@ -132,11 +173,21 @@ namespace Karma
 		 */
 		virtual void Present() override {}
 
+		/**
+		 * @brief Getter for Vulkan instance
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		inline VkInstance GetInstance() const
 		{
 			return m_VulkanInstance;
 		}
 
+		/**
+		 * @brief Getter for FVulkanDevice object created in FVulkanDynamicRHI::SelectDevice()
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		inline FVulkanDevice* GetDevice() const
 		{
 			return m_Device;
@@ -150,9 +201,22 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
-
+		
+		/**
+		 * @brief Getter for the boolean bEnableValidationLayers
+		 * 
+		 * For Debug builds bEnableValidationLayers is set to true
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		bool GetValidationLayersSetting() const { return bEnableValidationLayers; }
 
+		/**
+		 * @brief Getter for m_SupportedDeviceFeatures which contains boolean values for supported features like
+		 * availability of geometry shader or sampler anisotropy
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		const VkPhysicalDeviceFeatures& GetGpuDeviceFeatures() const{ return m_SupportedDeviceFeatures; }
 
 	protected:
@@ -185,7 +249,11 @@ namespace Karma
 		 */
 		void CreateSurface();
 
-		
+		/**
+		 * @brief Picks an Engine appropriate GPU and creates FVulkanDevice
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		void SelectDevice();
 
 	private:
