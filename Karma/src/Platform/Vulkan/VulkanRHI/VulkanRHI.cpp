@@ -30,6 +30,7 @@ namespace Karma
 		InitInstance();
 
 		KR_CORE_INFO("Vulkan RHI initialized successfully.");
+
 		return true;
 	}
 
@@ -40,6 +41,12 @@ namespace Karma
 
 	void FVulkanDynamicRHI::Shutdown()
 	{
+		// How to destroy swapchain
+		/*FVulkanSwapChainRecreateInfo RI{};
+		experimentalSwapChain->Destroy(&RI);
+		delete experimentalSwapChain;
+		experimentalSwapChain = nullptr;*/
+
 		m_Device->Destroy();
 		vkDestroySurfaceKHR(m_VulkanInstance, m_Surface, nullptr);
 		DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);

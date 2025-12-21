@@ -17,12 +17,32 @@ struct GLFWwindow;
 
 namespace Karma
 {
+	struct FVulkanSwapChainRecreateInfo
+	{
+		VkSwapchainKHR SwapChain;
+		VkSurfaceKHR Surface;
+	};
+
 	class FVulkanSwapChain
 	{
 	public:
 		static FVulkanSwapChain* Create(FVulkanDevice* InDevice);
 
+		/**
+		 * @brief Destroys the swapchain appropriately
+		 *
+		 * @since Karma 1.0.0
+		 */
+		void Destroy(FVulkanSwapChainRecreateInfo* RecreateInfo);
+
 	private:
+
+		/**
+		 * @brief Creates Vulkan swapchain based upon the surface format and present mode
+		 * 
+		 * @param InDevice						The FVulkanDevice containing the LogicalDevice and GPU
+		 * @since Karma 1.0.0
+		 */
 		FVulkanSwapChain(FVulkanDevice* InDevice);
 
 		/**
@@ -35,6 +55,8 @@ namespace Karma
 		 *
 		 * VK_COLOR_SPACE_SRGB_NONLINEAR_KHR : represents the sRGB color space with a nonlinear gamma curve. This color space is commonly used for displaying images on standard monitors.
 		 *
+		 * @note If this combination is not found, returns the first available format.
+		 * 
 		 * @param availableFormats						The available surface formats (from QuerySwapChainSupport())
 		 *
 		 * @see VulkanContext::CreateSwapChain()
@@ -86,5 +108,8 @@ namespace Karma
 		uint32_t m_InternalHeight = 0;
 
 		bool bInternalFullScreen = false;
+
+		uint32_t m_CurrentImageIndex;
+		uint32_t m_SemaphoreIndex;
 	};
 }

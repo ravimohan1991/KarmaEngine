@@ -105,6 +105,12 @@ namespace Karma
 		m_DefaultTexture = new VulkanTexture(this, "../Resources/Textures/UnrealGrid.png");
 	}
 
+	void FVulkanDevice::WaitUntilIdle()
+	{
+		VkResult result = vkDeviceWaitIdle(m_LogicalDevice);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
+	}
+
 	void FVulkanDevice::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 	{
 		VkCommandBufferAllocateInfo allocInfo{};

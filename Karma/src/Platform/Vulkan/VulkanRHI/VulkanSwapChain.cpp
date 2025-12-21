@@ -12,7 +12,8 @@ namespace Karma
 		return swapChain;
 	}
 
-	FVulkanSwapChain::FVulkanSwapChain(FVulkanDevice* InDevice) : m_Instance(InDevice->GetVulkanDynamicRHI()->GetInstance())
+	FVulkanSwapChain::FVulkanSwapChain(FVulkanDevice* InDevice) : m_Instance(InDevice->GetVulkanDynamicRHI()->GetInstance()),
+		m_Device(InDevice)
 	{
 		m_WindowHandle = InDevice->GetVulkanDynamicRHI()->GetSurfaceWindow();
 
@@ -62,6 +63,7 @@ namespace Karma
 		VkResult result = vkCreateSwapchainKHR(InDevice->GetLogicalDevice(), &createInfo, nullptr, &m_SwapChain);
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create swapchain!");
+		KR_CORE_INFO("Created a Vulkan swapchain");
 
 		vkGetSwapchainImagesKHR(InDevice->GetLogicalDevice(), m_SwapChain, &imageCount, nullptr);
 		m_SwapChainImages.resize(imageCount);
@@ -69,6 +71,12 @@ namespace Karma
 
 		m_SwapChainImageFormat = m_SurfaceFormat.format;
 		m_SwapChainExtent = extent;
+	}
+
+	void FVulkanSwapChain::Destroy(FVulkanSwapChainRecreateInfo * RecreateInfo)
+	{
+		m_Device->WaitUntilIdle();
+		vkDestroySwapchainKHR(m_Device->GetLogicalDevice(), m_SwapChain, nullptr);
 	}
 
 	VkSurfaceFormatKHR FVulkanSwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
@@ -91,10 +99,14 @@ namespace Karma
 		{
 			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
 			{
+				KR_CORE_INFO("Vulkan found surface present mode: VK_PRESENT_MODE_MAILBOX_KHR");
+				KR_CORE_INFO("Using VK_PRESENT_MODE_MAILBOX_KHR for swapchain present mode");
+
 				return availablePresentMode;
 			}
 		}
 
+		KR_CORE_INFO("Using the fallback VK_PRESENT_MODE_FIFO_KHR for swapchain");
 		return VK_PRESENT_MODE_FIFO_KHR;
 	}
 

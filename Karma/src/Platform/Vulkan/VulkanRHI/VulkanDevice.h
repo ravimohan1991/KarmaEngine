@@ -63,6 +63,14 @@ namespace Karma
 		void Destroy();
 
 		/**
+		 * @brief Waits on the host by blocking the calling CPU thread until the 
+		 * Vulkan logical device completes all pending GPU operations across all queues.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void WaitUntilIdle();
+
+		/**
 		 * @brief Retrieves the Vulkan logical device handle.
 		 * 
 		 * @return VkDevice The Vulkan logical device.
