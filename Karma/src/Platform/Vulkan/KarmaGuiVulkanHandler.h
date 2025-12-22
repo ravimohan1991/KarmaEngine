@@ -284,6 +284,16 @@ namespace Karma
 	};
 
 	/**
+	 * @brief Structure to hold references to Vulkan RHI resources
+	 * 
+	 * @since Karma 1.0.0
+	 */
+	struct KarmaGui_ImplVulkanH_RHIResources
+	{
+		class FVulkanSwapChain*				 VulkanSwapChain;
+	};
+
+	/**
 	 * @brief Helper structure to hold the data needed by entire KarmaGui primitive rendering including commandpools, renderpass, commandbuffers, 
 	 * ImageFrameCount (swapchain), and SemaphoreIndex etc.
 	 * 
@@ -438,6 +448,13 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		VkRect2D                            RenderArea;
+
+		/**
+		 * @brief Vulkan RHI resources
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		KarmaGui_ImplVulkanH_RHIResources				RHIResources;
 
 		/**
 		 * @brief Constructor for zero clearence and relevant stuff.
@@ -1215,6 +1232,8 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*);
+
+		static void FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity);
 
 		/**
 		 * @brief The purpose of the routine is two-fold

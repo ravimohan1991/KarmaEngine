@@ -35,6 +35,12 @@ namespace Karma
 		 */
 		void Destroy(FVulkanSwapChainRecreateInfo* RecreateInfo);
 
+		///////////////// Getters /////////////////
+		inline VkSwapchainKHR GetSwapChainHandle() const { return m_SwapChain; }
+
+		inline VkExtent2D GetSwapChainExtent() const { return m_SwapChainExtent; }
+		inline uint32_t GetMaxFramesInFlight() const { return MAX_FRAMES_IN_FLIGHT; }
+
 	private:
 
 		/**
@@ -111,5 +117,9 @@ namespace Karma
 
 		uint32_t m_CurrentImageIndex;
 		uint32_t m_SemaphoreIndex;
+
+		// Number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1
+		// Clearly, MAX_FRAMES_IN_FLIGHT shouldn't exceed m_SwapChainImages.size()
+		const uint32_t MAX_FRAMES_IN_FLIGHT = 2;
 	};
 }

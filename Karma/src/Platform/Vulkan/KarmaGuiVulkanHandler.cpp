@@ -4,6 +4,8 @@
 #include "KarmaUtilities.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
 #include "Karma/KarmaGui/KarmaGuiRenderer.h"
+#include "VulkanRHI/VulkanSwapChain.h"
+#include "VulkanRHI/VulkanDynamicRHI.h"
 
 // Visual Studio warnings
 /*#ifdef _MSC_VER
@@ -1494,6 +1496,18 @@ namespace Karma
 		}
 	}
 
+	void KarmaGuiVulkanHandler::FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
+	{
+		windowData->RHIResources.VulkanSwapChain = FVulkanSwapChain::Create(FVulkanDynamicRHI::Get().GetDevice());
+
+		windowData->Swapchain = windowData->RHIResources.VulkanSwapChain->GetSwapChainHandle();
+		windowData->TotalImageCount = FVulkanDynamicRHI::Get().GetDevice()->GetVulkanDynamicRHI()->SwapChainImageCount();
+		windowData->RenderArea.extent = windowData->RHIResources.VulkanSwapChain->GetSwapChainExtent();
+		windowData->RenderArea.offset = { 0, 0 };
+		//windowData->RenderPass = ;
+		windowData->MAX_FRAMES_IN_FLIGHT = windowData->RHIResources.VulkanSwapChain->GetMaxFramesInFlight();
+	}
+
 	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
@@ -1693,6 +1707,12 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
+		FVulkanSwapChainRecreateInfo RI{};
+		windowData->RHIResources.VulkanSwapChain->Destroy(&RI);
+		delete windowData->RHIResources.VulkanSwapChain;
+		windowData->RHIResources.VulkanSwapChain = nullptr;
+
+
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
