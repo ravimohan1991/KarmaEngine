@@ -434,6 +434,13 @@ public:
 		return Index >= 0 && Index < m_Elements.size();
 	}
 
+	/**
+	 * @brief Helper function to return typed pointer to the first entry of array
+	 * 
+	 * @since Karma 1.0.0
+	 */
+	FORCEINLINE BuildingBlock const* GetData() const { return m_Elements.data(); }
+
 
 protected:
 	std::vector<BuildingBlock> m_Elements;
