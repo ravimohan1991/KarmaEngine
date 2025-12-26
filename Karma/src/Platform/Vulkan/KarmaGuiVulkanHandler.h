@@ -927,7 +927,7 @@ namespace Karma
 		VkPipeline                  Pipeline;
 
 		/**
-		 * @brief Not sure what the use of this Subpass is. Seems vestigial?
+		 * @brief This is the index of the subpass in the render pass where this pipeline (KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline) will be used
 		 *
 		 * @since Karma 1.0.0
 		 */

@@ -841,7 +841,7 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create pipeline layout");
 	}
 
-	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache 	pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass)
+	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_CreateShaderModules(device, allocator);
@@ -1516,12 +1516,13 @@ namespace Karma
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 
 		backendData->RenderPass = windowData->RenderPass;
+		backendData->Subpass = 0;
 	}
 
 	void KarmaGuiVulkanHandler::MakeRenderPassInfo(FVulkanSwapChain* SwapChain, FVulkanRenderPassInfo& RPInfo)
 	{
 		FVulkanRenderPassInfo::FAttachmentInfo colorAttachmentInfo;
-		colorAttachmentInfo.AttachmentFlags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+		colorAttachmentInfo.AttachmentFlags = 0;
 		colorAttachmentInfo.AttachmentFormat = SwapChain->GetSwapChainImageFormat();
 		colorAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
 		colorAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR; 
@@ -1534,7 +1535,7 @@ namespace Karma
 		RPInfo.m_AttachmentsInfo.Add(colorAttachmentInfo);
 
 		FVulkanRenderPassInfo::FAttachmentInfo depthAttachmentInfo;
-		depthAttachmentInfo.AttachmentFlags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+		depthAttachmentInfo.AttachmentFlags = 0;
 		depthAttachmentInfo.AttachmentFormat = FVulkanDynamicRHI::Get().FindSupportedFormat({ VK_FORMAT_D32_SFLOAT,
 			VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL,
 			VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);

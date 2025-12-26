@@ -41,11 +41,6 @@ namespace Karma
 			// Stuff created and dedicated to KarmaGui
 			CreateDescriptorPool(initInfo.Device);
 			initInfo.DescriptorPool = m_KarmaGuiDescriptorPool;
-			
-			// initInfo.RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
-
-			// Not sure about the use of Subpass so setting to 0
-			// initInfo.Subpass = 0;
 
 			// Settingup backend in KarmaGui
 			// KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(&initInfo);
@@ -55,6 +50,9 @@ namespace Karma
 			// Since VulkanContext has already instantiated fresh swapchain and commandbuffers, we send that false
 			// KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
 			KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, true);
+
+			// Font, descriptor, and pipeline
+			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
 
 			// Load default font
 			KGFontConfig fontConfig;
@@ -260,8 +258,9 @@ namespace Karma
 		//backendData->RenderPass = info->RenderPass;
 		//backendData->Subpass = info->Subpass;
 
-		// Font, descriptor, and pipeline
-		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
+		// Font, descriptor, and pipeline (moved to the KarmaGuiRenderer::SetUpKarmaGuiRenderer, after KarmaGuiVulkanHandler::FillWindowData
+		// because RenderPass is required for pipeline creation)
+		// KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
 
 		// Our render function expect RendererUserData to be storing the window render buffer we need (for the main viewport we won't use ->Window)
 		KarmaGuiViewport* mainViewport = KarmaGui::GetMainViewport();
