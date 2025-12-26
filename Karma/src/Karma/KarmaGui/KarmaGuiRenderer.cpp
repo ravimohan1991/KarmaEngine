@@ -39,13 +39,13 @@ namespace Karma
 			initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
 			// Stuff created and dedicated to KarmaGui
-			CreateDescriptorPool();
+			CreateDescriptorPool(initInfo.Device);
 			initInfo.DescriptorPool = m_KarmaGuiDescriptorPool;
 			
-			initInfo.RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
+			// initInfo.RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
 
 			// Not sure about the use of Subpass so setting to 0
-			initInfo.Subpass = 0;
+			// initInfo.Subpass = 0;
 
 			// Settingup backend in KarmaGui
 			// KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(&initInfo);
@@ -53,7 +53,8 @@ namespace Karma
 
 			// Fresh start with newly instantiated Vulkan data
 			// Since VulkanContext has already instantiated fresh swapchain and commandbuffers, we send that false
-			KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
+			// KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
+			KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, true);
 
 			// Load default font
 			KGFontConfig fontConfig;
@@ -251,13 +252,13 @@ namespace Karma
 		KR_CORE_ASSERT(info->DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
 		KR_CORE_ASSERT(info->MinImageCount >= 2, "Minimum image count exceeding limit");
 		KR_CORE_ASSERT(info->ImageCount >= info->MinImageCount, "Not enough pitch for ImageCount");
-		KR_CORE_ASSERT(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
+		//(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
 
 		backendData->VulkanInitInfo = *info;
 		//backendData->VulkanInitInfo.Device = info->Device;
 
-		backendData->RenderPass = info->RenderPass;
-		backendData->Subpass = info->Subpass;
+		//backendData->RenderPass = info->RenderPass;
+		//backendData->Subpass = info->Subpass;
 
 		// Font, descriptor, and pipeline
 		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
@@ -396,7 +397,7 @@ namespace Karma
 		vkDestroyDescriptorPool(vulkanInfo->Device, m_KarmaGuiDescriptorPool, VK_NULL_HANDLE);
 	}
 
-	void KarmaGuiRenderer::CreateDescriptorPool()
+	void KarmaGuiRenderer::CreateDescriptorPool(VkDevice VulkanDevice)
 	{
 		VkDescriptorPoolSize pool_sizes[] =
 		{
@@ -420,7 +421,7 @@ namespace Karma
 		poolInfo.poolSizeCount = uint32_t(std::size(pool_sizes));
 		poolInfo.pPoolSizes = pool_sizes;
 
-		VkResult result = vkCreateDescriptorPool(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), &poolInfo, nullptr, &m_KarmaGuiDescriptorPool);
+		VkResult result = vkCreateDescriptorPool(VulkanDevice, &poolInfo, nullptr, &m_KarmaGuiDescriptorPool);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool for KarmaGui");
 	}
 

@@ -69,7 +69,7 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* initInfo);
-		static void CreateDescriptorPool();
+		static void CreateDescriptorPool(VkDevice VulkanDevice);
 
 		/**
 		 * @brief Calls CleanUpVulkanAndWindowData() and does the shutting of GLFW and KarmaGui (KarmaGui::DestroyContext)

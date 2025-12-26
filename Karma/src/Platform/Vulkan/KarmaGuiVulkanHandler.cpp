@@ -6,6 +6,7 @@
 #include "Karma/KarmaGui/KarmaGuiRenderer.h"
 #include "VulkanRHI/VulkanSwapChain.h"
 #include "VulkanRHI/VulkanDynamicRHI.h"
+#include "VulkanRHI/VulkanRenderPass.h"
 
 // Visual Studio warnings
 /*#ifdef _MSC_VER
@@ -1504,8 +1505,59 @@ namespace Karma
 		windowData->TotalImageCount = FVulkanDynamicRHI::Get().GetDevice()->GetVulkanDynamicRHI()->SwapChainImageCount();
 		windowData->RenderArea.extent = windowData->RHIResources.VulkanSwapChain->GetSwapChainExtent();
 		windowData->RenderArea.offset = { 0, 0 };
-		//windowData->RenderPass = ;
 		windowData->MAX_FRAMES_IN_FLIGHT = windowData->RHIResources.VulkanSwapChain->GetMaxFramesInFlight();
+
+		FVulkanRenderPassInfo RPInfo;
+		KarmaGuiVulkanHandler::MakeRenderPassInfo(windowData->RHIResources.VulkanSwapChain, RPInfo);
+
+		FVulkanRenderTargetLayout RTLayout(RPInfo);
+		windowData->RenderPass = CreateVulkanRenderPass(*FVulkanDynamicRHI::Get().GetDevice(), RTLayout);
+
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+
+		backendData->RenderPass = windowData->RenderPass;
+	}
+
+	void KarmaGuiVulkanHandler::MakeRenderPassInfo(FVulkanSwapChain* SwapChain, FVulkanRenderPassInfo& RPInfo)
+	{
+		FVulkanRenderPassInfo::FAttachmentInfo colorAttachmentInfo;
+		colorAttachmentInfo.AttachmentFlags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+		colorAttachmentInfo.AttachmentFormat = SwapChain->GetSwapChainImageFormat();
+		colorAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR; 
+		colorAttachmentInfo.AttachmentStoreOperation = VK_ATTACHMENT_STORE_OP_STORE; 
+		colorAttachmentInfo.AttachmentStencilLoadOperation = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachmentInfo.AttachmentStencilStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachmentInfo.AttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		colorAttachmentInfo.AttachmentFinalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+		RPInfo.m_AttachmentsInfo.Add(colorAttachmentInfo);
+
+		FVulkanRenderPassInfo::FAttachmentInfo depthAttachmentInfo;
+		depthAttachmentInfo.AttachmentFlags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+		depthAttachmentInfo.AttachmentFormat = FVulkanDynamicRHI::Get().FindSupportedFormat({ VK_FORMAT_D32_SFLOAT,
+			VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL,
+			VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+		depthAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
+		depthAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachmentInfo.AttachmentStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachmentInfo.AttachmentStencilLoadOperation = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		depthAttachmentInfo.AttachmentStencilStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachmentInfo.AttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		depthAttachmentInfo.AttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		RPInfo.m_AttachmentsInfo.Add(depthAttachmentInfo);
+
+		RPInfo.bHasDepthAttachment = true;
+
+		FVulkanRenderPassInfo::FAttachmentRefInfo colorAttachmentReference;
+		colorAttachmentReference.attachment = 0;
+		colorAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		RPInfo.m_ColorAttachmentsRefInfo.Add(colorAttachmentReference);
+
+		RPInfo.m_DepthAttachmentReference.attachment = 1;
+		RPInfo.m_DepthAttachmentReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	}
 
 	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)

@@ -410,8 +410,8 @@ class KarmaApp : public Karma::Application
 public:
 	KarmaApp()
 	{
-		// To be un commented when we have fully functional RHI
-		//PushLayer(new Karma::EditorLayer());
+		// To be uncommented when we have fully functional RHI
+		PushLayer(new Karma::EditorLayer());
 	}
 };
 

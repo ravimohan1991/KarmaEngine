@@ -37,8 +37,8 @@ namespace Karma
 		m_LayerStack = new LayerStack();
 
 		// Graphics API Vulkan or OpenGL should have been completely initialized by here
-		//m_KarmaGuiLayer = new KarmaGuiLayer(m_Window); <-- to be uncommented when we have RHI
-		//PushOverlay(m_KarmaGuiLayer);<-- to be uncommented when we have RHI
+		m_KarmaGuiLayer = new KarmaGuiLayer(m_Window);// <-- to be uncommented when we have RHI
+		PushOverlay(m_KarmaGuiLayer);//<-- to be uncommented when we have RHI
 	}
 
 	Application::~Application()

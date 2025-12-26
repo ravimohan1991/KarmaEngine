@@ -241,6 +241,15 @@ namespace Karma
 		 */
 		inline uint32_t SwapChainImageCount() const { return m_SwapChainImageCount; }
 
+		/**
+		 * @brief Finds a supported format from the list of candidate formats based on the desired tiling and features.
+		 * Used in depth resource creation.
+		 *
+		 * @see KarmaGuiVulkanHandler::MakeRenderPassInfo
+		 * @since Karma 1.0.0
+		 */
+		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
+
 		inline GLFWwindow* GetSurfaceWindow() const { return m_WindowHandle; }
 
 		inline VkSurfaceKHR GetSurface() const { return m_Surface; }

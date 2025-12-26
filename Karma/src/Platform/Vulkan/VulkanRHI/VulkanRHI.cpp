@@ -162,6 +162,26 @@ namespace Karma
 		}
 	}
 
+	VkFormat FVulkanDynamicRHI::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const
+	{
+		for (VkFormat format : candidates)
+		{
+			VkFormatProperties props;
+			vkGetPhysicalDeviceFormatProperties(m_PhysicalDevice, format, &props);
+			if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+			{
+				return format;
+			}
+			else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+			{
+				return format;
+			}
+		}
+
+		KR_CORE_ASSERT(false, "Failed to find supported format!");
+		return VkFormat{};
+	}
+
 	void FVulkanDynamicRHI::SelectDevice()// Pick physical device (GPU) and create Vulkan logical device
 	{
 		uint32_t deviceCount = 0;

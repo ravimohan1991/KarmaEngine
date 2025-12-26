@@ -1233,7 +1233,12 @@ namespace Karma
 		 */
 		static void KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*);
 
+		/**
+		 * @brief Replacement for ShareVulkanContextResourcesOfMainWindow
+		 */
 		static void FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity);
+
+		static void MakeRenderPassInfo(class FVulkanSwapChain* SwapChain, struct FVulkanRenderPassInfo& RPInfo);
 
 		/**
 		 * @brief The purpose of the routine is two-fold
