@@ -51,6 +51,9 @@ namespace Karma
 			// KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
 			KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, true);
 
+			// See if all the Vulkan resources have been instantiated
+			KarmaGuiVulkanHandler::CheckInitialization();
+
 			// Font, descriptor, and pipeline
 			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
 
@@ -242,15 +245,6 @@ namespace Karma
 
 		// Maybe chore for toofani mood!
 		// io.BackendFlags |= KarmaGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
-
-		KR_CORE_ASSERT(info->Instance != VK_NULL_HANDLE, "No instance found");
-		KR_CORE_ASSERT(info->PhysicalDevice != VK_NULL_HANDLE, "No physical device found");
-		KR_CORE_ASSERT(info->Device != VK_NULL_HANDLE, "No device found");
-		KR_CORE_ASSERT(info->Queue != VK_NULL_HANDLE, "No queue assigned");
-		KR_CORE_ASSERT(info->DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
-		KR_CORE_ASSERT(info->MinImageCount >= 2, "Minimum image count exceeding limit");
-		KR_CORE_ASSERT(info->ImageCount >= info->MinImageCount, "Not enough pitch for ImageCount");
-		//(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
 
 		backendData->VulkanInitInfo = *info;
 		//backendData->VulkanInitInfo.Device = info->Device;

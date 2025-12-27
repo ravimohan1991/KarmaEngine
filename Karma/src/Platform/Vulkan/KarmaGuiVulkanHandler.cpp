@@ -1497,6 +1497,21 @@ namespace Karma
 		}
 	}
 
+	void KarmaGuiVulkanHandler::CheckInitialization()
+	{
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo& vulkanInitInfo = backendData->VulkanInitInfo;
+
+		KR_CORE_ASSERT(vulkanInitInfo.Instance != VK_NULL_HANDLE, "No instance found");
+		KR_CORE_ASSERT(vulkanInitInfo.PhysicalDevice != VK_NULL_HANDLE, "No physical device found");
+		KR_CORE_ASSERT(vulkanInitInfo.Device != VK_NULL_HANDLE, "No device found");
+		KR_CORE_ASSERT(vulkanInitInfo.Queue != VK_NULL_HANDLE, "No queue assigned");
+		KR_CORE_ASSERT(vulkanInitInfo.DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
+		KR_CORE_ASSERT(vulkanInitInfo.MinImageCount >= 2, "Minimum image count exceeding limit");
+		KR_CORE_ASSERT(vulkanInitInfo.ImageCount >= vulkanInitInfo.MinImageCount, "Not enough pitch for ImageCount");
+		KR_CORE_ASSERT(vulkanInitInfo.RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
+	}
+
 	void KarmaGuiVulkanHandler::FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
 	{
 		windowData->RHIResources.VulkanSwapChain = FVulkanSwapChain::Create(FVulkanDynamicRHI::Get().GetDevice());
@@ -1515,7 +1530,9 @@ namespace Karma
 
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 
+		backendData->VulkanInitInfo.RenderPass = windowData->RenderPass;
 		backendData->RenderPass = windowData->RenderPass;
+
 		backendData->Subpass = 0;
 	}
 
@@ -1760,11 +1777,14 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
+
+
+
+
 		FVulkanSwapChainRecreateInfo RI{};
 		windowData->RHIResources.VulkanSwapChain->Destroy(&RI);
 		delete windowData->RHIResources.VulkanSwapChain;
 		windowData->RHIResources.VulkanSwapChain = nullptr;
-
 
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;

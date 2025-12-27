@@ -1233,8 +1233,19 @@ namespace Karma
 		 */
 		static void KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*);
 
+		static void CheckInitialization();
+
 		/**
-		 * @brief Replacement for ShareVulkanContextResourcesOfMainWindow
+		 * @brief Replacement for ShareVulkanContextResourcesOfMainWindow. Does the following
+		 * 
+		 * - Creates Vulkan swapchain and sets the swapchain handle of windowData along with imagecount, MAX_FRAMES_IN_FLIGHT,
+		 *   and renderarea.
+		 * - Creates Vulkan renderpass (see KarmaGuiVulkanHandler::MakeRenderPassInfo) for KarmaGui's Vulkan backend and sets
+		 *   backend->VulkanInitInfo.RenderPass with this renderpass (of which KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline
+		 *   is created)
+		 * 
+		 * @note SwapChain and renderpass resources are cleared in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow
+		 * @since Karma 1.0.0
 		 */
 		static void FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity);
 
