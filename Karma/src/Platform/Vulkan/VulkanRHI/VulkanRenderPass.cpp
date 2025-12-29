@@ -52,4 +52,15 @@ namespace Karma
 			bHasDepthStencil = false;
 		}
 	}
+
+	FVulkanRenderPass::FVulkanRenderPass(FVulkanDevice& Device, const FVulkanRenderTargetLayout& RTLayout) : m_Device(Device)
+	{
+		m_RenderPass = CreateVulkanRenderPass(m_Device, RTLayout);
+		m_Layout = RTLayout;
+	}
+
+	FVulkanRenderPass::~FVulkanRenderPass()
+	{
+		vkDestroyRenderPass(m_Device.GetLogicalDevice(), m_RenderPass, nullptr);
+	}
 }

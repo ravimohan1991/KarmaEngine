@@ -78,11 +78,18 @@ namespace Karma
 		VkDevice GetLogicalDevice() const { return m_LogicalDevice; }
 
 		/**
-		 * @biref Retrieves the Vulkan physical device handle.
+		 * @brief Retrieves the Vulkan physical device handle.
 		 * 
 		 * @return VkPhysicalDevice The Vulkan physical device (GPU)
 		 */
 		VkPhysicalDevice GetGPU() const { return m_GPU; }
+
+		/**
+		 * @brief Retrives the Vulkan command pool for the commandbuffers
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		VkCommandPool GetCommandPool() const { return m_CommandPool; }
 
 		///////////////// Utility Functions /////////////////
 		/**

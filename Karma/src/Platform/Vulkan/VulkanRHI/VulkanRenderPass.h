@@ -342,10 +342,20 @@ namespace Karma
 		FAttachmentRefInfo			 m_DepthAttachmentReference;
 	};
 
-
+	/**
+	 * @brief Data structure for Vulkan's render targets (color buffers and depth buffer)
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	class FVulkanRenderTargetLayout
 	{
 	public:
+		/**
+		 * @brief Default constructor provided for FVulkanRenderPass class constructor
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		FVulkanRenderTargetLayout() = default;
 		//FVulkanRenderTargetLayout(const FGraphicsPipelineStateInitializer& Initializer);
 		
 		// Experimental layout constructor (layout as in VulkanContext). We need to make this generic somehow
@@ -354,6 +364,7 @@ namespace Karma
 		//FVulkanRenderTargetLayout(FVulkanDevice& InDevice, const FRHISetRenderTargetsInfo& RTInfo);
 		//FVulkanRenderTargetLayout(FVulkanDevice& InDevice, const FRHIRenderPassInfo& RPInfo, VkImageLayout CurrentDepthLayout, VkImageLayout CurrentStencilLayout);
 
+		// Getters
 		inline const VkAttachmentReference* GetColorAttachmentReferences() const { return m_NumColorAttachments > 0 ? m_ColorReferences : nullptr; }
 		inline const VkAttachmentReference* GetDepthAttachmentReference() const { return bHasDepthStencil ? &m_DepthReference : nullptr; }
 		inline const VkAttachmentReferenceStencilLayout* GetStencilAttachmentReference() const { return bHasDepthStencil ? &m_StencilReference : nullptr; }
@@ -373,19 +384,50 @@ namespace Karma
 		uint8_t m_NumColorAttachments;
 		uint8_t m_NumAttachmentDescriptions;
 
+		/**
+		 * @brief Vulkan attachment descriptions for the rendertargets
+		 * 
+		 * @note Just MaxSimultaneousRenderTargets should be fine. Try doing this
+		 */
 		VkAttachmentDescription m_AttachmentDescriptions[MaxSimultaneousRenderTargets * 2 + 2];
 		
 		// Do we have a depth stencil
 		uint8_t bHasDepthStencil;
 	};
 
+	/**
+	 * @brief The actual Vulkan renderpass Engine class
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	class FVulkanRenderPass
 	{
 	public:
 		inline VkRenderPass GetHandle() const { return m_RenderPass; }
 
+		inline const FVulkanRenderTargetLayout& GetLayout() const { return m_Layout; }
+
+		// May become private once we have FVulkanRenderPassManager
+
+		//FVulkanRenderPass() = default;
+
+		/**
+		 * @brief Constructor to create a renderpass with supplied rendertarget layout
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		FVulkanRenderPass(FVulkanDevice& Device, const FVulkanRenderTargetLayout& RTLayout);
+
+		/**
+		 * @brief Destroys renderpass
+		 */
+		~FVulkanRenderPass();
+
 	private:
 		VkRenderPass m_RenderPass;
+		FVulkanRenderTargetLayout m_Layout;
+
+		FVulkanDevice& m_Device;
 	};
 
 	template <typename TSubpassDescriptionClass, typename TSubpassDependencyClass, typename TAttachmentReferenceClass, typename TAttachmentDescriptionClass, typename TRenderPassCreateInfoClass>

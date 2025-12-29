@@ -1526,7 +1526,8 @@ namespace Karma
 		KarmaGuiVulkanHandler::MakeRenderPassInfo(windowData->RHIResources.VulkanSwapChain, RPInfo);
 
 		FVulkanRenderTargetLayout RTLayout(RPInfo);
-		windowData->RenderPass = CreateVulkanRenderPass(*FVulkanDynamicRHI::Get().GetDevice(), RTLayout);
+		windowData->RHIResources.VulkanRenderPass = new FVulkanRenderPass(*FVulkanDynamicRHI::Get().GetDevice(), RTLayout);
+		windowData->RenderPass = windowData->RHIResources.VulkanRenderPass->GetHandle();
 
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 
@@ -1534,6 +1535,25 @@ namespace Karma
 		backendData->RenderPass = windowData->RenderPass;
 
 		backendData->Subpass = 0;
+
+		windowData->CommandPool = FVulkanDynamicRHI::Get().GetDevice()->GetCommandPool();
+
+		KR_CORE_ASSERT(windowData->ImageFrames == nullptr, "Somehow frames are still occupied. Please clear them.");
+		windowData->ImageFrames = new KarmaGui_ImplVulkanH_ImageFrame[windowData->TotalImageCount];
+
+		for (uint32_t counter = 0; counter < windowData->TotalImageCount; counter++)
+		{
+			KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[counter];
+
+			// VulkanContext ImageView equivalent
+			frameData->BackbufferView = VulkanHolder::GetVulkanContext()->GetSwapChainImageViews()[counter];
+
+			// Framebuffer
+			frameData->Framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[counter];
+
+			// Backbuffers could be VulkanContext m_swapChainImages equivalent
+			frameData->Backbuffer = VulkanHolder::GetVulkanContext()->GetSwapChainImages()[counter];
+		}
 	}
 
 	void KarmaGuiVulkanHandler::MakeRenderPassInfo(FVulkanSwapChain* SwapChain, FVulkanRenderPassInfo& RPInfo)
@@ -1777,9 +1797,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
-
-
-
+		delete windowData->RHIResources.VulkanRenderPass;
 
 		FVulkanSwapChainRecreateInfo RI{};
 		windowData->RHIResources.VulkanSwapChain->Destroy(&RI);

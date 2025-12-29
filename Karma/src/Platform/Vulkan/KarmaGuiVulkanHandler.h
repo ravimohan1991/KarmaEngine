@@ -291,6 +291,7 @@ namespace Karma
 	struct KarmaGui_ImplVulkanH_RHIResources
 	{
 		class FVulkanSwapChain*				 VulkanSwapChain;
+		class FVulkanRenderPass*             VulkanRenderPass;
 	};
 
 	/**
