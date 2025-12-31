@@ -51,6 +51,8 @@ namespace Karma
 		{
 			bHasDepthStencil = false;
 		}
+
+		m_RenderArea = VRPInfo.m_RenderArea;
 	}
 
 	FVulkanRenderPass::FVulkanRenderPass(FVulkanDevice& Device, const FVulkanRenderTargetLayout& RTLayout) : m_Device(Device)

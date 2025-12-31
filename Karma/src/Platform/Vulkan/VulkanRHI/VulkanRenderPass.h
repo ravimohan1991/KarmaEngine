@@ -340,6 +340,7 @@ namespace Karma
 		KarmaVector<FAttachmentRefInfo> m_ColorAttachmentsRefInfo;
 		bool						 bHasDepthAttachment;
 		FAttachmentRefInfo			 m_DepthAttachmentReference;
+		VkRect2D					 m_RenderArea;
 	};
 
 	/**
@@ -371,6 +372,7 @@ namespace Karma
 		inline uint32_t GetNumColorAttachments() const { return m_NumColorAttachments; }
 		inline uint32_t GetNumAttachmentDescriptions() const { return m_NumAttachmentDescriptions; }
 		inline const VkAttachmentDescription* GetAttachmentDescriptions() const { return m_AttachmentDescriptions; }
+		inline const VkRect2D& GetRenderArea() const { return m_RenderArea; }
 
 	private:
 		VkAttachmentReference m_ColorReferences[MaxSimultaneousRenderTargets];
@@ -393,6 +395,8 @@ namespace Karma
 		
 		// Do we have a depth stencil
 		uint8_t bHasDepthStencil;
+
+		VkRect2D				m_RenderArea;
 	};
 
 	/**

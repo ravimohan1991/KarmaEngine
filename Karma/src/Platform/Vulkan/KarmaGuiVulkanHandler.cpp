@@ -1596,6 +1596,8 @@ namespace Karma
 
 		RPInfo.m_DepthAttachmentReference.attachment = 1;
 		RPInfo.m_DepthAttachmentReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		RPInfo.m_RenderArea.extent = SwapChain->GetSwapChainExtent();
 	}
 
 	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)

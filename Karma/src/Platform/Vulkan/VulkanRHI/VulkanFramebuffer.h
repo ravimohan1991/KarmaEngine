@@ -33,8 +33,10 @@ namespace Karma
 	public:
 		FVulkanFramebuffer(FVulkanDevice& Device, const FVulkanRenderTargetLayout& RTLayout, const FVulkanRenderPass& RenderPass);
 
+		VkFramebuffer GetHandle() const { return m_Framebuffer; }
+
 	private:
-		VkFramebuffer m_FrameBuffer;
+		VkFramebuffer m_Framebuffer;
 		VkRect2D m_RenderArea;
 
 		KarmaVector<VkImageView> m_ImageViews;
