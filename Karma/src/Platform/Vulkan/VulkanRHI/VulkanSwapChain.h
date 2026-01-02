@@ -40,7 +40,7 @@ namespace Karma
 
 		inline VkExtent2D GetSwapChainExtent() const { return m_SwapChainExtent; }
 		inline uint32_t GetMaxFramesInFlight() const { return MAX_FRAMES_IN_FLIGHT; }
-		
+		inline const std::vector<VkImage>& GetSwapChainImages() const { return m_SwapChainImages; }
 		inline VkFormat GetSwapChainImageFormat() const { return m_SwapChainImageFormat; }
 
 	private:

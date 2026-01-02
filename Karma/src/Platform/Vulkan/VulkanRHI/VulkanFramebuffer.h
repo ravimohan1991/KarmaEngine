@@ -21,6 +21,35 @@ namespace Karma
 	class FVulkanRenderPass;
 
 	/**
+	 * @brief May move to more abstract since any graphic api should use such render targets' information
+	 * 
+	 * @note UE uses FRHISetRenderTargetsInfo
+	 */
+	class FVulkanRenderTargetsInfo
+	{
+	public:
+		struct ColorRenderTarget
+		{
+			VkImage m_ColorRenderTargetImages[MaxSimultaneousRenderTargets];
+			VkImageView m_ColorRenderTargetViews[MaxSimultaneousRenderTargets];
+		};
+
+		struct DepthRenderTarget
+		{
+			VkImage m_DepthRenderTargetImage;
+			VkImageView m_DepthRenderTargetView;
+		};
+
+		// Color rendertargets information
+		ColorRenderTarget m_ColorRenderTargets;
+		uint32_t m_NumColorRenderTargets;
+
+		// Depth render target information
+		bool bDepthRenderTarget = false;
+		DepthRenderTarget m_DepthRenderTarget;
+	};
+
+	/**
 	 * @brief Actual Vulkan framebuffer class
 	 * 
 	 * Framebuffers consists of rendertargets which are filled with per pixel information (color/depth).
@@ -31,7 +60,7 @@ namespace Karma
 	class FVulkanFramebuffer
 	{
 	public:
-		FVulkanFramebuffer(FVulkanDevice& Device, const FVulkanRenderTargetLayout& RTLayout, const FVulkanRenderPass& RenderPass);
+		FVulkanFramebuffer(FVulkanDevice& Device, const FVulkanRenderTargetsInfo& InRTInfo,  const FVulkanRenderTargetLayout& RTLayout, const FVulkanRenderPass& RenderPass);
 
 		VkFramebuffer GetHandle() const { return m_Framebuffer; }
 

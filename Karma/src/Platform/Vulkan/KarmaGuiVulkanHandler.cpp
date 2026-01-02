@@ -1538,6 +1538,8 @@ namespace Karma
 
 		windowData->CommandPool = FVulkanDynamicRHI::Get().GetDevice()->GetCommandPool();
 
+
+
 		KR_CORE_ASSERT(windowData->ImageFrames == nullptr, "Somehow frames are still occupied. Please clear them.");
 		windowData->ImageFrames = new KarmaGui_ImplVulkanH_ImageFrame[windowData->TotalImageCount];
 
@@ -1545,14 +1547,15 @@ namespace Karma
 		{
 			KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[counter];
 
+			// Backbuffers are swapchain images
+			frameData->Backbuffer = windowData->RHIResources.VulkanSwapChain->GetSwapChainImages()[counter];
+
 			// VulkanContext ImageView equivalent
 			frameData->BackbufferView = VulkanHolder::GetVulkanContext()->GetSwapChainImageViews()[counter];
 
 			// Framebuffer
 			frameData->Framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[counter];
 
-			// Backbuffers could be VulkanContext m_swapChainImages equivalent
-			frameData->Backbuffer = VulkanHolder::GetVulkanContext()->GetSwapChainImages()[counter];
 		}
 	}
 
