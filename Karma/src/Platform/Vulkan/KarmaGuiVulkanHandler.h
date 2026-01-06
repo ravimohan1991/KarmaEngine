@@ -295,7 +295,7 @@ namespace Karma
 	struct KarmaGui_ImplVulkanH_RHIResources
 	{
 		FVulkanSwapChain*                           VulkanSwapChain;
-		FVulkanRenderPass*                          VulkanRenderPass;
+		FVulkanRenderPass*                          VulkanRenderPass; // Primary renderpass for on-screen presentation
 		KarmaVector<FVulkanFramebuffer*>            VulkanFrameBuffers;
 		KarmaVector<FVulkanRenderTargetsInfo*>      RenderTargets; // RTs corresponding to framebuffers of a type
 	};

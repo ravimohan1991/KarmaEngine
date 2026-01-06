@@ -1518,11 +1518,12 @@ namespace Karma
 		windowData->RHIResources.VulkanSwapChain = FVulkanSwapChain::Create(FVulkanDynamicRHI::Get().GetDevice());
 
 		windowData->Swapchain = windowData->RHIResources.VulkanSwapChain->GetSwapChainHandle();
-		windowData->TotalImageCount = FVulkanDynamicRHI::Get().GetDevice()->GetVulkanDynamicRHI()->SwapChainImageCount();
+		windowData->TotalImageCount = FVulkanDynamicRHI::Get().SwapChainImageCount();
 		windowData->RenderArea.extent = windowData->RHIResources.VulkanSwapChain->GetSwapChainExtent();
 		windowData->RenderArea.offset = { 0, 0 };
 		windowData->MAX_FRAMES_IN_FLIGHT = windowData->RHIResources.VulkanSwapChain->GetMaxFramesInFlight();
 
+		KR_CORE_INFO("Attempting to create primary Vulkan renderpass for on screen presentation");
 		FVulkanRenderPassInfo RPInfo;
 		KarmaGuiVulkanHandler::MakeRenderPassInfo(windowData->RHIResources.VulkanSwapChain, RPInfo);
 
@@ -1626,10 +1627,10 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::GatherSwapChainColorRenderTargets(class FVulkanRenderTargetsInfo &RTInfo, FVulkanSwapChain *SwapChain, uint32_t SwapChainImageIndex)
 	{
-		//RTInfo.m_ColorRenderTargets.m_ColorRenderTargetViews[0] = SwapChain->GetSwapChainImageViews()[0];
-		
-		// m_ColorRTViews[0] is the first color attachment
 		RTInfo.m_ColorRenderTargets[SwapChainImageIndex].m_ColorRTViews[0] = SwapChain->GetSwapChainImageViews()[SwapChainImageIndex];
+		
+		RTInfo.m_ColorRenderTargets[SwapChainImageIndex].bSwapChainColorRenderTarget = true;
+		RTInfo.m_NumColorRenderTargets = 1;
 	}
 
 	void KarmaGuiVulkanHandler::MakeRenderPassInfo(FVulkanSwapChain* SwapChain, FVulkanRenderPassInfo& RPInfo)
@@ -1883,14 +1884,30 @@ namespace Karma
 		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
 		
 		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
+		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
 		for(const auto& renderTargets : windowData->RHIResources.RenderTargets)
 		{
+			for(uint32_t counter = 0; counter < FVulkanDynamicRHI::Get().SwapChainImageCount(); counter++)
+			{
+				if(!renderTargets->m_ColorRenderTargets[counter].bSwapChainColorRenderTarget)
+				{
+					for(uint32_t colorRT = 0; colorRT < renderTargets->m_NumColorRenderTargets; colorRT++)
+					{
+						vkDestroyImageView(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTViews[colorRT], nullptr);
+						vkDestroyImage(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTImages[colorRT], nullptr);
+						vkFreeMemory(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTDeviceMemory[colorRT], nullptr);
+					}
+				}
+			}
+			
 			if(renderTargets->bDepthRenderTarget)
 			{
 				vkDestroyImageView(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTView, nullptr);
 				vkDestroyImage(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTImage, nullptr);
 				vkFreeMemory(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTDeviceMemory, nullptr);
 			}
+			
+			delete renderTargets;
 		}
 		
 		delete windowData->RHIResources.VulkanRenderPass;

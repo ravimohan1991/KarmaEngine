@@ -35,6 +35,8 @@ namespace Karma
 			
 			VkDeviceMemory m_ColorRTDeviceMemory[MaxSimultaneousRenderTargets];
 			VkImageView m_ColorRTViews[MaxSimultaneousRenderTargets];
+			
+			bool bSwapChainColorRenderTarget = false;
 		};
 
 		struct DepthRenderTarget

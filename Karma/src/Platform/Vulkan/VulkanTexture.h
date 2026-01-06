@@ -105,17 +105,6 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		void GenerateVulkanTexture(VulkanImageBuffer* vImageBuffer);
-
-		/**
-		 * @brief Finds a suitable memory type on the physical device (graphics card) based on the type filter and desired properties.
-		 *
-		 * @param typeFilter						Bitmask specifying the acceptable memory types
-		 * @param properties						Desired memory properties (like VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT for CPU access)
-		 *
-		 * @see VulkanBuffer::VulkanBuffer()
-		 * @since Karma 1.0.0
-		 */
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		
 		// Getters
 		VkImageView GetImageView() const { return m_TextureImageView; }

@@ -1,7 +1,7 @@
 #include "VulkanTexture.h"
 #include "VulkanHolder.h"
-
 #include "VulkanRHI/VulkanDevice.h"
+#include "VulkanRHI/VulkanDynamicRHI.h"
 
 namespace Karma
 {
@@ -72,7 +72,7 @@ namespace Karma
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		allocInfo.memoryTypeIndex = FVulkanDynamicRHI::Get().FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		VkResult result1 = vkAllocateMemory(m_LogicalDevice, &allocInfo, nullptr, &m_TextureImageMemory);
 		KR_CORE_ASSERT(result1 == VK_SUCCESS, "Failed to allocate image memeory");
 
@@ -81,23 +81,6 @@ namespace Karma
 		m_Device->TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		m_Device->CopyBufferToImage(vImageBuffer->GetBuffer(), m_TextureImage, static_cast<uint32_t>(vImageBuffer->GetTextureWidth()), static_cast<uint32_t>(vImageBuffer->GetTextureHeight()));
 		m_Device->TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-	}
-
-	uint32_t VulkanTexture::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-	{
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(m_GPU, &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-		{
-			if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-			{
-				return i;
-			}
-		}
-
-		KR_CORE_ASSERT(false, "Failed to find suitable memory type for imagebuffer");
-		return 0;
 	}
 
 	void VulkanTexture::CreateTextureImageView()
