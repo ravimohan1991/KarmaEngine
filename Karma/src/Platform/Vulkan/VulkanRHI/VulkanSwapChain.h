@@ -41,6 +41,7 @@ namespace Karma
 		inline VkExtent2D GetSwapChainExtent() const { return m_SwapChainExtent; }
 		inline uint32_t GetMaxFramesInFlight() const { return MAX_FRAMES_IN_FLIGHT; }
 		inline const std::vector<VkImage>& GetSwapChainImages() const { return m_SwapChainImages; }
+		inline const std::vector<VkImageView>& GetSwapChainImageViews() const { return m_SwapChainImageViews; }
 		inline VkFormat GetSwapChainImageFormat() const { return m_SwapChainImageFormat; }
 
 	private:
@@ -103,6 +104,7 @@ namespace Karma
 		VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
 
 		std::vector<VkImage> m_SwapChainImages;
+		std::vector<VkImageView> m_SwapChainImageViews;
 
 		VkFormat m_SwapChainImageFormat;
 		VkExtent2D m_SwapChainExtent;

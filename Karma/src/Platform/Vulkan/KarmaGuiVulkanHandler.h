@@ -24,6 +24,10 @@
 
 namespace Karma
 {
+	class FVulkanSwapChain;
+	class FVulkanRenderPass;
+	class FVulkanRenderTargetsInfo;
+	class FVulkanFramebuffer;
 
 	/**
 	 * @brief Macro for vulkan's alignment needs.
@@ -290,8 +294,10 @@ namespace Karma
 	 */
 	struct KarmaGui_ImplVulkanH_RHIResources
 	{
-		class FVulkanSwapChain*				 VulkanSwapChain;
-		class FVulkanRenderPass*             VulkanRenderPass;
+		FVulkanSwapChain*                           VulkanSwapChain;
+		FVulkanRenderPass*                          VulkanRenderPass;
+		KarmaVector<FVulkanFramebuffer*>            VulkanFrameBuffers;
+		KarmaVector<FVulkanRenderTargetsInfo*>      RenderTargets; // RTs corresponding to framebuffers of a type
 	};
 
 	/**
@@ -426,8 +432,10 @@ namespace Karma
 		uint32_t             MAX_FRAMES_IN_FLIGHT;
 		
 		/**
-		 * @brief Just a container for buffers (framebuffers, images, and imageviews etc) and all those sizes depending on  VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+		 * @brief Just a container for rendertarget buffers (framebuffers, images, and imageviews etc) and all those sizes depending on  number of swapchain images
 		 *
+		 * @note Only SwapChain rendertargets are stored. The grand list of rendertargets (all rendertargets) is in KarmaGui_ImplVulkanH_RHIResources::RenderTargets
+		 * @see KarmaGuiVulkanHandler::GatherSwapChainColorRenderTargets
 		 * @since Karma 1.0.0
 		 */
 		KarmaGui_ImplVulkanH_ImageFrame* ImageFrames;
@@ -451,7 +459,7 @@ namespace Karma
 		VkRect2D                            RenderArea;
 
 		/**
-		 * @brief Vulkan RHI resources
+		 * @brief Vulkan RHI resources containing pointers to FVulkanSwpaChain etc
 		 * 
 		 * @since Karma 1.0.0
 		 */
@@ -1250,7 +1258,21 @@ namespace Karma
 		 */
 		static void FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity);
 
-		static void MakeRenderPassInfo(class FVulkanSwapChain* SwapChain, struct FVulkanRenderPassInfo& RPInfo);
+		static void MakeRenderPassInfo(FVulkanSwapChain* SwapChain, struct FVulkanRenderPassInfo& RPInfo);
+		
+		/**
+		 * @brief Fills the depth render target information
+		 *
+		 * @since Karma 1.0.0
+		 */
+		static void CreateDepthRenderTarget(FVulkanRenderTargetsInfo& RTInfo, FVulkanSwapChain* SwapChain);
+		
+		/**
+		 * @brief Prepares the RTInfo for framebuffer creation
+		 *
+		 * @since Karma 1.0.0
+		 */
+		static void GatherSwapChainColorRenderTargets(FVulkanRenderTargetsInfo& RTInfo, FVulkanSwapChain* SwapChain, uint32_t SwapChainImageIndex);
 
 		/**
 		 * @brief The purpose of the routine is two-fold

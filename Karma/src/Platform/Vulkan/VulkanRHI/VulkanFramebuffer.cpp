@@ -5,19 +5,22 @@
 
 namespace Karma
 {
-	FVulkanFramebuffer::FVulkanFramebuffer(FVulkanDevice& Device, const FVulkanRenderTargetsInfo& InRTInfo, const FVulkanRenderTargetLayout& RTLayout, const FVulkanRenderPass& RenderPass)
+	FVulkanFramebuffer::FVulkanFramebuffer(FVulkanDevice& Device, const FVulkanRenderTargetsInfo& InRTInfo, const FVulkanRenderTargetLayout& RTLayout, const FVulkanRenderPass& RenderPass, uint32_t SwapchainImageIndex) : m_Device(Device)
 	{
-		for (const auto& renderTarget : InRTInfo.m_ColorRenderTargets.m_ColorRenderTargetViews)
+		for (const auto& renderTarget : InRTInfo.m_ColorRenderTargets[SwapchainImageIndex].m_ColorRTViews)
 		{
-			m_ImageViews.Add(renderTarget);
+			if(renderTarget != 0)
+			{
+				m_ImageViews.Add(renderTarget);
+			}
 		}
 
 		if (InRTInfo.bDepthRenderTarget)
 		{
-			m_ImageViews.Add(InRTInfo.m_DepthRenderTarget.m_DepthRenderTargetView);
+			m_ImageViews.Add(InRTInfo.m_DepthRenderTarget.m_DepthRTView);
 		}
 
-		VkFramebufferCreateInfo createInfo;
+		VkFramebufferCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		createInfo.renderPass = RenderPass.GetHandle();
 		createInfo.attachmentCount = m_ImageViews.Num();
@@ -30,5 +33,10 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create frame buffer");
 
 		m_RenderArea = RTLayout.GetRenderArea();
+	}
+
+	FVulkanFramebuffer::~FVulkanFramebuffer()
+	{
+		vkDestroyFramebuffer(m_Device.GetLogicalDevice(), m_Framebuffer, nullptr);
 	}
 }

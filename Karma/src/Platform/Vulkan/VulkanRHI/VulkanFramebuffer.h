@@ -11,6 +11,7 @@
 #pragma once
 
 #include <vulkan/vulkan_core.h>
+#include "VulkanRenderPass.h"
 
 namespace Karma
 {
@@ -30,18 +31,26 @@ namespace Karma
 	public:
 		struct ColorRenderTarget
 		{
-			VkImage m_ColorRenderTargetImages[MaxSimultaneousRenderTargets];
-			VkImageView m_ColorRenderTargetViews[MaxSimultaneousRenderTargets];
+			VkImage m_ColorRTImages[MaxSimultaneousRenderTargets];
+			
+			VkDeviceMemory m_ColorRTDeviceMemory[MaxSimultaneousRenderTargets];
+			VkImageView m_ColorRTViews[MaxSimultaneousRenderTargets];
 		};
 
 		struct DepthRenderTarget
 		{
-			VkImage m_DepthRenderTargetImage;
-			VkImageView m_DepthRenderTargetView;
+			VkImage m_DepthRTImage;
+			
+			VkDeviceMemory m_DepthRTDeviceMemory;
+			VkImageView m_DepthRTView;
 		};
 
-		// Color rendertargets information
-		ColorRenderTarget m_ColorRenderTargets;
+		/**
+		 * @brief Array of of color rendertargets for each swapchain image.
+		 *
+		 * @note number of swapchain images (FVulkanDynamicRHI::m_SwapChainImageCount) is size of this vector
+		 */
+		std::vector<ColorRenderTarget> m_ColorRenderTargets;
 		uint32_t m_NumColorRenderTargets;
 
 		// Depth render target information
@@ -60,11 +69,15 @@ namespace Karma
 	class FVulkanFramebuffer
 	{
 	public:
-		FVulkanFramebuffer(FVulkanDevice& Device, const FVulkanRenderTargetsInfo& InRTInfo,  const FVulkanRenderTargetLayout& RTLayout, const FVulkanRenderPass& RenderPass);
+		FVulkanFramebuffer(FVulkanDevice& Device, const FVulkanRenderTargetsInfo& InRTInfo, const FVulkanRenderTargetLayout& RTLayout, const FVulkanRenderPass& RenderPass, uint32_t SwapchainImageIndex);
 
 		VkFramebuffer GetHandle() const { return m_Framebuffer; }
+		
+		~FVulkanFramebuffer();
 
 	private:
+		class FVulkanDevice& m_Device;
+		
 		VkFramebuffer m_Framebuffer;
 		VkRect2D m_RenderArea;
 

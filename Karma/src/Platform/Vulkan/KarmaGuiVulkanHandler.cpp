@@ -7,6 +7,7 @@
 #include "VulkanRHI/VulkanSwapChain.h"
 #include "VulkanRHI/VulkanDynamicRHI.h"
 #include "VulkanRHI/VulkanRenderPass.h"
+#include "VulkanRHI/VulkanFramebuffer.h"
 
 // Visual Studio warnings
 /*#ifdef _MSC_VER
@@ -1538,11 +1539,17 @@ namespace Karma
 
 		windowData->CommandPool = FVulkanDynamicRHI::Get().GetDevice()->GetCommandPool();
 
-
-
 		KR_CORE_ASSERT(windowData->ImageFrames == nullptr, "Somehow frames are still occupied. Please clear them.");
 		windowData->ImageFrames = new KarmaGui_ImplVulkanH_ImageFrame[windowData->TotalImageCount];
 
+		FVulkanRenderTargetsInfo* rT = new FVulkanRenderTargetsInfo();
+		windowData->RHIResources.RenderTargets.Add(rT);
+		
+		FVulkanRenderTargetsInfo& renderTargets = *rT;
+		CreateDepthRenderTarget(renderTargets, windowData->RHIResources.VulkanSwapChain);
+		
+		renderTargets.m_ColorRenderTargets.resize(windowData->TotalImageCount);
+		
 		for (uint32_t counter = 0; counter < windowData->TotalImageCount; counter++)
 		{
 			KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[counter];
@@ -1550,13 +1557,79 @@ namespace Karma
 			// Backbuffers are swapchain images
 			frameData->Backbuffer = windowData->RHIResources.VulkanSwapChain->GetSwapChainImages()[counter];
 
-			// VulkanContext ImageView equivalent
-			frameData->BackbufferView = VulkanHolder::GetVulkanContext()->GetSwapChainImageViews()[counter];
+			// BackbufferViews are swapchain image views
+			frameData->BackbufferView = windowData->RHIResources.VulkanSwapChain->GetSwapChainImageViews()[counter];
 
+			GatherSwapChainColorRenderTargets(renderTargets, windowData->RHIResources.VulkanSwapChain, counter);
+			
+			FVulkanFramebuffer* frameBuffer = new FVulkanFramebuffer(*FVulkanDynamicRHI::Get().GetDevice(), renderTargets, RTLayout, *windowData->RHIResources.VulkanRenderPass, counter);
+			
+			windowData->RHIResources.VulkanFrameBuffers.Add(frameBuffer);
+			
 			// Framebuffer
-			frameData->Framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[counter];
-
+			frameData->Framebuffer = frameBuffer->GetHandle();
 		}
+	}
+
+	void KarmaGuiVulkanHandler::CreateDepthRenderTarget(FVulkanRenderTargetsInfo &RTInfo, FVulkanSwapChain *SwapChain)
+	{
+		VkFormat depthFormat = FVulkanDynamicRHI::Get().FindSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+
+		VkImageCreateInfo imageInfo{};
+		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		imageInfo.imageType = VK_IMAGE_TYPE_2D;
+		imageInfo.extent.width = SwapChain->GetSwapChainExtent().width;
+		imageInfo.extent.height = SwapChain->GetSwapChainExtent().height;
+		imageInfo.extent.depth = 1;
+		imageInfo.mipLevels = 1;
+		imageInfo.arrayLayers = 1;
+		imageInfo.format = depthFormat;
+		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageInfo.flags = 0;
+
+		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+		
+		VkResult result = vkCreateImage(logicalDevice, &imageInfo, nullptr, &RTInfo.m_DepthRenderTarget.m_DepthRTImage);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create depthimage!");
+
+		VkMemoryRequirements memRequirements;
+		vkGetImageMemoryRequirements(logicalDevice, RTInfo.m_DepthRenderTarget.m_DepthRTImage, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = FVulkanDynamicRHI::Get().FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		VkResult result1 = vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &RTInfo.m_DepthRenderTarget.m_DepthRTDeviceMemory);
+		KR_CORE_ASSERT(result1 == VK_SUCCESS, "Failed to allocate depth image memeory");
+
+		vkBindImageMemory(logicalDevice, RTInfo.m_DepthRenderTarget.m_DepthRTImage, RTInfo.m_DepthRenderTarget.m_DepthRTDeviceMemory, 0);
+
+		VkImageViewCreateInfo viewInfo{};
+		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		viewInfo.image = RTInfo.m_DepthRenderTarget.m_DepthRTImage;
+		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		viewInfo.format = depthFormat;
+		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+		viewInfo.subresourceRange.baseMipLevel = 0;
+		viewInfo.subresourceRange.levelCount = 1;
+		viewInfo.subresourceRange.baseArrayLayer = 0;
+		viewInfo.subresourceRange.layerCount = 1;
+
+		result = vkCreateImageView(logicalDevice, &viewInfo, nullptr, &RTInfo.m_DepthRenderTarget.m_DepthRTView);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create depth imageview");
+		
+		RTInfo.bDepthRenderTarget = true;
+	}
+
+	void KarmaGuiVulkanHandler::GatherSwapChainColorRenderTargets(class FVulkanRenderTargetsInfo &RTInfo, FVulkanSwapChain *SwapChain, uint32_t SwapChainImageIndex)
+	{
+		//RTInfo.m_ColorRenderTargets.m_ColorRenderTargetViews[0] = SwapChain->GetSwapChainImageViews()[0];
+		
+		// m_ColorRTViews[0] is the first color attachment
+		RTInfo.m_ColorRenderTargets[SwapChainImageIndex].m_ColorRTViews[0] = SwapChain->GetSwapChainImageViews()[SwapChainImageIndex];
 	}
 
 	void KarmaGuiVulkanHandler::MakeRenderPassInfo(FVulkanSwapChain* SwapChain, FVulkanRenderPassInfo& RPInfo)
@@ -1802,12 +1875,32 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
+		for(const auto& vulkanFramebuffer : windowData->RHIResources.VulkanFrameBuffers)
+		{
+			delete vulkanFramebuffer;
+		}
+		
+		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+		
+		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
+		for(const auto& renderTargets : windowData->RHIResources.RenderTargets)
+		{
+			if(renderTargets->bDepthRenderTarget)
+			{
+				vkDestroyImageView(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTView, nullptr);
+				vkDestroyImage(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTImage, nullptr);
+				vkFreeMemory(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTDeviceMemory, nullptr);
+			}
+		}
+		
 		delete windowData->RHIResources.VulkanRenderPass;
 
 		FVulkanSwapChainRecreateInfo RI{};
 		windowData->RHIResources.VulkanSwapChain->Destroy(&RI);
 		delete windowData->RHIResources.VulkanSwapChain;
 		windowData->RHIResources.VulkanSwapChain = nullptr;
+		
+		return; // <-- to be uncommented when we have RHI (actually removed)
 
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;

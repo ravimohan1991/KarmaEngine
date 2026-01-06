@@ -5,11 +5,10 @@
 
 namespace Karma
 {
-
 #ifdef KR_MAC_PLATFORM
 	FDynamicRHI* PlatformCreateDynamicRHI()
 	{
-		FDynamicRHI* DynamicRHI = FDynamicRHI::Create();
+		FDynamicRHI* DynamicRHI = FDynamicRHI::CreateRHI();
 		
 		if (DynamicRHI)
 		{

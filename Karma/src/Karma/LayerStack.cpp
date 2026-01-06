@@ -5,7 +5,7 @@
  * In destructor, now those pointers were no longer there, that memory will never
  * be freed. Isn't this a memory leak.
  *
- * The Cherno talk about this stuff here https://youtu.be/_Kj6BSfM6P4?list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT&t=717
+ * The Cherno talks about this stuff here https://youtu.be/_Kj6BSfM6P4?list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT&t=717
  * but the above issue doesn't seem to get resolved.
  */
 
