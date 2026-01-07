@@ -16,7 +16,7 @@ namespace Karma
 
 	FVulkanDynamicRHI::FVulkanDynamicRHI()
 	{
-		KR_CORE_INFO("Initializing Vulkan RHI...");
+		KR_CORE_INFO("Initializing Vulkan RHI..");
 
 		CreateInstance();
 		SetupDebugMessenger();

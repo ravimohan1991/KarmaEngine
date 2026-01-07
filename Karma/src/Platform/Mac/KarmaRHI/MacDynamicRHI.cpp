@@ -12,7 +12,7 @@ namespace Karma
 		
 		if (DynamicRHI)
 		{
-			KR_CORE_INFO("Created DynamicRHI MacOS");
+			KR_CORE_INFO("Created DynamicRHI for MacOS");
 		}
 
 		return DynamicRHI;

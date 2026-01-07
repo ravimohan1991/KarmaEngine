@@ -50,9 +50,6 @@ namespace Karma
 			// Since VulkanContext has already instantiated fresh swapchain and commandbuffers, we send that false
 			// KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
 			KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, true);
-			
-			// To be removed later when RHI is functional
-			return; // <-- to be uncommented when we have RHI (actually removed)
 
 			// See if all the Vulkan resources have been instantiated
 			KarmaGuiVulkanHandler::CheckInitialization();

@@ -1523,7 +1523,7 @@ namespace Karma
 		windowData->RenderArea.offset = { 0, 0 };
 		windowData->MAX_FRAMES_IN_FLIGHT = windowData->RHIResources.VulkanSwapChain->GetMaxFramesInFlight();
 
-		KR_CORE_INFO("Attempting to create primary Vulkan renderpass for on screen presentation");
+		KR_CORE_INFO("Attempting to create primary Vulkan renderpass for on-screen presentation");
 		FVulkanRenderPassInfo RPInfo;
 		KarmaGuiVulkanHandler::MakeRenderPassInfo(windowData->RHIResources.VulkanSwapChain, RPInfo);
 
@@ -1569,6 +1569,61 @@ namespace Karma
 			
 			// Framebuffer
 			frameData->Framebuffer = frameBuffer->GetHandle();
+		}
+		
+		// We create seperate syncronicity resources for Dear KarmaGui
+		if (bCreateSyncronicity)
+		{
+			// For syncronicity, we instantiate FramesOnFlight with MAX_FRAMES_IN_FLIGHT number and label them the Real-Frames-On-Flight in our mind
+			KR_CORE_ASSERT(windowData->FramesOnFlight == nullptr, "Somehow frames-on-flight are still occupied. Please clear them.");
+
+			windowData->FramesOnFlight = new KarmaGui_Vulkan_Frame_On_Flight[windowData->MAX_FRAMES_IN_FLIGHT];
+
+			for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
+			{
+				KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
+
+				VkFenceCreateInfo fenceInfo = {};
+				fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+				fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+				VkResult result = vkCreateFence(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &fenceInfo, VK_NULL_HANDLE, &frameOnFlight->Fence);
+
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create fence");
+
+				VkSemaphoreCreateInfo semaphoreInfo = {};
+				semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+				result = vkCreateSemaphore(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->ImageAcquiredSemaphore);
+
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create ImageAcquiredSemaphore");
+
+				result = vkCreateSemaphore(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->RenderCompleteSemaphore);
+
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create RenderCompleteSemaphore");
+			}
+
+			windowData->SemaphoreIndex = 0;
+		}
+		
+		KR_CORE_ASSERT(windowData->FramesOnFlight != nullptr, "Commandbuffers are being assigned without enough resources");
+		
+		std::vector<VkCommandBuffer> commandBuffers;
+		commandBuffers.resize(windowData->MAX_FRAMES_IN_FLIGHT);
+
+		VkCommandBufferAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.commandPool = windowData->CommandPool;
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
+
+		VkResult result = vkAllocateCommandBuffers(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &allocInfo, commandBuffers.data());
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffers!");
+
+		for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
+		{
+			KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
+			frameOnFlight->CommandBuffer = commandBuffers[counter];
 		}
 	}
 
@@ -1876,12 +1931,27 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
+		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+		
+		std::vector<VkCommandBuffer> commandBuffers;
+		commandBuffers.resize(windowData->MAX_FRAMES_IN_FLIGHT);
+		
+		for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
+		{
+			KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
+			commandBuffers[counter] = frameOnFlight->CommandBuffer;
+		}
+		
+		vkFreeCommandBuffers(logicalDevice, windowData->CommandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+		
+		// 1. Removes synchronicity
+		// 2. Deletes imageframes and frames on flight objects
+		ClearVulkanWindowData(windowData, true);
+		
 		for(const auto& vulkanFramebuffer : windowData->RHIResources.VulkanFrameBuffers)
 		{
 			delete vulkanFramebuffer;
 		}
-		
-		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
 		
 		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
 		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
@@ -1948,8 +2018,6 @@ namespace Karma
 		}
 		// Assuming only on graphicspipeline
 		VulkanHolder::GetVulkanContext()->CleanUpKarmaGuiGeneralGraphicsPipeline();
-
-		ClearVulkanWindowData(windowData, true);
 	}
 
 	//--------------------------------------------------------------------------------------------------------
