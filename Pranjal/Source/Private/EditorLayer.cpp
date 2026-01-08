@@ -410,7 +410,6 @@ class KarmaApp : public Karma::Application
 public:
 	KarmaApp()
 	{
-		return; // <-- to be uncommented when we have RHI (actually removed)
 		PushLayer(new Karma::EditorLayer());
 	}
 };

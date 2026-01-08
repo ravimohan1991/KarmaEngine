@@ -63,7 +63,7 @@ namespace Karma
 
 		m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-		// To be replaced with RHI
+		// To be uncommented when we have RHI
 		/*switch (currentAPI)
 		{
 		case RendererAPI::API::None:

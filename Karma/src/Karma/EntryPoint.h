@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 	Karma::Input::Init();
 
 	app->PrepareApplicationForRun();
-	//app->Run();<-- to be uncommented when we have RHI
+	app->Run();
 	delete app;
 	
 	Karma::RenderCommand::DeInit();
