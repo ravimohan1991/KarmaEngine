@@ -1,7 +1,7 @@
 #include "VulkanDynamicRHI.h"
 #include "GLFW/glfw3.h"
-
 #include "Application.h"
+#include "VulkanBuffer.h"
 
 namespace Karma
 {
@@ -543,6 +543,19 @@ namespace Karma
 		if (func != nullptr)
 		{
 			func(instance, debugMessenger, pAllocator);
+		}
+	}
+
+	void FVulkanDynamicRHI::RegisterUniformBufferObject(VulkanUniformBuffer* ubo)
+	{
+		m_VulkanUBO.insert(ubo);
+	}
+
+	void FVulkanDynamicRHI::UploadUniformBufferObjects(size_t frameIndex)
+	{
+		for (auto ubo : m_VulkanUBO)
+		{
+			ubo->UploadUniformBuffer(frameIndex);
 		}
 	}
 }

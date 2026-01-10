@@ -17,6 +17,8 @@ namespace Karma
 	class FVulkanDynamicRHI;
 	class VulkanTexture;
 
+	class FVulkanSwapChain;
+
 	/**
 	 * @class FVulkanDevice
 	 * @brief Manages Vulkan device resources and operations.
@@ -144,7 +146,7 @@ namespace Karma
 		inline VkQueue GetGraphicsQueue() const { return m_GraphicsQueue; }
 
 		inline FVulkanDynamicRHI* GetVulkanDynamicRHI() const { return m_VulkanDynamicRHI; }
-
+		
 	private:
 		VkDevice m_LogicalDevice; ///< The Vulkan logical device handle.
 		FVulkanDynamicRHI* m_VulkanDynamicRHI;

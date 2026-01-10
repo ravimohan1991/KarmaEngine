@@ -121,22 +121,6 @@ namespace Karma
 		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 		/**
-		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount
-		 * (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.
-		 *
-		 * Graphics cards can offer different types of memory to allocate from. Each type of memory varies in terms of allowed operations and performance characteristics.
-		 * We need to combine the requirements of the buffer and our own application requirements to find the right type of memory to use.
-		 *
-		 * @param typeFilter								A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
-		 * @param properties								The demanded properties (https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html).
-		 *
-		 * @return Memory type index i
-		 * @see VulkanUniformBuffer::CreateBuffer
-		 * @since Karma 1.0.0
-		 */
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
-		/**
 		 * @brief Getter for vertex buffer.
 		 *
 		 * @since Karma 1.0.0
@@ -234,18 +218,6 @@ namespace Karma
 		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 		/**
-		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount
-		 * (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.
-		 *
-		 * @param typeFilter								A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
-		 * @param properties								The demanded properties (https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html).
-		 *
-		 * @return Memory type index i
-		 * @since Karma 1.0.0
-		 */
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
-		/**
 		 * @brief Getter for the number of vertices to draw.
 		 *
 		 * @note To be used in vkCmdDrawIndexed mostly
@@ -326,18 +298,6 @@ namespace Karma
 		 */
 		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
 			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-
-		/**
-		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount
-		 * (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.
-		 *
-		 * @param typeFilter								A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
-		 * @param properties								The demanded properties (https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html).
-		 *
-		 * @return Memory type index i
-		 * @since Karma 1.0.0
-		 */
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 		/**
 		 * @brief Getter for the uniform buffers
@@ -428,17 +388,6 @@ namespace Karma
 		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
 			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
-		/**
-		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount
-		 * (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.
-		 *
-		 * @param typeFilter								A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
-		 * @param properties								The demanded properties (https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html).
-		 *
-		 * @return Memory type index i
-		 * @since Karma 1.0.0
-		 */
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		const inline VkBuffer& GetBuffer() const { return m_StagingBuffer; }
 
 		// Getters

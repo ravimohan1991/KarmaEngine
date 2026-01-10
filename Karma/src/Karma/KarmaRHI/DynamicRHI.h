@@ -41,8 +41,10 @@ namespace Karma
 		virtual bool Init() = 0;
 		/**
 		 * @brief Shuts down the RHI.
-		 * 
-		 * Cleans up resources and states used by the RHI.
+		 *
+		 * Handles shutdown and resource destruction before the RHI's actual destructor is called (so that all resources of the RHI are still available for shutdown).
+		 *
+		 * @note Cleans up resources and states used by the RHI.
 		 */
 		virtual void Shutdown() = 0;
 

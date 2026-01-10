@@ -1518,6 +1518,7 @@ namespace Karma
 		windowData->RHIResources.VulkanSwapChain = FVulkanSwapChain::Create(FVulkanDynamicRHI::Get().GetDevice());
 
 		windowData->Swapchain = windowData->RHIResources.VulkanSwapChain->GetSwapChainHandle();
+		
 		windowData->TotalImageCount = FVulkanDynamicRHI::Get().SwapChainImageCount();
 		windowData->RenderArea.extent = windowData->RHIResources.VulkanSwapChain->GetSwapChainExtent();
 		windowData->RenderArea.offset = { 0, 0 };

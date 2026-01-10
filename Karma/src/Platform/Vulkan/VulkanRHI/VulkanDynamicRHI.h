@@ -19,6 +19,8 @@ struct GLFWwindow;
 
 namespace Karma
 {
+	class VulkanUniformBuffer;
+
 	template<typename TRHI>
 	FORCEINLINE TRHI* GetDynamicRHI()
 	{
@@ -251,18 +253,67 @@ namespace Karma
 		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
 
 		/**
-		 * @brief Finds a suitable memory type on the physical device (graphics card) based on the type filter and desired properties.
+		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount
+		 * (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.
 		 *
-		 * @param typeFilter						Bitmask specifying the acceptable memory types
-		 * @param properties						Desired memory properties (like VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT for CPU access)
+		 * Graphics cards can offer different types of memory to allocate from. Each type of memory varies in terms of allowed operations and performance characteristics.
+		 * We need to combine the requirements of the buffer and our own application requirements to find the right type of memory to use.
 		 *
-		 * @see KarmaGuiVulkanHandler::CreateDepthRenderTarget
+		 * @param typeFilter								A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
+		 * @param properties								The demanded properties (https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html).
+		 *
+		 * @return Memory type index i
+		 * @see VulkanUniformBuffer::CreateBuffer
 		 * @since Karma 1.0.0
 		 */
 		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		
+		// These may be abstracted to FDynamicRHI
+		/**
+		 * @brief Register a uniformbuffer object to curate an array or uniformbuffers
+		 *
+		 * @note May be abstracted to FDynamicRHI.
+		 * @note In Unreal Engine, there is no single global “array of uniform buffers” that UpdateUniformBuffer walks; instead, each system owns its own uniform buffer(s) and explicitly passes them into UpdateUniformBuffer when something changes.
+		 * Where the inputs come from
+		 * Uniform buffers are created and owned by higher-level engine systems:
+		 * 	Per-primitive: via FPrimitiveSceneInfo for object transforms, lighting, etc.
+		 * 	Per-view / per-pass: view uniforms, fog, shadow parameters, etc.
+		 * 	Per-material: FMaterialParameterCollectionInstance and other material parameter structs.
+		 */
+		void RegisterUniformBufferObject(VulkanUniformBuffer* ubo);
+		
+		/**
+		 * @brief Uploads data to the registered VulkanUniformBuffers for the specified frame index.
+		 *
+		 * Typically called during rendering to update uniform buffer data for the current frame like so
+		 *
+		 * @code{.cpp}
+		 * vkCmdBeginRenderPass
+		 *	vkCmdBindPipeline
+		 *	vkCmdBindVertexBuffers
+		 *	vkCmdBindIndexBuffer
+		 *  UploadUniformBufferObjects()
+		 *	vkCmdBindDescriptorSets // Descriptor sets include UBOs
+		 *	vkCmdDrawIndexed
+		 * vkCmdEndRenderPass
+		 * @endcode
+		 *
+		 * @param frameIndex						The index of the frame for which to upload UBO data
+		 *
+		 * @note The frameIndex is used to determine which uniform buffer to update, as multiple buffers
+		 * may be used for double or triple buffering to avoid synchronization issues between CPU and GPU.
+		 *
+		 * @note The uniform buffers are resized automatically based on MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side)
+		 * whilst an image is being rendered (GPU side processing)) + 1)
+		 * @see VulkanUniformBuffer::BufferCreation()
+		 *
+		 * @see KarmaGuiRenderer::FrameRender, VulkanBuffer::UploadUniformBuffer
+		 * @since Karma 1.0.0
+		 */
+		void UploadUniformBufferObjects(size_t frameIndex);
+		
+		///////////////////////// Getters /////////////////////////
 		inline GLFWwindow* GetSurfaceWindow() const { return m_WindowHandle; }
-
 		inline VkSurfaceKHR GetSurface() const { return m_Surface; }
 
 	protected:
@@ -457,8 +508,6 @@ namespace Karma
 		static const std::vector<const char*> validationLayers;
 
 	protected:
-		// Vulkan instance handle and other Vulkan-specific members can be declared here
-
 		uint32_t m_APIVersion;
 		VkInstance m_VulkanInstance;
 		FVulkanDevice* m_Device;
@@ -470,5 +519,7 @@ namespace Karma
 		VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;// GPU
 		SwapChainSupportDetails m_GPUSwapChainSupport;
 		uint32_t m_SwapChainImageCount;
+		
+		std::set<VulkanUniformBuffer*> m_VulkanUBO;
 	};
 }

@@ -120,6 +120,11 @@ namespace Karma
 		 * @since Karma 1.0.0 
 		 */
 		static KGTextureID Add3DSceneFor2DRendering(std::shared_ptr<Scene> scene, KGVec2 dimensions);
+		
+		/**
+		 * @brief Getter for m_VulkanWindowData
+		 */
+		static const KarmaGui_ImplVulkanH_Window& GetWindowData() { return m_VulkanWindowData; }
 
 	private:
 

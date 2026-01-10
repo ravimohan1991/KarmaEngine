@@ -294,10 +294,22 @@ namespace Karma
 	 */
 	struct KarmaGui_ImplVulkanH_RHIResources
 	{
+		/**
+		 * @brief Primary swapchain created in KarmaGuiVulkanHandler::FillWindowData
+		 */
 		FVulkanSwapChain*                           VulkanSwapChain;
-		FVulkanRenderPass*                          VulkanRenderPass; // Primary renderpass for on-screen presentation
+		
+		/**
+		 * @brief Primary renderpass for on-screen presentation
+		 */
+		FVulkanRenderPass*                          VulkanRenderPass;
 		KarmaVector<FVulkanFramebuffer*>            VulkanFrameBuffers;
-		KarmaVector<FVulkanRenderTargetsInfo*>      RenderTargets; // RTs corresponding to framebuffers of a type
+		
+		/**
+		 * @brief Collection of render targets organized in KarmaVector. Meaning each KarmaVector element contains
+		 * a collection of rendertarget for a framebuffer
+		 */
+		KarmaVector<FVulkanRenderTargetsInfo*>      RenderTargets;
 	};
 
 	/**

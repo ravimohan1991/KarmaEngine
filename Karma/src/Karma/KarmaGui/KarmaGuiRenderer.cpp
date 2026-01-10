@@ -461,11 +461,12 @@ namespace Karma
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't begin commandbuffer recording");
 		}
 
+		//VulkanHolder::GetVulkanContext()->UploadUBO(windowData->SemaphoreIndex);
+		FVulkanDynamicRHI::Get().UploadUniformBufferObjects(windowData->SemaphoreIndex);
+		
 		for (auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
 			std::shared_ptr<Scene> scene3D = it->Scene3D;
-
-			VulkanHolder::GetVulkanContext()->UploadUBO(windowData->SemaphoreIndex);
 
 			FrameDescriptorSets dSets;
 			if (VulkanHolder::GetVulkanContext()->GetGeneralDescriptorSets().size() > 0)
