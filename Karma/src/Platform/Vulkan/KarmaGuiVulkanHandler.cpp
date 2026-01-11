@@ -1949,14 +1949,14 @@ namespace Karma
 		// 2. Deletes imageframes and frames on flight objects
 		ClearVulkanWindowData(windowData, true);
 		
-		for(const auto& vulkanFramebuffer : windowData->RHIResources.VulkanFrameBuffers)
+		for(const auto& vulkanFramebuffer : windowData->RHIResources.VulkanFrameBuffers.GetElements())
 		{
 			delete vulkanFramebuffer;
 		}
 		
 		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
 		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
-		for(const auto& renderTargets : windowData->RHIResources.RenderTargets)
+		for(const auto& renderTargets : windowData->RHIResources.RenderTargets.GetElements())
 		{
 			for(uint32_t counter = 0; counter < FVulkanDynamicRHI::Get().SwapChainImageCount(); counter++)
 			{

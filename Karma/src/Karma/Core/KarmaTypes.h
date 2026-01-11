@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file KarmaTypes.h
  * @author Ravi Mohan (the_cowboy)
  * @brief This file contains the types used in game logic
@@ -381,6 +381,17 @@ public:
 	/**
 	 * @brief Getter for first vector element
 	 *
+	 * @note The range based loop breaks for MSVC atm
+	 * for(const auto& element : SomeKarmaVector)
+	 * {}
+	 * 
+	 * Perplexity gives answer:
+	 * MSVC's _ITERATOR_DEBUG_LEVEL=2 tracks global iterator ownership and gets confused by 
+	 * forwarded iterators from KarmaVector::begin(). Direct m_Elements access bypasses the wrapper entirely → no forwarding
+	 * → no corruption → works perfectly.
+	 * 
+	 * Also note KarmaVector::begin() works just fine on Mac and Linux (Clang and gcc)
+	 * 
 	 * @since Karma 1.0.0
 	 */
 	typename std::vector<BuildingBlock>::iterator begin()

@@ -307,6 +307,8 @@ namespace Karma
 				{
 					OutComponents.Add(tempSceneComponent);
 				}
+
+				// shouldn't we have iterator++
 			}
 		}
 
