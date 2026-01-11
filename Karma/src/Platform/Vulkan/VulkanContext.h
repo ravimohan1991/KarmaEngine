@@ -743,7 +743,7 @@ namespace Karma
 		VkDescriptorPool m_GeneralDescriptorPool;
 		std::vector<FrameDescriptorSets> m_GeneralDescriptorSets;
 
-		bool bVSync = false;
+        bool bVSync = true;
 
 		VkImage m_DepthImage;
 		VkDeviceMemory m_DepthImageMemory;

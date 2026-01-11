@@ -70,7 +70,7 @@ namespace Karma
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-		switch (currentAPI)
+        /*switch (currentAPI)
 		{
 			case RendererAPI::API::None:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
@@ -81,10 +81,10 @@ namespace Karma
 			case RendererAPI::API::Vulkan:
 				m_Context = new VulkanContext(m_Window);
 				break;
-		}
+        }
 
 		m_Context->Init();
-		SetVSync(true);
+        SetVSync(true);*/
 
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -101,7 +101,7 @@ namespace Karma
 
 	bool LinuxWindow::OnResize(WindowResizeEvent& event)
 	{
-		return m_Context->OnWindowResize(event);
+        return false;//m_Context->OnWindowResize(event);
 	}
 
 	void LinuxWindow::SetGLFWCallbacks(GLFWwindow* glfwWindow)
@@ -225,7 +225,7 @@ namespace Karma
 	void LinuxWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		m_Context->SwapBuffers();
+        //m_Context->SwapBuffers();
 	}
 
 	void LinuxWindow::SetVSync(bool enabled)
