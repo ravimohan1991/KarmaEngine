@@ -322,7 +322,7 @@ namespace Karma
 		void BufferCreation();
 
 		/**
-		 * @brief Uploads (copies) the data from buffer memory (m_UniformBuffersMemory) to  host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range
+		 * @brief Uploads (copies) the data to GPU buffer memory (m_UniformBuffersMemory) from host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range
 		 *
 		 * Basically copies the data from CPU side (uniforms) to GPU side (m_UniformBuffersMemory).
 		 * 
@@ -331,7 +331,12 @@ namespace Karma
 		 *	- The memory of the uniform buffer (a VkBuffer) is created with CPU-visible properties and mapped to a CPU pointer.
 		 *	- The updateUniformBuffer function copies the CPU-side data (like transformation matrices) into the mapped GPU buffer memory via a memcpy call.
 		 *	- This allows the GPU to read the fresh uniform data every frame during rendering without needing to re-record command buffers.
-		 * 
+		 *
+		 * Mechanics:
+		 * vkMapMemory returns a CPU-accessible pointer (data) to a specific range within m_UniformBuffersMemory[frameIndex], which is VkDeviceMemory allocated for
+		 * GPU use but with VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT (see VulkanUniformBuffer::BufferCreation()). This pointer points directly into GPU memory, so
+		 * memcpy(data, it.GetDataPointer(), uniformSize) overlays CPU data bytes onto that GPU buffer region
+		 *
 		 * @param frameIndex								The m_CurrentFrame index representing index of MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1)
 		 *
 		 * @see VulkanRendererAPI::SubmitCommandBuffers()

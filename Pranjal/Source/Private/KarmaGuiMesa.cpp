@@ -525,13 +525,13 @@ namespace Karma
 		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
 				
-		KGTextureID textureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
+		//KGTextureID textureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
 		
 		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
 		KGVec2 pos = KarmaGui::GetCursorScreenPos();
 		
 		drawList->AddImage((void*)backgroundImageTextureID, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
-		drawList->AddImage((void*)textureID3D, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
+		//drawList->AddImage((void*)textureID3D, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
 		
 		scene->SetRenderWindow(window);
 

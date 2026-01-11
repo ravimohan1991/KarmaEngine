@@ -227,7 +227,7 @@ namespace Karma
 	void MacWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		m_Context->SwapBuffers();
+		//m_Context->SwapBuffers();
 	}
 
 	void MacWindow::SetVSync(bool enabled)

@@ -2,11 +2,13 @@
 #include "Platform/Vulkan/VulkanHolder.h"
 #include "Platform/Vulkan/VulkanTexture.h"
 #include "Karma/Renderer/RenderCommand.h"
+#include "VulkanRHI/VulkanDynamicRHI.h"
+#include "VulkanRHI/VulkanDevice.h"
 
 namespace Karma
 {
 	VulkanVertexArray::VulkanVertexArray() : m_SupportedDeviceFeatures(VulkanHolder::GetVulkanContext()->GetSupportedDeviceFeatures()),
-		m_device(VulkanHolder::GetVulkanContext()->GetLogicalDevice())
+		m_device(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice())
 	{
 	}
 

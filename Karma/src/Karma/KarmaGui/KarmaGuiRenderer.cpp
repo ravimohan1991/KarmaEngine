@@ -5,6 +5,7 @@
 #include "StaticMeshActor.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
 #include "VulkanRHI/VulkanDynamicRHI.h"
+#include "VulkanRHI/VulkanSwapChain.h"
 
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"
@@ -569,7 +570,7 @@ namespace Karma
 		presentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
 		presentBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		presentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		presentBarrier.image = VulkanHolder::GetVulkanContext()->GetSwapChainImages()[windowData->ImageFrameIndex];  // Swapchain only!
+		presentBarrier.image = windowData->RHIResources.VulkanSwapChain->GetSwapChainImages()[windowData->ImageFrameIndex];
 		presentBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		presentBarrier.subresourceRange.levelCount = 1;
 		presentBarrier.subresourceRange.layerCount = 1;
