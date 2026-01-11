@@ -205,13 +205,13 @@ namespace Karma
 		{
 			delete m_Context;
 			m_Context = 0;
-		}*/ //<--to be removed when we have RHI
+		}*/
 	}
 
 	void WindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		//m_Context->SwapBuffers();<-- to be removed when RHI is in place?
+		//m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
