@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "KarmaTypes.h"
+
 namespace Karma
 {
 	class UObject;

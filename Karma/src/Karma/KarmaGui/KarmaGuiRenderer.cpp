@@ -430,12 +430,12 @@ namespace Karma
 		KarmaGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		VkResult result;
 
-		// Pointer to the container of framebuffers (based on number of swapchain images)
-		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
-
+        // IDK why for resizing vkWaitForFences before vkQueueSubmit works. Needs investigation
 		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
 
+        result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
+        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
 
 		// ImageAcquiredSemaphore is m_ImageAvailableSemaphores equivalent
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
@@ -449,6 +449,9 @@ namespace Karma
 		}
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image");
+
+        // Pointer to the container of framebuffers (based on number of swapchain images)
+        KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
 
 		vkResetCommandBuffer(frameOnFlightData->CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
@@ -545,7 +548,7 @@ namespace Karma
 		renderPassInfo.renderArea.extent = windowData->RenderArea.extent;
 
 		std::array<VkClearValue, 2> clearValues{};
-		clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], 		windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
+        clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], 		windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
 		clearValues[1].depthStencil = { 1.0f, 0 };
 
 		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -595,10 +598,6 @@ namespace Karma
 		submitInfo.pCommandBuffers = &frameOnFlightData->CommandBuffer;
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &renderCompleteSemaphore;
-
-		// We reset the fence here or else the swapchain rebuild seemingly fails
-		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
 
 		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");

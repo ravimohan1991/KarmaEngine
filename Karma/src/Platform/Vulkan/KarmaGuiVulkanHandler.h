@@ -20,6 +20,7 @@
 #include "KarmaGui.h"
 #include "KarmaGuiInternal.h"
 #include "Karma/Renderer/Scene.h"
+#include "KarmaTypes.h"
 #include <vulkan/vulkan.h>
 
 namespace Karma
