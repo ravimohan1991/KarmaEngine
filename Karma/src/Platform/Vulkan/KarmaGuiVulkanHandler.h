@@ -1254,6 +1254,12 @@ namespace Karma
 		 */
 		static void KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*);
 
+		/**
+		 * @brief Checks whether KarmaGui_ImplVulkan_InitInfo has been initialized properly. Crashes if not.
+		 * 
+		 * @see KarmaGuiRenderer::SetUpKarmaGuiRenderer
+		 * @since Karma 1.0.0
+		 */
 		static void CheckInitialization();
 
 		/**
@@ -1264,12 +1270,26 @@ namespace Karma
 		 * - Creates Vulkan renderpass (see KarmaGuiVulkanHandler::MakeRenderPassInfo) for KarmaGui's Vulkan backend and sets
 		 *   backend->VulkanInitInfo.RenderPass with this renderpass (of which KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline
 		 *   is created)
+		 * - Creates depth render target and uses swapchain images for color render targets and packages them into FVulkanRenderTargetsInfo
+		 * - Creates framebuffers for each swapchain image and sets windowData->Framebuffers
+		 * - Sets windowData->CommandPool with the pool created in FVulkanDynamiRHI::m_Device (FVulkanDevice)
+		 * - Creates semaphores and fences if bCreateSyncronicity is set to true
+		 * 
 		 * 
 		 * @note SwapChain and renderpass resources are cleared in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow
 		 * @since Karma 1.0.0
 		 */
 		static void FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity);
 
+		/**
+		 * @brief Prepares the renderpass information for KarmaGui's Vulkan backend
+		 * 
+		 * Basically fills FVulkanRenderPassInfo struct with two attachments, one for color and one for depth.
+		 * 
+		 * @todo Ponder upon the configurable subpass configuration. Currently done in FVulkanRenderPassBuilder::BuildCreateInfo with basic
+		 * subpass description.
+		 * @since Karma 1.0.0
+		 */
 		static void MakeRenderPassInfo(FVulkanSwapChain* SwapChain, struct FVulkanRenderPassInfo& RPInfo);
 		
 		/**

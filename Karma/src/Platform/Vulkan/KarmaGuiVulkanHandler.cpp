@@ -1558,15 +1558,35 @@ namespace Karma
 			// Framebuffer
 			frameData->Framebuffer = frameBuffer->GetHandle();
 		}
+
+		// For syncronicity, we instantiate FramesOnFlight with MAX_FRAMES_IN_FLIGHT number and label them the Real-Frames-On-Flight in our mind
+		KR_CORE_ASSERT(windowData->FramesOnFlight == nullptr, "Somehow frames-on-flight are still occupied. Please clear them.");
+		windowData->FramesOnFlight = new KarmaGui_Vulkan_Frame_On_Flight[windowData->MAX_FRAMES_IN_FLIGHT];
+
+		KR_CORE_ASSERT(windowData->FramesOnFlight != nullptr, "Commandbuffers are being assigned without enough resources");
+
+		std::vector<VkCommandBuffer> commandBuffers;
+		commandBuffers.resize(windowData->MAX_FRAMES_IN_FLIGHT);
+
+		VkCommandBufferAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.commandPool = windowData->CommandPool;
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
+
+		VkResult result = vkAllocateCommandBuffers(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &allocInfo, commandBuffers.data());
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffers!");
+
+		for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
+		{
+			KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
+			frameOnFlight->CommandBuffer = commandBuffers[counter];
+		}
 		
 		// We create seperate syncronicity resources for Dear KarmaGui
 		if (bCreateSyncronicity)
 		{
-			// For syncronicity, we instantiate FramesOnFlight with MAX_FRAMES_IN_FLIGHT number and label them the Real-Frames-On-Flight in our mind
-			KR_CORE_ASSERT(windowData->FramesOnFlight == nullptr, "Somehow frames-on-flight are still occupied. Please clear them.");
-
-			windowData->FramesOnFlight = new KarmaGui_Vulkan_Frame_On_Flight[windowData->MAX_FRAMES_IN_FLIGHT];
-
 			for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
 			{
 				KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
@@ -1591,27 +1611,6 @@ namespace Karma
 			}
 
 			windowData->SemaphoreIndex = 0;
-		}
-		
-		KR_CORE_ASSERT(windowData->FramesOnFlight != nullptr, "Commandbuffers are being assigned without enough resources");
-		
-		std::vector<VkCommandBuffer> commandBuffers;
-		commandBuffers.resize(windowData->MAX_FRAMES_IN_FLIGHT);
-
-		VkCommandBufferAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.commandPool = windowData->CommandPool;
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
-
-		VkResult result = vkAllocateCommandBuffers(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &allocInfo, commandBuffers.data());
-
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffers!");
-
-		for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
-		{
-			KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
-			frameOnFlight->CommandBuffer = commandBuffers[counter];
 		}
 	}
 

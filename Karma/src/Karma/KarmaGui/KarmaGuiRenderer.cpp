@@ -52,7 +52,7 @@ namespace Karma
 			// KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
 			KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, true);
 
-			// See if all the Vulkan resources have been instantiated
+			// See if all the appropriate Vulkan resources have been instantiated
 			KarmaGuiVulkanHandler::CheckInitialization();
 
 			// Font, descriptor, and pipeline
