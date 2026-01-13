@@ -548,7 +548,7 @@ namespace Karma
 		renderPassInfo.renderArea.extent = windowData->RenderArea.extent;
 
 		std::array<VkClearValue, 2> clearValues{};
-        clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], 		windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
+        clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
 		clearValues[1].depthStencil = { 1.0f, 0 };
 
 		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -565,9 +565,7 @@ namespace Karma
 		
 		// Transition the swapchain image from VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
 		// else there'd be validation error
-		// NOTE: We are using VulkanHolder::GetVulkanContext()->GetSwapChainImages() in case we decide to create
-		// different swapchain images for KarmaGui
-		VkImageMemoryBarrier presentBarrier = {};
+		/*VkImageMemoryBarrier presentBarrier = {};
 		presentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		presentBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		presentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
@@ -579,7 +577,7 @@ namespace Karma
 		presentBarrier.subresourceRange.layerCount = 1;
 
 		vkCmdPipelineBarrier(frameOnFlightData->CommandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-							 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, NULL, 0, NULL, 1, &presentBarrier);
+							 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, NULL, 0, NULL, 1, &presentBarrier);*/
 
 		result = vkEndCommandBuffer(frameOnFlightData->CommandBuffer);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end command buffer");

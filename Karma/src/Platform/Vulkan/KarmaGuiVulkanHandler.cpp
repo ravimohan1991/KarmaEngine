@@ -240,21 +240,7 @@ namespace Karma
 
 		if (windowRenderBuffers->FrameRenderBuffers == nullptr)
 		{
-			RendererAPI* rAPI = RenderCommand::GetRendererAPI();
-			VulkanRendererAPI* vulkanAPI = nullptr;
-
-			if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
-			{
-				vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
-			}
-			else
-			{
-				KR_CORE_ASSERT(false, "How is this even possible?");
-			}
-
-			KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-
-			windowRenderBuffers->Count = vulkanAPI->GetMaxFramesInFlight();
+			windowRenderBuffers->Count = KarmaGuiRenderer::GetWindowData().RHIResources.VulkanSwapChain->GetMaxFramesInFlight();
 
 			// Caution: Need to think about the object instantiation and resource management
 			// Cowboy's Note: delete is done in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_ShivaWindowRenderBuffers
@@ -534,6 +520,7 @@ namespace Karma
 			range[0].memory = imageData->UploadBufferMemory;
 			range[0].size = uploadSize;
 
+			// Flush issue 
 			result = vkFlushMappedMemoryRanges(vulkanInfo->Device, 1, range);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't flush memory range");
 

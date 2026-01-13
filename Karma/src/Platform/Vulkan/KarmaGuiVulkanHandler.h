@@ -138,7 +138,6 @@ namespace Karma
 		/**
 		 * @brief The number of elements in the pSwapchainImages array, i.e number of presentable swapchain images available (vkGetSwapchainImagesKHR).
 		 *
-		 * @note Taken from VulkanContext where (VulkanContext::CreateSwapChain()) ImageCount is defined MinImageCount + 1.
 		 * @since Karma 1.0.0
 		 */
 		uint32_t                        ImageCount;

@@ -124,6 +124,6 @@ namespace Karma
 
 		// Number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1
 		// Clearly, MAX_FRAMES_IN_FLIGHT shouldn't exceed m_SwapChainImages.size()
-		const uint32_t MAX_FRAMES_IN_FLIGHT = 2;
+		const uint32_t MAX_FRAMES_IN_FLIGHT = 4;
 	};
 }
