@@ -36,7 +36,6 @@ int main(int argc, char** argv)
 {
 	// TODO: add engine initialization code for various systems
 	Karma::Log::Init();
-	Karma::RenderCommand::Init();
 	KR_INFO("Hello Cowboy. Your lucky number is {0}", 7);
 
 	auto app = Karma::CreateApplication();
@@ -48,7 +47,6 @@ int main(int argc, char** argv)
 
 	delete app;
 
-	Karma::RenderCommand::DeInit();
 	Karma::Input::DeInit();
 
 	return 0;
@@ -72,7 +70,6 @@ int main(int argc, char** argv)
 {
 	// TODO: add engine initialization code for various systems
 	Karma::Log::Init();
-	Karma::RenderCommand::Init();
 	KR_INFO("Hello Cowboy. Your lucky number is {0}", 7);
 	
 	auto app = Karma::CreateApplication();
@@ -84,7 +81,6 @@ int main(int argc, char** argv)
 
 	delete app;
 	
-	Karma::RenderCommand::DeInit();
 	Karma::Input::DeInit();
 
 	return 0;
@@ -109,7 +105,6 @@ int main(int argc, char** argv)
 {
 	// TODO: add engine initialization code for various systems
 	Karma::Log::Init();
-	Karma::RenderCommand::Init();
 	KR_INFO("Hello Cowboy. Your lucky number is {0}", 7);
 	
 	auto app = Karma::CreateApplication();
@@ -120,7 +115,6 @@ int main(int argc, char** argv)
 	app->Run();
 	delete app;
 	
-	Karma::RenderCommand::DeInit();
 	Karma::Input::DeInit();
 	
 	return 0;

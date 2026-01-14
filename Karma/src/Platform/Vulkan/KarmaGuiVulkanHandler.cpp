@@ -1616,7 +1616,7 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::CreateDepthRenderTarget(FVulkanRenderTargetsInfo &RTInfo, FVulkanSwapChain *SwapChain)
 	{
-		VkFormat depthFormat = FVulkanDynamicRHI::Get().FindSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+		VkFormat depthFormat = FVulkanDynamicRHI::Get().FindDepthFormat();
 
 		VkImageCreateInfo imageInfo{};
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -1692,9 +1692,7 @@ namespace Karma
 
 		FVulkanRenderPassInfo::FAttachmentInfo depthAttachmentInfo;
 		depthAttachmentInfo.AttachmentFlags = 0;
-		depthAttachmentInfo.AttachmentFormat = FVulkanDynamicRHI::Get().FindSupportedFormat({ VK_FORMAT_D32_SFLOAT,
-			VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL,
-			VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+		depthAttachmentInfo.AttachmentFormat = FVulkanDynamicRHI::Get().FindDepthFormat();
 		depthAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
 		depthAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		depthAttachmentInfo.AttachmentStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;

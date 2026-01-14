@@ -19,8 +19,19 @@ struct GLFWwindow;
 
 namespace Karma
 {
+	/**
+	 * @brief Forward declaration of VulkanUniformBuffer class.
+	 */
 	class VulkanUniformBuffer;
 
+	/**
+	 * @brief Template function to get the dynamic RHI instance casted to the specified type.
+	 * 
+	 * @tparam TRHI The type to which the dynamic RHI instance should be casted.
+	 * @return Pointer to the dynamic RHI instance of type TRHI.
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	template<typename TRHI>
 	FORCEINLINE TRHI* GetDynamicRHI()
 	{
@@ -33,7 +44,7 @@ namespace Karma
 	 * Most operations performed with Vulkan, like draw commands and memory operations, are
 	 * asynchronously executed by submitting them to a VkQueue. Queues are allocated from queue
 	 * families, where each queue family supports a specific set of operations in its queues. For example,
-	 * there could be separate queue families for graphics, compute and memory transfer operations.
+	 * there could be separate queue families for graphics, compute, and memory transfer operations.
 	 *
 	 * Used for creating logical device, swapchain, and commandpool
 	 *
@@ -109,6 +120,14 @@ namespace Karma
 		std::vector<VkPresentModeKHR> presentModes;
 	};
 
+	/**
+	 * @brief Vulkan implementation of the Dynamic RHI.
+	 * 
+	 * Provides Vulkan-specific implementations for initializing/deinitializing RHI along with Vulkan resources
+	 * along with rendering operations.
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	class FVulkanDynamicRHI : public IVulkanDynamicRHI
 	{
 	public:
@@ -251,6 +270,14 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
+
+		/**
+		 * @brief Finds an appropriate depth format for depth resources.
+		 *
+		 * @see KarmaGuiVulkanHandler::MakeRenderPassInfo
+		 * @since Karma 1.0.0
+		 */
+		VkFormat FindDepthFormat() const;
 
 		/**
 		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount

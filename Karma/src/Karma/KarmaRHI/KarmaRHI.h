@@ -11,12 +11,22 @@
 
 namespace Karma
 {
+	/**
+	 * @brief Enumeration of supported RHI interface types.
+	 */
 	enum class ERHIInterfaceType
 	{
+		/**
+		 * @brief Hidden or null RHI interface type.
+		 */
 		Hidden,
 		Null,
 		D3D11,
 		D3D12,
+
+		/**
+		 * @brief Vulkan RHI interface type.
+		 */
 		Vulkan,
 		Metal,
 		Agx,
