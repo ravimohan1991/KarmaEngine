@@ -149,7 +149,7 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Specialized definition of FVulkanSubpassDescription 
+	 * @brief Specialized definition of FVulkanSubpassDescription
 	 */
 	template<>
 	struct FVulkanSubpassDescription<VkSubpassDescription>
@@ -214,15 +214,24 @@ namespace Karma
 		}
 	};
 
+	/**
+	 * @brief Template definition of FVulkanRenderPassCreateInfo
+	 */
 	template <typename T>
 	struct FVulkanRenderPassCreateInfo
 	{
 	};
 
+	/**
+	 * @brief Specialized definition of FVulkanRenderPassCreateInfo
+	 */
 	template<>
 	struct FVulkanRenderPassCreateInfo<VkRenderPassCreateInfo>
 		: public VkRenderPassCreateInfo
 	{
+		/**
+		 * @brief Constructor to initialize the renderpass create info structure
+		 */
 		FVulkanRenderPassCreateInfo()
 		{
 			//ZeroVulkanStruct(*this, VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO);
@@ -230,6 +239,11 @@ namespace Karma
 			FMemory::Memzero(((uint8_t*)&(*this)) + sizeof(VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO), sizeof(VkRenderPassCreateInfo) - sizeof(VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO));
 		}
 
+		/**
+		 * @brief Actual renderpass creation function
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		VkRenderPass Create(FVulkanDevice& Device)
 		{
 			VkRenderPass Handle = VK_NULL_HANDLE;
@@ -256,12 +270,22 @@ namespace Karma
 	};
     static_assert(MaxSimultaneousRenderTargets <= (1 << MaxSimultaneousRenderTargets_NumBits), "MaxSimultaneousRenderTargets will not fit on MaxSimultaneousRenderTargets_NumBits");
 
+	/**
+	 * @brief Data structure to hold information about Vulkan renderpass attachments (like color and depth attachments).
+	 * 
+	 * This is used to create FVulkanRenderTargetLayout which in turn is used to create Vulkan renderpasses.
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	struct FVulkanRenderPassInfo
 	{
+		/**
+		 * @brief Information about a single attachment in the renderpass
+		 */
 		struct FAttachmentInfo
 		{
 			/**
-			 * @brief 
+			 * @brief Attachment description flags
 			 */
 			VkAttachmentDescriptionFlags AttachmentFlags;
 
@@ -286,9 +310,13 @@ namespace Karma
 			VkAttachmentStoreOp		AttachmentStoreOperation;
 
 			/**
-			 * @brief
+			 * @brief what to do with stencil data before rendering
 			 */
 			VkAttachmentLoadOp		AttachmentStencilLoadOperation;
+
+			/**
+			 * @brief what to do with stencil data after rendering
+			 */
 			VkAttachmentStoreOp		AttachmentStencilStoreOperation;
 
 			/**
@@ -318,6 +346,9 @@ namespace Karma
 			VkImageLayout			AttachmentFinalLayout;
 		};
 
+		/**
+		 * @brief Reference to an attachment in the renderpass
+		 */
 		struct FAttachmentRefInfo
 		{
 			/**
@@ -434,15 +465,30 @@ namespace Karma
 		FVulkanDevice& m_Device;
 	};
 
+	/**
+	 * @brief Builder class to create Vulkan renderpass create info structure and generate renderpass
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	template <typename TSubpassDescriptionClass, typename TSubpassDependencyClass, typename TAttachmentReferenceClass, typename TAttachmentDescriptionClass, typename TRenderPassCreateInfoClass>
 	class FVulkanRenderPassBuilder
 	{
 	public:
+		/**
+		 * @brief Constructor
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FVulkanRenderPassBuilder(FVulkanDevice& InDevice)
 			: m_Device(InDevice)
 		{
 		}
 
+		/**
+		 * @brief Build the VkRenderPassCreateInfo structure from the supplied FVulkanRenderTargetLayout
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		void BuildCreateInfo(const FVulkanRenderTargetLayout& RTLayout)
 		{
 			uint32_t NumSubpasses = 0;
@@ -514,6 +560,11 @@ namespace Karma
 			m_CreateInfo.pDependencies = m_SubpassDependencies;
 		}
 
+		/**
+		 * @brief Create the Vulkan renderpass
+		 * 
+		 * @see Template definition of FVulkanRenderPassCreateInfo
+		 */
 		VkRenderPass Create(const FVulkanRenderTargetLayout& RTLayout)
 		{
 			BuildCreateInfo(RTLayout);

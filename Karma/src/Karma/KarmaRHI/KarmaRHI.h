@@ -33,9 +33,19 @@ namespace Karma
 		OpenGL,
 	};
 
-	/** Initializes the RHI. */
+	/**
+	 * @brief Initializes the RHI.
+	 * 
+	 * @see Application::Application()
+	 * @since Karma 1.0.0
+	 */
 	extern KARMA_API void RHIInit();
 
-	/** Shuts down the RHI. */
+	/**
+	 * @brief Shuts down the RHI.
+	 * 
+	 * @see Application::~Application()
+	 * @since Karma 1.0.0
+	 */
 	extern KARMA_API void RHIExit();
 }
