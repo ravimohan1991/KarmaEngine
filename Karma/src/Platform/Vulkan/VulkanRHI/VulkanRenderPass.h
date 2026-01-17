@@ -1,6 +1,6 @@
 ﻿/**
  * @file VulkanRenderPass.h
- * @brief
+ * @brief Karma Engine Vulkan RHI Render Pass definitions
  * @author Ravi Mohan (the_cowboy)
  * @version 1.0
  * @date December 21, 2025
@@ -18,9 +18,27 @@
 namespace Karma
 {
 	/**
-	 * @brief Using the Curiously Recurring Template Pattern (CRTP) reversal?.
-	 *
-	 * In CRTP we are do static polymorphism i.e base class gains information about the derived class without virtual functions
+	 * @brief Template definition of FVulkanAttachmentReference with specializations done later
+	 * 
+	 * This is primary class template for attachment references like color, depth, and input attachments
+	 * 
+	 * See
+	 * VkRenderPass CreateVulkanRenderPass()
+	 * {
+	 *		..
+	 *		FVulkanRenderPassBuilder<.., FVulkanAttachmentReference<VkAttachmentReference>, ..> Creator(InDevice);
+	 *		Creator.Create(RTLayout);
+	 *		..
+	 * }
+	 * 
+	 * where FVulkanRenderPassBuilder::m_ColorAttachmentReferences and FVulkanRenderPassBuilder::m_DepthStencilAttachmentReference are called
+	 * 
+	 * m_ColorAttachmentReferences.Add(TAttachmentReferenceClass(RTLayout.GetColorAttachmentReferences()[ColorAttachment], 0));
+	 * m_DepthStencilAttachmentReference.SetDepthStencilAttachment
+	 * 
+	 * triggering class template specializations out-of-class definitions of SetAttachment and SetDepthStencilAttachment
+	 * 
+	 * @since Karma 1.0.0
 	 */
 	template <typename TAttachmentReferenceType>
 	struct FVulkanAttachmentReference : public TAttachmentReferenceType
@@ -30,6 +48,11 @@ namespace Karma
 			ZeroStruct();
 		}
 
+		/**
+		 * @brief Constructor to copy from VkAttachmentReference
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FVulkanAttachmentReference(const VkAttachmentReference& AttachmentReferenceIn, VkImageAspectFlags AspectMask)
 		{
 			SetAttachment(AttachmentReferenceIn, AspectMask);
@@ -48,19 +71,44 @@ namespace Karma
 		 * FVulkanAttachmentReference<VkAttachmentReference> colorRef;  
 		 * colorRef.SetAttachment(ref, mask);  // Copies attachment/layout safely
 		 *
-		 * This selectively enables mutation only for standard attachments
+		 * This selectively enables mutation only for standard attachments. Or this discourages certain uses
 		 * 
 		 * @since Karma 1.0.0
 		 */
 		inline void SetAttachment(const VkAttachmentReference& AttachmentReferenceIn, VkImageAspectFlags AspectMask) { checkNoEntry(); }
+
+		/**
+		 * @brief Template definition of SetAttachment (specialized out-of-class definition exists)
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		inline void SetAttachment(const FVulkanAttachmentReference<TAttachmentReferenceType>& AttachmentReferenceIn, VkImageAspectFlags AspectMask) { *this = AttachmentReferenceIn; }
+		
+		/**
+		 * @brief Disable method enforced here (checkNoEntry()).
+		 * 
+		 * This is to prevent misuse for non-depth-stencil attachments
+		 * 
+		 * @note Specialized out-of-class definition exists for VkAttachmentReference
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		inline void SetDepthStencilAttachment(const VkAttachmentReference& AttachmentReferenceIn, const VkAttachmentReferenceStencilLayout* StencilReference, VkImageAspectFlags AspectMask, bool bSupportsParallelRendering) { checkNoEntry(); }
+		
+		/**
+		 * @brief Template definition for zero initialization
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		inline void ZeroStruct() {}
 		inline void SetAspect(uint32_t Aspect) {}
 	};
 
 	/**
-	 * @brief This is template specialization where we define or implement the generic SetAttachment for VkAttachmentReference
+	 * @brief This is template specialization out-of-class definition triggered by
+	 * m_ColorAttachmentReferences.Add(TAttachmentReferenceClass(RTLayout.GetColorAttachmentReferences()[ColorAttachment], 0));
+	 * 
+	 * @since Karma 1.0.0
 	 */
 	template <>
 	inline void FVulkanAttachmentReference<VkAttachmentReference>::SetAttachment(const VkAttachmentReference& AttachmentReferenceIn, VkImageAspectFlags AspectMask)
@@ -69,12 +117,18 @@ namespace Karma
 		layout = AttachmentReferenceIn.layout;
 	}
 
+	/**
+	 * @brief This is template specialization out-of-class definition triggered by
+	 * m_DepthStencilAttachmentReference.SetDepthStencilAttachment
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	template <>
 	inline void FVulkanAttachmentReference<VkAttachmentReference>::SetDepthStencilAttachment(const VkAttachmentReference& AttachmentReferenceIn,
 		const VkAttachmentReferenceStencilLayout* StencilReference, VkImageAspectFlags AspectMask, bool bSupportsParallelRendering)
 	{
 		attachment = AttachmentReferenceIn.attachment;
-		const VkImageLayout StencilLayout = StencilReference ? StencilReference->stencilLayout : VK_IMAGE_LAYOUT_UNDEFINED;
+		//const VkImageLayout StencilLayout = StencilReference ? StencilReference->stencilLayout : VK_IMAGE_LAYOUT_UNDEFINED;
 
 		layout = AttachmentReferenceIn.layout; //GetMergedDepthStencilLayout(AttachmentReferenceIn.layout, StencilLayout);
 	}
@@ -526,8 +580,8 @@ namespace Karma
 				m_DepthStencilAttachmentReference.SetDepthStencilAttachment(*RTLayout.GetDepthAttachmentReference(), RTLayout.GetStencilAttachmentReference(), 0, false/*m_Device.SupportsParallelRendering()*/);
 				
 				// Why are these needed when attachment and layout are assigned in m_DepthStencilAttachmentReference
-				m_DepthStencilAttachment.attachment = RTLayout.GetDepthAttachmentReference()->attachment;
-				m_DepthStencilAttachment.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+				//m_DepthStencilAttachment.attachment = RTLayout.GetDepthAttachmentReference()->attachment;
+				//m_DepthStencilAttachment.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 			}
 
 			// main subpass (using only single pass)
