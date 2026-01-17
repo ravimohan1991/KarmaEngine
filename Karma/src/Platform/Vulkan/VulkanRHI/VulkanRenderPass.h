@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file VulkanRenderPass.h
  * @brief Karma Engine Vulkan RHI Render Pass definitions
  * @author Ravi Mohan (the_cowboy)

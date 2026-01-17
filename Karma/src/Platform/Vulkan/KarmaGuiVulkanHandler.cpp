@@ -417,7 +417,7 @@ namespace Karma
 			VkImageCreateInfo info = {};
 			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			info.imageType = VK_IMAGE_TYPE_2D;
-			info.format = VK_FORMAT_R8G8B8A8_UNORM;
+			info.format = VK_FORMAT_R8G8B8A8_SRGB;// VK_FORMAT_R8G8B8A8_UNORM;
 			info.extent.width = width;
 			info.extent.height = height;
 			info.extent.depth = 1;
@@ -452,10 +452,14 @@ namespace Karma
 			info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			info.image = imageData->TextureImage;
 			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			info.format = VK_FORMAT_R8G8B8A8_UNORM;
+			info.format = VK_FORMAT_R8G8B8A8_SRGB;//VK_FORMAT_R8G8B8A8_UNORM;
 			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			info.subresourceRange.levelCount = 1;
 			info.subresourceRange.layerCount = 1;
+			info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
 			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &imageData->TextureView);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
