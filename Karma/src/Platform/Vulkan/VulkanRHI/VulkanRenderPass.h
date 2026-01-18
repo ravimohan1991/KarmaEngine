@@ -20,8 +20,8 @@ namespace Karma
 	/**
 	 * @brief Template definition of FVulkanAttachmentReference with specializations done later
 	 * 
-	 * This is primary class template for attachment references like color, depth, and input attachments
-	 * 
+	 * This is primary struct template for attachment references like color, depth, and input attachments
+	 *
 	 * See
 	 * VkRenderPass CreateVulkanRenderPass()
 	 * {
@@ -150,7 +150,7 @@ namespace Karma
 	/**
 	 * @brief Template (for VkAttachmentDescription(2)) definition of FVulkanAttachmentDescription
 	 * 
-	 * This is primary class template for attachment descriptions like color, depth, and input attachments. These
+	 * This is primary struct template for attachment descriptions like color, depth, and input attachments. These
 	 * attachments (FVulkanRenderPassBuilder::m_AttachmentDescriptions) are used in FVulkanRenderPassBuilder, to create
 	 * VkRenderPassCreateInfo, structure like so
 	 * 
@@ -231,7 +231,9 @@ namespace Karma
 
 	/**
 	 * @brief Template (for VkSubpassDescription(2)) definition of FVulkanSubpassDescription
-	 * 
+	 *
+	 * This is primary class template for subpasses.
+	 *
 	 * Subpasses in Vulkan are passes in RenderPass that define how attachments are used. There is one main subpass
 	 * which is used for standard rendering, which we are going to implement in FVulkanRenderPassBuilder::BuildCreateInfo()
 	 * 
@@ -319,9 +321,11 @@ namespace Karma
 
 	/**
 	 * @brief Template definition of FVulkanSubpassDependency
-	 * 
+	 *
+	 * This is primary struct template for subpass dependency.
+	 *
 	 * SubpassDependencies define memory and execution dependencies between subpasses in a renderpass. These are
-	 * conifgured according to the subpasses defined in the renderpass. Since we are using only one subpass, we will
+	 * configured according to the subpasses defined in the renderpass. Since we are using only one subpass, we will
 	 * use single dependency in FVulkanRenderPassBuilder::BuildCreateInfo()
 	 * 
 	 * @since Karma 1.0.0
@@ -356,7 +360,9 @@ namespace Karma
 
 	/**
 	 * @brief Template definition of FVulkanRenderPassCreateInfo for VkRenderPassCreateInfo(2)
-	 * 
+	 *
+	 * This is primary struct template for renderpass create info.
+	 *
 	 * @since Karma 1.0.0
 	 */
 	template <typename T>
@@ -414,7 +420,7 @@ namespace Karma
 		MaxSimultaneousRenderTargets = 8,
 		MaxSimultaneousRenderTargets_NumBits = 3,
 	};
-    static_assert(MaxSimultaneousRenderTargets <= (1 << MaxSimultaneousRenderTargets_NumBits), "MaxSimultaneousRenderTargets will not fit on MaxSimultaneousRenderTargets_NumBits");
+	static_assert(MaxSimultaneousRenderTargets <= (1 << MaxSimultaneousRenderTargets_NumBits), "MaxSimultaneousRenderTargets will not fit on MaxSimultaneousRenderTargets_NumBits");
 
 	/**
 	 * @brief Data structure to hold information about Vulkan renderpass attachments (like color and depth attachments).
