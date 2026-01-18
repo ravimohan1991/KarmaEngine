@@ -96,12 +96,12 @@ namespace Karma
 		inline void SetDepthStencilAttachment(const VkAttachmentReference& AttachmentReferenceIn, const VkAttachmentReferenceStencilLayout* StencilReference, VkImageAspectFlags AspectMask, bool bSupportsParallelRendering) { checkNoEntry(); }
 		
 		/**
-		 * @brief Template definition for zero initialization
+		 * @brief Template definition for zero initialization. Specialized out-of-class definition exists
 		 * 
 		 * @since Karma 1.0.0
 		 */
 		inline void ZeroStruct() {}
-		inline void SetAspect(uint32_t Aspect) {}
+		//inline void SetAspect(uint32_t Aspect) {}
 	};
 
 	/**
@@ -134,9 +134,28 @@ namespace Karma
 	}
 
 	/**
-	 * @brief Template (for VkAttachmentDescription) definition of FVulkanAttachmentDescription
+	 * @brief Template specialization out-of-class definition for zero initialization
+	 * 
+	 * This function is triggered by FVulkanAttachmentReference constructor
+	 * 
+	 * @since Karma 1.0.0
+	 */
+	template<>
+	inline void FVulkanAttachmentReference<VkAttachmentReference>::ZeroStruct()
+	{
+		attachment = 0;
+		layout = VK_IMAGE_LAYOUT_UNDEFINED;
+	}
+
+	/**
+	 * @brief Template (for VkAttachmentDescription(2)) definition of FVulkanAttachmentDescription
+	 * 
+	 * This is primary class template for attachment descriptions like color, depth, and input attachments. These
+	 * attachments (FVulkanRenderPassBuilder::m_AttachmentDescriptions) are used in FVulkanRenderPassBuilder, to create
+	 * VkRenderPassCreateInfo, structure like so
+	 * 
+	 * 	FVulkanRenderPassBuilder<.., FVulkanAttachmentDescription<VkAttachmentDescription>, ..> Creator(InDevice);
 	 *
-	 * Is this the CRTP reversal?
 	 * 
 	 * @since Karma 1.0.0
 	 */
@@ -146,17 +165,31 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Specializing (?) FVulkanAttachmentDescription for VkAttachmentDescription
+	 * @brief Specializing FVulkanAttachmentDescription for VkAttachmentDescription
+	 * 
+	 * @since Karma 1.0.0
 	 */
 	template<>
 	struct FVulkanAttachmentDescription<VkAttachmentDescription>
 		: public VkAttachmentDescription
 	{
+		/**
+		 * @brief Default constructor to zero initialize the structure
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FVulkanAttachmentDescription()
 		{
 			FMemory::Memzero(this, sizeof(VkAttachmentDescription));
 		}
 
+		/**
+		 * @brief Constructor to copy from VkAttachmentDescription
+		 * 
+		 * Triggered by m_AttachmentDescriptions.Add(TAttachmentDescriptionClass(RTLayout.GetAttachmentDescriptions()[Attachment]));
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FVulkanAttachmentDescription(const VkAttachmentDescription& InDesc)
 		{
 			flags = InDesc.flags;
@@ -172,6 +205,10 @@ namespace Karma
 
 		/**
 		 * @brief Seems like we are not supporting VkAttachmentDescriptionStencilLayout
+		 * 
+		 * For understanding purposes only atm
+		 * 
+		 * @since Karma 1.0.0
 		 */
 		FVulkanAttachmentDescription(const VkAttachmentDescription& InDesc, const VkAttachmentDescriptionStencilLayout* InStencilDesc, bool bSupportsParallelRendering)
 		{
@@ -193,7 +230,13 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Template (for VkSubpassDescription) definition of FVulkanSubpassDescription
+	 * @brief Template (for VkSubpassDescription(2)) definition of FVulkanSubpassDescription
+	 * 
+	 * Subpasses in Vulkan are passes in RenderPass that define how attachments are used. There is one main subpass
+	 * which is used for standard rendering, which we are going to implement in FVulkanRenderPassBuilder::BuildCreateInfo()
+	 * 
+	 * Unreal Engine has multiple subpasses for various effects. For instance color write / depth read subpass for deferred shading
+	 * optimization etc. We will keep this simple.
 	 * 
 	 * @since Karma 1.0.0
 	 */
@@ -203,18 +246,33 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Specialized definition of FVulkanSubpassDescription
+	 * @brief Specialized definition of FVulkanSubpassDescription for VkSubpassDescription
 	 */
 	template<>
 	struct FVulkanSubpassDescription<VkSubpassDescription>
 		: public VkSubpassDescription
 	{
+		/**
+		 * @brief Default constructor to zero initialize the structure
+		 * 
+		 * Triggered by the FVulkanRenderPassBuilder constructor for variable m_SubpassDescriptions
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FVulkanSubpassDescription()
 		{
 			FMemory::Memzero(this, sizeof(VkSubpassDescription));
 			pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 		}
 
+		/**
+		 * @brief Set color attachments for the subpass
+		 * 
+		 * @param ColorAttachmentReferences								Array of color attachment references for the subpass
+		 * @param OverrideCount											Optional override for number of color attachments
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		void SetColorAttachments(const KarmaVector<FVulkanAttachmentReference<VkAttachmentReference>>& ColorAttachmentReferences, int OverrideCount = -1)
 		{
 			colorAttachmentCount = (OverrideCount == -1) ? ColorAttachmentReferences.Num() : OverrideCount;
@@ -230,6 +288,13 @@ namespace Karma
 			}
 		}*/
 
+		/**
+		 * @brief Set depth-stencil attachment for the subpass
+		 * 
+		 * @param DepthStencilAttachmentReference						Depth-stencil attachment reference for the subpass
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		void SetDepthStencilAttachment(FVulkanAttachmentReference<VkAttachmentReference>* DepthStencilAttachmentReference)
 		{
 			pDepthStencilAttachment = static_cast<VkAttachmentReference*>(DepthStencilAttachmentReference);
@@ -252,16 +317,37 @@ namespace Karma
 		}*/
 	};
 
+	/**
+	 * @brief Template definition of FVulkanSubpassDependency
+	 * 
+	 * SubpassDependencies define memory and execution dependencies between subpasses in a renderpass. These are
+	 * conifgured according to the subpasses defined in the renderpass. Since we are using only one subpass, we will
+	 * use single dependency in FVulkanRenderPassBuilder::BuildCreateInfo()
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	template <typename TSubpassDependencyType>
 	struct FVulkanSubpassDependency
 		: public TSubpassDependencyType
 	{
 	};
 
+	/**
+	 * @brief Specialized definition of FVulkanSubpassDependency for VkSubpassDependency(2)
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	template<>
 	struct FVulkanSubpassDependency<VkSubpassDependency>
 		: public VkSubpassDependency
 	{
+		/**
+		 * @brief Default constructor to zero initialize the structure
+		 * 
+		 * Triggered by FVulkanRenderPassBuilder constructor for variable m_SubpassDependencies
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FVulkanSubpassDependency()
 		{
 			FMemory::Memzero(this, sizeof(VkSubpassDependency));
@@ -269,7 +355,9 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Template definition of FVulkanRenderPassCreateInfo
+	 * @brief Template definition of FVulkanRenderPassCreateInfo for VkRenderPassCreateInfo(2)
+	 * 
+	 * @since Karma 1.0.0
 	 */
 	template <typename T>
 	struct FVulkanRenderPassCreateInfo
@@ -285,6 +373,10 @@ namespace Karma
 	{
 		/**
 		 * @brief Constructor to initialize the renderpass create info structure
+		 * 
+		 * The constructor basically sets sType and zero initializes the rest of the structure
+		 * 
+		 * @since Karma 1.0.0
 		 */
 		FVulkanRenderPassCreateInfo()
 		{
@@ -557,14 +649,14 @@ namespace Karma
 			// VkAttachmentDescription for color/depth attachments
 			for (uint32_t Attachment = 0; Attachment < RTLayout.GetNumAttachmentDescriptions(); ++Attachment)
 			{
-				if (bHasDepthStencilAttachmentReference && (Attachment == m_DepthStencilAttachmentReference.attachment))
+				/*if (bHasDepthStencilAttachmentReference && (Attachment == m_DepthStencilAttachmentReference.attachment))
 				{
-					//m_AttachmentDescriptions.Add(TAttachmentDescriptionClass(RTLayout.GetAttachmentDescriptions()[Attachment], RTLayout.GetStencilDescription(), false/*Device.SupportsParallelRendering()*/));
+					//m_AttachmentDescriptions.Add(TAttachmentDescriptionClass(RTLayout.GetAttachmentDescriptions()[Attachment], RTLayout.GetStencilDescription(), false/*Device.SupportsParallelRendering()));
 				}
-				else
-				{
+				else*/
+				//{
 					m_AttachmentDescriptions.Add(TAttachmentDescriptionClass(RTLayout.GetAttachmentDescriptions()[Attachment]));
-				}
+				//}
 			}
 			
 			// VkAttachmentReference for color attachments
