@@ -17,20 +17,53 @@ struct GLFWwindow;
 
 namespace Karma
 {
+	/**
+	 * @brief Information required to recreate a Vulkan swapchain.
+	 * 
+	 * @note To be battle tested during swapchain recreation on window resize
+	 * @since Karma 1.0.0
+	 */
 	struct FVulkanSwapChainRecreateInfo
 	{
+		/**
+		 * @brief
+		 */
 		VkSwapchainKHR SwapChain;
+
+		/**
+		 * @brief
+		 */
 		VkSurfaceKHR Surface;
 	};
 
+	/**
+	 * @brief Represents a Vulkan swapchain, managing the images used for rendering and presentation.
+	 * 
+	 * A swapchain is a series of images that are presented to the screen in a specific order. It is a crucial component in Vulkan for rendering graphics to a window.
+	 * Since there is not default framebuffer in Vulkan, the swapchain provides the images that will be used as the framebuffer for rendering.
+	 * 
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	class FVulkanSwapChain
 	{
 	public:
+		/**
+		 * @brief Creates a Vulkan swapchain based on the provided device.
+		 * 
+		 * @param InDevice						The FVulkanDevice containing the LogicalDevice and GPU
+		 * 
+		 * @see KarmaGuiVulkanHandler::FillWindowData
+		 * @since Karma 1.0.0
+		 */
 		static FVulkanSwapChain* Create(FVulkanDevice* InDevice);
 
 		/**
 		 * @brief Destroys the swapchain appropriately
 		 *
+		 * @param RecreateInfo					Information required to recreate the swapchain
+		 * 
+		 * @note m_SwapChainImages are cleared automatically when vkDestroySwapchainKHR is called
 		 * @since Karma 1.0.0
 		 */
 		void Destroy(FVulkanSwapChainRecreateInfo* RecreateInfo);
@@ -68,7 +101,6 @@ namespace Karma
 		 * 
 		 * @param availableFormats						The available surface formats (from QuerySwapChainSupport())
 		 *
-		 * @see VulkanContext::CreateSwapChain()
 		 * @since Karma 1.0.0
 		 */
 		static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
@@ -80,7 +112,6 @@ namespace Karma
 		 *
 		 * @param availablePresentModes				The available presentation modes (from QuerySwapChainSupport())
 		 *
-		 * @see VulkanContext::CreateSwapChain()
 		 * @since Karma 1.0.0
 		 */
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -90,7 +121,6 @@ namespace Karma
 		 *
 		 * @param capabilities						The surface capabilities (from QuerySwapChainSupport())
 		 *
-		 * @see VulkanContext::CreateSwapChain()
 		 * @since Karma 1.0.0
 		 */
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
@@ -123,7 +153,7 @@ namespace Karma
 		uint32_t m_SemaphoreIndex;
 
 		// Number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1
-		// Clearly, MAX_FRAMES_IN_FLIGHT shouldn't exceed m_SwapChainImages.size()
+		// Clearly, m_SwapChainImages.size() shouldn't exceed MAX_FRAMES_IN_FLIGHT
 		const uint32_t MAX_FRAMES_IN_FLIGHT = 4;
 	};
 }

@@ -123,8 +123,7 @@ namespace Karma
 	/**
 	 * @brief Vulkan implementation of the Dynamic RHI.
 	 * 
-	 * Provides Vulkan-specific implementations for initializing/deinitializing RHI along with Vulkan resources
-	 * along with rendering operations.
+	 * Provides Vulkan-specific implementations for initializing/deinitializing RHI along with Vulkan resources and rendering operations.
 	 * 
 	 * @since Karma 1.0.0
 	 */
