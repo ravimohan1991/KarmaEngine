@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file KarmaTypes.h
  * @author Ravi Mohan (the_cowboy)
  * @brief This file contains the types used in game logic
@@ -363,6 +363,13 @@ public:
 		m_Elements[Index] = Value;
 	}
 
+	/**
+	 * @brief Clears the vector from all the elements
+	 *
+	 * @since Karma 1.0.0
+	 */
+	inline void Clear() { m_Elements.clear(); }
+	
 	/**
 	 * @brief Getter for the elements of vector
 	 *

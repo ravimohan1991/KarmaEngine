@@ -1563,9 +1563,10 @@ namespace Karma
 			frameData->Framebuffer = frameBuffer->GetHandle();
 		}
 
-		// For syncronicity, we instantiate FramesOnFlight with MAX_FRAMES_IN_FLIGHT number and label them the Real-Frames-On-Flight in our mind
-		KR_CORE_ASSERT(windowData->FramesOnFlight == nullptr, "Somehow frames-on-flight are still occupied. Please clear them.");
-		windowData->FramesOnFlight = new KarmaGui_Vulkan_Frame_On_Flight[windowData->MAX_FRAMES_IN_FLIGHT];
+		if(windowData->FramesOnFlight == nullptr)
+		{
+			windowData->FramesOnFlight = new KarmaGui_Vulkan_Frame_On_Flight[windowData->MAX_FRAMES_IN_FLIGHT];
+		}
 
 		KR_CORE_ASSERT(windowData->FramesOnFlight != nullptr, "Commandbuffers are being assigned without enough resources");
 
@@ -1721,98 +1722,66 @@ namespace Karma
 		RPInfo.m_RenderArea.extent = SwapChain->GetSwapChainExtent();
 	}
 
-	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
+	void KarmaGuiVulkanHandler::ShivaSwapChainForRebuild(KarmaGui_ImplVulkanH_Window* windowData)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
-		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-
-		// Clear the structure with now redundant information
-		ClearVulkanWindowData(windowData, bCreateSyncronicity);
-
-		RendererAPI* rAPI = RenderCommand::GetRendererAPI();
-		VulkanRendererAPI* vulkanAPI = nullptr;
-
-		if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
-		{
-			vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
-		}
-		else
-		{
-			KR_CORE_ASSERT(false, "How is this even possible?");
-		}
-
-		KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-
-		// Fill relevant information gathered from VulkanContext
-		// Assuming new swapchain and all that has been created in the KarmaGuiLayer::GiveLoopBeginControlToVulkan
-		windowData->Swapchain = VulkanHolder::GetVulkanContext()->GetSwapChain();
-		windowData->TotalImageCount = (uint32_t)VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
-		windowData->RenderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
-		windowData->RenderArea.offset = { 0, 0 };
-		windowData->RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
-		windowData->MAX_FRAMES_IN_FLIGHT = vulkanAPI->GetMaxFramesInFlight();
-		windowData->CommandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
-		windowData->ImageFrameIndex = 0;
-
-		KR_CORE_ASSERT(windowData->ImageFrames == nullptr, "Somehow frames are still occupied. Please clear them.");
-		windowData->ImageFrames = new KarmaGui_ImplVulkanH_ImageFrame[windowData->TotalImageCount];
-
-		for (uint32_t counter = 0; counter < windowData->TotalImageCount; counter++)
-		{
-			KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[counter];
-
-			// VulkanContext ImageView equivalent
-			frameData->BackbufferView = VulkanHolder::GetVulkanContext()->GetSwapChainImageViews()[counter];
-
-			// Framebuffer
-			frameData->Framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[counter];
-
-			// Backbuffers could be VulkanContext m_swapChainImages equivalent
-			frameData->Backbuffer = VulkanHolder::GetVulkanContext()->GetSwapChainImages()[counter];
-		}
-
-		// We create seperate syncronicity resources for Dear KarmaGui
-		if (bCreateSyncronicity)
-		{
-			// For syncronicity, we instantiate FramesOnFlight with MAX_FRAMES_IN_FLIGHT number and label them the Real-Frames-On-Flight in our mind
-			KR_CORE_ASSERT(windowData->FramesOnFlight == nullptr, "Somehow frames-on-flight are still occupied. Please clear them.");
-
-			windowData->FramesOnFlight = new KarmaGui_Vulkan_Frame_On_Flight[windowData->MAX_FRAMES_IN_FLIGHT];
-
-			for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
-			{
-				KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
-
-				VkFenceCreateInfo fenceInfo = {};
-				fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-				fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-				VkResult result = vkCreateFence(vulkanInfo->Device, &fenceInfo, VK_NULL_HANDLE, &frameOnFlight->Fence);
-
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create fence");
-
-				VkSemaphoreCreateInfo semaphoreInfo = {};
-				semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-				result = vkCreateSemaphore(vulkanInfo->Device, &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->ImageAcquiredSemaphore);
-
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create ImageAcquiredSemaphore");
-
-				result = vkCreateSemaphore(vulkanInfo->Device, &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->RenderCompleteSemaphore);
-
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create RenderCompleteSemaphore");
-			}
-
-			windowData->SemaphoreIndex = 0;
-		}
-
-		KR_CORE_ASSERT(windowData->FramesOnFlight != nullptr, "Commandbuffers are being assigned without enough resources");
-		vulkanAPI->AllocateCommandBuffers();
-
+		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+		
+		std::vector<VkCommandBuffer> commandBuffers;
+		commandBuffers.resize(windowData->MAX_FRAMES_IN_FLIGHT);
+		
 		for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
 		{
 			KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
-			frameOnFlight->CommandBuffer = vulkanAPI->GetCommandBuffers()[counter];
+			commandBuffers[counter] = frameOnFlight->CommandBuffer;
 		}
+		
+		vkDeviceWaitIdle(logicalDevice);
+		
+		vkFreeCommandBuffers(logicalDevice, windowData->CommandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+		
+		// 1. Deletes imageframes and frames on flight objects
+		ClearVulkanWindowData(windowData, false);
+		
+		for(const auto& vulkanFramebuffer : windowData->RHIResources.VulkanFrameBuffers.GetElements())
+		{
+			delete vulkanFramebuffer;
+		}
+		windowData->RHIResources.VulkanFrameBuffers.Clear();
+		
+		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
+		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
+		for(const auto& renderTargets : windowData->RHIResources.RenderTargets.GetElements())
+		{
+			for(uint32_t counter = 0; counter < FVulkanDynamicRHI::Get().SwapChainImageCount(); counter++)
+			{
+				if(!renderTargets->m_ColorRenderTargets[counter].bSwapChainColorRenderTarget)
+				{
+					for(uint32_t colorRT = 0; colorRT < renderTargets->m_NumColorRenderTargets; colorRT++)
+					{
+						vkDestroyImageView(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTViews[colorRT], nullptr);
+						vkDestroyImage(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTImages[colorRT], nullptr);
+						vkFreeMemory(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTDeviceMemory[colorRT], nullptr);
+					}
+				}
+			}
+			
+			if(renderTargets->bDepthRenderTarget)
+			{
+				vkDestroyImageView(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTView, nullptr);
+				vkDestroyImage(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTImage, nullptr);
+				vkFreeMemory(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTDeviceMemory, nullptr);
+			}
+			
+			delete renderTargets;
+		}
+		windowData->RHIResources.RenderTargets.Clear();
+		
+		delete windowData->RHIResources.VulkanRenderPass;
+
+		FVulkanSwapChainRecreateInfo RI{};
+		windowData->RHIResources.VulkanSwapChain->Destroy(&RI);
+		delete windowData->RHIResources.VulkanSwapChain;
+		windowData->RHIResources.VulkanSwapChain = nullptr;
 	}
 
 	void KarmaGuiVulkanHandler::ClearVulkanWindowData(KarmaGui_ImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity)
@@ -1898,24 +1867,10 @@ namespace Karma
 	{
 		if (bRecreateSwapChainAndCommandBuffers)
 		{
-			RendererAPI* rAPI = RenderCommand::GetRendererAPI();
-			VulkanRendererAPI* vulkanAPI = nullptr;
-
-			if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
-			{
-				vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
-			}
-			else
-			{
-				KR_CORE_ASSERT(false, "How is this even possible?");
-			}
-
-			KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-
-			vulkanAPI->RecreateCommandBuffersAndSwapChain();
+			KarmaGuiVulkanHandler::ShivaSwapChainForRebuild(windowData);
 		}
 
-		KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(windowData, bCreateSyncronicity);
+		KarmaGuiVulkanHandler::FillWindowData(windowData, bCreateSyncronicity);
 	}
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
@@ -1941,6 +1896,7 @@ namespace Karma
 		{
 			delete vulkanFramebuffer;
 		}
+		windowData->RHIResources.VulkanFrameBuffers.Clear();
 		
 		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
 		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
@@ -1968,6 +1924,7 @@ namespace Karma
 			
 			delete renderTargets;
 		}
+		windowData->RHIResources.RenderTargets.Clear();
 		
 		delete windowData->RHIResources.VulkanRenderPass;
 
@@ -1976,7 +1933,7 @@ namespace Karma
 		delete windowData->RHIResources.VulkanSwapChain;
 		windowData->RHIResources.VulkanSwapChain = nullptr;
 		
-		return; // <-- to be uncommented when we have RHI (actually removed)
+		return; // <-- to be uncommented when we have offscreen rendering logic
 
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
