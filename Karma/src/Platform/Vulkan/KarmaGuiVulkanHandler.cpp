@@ -1739,8 +1739,7 @@ namespace Karma
 		
 		vkFreeCommandBuffers(logicalDevice, windowData->CommandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
 		
-		// 1. Deletes imageframes and frames on flight objects
-		ClearVulkanWindowData(windowData, false);
+		ClearVulkanWindowData(windowData, true);
 		
 		for(const auto& vulkanFramebuffer : windowData->RHIResources.VulkanFrameBuffers.GetElements())
 		{
@@ -1805,7 +1804,6 @@ namespace Karma
 			{
 				if (vulkanWindowData->FramesOnFlight != nullptr)
 				{
-					// Remove syncronicity resources using Vulkan API
 					DestroyFramesOnFlightData(&vulkanWindowData->FramesOnFlight[counter]);
 				}
 			}
@@ -1867,10 +1865,10 @@ namespace Karma
 	{
 		if (bRecreateSwapChainAndCommandBuffers)
 		{
-			KarmaGuiVulkanHandler::ShivaSwapChainForRebuild(windowData);
+			ShivaSwapChainForRebuild(windowData);
 		}
 
-		KarmaGuiVulkanHandler::FillWindowData(windowData, bCreateSyncronicity);
+		FillWindowData(windowData, bCreateSyncronicity);
 	}
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
@@ -2129,7 +2127,7 @@ namespace Karma
 		KarmaGui_ImplVulkanH_Window* windowData = &viewportData->Window;
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
-        //KarmaGuiViewport* mainViewPort = KarmaGui::GetMainViewport();
+		//KarmaGuiViewport* mainViewPort = KarmaGui::GetMainViewport();
 
 		VkResult result;
 		uint32_t presentIndex = windowData->ImageFrameIndex;

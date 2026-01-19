@@ -280,9 +280,7 @@ namespace Karma
 
 			if (width > 0 && height > 0)
 			{
-				KarmaGuiVulkanHandler::ShivaSwapChainForRebuild(&m_VulkanWindowData);
-				KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, false);
-				
+				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateOrResizeWindow(&m_VulkanWindowData, true, true);
 				m_SwapChainRebuild = false;
 			}
 		}
@@ -412,15 +410,13 @@ namespace Karma
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		// Pointer to the per frame data for instance fence, semaphores, and commandbuffer
-		// Remember windowData->SemaphoreIndex is m_CurrentFrame equivalent of VulkanRendererAPI
 		KarmaGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		VkResult result;
 
-		// IDK why for resizing vkResetFences before vkQueueSubmit works. Needs investigation
+		// Fence needs to be signaled to pass the vkWaitForFences.
 		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
 
-		// ImageAcquiredSemaphore is m_ImageAvailableSemaphores equivalent
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
 		VkSemaphore renderCompleteSemaphore = frameOnFlightData->RenderCompleteSemaphore;
 
@@ -580,10 +576,12 @@ namespace Karma
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &renderCompleteSemaphore;
 
-		// We reset the fence here or else the swapchain rebuild seemingly fails
+		// vkResetFences unsignals the Fence
+		// Fixing a deadlock: https://vulkan-tutorial.com/Drawing_a_triangle/Swap_chain_recreation#page_Fixing-a-deadlock
 		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
 		
+		// vkQueueSubmit signals the Fence once commandbuffers finish execution
 		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 	}
