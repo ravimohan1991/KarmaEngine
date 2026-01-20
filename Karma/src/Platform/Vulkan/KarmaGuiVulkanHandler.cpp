@@ -1538,7 +1538,7 @@ namespace Karma
 		windowData->ImageFrames = new KarmaGui_ImplVulkanH_ImageFrame[windowData->TotalImageCount];
 
 		FVulkanRenderTargetsInfo* rT = new FVulkanRenderTargetsInfo();
-		windowData->RHIResources->RenderTargets.push_back(rT);
+		windowData->RHIResources->RenderTargets.Add(rT);
 		
 		FVulkanRenderTargetsInfo& renderTargets = *rT;
 		CreateDepthRenderTarget(renderTargets, windowData->RHIResources->VulkanSwapChain);
@@ -1559,7 +1559,7 @@ namespace Karma
 			
 			FVulkanFramebuffer* frameBuffer = new FVulkanFramebuffer(*FVulkanDynamicRHI::Get().GetDevice(), renderTargets, RTLayout, *windowData->RHIResources->VulkanRenderPass, counter);
 			
-			windowData->RHIResources->VulkanFrameBuffers.push_back(frameBuffer);// Add(frameBuffer);
+			windowData->RHIResources->VulkanFrameBuffers.Add(frameBuffer);
 			
 			// Framebuffer
 			frameData->Framebuffer = frameBuffer->GetHandle();
@@ -1747,25 +1747,11 @@ namespace Karma
 		{
 			delete vulkanFramebuffer;
 		}
-		windowData->RHIResources->VulkanFrameBuffers.clear();
+		windowData->RHIResources->VulkanFrameBuffers.Clear();
 		
-		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
-		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
+		// DepthRenderTarget of the swapchain should be destroyed here. This assumes depth render target is only used for swapchain
 		for(const auto& renderTargets : windowData->RHIResources->RenderTargets)
 		{
-			for(uint32_t counter = 0; counter < FVulkanDynamicRHI::Get().SwapChainImageCount(); counter++)
-			{
-				if(!renderTargets->m_ColorRenderTargets[counter].bSwapChainColorRenderTarget)
-				{
-					for(uint32_t colorRT = 0; colorRT < renderTargets->m_NumColorRenderTargets; colorRT++)
-					{
-						vkDestroyImageView(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTViews[colorRT], nullptr);
-						vkDestroyImage(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTImages[colorRT], nullptr);
-						vkFreeMemory(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTDeviceMemory[colorRT], nullptr);
-					}
-				}
-			}
-			
 			if(renderTargets->bDepthRenderTarget)
 			{
 				vkDestroyImageView(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTView, nullptr);
@@ -1775,7 +1761,7 @@ namespace Karma
 			
 			delete renderTargets;
 		}
-		windowData->RHIResources->RenderTargets.clear();
+		windowData->RHIResources->RenderTargets.Clear();
 		
 		delete windowData->RHIResources->VulkanRenderPass;
 
@@ -1898,7 +1884,7 @@ namespace Karma
 		{
 			delete vulkanFramebuffer;
 		}
-		windowData->RHIResources->VulkanFrameBuffers.clear();
+		windowData->RHIResources->VulkanFrameBuffers.Clear();
 		
 		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
 		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
@@ -1926,7 +1912,7 @@ namespace Karma
 			
 			delete renderTargets;
 		}
-		windowData->RHIResources->RenderTargets.clear();
+		windowData->RHIResources->RenderTargets.Clear();
 		
 		delete windowData->RHIResources->VulkanRenderPass;
 

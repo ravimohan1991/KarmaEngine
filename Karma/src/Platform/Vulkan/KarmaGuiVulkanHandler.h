@@ -303,13 +303,13 @@ namespace Karma
 		 * @brief Primary renderpass for on-screen presentation
 		 */
 		FVulkanRenderPass*                          VulkanRenderPass;
-		std::vector<FVulkanFramebuffer*>            VulkanFrameBuffers;
+		KarmaVector<FVulkanFramebuffer*>            VulkanFrameBuffers;
 		
 		/**
 		 * @brief Collection of render targets organized in KarmaVector. Meaning each KarmaVector element contains
 		 * a collection of rendertarget for a framebuffer
 		 */
-		std::vector<FVulkanRenderTargetsInfo*>      RenderTargets;
+		KarmaVector<FVulkanRenderTargetsInfo*>      RenderTargets;
 	};
 
 	/**
