@@ -36,7 +36,7 @@ namespace Karma
 
 	bool MacWindow::OnResize(WindowResizeEvent& event)
 	{
-		return true; //m_Context->OnWindowResize(event);
+        return false; //m_Context->OnWindowResize(event);
 	}
 
 	void MacWindow::Init(const WindowProps& props)
