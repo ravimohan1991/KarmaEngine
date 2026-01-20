@@ -237,7 +237,7 @@ namespace Karma
 	{
 		VkDeviceSize bufferSize = GetBufferSize();
 		
-		int maxFramesInFlight = KarmaGuiRenderer::GetWindowData().RHIResources.VulkanSwapChain->GetMaxFramesInFlight();
+		int maxFramesInFlight = KarmaGuiRenderer::GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
 
 		m_UniformBuffers.resize(maxFramesInFlight);
 		m_UniformBuffersMemory.resize(maxFramesInFlight);

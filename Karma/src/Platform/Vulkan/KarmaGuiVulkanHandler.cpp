@@ -240,7 +240,7 @@ namespace Karma
 
 		if (windowRenderBuffers->FrameRenderBuffers == nullptr)
 		{
-			windowRenderBuffers->Count = KarmaGuiRenderer::GetWindowData().RHIResources.VulkanSwapChain->GetMaxFramesInFlight();
+			windowRenderBuffers->Count = KarmaGuiRenderer::GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
 
 			// Caution: Need to think about the object instantiation and resource management
 			// Cowboy's Note: delete is done in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_ShivaWindowRenderBuffers
@@ -1506,22 +1506,24 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
 	{
-		windowData->RHIResources.VulkanSwapChain = FVulkanSwapChain::Create(FVulkanDynamicRHI::Get().GetDevice());
+		windowData->RHIResources = new KarmaGui_ImplVulkanH_RHIResources();
 
-		windowData->Swapchain = windowData->RHIResources.VulkanSwapChain->GetSwapChainHandle();
+		windowData->RHIResources->VulkanSwapChain = FVulkanSwapChain::Create(FVulkanDynamicRHI::Get().GetDevice());
+
+		windowData->Swapchain = windowData->RHIResources->VulkanSwapChain->GetSwapChainHandle();
 		
 		windowData->TotalImageCount = FVulkanDynamicRHI::Get().SwapChainImageCount();
-		windowData->RenderArea.extent = windowData->RHIResources.VulkanSwapChain->GetSwapChainExtent();
+		windowData->RenderArea.extent = windowData->RHIResources->VulkanSwapChain->GetSwapChainExtent();
 		windowData->RenderArea.offset = { 0, 0 };
-		windowData->MAX_FRAMES_IN_FLIGHT = windowData->RHIResources.VulkanSwapChain->GetMaxFramesInFlight();
+		windowData->MAX_FRAMES_IN_FLIGHT = windowData->RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
 
 		KR_CORE_INFO("Attempting to create primary Vulkan renderpass for on-screen presentation");
 		FVulkanRenderPassInfo RPInfo;
-		KarmaGuiVulkanHandler::MakeRenderPassInfo(windowData->RHIResources.VulkanSwapChain, RPInfo);
+		KarmaGuiVulkanHandler::MakeRenderPassInfo(windowData->RHIResources->VulkanSwapChain, RPInfo);
 
 		FVulkanRenderTargetLayout RTLayout(RPInfo);
-		windowData->RHIResources.VulkanRenderPass = new FVulkanRenderPass(*FVulkanDynamicRHI::Get().GetDevice(), RTLayout);
-		windowData->RenderPass = windowData->RHIResources.VulkanRenderPass->GetHandle();
+		windowData->RHIResources->VulkanRenderPass = new FVulkanRenderPass(*FVulkanDynamicRHI::Get().GetDevice(), RTLayout);
+		windowData->RenderPass = windowData->RHIResources->VulkanRenderPass->GetHandle();
 
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 
@@ -1536,10 +1538,10 @@ namespace Karma
 		windowData->ImageFrames = new KarmaGui_ImplVulkanH_ImageFrame[windowData->TotalImageCount];
 
 		FVulkanRenderTargetsInfo* rT = new FVulkanRenderTargetsInfo();
-		windowData->RHIResources.RenderTargets.Add(rT);
+		windowData->RHIResources->RenderTargets.push_back(rT);
 		
 		FVulkanRenderTargetsInfo& renderTargets = *rT;
-		CreateDepthRenderTarget(renderTargets, windowData->RHIResources.VulkanSwapChain);
+		CreateDepthRenderTarget(renderTargets, windowData->RHIResources->VulkanSwapChain);
 		
 		renderTargets.m_ColorRenderTargets.resize(windowData->TotalImageCount);
 		
@@ -1548,16 +1550,16 @@ namespace Karma
 			KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[counter];
 
 			// Backbuffers are swapchain images
-			frameData->Backbuffer = windowData->RHIResources.VulkanSwapChain->GetSwapChainImages()[counter];
+			frameData->Backbuffer = windowData->RHIResources->VulkanSwapChain->GetSwapChainImages()[counter];
 
 			// BackbufferViews are swapchain image views
-			frameData->BackbufferView = windowData->RHIResources.VulkanSwapChain->GetSwapChainImageViews()[counter];
+			frameData->BackbufferView = windowData->RHIResources->VulkanSwapChain->GetSwapChainImageViews()[counter];
 
-			GatherSwapChainColorRenderTargets(renderTargets, windowData->RHIResources.VulkanSwapChain, counter);
+			GatherSwapChainColorRenderTargets(renderTargets, windowData->RHIResources->VulkanSwapChain, counter);
 			
-			FVulkanFramebuffer* frameBuffer = new FVulkanFramebuffer(*FVulkanDynamicRHI::Get().GetDevice(), renderTargets, RTLayout, *windowData->RHIResources.VulkanRenderPass, counter);
+			FVulkanFramebuffer* frameBuffer = new FVulkanFramebuffer(*FVulkanDynamicRHI::Get().GetDevice(), renderTargets, RTLayout, *windowData->RHIResources->VulkanRenderPass, counter);
 			
-			windowData->RHIResources.VulkanFrameBuffers.Add(frameBuffer);
+			windowData->RHIResources->VulkanFrameBuffers.push_back(frameBuffer);// Add(frameBuffer);
 			
 			// Framebuffer
 			frameData->Framebuffer = frameBuffer->GetHandle();
@@ -1741,15 +1743,15 @@ namespace Karma
 		
 		ClearVulkanWindowData(windowData, true);
 		
-		for(const auto& vulkanFramebuffer : windowData->RHIResources.VulkanFrameBuffers.GetElements())
+		for(const auto& vulkanFramebuffer : windowData->RHIResources->VulkanFrameBuffers)
 		{
 			delete vulkanFramebuffer;
 		}
-		windowData->RHIResources.VulkanFrameBuffers.Clear();
+		windowData->RHIResources->VulkanFrameBuffers.clear();
 		
 		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
 		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
-		for(const auto& renderTargets : windowData->RHIResources.RenderTargets.GetElements())
+		for(const auto& renderTargets : windowData->RHIResources->RenderTargets)
 		{
 			for(uint32_t counter = 0; counter < FVulkanDynamicRHI::Get().SwapChainImageCount(); counter++)
 			{
@@ -1773,14 +1775,16 @@ namespace Karma
 			
 			delete renderTargets;
 		}
-		windowData->RHIResources.RenderTargets.Clear();
+		windowData->RHIResources->RenderTargets.clear();
 		
-		delete windowData->RHIResources.VulkanRenderPass;
+		delete windowData->RHIResources->VulkanRenderPass;
 
 		FVulkanSwapChainRecreateInfo RI{};
-		windowData->RHIResources.VulkanSwapChain->Destroy(&RI);
-		delete windowData->RHIResources.VulkanSwapChain;
-		windowData->RHIResources.VulkanSwapChain = nullptr;
+		windowData->RHIResources->VulkanSwapChain->Destroy(&RI);
+		delete windowData->RHIResources->VulkanSwapChain;
+		windowData->RHIResources->VulkanSwapChain = nullptr;
+
+		delete windowData->RHIResources;
 	}
 
 	void KarmaGuiVulkanHandler::ClearVulkanWindowData(KarmaGui_ImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity)
@@ -1890,15 +1894,15 @@ namespace Karma
 		// 2. Deletes imageframes and frames on flight objects
 		ClearVulkanWindowData(windowData, true);
 		
-		for(const auto& vulkanFramebuffer : windowData->RHIResources.VulkanFrameBuffers.GetElements())
+		for(const auto& vulkanFramebuffer : windowData->RHIResources->VulkanFrameBuffers)
 		{
 			delete vulkanFramebuffer;
 		}
-		windowData->RHIResources.VulkanFrameBuffers.Clear();
+		windowData->RHIResources->VulkanFrameBuffers.clear();
 		
 		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
 		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
-		for(const auto& renderTargets : windowData->RHIResources.RenderTargets.GetElements())
+		for(const auto& renderTargets : windowData->RHIResources->RenderTargets)
 		{
 			for(uint32_t counter = 0; counter < FVulkanDynamicRHI::Get().SwapChainImageCount(); counter++)
 			{
@@ -1922,14 +1926,16 @@ namespace Karma
 			
 			delete renderTargets;
 		}
-		windowData->RHIResources.RenderTargets.Clear();
+		windowData->RHIResources->RenderTargets.clear();
 		
-		delete windowData->RHIResources.VulkanRenderPass;
+		delete windowData->RHIResources->VulkanRenderPass;
 
 		FVulkanSwapChainRecreateInfo RI{};
-		windowData->RHIResources.VulkanSwapChain->Destroy(&RI);
-		delete windowData->RHIResources.VulkanSwapChain;
-		windowData->RHIResources.VulkanSwapChain = nullptr;
+		windowData->RHIResources->VulkanSwapChain->Destroy(&RI);
+		delete windowData->RHIResources->VulkanSwapChain;
+		windowData->RHIResources->VulkanSwapChain = nullptr;
+
+		delete windowData->RHIResources;
 		
 		return; // <-- to be uncommented when we have offscreen rendering logic
 
