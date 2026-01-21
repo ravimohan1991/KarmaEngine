@@ -1306,6 +1306,12 @@ namespace Karma
 		 */
 		static void GatherSwapChainColorRenderTargets(FVulkanRenderTargetsInfo& RTInfo, FVulkanSwapChain* SwapChain, uint32_t SwapChainImageIndex);
 		
+		/**
+		 * @brief Destroys swapchain and related resources for KarmaGui's Vulkan backend
+		 *
+		 * @param windowData                               Container for information required for swapchain destruction
+		 * @since Karma 1.0.0
+		 */
 		static void ShivaSwapChainForRebuild(KarmaGui_ImplVulkanH_Window* windowData);
 		
 		/**
