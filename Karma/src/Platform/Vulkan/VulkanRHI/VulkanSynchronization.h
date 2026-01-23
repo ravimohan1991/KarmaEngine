@@ -29,15 +29,34 @@ namespace Karma
 		{
 		}
 
+		/**
+		 * @brief Makes sure m_UsedFences are zero i.e no fences are currently in use by
+		 * GPU or inflight-work
+		 *
+		 * @since Karma 1.0.0
+		 */
 		~FVulkanFenceManager();
 
-		void Denit() {}
+		/**
+		 * @brief Purpose is two-fold
+		 * 	- 1. Makes sure no fences are currently in use (m_UsedFences.Num ==0)
+		 * 	- 2. Clear off m_FreeFences
+		 *
+		 * @since Karma 1.0.0
+		 */
+		void Denit();
 
+		/**
+		 * @brief Looks in m_FreeFences, if array is not empty, uses the first fence and fills m_UsedFence.
+		 * If m_FreeFences is empty, creates new FVulkanFence and fills m_UsedFence.
+		 *
+		 * @param bCreateSignaled							Should the fence be in Signaled state
+		 */
 		FVulkanFence* AllocateFence(bool bCreateSignaled = false);
 
 		bool IsFenceSignaled(FVulkanFence* InFence);
 
-		bool WaitForFence(FVulkanFence* Fence) {}
+		bool WaitForFence(FVulkanFence* Fence);
 
 		void ResetFence(FVulkanFence* Fence) {}
 
@@ -78,7 +97,18 @@ namespace Karma
 	protected:
 		FVulkanDevice& m_Device;
 
+		/**
+		 * @brief Array of free fences to be used.
+		 *
+		 * @note This gets filled mainly by ReleaseFence and WaitAndReleaseFence once
+		 * work is finished.
+		 */
 		KarmaVector<FVulkanFence*> m_FreeFences;
+		
+		/**
+		 * @brief Array of fences currently in use by GPU or in-flight
+		 * work.
+		 */
 		KarmaVector<FVulkanFence*> m_UsedFences;
 	};
 	

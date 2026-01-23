@@ -92,4 +92,35 @@ namespace Karma
 			return false;
 		}
 	}
+
+	void FVulkanFenceManager::Denit()
+	{
+		KR_CORE_ASSERT(m_UsedFences.Num() == 0, "Not all fences are done")
+		
+		for(FVulkanFence* fence : m_FreeFences)
+		{
+			DestroyFence(fence);
+		}
+	}
+
+	bool FVulkanFenceManager::WaitForFence(FVulkanFence* Fence)
+	{
+		KR_CORE_ASSERT(m_UsedFences.Contains(Fence), "Not a usable fence");
+		KR_CORE_ASSERT(Fence->m_State == FVulkanFence::EState::NotReady, "Not a suitable fence state for wait");
+		
+		VkResult result = vkWaitForFences(m_Device.GetLogicalDevice(), 1, &Fence->m_Handle, true, UINT64_MAX);
+		
+		switch (result)
+		{
+			case VK_SUCCESS:
+				Fence->m_State = FVulkanFence::EState::Signaled;
+				return true;
+			case VK_TIMEOUT:
+				break;
+			default:
+				break;
+		}
+		
+		return false;
+	}
 }
