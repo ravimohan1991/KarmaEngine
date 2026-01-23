@@ -16,6 +16,15 @@
 #include <utility>
 #include <algorithm>
 
+enum class EAllowShrinking
+{
+	/** Allow the array to shrink its allocation if possible */
+	Yes,
+
+	/** Prevent the array from shrinking its allocation */
+	No
+};
+
 /** @brief Specifies why an actor is being deleted/removed from a level */
 namespace EEndPlayReason
 {
@@ -156,7 +165,7 @@ public:
 	 *
 	 * @since Karma 1.0.0
 	 */
-	KarmaVector()
+	KarmaVector() : m_ArrayNum(0)
 	{
 	}
 
@@ -172,6 +181,10 @@ public:
 	/**
 	 * @brief Removes an element from the vector
 	 *
+	 * The function removes all occurrences of the specified element from the vector
+	 * 
+	 * @note The vector size is reduced by the number of removed elements
+	 * 
 	 * @param aBlock	The element to be removed
 	 * @since Karma 1.0.0
 	 */
@@ -186,6 +199,8 @@ public:
 			{
 				iterator = m_Elements.erase(iterator);
 				occurences++;
+
+				m_ArrayNum--;
 			}
 			else
 			{
@@ -205,6 +220,12 @@ public:
 	void Add(BuildingBlock aBlock)
 	{
 		m_Elements.push_back(aBlock);
+		m_ArrayNum++;
+	}
+
+	void RangeCheck(uint32_t Index) const
+	{
+		KR_CORE_ASSERT((Index >= 0 && Index < m_ArrayNum), "KarmaVector: Range check failed");
 	}
 
 	/**
@@ -295,13 +316,36 @@ public:
 	}
 
 	/**
+	 * @brief Removes an element at given location, swapping the last element into its place, and
+	 * optionally shrinking the array.
+	 * 
+	 * @param Index					The index of the element to be removed
+	 * @param AllowShrinking		Whether to allow the array to shrink its allocation if possible
+	 * 
+	 * 
+	 * @note AllowShrinking is not functional yet
+	 * @since Karma 1.0.0
+	 */
+	void RemoveAtSwap(int32_t Index, EAllowShrinking AllowShrinking = EAllowShrinking::Yes)
+	{
+		RangeCheck(Index);
+		RemoveAtSwapImpl(Index);
+
+		if (AllowShrinking == EAllowShrinking::Yes)
+		{
+			// not functional yet
+		}
+	}
+
+	/**
 	 * @brief Returns the total number of elements in a vector
 	 *
 	 * @since Karma 1.0.0
 	 */
 	uint32_t Num() const
 	{
-		return (uint32_t) m_Elements.size();
+		//return (uint32_t) m_Elements.size();
+		return m_ArrayNum;
 	}
 
 	/**
@@ -335,6 +379,7 @@ public:
 		}
 
 		m_Elements.clear();
+		m_ArrayNum = 0;
 	}
 
 	/**
@@ -348,6 +393,7 @@ public:
 	void SmartReset()
 	{
 		m_Elements.clear();
+		m_ArrayNum = 0;
 	}
 
 	/**
@@ -366,9 +412,10 @@ public:
 	/**
 	 * @brief Clears the vector from all the elements
 	 *
+	 * @note Duplicate of SmartReset
 	 * @since Karma 1.0.0
 	 */
-	inline void Clear() { m_Elements.clear(); }
+	inline void Clear() { m_Elements.clear(); m_ArrayNum = 0; }
 	
 	/**
 	 * @brief Getter for the elements of vector
@@ -428,7 +475,7 @@ public:
 	{
 		KR_CORE_ASSERT(Index >= 0, "");
 		
-		if(Index < m_Elements.size())
+		if(Index < m_ArrayNum)
 		{
 			return m_Elements.at(Index);
 		}
@@ -449,7 +496,7 @@ public:
 	 */
 	FORCEINLINE bool IsValidIndex(int32_t Index) const
 	{
-		return Index >= 0 && Index < m_Elements.size();
+		return Index >= 0 && Index < m_ArrayNum;
 	}
 
 	/**
@@ -459,9 +506,53 @@ public:
 	 */
 	FORCEINLINE BuildingBlock const* GetData() const { return m_Elements.data(); }
 
+private:
+	/**
+	 * @brief Internal implementation of RemoveAtSwap
+	 * 
+	 * @param Index					The index of the element to be removed
+	 * @since Karma 1.0.0
+	 */
+	void RemoveAtSwapImpl(int32_t Index)
+	{
+		const BuildingBlock* Data = GetData();
+		const BuildingBlock* Dest = Data + Index;
+
+		DestructItem(Dest);
+
+		// Number of elements (after the generated vacancy) to move
+		int32_t NumToMove = Num() - Index - 1;
+
+		if (NumToMove)
+		{
+			// std::memcpy((void*)Dest, (const void*)(Dest + 1), sizeof(BuildingBlock) * NumToMove);
+			// Perplexity's suggestion for overlapping memory regions
+			// we are moving all elements (from Dest + 1), to Dest
+			std::memmove((void *) Dest, (const void*)(Dest + 1),
+				sizeof(BuildingBlock) * NumToMove);
+		}
+
+		m_ArrayNum--;
+	}
+
+	/**
+	 * @brief Destructs an item of given ElementType
+	 * 
+	 * @note May be placed in different space if need arises
+	 * 
+	 * @param Element				The element to be destructed
+	 * @since Karma 1.0.0
+	 */
+	template <typename ElementType>
+	FORCEINLINE void DestructItem(ElementType* Element)
+	{
+		Element->~ElementType();
+	}
 
 protected:
 	std::vector<BuildingBlock> m_Elements;
+
+	uint32_t m_ArrayNum;
 };
 
 /**
