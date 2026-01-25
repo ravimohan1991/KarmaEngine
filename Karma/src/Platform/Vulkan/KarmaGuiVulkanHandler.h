@@ -29,6 +29,7 @@ namespace Karma
 	class FVulkanRenderPass;
 	class FVulkanRenderTargetsInfo;
 	class FVulkanFramebuffer;
+	class FVulkanFence;
 
 	/**
 	 * @brief Macro for vulkan's alignment needs.
@@ -214,7 +215,7 @@ namespace Karma
 		 *
 		 * @since Karma 1.0.0
 		 */
-		VkFence             Fence;
+		FVulkanFence*             Fence;
 
 		/**
 		 * @brief Handle to semaphore object for next available presentable image (vkAcquireNextImageKHR).

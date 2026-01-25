@@ -6,6 +6,7 @@
 #include "Platform/Vulkan/VulkanVertexArray.h"
 #include "VulkanRHI/VulkanDynamicRHI.h"
 #include "VulkanRHI/VulkanSwapChain.h"
+#include "VulkanRHI/VulkanSynchronization.h"
 
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"
@@ -414,8 +415,10 @@ namespace Karma
 		VkResult result;
 
 		// Fence needs to be signaled to pass the vkWaitForFences.
-		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
+		// VkFence fenceHandle = frameOnFlightData->Fence->GetHandle();
+		// result = vkWaitForFences(vulkanInfo->Device, 1, &fenceHandle, VK_TRUE, UINT64_MAX);
+		// KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().WaitForFence(frameOnFlightData->Fence);
 
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
 		VkSemaphore renderCompleteSemaphore = frameOnFlightData->RenderCompleteSemaphore;
@@ -578,11 +581,13 @@ namespace Karma
 
 		// vkResetFences unsignals the Fence
 		// Fixing a deadlock: https://vulkan-tutorial.com/Drawing_a_triangle/Swap_chain_recreation#page_Fixing-a-deadlock
-		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
-		
+		// result = vkResetFences(vulkanInfo->Device, 1, &fence);
+		// KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().ResetFence(frameOnFlightData->Fence);
+
+		VkFence fence = frameOnFlightData->Fence->GetHandle();
 		// vkQueueSubmit signals the Fence once commandbuffers finish execution
-		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
+		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 	}
 

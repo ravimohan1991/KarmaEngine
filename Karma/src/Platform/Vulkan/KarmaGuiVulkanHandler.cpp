@@ -1598,12 +1598,13 @@ namespace Karma
 			{
 				KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
 
-				VkFenceCreateInfo fenceInfo = {};
+				/*VkFenceCreateInfo fenceInfo = {};
 				fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 				fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 				VkResult result = vkCreateFence(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &fenceInfo, VK_NULL_HANDLE, &frameOnFlight->Fence);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create fence");*/
 
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create fence");
+				frameOnFlight->Fence = FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().AllocateFence(true);
 
 				VkSemaphoreCreateInfo semaphoreInfo = {};
 				semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -1839,8 +1840,9 @@ namespace Karma
 
 		vkDeviceWaitIdle(vulkanInfo->Device);
 
-		vkDestroyFence(vulkanInfo->Device, frameSyncronicityData->Fence, VK_NULL_HANDLE);
-		frameSyncronicityData->Fence = VK_NULL_HANDLE;
+		//vkDestroyFence(vulkanInfo->Device, frameSyncronicityData->Fence, VK_NULL_HANDLE);
+		//frameSyncronicityData->Fence = VK_NULL_HANDLE;
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().ReleaseFence(frameSyncronicityData->Fence);
 
 		vkDestroySemaphore(vulkanInfo->Device, frameSyncronicityData->ImageAcquiredSemaphore, VK_NULL_HANDLE);
 		vkDestroySemaphore(vulkanInfo->Device, frameSyncronicityData->RenderCompleteSemaphore, VK_NULL_HANDLE);
@@ -1879,6 +1881,8 @@ namespace Karma
 		// 1. Removes synchronicity
 		// 2. Deletes imageframes and frames on flight objects
 		ClearVulkanWindowData(windowData, true);
+
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().Denit();
 		
 		for(const auto& vulkanFramebuffer : windowData->RHIResources->VulkanFrameBuffers)
 		{
@@ -2042,14 +2046,6 @@ namespace Karma
 
                 frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
 			}
-			for (;;)
-			{
-				result = vkWaitForFences(vulkanInfo->Device, 1, &frameFlightData->Fence, VK_TRUE, 100);
-				if (result == VK_SUCCESS) break;
-				if (result == VK_TIMEOUT) continue;
-
-				KR_CORE_ASSERT((result == VK_SUCCESS || VK_TIMEOUT), "Something not right");
-			}
 			
 			{
 				//result = vkResetCommandPool(vulkanInfo->Device, windowData->CommandPool, 0);
@@ -2103,11 +2099,6 @@ namespace Karma
 				result = vkEndCommandBuffer(frameFlightData->CommandBuffer);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Coudn't finish the commandbuffer recording")
 
-				result = vkResetFences(vulkanInfo->Device, 1, &frameFlightData->Fence);
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't reset the fences");
-
-				result = vkQueueSubmit(vulkanInfo->Queue, 1, &info, frameFlightData->Fence);
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't submit the queue");
 			}
 		}
 	}

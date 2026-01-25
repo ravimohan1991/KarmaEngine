@@ -11,6 +11,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include "VulkanSynchronization.h"
 
 namespace Karma
 {
@@ -146,6 +147,8 @@ namespace Karma
 		inline VkQueue GetGraphicsQueue() const { return m_GraphicsQueue; }
 
 		inline FVulkanDynamicRHI* GetVulkanDynamicRHI() const { return m_VulkanDynamicRHI; }
+
+		inline FVulkanFenceManager& GetFenceManager() { return m_FenceManager; }
 		
 	private:
 		VkDevice m_LogicalDevice; ///< The Vulkan logical device handle.
@@ -158,5 +161,7 @@ namespace Karma
 
 		// Additional members for managing queues, command pools, etc. can be added here.
 		VkCommandPool m_CommandPool;
+
+		FVulkanFenceManager	m_FenceManager;
 	};
 }

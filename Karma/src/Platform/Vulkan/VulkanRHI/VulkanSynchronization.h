@@ -14,12 +14,13 @@
 
 #pragma once
 
-#include "VulkanRHI/VulkanDevice.h"
+#include <vulkan/vulkan.h>
 #include "KarmaTypes.h"
 
 namespace Karma
 {
 	class FVulkanFence;
+	class FVulkanDevice;
 
 	class FVulkanFenceManager
 	{
@@ -39,7 +40,7 @@ namespace Karma
 
 		/**
 		 * @brief Purpose is two-fold
-		 * 	- 1. Makes sure no fences are currently in use (m_UsedFences.Num ==0)
+		 * 	- 1. Makes sure no fences are currently in use (m_UsedFences.Num == 0)
 		 * 	- 2. Clear off m_FreeFences
 		 *
 		 * @since Karma 1.0.0
@@ -54,15 +55,60 @@ namespace Karma
 		 */
 		FVulkanFence* AllocateFence(bool bCreateSignaled = false);
 
+		/**
+		 * @brief Checks if the given fence is signaled.
+		 * 
+		 * First checks the CPU-side state of the fence. If the fence is already marked as signaled,
+		 * returns true immediately. If not, queries the Vulkan API (via CheckFenceState) to check the 
+		 * actual status of the fence.
+		 *
+		 * @param InFence						The fence to be checked
+		 * @return true if the fence is signaled, false otherwise
+		 * @see CheckFenceState
+		 * @since Karma 1.0.0
+		 */
 		bool IsFenceSignaled(FVulkanFence* InFence);
 
+		/**
+		 * @brief Waits for the given fence to be signaled.
+		 * 
+		 * @todo Ponder over the use of this funciton
+		 * @param Fence							The fence to wait for
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		bool WaitForFence(FVulkanFence* Fence);
 
-		void ResetFence(FVulkanFence* Fence) {}
+		/**
+		 * @brief Resets the given fence to the unsignaled state.
+		 * 
+		 * @note Both CPU and GPU side states are reset.
+		 * 
+		 * @param Fence							The fence to be reset
+		 * @since Karma 1.0.0
+		 */
+		void ResetFence(FVulkanFence* Fence);
 
-		void ReleaseFence(FVulkanFence*& Fence) {}
+		/**
+		 * @brief Releases the given fence back to the manager.
+		 * 
+		 * Moves the fence from m_UsedFences to m_FreeFences for future reuse.
+		 * 
+		 * @note This is kind of reverse of AllocateFence
+		 * @param Fence							The fence to be released
+		 * @since Karma 1.0.0
+		 */
+		void ReleaseFence(FVulkanFence*& Fence);
 
-		void WaitAndReleaseFence(FVulkanFence*& Fence, uint64_t TimeNanoSeconds) {}
+		/**
+		 * @brief Waits for the given fence to be signaled and then releases it.
+		 * 
+		 * Combines the functionality of WaitForFence and ReleaseFence.
+		 * 
+		 * @param Fence							The fence to wait for and release
+		 * @since Karma 1.0.0
+		 */
+		void WaitAndReleaseFence(FVulkanFence*& Fence);
 
 	protected:
 		/**
@@ -131,6 +177,11 @@ namespace Karma
 			return m_State == EState::Signaled;
 		}
 
+		inline VkFence GetHandle() const
+		{
+			return m_Handle;
+		}
+
 		// Only owner can create and manage fences
 		~FVulkanFence();
 
@@ -143,7 +194,7 @@ namespace Karma
 			 * @brief The fence is not signaled, initial state after reset
 			 *
 			 * @note Fence must be signaled when created
-			 * https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation#waiting-for-the-previous-frame
+			 * https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation#page_Waiting-for-the-previous-frame
 			 */
 			NotReady,
 

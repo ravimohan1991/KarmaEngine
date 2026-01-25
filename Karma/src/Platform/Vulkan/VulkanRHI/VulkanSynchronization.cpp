@@ -1,4 +1,5 @@
 #include "VulkanSynchronization.h"
+#include "VulkanDevice.h"
 
 namespace Karma
 {
@@ -106,7 +107,7 @@ namespace Karma
 	bool FVulkanFenceManager::WaitForFence(FVulkanFence* Fence)
 	{
 		KR_CORE_ASSERT(m_UsedFences.Contains(Fence), "Not a usable fence");
-		KR_CORE_ASSERT(Fence->m_State == FVulkanFence::EState::NotReady, "Not a suitable fence state for wait");
+		//KR_CORE_ASSERT(Fence->m_State == FVulkanFence::EState::NotReady, "Not a suitable fence state for wait");
 		
 		VkResult result = vkWaitForFences(m_Device.GetLogicalDevice(), 1, &Fence->m_Handle, true, UINT64_MAX);
 		
@@ -122,5 +123,36 @@ namespace Karma
 		}
 		
 		return false;
+	}
+
+	void FVulkanFenceManager::ResetFence(FVulkanFence* Fence)
+	{
+		if (Fence->m_State != FVulkanFence::EState::NotReady)
+		{
+			VkResult result = vkResetFences(m_Device.GetLogicalDevice(), 1, &Fence->m_Handle);
+			Fence->m_State = FVulkanFence::EState::NotReady;
+		}
+	}
+
+	void FVulkanFenceManager::ReleaseFence(FVulkanFence*& Fence)
+	{
+		ResetFence(Fence);
+		m_UsedFences.RemoveSingleSwap(Fence, EAllowShrinking::No);
+
+		m_FreeFences.Add(Fence);// add copy of the pointer to free list
+		Fence = nullptr;// nullify the caller's pointer
+	}
+
+	void FVulkanFenceManager::WaitAndReleaseFence(FVulkanFence*& Fence)
+	{
+		if (!Fence->IsSignaled())
+		{
+			WaitForFence(Fence);
+		}
+
+		ResetFence(Fence);
+		m_UsedFences.RemoveSingleSwap(Fence, EAllowShrinking::No);
+		m_FreeFences.Add(Fence);// add copy of the pointer to free list
+		Fence = nullptr;// nullify the caller's pointer
 	}
 }

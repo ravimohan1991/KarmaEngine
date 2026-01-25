@@ -6,7 +6,8 @@
 namespace Karma
 {
 	FVulkanDevice::FVulkanDevice(FVulkanDynamicRHI* InRHI, VkPhysicalDevice InGpu) : m_VulkanDynamicRHI(InRHI),
-		m_GPU(InGpu)
+		m_GPU(InGpu), m_FenceManager(*this), m_CommandPool(VK_NULL_HANDLE), m_DefaultTexture(nullptr), m_LogicalDevice(VK_NULL_HANDLE),
+		m_GraphicsQueue(VK_NULL_HANDLE), m_PresentQueue(VK_NULL_HANDLE)
 	{
 		// Implementation for creating a Vulkan logical device
 	}

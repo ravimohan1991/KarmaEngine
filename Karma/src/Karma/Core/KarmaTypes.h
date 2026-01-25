@@ -338,6 +338,31 @@ public:
 	}
 
 	/**
+	 * @brief Removes a first appearence of single element from the array, swapping the last element 
+	 * into its place, and optionally shrinking the array.
+	 *
+	 * @param Item					The item to be removed
+	 * @param AllowShrinking		Whether to allow the array to shrink its allocation if possible
+	 * @returns The number of elements removed (0 or 1)
+	 *
+	 * @note AllowShrinking is not functional yet
+	 * @since Karma 1.0.0
+	 */
+	uint32_t RemoveSingleSwap(const BuildingBlock& Item, EAllowShrinking AllowShrinking = EAllowShrinking::Yes)
+	{
+		int32_t Index = Find(Item);
+
+		if (Index == INDEX_NONE)
+		{
+			return 0;
+		}
+
+		RemoveAtSwap(Index, AllowShrinking);
+
+		return 1;
+	}
+
+	/**
 	 * @brief Returns the total number of elements in a vector
 	 *
 	 * @since Karma 1.0.0
