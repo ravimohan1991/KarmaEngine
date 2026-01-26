@@ -40,7 +40,7 @@ namespace Karma
 		{
 			FVulkanFence* Fence = m_FreeFences.IndexToObject(0);
 			
-			m_FreeFences.RemoveAtSwap(0, EAllowShrinking::No);
+			m_FreeFences.RemoveAtSwap(0/*, EAllowShrinking::No*/);
 			m_UsedFences.Add(Fence);
 
 			if (bCreateSignaled)
@@ -137,7 +137,7 @@ namespace Karma
 	void FVulkanFenceManager::ReleaseFence(FVulkanFence*& Fence)
 	{
 		ResetFence(Fence);
-		m_UsedFences.RemoveSingleSwap(Fence, EAllowShrinking::No);
+		m_UsedFences.RemoveSingleSwap(Fence/*, EAllowShrinking::No*/);
 
 		m_FreeFences.Add(Fence);// add copy of the pointer to free list
 		Fence = nullptr;// nullify the caller's pointer
@@ -151,7 +151,7 @@ namespace Karma
 		}
 
 		ResetFence(Fence);
-		m_UsedFences.RemoveSingleSwap(Fence, EAllowShrinking::No);
+		m_UsedFences.RemoveSingleSwap(Fence/*, EAllowShrinking::No*/);
 		m_FreeFences.Add(Fence);// add copy of the pointer to free list
 		Fence = nullptr;// nullify the caller's pointer
 	}

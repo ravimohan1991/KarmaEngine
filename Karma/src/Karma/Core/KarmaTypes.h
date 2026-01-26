@@ -15,6 +15,7 @@
 #include <map>
 #include <utility>
 #include <algorithm>
+#include <glm/glm.hpp>
 
 enum class EAllowShrinking
 {
@@ -165,7 +166,7 @@ public:
 	 *
 	 * @since Karma 1.0.0
 	 */
-	KarmaVector() : m_ArrayNum(0)
+	KarmaVector()
 	{
 	}
 
@@ -199,8 +200,6 @@ public:
 			{
 				iterator = m_Elements.erase(iterator);
 				occurences++;
-
-				m_ArrayNum--;
 			}
 			else
 			{
@@ -220,12 +219,11 @@ public:
 	void Add(BuildingBlock aBlock)
 	{
 		m_Elements.push_back(aBlock);
-		m_ArrayNum++;
 	}
 
 	void RangeCheck(uint32_t Index) const
 	{
-		KR_CORE_ASSERT((Index >= 0 && Index < m_ArrayNum), "KarmaVector: Range check failed");
+		KR_CORE_ASSERT((Index >= 0 && Index < Num()), "KarmaVector: Range check failed");
 	}
 
 	/**
@@ -317,38 +315,38 @@ public:
 
 	/**
 	 * @brief Removes an element at given location, swapping the last element into its place, and
-	 * optionally shrinking the array.
+	 * shrinking the array.
 	 * 
 	 * @param Index					The index of the element to be removed
 	 * @param AllowShrinking		Whether to allow the array to shrink its allocation if possible
 	 * 
 	 * 
-	 * @note AllowShrinking is not functional yet
+	 * @note This implementation is differenct from UE and here vector shrinks automatically
 	 * @since Karma 1.0.0
 	 */
-	void RemoveAtSwap(int32_t Index, EAllowShrinking AllowShrinking = EAllowShrinking::Yes)
+	void RemoveAtSwap(int32_t Index/*, EAllowShrinking AllowShrinking = EAllowShrinking::Yes*/)
 	{
 		RangeCheck(Index);
 		RemoveAtSwapImpl(Index);
 
-		if (AllowShrinking == EAllowShrinking::Yes)
-		{
+		//if (AllowShrinking == EAllowShrinking::Yes)
+		//{
 			// not functional yet
-		}
+		//}
 	}
 
 	/**
 	 * @brief Removes a first appearence of single element from the array, swapping the last element 
-	 * into its place, and optionally shrinking the array.
+	 * into its place, and  shrinking the array.
 	 *
 	 * @param Item					The item to be removed
 	 * @param AllowShrinking		Whether to allow the array to shrink its allocation if possible
 	 * @returns The number of elements removed (0 or 1)
 	 *
-	 * @note AllowShrinking is not functional yet
+	 * @note AllowShrinking is automatic different from UE
 	 * @since Karma 1.0.0
 	 */
-	uint32_t RemoveSingleSwap(const BuildingBlock& Item, EAllowShrinking AllowShrinking = EAllowShrinking::Yes)
+	uint32_t RemoveSingleSwap(const BuildingBlock& Item/*, EAllowShrinking AllowShrinking = EAllowShrinking::Yes*/)
 	{
 		int32_t Index = Find(Item);
 
@@ -357,7 +355,7 @@ public:
 			return 0;
 		}
 
-		RemoveAtSwap(Index, AllowShrinking);
+		RemoveAtSwap(Index/*, AllowShrinking*/);
 
 		return 1;
 	}
@@ -369,8 +367,7 @@ public:
 	 */
 	uint32_t Num() const
 	{
-		//return (uint32_t) m_Elements.size();
-		return m_ArrayNum;
+		return (uint32_t) m_Elements.size();
 	}
 
 	/**
@@ -404,7 +401,6 @@ public:
 		}
 
 		m_Elements.clear();
-		m_ArrayNum = 0;
 	}
 
 	/**
@@ -418,7 +414,6 @@ public:
 	void SmartReset()
 	{
 		m_Elements.clear();
-		m_ArrayNum = 0;
 	}
 
 	/**
@@ -440,7 +435,7 @@ public:
 	 * @note Duplicate of SmartReset
 	 * @since Karma 1.0.0
 	 */
-	inline void Clear() { m_Elements.clear(); m_ArrayNum = 0; }
+	inline void Clear() { m_Elements.clear(); }
 	
 	/**
 	 * @brief Getter for the elements of vector
@@ -500,7 +495,7 @@ public:
 	{
 		KR_CORE_ASSERT(Index >= 0, "");
 		
-		if(Index < m_ArrayNum)
+		if(Index < Num())
 		{
 			return m_Elements.at(Index);
 		}
@@ -521,7 +516,7 @@ public:
 	 */
 	FORCEINLINE bool IsValidIndex(int32_t Index) const
 	{
-		return Index >= 0 && Index < m_ArrayNum;
+		return Index >= 0 && Index < Num();
 	}
 
 	/**
@@ -546,18 +541,18 @@ private:
 		DestructItem(Dest);
 
 		// Number of elements (after the generated vacancy) to move
-		int32_t NumToMove = Num() - Index - 1;
+		const int32_t NumElementsAfterHole = Num() - Index - 1;
+		const int32_t NumElementsToMoveIntoHole = glm::min(1, NumElementsAfterHole);
 
-		if (NumToMove)
+		if (NumElementsToMoveIntoHole)
 		{
-			// std::memcpy((void*)Dest, (const void*)(Dest + 1), sizeof(BuildingBlock) * NumToMove);
-			// Perplexity's suggestion for overlapping memory regions
-			// we are moving all elements (from Dest + 1), to Dest
-			std::memmove((void *) Dest, (const void*)(Dest + 1),
-				sizeof(BuildingBlock) * NumToMove);
+			//std::memmove((void *) Dest, (const void*)(Data + Num() - NumElementsToMoveIntoHole),
+			//	sizeof(BuildingBlock) * NumElementsToMoveIntoHole);
+			const int32_t LastElementIndex = Num() - 1;
+			
+			m_Elements[Index] = m_Elements[LastElementIndex];
 		}
-
-		m_ArrayNum--;
+		m_Elements.pop_back();
 	}
 
 	/**
@@ -576,8 +571,6 @@ private:
 
 protected:
 	std::vector<BuildingBlock> m_Elements;
-
-	uint32_t m_ArrayNum;
 };
 
 /**

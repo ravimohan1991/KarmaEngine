@@ -418,7 +418,7 @@ namespace Karma
 		// VkFence fenceHandle = frameOnFlightData->Fence->GetHandle();
 		// result = vkWaitForFences(vulkanInfo->Device, 1, &fenceHandle, VK_TRUE, UINT64_MAX);
 		// KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
-		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().WaitForFence(frameOnFlightData->Fence);
+		//FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().WaitForFence(frameOnFlightData->Fence);
 
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
 		VkSemaphore renderCompleteSemaphore = frameOnFlightData->RenderCompleteSemaphore;
@@ -431,6 +431,8 @@ namespace Karma
 		}
 
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image");
+		
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().WaitForFence(frameOnFlightData->Fence);
 
 		// Pointer to the container of framebuffers (based on number of swapchain images)
 		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
