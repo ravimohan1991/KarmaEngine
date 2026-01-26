@@ -110,6 +110,7 @@ namespace Karma
 		//KR_CORE_ASSERT(Fence->m_State == FVulkanFence::EState::NotReady, "Not a suitable fence state for wait");
 		
 		VkResult result = vkWaitForFences(m_Device.GetLogicalDevice(), 1, &Fence->m_Handle, true, UINT64_MAX);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
 		
 		switch (result)
 		{

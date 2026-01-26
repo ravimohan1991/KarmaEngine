@@ -415,10 +415,7 @@ namespace Karma
 		VkResult result;
 
 		// Fence needs to be signaled to pass the vkWaitForFences.
-		// VkFence fenceHandle = frameOnFlightData->Fence->GetHandle();
-		// result = vkWaitForFences(vulkanInfo->Device, 1, &fenceHandle, VK_TRUE, UINT64_MAX);
-		// KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
-		//FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().WaitForFence(frameOnFlightData->Fence);
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().WaitForFence(frameOnFlightData->Fence);
 
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
 		VkSemaphore renderCompleteSemaphore = frameOnFlightData->RenderCompleteSemaphore;
@@ -427,12 +424,12 @@ namespace Karma
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
-			return;
+			//return; we provide work to do anyway so the fence can be signaled properly. This was causing a stall on MacOS
 		}
-
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image");
-		
-		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().WaitForFence(frameOnFlightData->Fence);
+		else
+		{
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image");
+		}
 
 		// Pointer to the container of framebuffers (based on number of swapchain images)
 		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
