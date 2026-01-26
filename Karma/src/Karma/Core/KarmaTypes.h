@@ -1,7 +1,7 @@
 /**
  * @file KarmaTypes.h
  * @author Ravi Mohan (the_cowboy)
- * @brief This file contains the types used in game logic
+ * @brief This file contains the custom types used in Engine's logic
  * @version 1.0
  * @date March 30, 2023
  *
@@ -46,7 +46,8 @@ namespace EEndPlayReason
 
 /**
  * @brief euphemism for no index situations
- * @todo usage hasn't caught on in usual engine routines
+ * 
+ * @see KarmaVector::Find, KarmaVector::RemoveSingleSwap etc
  */
 enum { INDEX_NONE = -1 };
 
@@ -155,7 +156,9 @@ protected:
 };
 
 /**
- * @brief Karma's std::vector wrapper
+ * @brief Karma's std::vector wrapper with additional functionalities
+ * 
+ * @since Karma 1.0.0
  */
 template<typename BuildingBlock>
 class KarmaVector
@@ -221,17 +224,22 @@ public:
 		m_Elements.push_back(aBlock);
 	}
 
+	/**
+	 * @brief Sanity check for the index
+	 * 
+	 * @since Karma 1.0.0
+	 */
 	void RangeCheck(uint32_t Index) const
 	{
 		KR_CORE_ASSERT((Index >= 0 && Index < Num()), "KarmaVector: Range check failed");
 	}
 
 	/**
-	 * Adds unique element to array if it doesn't exist.
+	 * Adds unique element to array if the element doesn't exist.
 	 *
 	 * Move semantics version.
 	 *
-	 * @param Item Item to add.
+	 * @param Item						Item to add
 	 * @returns Index of the element in the array.
 	 *
 	 * @see Add, AddDefaulted, AddZeroed, Append, Insert
@@ -253,7 +261,7 @@ public:
 	}
 
 	/**
-	 * Finds element within the array.
+	 * Finds first occurance of an element within the array.
 	 *
 	 * @param Item Item to look for.
 	 * @returns Index of the found element. INDEX_NONE otherwise.
@@ -454,17 +462,6 @@ public:
 
 	/**
 	 * @brief Getter for first vector element
-	 *
-	 * @note The range based loop breaks for MSVC atm
-	 * for(const auto& element : SomeKarmaVector)
-	 * {}
-	 * 
-	 * Perplexity gives answer:
-	 * MSVC's _ITERATOR_DEBUG_LEVEL=2 tracks global iterator ownership and gets confused by 
-	 * forwarded iterators from KarmaVector::begin(). Direct m_Elements access bypasses the wrapper entirely → no forwarding
-	 * → no corruption → works perfectly.
-	 * 
-	 * Also note KarmaVector::begin() works just fine on Mac and Linux (Clang and gcc)
 	 * 
 	 * @since Karma 1.0.0
 	 */
