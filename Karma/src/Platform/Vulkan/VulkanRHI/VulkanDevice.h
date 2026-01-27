@@ -33,9 +33,10 @@ namespace Karma
 		/**
 		 * @brief Constructor for FVulkanDevice.
 		 * 
-		 *
+		 * Initializes the Vulkan device with the given physical device (GPU) and dynamic RHI instance.
 		 * 
-		 * @param 
+		 * @param InRHI			Pointer to the FVulkanDynamicRHI instance
+		 * @param InGpu			The Vulkan physical device (GPU) handle
 		 * 
 		 * @since Karma 1.0.0
 		 */
@@ -146,8 +147,18 @@ namespace Karma
 		 */
 		inline VkQueue GetGraphicsQueue() const { return m_GraphicsQueue; }
 
+		/**
+		 * @brief Getter for the present queue created in FVulkanDevice::InitGPU()
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		inline FVulkanDynamicRHI* GetVulkanDynamicRHI() const { return m_VulkanDynamicRHI; }
 
+		/**
+		 * @brief Getter for the default texture (unreal grid)
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		inline FVulkanFenceManager& GetFenceManager() { return m_FenceManager; }
 		
 	private:

@@ -1598,12 +1598,6 @@ namespace Karma
 			{
 				KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
 
-				/*VkFenceCreateInfo fenceInfo = {};
-				fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-				fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-				VkResult result = vkCreateFence(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &fenceInfo, VK_NULL_HANDLE, &frameOnFlight->Fence);
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create fence");*/
-
 				frameOnFlight->Fence = FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().AllocateFence(true);
 
 				VkSemaphoreCreateInfo semaphoreInfo = {};

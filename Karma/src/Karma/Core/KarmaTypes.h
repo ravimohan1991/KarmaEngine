@@ -535,8 +535,6 @@ private:
 		const BuildingBlock* Data = GetData();
 		const BuildingBlock* Dest = Data + Index;
 
-		DestructItem(Dest);
-
 		// Number of elements (after the generated vacancy) to move
 		const int32_t NumElementsAfterHole = Num() - Index - 1;
 		const int32_t NumElementsToMoveIntoHole = glm::min(1, NumElementsAfterHole);
@@ -550,20 +548,6 @@ private:
 			m_Elements[Index] = m_Elements[LastElementIndex];
 		}
 		m_Elements.pop_back();
-	}
-
-	/**
-	 * @brief Destructs an item of given ElementType
-	 * 
-	 * @note May be placed in different space if need arises
-	 * 
-	 * @param Element				The element to be destructed
-	 * @since Karma 1.0.0
-	 */
-	template <typename ElementType>
-	FORCEINLINE void DestructItem(ElementType* Element)
-	{
-		Element->~ElementType();
 	}
 
 protected:

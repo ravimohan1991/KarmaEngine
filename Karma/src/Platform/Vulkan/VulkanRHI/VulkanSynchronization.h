@@ -25,6 +25,12 @@ namespace Karma
 	class FVulkanFenceManager
 	{
 	public:
+		/**
+		 * @brief Constructor
+		 *
+		 * @param InDevice						Reference to the owning FVulkanDevice
+		 * @since Karma 1.0.0
+		 */
 		FVulkanFenceManager(FVulkanDevice& InDevice)
 			: m_Device(InDevice)
 		{
@@ -40,7 +46,7 @@ namespace Karma
 
 		/**
 		 * @brief Purpose is two-fold
-		 * 	- 1. Makes sure no fences are currently in use (m_UsedFences.Num == 0)
+		 * 	- 1. Makes sure no fences are currently in use (m_UsedFences.Num() == 0)
 		 * 	- 2. Clear off m_FreeFences
 		 *
 		 * @since Karma 1.0.0
@@ -48,31 +54,23 @@ namespace Karma
 		void Denit();
 
 		/**
-		 * @brief Looks in m_FreeFences, if array is not empty, uses the first fence and fills m_UsedFence.
+		 * @brief Allocates fence for use
+		 *
+		 * Looks in m_FreeFences, if array is not empty, uses the first fence and fills m_UsedFence.
 		 * If m_FreeFences is empty, creates new FVulkanFence and fills m_UsedFence.
 		 *
 		 * @param bCreateSignaled							Should the fence be in Signaled state
+		 * @see KarmaGuiVulkanHandler::FillWindowData
+		 * 
+		 * @since Karma 1.0.0
 		 */
 		FVulkanFence* AllocateFence(bool bCreateSignaled = false);
 
 		/**
-		 * @brief Checks if the given fence is signaled.
-		 * 
-		 * First checks the CPU-side state of the fence. If the fence is already marked as signaled,
-		 * returns true immediately. If not, queries the Vulkan API (via CheckFenceState) to check the 
-		 * actual status of the fence.
-		 *
-		 * @param InFence						The fence to be checked
-		 * @return true if the fence is signaled, false otherwise
-		 * @see CheckFenceState
-		 * @since Karma 1.0.0
-		 */
-		bool IsFenceSignaled(FVulkanFence* InFence);
-
-		/**
 		 * @brief Waits for the given fence to be signaled.
 		 * 
-		 * @todo Ponder over the use of this funciton
+		 * Makes sure the fence is in m_UsedFences before waiting.
+		 * 
 		 * @param Fence							The fence to wait for
 		 * 
 		 * @since Karma 1.0.0
@@ -96,42 +94,14 @@ namespace Karma
 		 * 
 		 * @note This is kind of reverse of AllocateFence
 		 * @param Fence							The fence to be released
+		 * 
+		 * @see KarmaGuiVulkanHandler::DestroyFramesOnFlightData
+		 * 
 		 * @since Karma 1.0.0
 		 */
 		void ReleaseFence(FVulkanFence*& Fence);
 
-		/**
-		 * @brief Waits for the given fence to be signaled and then releases it.
-		 * 
-		 * Combines the functionality of WaitForFence and ReleaseFence.
-		 * 
-		 * @param Fence							The fence to wait for and release
-		 * @since Karma 1.0.0
-		 */
-		void WaitAndReleaseFence(FVulkanFence*& Fence);
-
 	protected:
-		/**
-		 * @brief Returns true if the fence is signaled, false otherwise.
-		 * 
-		 * Sets the state of the fence accordingly i.e
-		 * 1. If vkGetFenceStatus returns VK_SUCCESS, fence state is set to Signaled
-		 * 2. If vkGetFenceStatus returns VK_NOT_READY, fence state is set to NotReady,
-		 * meaning associated GPU operations are still pending
-		 * 
-		 * Assumptions:
-		 * 1. The fence is in NotReady state when this function is called. So this function
-		 * is used for fences which are supposed to be signaled later after GPU operations complete.
-		 * 2. The fence is owned by this manager and is present in m_UsedFences array
-		 * 
-		 * @note Typically usage is in polling scenarios where CPU wants to check completion status
-		 * opportunistically without blocking. For blocking waits, use WaitForFence().
-		 * 
-		 * @param Fence							The fence to be checked
-		 * @since Karma 1.0.0
-		 */
-		bool CheckFenceState(FVulkanFence* Fence);
-
 		/**
 		 * @brief Destroys the given fence and releases its resources.
 		 * 
@@ -170,20 +140,41 @@ namespace Karma
 	class FVulkanFence
 	{
 	public:
+		/**
+		 * @brief Constructor for FVulkanFence.
+		 *
+		 * @param InDevice						Reference to the owning FVulkanDevice
+		 * @param InOwner						Reference to the owning FVulkanFenceManager
+		 * 
+		 * @param bCreateSignaled				Whether to create the fence in a signaled state
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		FVulkanFence(FVulkanDevice& InDevice, FVulkanFenceManager& InOwner, bool bCreateSignaled);
 
+		/**
+		 * @brief Checks if the fence is currently signaled.
+		 * 
+		 * @return true if the fence is in the signaled state, false otherwise
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		inline bool IsSignaled() const
 		{
 			return m_State == EState::Signaled;
 		}
 
+		/**
+		 * @brief Retrieves the Vulkan fence handle.
+		 * 
+		 * @return VkFence The Vulkan fence handle.
+		 * 
+		 * @since Karma 1.0.0
+		 */
 		inline VkFence GetHandle() const
 		{
 			return m_Handle;
 		}
-
-		// Only owner can create and manage fences
-		~FVulkanFence();
 
 	protected:
 		VkFence m_Handle;
@@ -209,6 +200,9 @@ namespace Karma
 		EState m_State;
 
 		FVulkanFenceManager& m_Owner;
+
+		// Only owner can create and manage fences
+		~FVulkanFence();
 
 		friend FVulkanFenceManager;
 	};

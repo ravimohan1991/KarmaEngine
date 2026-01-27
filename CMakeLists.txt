@@ -87,13 +87,13 @@ add_subdirectory(Karma)
 list(APPEND ESSENTIAL_LIBS Karma)
 
 # Build the Client
-add_subdirectory(Application)
+# add_subdirectory(Application)
 
 # Build the Editor
 add_subdirectory(Pranjal)
 
 # Relevant linking of finished Application with the Engine!
-target_link_libraries(SandBox PUBLIC KarmaEngine)
+# target_link_libraries(SandBox PUBLIC KarmaEngine)
 target_link_libraries(Pranjal PUBLIC KarmaEngine)
 
 if (APPLE AND MAC_PACKAGE)

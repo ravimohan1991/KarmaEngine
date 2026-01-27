@@ -61,39 +61,6 @@ namespace Karma
 		return NewFence;
 	}
 
-	bool FVulkanFenceManager::IsFenceSignaled(FVulkanFence* InFence)
-	{
-		if (InFence->IsSignaled())
-		{
-			return true;
-		}
-
-		return CheckFenceState(InFence);
-	}
-
-	bool FVulkanFenceManager::CheckFenceState(FVulkanFence* Fence)
-	{
-		KR_CORE_ASSERT(m_UsedFences.Contains(Fence), "Fence must be within m_UsedFences array");
-		KR_CORE_ASSERT(Fence->m_State == FVulkanFence::EState::NotReady, "Fence state must be NotReady to check status");
-
-		VkResult result = vkGetFenceStatus(m_Device.GetLogicalDevice(), Fence->m_Handle);
-		if (result == VK_SUCCESS)
-		{
-			Fence->m_State = FVulkanFence::EState::Signaled;
-			return true;
-		}
-		else if (result == VK_NOT_READY)
-		{
-			Fence->m_State = FVulkanFence::EState::NotReady;
-			return false;
-		}
-		else
-		{
-			KR_CORE_ASSERT(false, "Failed to get fence status");
-			return false;
-		}
-	}
-
 	void FVulkanFenceManager::Denit()
 	{
 		KR_CORE_ASSERT(m_UsedFences.Num() == 0, "Not all fences are done")
@@ -107,7 +74,6 @@ namespace Karma
 	bool FVulkanFenceManager::WaitForFence(FVulkanFence* Fence)
 	{
 		KR_CORE_ASSERT(m_UsedFences.Contains(Fence), "Not a usable fence");
-		//KR_CORE_ASSERT(Fence->m_State == FVulkanFence::EState::NotReady, "Not a suitable fence state for wait");
 		
 		VkResult result = vkWaitForFences(m_Device.GetLogicalDevice(), 1, &Fence->m_Handle, true, UINT64_MAX);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
@@ -140,19 +106,6 @@ namespace Karma
 		ResetFence(Fence);
 		m_UsedFences.RemoveSingleSwap(Fence/*, EAllowShrinking::No*/);
 
-		m_FreeFences.Add(Fence);// add copy of the pointer to free list
-		Fence = nullptr;// nullify the caller's pointer
-	}
-
-	void FVulkanFenceManager::WaitAndReleaseFence(FVulkanFence*& Fence)
-	{
-		if (!Fence->IsSignaled())
-		{
-			WaitForFence(Fence);
-		}
-
-		ResetFence(Fence);
-		m_UsedFences.RemoveSingleSwap(Fence/*, EAllowShrinking::No*/);
 		m_FreeFences.Add(Fence);// add copy of the pointer to free list
 		Fence = nullptr;// nullify the caller's pointer
 	}

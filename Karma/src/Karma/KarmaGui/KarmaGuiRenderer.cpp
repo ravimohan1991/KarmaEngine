@@ -580,8 +580,6 @@ namespace Karma
 
 		// vkResetFences unsignals the Fence
 		// Fixing a deadlock: https://vulkan-tutorial.com/Drawing_a_triangle/Swap_chain_recreation#page_Fixing-a-deadlock
-		// result = vkResetFences(vulkanInfo->Device, 1, &fence);
-		// KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
 		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().ResetFence(frameOnFlightData->Fence);
 
 		VkFence fence = frameOnFlightData->Fence->GetHandle();
