@@ -109,4 +109,18 @@ namespace Karma
 		m_FreeFences.Add(Fence);// add copy of the pointer to free list
 		Fence = nullptr;// nullify the caller's pointer
 	}
+
+	FVulkanSemaphore::FVulkanSemaphore(FVulkanDevice& InDevice) : m_Device(InDevice)
+	{
+		VkSemaphoreCreateInfo semaphoreInfo = {};
+		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+		VkResult result = vkCreateSemaphore(m_Device.GetLogicalDevice(), &semaphoreInfo, VK_NULL_HANDLE, &m_Handle);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create Semaphore");
+	}
+
+	FVulkanSemaphore::~FVulkanSemaphore()
+	{
+		vkDestroySemaphore(m_Device.GetLogicalDevice(), m_Handle, VK_NULL_HANDLE);
+	}
 }

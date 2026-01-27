@@ -206,4 +206,16 @@ namespace Karma
 
 		friend FVulkanFenceManager;
 	};
+
+	class FVulkanSemaphore
+	{
+	public:
+		FVulkanSemaphore(FVulkanDevice& InDevice);
+
+		~FVulkanSemaphore();
+
+	protected:
+		VkSemaphore		m_Handle;
+		FVulkanDevice&	m_Device;
+	};
 }
