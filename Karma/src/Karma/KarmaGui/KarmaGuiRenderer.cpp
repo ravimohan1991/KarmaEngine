@@ -281,8 +281,11 @@ namespace Karma
 
 			if (width > 0 && height > 0)
 			{
-				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateOrResizeWindow(&m_VulkanWindowData, true, true);
-				m_SwapChainRebuild = false;
+                //KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateOrResizeWindow(&m_VulkanWindowData, true, true);
+                KarmaGuiVulkanHandler::ShivaSwapChainForRebuild(&m_VulkanWindowData);
+                KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, false);
+
+                m_SwapChainRebuild = false;
 			}
 		}
 
@@ -424,7 +427,9 @@ namespace Karma
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
-			//return; we provide work to do anyway so the fence can be signaled properly. This was causing a stall on MacOS
+            vkDeviceWaitIdle(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice());
+
+            return;
 		}
 		else
 		{

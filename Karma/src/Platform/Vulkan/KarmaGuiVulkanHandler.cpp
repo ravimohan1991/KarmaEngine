@@ -1736,7 +1736,7 @@ namespace Karma
 		
 		vkFreeCommandBuffers(logicalDevice, windowData->CommandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
 		
-		ClearVulkanWindowData(windowData, true);
+        ClearVulkanWindowData(windowData, false);
 		
 		for(const auto& vulkanFramebuffer : windowData->RHIResources->VulkanFrameBuffers)
 		{
