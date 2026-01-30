@@ -102,6 +102,29 @@ public:
 	}
 
 	/**
+	 * @brief Addes a key-value pair to the map
+	 * 
+	 * @since Karma 1.0.0
+	 */
+	void Add(const KeyType& Key, const ValueType& Value)
+	{
+		m_KeyValuePair.insert(typename AMap::value_type(Key, Value));
+	}
+
+	/**
+	 * @brief Checks if the map contains a specified key
+	 *
+	 * @param Key The key to search for.
+	 * @return true if the map contains the specified key, false otherwise.
+	 *
+	 * @since Karma 1.0.0
+	 */
+	bool Contains(const KeyType& Key) const
+	{
+		return m_KeyValuePair.find(Key) != m_KeyValuePair.end();
+	}
+
+	/**
 	 * @brief Find the value associated with a specified key, or if none exists,
 	 * adds a value using the default constructor.
 	 *
@@ -151,6 +174,36 @@ public:
 
 		return nullptr;
 	}
+
+	/**
+	 * @brief Overloaded subscript operator for accessing values by key
+	 *
+	 * @param Key The key whose associated value is to be accessed.
+	 * @return A reference to the value associated with the specified key.
+	 *
+	 * @note If the key does not exist in the map, a new entry is created with a default-constructed value. A mutable reference
+	 * is returned.
+	 * @since Karma 1.0.0
+	 */
+	ValueType& operator[](const KeyType& Key)
+	{
+		return m_KeyValuePair[Key];
+	}
+
+	/**
+	 * @brief Overloaded subscript operator for accessing values by key (const version)
+	 *
+	 * @param Key						The key whose associated value is to be accessed.
+	 * @return A const reference to the value associated with the specified key.
+	 *
+	 * @note Returns immutable reference
+	 * @since Karma 1.0.0
+	 */
+	const ValueType& operator[](const KeyType& Key) const
+	{
+		return m_KeyValuePair.at(Key);
+	}
+
 protected:
 	AMap m_KeyValuePair;
 };
