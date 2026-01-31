@@ -12,73 +12,97 @@
 #include "KarmaTypes.h"
 #include <vulkan/vulkan.h>
 
-class FVulkanDescriptorSetsLayoutInfo
+namespace Karma
 {
-public:
-	/**
-	 * @brief Constructor
-	 *
-	 * Adds all the Vulkan descriptor types currently supported to the m_LayoutTypes map with initial count of 0.
-	 *
-	 * @since Karma 1.0.0
-	 */
-	FVulkanDescriptorSetsLayoutInfo()
+	class FVulkanDevice;
+	
+	class FVulkanDescriptorSetsLayoutInfo
 	{
-		for (uint32_t i = VK_DESCRIPTOR_TYPE_SAMPLER; i <= VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT; ++i)
+	public:
+		/**
+		* @brief Constructor
+		*
+		* Adds all the Vulkan descriptor types currently supported to the m_LayoutTypes map with initial count of 0.
+		*
+		* @since Karma 1.0.0
+		*/
+		FVulkanDescriptorSetsLayoutInfo()
 		{
-			m_LayoutTypes.Add(static_cast<VkDescriptorType>(i), 0);
-		}
-
-		m_LayoutTypes.Add(VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR, 0);
-	}
-
-	/**
-	 * @brief Returns the number of descriptors of a specific type used in the layout.
-	 * 
-	 * @param Type						The Vulkan descriptor type to query.
-	 * @return The number of descriptors of the specified type used in the layout.
-	 * 
-	 * @since Karma 1.0.0
-	 */
-	inline uint32_t GetTypesUsed(VkDescriptorType Type) const
-	{
-		if (m_LayoutTypes.Contains(Type))
-		{
-			return m_LayoutTypes[Type];
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	struct FSetLayout
-	{
-		KarmaVector<VkDescriptorSetLayoutBinding> m_LayoutBindings;
-		uint32_t m_Hash;
-
-		inline void GenerateHash()
-		{
-			// Simple hash generation based on bindings
-			m_Hash = 0;
-			for (const auto& binding : m_LayoutBindings)
+			for (uint32_t i = VK_DESCRIPTOR_TYPE_SAMPLER; i <= VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT; ++i)
 			{
-				m_Hash ^= std::hash<uint32_t>()(binding.binding) ^
+				m_LayoutTypes.Add(static_cast<VkDescriptorType>(i), 0);
+			}
+			
+			m_LayoutTypes.Add(VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR, 0);
+		}
+		
+		/**
+		* @brief Returns the number of descriptors of a specific type used in the layout.
+		*
+		* @param Type						The Vulkan descriptor type to query.
+		* @return The number of descriptors of the specified type used in the layout.
+		*
+		* @since Karma 1.0.0
+		*/
+		inline uint32_t GetTypesUsed(VkDescriptorType Type) const
+		{
+			if (m_LayoutTypes.Contains(Type))
+			{
+				return m_LayoutTypes[Type];
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		
+		struct FSetLayout
+		{
+			KarmaVector<VkDescriptorSetLayoutBinding> m_LayoutBindings;
+			uint32_t m_Hash;
+			
+			inline void GenerateHash()
+			{
+				// Simple hash generation based on bindings
+				m_Hash = 0;
+				for (const auto& binding : m_LayoutBindings)
+				{
+					m_Hash ^= std::hash<uint32_t>()(binding.binding) ^
 					std::hash<uint32_t>()(binding.descriptorType) ^
 					std::hash<uint32_t>()(binding.descriptorCount) ^
 					std::hash<uint32_t>()(binding.stageFlags);
+				}
 			}
-		}
-
-		friend uint32_t GetTypeHash(const FSetLayout& Layout)
+			
+			friend uint32_t GetTypeHash(const FSetLayout& Layout)
+			{
+				return Layout.m_Hash;
+			}
+			
+		};
+		
+		inline const KarmaVector<FSetLayout>& GetLayouts() const
 		{
-			return Layout.m_Hash;
+			return m_SetLayouts;
 		}
-
-
+		
+		inline const KarmaMap<VkDescriptorType, uint32_t>& GetLayoutTypes() const
+		{
+			return m_LayoutTypes;
+		}
+		
+		
+	private:
+		KarmaMap<VkDescriptorType, uint32_t> m_LayoutTypes;
+		KarmaVector<FSetLayout> m_SetLayouts;
+		
+		VkPipelineBindPoint m_BindPoint = VK_PIPELINE_BIND_POINT_MAX_ENUM;
 	};
 
-private:
-	KarmaMap<VkDescriptorType, uint32_t> m_LayoutTypes;
-
-};
+	class FVulkanDescriptorSetsLayout : public FVulkanDescriptorSetsLayoutInfo
+	{
+	public:
+		FVulkanDescriptorSetsLayout(FVulkanDevice* InDevice);
+		~FVulkanDescriptorSetsLayout();
+	};
+}
