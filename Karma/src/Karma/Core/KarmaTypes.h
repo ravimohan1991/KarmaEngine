@@ -204,6 +204,31 @@ public:
 		return m_KeyValuePair.at(Key);
 	}
 
+	uint32_t Num() const
+	{
+		return (uint32_t) m_KeyValuePair.size();
+	}
+
+	auto begin()
+	{
+		return m_KeyValuePair.begin();
+	}
+
+	auto end()
+	{
+		return m_KeyValuePair.end();
+	}
+
+	auto begin() const
+	{
+		return m_KeyValuePair.cbegin();
+	}
+
+	auto end() const
+	{
+		return m_KeyValuePair.cend();
+	}
+
 protected:
 	AMap m_KeyValuePair;
 };
@@ -464,6 +489,11 @@ public:
 		m_Elements.clear();
 	}
 
+	void Resize(uint32_t NewSize)
+	{
+		m_Elements.resize(NewSize);
+	}
+
 	/**
 	 * @brief Just clear the elements
 	 *
@@ -533,6 +563,16 @@ public:
 		return m_Elements.end();
 	}
 
+	typename std::vector<BuildingBlock>::const_iterator begin() const
+	{
+		return m_Elements.cbegin();
+	}
+
+	typename std::vector<BuildingBlock>::const_iterator end() const
+	{
+		return m_Elements.cend();
+	}
+
 	/**
 	 * Returns the UObject corresponding to index. Be advised this is only for very low level use.
 	 *
@@ -575,6 +615,12 @@ public:
 	 * @since Karma 1.0.0
 	 */
 	FORCEINLINE BuildingBlock const* GetData() const { return m_Elements.data(); }
+
+	BuildingBlock& operator[](int32_t Index)
+	{
+		RangeCheck(Index);
+		return m_Elements[Index];
+	}
 
 private:
 	/**

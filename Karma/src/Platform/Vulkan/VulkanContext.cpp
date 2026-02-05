@@ -503,7 +503,7 @@ namespace Karma
 		VkDescriptorSetLayoutBinding texBinding{};
 		texBinding.binding = 0;
 		texBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		texBinding.descriptorCount = 1;
+		texBinding.descriptorCount = 1; // <----------------------------------- Number of such descriptors, for per mesh should be number of meshes
 		texBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 		texBinding.pImmutableSamplers = nullptr;
 
@@ -519,7 +519,7 @@ namespace Karma
 		VkDescriptorSetLayoutBinding objectBinding{};
 		objectBinding.binding = 0;
 		objectBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		objectBinding.descriptorCount = 1;
+		objectBinding.descriptorCount = 1;// <----------------------------------- number of uniform buffers , for per mesh should be number of meshes
 		objectBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 		objectBinding.pImmutableSamplers = nullptr;
 

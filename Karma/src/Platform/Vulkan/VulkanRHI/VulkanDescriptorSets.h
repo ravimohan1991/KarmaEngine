@@ -19,21 +19,23 @@ namespace Karma
 	class FVulkanDescriptorSetsLayoutInfo
 	{
 	public:
-		/**
+	   /**
 		* @brief Constructor
 		*
-		* Adds all the Vulkan descriptor types currently supported to the m_LayoutTypes map with initial count of 0.
+		* Adds all the Vulkan descriptor types currently needed.
 		*
 		* @since Karma 1.0.0
 		*/
 		FVulkanDescriptorSetsLayoutInfo()
 		{
-			for (uint32_t i = VK_DESCRIPTOR_TYPE_SAMPLER; i <= VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT; ++i)
+		}
+
+		void SetLayoutTypes(const KarmaVector<VkDescriptorType>& NeededDescriptorTypes)
+		{
+			for (const VkDescriptorType& type : NeededDescriptorTypes)
 			{
-				m_LayoutTypes.Add(static_cast<VkDescriptorType>(i), 0);
+				m_LayoutTypes.Add(type, 1);
 			}
-			
-			m_LayoutTypes.Add(VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR, 0);
 		}
 		
 		/**
@@ -56,10 +58,17 @@ namespace Karma
 			}
 		}
 		
+		/**
+		 * @brief Structure representing a descriptor set layout.
+		 */
 		struct FSetLayout
 		{
+			/**
+			 * @brief Layout bindings for this descriptor set, representing the individual
+			 * descriptors and their configurations within the set.
+			 */
 			KarmaVector<VkDescriptorSetLayoutBinding> m_LayoutBindings;
-			uint32_t m_Hash;
+			uint32_t m_Hash = 0;
 			
 			inline void GenerateHash()
 			{
@@ -91,11 +100,18 @@ namespace Karma
 			return m_LayoutTypes;
 		}
 		
-		
-	private:
+	/*protected:*/
+		void AddDescriptor(int32_t DescriptorSetIndex, const VkDescriptorSetLayoutBinding& Descriptor);
+		void AddDescriptorSet(FSetLayout SetLayout);
+
+	protected:
+		/**
+		 * @brief Map storing the count of each Vulkan descriptor type used in the layout.
+		 */
 		KarmaMap<VkDescriptorType, uint32_t> m_LayoutTypes;
 		KarmaVector<FSetLayout> m_SetLayouts;
 		
+		uint32_t m_Hash = 0;
 		VkPipelineBindPoint m_BindPoint = VK_PIPELINE_BIND_POINT_MAX_ENUM;
 	};
 
@@ -104,5 +120,90 @@ namespace Karma
 	public:
 		FVulkanDescriptorSetsLayout(FVulkanDevice* InDevice);
 		~FVulkanDescriptorSetsLayout();
+
+		inline const KarmaVector<VkDescriptorSetLayout>& GetHandles() const
+		{
+			return m_LayoutHandles;
+		}
+
+		inline const KarmaVector<uint32_t>& GetHandleIds() const
+		{
+			return m_LayoutHandleIds;
+		}
+
+		inline const VkDescriptorSetAllocateInfo& GetAllocateInfo() const
+		{
+			return m_DescriptorSetsAllocateInfo;
+		}
+
+		inline uint32_t GetHash() const
+		{
+			return m_Hash;
+		}
+
+	private:
+		FVulkanDevice* m_Device;
+		KarmaVector<VkDescriptorSetLayout> m_LayoutHandles;
+		KarmaVector<uint32_t> m_LayoutHandleIds;
+		VkDescriptorSetAllocateInfo m_DescriptorSetsAllocateInfo;
+	};
+
+	class FVulkanDescriptorPool
+	{
+	public:
+		FVulkanDescriptorPool(FVulkanDevice* InDevice, const FVulkanDescriptorSetsLayout& InLayout, uint32_t MaxSetsAllocations);
+		~FVulkanDescriptorPool();
+
+		/**
+		 * @brief Retrieves the Vulkan descriptor pool handle.
+		 * 
+		 * @return VkDescriptorPool The Vulkan descriptor pool handle.
+		 * @since Karma 1.0.0
+		 */
+		inline VkDescriptorPool GetHandle() const
+		{
+			return m_DescriptorPool;
+		}
+
+		/**
+		 * @brief Checks if the descriptor pool can allocate more descriptor sets based on the provided layout.
+		 * 
+		 * @param InLayout									The layout of the descriptor sets to be allocated
+		 * @since Karma 1.0.0
+		 */
+		inline bool CanAllocate(const FVulkanDescriptorSetsLayout& InLayout) const
+		{
+			return m_MaxDescriptorSets > m_NumAllocatedDescriptorSets + InLayout.GetLayouts().Num();
+		}
+		
+		/**
+		 * @brief Allocates descriptor sets from the pool based on the provided allocation info.
+		 * 
+		 * @param InDescriptorSetAllocateInfo				Information about the descriptor set allocation
+		 * @param OutSets									Pointer to an array where allocated descriptor sets will be stored
+		 * @return VkDescriptorSet							The first allocated descriptor set handle
+		 * @since Karma 1.0.0
+		 */
+		VkDescriptorSet AllocateDescriptorSet(const VkDescriptorSetAllocateInfo& InDescriptorSetAllocateInfo, VkDescriptorSet* OutSets);
+
+	private:
+		FVulkanDevice* m_Device;
+		
+		uint32_t m_MaxDescriptorSets;
+		uint32_t m_NumAllocatedDescriptorSets;
+
+		uint32_t m_PeakAllocatedDescriptorSets;
+		const FVulkanDescriptorSetsLayout& m_Layout;
+
+		VkDescriptorPool m_DescriptorPool;
+
+		//friend class FVulkanCommandListContext;
+	};
+
+	class FVulkanDescriptorPoolsManager
+	{
+	private:
+		FVulkanDevice* m_Device = nullptr;
+
 	};
 }

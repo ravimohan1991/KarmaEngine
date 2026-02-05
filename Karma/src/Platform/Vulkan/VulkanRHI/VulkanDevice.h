@@ -17,7 +17,7 @@ namespace Karma
 {
 	class FVulkanDynamicRHI;
 	class VulkanTexture;
-
+	class FVulkanDescriptorSetsLayout;
 	class FVulkanSwapChain;
 
 	/**
@@ -160,6 +160,9 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		inline FVulkanFenceManager& GetFenceManager() { return m_FenceManager; }
+
+	private:
+		void PopulateWithDescriptorSetsLayout(FVulkanDescriptorSetsLayout& OutLayout);
 		
 	private:
 		VkDevice m_LogicalDevice; ///< The Vulkan logical device handle.
@@ -172,6 +175,7 @@ namespace Karma
 
 		// Additional members for managing queues, command pools, etc. can be added here.
 		VkCommandPool m_CommandPool;
+		class FVulkanDescriptorPool* m_DescriptorPool;
 
 		FVulkanFenceManager	m_FenceManager;
 	};

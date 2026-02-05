@@ -1,7 +1,7 @@
 #include "VulkanDevice.h"
 #include "VulkanDynamicRHI.h"
-
 #include "Vulkan/VulkanTexture.h"
+#include "VulkanRHI/VulkanDescriptorSets.h"
 
 namespace Karma
 {
@@ -21,6 +21,7 @@ namespace Karma
 	{
 		// vkdestroy default buffers etc
 		delete m_DefaultTexture;
+		delete m_DescriptorPool;
 		vkDestroyCommandPool(m_LogicalDevice, m_CommandPool, nullptr);
 		vkDestroyDevice(m_LogicalDevice, nullptr);
 	}
@@ -102,8 +103,56 @@ namespace Karma
 
 		KR_CORE_INFO("Created Vulkan commandpool");
 
+		// Tentative descriptor pool
+		FVulkanDescriptorSetsLayout descriptorSetLayout(this);
+		KarmaVector<VkDescriptorType> neededTypes;
+		neededTypes.Add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); // for camera UBO and per-mesh UBO
+		neededTypes.Add(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);// for mesh textures (samplers + image views)
+
+		descriptorSetLayout.SetLayoutTypes(neededTypes);
+
+		PopulateWithDescriptorSetsLayout(descriptorSetLayout);
+		m_DescriptorPool = new FVulkanDescriptorPool(this, descriptorSetLayout, 16);
+
 		// Default texture (unreal grid)
 		m_DefaultTexture = new VulkanTexture(this, "../Resources/Textures/UnrealGrid.png");
+	}
+
+	void FVulkanDevice::PopulateWithDescriptorSetsLayout(FVulkanDescriptorSetsLayout& InLayout)
+	{
+		// Set 0: Global descriptors (camera UBO, texture sampler)
+		FVulkanDescriptorSetsLayoutInfo::FSetLayout setLayout;
+
+		// Camera UBO at binding 0 (vertex shader)
+		setLayout.m_LayoutBindings.Add({
+			0, // binding
+			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+			1, // descriptorCount
+			VK_SHADER_STAGE_VERTEX_BIT,
+			nullptr
+			});
+		// Texture sampler at binding 1 (fragment shader) with default sampler and image view
+		setLayout.m_LayoutBindings.Add({
+			1, // binding
+			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+			1, // descriptorCount
+			VK_SHADER_STAGE_FRAGMENT_BIT,
+			nullptr
+			});
+
+		InLayout.AddDescriptorSet(setLayout);
+
+		// Set 1: Per-mesh descriptors (per-mesh UBO)
+		FVulkanDescriptorSetsLayoutInfo::FSetLayout meshSetLayout;
+		// Per mesh UBO at binding 0 (vertex shader)
+		meshSetLayout.m_LayoutBindings.Add({
+			0, // binding
+			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+			100, // descriptorCount
+			VK_SHADER_STAGE_VERTEX_BIT,
+			});
+
+		InLayout.AddDescriptorSet(setLayout);
 	}
 
 	void FVulkanDevice::WaitUntilIdle()
