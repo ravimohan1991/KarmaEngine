@@ -26,6 +26,18 @@ namespace Karma
 	void FVulkanDescriptorSetsLayoutInfo::AddDescriptorSet(FSetLayout SetLayout)
 	{
 		m_SetLayouts.Add(SetLayout);
+
+		for (const auto& layoutBindings : SetLayout.m_LayoutBindings)
+		{
+			if (m_LayoutTypes.Contains(layoutBindings.descriptorType))
+			{
+				m_LayoutTypes[layoutBindings.descriptorType]++;
+			}
+			else
+			{
+				m_LayoutTypes.Add(layoutBindings.descriptorType, 1);
+			}
+		}
 	}
 
 	FVulkanDescriptorSetsLayout::FVulkanDescriptorSetsLayout(FVulkanDevice* InDevice) : m_Device(InDevice), 
@@ -35,29 +47,75 @@ namespace Karma
 
 	FVulkanDescriptorSetsLayout::~FVulkanDescriptorSetsLayout()
 	{
-		// Hanldles are owned by FVulkanPipleLineStateCacheManager
-		m_LayoutHandleIds.Clear();
+		for (const auto& handle : m_LayoutHandles)
+		{
+			vkDestroyDescriptorSetLayout(m_Device->GetLogicalDevice(), handle, nullptr);
+		}
+
+		m_LayoutHandles.Clear();
 	}	
+
+	void FVulkanDescriptorSetsLayout::Compile()
+	{
+		for (const auto& setLayout : m_SetLayouts)
+		{
+			VkDescriptorSetLayout handle = VK_NULL_HANDLE;
+			
+			VkDescriptorSetLayoutCreateInfo layoutInfo{};
+			layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			layoutInfo.bindingCount = static_cast<uint32_t>(setLayout.m_LayoutBindings.Num());
+			layoutInfo.pBindings = setLayout.m_LayoutBindings.GetData(); // <------ contains the information of how many descriptors of each type are used in the layout, and their shader stage flags
+
+			VkResult result = vkCreateDescriptorSetLayout(m_Device->GetLogicalDevice(), &layoutInfo, nullptr, &handle);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor set layout!");
+
+			m_LayoutHandles.Add(handle);
+		}
+	}
 
 	FVulkanDescriptorPool::FVulkanDescriptorPool(FVulkanDevice* InDevice, const FVulkanDescriptorSetsLayout& Layout, uint32_t MaxSetsAllocations)
 		: m_Device(InDevice), m_MaxDescriptorSets(0), m_NumAllocatedDescriptorSets(0), m_PeakAllocatedDescriptorSets(0), m_Layout(Layout),
 		m_DescriptorPool(VK_NULL_HANDLE)
 	{
 		// Descriptor sets number required to allocate max number of descriptor sets layout
-		m_MaxDescriptorSets = MaxSetsAllocations * Layout.GetLayouts().Num();
+		//m_MaxDescriptorSets = MaxSetsAllocations * Layout.GetLayouts().Num();
+
+		KarmaMap<VkDescriptorType, uint32_t> descriptorTypeCounts;
+
+		for (const auto& layout : Layout.GetLayouts())
+		{
+			m_MaxDescriptorSets += layout.m_NumberOfDescriptorSets;
+
+			for (const auto& layoutBindings : layout.m_LayoutBindings)
+			{
+				if (descriptorTypeCounts.Contains(layoutBindings.descriptorType))
+				{
+					descriptorTypeCounts[layoutBindings.descriptorType] += layoutBindings.descriptorCount * layout.m_NumberOfDescriptorSets;
+				}
+				else
+				{
+					descriptorTypeCounts.Add(layoutBindings.descriptorType, layoutBindings.descriptorCount * layout.m_NumberOfDescriptorSets);
+				}
+			}
+		}
+
 		KarmaVector<VkDescriptorPoolSize> types;
 
 		for (const auto& layoutType : Layout.GetLayoutTypes())
 		{
 			VkDescriptorPoolSize poolSize{};
 			poolSize.type = VkDescriptorType(layoutType.first);
-			poolSize.descriptorCount = Layout.GetTypesUsed(poolSize.type) * MaxSetsAllocations;
+			//poolSize.descriptorCount = Layout.GetTypesUsed(poolSize.type) * MaxSetsAllocations;// the number of descriptors of this type across all the descriptor sets
+			poolSize.descriptorCount = descriptorTypeCounts[layoutType.first];// the number of descriptors of this type across all the descriptor sets
 			types.Add(poolSize);
 		}
 
+		// Note: A descriptor set may have multiple types of descriptors.
+		// For example, a descriptor set may have both uniform buffers and combined image samplers.
+
 		VkDescriptorPoolCreateInfo PoolInfoP{};
 		PoolInfoP.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		PoolInfoP.maxSets = m_MaxDescriptorSets;
+		PoolInfoP.maxSets = m_MaxDescriptorSets;// Max number of descriptor sets that can be allocated from this pool (via vkAllocateDescriptorSets)
 		PoolInfoP.poolSizeCount = static_cast<uint32_t>(types.Num());
 		PoolInfoP.pPoolSizes = types.GetData();
 
@@ -76,21 +134,38 @@ namespace Karma
 		}
 	}
 
-	VkDescriptorSet FVulkanDescriptorPool::AllocateDescriptorSet(const VkDescriptorSetAllocateInfo& InDescriptorSetAllocateInfo, VkDescriptorSet* OutSets)
+	void FVulkanDescriptorPool::AllocateDescriptorSets(const FVulkanDescriptorSetsLayout& InLayout, FVulkanDescriptorSets& InDSets)
 	{
-		VkDescriptorSetAllocateInfo AllocateInfo = InDescriptorSetAllocateInfo;
-		AllocateInfo.descriptorPool = m_DescriptorPool;
-		VkResult Result = vkAllocateDescriptorSets(m_Device->GetLogicalDevice(), &AllocateInfo, OutSets);
-		if (Result != VK_SUCCESS)
+		uint32_t setIndex = 0;
+		for (const auto& layout : InLayout.GetLayouts())
 		{
-			KR_CORE_ERROR("Failed to allocate descriptor sets from the pool!");
-			return VK_NULL_HANDLE;
+			KarmaVector<VkDescriptorSet>& dSets = InDSets.m_DescriptorSets[setIndex];
+
+			for (auto& descriptorSet : dSets)
+			{
+				VkDescriptorSetAllocateInfo allocInfo{};
+				allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+				allocInfo.descriptorPool = m_DescriptorPool;
+				allocInfo.descriptorSetCount = 1;
+				allocInfo.pSetLayouts = &InLayout.GetHandles()[setIndex];
+
+				VkResult result = vkAllocateDescriptorSets(m_Device->GetLogicalDevice(), &allocInfo, &descriptorSet);
+				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to allocate descriptor set!");
+			}
+
+			setIndex++;
 		}
-		m_NumAllocatedDescriptorSets += AllocateInfo.descriptorSetCount;
-		if (m_NumAllocatedDescriptorSets > m_PeakAllocatedDescriptorSets)
+	}
+
+	FVulkanDescriptorSets::FVulkanDescriptorSets(const FVulkanDescriptorSetsLayout& InLayout)
+	{
+		m_DescriptorSets.Resize(InLayout.GetLayouts().Num());
+
+		uint32_t setIndex = 0;
+
+		for (const auto& layout : InLayout.GetLayouts())
 		{
-			m_PeakAllocatedDescriptorSets = m_NumAllocatedDescriptorSets;
+			m_DescriptorSets[setIndex++].Resize(layout.m_NumberOfDescriptorSets);
 		}
-		return *OutSets;
 	}
 }

@@ -39,7 +39,7 @@ namespace Karma
 		}
 		
 		/**
-		* @brief Returns the number of descriptors of a specific type used in the layout.
+		* @brief Returns the number of descriptors of a specific type used in the layout, across all descriptor sets
 		*
 		* @param Type						The Vulkan descriptor type to query.
 		* @return The number of descriptors of the specified type used in the layout.
@@ -69,6 +69,13 @@ namespace Karma
 			 */
 			KarmaVector<VkDescriptorSetLayoutBinding> m_LayoutBindings;
 			uint32_t m_Hash = 0;
+
+			/**
+			 * @brief The number of descriptor sets that use this layout. This is used for calculating the total number of descriptors
+			 * needed for the pool allocation and appropriating the number of descriptor sets to allocate (vkAllocateDescriptorSets), from
+			 * the pool, using this layout.
+			 */
+			uint32_t m_NumberOfDescriptorSets = 0;
 			
 			inline void GenerateHash()
 			{
@@ -121,6 +128,8 @@ namespace Karma
 		FVulkanDescriptorSetsLayout(FVulkanDevice* InDevice);
 		~FVulkanDescriptorSetsLayout();
 
+		void Compile();
+
 		inline const KarmaVector<VkDescriptorSetLayout>& GetHandles() const
 		{
 			return m_LayoutHandles;
@@ -146,6 +155,13 @@ namespace Karma
 		KarmaVector<VkDescriptorSetLayout> m_LayoutHandles;
 		KarmaVector<uint32_t> m_LayoutHandleIds;
 		VkDescriptorSetAllocateInfo m_DescriptorSetsAllocateInfo;
+	};
+
+	struct FVulkanDescriptorSets
+	{
+		FVulkanDescriptorSets(const FVulkanDescriptorSetsLayout& InLayout);
+
+		KarmaVector<KarmaVector<VkDescriptorSet>> m_DescriptorSets;
 	};
 
 	class FVulkanDescriptorPool
@@ -184,7 +200,7 @@ namespace Karma
 		 * @return VkDescriptorSet							The first allocated descriptor set handle
 		 * @since Karma 1.0.0
 		 */
-		VkDescriptorSet AllocateDescriptorSet(const VkDescriptorSetAllocateInfo& InDescriptorSetAllocateInfo, VkDescriptorSet* OutSets);
+		void AllocateDescriptorSets(const FVulkanDescriptorSetsLayout& InLayout, FVulkanDescriptorSets& InDSets);
 
 	private:
 		FVulkanDevice* m_Device;

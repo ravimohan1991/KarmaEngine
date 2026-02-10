@@ -6,8 +6,8 @@
 namespace Karma
 {
 	FVulkanDevice::FVulkanDevice(FVulkanDynamicRHI* InRHI, VkPhysicalDevice InGpu) : m_VulkanDynamicRHI(InRHI),
-		m_GPU(InGpu), m_FenceManager(*this), m_CommandPool(VK_NULL_HANDLE), m_DefaultTexture(nullptr), m_LogicalDevice(VK_NULL_HANDLE),
-		m_GraphicsQueue(VK_NULL_HANDLE), m_PresentQueue(VK_NULL_HANDLE)
+		m_GPU(InGpu), m_FenceManager(*this), m_CommandPool(VK_NULL_HANDLE), m_DefaultTexture(nullptr), m_DefaultDescriptorSetLayout(nullptr),
+		m_LogicalDevice(VK_NULL_HANDLE), m_GraphicsQueue(VK_NULL_HANDLE), m_PresentQueue(VK_NULL_HANDLE)
 	{
 		// Implementation for creating a Vulkan logical device
 	}
@@ -21,6 +21,8 @@ namespace Karma
 	{
 		// vkdestroy default buffers etc
 		delete m_DefaultTexture;
+		delete m_DefaultDescriptorSetLayout;
+		delete m_DefaultDescriptorSets;
 		delete m_DescriptorPool;
 		vkDestroyCommandPool(m_LogicalDevice, m_CommandPool, nullptr);
 		vkDestroyDevice(m_LogicalDevice, nullptr);
@@ -104,15 +106,15 @@ namespace Karma
 		KR_CORE_INFO("Created Vulkan commandpool");
 
 		// Tentative descriptor pool
-		FVulkanDescriptorSetsLayout descriptorSetLayout(this);
-		KarmaVector<VkDescriptorType> neededTypes;
-		neededTypes.Add(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER); // for camera UBO and per-mesh UBO
-		neededTypes.Add(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);// for mesh textures (samplers + image views)
+		m_DefaultDescriptorSetLayout = new FVulkanDescriptorSetsLayout(this);
 
-		descriptorSetLayout.SetLayoutTypes(neededTypes);
+		PopulateWithDescriptorSetsLayout(*m_DefaultDescriptorSetLayout);
+		m_DescriptorPool = new FVulkanDescriptorPool(this, *m_DefaultDescriptorSetLayout, 16);
 
-		PopulateWithDescriptorSetsLayout(descriptorSetLayout);
-		m_DescriptorPool = new FVulkanDescriptorPool(this, descriptorSetLayout, 16);
+		m_DefaultDescriptorSetLayout->Compile();
+		m_DefaultDescriptorSets = new FVulkanDescriptorSets(*m_DefaultDescriptorSetLayout);
+
+		m_DescriptorPool->AllocateDescriptorSets(*m_DefaultDescriptorSetLayout, *m_DefaultDescriptorSets);
 
 		// Default texture (unreal grid)
 		m_DefaultTexture = new VulkanTexture(this, "../Resources/Textures/UnrealGrid.png");
@@ -140,6 +142,8 @@ namespace Karma
 			nullptr
 			});
 
+		setLayout.m_NumberOfDescriptorSets = 1;
+
 		InLayout.AddDescriptorSet(setLayout);
 
 		// Set 1: Per-mesh descriptors (per-mesh UBO)
@@ -148,11 +152,12 @@ namespace Karma
 		meshSetLayout.m_LayoutBindings.Add({
 			0, // binding
 			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-			100, // descriptorCount
+			1, // descriptorCount
 			VK_SHADER_STAGE_VERTEX_BIT,
 			});
+		meshSetLayout.m_NumberOfDescriptorSets = 16;
 
-		InLayout.AddDescriptorSet(setLayout);
+		InLayout.AddDescriptorSet(meshSetLayout);
 	}
 
 	void FVulkanDevice::WaitUntilIdle()

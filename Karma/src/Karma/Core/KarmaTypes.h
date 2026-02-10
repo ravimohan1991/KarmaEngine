@@ -622,6 +622,12 @@ public:
 		return m_Elements[Index];
 	}
 
+	const BuildingBlock& operator[](int32_t Index) const
+	{
+		RangeCheck(Index);
+		return m_Elements[Index];
+	}
+
 private:
 	/**
 	 * @brief Internal implementation of RemoveAtSwap

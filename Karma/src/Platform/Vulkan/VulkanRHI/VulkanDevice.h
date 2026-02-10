@@ -18,6 +18,7 @@ namespace Karma
 	class FVulkanDynamicRHI;
 	class VulkanTexture;
 	class FVulkanDescriptorSetsLayout;
+	class FVulkanDescriptorSets;
 	class FVulkanSwapChain;
 
 	/**
@@ -162,6 +163,23 @@ namespace Karma
 		inline FVulkanFenceManager& GetFenceManager() { return m_FenceManager; }
 
 	private:
+		/**
+		 * @brief Populates the provided descriptor sets layout with the necessary bindings for the device.
+		 *
+		 * This function is responsible for defining the descriptor set layouts that will be used for resource binding in shaders. It 
+		 * adds the required bindings for global resources (like camera UBO and texture sampler) and per-mesh resources (like per-mesh UBO).
+		 * 
+		 * From shader POV, the sets are like so
+		 * set = 0, binding = 0: Camera UBO (vertex shader)
+		 * set = 0, binding = 1: Texture sampler (fragment shader)
+		 * 
+		 * set = 1, binding = 0: Per-mesh UBO (vertex and fragment shader)
+		 *
+		 * @param OutLayout						The descriptor sets layout to be populated with the necessary bindings.
+		 *
+		 * @see FVulkanDescriptorSetsLayout
+		 * @since Karma 1.0.0
+		 */
 		void PopulateWithDescriptorSetsLayout(FVulkanDescriptorSetsLayout& OutLayout);
 		
 	private:
@@ -176,6 +194,10 @@ namespace Karma
 		// Additional members for managing queues, command pools, etc. can be added here.
 		VkCommandPool m_CommandPool;
 		class FVulkanDescriptorPool* m_DescriptorPool;
+
+		// Default descriptor set layout for the device, which can be used for common resources like camera UBO and default texture sampler.
+		FVulkanDescriptorSetsLayout* m_DefaultDescriptorSetLayout;
+		FVulkanDescriptorSets* m_DefaultDescriptorSets;
 
 		FVulkanFenceManager	m_FenceManager;
 	};
