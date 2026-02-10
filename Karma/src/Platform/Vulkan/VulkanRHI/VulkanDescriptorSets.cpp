@@ -73,9 +73,9 @@ namespace Karma
 		}
 	}
 
-	FVulkanDescriptorPool::FVulkanDescriptorPool(FVulkanDevice* InDevice, const FVulkanDescriptorSetsLayout& Layout, uint32_t MaxSetsAllocations)
-		: m_Device(InDevice), m_MaxDescriptorSets(0), m_NumAllocatedDescriptorSets(0), m_PeakAllocatedDescriptorSets(0), m_Layout(Layout),
-		m_DescriptorPool(VK_NULL_HANDLE)
+	FVulkanDescriptorPool::FVulkanDescriptorPool(FVulkanDevice* InDevice, const FVulkanDescriptorSetsLayout& Layout/*, uint32_t MaxSetsAllocations*/)
+		: m_Device(InDevice), m_Layout(Layout),
+		m_MaxDescriptorSets(0), m_DescriptorPool(VK_NULL_HANDLE)
 	{
 		// Descriptor sets number required to allocate max number of descriptor sets layout
 		//m_MaxDescriptorSets = MaxSetsAllocations * Layout.GetLayouts().Num();

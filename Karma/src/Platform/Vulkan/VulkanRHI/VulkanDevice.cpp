@@ -105,15 +105,15 @@ namespace Karma
 
 		KR_CORE_INFO("Created Vulkan commandpool");
 
-		// Tentative descriptor pool
+		// Default descriptorsets
 		m_DefaultDescriptorSetLayout = new FVulkanDescriptorSetsLayout(this);
-
+		
 		PopulateWithDescriptorSetsLayout(*m_DefaultDescriptorSetLayout);
-		m_DescriptorPool = new FVulkanDescriptorPool(this, *m_DefaultDescriptorSetLayout, 16);
-
 		m_DefaultDescriptorSetLayout->Compile();
+		
+		m_DescriptorPool = new FVulkanDescriptorPool(this, *m_DefaultDescriptorSetLayout);
 		m_DefaultDescriptorSets = new FVulkanDescriptorSets(*m_DefaultDescriptorSetLayout);
-
+		
 		m_DescriptorPool->AllocateDescriptorSets(*m_DefaultDescriptorSetLayout, *m_DefaultDescriptorSets);
 
 		// Default texture (unreal grid)

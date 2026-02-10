@@ -167,7 +167,7 @@ namespace Karma
 	class FVulkanDescriptorPool
 	{
 	public:
-		FVulkanDescriptorPool(FVulkanDevice* InDevice, const FVulkanDescriptorSetsLayout& InLayout, uint32_t MaxSetsAllocations);
+		FVulkanDescriptorPool(FVulkanDevice* InDevice, const FVulkanDescriptorSetsLayout& InLayout/*, uint32_t MaxSetsAllocations*/);
 		~FVulkanDescriptorPool();
 
 		/**
@@ -181,16 +181,6 @@ namespace Karma
 			return m_DescriptorPool;
 		}
 
-		/**
-		 * @brief Checks if the descriptor pool can allocate more descriptor sets based on the provided layout.
-		 * 
-		 * @param InLayout									The layout of the descriptor sets to be allocated
-		 * @since Karma 1.0.0
-		 */
-		inline bool CanAllocate(const FVulkanDescriptorSetsLayout& InLayout) const
-		{
-			return m_MaxDescriptorSets > m_NumAllocatedDescriptorSets + InLayout.GetLayouts().Num();
-		}
 		
 		/**
 		 * @brief Allocates descriptor sets from the pool based on the provided allocation info.
@@ -204,16 +194,9 @@ namespace Karma
 
 	private:
 		FVulkanDevice* m_Device;
-		
 		uint32_t m_MaxDescriptorSets;
-		uint32_t m_NumAllocatedDescriptorSets;
-
-		uint32_t m_PeakAllocatedDescriptorSets;
 		const FVulkanDescriptorSetsLayout& m_Layout;
-
 		VkDescriptorPool m_DescriptorPool;
-
-		//friend class FVulkanCommandListContext;
 	};
 
 	class FVulkanDescriptorPoolsManager
