@@ -185,7 +185,7 @@ namespace Karma
 		 * 
 		 * @since Karma 1.0.0
 		 */
-		void UpdateUniformBufferDescriptorSet(std::shared_ptr<class VulkanUniformBuffer> Uniform, uint32_t SetLayoutIndex, uint32_t DescriptorSetIndex, uint32_t FrameIndex);
+		void UpdateUniformBufferDescriptorSet(class VulkanUniformBuffer* Uniform, uint32_t SetLayoutIndex, uint32_t DescriptorSetIndex, uint32_t FrameIndex);
 
 		/**
 		 * @brief Assigns an Engine's texture to a specific descriptor set of a specific layout.

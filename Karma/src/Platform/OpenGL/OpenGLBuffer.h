@@ -206,6 +206,8 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		virtual void UploadUniformBuffer(size_t frameIndex) override;
+		
+		virtual void UpdateCameraUniform() override {}
 
 	private:
 		/**

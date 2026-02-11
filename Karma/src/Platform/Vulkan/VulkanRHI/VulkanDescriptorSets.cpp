@@ -132,7 +132,7 @@ namespace Karma
 			vkDestroyDescriptorPool(m_Device->GetLogicalDevice(), m_DescriptorPool, nullptr);
 			m_DescriptorPool = VK_NULL_HANDLE;
 
-			KR_CORE_INFO("Destroying descriptorpool");
+			//KR_CORE_INFO("Destroying descriptorpool");
 		}
 	}
 
@@ -173,7 +173,7 @@ namespace Karma
 		}
 	}
 
-	void FVulkanDescriptorSets::UpdateUniformBufferDescriptorSet(std::shared_ptr<class VulkanUniformBuffer> Uniform, uint32_t SetLayoutIndex,
+	void FVulkanDescriptorSets::UpdateUniformBufferDescriptorSet(VulkanUniformBuffer* Uniform, uint32_t SetLayoutIndex,
 		uint32_t DescriptorSetIndex, uint32_t FrameIndex)
 	{
 		VkDescriptorBufferInfo bufferInfo{};

@@ -2,7 +2,6 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "Karma/Input.h"
 #include "Buffer.h"
-#include "Platform/Vulkan/VulkanHolder.h"
 
 namespace Karma
 {
@@ -14,6 +13,7 @@ namespace Karma
 		UBODataPointer uView(&m_ViewMatrix);
 
 		m_ViewProjectionUBO->UpdateUniforms(uProjection, uView);
+		m_ViewProjectionUBO->UpdateCameraUniform();
 	}
 
 	Camera::~Camera()

@@ -58,6 +58,7 @@ namespace Karma
 
 			// Font, descriptor, and pipeline
 			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
+			FVulkanDynamicRHI::Get().GetDevice()->InitializeDefaultDescriptorSets(m_VulkanWindowData.RHIResources->VulkanSwapChain->GetMaxFramesInFlight());
 
 			// Load default font
 			KGFontConfig fontConfig;
@@ -427,9 +428,9 @@ namespace Karma
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
-            vkDeviceWaitIdle(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice());
+			vkDeviceWaitIdle(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice());
 
-            return;
+			return;
 		}
 		else
 		{

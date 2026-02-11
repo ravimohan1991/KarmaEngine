@@ -5,6 +5,7 @@
 #include "VulkanRHI/VulkanDevice.h"
 #include "VulkanRHI/VulkanSwapChain.h"
 #include "KarmaGui/KarmaGuiRenderer.h"
+#include "VulkanRHI/VulkanDescriptorSets.h"
 
 namespace Karma
 {
@@ -231,6 +232,16 @@ namespace Karma
 	VulkanUniformBuffer::~VulkanUniformBuffer()
 	{
 		ClearBuffer();
+	}
+
+	void VulkanUniformBuffer::UpdateCameraUniform()
+	{
+		uint32_t maxFramesInFlight = KarmaGuiRenderer::GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
+		
+		for(uint32_t counter = 0; counter < maxFramesInFlight; counter++)
+		{
+			FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(this, 0, 0, counter);
+		}
 	}
 
 	void VulkanUniformBuffer::BufferCreation()
