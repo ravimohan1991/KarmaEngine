@@ -159,8 +159,47 @@ namespace Karma
 
 	struct FVulkanDescriptorSets
 	{
-		FVulkanDescriptorSets(const FVulkanDescriptorSetsLayout& InLayout);
+		/**
+		 * @brief Constructor for FVulkanDescriptorSets.
+		 *
+		 * Initializes the descriptor sets based on the provided Vulkan device and descriptor set layout.
+		 * 
+		 * The descriptor sets are allocated based on the layout information, and are stored in a vector of vectors, where each inner
+		 * vector corresponds to a specific descriptor set layout, and contains the allocated descriptor sets for that layout.
+		 *
+		 * @param InDevice						The Vulkan device used for creating descriptor sets.
+		 * @param InLayout						The descriptor set layout defining the structure of the descriptor sets.
+		 *
+		 * @since Karma 1.0.0
+		 */
+		FVulkanDescriptorSets(FVulkanDevice* InDevice, const FVulkanDescriptorSetsLayout& InLayout);
 
+		/**
+		 * @brief Assigns an Engine's uniform buffer to a specific descriptor set of a specific layout.
+		 * 
+		 * @param Uniform						The uniform buffer to be assigned to the descriptor set
+		 * @param SetLayoutIndex				The index of the descriptor set layout to which the descriptor set belongs
+		 * @param DescriptorSetIndex			The index of the descriptor set within the specified layout to which the uniform buffer will be assigned
+		 * @param FrameIndex					The index of the the frame for which the descriptor set will be updated with the uniform buffer. Uniform 
+		 *										buffers are for each frame in flight, so the descriptor sets must be updated for each frame in flight, with the corresponding uniform buffer for that frame
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void UpdateUniformBufferDescriptorSet(std::shared_ptr<class VulkanUniformBuffer> Uniform, uint32_t SetLayoutIndex, uint32_t DescriptorSetIndex, uint32_t FrameIndex);
+
+		/**
+		 * @brief Assigns an Engine's texture to a specific descriptor set of a specific layout.
+		 * 
+		 * @param Texture						The texture to be assigned to the descriptor set
+		 * @param SetLayoutIndex				The index of the descriptor set layout to which the descriptor set belongs
+		 * 
+		 * @param DescriptorSetIndex			The index of the descriptor set within the specified layout to which the texture will be assigned
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void UpdateTextureDescriptorSet(std::shared_ptr<class VulkanTexture> Texture, uint32_t SetLayoutIndex, uint32_t DescriptorSetIndex);
+
+		FVulkanDevice* m_Device;
 		KarmaVector<KarmaVector<VkDescriptorSet>> m_DescriptorSets;
 	};
 

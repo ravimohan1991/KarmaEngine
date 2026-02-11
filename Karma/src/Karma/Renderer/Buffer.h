@@ -410,7 +410,10 @@ namespace Karma
 		void UpdateUniforms(T&&... uniforms)
 		{
 			m_UniformList = { uniforms... };
+			UpdateDriverSpecificUBOData();
 		}
+
+		virtual void UpdateDriverSpecificUBOData() = 0;
 
 		/**
 		 * @brief An overridable function to upload the uniform buffer

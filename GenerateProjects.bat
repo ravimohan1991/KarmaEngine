@@ -8,7 +8,7 @@ set /p Input=Enter y(Yes) or n(No):
 If /I "%Input%"=="y" goto yes
 goto no
 :yes
-Game_Of_Lands.slnx
+start "" Game_Of_Lands.slnx
 exit
 :no
 echo Suit yourself! Goodbye!

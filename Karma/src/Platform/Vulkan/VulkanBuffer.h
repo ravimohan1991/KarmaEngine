@@ -321,6 +321,8 @@ namespace Karma
 		 */
 		void BufferCreation();
 
+		virtual void UpdateDriverSpecificUBOData() override;
+
 		/**
 		 * @brief Uploads (copies) the data to GPU buffer memory (m_UniformBuffersMemory) from host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range
 		 *

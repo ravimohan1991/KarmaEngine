@@ -20,10 +20,14 @@ namespace Karma
 	void FVulkanDevice::Destroy()
 	{
 		// vkdestroy default buffers etc
+		for (uint32_t counter = 0; counter < m_MaxFramesInFlight; counter++)
+		{
+			delete m_DefaultDescriptorSets[counter];
+			delete m_DescriptorPool[counter];
+		}
+
 		delete m_DefaultTexture;
 		delete m_DefaultDescriptorSetLayout;
-		delete m_DefaultDescriptorSets;
-		delete m_DescriptorPool;
 		vkDestroyCommandPool(m_LogicalDevice, m_CommandPool, nullptr);
 		vkDestroyDevice(m_LogicalDevice, nullptr);
 	}
@@ -110,14 +114,26 @@ namespace Karma
 		
 		PopulateWithDescriptorSetsLayout(*m_DefaultDescriptorSetLayout);
 		m_DefaultDescriptorSetLayout->Compile();
-		
-		m_DescriptorPool = new FVulkanDescriptorPool(this, *m_DefaultDescriptorSetLayout);
-		m_DefaultDescriptorSets = new FVulkanDescriptorSets(*m_DefaultDescriptorSetLayout);
-		
-		m_DescriptorPool->AllocateDescriptorSets(*m_DefaultDescriptorSetLayout, *m_DefaultDescriptorSets);
+	
 
 		// Default texture (unreal grid)
 		m_DefaultTexture = new VulkanTexture(this, "../Resources/Textures/UnrealGrid.png");
+	}
+
+	void FVulkanDevice::InitializeDefaultDescriptorSets(uint32_t MaxFramesInFlight)
+	{
+		m_DescriptorPool.Resize(MaxFramesInFlight);
+		m_DefaultDescriptorSets.Resize(MaxFramesInFlight);
+
+		for (uint32_t counter = 0; counter < MaxFramesInFlight; counter++)
+		{
+			m_DescriptorPool[counter] = new FVulkanDescriptorPool(this, *m_DefaultDescriptorSetLayout);
+			m_DefaultDescriptorSets[counter] = new FVulkanDescriptorSets(this, *m_DefaultDescriptorSetLayout);
+
+			m_DescriptorPool[counter]->AllocateDescriptorSets(*m_DefaultDescriptorSetLayout, *m_DefaultDescriptorSets[counter]);
+		}
+
+		m_MaxFramesInFlight = MaxFramesInFlight;
 	}
 
 	void FVulkanDevice::PopulateWithDescriptorSetsLayout(FVulkanDescriptorSetsLayout& InLayout)

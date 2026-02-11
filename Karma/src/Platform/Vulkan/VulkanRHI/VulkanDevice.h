@@ -139,6 +139,8 @@ namespace Karma
 		 */
 		bool HasStencilComponent(VkFormat format);
 
+		void InitializeDefaultDescriptorSets(uint32_t MaxFramesInFlight);
+
 		///////////////// Getters /////////////////
 
 		/**
@@ -161,6 +163,8 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		inline FVulkanFenceManager& GetFenceManager() { return m_FenceManager; }
+
+		inline KarmaVector<FVulkanDescriptorSets*>& GetDefaultDescriptorSets() { return m_DefaultDescriptorSets; }
 
 	private:
 		/**
@@ -193,11 +197,12 @@ namespace Karma
 
 		// Additional members for managing queues, command pools, etc. can be added here.
 		VkCommandPool m_CommandPool;
-		class FVulkanDescriptorPool* m_DescriptorPool;
 
 		// Default descriptor set layout for the device, which can be used for common resources like camera UBO and default texture sampler.
 		FVulkanDescriptorSetsLayout* m_DefaultDescriptorSetLayout;
-		FVulkanDescriptorSets* m_DefaultDescriptorSets;
+		KarmaVector<class FVulkanDescriptorPool*> m_DescriptorPool;
+		KarmaVector<FVulkanDescriptorSets*> m_DefaultDescriptorSets;
+		uint32_t m_MaxFramesInFlight = 0;
 
 		FVulkanFenceManager	m_FenceManager;
 	};

@@ -1,5 +1,7 @@
 #include "VulkanDescriptorSets.h"
 #include "VulkanDevice.h"
+#include "VulkanBuffer.h"
+#include "VulkanTexture.h"
 
 namespace Karma
 {
@@ -157,8 +159,10 @@ namespace Karma
 		}
 	}
 
-	FVulkanDescriptorSets::FVulkanDescriptorSets(const FVulkanDescriptorSetsLayout& InLayout)
+	FVulkanDescriptorSets::FVulkanDescriptorSets(FVulkanDevice* InDevice, const FVulkanDescriptorSetsLayout& InLayout)
 	{
+		m_Device = InDevice;
+
 		m_DescriptorSets.Resize(InLayout.GetLayouts().Num());
 
 		uint32_t setIndex = 0;
@@ -167,5 +171,42 @@ namespace Karma
 		{
 			m_DescriptorSets[setIndex++].Resize(layout.m_NumberOfDescriptorSets);
 		}
+	}
+
+	void FVulkanDescriptorSets::UpdateUniformBufferDescriptorSet(std::shared_ptr<class VulkanUniformBuffer> Uniform, uint32_t SetLayoutIndex,
+		uint32_t DescriptorSetIndex, uint32_t FrameIndex)
+	{
+		VkDescriptorBufferInfo bufferInfo{};
+		bufferInfo.buffer = Uniform->GetUniformBuffers()[FrameIndex];
+		bufferInfo.offset = 0;
+		bufferInfo.range = Uniform->GetBufferSize();
+
+		VkWriteDescriptorSet descriptorWrite{};
+		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrite.dstSet = m_DescriptorSets[SetLayoutIndex][DescriptorSetIndex];
+		descriptorWrite.dstBinding = 0; // Assuming the uniform buffer is bound to binding 0 in the shader
+		descriptorWrite.dstArrayElement = 0;
+		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrite.descriptorCount = 1;
+		descriptorWrite.pBufferInfo = &bufferInfo;
+		vkUpdateDescriptorSets(m_Device->GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);
+	}
+
+	void FVulkanDescriptorSets::UpdateTextureDescriptorSet(std::shared_ptr<VulkanTexture> Texture, uint32_t SetLayoutIndex, uint32_t DescriptorSetIndex)
+	{
+		VkDescriptorImageInfo imageInfo{};
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = Texture->GetImageView();
+		imageInfo.sampler = Texture->GetImageSampler();
+
+		VkWriteDescriptorSet descriptorWrite{};
+		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrite.dstSet = m_DescriptorSets[SetLayoutIndex][DescriptorSetIndex];
+		descriptorWrite.dstBinding = 0; // Assuming the texture is bound to binding 0 in the shader
+		descriptorWrite.dstArrayElement = 0;
+		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWrite.descriptorCount = 1;
+		descriptorWrite.pImageInfo = &imageInfo;
+		vkUpdateDescriptorSets(m_Device->GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);
 	}
 }
