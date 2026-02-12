@@ -29,6 +29,7 @@ namespace Karma
 		// Tentative routine for incorporating spawning of full fledged StaticMeshActor (SM actor)
 		// with model
 		void SpawnStaticMeshActor();
+		void SpawnStaticMeshActor2();
 
 	private:
 		std::shared_ptr<Karma::Shader> m_ModelShader;

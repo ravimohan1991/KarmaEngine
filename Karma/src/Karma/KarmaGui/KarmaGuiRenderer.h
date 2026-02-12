@@ -138,6 +138,8 @@ namespace Karma
 		// Vulkan specific members
 		static VkDescriptorPool m_KarmaGuiDescriptorPool;
 		static KarmaGui_ImplVulkanH_Window m_VulkanWindowData;
+		
+		static uint32_t m_SMCounter;
 
 		static bool m_SwapChainRebuild;
 	};

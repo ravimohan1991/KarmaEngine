@@ -19,22 +19,22 @@ namespace Karma
 
 	void AStaticMeshActor::Tick(float DeltaSeconds)
 	{
-		//m_ActorTranformUniform = glm::rotate(m_ActorTranformUniform, glm::radians(7.8f * DeltaSeconds), glm::vec3(0.f, 0.f, 1.f));
+		m_ActorTranformUniform = glm::rotate(m_ActorTranformUniform, glm::radians(7.8f * DeltaSeconds), glm::vec3(0.f, 0.f, 1.f));
 		
-		FTransform AnimTransform = FTransform::Identity();
+		//FTransform AnimTransform = FTransform::Identity();
 		
-		AnimTransform.SetRotation(TRotator(glm::vec3(0.f, 0.f, m_RotationAngle)));
+		//AnimTransform.SetRotation(TRotator(glm::vec3(0.f, 0.f, m_RotationAngle)));
 		
-		SetActorTransform(AnimTransform);
+		//SetActorTransform(AnimTransform);
 
-		m_ActorTranformUniform = GetTransform().ToMatrixWithScale();
+		//m_ActorTranformUniform = GetTransform().ToMatrixWithScale();
 		
-		m_RotationAngle += 0.78f * DeltaSeconds;
+		/*m_RotationAngle += 0.78f * DeltaSeconds;
 		
 		if(m_RotationAngle > 360.f)
 		{
 			m_RotationAngle -= 360.f;
-		}
+		}*/
 	}
 
 	void AStaticMeshActor::LoadMeshFromFile(const std::string& filePath)
@@ -48,6 +48,7 @@ namespace Karma
 		//m_ActorTranformUniform = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 1.f));
 		//m_ActorTranformUniform = glm::scale(m_ActorTranformUniform, glm::vec3(0.25f));
 		
+		//SetActorTransform(FTransform::Identity());
 		m_ActorTranformUniform = GetTransform().ToMatrixWithScale();
 		
 		UBODataPointer uModelMatrix(&m_ActorTranformUniform);

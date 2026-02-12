@@ -209,6 +209,10 @@ namespace Karma
 		{
 			SpawnStaticMeshActor();
 		}
+		else if (e.GetKeyCode() == GLFW_KEY_B)
+		{
+			SpawnStaticMeshActor2();
+		}
 
 		return false;
 	}
@@ -373,10 +377,41 @@ namespace Karma
 			{
 				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
 
+				staticMeshActor->SetActorTransform(smActorTransform);
+				
 				staticMeshActor->LoadMeshFromFile("../Resources/Models/BonedCylinder.obj");
 				m_EditorScene->AddStaticMeshActor(staticMeshActor);
+			}
+		}
+	}
 
-				//Karma::VulkanHolder::GetVulkanContext()->CreateVulkanResourcesForScene(m_EditorScene);
+	void EditorLayer::SpawnStaticMeshActor2()
+	{
+		UWorld* currentWorld = GEngine->GetCurrentGameInstance()->GetWorldContext()->World();
+
+		if (currentWorld)
+		{
+			KR_INFO("Current World is : {0}", currentWorld->GetName());
+
+			FTransform smActorTransform = FTransform::m_Identity;
+			smActorTransform.SetTranslation(glm::vec3(1.f, 0.f, 1.5f));
+			
+			FActorSpawnParameters smActorParams;
+			smActorParams.m_Owner = nullptr;
+			smActorParams.m_Name = "StaticMeshActor2";
+			smActorParams.m_OverrideLevel = currentWorld->GetCurrentLevel();
+
+
+			AStaticMeshActor* staticMeshActor = currentWorld->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), &smActorTransform, smActorParams);
+
+			if (staticMeshActor)
+			{
+				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
+
+				staticMeshActor->SetActorTransform(smActorTransform);
+				
+				staticMeshActor->LoadMeshFromFile("../Resources/Models/FORZombie.obj");
+				m_EditorScene->AddStaticMeshActor(staticMeshActor);
 			}
 		}
 	}

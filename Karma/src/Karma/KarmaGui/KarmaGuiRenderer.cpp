@@ -18,6 +18,7 @@
 namespace Karma
 {
 	VkDescriptorPool KarmaGuiRenderer::m_KarmaGuiDescriptorPool;
+	uint32_t KarmaGuiRenderer::m_SMCounter = 0;
 	KarmaGui_ImplVulkanH_Window KarmaGuiRenderer::m_VulkanWindowData;
 	bool KarmaGuiRenderer::m_SwapChainRebuild;
 	GLFWwindow* KarmaGuiRenderer::m_GLFWwindow = nullptr;
@@ -126,11 +127,16 @@ namespace Karma
 
 	void KarmaGuiRenderer::OnAdditionOfStaticMesh(AStaticMeshActor* smActor)
 	{
-		uint32_t maxFramesInFlight = GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
-
-		for (uint32_t counter = 0; counter < maxFramesInFlight; counter++)
+		if(GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
-			FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(static_cast<VulkanUniformBuffer*>(smActor->GetMeshTransformUniform().get()), 1, 0, counter);
+			uint32_t maxFramesInFlight = GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
+			
+			for (uint32_t counter = 0; counter < maxFramesInFlight; counter++)
+			{
+				FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(static_cast<VulkanUniformBuffer*>(smActor->GetMeshTransformUniform().get()), 1, m_SMCounter, counter);
+			}
+			
+			m_SMCounter++;
 		}
 	}
 
@@ -464,7 +470,6 @@ namespace Karma
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't begin commandbuffer recording");
 		}
 
-		//VulkanHolder::GetVulkanContext()->UploadUBO(windowData->SemaphoreIndex);
 		FVulkanDynamicRHI::Get().UploadUniformBufferObjects(windowData->SemaphoreIndex);
 		
 		for (auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
@@ -552,22 +557,6 @@ namespace Karma
 		}
 
 		vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
-		
-		// Transition the swapchain image from VK_IMAGE_LAYOUT_UNDEFINED -> VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-		// else there'd be validation error
-		/*VkImageMemoryBarrier presentBarrier = {};
-		presentBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		presentBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		presentBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		presentBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		presentBarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		presentBarrier.image = windowData->RHIResources.VulkanSwapChain->GetSwapChainImages()[windowData->ImageFrameIndex];
-		presentBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		presentBarrier.subresourceRange.levelCount = 1;
-		presentBarrier.subresourceRange.layerCount = 1;
-
-		vkCmdPipelineBarrier(frameOnFlightData->CommandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-							 VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, NULL, 0, NULL, 1, &presentBarrier);*/
 
 		result = vkEndCommandBuffer(frameOnFlightData->CommandBuffer);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to end command buffer");
