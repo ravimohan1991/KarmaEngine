@@ -1,6 +1,8 @@
 #include "StaticMeshActor.h"
 #include "Mesh.h"
 
+#include <glm/gtc/random.hpp>
+
 namespace Karma
 {
 	AStaticMeshActor::AStaticMeshActor(const std::string& name)
@@ -19,7 +21,7 @@ namespace Karma
 
 	void AStaticMeshActor::Tick(float DeltaSeconds)
 	{
-		m_ActorTranformUniform = glm::rotate(m_ActorTranformUniform, glm::radians(7.8f * DeltaSeconds), glm::vec3(0.f, 0.f, 1.f));
+		m_ActorTranformUniform = glm::rotate(m_ActorTranformUniform, glm::radians(m_RotationSpeed * 7.8f * DeltaSeconds), glm::vec3(0.f, 0.f, 1.f));
 		
 		//FTransform AnimTransform = FTransform::Identity();
 		
@@ -55,5 +57,6 @@ namespace Karma
 		m_MeshTransformUniform->UpdateUniforms(uModelMatrix);// set the model matrix (Actor Transform) uniform
 
 		m_StaticMeshComponent->SetStaticMesh(loadedMesh);
+		m_RotationSpeed = glm::linearRand(0.2f, 4.5f);
 	}
 }

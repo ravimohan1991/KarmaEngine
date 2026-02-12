@@ -44,6 +44,8 @@ namespace Karma
 		//tentative
 		glm::mat4 m_ActorTranformUniform;
 		float m_RotationAngle;
+		
+		float m_RotationSpeed;
 
 	public:
 		/**

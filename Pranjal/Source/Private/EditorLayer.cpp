@@ -394,7 +394,6 @@ namespace Karma
 			KR_INFO("Current World is : {0}", currentWorld->GetName());
 
 			FTransform smActorTransform = FTransform::m_Identity;
-			smActorTransform.SetTranslation(glm::vec3(1.f, 0.f, 1.5f));
 			
 			FActorSpawnParameters smActorParams;
 			smActorParams.m_Owner = nullptr;
