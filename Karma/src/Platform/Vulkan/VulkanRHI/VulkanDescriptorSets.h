@@ -197,7 +197,7 @@ namespace Karma
 		 * 
 		 * @since Karma 1.0.0
 		 */
-		void UpdateTextureDescriptorSet(std::shared_ptr<class VulkanTexture> Texture, uint32_t SetLayoutIndex, uint32_t DescriptorSetIndex);
+		void UpdateTextureDescriptorSet(class VulkanTexture* Texture, uint32_t SetLayoutIndex, uint32_t DescriptorSetIndex);
 
 		FVulkanDevice* m_Device;
 		KarmaVector<KarmaVector<VkDescriptorSet>> m_DescriptorSets;

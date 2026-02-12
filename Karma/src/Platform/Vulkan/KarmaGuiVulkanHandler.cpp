@@ -8,6 +8,7 @@
 #include "VulkanRHI/VulkanDynamicRHI.h"
 #include "VulkanRHI/VulkanRenderPass.h"
 #include "VulkanRHI/VulkanFramebuffer.h"
+#include "VulkanRHI/VulkanDescriptorSets.h"
 
 // Visual Studio warnings
 /*#ifdef _MSC_VER
@@ -732,6 +733,24 @@ namespace Karma
 		return true;
 	}
 
+	VkShaderModule KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateShaderModule(const std::vector<uint32_t>& code)
+	{
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		
+		VkShaderModuleCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		createInfo.codeSize = code.size() * sizeof(uint32_t);
+		createInfo.pCode = code.data();
+
+		VkShaderModule shaderModule;
+		VkResult result = vkCreateShaderModule(vulkanInfo->Device, &createInfo, nullptr, &shaderModule);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create shader module!");
+
+		return shaderModule;
+	}
+
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateShaderModules(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
 		// Create the shader modules
@@ -1299,22 +1318,244 @@ namespace Karma
 		if(!backendData->OffScreenRR.bAllocationDoneOnce)
 		{
 			CreateOffScreenTextureRenderpassResource();
-			
-			// This variable is also used to create sampler in KarmaGuiRenderer::Add3DSceneFor2DRendering once
-			backendData->OffScreenRR.bAllocationDoneOnce = true;
 		}
 		
 		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
+			if (!backendData->OffScreenRR.bAllocationDoneOnce)
+			{
+				// assuming that all 3D scenes use same pipeline layout. This may change later
+				CreateOffScreenTextureGraphicsPipelineResource(backendData->OffScreenRR.RenderPass->GetHandle(), it->Size.x, it->Size.y);
+
+				// This variable is also used to create sampler in KarmaGuiRenderer::Add3DSceneFor2DRendering once
+				backendData->OffScreenRR.bAllocationDoneOnce = true;
+			}
 
 			CreateOffScreenTextureDepthResource(&(*it));
-
 			CreateOffScreenTextureFrameBufferResource(&(*it));
-			
-			return;// for experimental
-			// assuming that all 3D scenes use same pipeline layout. This may change later
-			VulkanHolder::GetVulkanContext()->CreateKarmaGuiGeneralGraphicsPipeline(backendData->OffScreenRR.RenderPass->GetHandle(), it->Size.x, it->Size.y);
 		}
+	}
+
+	static VkFormat ShaderDataTypeToVulkanType(ShaderDataType type)
+	{
+		switch (type)
+		{
+		case ShaderDataType::Float:
+			return VK_FORMAT_R32_SFLOAT;
+		case ShaderDataType::Float2:
+			return VK_FORMAT_R32G32_SFLOAT;
+		case ShaderDataType::Float3:
+			return VK_FORMAT_R32G32B32_SFLOAT;
+		case ShaderDataType::Float4:
+			return VK_FORMAT_R32G32B32A32_SFLOAT;
+		case ShaderDataType::None:
+		case ShaderDataType::Mat3:
+		case ShaderDataType::Mat4:
+		case ShaderDataType::Int:
+		case ShaderDataType::Int2:
+		case ShaderDataType::Int3:
+		case ShaderDataType::Int4:
+		case ShaderDataType::Bool:
+			// Refer Mesh::GaugeVertexDataLayout for usual datatype
+			// to be used in the context of vertex buffer
+			KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
+				return VK_FORMAT_UNDEFINED;
+			break;
+		}
+
+		KR_CORE_ASSERT(false, "Vulkan doesn't support this ShaderDatatype");
+		return VK_FORMAT_UNDEFINED;
+	}
+
+	void KarmaGuiVulkanHandler::CreateOffScreenTextureGraphicsPipelineResource(VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight)
+	{
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+
+		const KarmaVector<VkDescriptorSetLayout>& setLayouts = FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSetLayout()->GetHandles();
+
+		VkPipelineLayoutCreateInfo plInfo{};
+		plInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		plInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.Num());
+		plInfo.pSetLayouts = setLayouts.GetData();
+		plInfo.pushConstantRangeCount = 0;
+		plInfo.pPushConstantRanges = nullptr;
+
+		VkResult result = vkCreatePipelineLayout(vulkanInfo->Device, &plInfo, nullptr, &backendData->OffScreenRR.OffscreenPipelineLayout);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create pipeline layout!");
+
+		VkShaderModule vertShaderModule = KarmaGui_ImplVulkan_CreateShaderModule(FVulkanDynamicRHI::Get().GetDevice()->GetDefaultShader()->GetVertSpirV());
+		VkShaderModule fragShaderModule = KarmaGui_ImplVulkan_CreateShaderModule(FVulkanDynamicRHI::Get().GetDevice()->GetDefaultShader()->GetFragSpirV());
+
+		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+		vertShaderStageInfo.module = vertShaderModule;
+		vertShaderStageInfo.pName = "main";
+
+		VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+		fragShaderStageInfo.module = fragShaderModule;
+		fragShaderStageInfo.pName = "main";
+
+		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+
+		// See Mesh::GaugeVertexDataLayout to understand the layout of vertex data we are using
+		BufferLayout layout;
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Position"));
+		layout.PushElement(BufferElement(ShaderDataType::Float2, "v_UV"));
+
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Normal"));
+		/*layout.PushElement(BufferElement(ShaderDataType::Float4, "v_Color"));
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Normal"));
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Tangent"));*/
+
+		VkVertexInputBindingDescription bindingDescription = {};
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+		bindingDescription.binding = 0;
+		bindingDescription.stride = layout.GetStride();
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		// Telling vulkan what to expect from vertex data in terms of attributes and their rate of loading
+		uint32_t index = 0;
+
+		for (const auto& element : layout)
+		{
+			VkVertexInputAttributeDescription elementAttributeDescription{};
+			elementAttributeDescription.binding = 0;
+			elementAttributeDescription.location = index;
+			elementAttributeDescription.format = ShaderDataTypeToVulkanType(element.Type);
+			elementAttributeDescription.offset = static_cast<uint32_t>(element.Offset);
+
+			attributeDescriptions.push_back(elementAttributeDescription);
+			index++;
+		}
+
+		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+		VkViewport viewport{};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = windowKGWidth;
+		viewport.height = windowKGHeight;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+
+		VkRect2D scissor{};
+		scissor.offset = { 0, 0 };
+		scissor.extent.width = windowKGWidth;
+		scissor.extent.height = windowKGHeight;
+
+		VkPipelineViewportStateCreateInfo viewportState{};
+		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewportState.viewportCount = 1;
+		viewportState.pViewports = &viewport;
+
+		viewportState.scissorCount = 1;
+		viewportState.pScissors = &scissor;
+
+		VkPipelineRasterizationStateCreateInfo rasterizer{};
+		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rasterizer.depthClampEnable = VK_FALSE;
+		rasterizer.rasterizerDiscardEnable = VK_FALSE;
+		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+		rasterizer.lineWidth = 1.0f;
+		rasterizer.cullMode = VK_CULL_MODE_NONE;
+		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		rasterizer.depthBiasEnable = VK_FALSE;
+
+		// Antialiasing
+		VkPipelineMultisampleStateCreateInfo multisampling{};
+		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		multisampling.sampleShadingEnable = VK_FALSE;
+		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+		VkPipelineDepthStencilStateCreateInfo depthStencil{};
+		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.stencilTestEnable = VK_FALSE;
+
+		VkBool32 bLogicalOperationsAllowed = FVulkanDynamicRHI::Get().GetGpuDeviceFeatures().logicOp;
+
+		// Mix the old and new value to produce a final color
+		// finalColor.rgb = newAlpha * newColor + (1 - newAlpha) * oldColor;
+		// finalColor.a = newAlpha.a;
+		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
+			| VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		if (!bLogicalOperationsAllowed)
+		{
+			colorBlendAttachment.blendEnable = VK_TRUE;
+		}
+		else
+		{
+			colorBlendAttachment.blendEnable = VK_FALSE;
+		}
+		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+		// Combine the old and new value using a bitwise operation
+		VkPipelineColorBlendStateCreateInfo colorBlending{};
+		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		if (bLogicalOperationsAllowed)
+		{
+			colorBlending.logicOpEnable = VK_TRUE;
+		}
+		else
+		{
+			colorBlending.logicOpEnable = VK_FALSE;
+		}
+		colorBlending.logicOp = VK_LOGIC_OP_COPY;
+		colorBlending.attachmentCount = 1;
+		colorBlending.pAttachments = &colorBlendAttachment;
+		colorBlending.blendConstants[0] = 0.0f;
+		colorBlending.blendConstants[1] = 0.0f;
+		colorBlending.blendConstants[2] = 0.0f;
+		colorBlending.blendConstants[3] = 0.0f;
+
+		VkGraphicsPipelineCreateInfo pipelineInfo{};
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineInfo.stageCount = 2;
+		pipelineInfo.pStages = shaderStages;
+		pipelineInfo.pVertexInputState = &vertexInputInfo;
+		pipelineInfo.pInputAssemblyState = &inputAssembly;
+		pipelineInfo.pViewportState = &viewportState;
+		pipelineInfo.pRasterizationState = &rasterizer;
+		pipelineInfo.pMultisampleState = &multisampling;
+		pipelineInfo.pColorBlendState = &colorBlending;
+		pipelineInfo.layout = backendData->OffScreenRR.OffscreenPipelineLayout;
+		pipelineInfo.renderPass = renderPassKG;
+		pipelineInfo.subpass = 0;
+		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+		pipelineInfo.pDepthStencilState = &depthStencil;
+
+		VkResult resultGP = vkCreateGraphicsPipelines(vulkanInfo->Device, VK_NULL_HANDLE,
+			1, &pipelineInfo, nullptr, &backendData->OffScreenRR.OffscreenGraphicsPipeline);
+
+		KR_CORE_ASSERT(resultGP == VK_SUCCESS, "Failed to create graphics pipeline!");
+
+
+		vkDestroyShaderModule(vulkanInfo->Device, fragShaderModule, nullptr);
+		vkDestroyShaderModule(vulkanInfo->Device, vertShaderModule, nullptr);
 	}
 
 	void KarmaGuiVulkanHandler::CreateOffScreenTextureRenderpassResource()
@@ -1827,6 +2068,9 @@ namespace Karma
 
 		if (backendData->OffScreenRR.bAllocationDoneOnce)
 		{
+			vkDestroyPipeline(vulkanInfo->Device, backendData->OffScreenRR.OffscreenGraphicsPipeline, nullptr);
+			vkDestroyPipelineLayout(vulkanInfo->Device, backendData->OffScreenRR.OffscreenPipelineLayout, nullptr);
+
 			delete backendData->OffScreenRR.RenderPass;
 			backendData->OffScreenRR.RenderPass = nullptr;
 
@@ -1906,11 +2150,6 @@ namespace Karma
 		windowData->RHIResources->VulkanSwapChain = nullptr;
 
 		delete windowData->RHIResources;
-		
-		return; // <-- to be uncommented when we have offscreen rendering logic
-	
-		// Assuming only on graphicspipeline
-		VulkanHolder::GetVulkanContext()->CleanUpKarmaGuiGeneralGraphicsPipeline();
 	}
 
 	//--------------------------------------------------------------------------------------------------------

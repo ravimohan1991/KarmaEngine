@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "StaticMeshActor.h"
 
+#include "KarmaGui/KarmaGuiRenderer.h"
+
 namespace Karma
 {
 	Scene::Scene()
@@ -21,6 +23,7 @@ namespace Karma
 	void Scene::AddStaticMeshActor(AStaticMeshActor* smActor)
 	{
 		m_SMActors.push_back(smActor);
+		KarmaGuiRenderer::OnAdditionOfStaticMesh(smActor);
 	}
 
 	void Scene::AddCamera(std::shared_ptr<Camera> camera)

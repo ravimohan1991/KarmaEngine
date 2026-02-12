@@ -1,6 +1,7 @@
 #include "VulkanDevice.h"
 #include "VulkanDynamicRHI.h"
 #include "Vulkan/VulkanTexture.h"
+#include "Vulkan/VulkanShader.h"
 #include "VulkanRHI/VulkanDescriptorSets.h"
 
 namespace Karma
@@ -26,6 +27,7 @@ namespace Karma
 			delete m_DescriptorPool[counter];
 		}
 
+		delete m_DefaultShader;
 		delete m_DefaultTexture;
 		delete m_DefaultDescriptorSetLayout;
 		vkDestroyCommandPool(m_LogicalDevice, m_CommandPool, nullptr);
@@ -118,6 +120,7 @@ namespace Karma
 
 		// Default texture (unreal grid)
 		m_DefaultTexture = new VulkanTexture(this, "../Resources/Textures/UnrealGrid.png");
+		m_DefaultShader = new VulkanShader("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag");
 	}
 
 	void FVulkanDevice::InitializeDefaultDescriptorSets(uint32_t MaxFramesInFlight)
@@ -131,6 +134,7 @@ namespace Karma
 			m_DefaultDescriptorSets[counter] = new FVulkanDescriptorSets(this, *m_DefaultDescriptorSetLayout);
 
 			m_DescriptorPool[counter]->AllocateDescriptorSets(*m_DefaultDescriptorSetLayout, *m_DefaultDescriptorSets[counter]);
+			m_DefaultDescriptorSets[counter]->UpdateTextureDescriptorSet(m_DefaultTexture, 0, 0);
 		}
 
 		m_MaxFramesInFlight = MaxFramesInFlight;

@@ -6,6 +6,8 @@
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec2 inUV;
 
+layout(location = 2) in vec3 inNormal;
+
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec2 fragUVs;
 
@@ -17,7 +19,7 @@ layout(set = 0, binding = 0) uniform VPUniformBufferObject
 };
 
 // set 2: per-mesh transform
-layout(set = 2, binding = 0) uniform ModelUniformBufferObject
+layout(set = 1, binding = 0) uniform ModelUniformBufferObject
 {
 	mat4 u_Model;
 };

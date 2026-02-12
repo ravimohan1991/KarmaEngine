@@ -308,7 +308,7 @@ namespace Karma
 		
 		/**
 		 * @brief Collection of render targets organized in KarmaVector. Meaning each KarmaVector element contains
-		 * a collection of rendertarget for a framebuffer
+		 * a collection of rendertargets for a framebuffer
 		 */
 		KarmaVector<FVulkanRenderTargetsInfo*>      RenderTargets;
 	};
@@ -859,6 +859,9 @@ namespace Karma
 		 * @see KarmaGuiRenderer::Add3DSceneFor2DRendering
 		 */
 		bool                                bAllocationDoneOnce;
+
+		VkPipelineLayout					OffscreenPipelineLayout;
+		VkPipeline							OffscreenGraphicsPipeline;
 		
 		KarmaGui_OffScreen_Render_Resources() : bAllocationDoneOnce(false)
 		{}
@@ -1114,6 +1117,8 @@ namespace Karma
 		 */
 		static void KarmaGui_ImplVulkan_CreateShaderModules(VkDevice device, const VkAllocationCallbacks* allocator);
 
+		static VkShaderModule KarmaGui_ImplVulkan_CreateShaderModule(const std::vector<uint32_t>& code);
+
 		/**
 		 * @brief Bilinear sampling object is created for font and stored in KarmaGui_ImplVulkan_Data.FontSampler if not done already in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects().
 		 *
@@ -1344,6 +1349,8 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void CreateOffScreenTextureFrameBufferResource(KarmaGui_3DScene_To_2DTexture_Data* textureData);
+
+		static void CreateOffScreenTextureGraphicsPipelineResource(VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight);
 
 		/**
 		 * @brief Clears appropriate buffers which are used for KarmaGui's rendering. They include:

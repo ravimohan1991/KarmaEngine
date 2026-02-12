@@ -9,6 +9,8 @@
 #include "VulkanRHI/VulkanSynchronization.h"
 #include "KarmaRHI/DynamicRHI.h"
 #include "VulkanRHI/VulkanRenderPass.h"
+#include "VulkanRHI/VulkanDescriptorSets.h"
+#include "StaticMeshActor.h"
 
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"
@@ -27,7 +29,7 @@ namespace Karma
 
 		m_GLFWwindow = window;
 
-		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		if (GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
 			KarmaGui_ImplGlfw_InitForVulkan(window, true);
 
@@ -51,8 +53,6 @@ namespace Karma
 			KarmaGui_ImplVulkan_Init(&initInfo);
 
 			// Fresh start with newly instantiated Vulkan data
-			// Since VulkanContext has already instantiated fresh swapchain and commandbuffers, we send that false
-			// KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
 			KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, true);
 
 			// See if all the appropriate Vulkan resources have been instantiated
@@ -124,11 +124,21 @@ namespace Karma
 		}
 	}
 
+	void KarmaGuiRenderer::OnAdditionOfStaticMesh(AStaticMeshActor* smActor)
+	{
+		uint32_t maxFramesInFlight = GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
+
+		for (uint32_t counter = 0; counter < maxFramesInFlight; counter++)
+		{
+			FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(static_cast<VulkanUniformBuffer*>(smActor->GetMeshTransformUniform().get()), 1, 0, counter);
+		}
+	}
+
 	void KarmaGuiRenderer::AddImageTexture(char const* fileName, const std::string& label)
 	{
-		switch(RendererAPI::GetAPI())
+		switch(GRHIInterfaceType)
 		{
-			case RendererAPI::API::Vulkan:
+			case ERHIInterfaceType::Vulkan:
 			{
 				KarmaGuiIO& io = KarmaGui::GetIO();
 				KarmaGuiBackendRendererUserData* backendData = (KarmaGuiBackendRendererUserData*) io.BackendRendererUserData;
@@ -162,12 +172,12 @@ namespace Karma
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait!");
 			}
 			break;
-			case RendererAPI::API::OpenGL:
+			case ERHIInterfaceType::OpenGL:
 			{
 				KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture(fileName, label);
 			}
 			break;
-			case RendererAPI::API::None:
+			case ERHIInterfaceType::Null:
 					KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 				break;
 			default:
@@ -178,16 +188,16 @@ namespace Karma
 
 	void KarmaGuiRenderer::OnKarmaGuiLayerBegin()
 	{
-		switch (RendererAPI::GetAPI())
+		switch (GRHIInterfaceType)
 		{
-		case RendererAPI::API::Vulkan:
+		case ERHIInterfaceType::Vulkan:
 				GiveLoopBeginControlToVulkan();
 			break;
-		case RendererAPI::API::OpenGL:
+		case ERHIInterfaceType::OpenGL:
 				KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_NewFrame();
 				KarmaGui_ImplGlfw_NewFrame();
 			break;
-		case RendererAPI::API::None:
+		case ERHIInterfaceType::Null:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 			break;
 		default:
@@ -459,18 +469,9 @@ namespace Karma
 		
 		for (auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
-			continue;// For now, skipping the 3D scene rendering on 2D render target, to focus on getting the main render pass right. Will come back to this later.
 			std::shared_ptr<Scene> scene3D = it->Scene3D;
 
-			FrameDescriptorSets dSets;
-			if (VulkanHolder::GetVulkanContext()->GetGeneralDescriptorSets().size() > 0)
-			{
-					dSets = VulkanHolder::GetVulkanContext()->GetGeneralDescriptorSets()[windowData->SemaphoreIndex];
-			}
-			else
-			{
-				continue;
-			}
+			FVulkanDescriptorSets* descriptorSets = FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[windowData->SemaphoreIndex];
 
 			{
 				VkRenderPassBeginInfo renderPassInfo{};
@@ -493,16 +494,18 @@ namespace Karma
 				vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 				// ---- Bind Graphics Pipeline ----
-				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralGraphicsPipeline());
+				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenGraphicsPipeline);
 
 				// === BIND GLOBAL DESCRIPTOR SETS (once per frame) ===
-				// Set 0: Camera UBO
-				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 0, 1, &dSets.viewSet, 0, nullptr);
+				// Set 0, Binding 0 :Camera UBO
+				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenPipelineLayout, 0, 1, &descriptorSets->m_DescriptorSets[0][0], 0, nullptr);
+				// Set 0, Binding 1: Texture
+				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenPipelineLayout, 0, 1, &descriptorSets->m_DescriptorSets[0][0], 0, nullptr);
 
 				uint32_t objectIndex = 0;
-
+				
 				// ---- Bind 3D Vertex And Index Buffers ----
-				for(const auto& smActor : scene3D->GetSMActors())
+				for (const auto& smActor : scene3D->GetSMActors())
 				{
 					std::shared_ptr<Mesh> mesh = smActor->GetStaticMeshComponent()->GetStaticMesh();
 
@@ -511,11 +514,8 @@ namespace Karma
 					vkCmdBindVertexBuffers(frameOnFlightData->CommandBuffer, 0, 1, vertexBuffers, vertexOffset);
 					vkCmdBindIndexBuffer(frameOnFlightData->CommandBuffer, std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer())->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
-					// Set 1: Texture
-					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 1, 1, &dSets.textureSet[objectIndex], 0, nullptr);
-					
 					// Set 2: Object UBO
-					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanHolder::GetVulkanContext()->GetKarmaGuiGeneralPipelineLayout(), 2, 1, &dSets.objectsSet[objectIndex], 0, nullptr);
+					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenPipelineLayout, 1, 1, &descriptorSets->m_DescriptorSets[1][objectIndex], 0, nullptr);
 
 					// ----Issue Draw Commands----
 					// Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)

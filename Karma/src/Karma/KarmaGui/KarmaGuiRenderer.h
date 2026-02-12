@@ -17,6 +17,8 @@
 
 namespace Karma
 {
+	class AStaticMeshActor;
+
 	/**
 	 * @brief A multiply inherited class for supporting both OpenGL and Vulkan API's.
 	 *
@@ -50,6 +52,8 @@ namespace Karma
 		static void OnKarmaGuiLayerDetach();
 		static void OnKarmaGuiLayerBegin();
 		static void OnKarmaGuiLayerEnd();
+
+		static void OnAdditionOfStaticMesh(AStaticMeshActor* smActor);
 
 		/**
 		 * @brief Acessor function for KarmaGui's renderer backend (BackendRendererUserData).

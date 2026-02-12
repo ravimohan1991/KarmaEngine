@@ -20,6 +20,7 @@ namespace Karma
 	class FVulkanDescriptorSetsLayout;
 	class FVulkanDescriptorSets;
 	class FVulkanSwapChain;
+	class VulkanShader;
 
 	/**
 	 * @class FVulkanDevice
@@ -166,6 +167,12 @@ namespace Karma
 
 		inline KarmaVector<FVulkanDescriptorSets*>& GetDefaultDescriptorSets() { return m_DefaultDescriptorSets; }
 
+		inline FVulkanDescriptorSetsLayout* GetDefaultDescriptorSetLayout() const { return m_DefaultDescriptorSetLayout; }
+
+		inline VulkanTexture* GetDefaultTexture() const { return m_DefaultTexture; }
+
+		inline VulkanShader* GetDefaultShader() const { return m_DefaultShader; }
+
 	private:
 		/**
 		 * @brief Populates the provided descriptor sets layout with the necessary bindings for the device.
@@ -194,6 +201,7 @@ namespace Karma
 		VkQueue m_GraphicsQueue;
 		VkQueue m_PresentQueue;
 		VulkanTexture* m_DefaultTexture;
+		VulkanShader* m_DefaultShader;
 
 		// Additional members for managing queues, command pools, etc. can be added here.
 		VkCommandPool m_CommandPool;

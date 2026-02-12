@@ -192,7 +192,7 @@ namespace Karma
 		vkUpdateDescriptorSets(m_Device->GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);
 	}
 
-	void FVulkanDescriptorSets::UpdateTextureDescriptorSet(std::shared_ptr<VulkanTexture> Texture, uint32_t SetLayoutIndex, uint32_t DescriptorSetIndex)
+	void FVulkanDescriptorSets::UpdateTextureDescriptorSet(VulkanTexture* Texture, uint32_t SetLayoutIndex, uint32_t DescriptorSetIndex)
 	{
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -202,7 +202,7 @@ namespace Karma
 		VkWriteDescriptorSet descriptorWrite{};
 		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrite.dstSet = m_DescriptorSets[SetLayoutIndex][DescriptorSetIndex];
-		descriptorWrite.dstBinding = 0; // Assuming the texture is bound to binding 0 in the shader
+		descriptorWrite.dstBinding = 1; // Assuming the texture is bound to binding 1 in the shader
 		descriptorWrite.dstArrayElement = 0;
 		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorWrite.descriptorCount = 1;
