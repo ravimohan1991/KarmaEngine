@@ -1306,16 +1306,14 @@ namespace Karma
 		
 		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
+
 			CreateOffScreenTextureDepthResource(&(*it));
-			//CreateOffScreenTextureRenderpassResource(&(*it));
-			
+
 			CreateOffScreenTextureFrameBufferResource(&(*it));
 			
-			// std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
-			// vulkanVA->CreateKarmaGuiGraphicsPipeline(backendData->OffScreenRR.RenderPass, it->Size.x, it->Size.y);
-			
+			return;// for experimental
 			// assuming that all 3D scenes use same pipeline layout. This may change later
-			VulkanHolder::GetVulkanContext()->CreateKarmaGuiGeneralGraphicsPipeline(backendData->OffScreenRR.RenderPass, it->Size.x, it->Size.y);
+			VulkanHolder::GetVulkanContext()->CreateKarmaGuiGeneralGraphicsPipeline(backendData->OffScreenRR.RenderPass->GetHandle(), it->Size.x, it->Size.y);
 		}
 	}
 
@@ -1323,86 +1321,51 @@ namespace Karma
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-		
+
+		KR_CORE_INFO("Attempting to Vulkan renderpass for offscreen texture rendering of 3D scene");
+		FVulkanRenderPassInfo RPInfo;
+
 		// Color Attachment
-		VkAttachmentDescription colorAttachment{};
-		colorAttachment.format = VK_FORMAT_R8G8B8A8_UNORM;
-		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;       // Clear the image at start
-		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;     // Store the result for sampling later
-		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;  // Layout when render pass starts
-		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL; // Layout when render pass ends (we transition *after* the pass)
-		
+		FVulkanRenderPassInfo::FAttachmentInfo colorAttachmentInfo;
+		colorAttachmentInfo.AttachmentFlags = 0;
+		colorAttachmentInfo.AttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
+		colorAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR;       // Clear the image at start
+		colorAttachmentInfo.AttachmentStoreOperation = VK_ATTACHMENT_STORE_OP_STORE;     // Store the result for sampling later
+		colorAttachmentInfo.AttachmentStencilLoadOperation = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachmentInfo.AttachmentStencilStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachmentInfo.AttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;  // Layout when render pass starts
+		colorAttachmentInfo.AttachmentFinalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;// Layout when render pass ends (we transition *after* the pass)
+		RPInfo.m_AttachmentsInfo.Add(colorAttachmentInfo);
+
 		// Depth Attachment
-		VkAttachmentDescription depthAttachment{};
-		depthAttachment.format = VulkanHolder::GetVulkanContext()->FindDepthFormat();
-		depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		FVulkanRenderPassInfo::FAttachmentInfo depthAttachmentInfo;
+		depthAttachmentInfo.AttachmentFlags = 0;
+		depthAttachmentInfo.AttachmentFormat = FVulkanDynamicRHI::Get().FindDepthFormat();
+		depthAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
+		depthAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR;       // Clear the image at start
+		depthAttachmentInfo.AttachmentStoreOperation = VK_ATTACHMENT_STORE_OP_STORE;     // Store the result for sampling later
+		depthAttachmentInfo.AttachmentStencilLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachmentInfo.AttachmentStencilStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachmentInfo.AttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;  // Layout when render pass starts
+		depthAttachmentInfo.AttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;// Layout when render pass ends (we transition *after* the pass)
+		RPInfo.m_AttachmentsInfo.Add(depthAttachmentInfo);
 
-		// --- Subpass and References ---
+		RPInfo.bHasDepthAttachment = true;
 
-		// Reference for the color attachment in the subpass
-		VkAttachmentReference colorAttachmentRef{};
-		colorAttachmentRef.attachment = 0; // Index 0 in the pAttachments array
-		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		
-		// Reference for the depth attachment in the subpass
-		VkAttachmentReference depthAttachmentRef{};
-		depthAttachmentRef.attachment = 1; // Index 1 in the pAttachments array
-		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		
-		// The subpass itself
-		VkSubpassDescription subpass{};
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-		subpass.colorAttachmentCount = 1;
-		subpass.pColorAttachments = &colorAttachmentRef;
-		subpass.pDepthStencilAttachment = &depthAttachmentRef;
-		
-		// Subpass dependencies for layout transitions ########## seems IMPORTANT for layout transitions ################
-		// https://github.com/1111mp/Vulkan/blob/7e65729c9782d00ee87e70fb25b711ccc0b71b64/src/Application.cpp#L1627
-		std::array<VkSubpassDependency, 2> dependencies;
+		FVulkanRenderPassInfo::FAttachmentRefInfo colorAttachmentReference;
+		colorAttachmentReference.attachment = 0;
+		colorAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-		dependencies[0].dstSubpass = 0;
-		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+		RPInfo.m_ColorAttachmentsRefInfo.Add(colorAttachmentReference);
 
-		dependencies[1].srcSubpass = VK_SUBPASS_EXTERNAL;
-		dependencies[1].dstSubpass = 0;
-		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-		dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+		RPInfo.m_DepthAttachmentReference.attachment = 1;
+		RPInfo.m_DepthAttachmentReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-		
-		// --- Render Pass Creation ---
-		
-		std::vector<VkAttachmentDescription> attachments = {colorAttachment, depthAttachment};
-		VkRenderPassCreateInfo renderPassInfo{};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-		renderPassInfo.pAttachments = attachments.data();
-		renderPassInfo.subpassCount = 1;
-		renderPassInfo.pSubpasses = &subpass;
-		renderPassInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
-		renderPassInfo.pDependencies = dependencies.data();
-		
-		// Subpass dependencies for synchronization could be added here,
-		// but the manual pipeline barrier after the pass is generally cleaner for this use case.
+		FVulkanRenderTargetLayout RTLayout(RPInfo);
+		backendData->OffScreenRR.RenderPass = new FVulkanRenderPass(*FVulkanDynamicRHI::Get().GetDevice(), RTLayout);
 
-		VkResult result = vkCreateRenderPass(vulkanInfo->Device, &renderPassInfo, nullptr, &backendData->OffScreenRR.RenderPass);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't off screen render pass");
+		// --- had couple of dependencies for layouts change ---
 	}
 
 	void KarmaGuiVulkanHandler::CreateOffScreenTextureFrameBufferResource(KarmaGui_3DScene_To_2DTexture_Data* textureData)
@@ -1417,7 +1380,7 @@ namespace Karma
 
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = backendData->OffScreenRR.RenderPass;
+		framebufferInfo.renderPass = backendData->OffScreenRR.RenderPass->GetHandle();
 		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 		framebufferInfo.pAttachments = attachments.data();
 		framebufferInfo.width = textureData->Size.x;
@@ -1442,7 +1405,7 @@ namespace Karma
 			VkImageCreateInfo info = {};
 			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			info.imageType = VK_IMAGE_TYPE_2D;
-			info.format = VulkanHolder::GetVulkanContext()->FindDepthFormat();
+			info.format = FVulkanDynamicRHI::Get().FindDepthFormat();
 			info.extent.width = textureData->Size.x;
 			info.extent.height = textureData->Size.y;
 			info.extent.depth = 1;
@@ -1462,7 +1425,7 @@ namespace Karma
 			VkMemoryAllocateInfo allocInfo = {};
 			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			allocInfo.allocationSize = req.size;
-			allocInfo.memoryTypeIndex = VulkanHolder::GetVulkanContext()->FindMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);//KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_MemoryType(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, req.memoryTypeBits);
+			allocInfo.memoryTypeIndex = FVulkanDynamicRHI::Get().FindMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 			result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &textureData->DepthDeviceMemory);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
@@ -1477,7 +1440,7 @@ namespace Karma
 			info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			info.image = textureData->DepthImage;
 			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			info.format = VulkanHolder::GetVulkanContext()->FindDepthFormat();
+			info.format = FVulkanDynamicRHI::Get().FindDepthFormat();
 			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 			info.subresourceRange.levelCount = 1;
 			info.subresourceRange.layerCount = 1;
@@ -1859,6 +1822,29 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
 	{
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+
+		if (backendData->OffScreenRR.bAllocationDoneOnce)
+		{
+			delete backendData->OffScreenRR.RenderPass;
+			backendData->OffScreenRR.RenderPass = nullptr;
+
+			vkDestroySampler(vulkanInfo->Device, backendData->OffScreenRR.Sampler, nullptr);
+		}
+
+		// Clear vulkan resources from KarmaGui_3DScene_To_2DTexture_Data
+		for (auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
+		{
+			vkDestroyImageView(vulkanInfo->Device, it->DepthImage_View, nullptr);
+			vkDestroyImage(vulkanInfo->Device, it->DepthImage, nullptr);
+			vkFreeMemory(vulkanInfo->Device, it->DepthDeviceMemory, nullptr);
+			vkDestroyImageView(vulkanInfo->Device, it->Image_View, nullptr);
+			vkDestroyImage(vulkanInfo->Device, it->Image, nullptr);
+			vkFreeMemory(vulkanInfo->Device, it->DeviceMemory, nullptr);
+			vkDestroyFramebuffer(vulkanInfo->Device, it->FrameBuffer, nullptr);
+		}
+
 		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
 		
 		std::vector<VkCommandBuffer> commandBuffers;
@@ -1922,34 +1908,7 @@ namespace Karma
 		delete windowData->RHIResources;
 		
 		return; // <-- to be uncommented when we have offscreen rendering logic
-
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
-		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
-
-		vkDestroySampler(vulkanInfo->Device, backendData->OffScreenRR.Sampler, nullptr);
-		vkDestroyRenderPass(vulkanInfo->Device, backendData->OffScreenRR.RenderPass, nullptr);
-		
-		// Clear vulkan resources from KarmaGui_3DScene_To_2DTexture_Data
-		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
-		{
-			// Order of destruction to be taken in account
-
-			//vkDestroySampler(vulkanInfo->Device, it->Sampler, nullptr);
-			vkDestroyImageView(vulkanInfo->Device, it->DepthImage_View, nullptr);
-
-			vkDestroyImage(vulkanInfo->Device, it->DepthImage, nullptr);
-			vkFreeMemory(vulkanInfo->Device, it->DepthDeviceMemory, nullptr);
-
-			vkDestroyImageView(vulkanInfo->Device, it->Image_View, nullptr);
-			vkDestroyImage(vulkanInfo->Device, it->Image, nullptr);
-			vkFreeMemory(vulkanInfo->Device, it->DeviceMemory, nullptr);
-			vkDestroyFramebuffer(vulkanInfo->Device, it->FrameBuffer, nullptr);
-
-			//std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
-			//vulkanVA->CleanupKarmaGuiGraphicsPipeline();
-
-			//vkDestroyRenderPass(vulkanInfo->Device, it->RenderPass, nullptr);
-		}
+	
 		// Assuming only on graphicspipeline
 		VulkanHolder::GetVulkanContext()->CleanUpKarmaGuiGeneralGraphicsPipeline();
 	}

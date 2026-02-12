@@ -376,7 +376,7 @@ namespace Karma
 				staticMeshActor->LoadMeshFromFile("../Resources/Models/BonedCylinder.obj");
 				m_EditorScene->AddStaticMeshActor(staticMeshActor);
 
-				Karma::VulkanHolder::GetVulkanContext()->CreateVulkanResourcesForScene(m_EditorScene);
+				//Karma::VulkanHolder::GetVulkanContext()->CreateVulkanResourcesForScene(m_EditorScene);
 			}
 		}
 	}

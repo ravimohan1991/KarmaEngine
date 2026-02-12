@@ -7,6 +7,8 @@
 #include "VulkanRHI/VulkanDynamicRHI.h"
 #include "VulkanRHI/VulkanSwapChain.h"
 #include "VulkanRHI/VulkanSynchronization.h"
+#include "KarmaRHI/DynamicRHI.h"
+#include "VulkanRHI/VulkanRenderPass.h"
 
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"
@@ -457,6 +459,7 @@ namespace Karma
 		
 		for (auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
+			continue;// For now, skipping the 3D scene rendering on 2D render target, to focus on getting the main render pass right. Will come back to this later.
 			std::shared_ptr<Scene> scene3D = it->Scene3D;
 
 			FrameDescriptorSets dSets;
@@ -472,7 +475,7 @@ namespace Karma
 			{
 				VkRenderPassBeginInfo renderPassInfo{};
 				renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-				renderPassInfo.renderPass = backendData->OffScreenRR.RenderPass;
+				renderPassInfo.renderPass = backendData->OffScreenRR.RenderPass->GetHandle();
 				renderPassInfo.framebuffer = it->FrameBuffer;
 				renderPassInfo.renderArea.offset = {0, 0};
 				renderPassInfo.renderArea.extent.width = it->Size.x;
@@ -632,7 +635,7 @@ namespace Karma
 
 	KGTextureID KarmaGuiRenderer::Add3DSceneFor2DRendering(std::shared_ptr<Scene> scene, KGVec2 dimensions)
 	{
-		if(RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		if(GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
 			KarmaGui_ImplVulkan_Data* backendData = GetBackendRendererUserData();
 			KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;

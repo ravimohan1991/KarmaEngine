@@ -851,7 +851,7 @@ namespace Karma
 		 * 
 		 * @see KarmaGuiRenderer::Add3DSceneFor2DRendering
 		 */
-		VkRenderPass                        RenderPass;
+		FVulkanRenderPass*					RenderPass;
 
 		/**
 		 * @brief Flag indicating whether the allocation of offscreen rendering resources has been done at least once.
