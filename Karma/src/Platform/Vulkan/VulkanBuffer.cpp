@@ -262,6 +262,8 @@ namespace Karma
 
 	void VulkanUniformBuffer::ClearBuffer()
 	{
+		vkDeviceWaitIdle(m_Device);
+
 		for (size_t i = 0; i < m_UniformBuffers.size(); i++)
 		{
 			vkDestroyBuffer(m_Device, m_UniformBuffers[i], nullptr);
