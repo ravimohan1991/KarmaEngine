@@ -472,8 +472,8 @@ namespace Karma
 
 			// Respect any non-default transform value that the root component may have received from the archetype that's owned
 			// by the native CDO, so the final transform might not always necessarily equate to the passed-in UserSpawnTransform.
-			const FTransform RootTransform(SceneRootComponent->GetRelativeRotation(), SceneRootComponent->GetRelativeLocation(), SceneRootComponent->GetRelativeScale3D());
-			const FTransform FinalRootComponentTransform = RootTransform * UserSpawnTransform;
+			/*const FTransform RootTransform(SceneRootComponent->GetRelativeRotation(), SceneRootComponent->GetRelativeLocation(), SceneRootComponent->GetRelativeScale3D());*/
+			const FTransform FinalRootComponentTransform = /*RootTransform */ UserSpawnTransform;
 
 			SceneRootComponent->SetWorldTransform(FinalRootComponentTransform/*, false, nullptr, ETeleportType::ResetPhysics*/);
 		}

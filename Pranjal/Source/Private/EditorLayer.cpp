@@ -376,8 +376,6 @@ namespace Karma
 			if (staticMeshActor)
 			{
 				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
-
-				staticMeshActor->SetActorTransform(smActorTransform);
 				
 				staticMeshActor->LoadMeshFromFile("../Resources/Models/BonedCylinder.obj");
 				m_EditorScene->AddStaticMeshActor(staticMeshActor);
@@ -407,8 +405,6 @@ namespace Karma
 			if (staticMeshActor)
 			{
 				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
-
-				staticMeshActor->SetActorTransform(smActorTransform);
 				
 				staticMeshActor->LoadMeshFromFile("../Resources/Models/FORZombie.obj");
 				m_EditorScene->AddStaticMeshActor(staticMeshActor);

@@ -11,6 +11,7 @@
 #include "VulkanRHI/VulkanRenderPass.h"
 #include "VulkanRHI/VulkanDescriptorSets.h"
 #include "StaticMeshActor.h"
+#include "PrimitiveComponent.h"
 
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"
@@ -133,7 +134,7 @@ namespace Karma
 			
 			for (uint32_t counter = 0; counter < maxFramesInFlight; counter++)
 			{
-				FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(static_cast<VulkanUniformBuffer*>(smActor->GetMeshTransformUniform().get()), 1, m_SMCounter, counter);
+				FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(static_cast<VulkanUniformBuffer*>(static_cast<UPrimitiveComponent*>(smActor->GetRootComponent())->GetComponentTransformUniform() .get()), 1, m_SMCounter, counter);
 			}
 			
 			m_SMCounter++;

@@ -622,7 +622,7 @@ namespace Karma
 
 			// Update set 2: Per-mesh UBO will be updated during mesh rendering
 			{
-				std::shared_ptr<VulkanUniformBuffer> objectUBO = static_pointer_cast<VulkanUniformBuffer>(smElement->GetMeshTransformUniform());
+				std::shared_ptr<VulkanUniformBuffer> objectUBO = nullptr;//static_pointer_cast<VulkanUniformBuffer>(smElement->GetMeshTransformUniform());
 
 				VkDescriptorBufferInfo objectInfo{};
 				objectInfo.buffer = objectUBO->GetUniformBuffers()[frameIndex];

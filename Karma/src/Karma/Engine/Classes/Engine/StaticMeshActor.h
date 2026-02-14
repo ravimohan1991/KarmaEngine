@@ -34,17 +34,8 @@ namespace Karma
 		//std::shared_ptr<class UStaticMeshComponent> m_StaticMeshComponent;
 		UStaticMeshComponent* m_StaticMeshComponent;
 		
-		/**
-		 * @brief Uniform buffer object for the mesh's transformation matrix
-		 * 
-		 * Used to upload the actor's transform to the GPU for rendering
-		 */
-		std::shared_ptr<UniformBufferObject> m_MeshTransformUniform;
-		
-		//tentative
-		glm::mat4 m_ActorTranformUniform;
+		// Experimental
 		float m_RotationAngle;
-		
 		float m_RotationSpeed;
 
 	public:
@@ -72,15 +63,6 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		UStaticMeshComponent* GetStaticMeshComponent() const { return m_StaticMeshComponent; }
-
-		/**
-		 * @brief Getter for the mesh transform uniform buffer object
-		 * 
-		 * @return std::shared_ptr<UniformBufferObject> The uniform buffer object for the mesh's transformation matrix.
-		 * 
-		 * @since Karma 1.0.0
-		 */
-		std::shared_ptr<UniformBufferObject> GetMeshTransformUniform() const { return m_MeshTransformUniform; }
 		
 		virtual void Tick(float DeltaSeconds) override;
 	};

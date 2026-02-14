@@ -175,7 +175,7 @@ namespace Karma
 		 *							If CCD is on and not teleporting, this will affect objects along the entire sweep volume.
 		 * @since Karma 1.0.0
 		 */
-		void SetWorldTransform(const FTransform& NewTransform/*, bool bSweep = false, FHitResult* OutSweepHitResult = nullptr, ETeleportType Teleport = ETeleportType::None*/);
+		virtual void SetWorldTransform(const FTransform& NewTransform/*, bool bSweep = false, FHitResult* OutSweepHitResult = nullptr, ETeleportType Teleport = ETeleportType::None*/);
 
 		/** 
 		 * @brief Get the SceneComponent we are attached to.
