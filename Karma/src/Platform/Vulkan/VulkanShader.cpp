@@ -21,7 +21,7 @@ namespace Karma
 
 	std::vector<uint32_t> VulkanShader::Compile(const std::string& src, const std::string& source, EShLanguage lang)
 	{
-		KR_CORE_INFO("Compiling {0} {1} for Vulkan ...", lang == EShLangVertex ? "vertex shader" : "fragment shader", src);
+		KR_CORE_INFO("Compiling {0} {1} for Vulkan ..", lang == EShLangVertex ? "vertex shader" : "fragment shader", src);
 
 		const char* sString = source.c_str();
 
