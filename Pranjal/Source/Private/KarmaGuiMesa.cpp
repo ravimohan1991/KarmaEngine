@@ -14,6 +14,8 @@
 #include "hwinfo/hwinfo.h"
 #include "hwinfo/utils/unit.h"
 #include "spdlog/sinks/callback_sink.h"
+#include "KarmaGui/KarmaGuizmo.h"
+#include "StaticMeshActor.h"
 
 // Experimental
 //#include "Karma/Core/UObjectAllocator.h"
@@ -538,6 +540,24 @@ namespace Karma
 		if (scene->GetSMActors().size() > 0 && textureID3D != nullptr)
 		{
 			drawList->AddImage((void*)textureID3D, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
+		}
+		
+		KarmaGuizmo::SetDrawlist(KarmaGui::GetWindowDrawList());
+		KarmaGuizmo::SetRect(pos.x, pos.y, window->Size.x, window->Size.y);
+		
+		if(scene->GetSMActors().size() > 0)
+		{
+			std::shared_ptr<Camera> sceneCamera =  scene->GetSceneCamera();
+			glm::mat4 viewMatrix = sceneCamera->GetViewMatirx();
+			
+			glm::mat4 projectionMatrix = sceneCamera->GetProjectionMatrix();
+			
+			float* projectionPtr = glm::value_ptr(projectionMatrix);
+			projectionPtr[5] *= -1.f;
+			
+			glm::mat4 objectMatrix = scene->GetSMActors()[0]->GetTransform().ToMatrixWithScale();
+			
+			KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::TRANSLATE, KarmaGuizmo::WORLD, glm::value_ptr(objectMatrix));
 		}
 		
 		scene->SetRenderWindow(window);

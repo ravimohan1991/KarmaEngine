@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 #include "Renderer/Renderer.h"
 #include "KarmaGuiRenderer.h"
+#include "KarmaGui/KarmaGuizmo.h"
 
 namespace Karma
 {
@@ -67,6 +68,8 @@ namespace Karma
 	{
 		KarmaGuiRenderer::OnKarmaGuiLayerBegin();
 		KarmaGui::NewFrame();
+		
+		KarmaGuizmo::BeginFrame();
 	}
 
 	void KarmaGuiLayer::KarmaGuiRender(float deltaTime)

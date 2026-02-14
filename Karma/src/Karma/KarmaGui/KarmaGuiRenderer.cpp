@@ -134,7 +134,7 @@ namespace Karma
 			
 			for (uint32_t counter = 0; counter < maxFramesInFlight; counter++)
 			{
-				FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(static_cast<VulkanUniformBuffer*>(static_cast<UPrimitiveComponent*>(smActor->GetRootComponent())->GetComponentTransformUniform() .get()), 1, m_SMCounter, counter);
+				FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(static_cast<VulkanUniformBuffer*>(static_cast<UPrimitiveComponent*>(smActor->GetRootComponent())->GetComponentTransformUniform().get()), 1, m_SMCounter, counter);
 			}
 			
 			m_SMCounter++;
@@ -301,11 +301,11 @@ namespace Karma
 
 			if (width > 0 && height > 0)
 			{
-                //KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateOrResizeWindow(&m_VulkanWindowData, true, true);
-                KarmaGuiVulkanHandler::ShivaSwapChainForRebuild(&m_VulkanWindowData);
-                KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, false);
+				//KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateOrResizeWindow(&m_VulkanWindowData, true, true);
+				KarmaGuiVulkanHandler::ShivaSwapChainForRebuild(&m_VulkanWindowData);
+				KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, false);
 
-                m_SwapChainRebuild = false;
+				m_SwapChainRebuild = false;
 			}
 		}
 

@@ -25,7 +25,7 @@ namespace Karma
 		
 		AnimTransform.SetRotation(TRotator(glm::vec3(0.f, 0.f, m_RotationAngle)));
 		
-		SetActorTransform(AnimTransform);
+		//SetActorTransform(AnimTransform);
 
 		m_RotationAngle += 0.78f * DeltaSeconds * m_RotationSpeed;
 		
@@ -41,6 +41,6 @@ namespace Karma
 		loadedMesh.reset(new Mesh(filePath));
 
 		m_StaticMeshComponent->SetStaticMesh(loadedMesh);
-		m_RotationSpeed = glm::linearRand(0.2f, 4.5f);
+		m_RotationSpeed = glm::linearRand(0.2f, 1.0f);
 	}
 }
