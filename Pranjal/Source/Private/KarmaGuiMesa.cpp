@@ -38,6 +38,7 @@ namespace Karma
 	std::shared_ptr<spdlog::pattern_formatter> s_MesaLogFormatter = nullptr;
 	bool KarmaGuiMesa::m_EditorInitialized = false;
 	bool KarmaGuiMesa::m_RefreshRenderingResources = false;
+	AStaticMeshActor* KarmaGuiMesa::m_SelectedSMActor = nullptr;
 
 	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
 	WindowManipulationGaugeData	KarmaGuiMesa::m_MemoryExhibitor;
@@ -102,7 +103,7 @@ namespace Karma
 
 		// 4. A panel for scene hierarchy and whatnot
 		{
-			DrawKarmaSceneHierarchyPanelMesa();
+			DrawKarmaSceneHierarchyPanelMesa(scene);
 		}
 
 		// 5. A window for 3D rendering part
@@ -554,10 +555,8 @@ namespace Karma
 		KarmaGuizmo::SetDrawlist();
 		KarmaGuizmo::SetRect(pos.x, pos.y + window->TitleBarHeight(), window->Size.x, window->Size.y - window->TitleBarHeight());
 		
-		if(scene->GetSMActors().size() > 0)
+		if(scene->GetSMActors().size() > 0 && m_SelectedSMActor != nullptr)
 		{
-			KarmaGuizmo::SetOrthographic(false);
-			
 			std::shared_ptr<Camera> sceneCamera =  scene->GetSceneCamera();
 			glm::mat4 viewMatrix = sceneCamera->GetViewMatirx();
 			
@@ -566,17 +565,17 @@ namespace Karma
 			float* projectionPtr = glm::value_ptr(projectionMatrix);
 			projectionPtr[5] *= -1.f;
 			
-			glm::mat4 objectMatrix = scene->GetSMActors()[0]->GetTransform().ToMatrixWithScale();
+			glm::mat4 objectMatrix = m_SelectedSMActor->GetTransform().ToMatrixWithScale();
 			
 			KarmaGuizmo::Enable(true);
 			KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::TRANSLATE, KarmaGuizmo::LOCAL, glm::value_ptr(objectMatrix));
 			
 			if(KarmaGuizmo::IsUsing())
 			{
-				FTransform transform = scene->GetSMActors()[0]->GetTransform();
+				FTransform transform = m_SelectedSMActor->GetTransform();
 				transform.SetTranslation(glm::vec3(objectMatrix[3]));
 				
-				scene->GetSMActors()[0]->SetActorTransform(transform);
+				m_SelectedSMActor->SetActorTransform(transform);
 			}
 		}
 		
@@ -618,14 +617,30 @@ namespace Karma
 		KarmaGui::End();
 	}
 
-	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
+	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa(std::shared_ptr<Scene> scene)
 	{
 		KarmaGui::SetNextWindowSize(KGVec2(500, 400), KGGuiCond_FirstUseEver);
 
 		KarmaGui::Begin("Scene Hierarchy");
-		KarmaGui::Text("Some Stuff 1");
-		KarmaGui::Text("Some stuff 2");
-		KarmaGui::Text("lumbdaa");
+		
+		for(const auto& smActor : scene->GetSMActors())
+		{
+			const char* sceneElement = smActor->GetName().c_str();
+			
+			KGGuiTreeNodeFlags_ flags = (smActor == m_SelectedSMActor) ? KGGuiTreeNodeFlags_Selected : KGGuiTreeNodeFlags_Bullet;
+			bool opened = KarmaGui::TreeNodeEx(sceneElement, flags);
+			
+			if(KarmaGui::IsItemClicked())
+			{
+				m_SelectedSMActor = smActor;
+			}
+			
+			if(opened)
+			{
+				KarmaGui::TreePop();
+			}
+		}
+		
 		KarmaGui::End();
 	}
 

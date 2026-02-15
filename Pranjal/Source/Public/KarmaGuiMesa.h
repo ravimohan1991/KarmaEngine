@@ -280,7 +280,7 @@ namespace Karma
 		static void DrawKarmaMainMenuBarMesa();
 		static void DrawMainMenuFileListMesa();
 		static void DrawKarmaLogMesa(KGGuiID mainMesaDockID);
-		static void DrawKarmaSceneHierarchyPanelMesa();
+		static void DrawKarmaSceneHierarchyPanelMesa(std::shared_ptr<Scene> scene);
 		static void Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene);
 		static void DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback);
 		static void DrawMemoryExhibitor();
@@ -320,6 +320,7 @@ namespace Karma
 		static WindowManipulationGaugeData m_MemoryExhibitor;
 		static bool m_EditorInitialized;
 		static bool m_RefreshRenderingResources;
+		static class AStaticMeshActor* m_SelectedSMActor;
 
 		// Content browser
 		static std::filesystem::path m_CurrentDirectory;
