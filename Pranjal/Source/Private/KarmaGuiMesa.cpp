@@ -514,8 +514,16 @@ namespace Karma
 			bShouldRefresh = true;
 		}
 
-		m_ViewportFocused = KarmaGui::IsWindowFocused();
-		m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
+		if (!KarmaGuizmo::IsUsing())
+		{
+			m_ViewportFocused = KarmaGui::IsWindowFocused();
+			m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
+		}
+		else
+		{
+			m_ViewportFocused = false;
+			m_ViewportHovered = false;
+		}
 
 		KarmaGuiIO& io = KarmaGui::GetIO();
 
@@ -527,14 +535,15 @@ namespace Karma
 		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
 		
-		KGTextureID textureID3D;
+		KGTextureID textureID3D = nullptr;
 		if (scene->GetSMActors().size() > 0)
 		{
 			textureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
+			KarmaGui::SetItemAllowOverlap();
 		}
-		
-		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
+
 		KGVec2 pos = KarmaGui::GetCursorScreenPos();
+		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
 		
 		drawList->AddImage((void*)backgroundImageTextureID, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
 		if (scene->GetSMActors().size() > 0 && textureID3D != nullptr)
@@ -542,7 +551,7 @@ namespace Karma
 			drawList->AddImage((void*)textureID3D, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
 		}
 		
-		KarmaGuizmo::SetDrawlist(KarmaGui::GetWindowDrawList());
+		KarmaGuizmo::SetDrawlist(KarmaGui::GetBackgroundDrawList());
 		KarmaGuizmo::SetRect(pos.x, pos.y, window->Size.x, window->Size.y);
 		
 		if(scene->GetSMActors().size() > 0)
@@ -557,6 +566,7 @@ namespace Karma
 			
 			glm::mat4 objectMatrix = scene->GetSMActors()[0]->GetTransform().ToMatrixWithScale();
 			
+			KarmaGuizmo::Enable(true);
 			KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::TRANSLATE, KarmaGuizmo::WORLD, glm::value_ptr(objectMatrix));
 		}
 		

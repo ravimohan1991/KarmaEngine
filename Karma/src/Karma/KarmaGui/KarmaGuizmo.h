@@ -107,7 +107,7 @@ void EditTransform(const Camera& camera, matrix_t& matrix)
 #include "KarmaGui.h"
 
 #ifndef KARMAGUI_API
-#define KARMAGUI_API
+#define KARMAGUI_API KARMA_API
 #endif
 
 #ifndef KARMAGUIZMO_NAMESPACE

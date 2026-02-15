@@ -39,6 +39,8 @@ namespace Karma
 
 	VulkanVertexBuffer::~VulkanVertexBuffer()
 	{
+		vkDeviceWaitIdle(m_Device);
+
 		vkDestroyBuffer(m_Device, m_VertexBuffer, nullptr);
 		vkFreeMemory(m_Device, m_VertexBufferMemory, nullptr);
 	}
@@ -143,6 +145,8 @@ namespace Karma
 
 	VulkanIndexBuffer::~VulkanIndexBuffer()
 	{
+		vkDeviceWaitIdle(m_Device);
+
 		vkDestroyBuffer(m_Device, m_IndexBuffer, nullptr);
 		vkFreeMemory(m_Device, m_IndexBufferMemory, nullptr);
 	}
