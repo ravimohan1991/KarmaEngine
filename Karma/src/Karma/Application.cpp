@@ -113,6 +113,10 @@ namespace Karma
 			{
 				GEngine->Tick(deltaTime, false);
 			}
+			
+			// Ponder over the sequence of this updation
+			// this includes glfwPollEvents()
+			m_Window->OnUpdate();
 
 			for (auto layer : *m_LayerStack)
 			{
@@ -128,8 +132,6 @@ namespace Karma
 			}
 
 			m_KarmaGuiLayer->End();
-
-			m_Window->OnUpdate();
 		}
 	}
 

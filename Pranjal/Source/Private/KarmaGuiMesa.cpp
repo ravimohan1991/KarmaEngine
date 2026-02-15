@@ -542,7 +542,7 @@ namespace Karma
 			KarmaGui::SetItemAllowOverlap();
 		}
 
-		KGVec2 pos = KarmaGui::GetCursorScreenPos();
+		KGVec2 pos = KarmaGui::GetWindowPos();
 		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
 		
 		drawList->AddImage((void*)backgroundImageTextureID, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
@@ -551,11 +551,13 @@ namespace Karma
 			drawList->AddImage((void*)textureID3D, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
 		}
 		
-		KarmaGuizmo::SetDrawlist(KarmaGui::GetBackgroundDrawList());
-		KarmaGuizmo::SetRect(pos.x, pos.y, window->Size.x, window->Size.y);
+		KarmaGuizmo::SetDrawlist();
+		KarmaGuizmo::SetRect(pos.x, pos.y + window->TitleBarHeight(), window->Size.x, window->Size.y - window->TitleBarHeight());
 		
 		if(scene->GetSMActors().size() > 0)
 		{
+			KarmaGuizmo::SetOrthographic(false);
+			
 			std::shared_ptr<Camera> sceneCamera =  scene->GetSceneCamera();
 			glm::mat4 viewMatrix = sceneCamera->GetViewMatirx();
 			
@@ -567,7 +569,15 @@ namespace Karma
 			glm::mat4 objectMatrix = scene->GetSMActors()[0]->GetTransform().ToMatrixWithScale();
 			
 			KarmaGuizmo::Enable(true);
-			KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::TRANSLATE, KarmaGuizmo::WORLD, glm::value_ptr(objectMatrix));
+			KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::TRANSLATE, KarmaGuizmo::LOCAL, glm::value_ptr(objectMatrix));
+			
+			if(KarmaGuizmo::IsUsing())
+			{
+				FTransform transform = scene->GetSMActors()[0]->GetTransform();
+				transform.SetTranslation(glm::vec3(objectMatrix[3]));
+				
+				scene->GetSMActors()[0]->SetActorTransform(transform);
+			}
 		}
 		
 		scene->SetRenderWindow(window);
