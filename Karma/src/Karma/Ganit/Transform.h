@@ -241,6 +241,8 @@ namespace Karma
 		}
 		
 		glm::mat4 ToMatrixWithScale() const;
+		
+		void ToTransform(const glm::mat4 Matrix);
 
 	public:
 		static FTransform m_Identity;

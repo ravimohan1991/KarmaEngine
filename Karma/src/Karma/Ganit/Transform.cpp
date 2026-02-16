@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace Karma
 {
@@ -153,7 +154,25 @@ namespace Karma
 		ReturnMatrix *= glm::mat4_cast(m_Rotation.ToQuat());
 		
 		ReturnMatrix = glm::translate(ReturnMatrix, m_Translation);
-		
+
 		return ReturnMatrix;
+	}
+
+	void FTransform::ToTransform(const glm::mat4 Matrix)
+	{
+		glm::vec3 scale(0), translation(0), skew(0);
+		glm::quat rotation;
+		glm::vec4 perspective(0);
+
+		glm::decompose(Matrix, scale, rotation, translation, skew, perspective);
+		
+		TRotator rotator = TRotator(glm::eulerAngles(rotation));
+		
+		//FTransform transform = FTransform::Identity();
+		
+		m_Translation = translation;
+		m_Rotation = rotator;
+		
+		m_Scale3D = scale;
 	}
 }

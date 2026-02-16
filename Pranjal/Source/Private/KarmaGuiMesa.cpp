@@ -53,6 +53,47 @@ namespace Karma
 			DropRectsDraw[n] = KGRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX);
 		}
 	}
+	
+	void KarmaGuiMesa::EditTransform(std::shared_ptr<Scene> scene)
+	{
+		if(m_SelectedSMActor == nullptr)
+		{
+			return;
+		}
+		
+		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+		FTransform transform = m_SelectedSMActor->GetTransform();
+		
+		matrixTranslation[0] = transform.GetTranslation().x;
+		matrixTranslation[1] = transform.GetTranslation().y;
+		matrixTranslation[2] = transform.GetTranslation().z;
+		
+		matrixRotation[0] = transform.GetRotation().m_Roll;
+		matrixRotation[1] = transform.GetRotation().m_Pitch;
+		matrixRotation[2] = transform.GetRotation().m_Yaw;
+		
+		matrixScale[0] = transform.GetScale3D().x;
+		matrixScale[1] = transform.GetScale3D().y;
+		matrixScale[2] = transform.GetScale3D().z;
+		
+		KarmaGui::InputFloat3("Tr", matrixTranslation, "%.2f");
+		KarmaGui::InputFloat3("Rt", matrixRotation, "%.2f");
+		
+		KarmaGui::InputFloat3("Sc", matrixScale, "%.2f");
+		
+		glm::vec3 translation(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
+		transform.SetTranslation(translation);
+	
+		glm::vec3 euler(matrixRotation[0], matrixRotation[1], matrixRotation[2]);
+		TRotator rotation(euler);
+		
+		transform.SetRotation(rotation);
+		
+		glm::vec3 scale(matrixScale[0], matrixScale[1], matrixScale[2]);
+		transform.SetScale3D(scale);
+		
+		m_SelectedSMActor->SetActorTransform(transform);
+	}
 
 	void KarmaGuiMesa::RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
 	{
@@ -61,15 +102,16 @@ namespace Karma
 
 		// 2. Show a simple sampling and experiment window
 		{
-			static bool show = true;
+			static bool show1 = true;
+			static bool show2 = true;
 			static float fValue = 0.0f;
 			static int counter = 0;
 
 			KarmaGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and appeninto it
 
 			KarmaGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			KarmaGui::Checkbox("Demo Window", &show);                  // Edit bools storing our window open/close state
-			KarmaGui::Checkbox("Another Window", &show);
+			KarmaGui::Checkbox("Demo Window", &show1);                  // Edit bools storing our window open/close state
+			KarmaGui::Checkbox("Another Window", &show2);
 
 			KarmaGui::SliderFloat("float", &fValue, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 			//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a colo
@@ -89,6 +131,8 @@ namespace Karma
 			node = nullptr;//ImGui::FindAppropriateNode(window, payloadWindow, boxNumber);
 
 			KarmaGui::Text("Node ID = %d at position x = %f, y = %f on docking box %d", node != nullptr ? node->ID : 0, KarmaGui::GetMousePos().x, KarmaGui::GetMousePos().y, boxNumber);
+			
+			EditTransform(scene);
 
 			if (payloadWindow)
 				KarmaGui::Text("Karma: Log window is of dimension width = %f und height = %f", payloadWindow->Size.x, payloadWindow->Size.y);

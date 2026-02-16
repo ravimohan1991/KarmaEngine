@@ -277,6 +277,7 @@ namespace Karma
 	public:
 		// Showtime!
 		static void RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks);
+		static void EditTransform(std::shared_ptr<Scene> scene);
 		static void DrawKarmaMainMenuBarMesa();
 		static void DrawMainMenuFileListMesa();
 		static void DrawKarmaLogMesa(KGGuiID mainMesaDockID);
