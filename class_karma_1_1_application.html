@@ -147,7 +147,7 @@ Static Public Member Functions</h2></td></tr>
 <li>A check for ensuring only one instance is present</li>
 <li>Creation of a <a class="el" href="class_karma_1_1_window.html" title="The abstract base class of Karma&#39;s window (for platform specific purposes).">Window</a> (depending upon the platform)</li>
 <li>Declaration of <a class="el" href="class_karma_1_1_layer.html" title="Base class of all Karma&#39;s Layers. For instance KarmaGuiLayer.">Layer</a> stack</li>
-<li>Creation of <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> <a class="el" href="class_karma_1_1_layer.html" title="Base class of all Karma&#39;s Layers. For instance KarmaGuiLayer.">Layer</a> and a push into the stack</li>
+<li>Creation of <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> <a class="el" href="class_karma_1_1_layer.html" title="Base class of all Karma&#39;s Layers. For instance KarmaGuiLayer.">Layer</a> and a push into the stack</li>
 </ul>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
@@ -336,8 +336,8 @@ Static Public Member Functions</h2></td></tr>
 
 <p>For dispatching events and trickling down the call to <a class="el" href="class_karma_1_1_layer.html" title="Base class of all Karma&#39;s Layers. For instance KarmaGuiLayer.">Layer</a> stack. </p>
 <p>The OnEvent call is basically made by the glfw library via m_Data.EventCallback. The registration is done like so </p><div class="fragment"><div class="line">m_Window-&gt;SetEventCallback(<a class="code hl_define" href="_core_8h.html#a32ecba5b2ab37e1478d0fdfe3799ee1c">KR_BIND_EVENT_FN</a>(<a class="code hl_function" href="#a39be3483a9dab224dc8a45683b7a0e67">Application::OnEvent</a>)); <span class="comment">// Setting the listener</span></div>
-<div class="ttc" id="a_core_8h_html_a32ecba5b2ab37e1478d0fdfe3799ee1c"><div class="ttname"><a href="_core_8h.html#a32ecba5b2ab37e1478d0fdfe3799ee1c">KR_BIND_EVENT_FN</a></div><div class="ttdeci">#define KR_BIND_EVENT_FN(fn)</div><div class="ttdoc">Macro for std::bind routine. See https://en.cppreference.com/w/cpp/utility/functional/bind.</div><div class="ttdef"><b>Definition</b> Core.h:117</div></div>
-<div class="ttc" id="aclass_karma_1_1_application_html_a39be3483a9dab224dc8a45683b7a0e67"><div class="ttname"><a href="#a39be3483a9dab224dc8a45683b7a0e67">Karma::Application::OnEvent</a></div><div class="ttdeci">void OnEvent(Event &amp;e)</div><div class="ttdoc">For dispatching events and trickling down the call to Layer stack.</div><div class="ttdef"><b>Definition</b> Application.cpp:169</div></div>
+<div class="ttc" id="a_core_8h_html_a32ecba5b2ab37e1478d0fdfe3799ee1c"><div class="ttname"><a href="_core_8h.html#a32ecba5b2ab37e1478d0fdfe3799ee1c">KR_BIND_EVENT_FN</a></div><div class="ttdeci">#define KR_BIND_EVENT_FN(fn)</div><div class="ttdoc">Macro for std::bind routine. See https://en.cppreference.com/w/cpp/utility/functional/bind.</div><div class="ttdef"><b>Definition</b> Core.h:125</div></div>
+<div class="ttc" id="aclass_karma_1_1_application_html_a39be3483a9dab224dc8a45683b7a0e67"><div class="ttname"><a href="#a39be3483a9dab224dc8a45683b7a0e67">Karma::Application::OnEvent</a></div><div class="ttdeci">void OnEvent(Event &amp;e)</div><div class="ttdoc">For dispatching events and trickling down the call to Layer stack.</div><div class="ttdef"><b>Definition</b> Application.cpp:181</div></div>
 </div><!-- fragment --><p> whilst, the EventCallback is called in the lambdas of (Linux/Mac/Windows)Window::SetGLFWCallbacks()</p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
@@ -465,7 +465,7 @@ Static Public Member Functions</h2></td></tr>
 <li>Tracking the clock time gap between consecutive loop iterations (thus compute the deltatime)</li>
 <li>Make GEngine (instance of <a class="el" href="class_karma_1_1_k_engine.html" title="Base class of all Engine classes, responsible for management of systems critical to editor or game sy...">KEngine</a> class) tick</li>
 <li>Update all the layers of stack</li>
-<li>Update all the layers' UI rendering (<a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>'s sequence)</li>
+<li>Update all the layers' UI rendering (<a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s sequence)</li>
 <li><a class="el" href="class_karma_1_1_window.html" title="The abstract base class of Karma&#39;s window (for platform specific purposes).">Window</a> update</li>
 </ul>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>

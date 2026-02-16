@@ -104,11 +104,11 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a38d85c7204c64b4ef18a2e5f8e8fe241" id="r_a38d85c7204c64b4ef18a2e5f8e8fe241"><td class="memItemLeft" align="right" valign="top">VkDescriptorPool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38d85c7204c64b4ef18a2e5f8e8fe241">DescriptorPool</a></td></tr>
 <tr class="memdesc:a38d85c7204c64b4ef18a2e5f8e8fe241"><td class="mdescLeft">&#160;</td><td class="mdescRight">A fresh descriptor pool created in KarmaGuiRenderer::CreateDescriptorPool() (seperate from <a class="el" href="class_karma_1_1_vulkan_vertex_array.html#a5d3d0bea1ea62a11e953353ff9ccb336" title="Creates the descriptor pool.">VulkanVertexArray::CreateDescriptorPool()</a>) for the uniforms and texture purposes. In this backend chiefly for <a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#a69593647c6b97022deb5449e94bdef93" title="Register a texture by creation of descriptor set from preallocated descriptor pool.">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_AddTexture</a> routine.  <br /></td></tr>
 <tr class="memitem:a8f8ac1139a4a4d5265fce17efb582d49" id="r_a8f8ac1139a4a4d5265fce17efb582d49"><td class="memItemLeft" align="right" valign="top">VkRenderPass&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f8ac1139a4a4d5265fce17efb582d49">RenderPass</a></td></tr>
-<tr class="memdesc:a8f8ac1139a4a4d5265fce17efb582d49"><td class="mdescLeft">&#160;</td><td class="mdescRight">A handle to render pass object which represents a collection of attachments (depth attachment or colo(u)r attachment ), subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses. Taken from the one created in <a class="el" href="class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a>.  <br /></td></tr>
+<tr class="memdesc:a8f8ac1139a4a4d5265fce17efb582d49"><td class="mdescLeft">&#160;</td><td class="mdescRight">A handle to render pass object which represents a collection of attachments (depth attachment or colo(u)r attachment ), subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses.  <br /></td></tr>
 <tr class="memitem:a041d1b82cf53cb9649182f7111240b1d" id="r_a041d1b82cf53cb9649182f7111240b1d"><td class="memItemLeft" align="right" valign="top">VkPipelineCache&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a041d1b82cf53cb9649182f7111240b1d">PipelineCache</a></td></tr>
 <tr class="memdesc:a041d1b82cf53cb9649182f7111240b1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Usually this cache is set to VK_NULL_HANDLE, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that cache is enabled for the duration of the command.  <br /></td></tr>
 <tr class="memitem:acbf6b52ed139a92ed23876e9c3574562" id="r_acbf6b52ed139a92ed23876e9c3574562"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acbf6b52ed139a92ed23876e9c3574562">Subpass</a></td></tr>
-<tr class="memdesc:acbf6b52ed139a92ed23876e9c3574562"><td class="mdescLeft">&#160;</td><td class="mdescRight">Not sure what the sue of this Subpass is. Seems vestigial?  <br /></td></tr>
+<tr class="memdesc:acbf6b52ed139a92ed23876e9c3574562"><td class="mdescLeft">&#160;</td><td class="mdescRight">Not sure what the use of this Subpass is. Seems vestigial?  <br /></td></tr>
 <tr class="memitem:aa3955557aa8d9ea7754fee3a475c6251" id="r_aa3955557aa8d9ea7754fee3a475c6251"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3955557aa8d9ea7754fee3a475c6251">MinImageCount</a></td></tr>
 <tr class="memdesc:aa3955557aa8d9ea7754fee3a475c6251"><td class="mdescLeft">&#160;</td><td class="mdescRight">The minimum number of images the specified device supports for a swapchain created for the surface, and will be at least one plus one.  <br /></td></tr>
 <tr class="memitem:afdca5cb9391ff2a44d7a0d0a2b64447b" id="r_afdca5cb9391ff2a44d7a0d0a2b64447b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afdca5cb9391ff2a44d7a0d0a2b64447b">ImageCount</a></td></tr>
@@ -188,7 +188,6 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The number of elements in the pSwapchainImages array, i.e number of presentable swapchain images available (vkGetSwapchainImagesKHR). </p>
-<dl class="section note"><dt>Note</dt><dd>Taken from <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> where (<a class="el" href="class_karma_1_1_vulkan_context.html#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a>) ImageCount is defined MinImageCount + 1. </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -223,7 +222,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The minimum number of images the specified device supports for a swapchain created for the surface, and will be at least one plus one. </p>
-<dl class="section note"><dt>Note</dt><dd>Taken from <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> and supposed to be &gt;= 2. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Taken from <a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a> and supposed to be &gt;= 2. </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -241,7 +240,12 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Is a VkSampleCountFlagBits value specifying the number of samples used in rasterization. This value is ignored for the purposes of setting the number of samples used in rasterization if the pipeline is created with the VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT dynamic state set, but if VK_DYNAMIC_STATE_SAMPLE_MASK_EXT dynamic state is not set, it is still used to define the size of the pSampleMask array. </p>
-<dl class="section note"><dt>Note</dt><dd>&gt;= VK_SAMPLE_COUNT_1_BIT (0 -&gt; default to VK_SAMPLE_COUNT_1_BIT) </dd></dl>
+<p>This is using in the rasterization stage of the graphics pipeline to determine how many samples per pixel will be used when rendering.</p>
+<dl class="section note"><dt>Note</dt><dd>&gt;= VK_SAMPLE_COUNT_1_BIT (0 -&gt; default to VK_SAMPLE_COUNT_1_BIT). This setting disables multisampling, equivalent to no anti-aliasing, where each pixel has a single sample for color and depth processing during rasterization. Images created with this sample count cannot be used for multisample resolve operations or multisampled samplers, as they are treated as non-multisampled. Higher values like VK_SAMPLE_COUNT_2_BIT or VK_SAMPLE_COUNT_4_BIT enable multiple samples per pixel for improved anti-aliasing quality</dd>
+<dd>
+In rasterization stage the primitives are converted to fragments. Each fragment corresponds to a pixel in the framebuffer. When multisampling is enabled, multiple samples are taken within each pixel to improve image quality and reduce aliasing effects. </dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>While using higher sample counts (for instance VK_SAMPLE_COUNT_4_BIT), I couldn't produce coherent 2D image here, despit of setting VK_SAMPLE_COUNT_4_BIT in KarmaGuiHandler::CreateOffScreenRenderResources() and appropriately setting image, depthimage, and pipeline to use that sample count. Perplexity isn't particularly able to help. So, I am leaving VK_SAMPLE_COUNT_1_BIT (no multisampling).</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#aeb43f8c13ca81df044eecbe9dbd05630" title="Creates KarmaGui_ImplVulkan_Data.Pipeline.">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -327,7 +331,10 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>A handle to render pass object which represents a collection of attachments (depth attachment or colo(u)r attachment ), subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses. Taken from the one created in <a class="el" href="class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a>. </p>
+<p>A handle to render pass object which represents a collection of attachments (depth attachment or colo(u)r attachment ), subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses. </p>
+<p>Taken from the one created in <a class="el" href="class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>Used to set <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#ad7acd46e22b833a08e8bc3abc2c4ac13" title="A render pass object represents a collection of attachments, subpasses, and dependencies between the ...">KarmaGui_ImplVulkan_Data::RenderPass</a> (backend data) in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init()</dd></dl>
+<dl class="section see"><dt>See also</dt><dd>KarmaGuiRenderer::SetupKarmaGuiRenderer </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -344,7 +351,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Not sure what the sue of this Subpass is. Seems vestigial? </p>
+<p>Not sure what the use of this Subpass is. Seems vestigial? </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

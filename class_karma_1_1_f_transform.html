@@ -86,6 +86,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Transform composed of Scale, Rotation (as a quaternion), and Translation.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_transform_8h_source.html">Transform.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -109,18 +112,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetTranslation</b> (c
 <tr class="memitem:af7ce66719315be5206b096f57a840f99" id="r_af7ce66719315be5206b096f57a840f99"><td class="memItemLeft" align="right" valign="top"><a id="af7ce66719315be5206b096f57a840f99" name="af7ce66719315be5206b096f57a840f99"></a>
 FTransform&#160;</td><td class="memItemRight" valign="bottom"><b>GetRelativeTransform</b> (const FTransform &amp;RelativeToWhat) const</td></tr>
 <tr class="memitem:ac3aae64f1c6a3898d6e792a8d154d179" id="r_ac3aae64f1c6a3898d6e792a8d154d179"><td class="memItemLeft" align="right" valign="top">FTransform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3aae64f1c6a3898d6e792a8d154d179">operator*</a> (const FTransform &amp;Other) const</td></tr>
+<tr class="memdesc:ac3aae64f1c6a3898d6e792a8d154d179"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a transform that is the result of this multiplied by another transform. Order matters when composing transforms : C = A * B will yield a transform C that logically first applies A then B to any subsequent transformation.  <br /></td></tr>
 <tr class="memitem:a1cd9a118359f538792268b12b46f1879" id="r_a1cd9a118359f538792268b12b46f1879"><td class="memItemLeft" align="right" valign="top"><a id="a1cd9a118359f538792268b12b46f1879" name="a1cd9a118359f538792268b12b46f1879"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>AnyHasNegativeScale</b> (const glm::vec3 &amp;InScale3D, const glm::vec3 &amp;InOtherScale3D) const</td></tr>
 <tr class="memitem:a693df73720b0ef81b935c1e770afc97f" id="r_a693df73720b0ef81b935c1e770afc97f"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a693df73720b0ef81b935c1e770afc97f">GetSafeScaleReciprocal</a> (const glm::vec3 &amp;InScale, float Tolerance) const</td></tr>
 <tr class="memitem:a01979aef0be2c01080cfa6238d39552b" id="r_a01979aef0be2c01080cfa6238d39552b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a01979aef0be2c01080cfa6238d39552b">CopyTranslation</a> (const FTransform &amp;Other)</td></tr>
 <tr class="memitem:aeb5733de9586a5dd3940839e0904e9ef" id="r_aeb5733de9586a5dd3940839e0904e9ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb5733de9586a5dd3940839e0904e9ef">CopyRotation</a> (const FTransform &amp;Other)</td></tr>
 <tr class="memitem:afd2159f3410065e44bfbad696aaa3add" id="r_afd2159f3410065e44bfbad696aaa3add"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd2159f3410065e44bfbad696aaa3add">CopyScale3D</a> (const FTransform Other)</td></tr>
+<tr class="memitem:a1ac0dad23c5e11209ffbf3f49d287482" id="r_a1ac0dad23c5e11209ffbf3f49d287482"><td class="memItemLeft" align="right" valign="top"><a id="a1ac0dad23c5e11209ffbf3f49d287482" name="a1ac0dad23c5e11209ffbf3f49d287482"></a>
+glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>ToMatrixWithScale</b> () const</td></tr>
+<tr class="memitem:a642d19e396fce6459a64c304955fdaec" id="r_a642d19e396fce6459a64c304955fdaec"><td class="memItemLeft" align="right" valign="top"><a id="a642d19e396fce6459a64c304955fdaec" name="a642d19e396fce6459a64c304955fdaec"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ToTransform</b> (const glm::mat4 Matrix)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ab52c2de442260cae3150cf3f7a6c6ed7" id="r_ab52c2de442260cae3150cf3f7a6c6ed7"><td class="memItemLeft" align="right" valign="top"><a id="ab52c2de442260cae3150cf3f7a6c6ed7" name="ab52c2de442260cae3150cf3f7a6c6ed7"></a>
 static FTransform&#160;</td><td class="memItemRight" valign="bottom"><b>Identity</b> ()</td></tr>
 <tr class="memitem:ae81e5682d3678ad57ccc907b12f74846" id="r_ae81e5682d3678ad57ccc907b12f74846"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae81e5682d3678ad57ccc907b12f74846">Multiply</a> (FTransform *OutTransform, const FTransform *A, const FTransform *B)</td></tr>
+<tr class="memdesc:ae81e5682d3678ad57ccc907b12f74846"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new transform: OutTransform = A * B.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -128,11 +137,13 @@ Static Public Attributes</h2></td></tr>
 static FTransform&#160;</td><td class="memItemRight" valign="bottom"><b>m_Identity</b> = FTransform()</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Transform composed of Scale, Rotation (as a quaternion), and Translation.</p>
+<div class="textblock"><p>Transform composed of Scale, Rotation (as a quaternion), and Translation. </p>
 <p>Transforms can be used to convert from one space to another, for example by transforming positions and directions from local space to world space.</p>
 <p>Transformation of position vectors is applied in the order: Scale -&gt; Rotate -&gt; Translate. Transformation of direction vectors is applied in the order: Scale -&gt; Rotate.</p>
 <p>Order matters when composing transforms: C = A * B will yield a transform C that logically first applies A then B to any subsequent transformation. Note that this is the opposite order of quaternion (TQuat&lt;T&gt;) multiplication.</p>
-<p>Example: LocalToWorld = (DeltaRotation * LocalToWorld) will change rotation in local space by DeltaRotation. Example: LocalToWorld = (LocalToWorld * DeltaRotation) will change rotation in world space by DeltaRotation. </p>
+<p>Example: LocalToWorld = (DeltaRotation * LocalToWorld) will change rotation in local space by DeltaRotation. Example: LocalToWorld = (LocalToWorld * DeltaRotation) will change rotation in world space by DeltaRotation.</p>
+<dl class="section note"><dt>Note</dt><dd>We will be following Unreal Engine's left handed convention, meaning +X is forward, +Y is right, +Z is up.</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="aeb5733de9586a5dd3940839e0904e9ef" name="aeb5733de9586a5dd3940839e0904e9ef"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeb5733de9586a5dd3940839e0904e9ef">&#9670;&#160;</a></span>CopyRotation()</h2>
@@ -156,7 +167,7 @@ static FTransform&#160;</td><td class="memItemRight" valign="bottom"><b>m_Identi
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Copy rotation from another <a class="el" href="class_karma_1_1_f_transform.html">FTransform</a>. </p>
+<p>Copy rotation from another <a class="el" href="class_karma_1_1_f_transform.html" title="Transform composed of Scale, Rotation (as a quaternion), and Translation.">FTransform</a>. </p>
 
 </div>
 </div>
@@ -182,7 +193,7 @@ static FTransform&#160;</td><td class="memItemRight" valign="bottom"><b>m_Identi
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Copy scale from another <a class="el" href="class_karma_1_1_f_transform.html">FTransform</a>. </p>
+<p>Copy scale from another <a class="el" href="class_karma_1_1_f_transform.html" title="Transform composed of Scale, Rotation (as a quaternion), and Translation.">FTransform</a>. </p>
 
 </div>
 </div>
@@ -208,7 +219,7 @@ static FTransform&#160;</td><td class="memItemRight" valign="bottom"><b>m_Identi
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Copy translation from another <a class="el" href="class_karma_1_1_f_transform.html">FTransform</a>. </p>
+<p>Copy translation from another <a class="el" href="class_karma_1_1_f_transform.html" title="Transform composed of Scale, Rotation (as a quaternion), and Translation.">FTransform</a>. </p>
 
 </div>
 </div>
@@ -273,7 +284,8 @@ static FTransform&#160;</td><td class="memItemRight" valign="bottom"><b>m_Identi
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Create a new transform: OutTransform = A * B.</p>
+
+<p>Create a new transform: OutTransform = A * B. </p>
 <p>Order matters when composing transforms : A * B will yield a transform that logically first applies A then B to any subsequent transformation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -283,6 +295,7 @@ static FTransform&#160;</td><td class="memItemRight" valign="bottom"><b>m_Identi
   </table>
   </dd>
 </dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0</dd></dl>
 <p>Returns Multiplied Transform of 2 FTransforms </p>
 
 </div>
@@ -301,14 +314,16 @@ static FTransform&#160;</td><td class="memItemRight" valign="bottom"><b>m_Identi
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Return a transform that is the result of this multiplied by another transform. Order matters when composing transforms : C = A * B will yield a transform C that logically first applies A then B to any subsequent transformation.</p>
+
+<p>Return a transform that is the result of this multiplied by another transform. Order matters when composing transforms : C = A * B will yield a transform C that logically first applies A then B to any subsequent transformation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Other</td><td>other transform by which to multiply. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>new transform: this * Other </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>new transform: this * Other</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>

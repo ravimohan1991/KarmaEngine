@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['capabilities_0',['capabilities',['../struct_karma_1_1_swap_chain_support_details.html#a623d494aeea2df5f38719cc01a2a8f88',1,'Karma::SwapChainSupportDetails']]],
+  ['capabilities_0',['capabilities',['../struct_karma_1_1_swap_chain_support_details_depricated.html#a04f6f06f5a395a5c30b70b49e224dd23',1,'Karma::SwapChainSupportDetailsDepricated::capabilities'],['../struct_karma_1_1_swap_chain_support_details.html#a623d494aeea2df5f38719cc01a2a8f88',1,'Karma::SwapChainSupportDetails::capabilities']]],
   ['castshadow_1',['CastShadow',['../class_karma_1_1_u_primitive_component.html#a671ee4abe9c0845beacd29d5da485536',1,'Karma::UPrimitiveComponent']]],
   ['channels_2',['channels',['../struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html#ae7e9a4236c7e8c9cd26de83b192e4f2c',1,'Karma::KarmaGui_ImplVulkan_Image_TextureData']]],
   ['clearenable_3',['ClearEnable',['../struct_karma_1_1_karma_gui___impl_vulkan_h___window.html#aa7dc4032e7d0af1490711e4dfa1b0095',1,'Karma::KarmaGui_ImplVulkanH_Window']]],

@@ -102,8 +102,8 @@ Inheritance diagram for Karma::OpenGLShader:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a19a85b1b2d99a83abbfdb1ba8811506a" id="r_a19a85b1b2d99a83abbfdb1ba8811506a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19a85b1b2d99a83abbfdb1ba8811506a">OpenGLShader</a> (const std::string &amp;vertexSrc, const std::string &amp;fragmentSrc)</td></tr>
 <tr class="memdesc:a19a85b1b2d99a83abbfdb1ba8811506a"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constructor.  <br /></td></tr>
-<tr class="memitem:ac0ed8d8bee11a2141e5f4b8b9a8f2f4a" id="r_ac0ed8d8bee11a2141e5f4b8b9a8f2f4a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac0ed8d8bee11a2141e5f4b8b9a8f2f4a">OpenGLShader</a> (const std::string &amp;vertexSrcFile, const std::string &amp;fragmentSrcFile, std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt; ubo, const std::string &amp;shaderName)</td></tr>
-<tr class="memdesc:ac0ed8d8bee11a2141e5f4b8b9a8f2f4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overloaded constructor.  <br /></td></tr>
+<tr class="memitem:aa116c8ab9bff85190d16e30eee0259b4" id="r_aa116c8ab9bff85190d16e30eee0259b4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa116c8ab9bff85190d16e30eee0259b4">OpenGLShader</a> (const std::string &amp;vertexSrcFile, const std::string &amp;fragmentSrcFile, const std::string &amp;shaderName)</td></tr>
+<tr class="memdesc:aa116c8ab9bff85190d16e30eee0259b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overloaded constructor.  <br /></td></tr>
 <tr class="memitem:ab13792ea50be706bc7886fe462bcc2fc" id="r_ab13792ea50be706bc7886fe462bcc2fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab13792ea50be706bc7886fe462bcc2fc">~OpenGLShader</a> () override</td></tr>
 <tr class="memdesc:ab13792ea50be706bc7886fe462bcc2fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the appropriate resources, no longer in use, and clean up.  <br /></td></tr>
 <tr class="memitem:a03178124ea3c4c466ea909f728e7c7d8" id="r_a03178124ea3c4c466ea909f728e7c7d8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03178124ea3c4c466ea909f728e7c7d8">Bind</a> () const override</td></tr>
@@ -115,22 +115,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a937cc3712ab0def06d1ca1c7687dd97d" id="r_a937cc3712ab0def06d1ca1c7687dd97d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a937cc3712ab0def06d1ca1c7687dd97d">UploadUniformMat4</a> (const std::string &amp;name, const glm::mat4 &amp;matrix)</td></tr>
 <tr class="memdesc:a937cc3712ab0def06d1ca1c7687dd97d"><td class="mdescLeft">&#160;</td><td class="mdescRight">A legacy uniform upload routine.  <br /></td></tr>
 <tr class="inherit_header pub_methods_class_karma_1_1_shader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_karma_1_1_shader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_karma_1_1_shader.html">Karma::Shader</a></td></tr>
-<tr class="memitem:a8e558b284952a8791b2301e52c5aa9c0 inherit pub_methods_class_karma_1_1_shader" id="r_a8e558b284952a8791b2301e52c5aa9c0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_shader.html#a8e558b284952a8791b2301e52c5aa9c0">Shader</a> (std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt; ubo)</td></tr>
-<tr class="memdesc:a8e558b284952a8791b2301e52c5aa9c0 inherit pub_methods_class_karma_1_1_shader"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constructor.  <br /></td></tr>
+<tr class="memitem:affdd71cec147910d9942d926fac1c477 inherit pub_methods_class_karma_1_1_shader" id="r_affdd71cec147910d9942d926fac1c477"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_shader.html#affdd71cec147910d9942d926fac1c477">Shader</a> ()</td></tr>
+<tr class="memdesc:affdd71cec147910d9942d926fac1c477 inherit pub_methods_class_karma_1_1_shader"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constructor.  <br /></td></tr>
 <tr class="memitem:a53823dbc74b00a97a10753db22c83448 inherit pub_methods_class_karma_1_1_shader" id="r_a53823dbc74b00a97a10753db22c83448"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_shader.html#a53823dbc74b00a97a10753db22c83448">~Shader</a> ()=default</td></tr>
 <tr class="memdesc:a53823dbc74b00a97a10753db22c83448 inherit pub_methods_class_karma_1_1_shader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
-<tr class="memitem:ad3df3961cfa642287e1b34f1468f6bcc inherit pub_methods_class_karma_1_1_shader" id="r_ad3df3961cfa642287e1b34f1468f6bcc"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_shader.html#ad3df3961cfa642287e1b34f1468f6bcc">GetUniformBufferObject</a> () const</td></tr>
-<tr class="memdesc:ad3df3961cfa642287e1b34f1468f6bcc inherit pub_methods_class_karma_1_1_shader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for uniform buffer object.  <br /></td></tr>
 <tr class="memitem:a02061828e95d0ede71a43d2bae8a2358 inherit pub_methods_class_karma_1_1_shader" id="r_a02061828e95d0ede71a43d2bae8a2358"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_shader.html#a02061828e95d0ede71a43d2bae8a2358">GetShaderName</a> () const</td></tr>
 <tr class="memdesc:a02061828e95d0ede71a43d2bae8a2358 inherit pub_methods_class_karma_1_1_shader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for shader name.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_static_methods_class_karma_1_1_shader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_class_karma_1_1_shader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="class_karma_1_1_shader.html">Karma::Shader</a></td></tr>
-<tr class="memitem:a09264c9af35a832d1baa6307678345d2 inherit pub_static_methods_class_karma_1_1_shader" id="r_a09264c9af35a832d1baa6307678345d2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_karma_1_1_shader.html#a8e558b284952a8791b2301e52c5aa9c0">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_shader.html#a09264c9af35a832d1baa6307678345d2">Create</a> (const std::string &amp;vertexSrc, const std::string &amp;fragmentSrc)</td></tr>
+<tr class="memitem:a09264c9af35a832d1baa6307678345d2 inherit pub_static_methods_class_karma_1_1_shader" id="r_a09264c9af35a832d1baa6307678345d2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_karma_1_1_shader.html#affdd71cec147910d9942d926fac1c477">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_shader.html#a09264c9af35a832d1baa6307678345d2">Create</a> (const std::string &amp;vertexSrc, const std::string &amp;fragmentSrc)</td></tr>
 <tr class="memdesc:a09264c9af35a832d1baa6307678345d2 inherit pub_static_methods_class_karma_1_1_shader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiating shader object according to the programmer chosen API.  <br /></td></tr>
-<tr class="memitem:ac82a52b4c6f3d4a9aca29aac66efc00f inherit pub_static_methods_class_karma_1_1_shader" id="r_ac82a52b4c6f3d4a9aca29aac66efc00f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_karma_1_1_shader.html#a8e558b284952a8791b2301e52c5aa9c0">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_shader.html#ac82a52b4c6f3d4a9aca29aac66efc00f">Create</a> (const std::string &amp;vertexSrcFile, const std::string &amp;fragmentSrcFile, std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt; ubo, const std::string &amp;shaderName=&quot;NoNamedShader&quot;)</td></tr>
-<tr class="memdesc:ac82a52b4c6f3d4a9aca29aac66efc00f inherit pub_static_methods_class_karma_1_1_shader"><td class="mdescLeft">&#160;</td><td class="mdescRight">For instantiating shader object accodring to programer's chosen API.  <br /></td></tr>
+<tr class="memitem:af44283e2ca4c6dfc849657934cc5c2c4 inherit pub_static_methods_class_karma_1_1_shader" id="r_af44283e2ca4c6dfc849657934cc5c2c4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_karma_1_1_shader.html#affdd71cec147910d9942d926fac1c477">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_shader.html#af44283e2ca4c6dfc849657934cc5c2c4">Create</a> (const std::string &amp;vertexSrcFile, const std::string &amp;fragmentSrcFile, const std::string &amp;shaderName=&quot;NoNamedShader&quot;)</td></tr>
+<tr class="memdesc:af44283e2ca4c6dfc849657934cc5c2c4 inherit pub_static_methods_class_karma_1_1_shader"><td class="mdescLeft">&#160;</td><td class="mdescRight">For instantiating shader object accodring to programer's chosen API.  <br /></td></tr>
 <tr class="inherit_header pro_attribs_class_karma_1_1_shader"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_class_karma_1_1_shader')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="class_karma_1_1_shader.html">Karma::Shader</a></td></tr>
 <tr class="memitem:a18f85e40fbde660dcd4f2fbe89fdc1c9 inherit pro_attribs_class_karma_1_1_shader" id="r_a18f85e40fbde660dcd4f2fbe89fdc1c9"><td class="memItemLeft" align="right" valign="top">
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</b></td></tr>
@@ -172,8 +170,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
 
 </div>
 </div>
-<a id="ac0ed8d8bee11a2141e5f4b8b9a8f2f4a" name="ac0ed8d8bee11a2141e5f4b8b9a8f2f4a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0ed8d8bee11a2141e5f4b8b9a8f2f4a">&#9670;&#160;</a></span>OpenGLShader() <span class="overload">[2/2]</span></h2>
+<a id="aa116c8ab9bff85190d16e30eee0259b4" name="aa116c8ab9bff85190d16e30eee0259b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa116c8ab9bff85190d16e30eee0259b4">&#9670;&#160;</a></span>OpenGLShader() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -187,11 +185,6 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>fragmentSrcFile</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>ubo</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

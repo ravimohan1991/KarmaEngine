@@ -87,8 +87,7 @@ $(function() {
 
 <p>This file contains some commonly used game code macros.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;krpch.h&quot;</code><br />
-</div>
+
 <p><a href="_g_framework_macros_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
@@ -137,6 +136,7 @@ Enumerations</h2></td></tr>
 
 <p>Karma's gamecode object class declaration. </p>
 <p>Generates class hierarchy, defines base class and calls default constructor with placement new during UObjectAllocation (*InClass-&gt;m_ClassConstructor)(FObjectInitializer)</p>
+<p>Also defines the routine to destroy (call class destructor) accessible from UObjectBase. See KarmaSmriti::ShutDown() for the application.</p>
 <dl class="section see"><dt>See also</dt><dd>StaticConstructObject_Internal() in UObjectGlobals.cpp </dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>In UE, this is done in ObjectMacros.h, #define DECLARE_CLASS </dd></dl>
 

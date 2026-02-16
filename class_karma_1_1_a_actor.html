@@ -98,9 +98,10 @@ Inheritance diagram for Karma::AActor:</div>
  <div class="center">
   <img src="class_karma_1_1_a_actor.png" usemap="#Karma_3A_3AAActor_map" alt=""/>
   <map id="Karma_3A_3AAActor_map" name="Karma_3A_3AAActor_map">
-<area href="class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects." alt="Karma::UObject" shape="rect" coords="0,56,140,80"/>
-<area href="class_karma_1_1_u_object_base.html" title="Low level implementation of UObject, should not be used directly in game code." alt="Karma::UObjectBase" shape="rect" coords="0,0,140,24"/>
-<area href="class_karma_1_1_a_world_settings.html" title="Actor containing all script accessible world properties." alt="Karma::AWorldSettings" shape="rect" coords="0,168,140,192"/>
+<area href="class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects." alt="Karma::UObject" shape="rect" coords="83,56,239,80"/>
+<area href="class_karma_1_1_u_object_base.html" title="Low level implementation of UObject, should not be used directly in game code." alt="Karma::UObjectBase" shape="rect" coords="83,0,239,24"/>
+<area href="class_karma_1_1_a_static_mesh_actor.html" title="An actor that contains a static mesh component, allowing the mesh to be rendered in the game world." alt="Karma::AStaticMeshActor" shape="rect" coords="0,168,156,192"/>
+<area href="class_karma_1_1_a_world_settings.html" title="Actor containing all script accessible world properties." alt="Karma::AWorldSettings" shape="rect" coords="166,168,322,192"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -123,6 +124,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae56e7dbbab7506ab4f17cfef2971495c" id="r_ae56e7dbbab7506ab4f17cfef2971495c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> <a class="el" href="class_karma_1_1_u_scene_component.html">USceneComponent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae56e7dbbab7506ab4f17cfef2971495c">GetRootComponent</a> () const</td></tr>
 <tr class="memitem:ab26ebfcc548bc3ce6e477943d98b0423" id="r_ab26ebfcc548bc3ce6e477943d98b0423"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab26ebfcc548bc3ce6e477943d98b0423">SetRootComponent</a> (<a class="el" href="class_karma_1_1_u_scene_component.html">USceneComponent</a> *NewRootComponent)</td></tr>
 <tr class="memitem:a62070dc615815966caa896477cb2fec3" id="r_a62070dc615815966caa896477cb2fec3"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_karma_1_1_f_transform.html">FTransform</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a62070dc615815966caa896477cb2fec3">GetTransform</a> () const</td></tr>
+<tr class="memitem:a20a29ffc4a495fdbb18623b2b9d8089a" id="r_a20a29ffc4a495fdbb18623b2b9d8089a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20a29ffc4a495fdbb18623b2b9d8089a">SetActorTransform</a> (const <a class="el" href="class_karma_1_1_f_transform.html">FTransform</a> &amp;NewTransform)</td></tr>
+<tr class="memitem:a9d92b3d52e83d3f290a3ddcc22b97a11" id="r_a9d92b3d52e83d3f290a3ddcc22b97a11"><td class="memItemLeft" align="right" valign="top"><a id="a9d92b3d52e83d3f290a3ddcc22b97a11" name="a9d92b3d52e83d3f290a3ddcc22b97a11"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>SetActorLocation</b> (const glm::vec3 &amp;NewLocation)</td></tr>
+<tr class="memdesc:a9d92b3d52e83d3f290a3ddcc22b97a11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move the actor instantly to the specified location. <br /></td></tr>
+<tr class="memitem:a9e916e1b41dd6a2655583c162cb1e250" id="r_a9e916e1b41dd6a2655583c162cb1e250"><td class="memItemLeft" align="right" valign="top"><a id="a9e916e1b41dd6a2655583c162cb1e250" name="a9e916e1b41dd6a2655583c162cb1e250"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>SetActorRotation</b> (<a class="el" href="struct_karma_1_1_t_rotator.html">TRotator</a> NewRotation)</td></tr>
+<tr class="memitem:a7eb0e17f41f282602e6d06d8e9d604de" id="r_a7eb0e17f41f282602e6d06d8e9d604de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7eb0e17f41f282602e6d06d8e9d604de">SetActorScale3D</a> (glm::vec3 NewScale3D)</td></tr>
 <tr class="memitem:a9da90448b3a136af774fc2d9a1f6f3f4" id="r_a9da90448b3a136af774fc2d9a1f6f3f4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_karma_1_1_f_transform.html">FTransform</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9da90448b3a136af774fc2d9a1f6f3f4">ActorToWorld</a> () const</td></tr>
 <tr class="memitem:a4482ffa0dc3a5072422b4f67f3a64cc5" id="r_a4482ffa0dc3a5072422b4f67f3a64cc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4482ffa0dc3a5072422b4f67f3a64cc5">InitializeComponents</a> ()</td></tr>
 <tr class="memitem:a29194b9cdf06e784e8e597019d7e9c33" id="r_a29194b9cdf06e784e8e597019d7e9c33"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29194b9cdf06e784e8e597019d7e9c33">PostInitializeComponents</a> ()</td></tr>
@@ -146,7 +154,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:afa4c5fbf1ee70624094244573d7c3470 inherit pub_methods_class_karma_1_1_u_object"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test the selection state of a <a class="el" href="class_karma_1_1_u_object.html" title="The base class of all the game code relevant objects.">UObject</a>.  <br /></td></tr>
 <tr class="inherit_header pub_methods_class_karma_1_1_u_object_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_karma_1_1_u_object_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_karma_1_1_u_object_base.html">Karma::UObjectBase</a></td></tr>
 <tr class="memitem:ae5443b9f74f6f118535129f1b5e87955 inherit pub_methods_class_karma_1_1_u_object_base" id="r_ae5443b9f74f6f118535129f1b5e87955"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_u_object_base.html#ae5443b9f74f6f118535129f1b5e87955">UObjectBase</a> (<a class="el" href="class_karma_1_1_u_class.html">UClass</a> *inClass, <a class="el" href="_u_object_globals_8h.html#a76fa055fd82e7c09a3fe62befdc8e5d5">EObjectFlags</a> inFlags, <a class="el" href="_u_object_globals_8h.html#a934ef016d169a5af50d3cf77f9931cc1">EInternalObjectFlags</a> inInternalFlags, <a class="el" href="class_karma_1_1_u_object.html">UObject</a> *inOuter, const std::string &amp;inName)</td></tr>
+<tr class="memdesc:ae5443b9f74f6f118535129f1b5e87955 inherit pub_methods_class_karma_1_1_u_object_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor used by StaticAllocateObject.  <br /></td></tr>
+<tr class="memitem:a512f820b56a0cad6c3827dba68c76301 inherit pub_methods_class_karma_1_1_u_object_base" id="r_a512f820b56a0cad6c3827dba68c76301"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_u_object_base.html#a512f820b56a0cad6c3827dba68c76301">ShivaUObject</a> ()</td></tr>
+<tr class="memdesc:a512f820b56a0cad6c3827dba68c76301 inherit pub_methods_class_karma_1_1_u_object_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">One function to destroy them.  <br /></td></tr>
 <tr class="memitem:a38305b83660607ab6effa4baf16481cc inherit pub_methods_class_karma_1_1_u_object_base" id="r_a38305b83660607ab6effa4baf16481cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_karma_1_1_u_package.html">UPackage</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_u_object_base.html#a38305b83660607ab6effa4baf16481cc">GetPackage</a> () const</td></tr>
+<tr class="memdesc:a38305b83660607ab6effa4baf16481cc inherit pub_methods_class_karma_1_1_u_object_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Walks up the list of outers until it finds a package directly associated with the object.  <br /></td></tr>
 <tr class="memitem:a46fb8397ce68c58be4e93f9f89c3e172 inherit pub_methods_class_karma_1_1_u_object_base" id="r_a46fb8397ce68c58be4e93f9f89c3e172"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_karma_1_1_u_package.html">UPackage</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_u_object_base.html#a46fb8397ce68c58be4e93f9f89c3e172">GetExternalPackage</a> () const</td></tr>
 <tr class="memitem:a54510d8a87d1bd7e19ae267374923aba inherit pub_methods_class_karma_1_1_u_object_base" id="r_a54510d8a87d1bd7e19ae267374923aba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_u_object_base.html#a54510d8a87d1bd7e19ae267374923aba">IsUnreachable</a> () const</td></tr>
 <tr class="memitem:a8b5487a55f059b8274aee44512cd05a1 inherit pub_methods_class_karma_1_1_u_object_base" id="r_a8b5487a55f059b8274aee44512cd05a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_u_object_base.html#a8b5487a55f059b8274aee44512cd05a1">SetInternalIndex</a> (uint32_t StoreIndex)</td></tr>
@@ -420,7 +432,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_bCanEverTick</b></t
 <p>Called to finish the spawning process, generally in the case of deferred spawning</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Transform</td><td>The <a class="el" href="class_karma_1_1_f_transform.html">FTransform</a> of the spawned actor </td></tr>
+    <tr><td class="paramname">Transform</td><td>The <a class="el" href="class_karma_1_1_f_transform.html" title="Transform composed of Scale, Rotation (as a quaternion), and Translation.">FTransform</a> of the spawned actor </td></tr>
     <tr><td class="paramname">bIsDefaultTransform</td><td>- Not functional - </td></tr>
   </table>
   </dd>
@@ -900,7 +912,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_bCanEverTick</b></t
 <p>For instance the time of spawning is recorded, owner is set, instigator is set, and all that.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">SpawnTransform</td><td>The <a class="el" href="class_karma_1_1_f_transform.html">FTransform</a> of the actor with which the spawning happens </td></tr>
+    <tr><td class="paramname">SpawnTransform</td><td>The <a class="el" href="class_karma_1_1_f_transform.html" title="Transform composed of Scale, Rotation (as a quaternion), and Translation.">FTransform</a> of the actor with which the spawning happens </td></tr>
     <tr><td class="paramname">InOwner</td><td>The actor that owns this actor </td></tr>
     <tr><td class="paramname">InInstigator</td><td>The pawn that is the cause for instigated relevant part of actor </td></tr>
     <tr><td class="paramname">bRemoteOwned</td><td>- Not functional - </td></tr>
@@ -929,7 +941,52 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_bCanEverTick</b></t
       </table>
 </div><div class="memdoc">
 <p>Removes a component from the OwnedComponents array of the Actor. In general this should not need to be called directly by anything other than <a class="el" href="class_karma_1_1_u_actor_component.html" title="ActorComponent is the base class for components that define reusable behavior that can be added to di...">UActorComponent</a> functions</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000047">Todo</a></b></dt><dd>Not functional yet </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000046">Todo</a></b></dt><dd>Not functional yet </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a7eb0e17f41f282602e6d06d8e9d604de" name="a7eb0e17f41f282602e6d06d8e9d604de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eb0e17f41f282602e6d06d8e9d604de">&#9670;&#160;</a></span>SetActorScale3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::AActor::SetActorScale3D </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3</td>          <td class="paramname"><span class="paramname"><em>NewScale3D</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the Actor's world-space scale. </p>
+
+</div>
+</div>
+<a id="a20a29ffc4a495fdbb18623b2b9d8089a" name="a20a29ffc4a495fdbb18623b2b9d8089a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20a29ffc4a495fdbb18623b2b9d8089a">&#9670;&#160;</a></span>SetActorTransform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Karma::AActor::SetActorTransform </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_karma_1_1_f_transform.html">FTransform</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>NewTransform</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the Actors transform to the specified one. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">NewTransform</td><td>The new transform. </td></tr>
+    <tr><td class="paramname">bSweep</td><td>Whether we sweep to the destination location, triggering overlaps along the way and stopping short of the target if blocked by something. Only the root component is swept and checked for blocking collision, child components move without sweeping. If collision is off, this has no effect. </td></tr>
+    <tr><td class="paramname">bTeleport</td><td>Whether we teleport the physics state (if physics collision is enabled for this object). If true, physics velocity for this object is unchanged (so ragdoll parts are not affected by change in location). If false, physics velocity is updated based on the change in position (affecting ragdoll parts). If CCD is on and not teleporting, this will affect objects along the entire swept volume. Note that when teleporting, any child/attached components will be teleported too, maintaining their current offset even if they are being simulated. Setting the transform without teleporting will not update the transform of simulated child/attached components.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000045">Todo</a></b></dt><dd>Hit detection when collision system is installed </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -1044,6 +1101,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_bCanEverTick</b></t
 </dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
+<p>Reimplemented in <a class="el" href="class_karma_1_1_a_static_mesh_actor.html#af32c5fc9322ae491939ee6bbcf54dcb4">Karma::AStaticMeshActor</a>.</p>
+
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
@@ -1117,8 +1176,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_bCanEverTick</b></t
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>Karma/src/Karma/GameFramework/<a class="el" href="_actor_8h_source.html">Actor.h</a></li>
-<li>Karma/src/Karma/GameFramework/<b>Actor.cpp</b></li>
+<li>Karma/src/Karma/Engine/Classes/GameFramework/<a class="el" href="_actor_8h_source.html">Actor.h</a></li>
+<li>Karma/src/Karma/Engine/Classes/GameFramework/<b>Actor.cpp</b></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

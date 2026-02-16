@@ -92,16 +92,16 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a825a601014632978f618da14d22b343e" id="r_a825a601014632978f618da14d22b343e"><td class="memItemLeft" align="right" valign="top">VkImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a825a601014632978f618da14d22b343e">Backbuffer</a></td></tr>
-<tr class="memdesc:a825a601014632978f618da14d22b343e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) are the images contained in the swapchain created in <a class="el" href="class_karma_1_1_vulkan_context.html#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a>.  <br /></td></tr>
+<tr class="memdesc:a825a601014632978f618da14d22b343e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a> m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) are the images contained in the swapchain created in <a class="el" href="class_karma_1_1_vulkan_context.html#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a>.  <br /></td></tr>
 <tr class="memitem:a2a4510b126f93b1d6aef81c250e8f455" id="r_a2a4510b126f93b1d6aef81c250e8f455"><td class="memItemLeft" align="right" valign="top">VkImageView&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a4510b126f93b1d6aef81c250e8f455">BackbufferView</a></td></tr>
-<tr class="memdesc:a2a4510b126f93b1d6aef81c250e8f455"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> m_swapChainImageViews equivalent. Again, the number is same.  <br /></td></tr>
+<tr class="memdesc:a2a4510b126f93b1d6aef81c250e8f455"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a> m_swapChainImageViews equivalent. Again, the number is same.  <br /></td></tr>
 <tr class="memitem:ae6ab5c377d34dfdd1667da4b95c5f28e" id="r_ae6ab5c377d34dfdd1667da4b95c5f28e"><td class="memItemLeft" align="right" valign="top">VkFramebuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6ab5c377d34dfdd1667da4b95c5f28e">Framebuffer</a></td></tr>
 <tr class="memdesc:ae6ab5c377d34dfdd1667da4b95c5f28e"><td class="mdescLeft">&#160;</td><td class="mdescRight">A handle to framebuffer which represents a collection of specific memory attachments that a render pass instance uses.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Helper structure to hold the data needed by one rendering ImageFrame (different from the FRAME_IN_FLIGHT frame!) (Used by multi-viewport features. We gonna just use this.). The number of frames is MinImageCount = m_MinImageCount + 1. </p>
 <dl class="section note"><dt>Note</dt><dd>Please zero-clear before use! </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#ac2c93fab4bd1c3b354b46485db32a8d6" title="The purpose of the routine is two-fold.">KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow</a></dd></dl>
+<dl class="section see"><dt>See also</dt><dd>KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow</dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 </div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="a825a601014632978f618da14d22b343e" name="a825a601014632978f618da14d22b343e"></a>
@@ -116,7 +116,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) are the images contained in the swapchain created in <a class="el" href="class_karma_1_1_vulkan_context.html#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a>. </p>
+<p><a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a> m_swapChainImages equivalent. The number of images (MinImageCount = m_MinImageCount + 1) are the images contained in the swapchain created in <a class="el" href="class_karma_1_1_vulkan_context.html#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a>. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -133,7 +133,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> m_swapChainImageViews equivalent. Again, the number is same. </p>
+<p><a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a> m_swapChainImageViews equivalent. Again, the number is same. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -152,7 +152,7 @@ Public Attributes</h2></td></tr>
 
 <p>A handle to framebuffer which represents a collection of specific memory attachments that a render pass instance uses. </p>
 <p>Framebuffers are taken from SwapchainFrameBuffers created in VulkanContext::CreateFramebuffers()</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#ac2c93fab4bd1c3b354b46485db32a8d6" title="The purpose of the routine is two-fold.">KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

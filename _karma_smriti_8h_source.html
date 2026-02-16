@@ -84,40 +84,38 @@ $(function() {
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;krpch.h&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="_u_object_allocator_8h.html">Core/UObjectAllocator.h</a>&quot;</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="_u_object_allocator_8h.html">Core/UObjectAllocator.h</a>&quot;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>Karma</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
-<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="class_karma_1_1_karma_smriti.html">   23</a></span>    <span class="keyword">class </span><a class="code hl_define" href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a> <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a3f449d4101020b9a5f79e551e6345ab8">KarmaSmriti</a></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    {</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a3f449d4101020b9a5f79e551e6345ab8">KarmaSmriti</a>();</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a3f449d4101020b9a5f79e551e6345ab8">~KarmaSmriti</a>();</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span></div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a79b2f7dc034ac8d9de44bc37c9f7a1bb">StartUp</a>();</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a21b5ac62a8735740108219f4ef250422">ShutDown</a>();</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="class_karma_1_1_karma_smriti.html#abc5a442a99d2477fd752e05363294cc4">   59</a></span>        <span class="keywordtype">void</span>* <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#abc5a442a99d2477fd752e05363294cc4">GetMemBlock</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_pMemBlock; }</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordtype">void</span>* m_pMemBlock = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordtype">size_t</span> m_TotalBytes = 0;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    };</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>Karma</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="class_karma_1_1_karma_smriti.html">   21</a></span>    <span class="keyword">class </span><a class="code hl_define" href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a> <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a3f449d4101020b9a5f79e551e6345ab8">KarmaSmriti</a></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a3f449d4101020b9a5f79e551e6345ab8">KarmaSmriti</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a3f449d4101020b9a5f79e551e6345ab8">~KarmaSmriti</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a79b2f7dc034ac8d9de44bc37c9f7a1bb">StartUp</a>();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#a21b5ac62a8735740108219f4ef250422">ShutDown</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="class_karma_1_1_karma_smriti.html#abc5a442a99d2477fd752e05363294cc4">   57</a></span>        <span class="keywordtype">void</span>* <a class="code hl_function" href="class_karma_1_1_karma_smriti.html#abc5a442a99d2477fd752e05363294cc4">GetMemBlock</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_pMemBlock; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordtype">void</span>* m_pMemBlock = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordtype">size_t</span> m_TotalBytes = 0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    };</div>
 </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
 <div class="ttc" id="a_core_8h_html_a0362c0681bf67d6dd6b8d2c75866bef4"><div class="ttname"><a href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a></div><div class="ttdeci">#define KARMA_API</div><div class="ttdoc">Defining Karma&#39;s API macro for storage class information.</div><div class="ttdef"><b>Definition</b> Core.h:41</div></div>
 <div class="ttc" id="a_u_object_allocator_8h_html"><div class="ttname"><a href="_u_object_allocator_8h.html">UObjectAllocator.h</a></div><div class="ttdoc">This file contains the class FUObjectAllocator along with the global variable declaration and several...</div></div>
-<div class="ttc" id="aclass_karma_1_1_karma_smriti_html_a21b5ac62a8735740108219f4ef250422"><div class="ttname"><a href="class_karma_1_1_karma_smriti.html#a21b5ac62a8735740108219f4ef250422">Karma::KarmaSmriti::ShutDown</a></div><div class="ttdeci">void ShutDown()</div><div class="ttdoc">Releases memory &amp; any other resources held by the memory system (KarmaSmriti) and allocators.</div><div class="ttdef"><b>Definition</b> KarmaSmriti.cpp:31</div></div>
-<div class="ttc" id="aclass_karma_1_1_karma_smriti_html_a3f449d4101020b9a5f79e551e6345ab8"><div class="ttname"><a href="class_karma_1_1_karma_smriti.html#a3f449d4101020b9a5f79e551e6345ab8">Karma::KarmaSmriti::KarmaSmriti</a></div><div class="ttdeci">KarmaSmriti()</div><div class="ttdoc">Constructor.</div><div class="ttdef"><b>Definition</b> KarmaSmriti.cpp:8</div></div>
-<div class="ttc" id="aclass_karma_1_1_karma_smriti_html_a79b2f7dc034ac8d9de44bc37c9f7a1bb"><div class="ttname"><a href="class_karma_1_1_karma_smriti.html#a79b2f7dc034ac8d9de44bc37c9f7a1bb">Karma::KarmaSmriti::StartUp</a></div><div class="ttdeci">void StartUp()</div><div class="ttdoc">Allocates the memory block and sets up the memory system for use.</div><div class="ttdef"><b>Definition</b> KarmaSmriti.cpp:16</div></div>
-<div class="ttc" id="aclass_karma_1_1_karma_smriti_html_abc5a442a99d2477fd752e05363294cc4"><div class="ttname"><a href="class_karma_1_1_karma_smriti.html#abc5a442a99d2477fd752e05363294cc4">Karma::KarmaSmriti::GetMemBlock</a></div><div class="ttdeci">void * GetMemBlock() const</div><div class="ttdoc">Getter for the pointer to start of allocated memory address.</div><div class="ttdef"><b>Definition</b> KarmaSmriti.h:59</div></div>
+<div class="ttc" id="aclass_karma_1_1_karma_smriti_html_a21b5ac62a8735740108219f4ef250422"><div class="ttname"><a href="class_karma_1_1_karma_smriti.html#a21b5ac62a8735740108219f4ef250422">Karma::KarmaSmriti::ShutDown</a></div><div class="ttdeci">void ShutDown()</div><div class="ttdoc">Releases memory &amp; any other resources held by the memory system (KarmaSmriti) and allocators.</div><div class="ttdef"><b>Definition</b> KarmaSmriti.cpp:32</div></div>
+<div class="ttc" id="aclass_karma_1_1_karma_smriti_html_a3f449d4101020b9a5f79e551e6345ab8"><div class="ttname"><a href="class_karma_1_1_karma_smriti.html#a3f449d4101020b9a5f79e551e6345ab8">Karma::KarmaSmriti::KarmaSmriti</a></div><div class="ttdeci">KarmaSmriti()</div><div class="ttdoc">Constructor.</div><div class="ttdef"><b>Definition</b> KarmaSmriti.cpp:9</div></div>
+<div class="ttc" id="aclass_karma_1_1_karma_smriti_html_a79b2f7dc034ac8d9de44bc37c9f7a1bb"><div class="ttname"><a href="class_karma_1_1_karma_smriti.html#a79b2f7dc034ac8d9de44bc37c9f7a1bb">Karma::KarmaSmriti::StartUp</a></div><div class="ttdeci">void StartUp()</div><div class="ttdoc">Allocates the memory block and sets up the memory system for use.</div><div class="ttdef"><b>Definition</b> KarmaSmriti.cpp:17</div></div>
+<div class="ttc" id="aclass_karma_1_1_karma_smriti_html_abc5a442a99d2477fd752e05363294cc4"><div class="ttname"><a href="class_karma_1_1_karma_smriti.html#abc5a442a99d2477fd752e05363294cc4">Karma::KarmaSmriti::GetMemBlock</a></div><div class="ttdeci">void * GetMemBlock() const</div><div class="ttdoc">Getter for the pointer to start of allocated memory address.</div><div class="ttdef"><b>Definition</b> KarmaSmriti.h:57</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

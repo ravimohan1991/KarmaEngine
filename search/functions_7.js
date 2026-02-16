@@ -8,6 +8,6 @@ var searchData=
   ['hasbeencreated_5',['HasBeenCreated',['../class_karma_1_1_u_actor_component.html#a5fc1e54d3fefe5420a9b35e75c64a746',1,'Karma::UActorComponent']]],
   ['hasbeeninitialized_6',['HasBeenInitialized',['../class_karma_1_1_u_actor_component.html#a06a3bc3b251ce0138fb3ad84e985c105',1,'Karma::UActorComponent']]],
   ['hasbegunplay_7',['HasBegunPlay',['../class_karma_1_1_u_actor_component.html#ac59bd7cd18970fda57fd3d436af153f5',1,'Karma::UActorComponent::HasBegunPlay()'],['../class_karma_1_1_u_world.html#a643ae2b96e18279e91395d85788e8e76',1,'Karma::UWorld::HasBegunPlay()']]],
-  ['hasstencilcomponent_8',['HasStencilComponent',['../class_karma_1_1_vulkan_context.html#a25d733eba5be4197f7d1f98a66822863',1,'Karma::VulkanContext']]],
+  ['hasstencilcomponent_8',['HasStencilComponent',['../class_karma_1_1_vulkan_context.html#a25d733eba5be4197f7d1f98a66822863',1,'Karma::VulkanContext::HasStencilComponent()'],['../class_karma_1_1_f_vulkan_device.html#a633b4c8a92df12992f119ed3ee383792',1,'Karma::FVulkanDevice::HasStencilComponent()']]],
   ['hookinputsystem_9',['HookInputSystem',['../class_karma_1_1_application.html#a7eb05769a2849fb30f4db778247e9ca7',1,'Karma::Application']]]
 ];

@@ -85,7 +85,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Vulkan API has the following concepts.  
+<p>A class for Vulkan specific graphics context. This class also contains all the common Vulkan resources shared by various elements that are rendered, for instance UniformBufferObjects, graphicspipeline etc.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_vulkan_context_8h_source.html">VulkanContext.h</a>&gt;</code></p>
@@ -106,7 +106,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aff051cf28280933d857368847979a6bb" id="r_aff051cf28280933d857368847979a6bb"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff051cf28280933d857368847979a6bb">~VulkanContext</a> () override</td></tr>
 <tr class="memdesc:aff051cf28280933d857368847979a6bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor of vulkan context. Does the following.  <br /></td></tr>
 <tr class="memitem:ae07d2db438aac38447337bed1c940713" id="r_ae07d2db438aac38447337bed1c940713"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae07d2db438aac38447337bed1c940713">Init</a> () override</td></tr>
-<tr class="memdesc:ae07d2db438aac38447337bed1c940713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> by creating appropriate Vulkan and glslang specific instruments and allocating resources accordingly.  <br /></td></tr>
+<tr class="memdesc:ae07d2db438aac38447337bed1c940713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes <a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a> by creating appropriate Vulkan and glslang specific instruments and allocating resources accordingly.  <br /></td></tr>
 <tr class="memitem:a97415930a02a69e31cea2ad06d3a3820" id="r_a97415930a02a69e31cea2ad06d3a3820"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97415930a02a69e31cea2ad06d3a3820">SwapBuffers</a> () override</td></tr>
 <tr class="memdesc:a97415930a02a69e31cea2ad06d3a3820"><td class="mdescLeft">&#160;</td><td class="mdescRight">In Vulkan there is no default framebuffer, hence we need to explicitly swap the buffers in the swapchain.  <br /></td></tr>
 <tr class="memitem:a8bd0d59a1a7c511a0f17aa38887869ee" id="r_a8bd0d59a1a7c511a0f17aa38887869ee"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8bd0d59a1a7c511a0f17aa38887869ee">OnWindowResize</a> (<a class="el" href="class_karma_1_1_window_resize_event.html">WindowResizeEvent</a> &amp;event) override</td></tr>
@@ -135,16 +135,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>DestroyDebugUtilsMess
 <tr class="memdesc:afad165c3848ece8a475fce66ea2023cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Picks the appropriate physical device (graphics card) for the Engine to use based on suitability.  <br /></td></tr>
 <tr class="memitem:aa75221e66d5cd1a6b93c3d8be3571500" id="r_aa75221e66d5cd1a6b93c3d8be3571500"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa75221e66d5cd1a6b93c3d8be3571500">IsDeviceSuitable</a> (VkPhysicalDevice device)</td></tr>
 <tr class="memdesc:aa75221e66d5cd1a6b93c3d8be3571500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the physical device (graphics card) is suitable for the Engine to use based on.  <br /></td></tr>
-<tr class="memitem:a3de5ebe667dc946ef303d6e42eb41edc" id="r_a3de5ebe667dc946ef303d6e42eb41edc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_queue_family_indices.html">QueueFamilyIndices</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3de5ebe667dc946ef303d6e42eb41edc">FindQueueFamilies</a> (VkPhysicalDevice device)</td></tr>
-<tr class="memdesc:a3de5ebe667dc946ef303d6e42eb41edc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries the graphics card for available queue families and compares against the availability of graphics and presentation queues.  <br /></td></tr>
+<tr class="memitem:a7d9cc8329b69044619cc86930cb7a53b" id="r_a7d9cc8329b69044619cc86930cb7a53b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_queue_family_indices_depricated.html">QueueFamilyIndicesDepricated</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d9cc8329b69044619cc86930cb7a53b">FindQueueFamilies</a> (VkPhysicalDevice device)</td></tr>
+<tr class="memdesc:a7d9cc8329b69044619cc86930cb7a53b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries the graphics card for available queue families and compares against the availability of graphics and presentation queues.  <br /></td></tr>
 <tr class="memitem:ada1f0e963dfe33514587e524c6ec973d" id="r_ada1f0e963dfe33514587e524c6ec973d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada1f0e963dfe33514587e524c6ec973d">CreateLogicalDevice</a> ()</td></tr>
 <tr class="memdesc:ada1f0e963dfe33514587e524c6ec973d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. Following is done:  <br /></td></tr>
 <tr class="memitem:a2d367e332d968a2c5ba25c3759bff2b5" id="r_a2d367e332d968a2c5ba25c3759bff2b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5">CreateSwapChain</a> ()</td></tr>
 <tr class="memdesc:a2d367e332d968a2c5ba25c3759bff2b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan does not have the concept of a "default framebuffer", hence it requires an infrastructure that will own the buffers we will render to before we visualize them on the screen. This infrastructure is known as the swap chain and must be created explicitly in Vulkan. The swap chain is essentially a queue of images that are waiting to be presented to the screen. Our backend will acquire such an image to draw to it, and then return it to the queue. Then swapchain will have to sync the presentation of image with refresh rate of the monitor.  <br /></td></tr>
 <tr class="memitem:a19eac2cedd2049cb443f426fadf9e79c" id="r_a19eac2cedd2049cb443f426fadf9e79c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19eac2cedd2049cb443f426fadf9e79c">CheckDeviceExtensionSupport</a> (VkPhysicalDevice device)</td></tr>
 <tr class="memdesc:a19eac2cedd2049cb443f426fadf9e79c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks for extension properties supported by the GPU.  <br /></td></tr>
-<tr class="memitem:a0b62af69e4d46e385abfb9b998bd0c81" id="r_a0b62af69e4d46e385abfb9b998bd0c81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_swap_chain_support_details.html">SwapChainSupportDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81">QuerySwapChainSupport</a> (VkPhysicalDevice device)</td></tr>
-<tr class="memdesc:a0b62af69e4d46e385abfb9b998bd0c81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data.  <br /></td></tr>
+<tr class="memitem:a90dd006bccd6ce6b9989ed76aaca519c" id="r_a90dd006bccd6ce6b9989ed76aaca519c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_swap_chain_support_details_depricated.html">SwapChainSupportDetailsDepricated</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90dd006bccd6ce6b9989ed76aaca519c">QuerySwapChainSupport</a> (VkPhysicalDevice device)</td></tr>
+<tr class="memdesc:a90dd006bccd6ce6b9989ed76aaca519c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixel format data) and present modes data.  <br /></td></tr>
 <tr class="memitem:a8989c5787a77aa8363f64f9dc8deae1f" id="r_a8989c5787a77aa8363f64f9dc8deae1f"><td class="memItemLeft" align="right" valign="top">VkSurfaceFormatKHR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8989c5787a77aa8363f64f9dc8deae1f">ChooseSwapSurfaceFormat</a> (const std::vector&lt; VkSurfaceFormatKHR &gt; &amp;availableFormats)</td></tr>
 <tr class="memdesc:a8989c5787a77aa8363f64f9dc8deae1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Chooses the best surface format (pixel format and color space) for the swapchain from the available formats.  <br /></td></tr>
 <tr class="memitem:adc09c4f580967d940b6c56ee5e3d8985" id="r_adc09c4f580967d940b6c56ee5e3d8985"><td class="memItemLeft" align="right" valign="top">VkPresentModeKHR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc09c4f580967d940b6c56ee5e3d8985">ChooseSwapPresentMode</a> (const std::vector&lt; VkPresentModeKHR &gt; &amp;availablePresentModes)</td></tr>
@@ -181,12 +181,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>DestroyDebugUtilsMess
 <tr class="memdesc:a874bcd49d4121b95a8f95c5507c626d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables vertical synchronization (VSync) for the swapchain.  <br /></td></tr>
 <tr class="memitem:abfdfa7c10ef2bf92d4f5228b722dd080" id="r_abfdfa7c10ef2bf92d4f5228b722dd080"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abfdfa7c10ef2bf92d4f5228b722dd080">Initializeglslang</a> ()</td></tr>
 <tr class="memdesc:abfdfa7c10ef2bf92d4f5228b722dd080"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the glslang library for shader compilation and processing.  <br /></td></tr>
-<tr class="memitem:a6f8a80f3f98dee0029f19aa917440461" id="r_a6f8a80f3f98dee0029f19aa917440461"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f8a80f3f98dee0029f19aa917440461">RegisterUBO</a> (const std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html">VulkanUniformBuffer</a> &gt; &amp;ubo)</td></tr>
-<tr class="memdesc:a6f8a80f3f98dee0029f19aa917440461"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html" title="The actual uniform buffer class with implemented function using Vulkan API.">VulkanUniformBuffer</a> for management by the <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a>.  <br /></td></tr>
+<tr class="memitem:a66019c0f02299b5a285f0dd40b2bf8c2" id="r_a66019c0f02299b5a285f0dd40b2bf8c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66019c0f02299b5a285f0dd40b2bf8c2">RegisterUBO</a> (<a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html">VulkanUniformBuffer</a> *ubo)</td></tr>
+<tr class="memdesc:a66019c0f02299b5a285f0dd40b2bf8c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html" title="The actual uniform buffer class with implemented function using Vulkan API.">VulkanUniformBuffer</a> for management by the <a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a>.  <br /></td></tr>
 <tr class="memitem:a620cbb199308a721c243793e29e19fac" id="r_a620cbb199308a721c243793e29e19fac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a620cbb199308a721c243793e29e19fac">ClearUBO</a> ()</td></tr>
 <tr class="memdesc:a620cbb199308a721c243793e29e19fac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all registered VulkanUniformBuffers, freeing their resources.  <br /></td></tr>
 <tr class="memitem:a15923c620c5fb6c8cae59a94d57cce99" id="r_a15923c620c5fb6c8cae59a94d57cce99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a15923c620c5fb6c8cae59a94d57cce99">RecreateUBO</a> ()</td></tr>
 <tr class="memdesc:a15923c620c5fb6c8cae59a94d57cce99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recreates all registered VulkanUniformBuffers, typically in response to swapchain recreation.  <br /></td></tr>
+<tr class="memitem:a8881e8c646fda34a5307ab55e06183ae" id="r_a8881e8c646fda34a5307ab55e06183ae"><td class="memItemLeft" align="right" valign="top">VkShaderModule&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8881e8c646fda34a5307ab55e06183ae">CreateShaderModule</a> (const std::vector&lt; uint32_t &gt; &amp;code)</td></tr>
+<tr class="memdesc:a8881e8c646fda34a5307ab55e06183ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a Vulkan shader module from SPIR-V bytecode.  <br /></td></tr>
+<tr class="memitem:a3399aec519c6a5db244c4e0a8a87d1f0" id="r_a3399aec519c6a5db244c4e0a8a87d1f0"><td class="memItemLeft" align="right" valign="top"><a id="a3399aec519c6a5db244c4e0a8a87d1f0" name="a3399aec519c6a5db244c4e0a8a87d1f0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>CreateVulkanResourcesForScene</b> (std::shared_ptr&lt; <a class="el" href="class_karma_1_1_scene.html">Scene</a> &gt; scene3D)</td></tr>
+<tr class="memitem:a842e051f70e1c8a6addba412ed5f74e0" id="r_a842e051f70e1c8a6addba412ed5f74e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a842e051f70e1c8a6addba412ed5f74e0">CreateGeneralShader</a> ()</td></tr>
+<tr class="memdesc:a842e051f70e1c8a6addba412ed5f74e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a default vulkan shader.  <br /></td></tr>
+<tr class="memitem:afadf5f47f07c609b692180920cf031b2" id="r_afadf5f47f07c609b692180920cf031b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afadf5f47f07c609b692180920cf031b2">CreateGeneralTexture</a> ()</td></tr>
+<tr class="memdesc:afadf5f47f07c609b692180920cf031b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a general texture used for default texturing in the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> exhibitor window.  <br /></td></tr>
+<tr class="memitem:a6e6a2c780a97c72c74f8a06d352dab98" id="r_a6e6a2c780a97c72c74f8a06d352dab98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e6a2c780a97c72c74f8a06d352dab98">CreateGeneralDescriptorSetLayouts</a> ()</td></tr>
+<tr class="memdesc:a6e6a2c780a97c72c74f8a06d352dab98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates general descriptor set layouts for common resources like camera UBO, texture sampler, and object UBO.  <br /></td></tr>
+<tr class="memitem:abf096107332d83eceac4a3838106653e" id="r_abf096107332d83eceac4a3838106653e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf096107332d83eceac4a3838106653e">CreateKarmaGuiGeneralGraphicsPipeline</a> (VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight)</td></tr>
+<tr class="memdesc:abf096107332d83eceac4a3838106653e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the graphics pipeline for rendering 3D objects in the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s exhibitor window.  <br /></td></tr>
+<tr class="memitem:adf8936734787f1bf9ba61c03e025cd0a" id="r_adf8936734787f1bf9ba61c03e025cd0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf8936734787f1bf9ba61c03e025cd0a">CleanUpKarmaGuiGeneralGraphicsPipeline</a> ()</td></tr>
+<tr class="memdesc:adf8936734787f1bf9ba61c03e025cd0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cleans up the resources associated with the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> general graphics pipeline.  <br /></td></tr>
+<tr class="memitem:a16cfa544c5ed04e467a84cea6f50187b" id="r_a16cfa544c5ed04e467a84cea6f50187b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a16cfa544c5ed04e467a84cea6f50187b">CreateGeneralDescriptorPool</a> (uint32_t smElementsNumber)</td></tr>
+<tr class="memdesc:a16cfa544c5ed04e467a84cea6f50187b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a general descriptor pool for allocating descriptor sets for common resources.  <br /></td></tr>
+<tr class="memitem:a78d01717c8bcfa81e70a43dcca3a8ce4" id="r_a78d01717c8bcfa81e70a43dcca3a8ce4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78d01717c8bcfa81e70a43dcca3a8ce4">CreateGeneralDescriptorSets</a> (std::shared_ptr&lt; <a class="el" href="class_karma_1_1_scene.html">Scene</a> &gt; scene3D, uint32_t smElementsNumber, uint32_t maxFramesInFlight)</td></tr>
+<tr class="memdesc:a78d01717c8bcfa81e70a43dcca3a8ce4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates and writes to general descriptor sets for common resources like camera UBO, texture sampler, and object UBO.  <br /></td></tr>
+<tr class="memitem:afc598d75e55c30a39782a1bd237d622f" id="r_afc598d75e55c30a39782a1bd237d622f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afc598d75e55c30a39782a1bd237d622f">UpdateGeneralDescriptorSets</a> (std::shared_ptr&lt; <a class="el" href="class_karma_1_1_scene.html">Scene</a> &gt; scene3D, uint32_t frameIndex)</td></tr>
+<tr class="memdesc:afc598d75e55c30a39782a1bd237d622f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the general descriptor sets with the provided view buffer for the specified frame index.  <br /></td></tr>
 <tr class="memitem:ad6516fa8d4ba38e2b5fdfc4382cf04bf" id="r_ad6516fa8d4ba38e2b5fdfc4382cf04bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6516fa8d4ba38e2b5fdfc4382cf04bf">UploadUBO</a> (size_t frameIndex)</td></tr>
 <tr class="memdesc:ad6516fa8d4ba38e2b5fdfc4382cf04bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uploads data to the registered VulkanUniformBuffers for the specified frame index.  <br /></td></tr>
 <tr class="memitem:aeacebbf81c74bc923ae7dbf3d6b21038" id="r_aeacebbf81c74bc923ae7dbf3d6b21038"><td class="memItemLeft" align="right" valign="top"><a id="aeacebbf81c74bc923ae7dbf3d6b21038" name="aeacebbf81c74bc923ae7dbf3d6b21038"></a>
@@ -229,6 +249,14 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>GetMinImageCount<
 VkSurfaceKHR&#160;</td><td class="memItemRight" valign="bottom"><b>GetSurface</b> () const</td></tr>
 <tr class="memitem:a79b9fde525e9911c28a380f800f3a413" id="r_a79b9fde525e9911c28a380f800f3a413"><td class="memItemLeft" align="right" valign="top"><a id="a79b9fde525e9911c28a380f800f3a413" name="a79b9fde525e9911c28a380f800f3a413"></a>
 VkPresentModeKHR&#160;</td><td class="memItemRight" valign="bottom"><b>GetPresentMode</b> () const</td></tr>
+<tr class="memitem:a4b1ee8ea3fbf8bdf3e2b444eb1b4b90c" id="r_a4b1ee8ea3fbf8bdf3e2b444eb1b4b90c"><td class="memItemLeft" align="right" valign="top"><a id="a4b1ee8ea3fbf8bdf3e2b444eb1b4b90c" name="a4b1ee8ea3fbf8bdf3e2b444eb1b4b90c"></a>
+std::shared_ptr&lt; <a class="el" href="class_karma_1_1_vulkan_shader.html">VulkanShader</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetGeneralShader</b> () const</td></tr>
+<tr class="memitem:aeaf9a6c2a4e8081df760d35d4f260b78" id="r_aeaf9a6c2a4e8081df760d35d4f260b78"><td class="memItemLeft" align="right" valign="top"><a id="aeaf9a6c2a4e8081df760d35d4f260b78" name="aeaf9a6c2a4e8081df760d35d4f260b78"></a>
+VkPipeline&#160;</td><td class="memItemRight" valign="bottom"><b>GetKarmaGuiGeneralGraphicsPipeline</b> () const</td></tr>
+<tr class="memitem:a4ad57e868e1f6f5f71a749c3831dac72" id="r_a4ad57e868e1f6f5f71a749c3831dac72"><td class="memItemLeft" align="right" valign="top"><a id="a4ad57e868e1f6f5f71a749c3831dac72" name="a4ad57e868e1f6f5f71a749c3831dac72"></a>
+VkPipelineLayout&#160;</td><td class="memItemRight" valign="bottom"><b>GetKarmaGuiGeneralPipelineLayout</b> () const</td></tr>
+<tr class="memitem:a8bf3316edf4f664e74c809dcfa798c61" id="r_a8bf3316edf4f664e74c809dcfa798c61"><td class="memItemLeft" align="right" valign="top"><a id="a8bf3316edf4f664e74c809dcfa798c61" name="a8bf3316edf4f664e74c809dcfa798c61"></a>
+const std::vector&lt; <a class="el" href="struct_karma_1_1_frame_descriptor_sets.html">FrameDescriptorSets</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetGeneralDescriptorSets</b> () const</td></tr>
 <tr class="inherit_header pub_methods_class_karma_1_1_graphics_context"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_karma_1_1_graphics_context')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="class_karma_1_1_graphics_context.html">Karma::GraphicsContext</a></td></tr>
 <tr class="memitem:a13422669efac1397907da22a6c36aed3 inherit pub_methods_class_karma_1_1_graphics_context" id="r_a13422669efac1397907da22a6c36aed3"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_graphics_context.html#a13422669efac1397907da22a6c36aed3">~GraphicsContext</a> ()</td></tr>
 <tr class="memdesc:a13422669efac1397907da22a6c36aed3 inherit pub_methods_class_karma_1_1_graphics_context"><td class="mdescLeft">&#160;</td><td class="mdescRight">A destructor.  <br /></td></tr>
@@ -239,12 +267,16 @@ Static Public Member Functions</h2></td></tr>
 static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign="bottom"><b>DebugCallback</b> (VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Vulkan API has the following concepts. </p>
-<ol type="1">
+<div class="textblock"><p>A class for Vulkan specific graphics context. This class also contains all the common Vulkan resources shared by various elements that are rendered, for instance UniformBufferObjects, graphicspipeline etc. </p>
+<p>ATM this class also contains resources like swapchain, commandpool etc which are used by <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>Vulkan API has the following concepts<ol type="1">
 <li>Physical Device (<a href="https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Physical_devices_and_queue_families">https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Physical_devices_and_queue_families</a>): The software counterpart (VkPhysicalDevice) of a graphics card (GPU). Logical device is created from physical device.</li>
-<li>Device (<a href="https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues">https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues</a>): The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device.</li>
+<li>Device (<a href="https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues">https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues</a>): The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. </li>
 </ol>
-<p>Host : is CPU the host? </p>
+</dd>
+<dd>
+CPU is always the host in Vulkan and GPU is the device. </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a583612ff1cb505434affe692d444168f" name="a583612ff1cb505434affe692d444168f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a583612ff1cb505434affe692d444168f">&#9670;&#160;</a></span>VulkanContext()</h2>
@@ -335,7 +367,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 <p>Looks for extension properties supported by the GPU. </p>
 <p>Calls vkEnumerateDeviceExtensionProperties for list of supported extensions for instance VK_KHR_swapchain which is required for, well, swapchain</p>
-<p>@ </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
 </div>
@@ -357,7 +389,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <p>Chooses the swap extent (resolution of the swapchain images) based on the capabilities of the surface and the actual window size. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">capabilities</td><td>The surface capabilities (from <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">QuerySwapChainSupport()</a>)</td></tr>
+    <tr><td class="paramname">capabilities</td><td>The surface capabilities (from <a class="el" href="#a90dd006bccd6ce6b9989ed76aaca519c" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">QuerySwapChainSupport()</a>)</td></tr>
   </table>
   </dd>
 </dl>
@@ -385,7 +417,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <p>Basically looks for VK_PRESENT_MODE_MAILBOX_KHR (triple buffering) first, then VK_PRESENT_MODE_IMMEDIATE_KHR (tearing possible), and finally defaults to VK_PRESENT_MODE_FIFO_KHR (always available, v-sync)</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">availablePresentModes</td><td>The available presentation modes (from <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">QuerySwapChainSupport()</a>)</td></tr>
+    <tr><td class="paramname">availablePresentModes</td><td>The available presentation modes (from <a class="el" href="#a90dd006bccd6ce6b9989ed76aaca519c" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">QuerySwapChainSupport()</a>)</td></tr>
   </table>
   </dd>
 </dl>
@@ -415,11 +447,32 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <p>VK_COLOR_SPACE_SRGB_NONLINEAR_KHR : represents the sRGB color space with a nonlinear gamma curve. This color space is commonly used for displaying images on standard monitors.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">availableFormats</td><td>The available surface formats (from <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">QuerySwapChainSupport()</a>)</td></tr>
+    <tr><td class="paramname">availableFormats</td><td>The available surface formats (from <a class="el" href="#a90dd006bccd6ce6b9989ed76aaca519c" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">QuerySwapChainSupport()</a>)</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="#a2d367e332d968a2c5ba25c3759bff2b5" title="Vulkan does not have the concept of a &quot;default framebuffer&quot;, hence it requires an infrastructure that...">VulkanContext::CreateSwapChain()</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="adf8936734787f1bf9ba61c03e025cd0a" name="adf8936734787f1bf9ba61c03e025cd0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf8936734787f1bf9ba61c03e025cd0a">&#9670;&#160;</a></span>CleanUpKarmaGuiGeneralGraphicsPipeline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CleanUpKarmaGuiGeneralGraphicsPipeline </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cleans up the resources associated with the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> general graphics pipeline. </p>
+<p>This includes destroying the pipeline and pipeline layout is destroyed in destructor.</p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -573,6 +626,123 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 </div>
 </div>
+<a id="a16cfa544c5ed04e467a84cea6f50187b" name="a16cfa544c5ed04e467a84cea6f50187b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16cfa544c5ed04e467a84cea6f50187b">&#9670;&#160;</a></span>CreateGeneralDescriptorPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CreateGeneralDescriptorPool </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>smElementsNumber</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a general descriptor pool for allocating descriptor sets for common resources. </p>
+<p>The descriptor sets are like so</p><ol type="1">
+<li><a class="el" href="class_karma_1_1_camera.html" title="Base class of Camera.">Camera</a> UBO descriptor set</li>
+<li><a class="el" href="class_karma_1_1_texture.html" title="Texture class.">Texture</a> sampler descriptor set</li>
+<li>Object UBO descriptor set</li>
+<li>Maybe add more later</li>
+</ol>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a6e6a2c780a97c72c74f8a06d352dab98" name="a6e6a2c780a97c72c74f8a06d352dab98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e6a2c780a97c72c74f8a06d352dab98">&#9670;&#160;</a></span>CreateGeneralDescriptorSetLayouts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CreateGeneralDescriptorSetLayouts </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates general descriptor set layouts for common resources like camera UBO, texture sampler, and object UBO. </p>
+<p>These descriptor set layouts define how shader resources are organized and accessed in the rendering pipeline.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a78d01717c8bcfa81e70a43dcca3a8ce4" name="a78d01717c8bcfa81e70a43dcca3a8ce4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78d01717c8bcfa81e70a43dcca3a8ce4">&#9670;&#160;</a></span>CreateGeneralDescriptorSets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CreateGeneralDescriptorSets </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="class_karma_1_1_scene.html">Scene</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>scene3D</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>smElementsNumber</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>maxFramesInFlight</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocates and writes to general descriptor sets for common resources like camera UBO, texture sampler, and object UBO. </p>
+<p>These descriptor sets are used in the graphics pipeline to bind the appropriate resources for rendering.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a842e051f70e1c8a6addba412ed5f74e0" name="a842e051f70e1c8a6addba412ed5f74e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a842e051f70e1c8a6addba412ed5f74e0">&#9670;&#160;</a></span>CreateGeneralShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CreateGeneralShader </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a default vulkan shader. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="afadf5f47f07c609b692180920cf031b2" name="afadf5f47f07c609b692180920cf031b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afadf5f47f07c609b692180920cf031b2">&#9670;&#160;</a></span>CreateGeneralTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CreateGeneralTexture </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a general texture used for default texturing in the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> exhibitor window. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="a3b84cc1c4edf52881d495e34104f9e7f" name="a3b84cc1c4edf52881d495e34104f9e7f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3b84cc1c4edf52881d495e34104f9e7f">&#9670;&#160;</a></span>CreateImageViews()</h2>
 
@@ -614,6 +784,43 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 </div>
 </div>
+<a id="abf096107332d83eceac4a3838106653e" name="abf096107332d83eceac4a3838106653e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf096107332d83eceac4a3838106653e">&#9670;&#160;</a></span>CreateKarmaGuiGeneralGraphicsPipeline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::CreateKarmaGuiGeneralGraphicsPipeline </td>
+          <td>(</td>
+          <td class="paramtype">VkRenderPass</td>          <td class="paramname"><span class="paramname"><em>renderPassKG</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>windowKGWidth</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>windowKGHeight</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates the graphics pipeline for rendering 3D objects in the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s exhibitor window. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">renderPassKG</td><td>The render pass to be used with the Karma GUI graphics pipeline </td></tr>
+    <tr><td class="paramname">windowKGWidth</td><td>The width of the window for viewport and scissor setup </td></tr>
+    <tr><td class="paramname">windowKGHeight</td><td>The height of the window for viewport and scissor setup</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="ada1f0e963dfe33514587e524c6ec973d" name="ada1f0e963dfe33514587e524c6ec973d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ada1f0e963dfe33514587e524c6ec973d">&#9670;&#160;</a></span>CreateLogicalDevice()</h2>
 
@@ -635,7 +842,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <li>Create queues from both graphics and presentation families The logical device (VkDevice) m_device is created with the above features</li>
 </ol>
 <dl class="section note"><dt>Note</dt><dd>Various Vulkan operations from graphics to compute are asynchronously executed by submitting them to the queues having different cababilities depending on the queue family they are derived from.</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a3de5ebe667dc946ef303d6e42eb41edc" title="Queries the graphics card for available queue families and compares against the availability of graph...">VulkanContext::FindQueueFamilies()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a7d9cc8329b69044619cc86930cb7a53b" title="Queries the graphics card for available queue families and compares against the availability of graph...">VulkanContext::FindQueueFamilies()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -656,6 +863,39 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 </div><div class="memdoc">
 
 <p>A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for rendering, and the state of the images we will be rendering to. The "targets" are also known as render targets and include the attachments like colorattachment and depthattachment that describe where the rendering output will go to. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a8881e8c646fda34a5307ab55e06183ae" name="a8881e8c646fda34a5307ab55e06183ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8881e8c646fda34a5307ab55e06183ae">&#9670;&#160;</a></span>CreateShaderModule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VkShaderModule Karma::VulkanContext::CreateShaderModule </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>code</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a Vulkan shader module from SPIR-V bytecode. </p>
+<p>This is specifically used when creating the graphics pipeline to load vertex and fragment shaders.</p>
+<p>For instance while creating vertex shader stage info (pipeline creation): </p><div class="fragment"><div class="line">VkPipelineShaderStageCreateInfo vertShaderStageInfo{};</div>
+<div class="line">vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;</div>
+<div class="line">vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;</div>
+<div class="line">vertShaderStageInfo.module = vertShaderModule;</div>
+<div class="line">vertShaderStageInfo.pName = <span class="stringliteral">&quot;main&quot;</span>;</div>
+</div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">code</td><td>The SPIR-V bytecode as a vector of uint32_t</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The created VkShaderModule </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -701,7 +941,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <li>Sets m_surfaceFormat and m_presentMode</li>
 </ol>
 <dl class="section note"><dt>Note</dt><dd>Requires the availability of Requires VK_KHR_swapchain extension which is queried in <a class="el" href="#aa75221e66d5cd1a6b93c3d8be3571500" title="Checks if the physical device (graphics card) is suitable for the Engine to use based on.">IsDeviceSuitable()</a> (which calls <a class="el" href="#a19eac2cedd2049cb443f426fadf9e79c" title="Looks for extension properties supported by the GPU.">CheckDeviceExtensionSupport()</a>).</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a7b7923ffd44b5cd7767c450565d52f75" title="Chooses the swap extent (resolution of the swapchain images) based on the capabilities of the surface...">VulkanContext::ChooseSwapExtent()</a>, <a class="el" href="#a0b62af69e4d46e385abfb9b998bd0c81" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">VulkanContext::QuerySwapChainSupport()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a7b7923ffd44b5cd7767c450565d52f75" title="Chooses the swap extent (resolution of the swapchain images) based on the capabilities of the surface...">VulkanContext::ChooseSwapExtent()</a>, <a class="el" href="#a90dd006bccd6ce6b9989ed76aaca519c" title="Uses Two-Pass Query to gather surface formats (physical device and surface paired color space or pixe...">VulkanContext::QuerySwapChainSupport()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -759,14 +999,14 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 </div>
 </div>
-<a id="a3de5ebe667dc946ef303d6e42eb41edc" name="a3de5ebe667dc946ef303d6e42eb41edc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3de5ebe667dc946ef303d6e42eb41edc">&#9670;&#160;</a></span>FindQueueFamilies()</h2>
+<a id="a7d9cc8329b69044619cc86930cb7a53b" name="a7d9cc8329b69044619cc86930cb7a53b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d9cc8329b69044619cc86930cb7a53b">&#9670;&#160;</a></span>FindQueueFamilies()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="struct_karma_1_1_queue_family_indices.html">QueueFamilyIndices</a> Karma::VulkanContext::FindQueueFamilies </td>
+          <td class="memname"><a class="el" href="struct_karma_1_1_queue_family_indices_depricated.html">QueueFamilyIndicesDepricated</a> Karma::VulkanContext::FindQueueFamilies </td>
           <td>(</td>
           <td class="paramtype">VkPhysicalDevice</td>          <td class="paramname"><span class="paramname"><em>device</em></span></td><td>)</td>
           <td></td>
@@ -866,7 +1106,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 </table>
 </div><div class="memdoc">
 
-<p>Initializes <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> by creating appropriate Vulkan and glslang specific instruments and allocating resources accordingly. </p>
+<p>Initializes <a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a> by creating appropriate Vulkan and glslang specific instruments and allocating resources accordingly. </p>
 <ol type="1">
 <li>Create Instance;</li>
 <li>Setup Debug Messenger</li>
@@ -1032,14 +1272,14 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 </div>
 </div>
-<a id="a0b62af69e4d46e385abfb9b998bd0c81" name="a0b62af69e4d46e385abfb9b998bd0c81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b62af69e4d46e385abfb9b998bd0c81">&#9670;&#160;</a></span>QuerySwapChainSupport()</h2>
+<a id="a90dd006bccd6ce6b9989ed76aaca519c" name="a90dd006bccd6ce6b9989ed76aaca519c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90dd006bccd6ce6b9989ed76aaca519c">&#9670;&#160;</a></span>QuerySwapChainSupport()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="struct_karma_1_1_swap_chain_support_details.html">SwapChainSupportDetails</a> Karma::VulkanContext::QuerySwapChainSupport </td>
+          <td class="memname"><a class="el" href="struct_karma_1_1_swap_chain_support_details_depricated.html">SwapChainSupportDetailsDepricated</a> Karma::VulkanContext::QuerySwapChainSupport </td>
           <td>(</td>
           <td class="paramtype">VkPhysicalDevice</td>          <td class="paramname"><span class="paramname"><em>device</em></span></td><td>)</td>
           <td></td>
@@ -1096,8 +1336,8 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 </div>
 </div>
-<a id="a6f8a80f3f98dee0029f19aa917440461" name="a6f8a80f3f98dee0029f19aa917440461"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6f8a80f3f98dee0029f19aa917440461">&#9670;&#160;</a></span>RegisterUBO()</h2>
+<a id="a66019c0f02299b5a285f0dd40b2bf8c2" name="a66019c0f02299b5a285f0dd40b2bf8c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66019c0f02299b5a285f0dd40b2bf8c2">&#9670;&#160;</a></span>RegisterUBO()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1105,13 +1345,13 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
         <tr>
           <td class="memname">void Karma::VulkanContext::RegisterUBO </td>
           <td>(</td>
-          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html">VulkanUniformBuffer</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>ubo</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html">VulkanUniformBuffer</a> *</td>          <td class="paramname"><span class="paramname"><em>ubo</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Registers a <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html" title="The actual uniform buffer class with implemented function using Vulkan API.">VulkanUniformBuffer</a> for management by the <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a>. </p>
+<p>Registers a <a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html" title="The actual uniform buffer class with implemented function using Vulkan API.">VulkanUniformBuffer</a> for management by the <a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a>. </p>
 <dl class="section see"><dt>See also</dt><dd>VulkanContext::m_VulkanUBO </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
@@ -1222,6 +1462,38 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 
 </div>
 </div>
+<a id="afc598d75e55c30a39782a1bd237d622f" name="afc598d75e55c30a39782a1bd237d622f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc598d75e55c30a39782a1bd237d622f">&#9670;&#160;</a></span>UpdateGeneralDescriptorSets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanContext::UpdateGeneralDescriptorSets </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="class_karma_1_1_scene.html">Scene</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>scene3D</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>frameIndex</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Updates the general descriptor sets with the provided view buffer for the specified frame index. </p>
+<dl class="section note"><dt>Note</dt><dd>viewbuffer is the vkbuffer of the camera in scene</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frameIndex</td><td>The index of the frame for which to update the descriptor sets </td></tr>
+    <tr><td class="paramname">viewBuffer</td><td>The buffer containing view (camera) data</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="ad6516fa8d4ba38e2b5fdfc4382cf04bf" name="ad6516fa8d4ba38e2b5fdfc4382cf04bf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad6516fa8d4ba38e2b5fdfc4382cf04bf">&#9670;&#160;</a></span>UploadUBO()</h2>
 
@@ -1247,14 +1519,19 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL&#160;</td><td class="memItemRight" valign=
 <div class="line"> vkCmdBindDescriptorSets <span class="comment">// Descriptor sets include UBOs</span></div>
 <div class="line"> vkCmdDrawIndexed</div>
 <div class="line">vkCmdEndRenderPass</div>
-<div class="ttc" id="aclass_karma_1_1_vulkan_context_html_ad6516fa8d4ba38e2b5fdfc4382cf04bf"><div class="ttname"><a href="#ad6516fa8d4ba38e2b5fdfc4382cf04bf">Karma::VulkanContext::UploadUBO</a></div><div class="ttdeci">void UploadUBO(size_t frameIndex)</div><div class="ttdoc">Uploads data to the registered VulkanUniformBuffers for the specified frame index.</div><div class="ttdef"><b>Definition</b> VulkanContext.cpp:68</div></div>
+<div class="ttc" id="aclass_karma_1_1_vulkan_context_html_ad6516fa8d4ba38e2b5fdfc4382cf04bf"><div class="ttname"><a href="#ad6516fa8d4ba38e2b5fdfc4382cf04bf">Karma::VulkanContext::UploadUBO</a></div><div class="ttdeci">void UploadUBO(size_t frameIndex)</div><div class="ttdoc">Uploads data to the registered VulkanUniformBuffers for the specified frame index.</div><div class="ttdef"><b>Definition</b> VulkanContext.cpp:120</div></div>
 </div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">frameIndex</td><td>The index of the frame for which to upload UBO data</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>, VulkanBuffer::UploadUniformBuffer </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The frameIndex is used to determine which uniform buffer to update, as multiple buffers may be used for double or triple buffering to avoid synchronization issues between CPU and GPU.</dd>
+<dd>
+The uniform buffers are resized automatically based on MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1) </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html#ad1fa2995c3e817ffe496b717059d9482" title="Based on MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being ren...">VulkanUniformBuffer::BufferCreation()</a></dd>
+<dd>
+<a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>, VulkanBuffer::UploadUniformBuffer </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

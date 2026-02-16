@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Karma's std::vector wrapper.  
+<p>Karma's std::vector wrapper with additional functionalities.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_karma_types_8h_source.html">KarmaTypes.h</a>&gt;</code></p>
@@ -96,18 +96,28 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8ee0ebbf20ee399ba22c934f66043bc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an element from the vector.  <br /></td></tr>
 <tr class="memitem:a60a203e8777cfcf9f39777c5ffc13abf" id="r_a60a203e8777cfcf9f39777c5ffc13abf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a60a203e8777cfcf9f39777c5ffc13abf">Add</a> (BuildingBlock aBlock)</td></tr>
 <tr class="memdesc:a60a203e8777cfcf9f39777c5ffc13abf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an element to the vector.  <br /></td></tr>
+<tr class="memitem:a8e0a42206a63ac24fe1ea6a94673de1f" id="r_a8e0a42206a63ac24fe1ea6a94673de1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e0a42206a63ac24fe1ea6a94673de1f">RangeCheck</a> (uint32_t Index) const</td></tr>
+<tr class="memdesc:a8e0a42206a63ac24fe1ea6a94673de1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sanity check for the index.  <br /></td></tr>
 <tr class="memitem:a350efd088862d5c54111016935d1d767" id="r_a350efd088862d5c54111016935d1d767"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a350efd088862d5c54111016935d1d767">AddUnique</a> (const BuildingBlock &amp;Item)</td></tr>
 <tr class="memitem:a7544254bbe8f0e36ceff25441d19850e" id="r_a7544254bbe8f0e36ceff25441d19850e"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7544254bbe8f0e36ceff25441d19850e">Find</a> (const BuildingBlock &amp;Item) const</td></tr>
 <tr class="memitem:a84b9460a1b95dacc082e9a432c776e4c" id="r_a84b9460a1b95dacc082e9a432c776e4c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a84b9460a1b95dacc082e9a432c776e4c">Contains</a> (BuildingBlock aBlock) const</td></tr>
 <tr class="memdesc:a84b9460a1b95dacc082e9a432c776e4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sees if the vector contains the specified element.  <br /></td></tr>
+<tr class="memitem:a5f77e3522d625aca00c8791fda40e5e0" id="r_a5f77e3522d625aca00c8791fda40e5e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f77e3522d625aca00c8791fda40e5e0">RemoveAtSwap</a> (int32_t Index)</td></tr>
+<tr class="memdesc:a5f77e3522d625aca00c8791fda40e5e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an element at given location, swapping the last element into its place, and shrinking the array.  <br /></td></tr>
+<tr class="memitem:add8d89f0352e180db7d6e9ffc55f436a" id="r_add8d89f0352e180db7d6e9ffc55f436a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add8d89f0352e180db7d6e9ffc55f436a">RemoveSingleSwap</a> (const BuildingBlock &amp;Item)</td></tr>
+<tr class="memdesc:add8d89f0352e180db7d6e9ffc55f436a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a first appearence of single element from the array, swapping the last element into its place, and shrinking the array.  <br /></td></tr>
 <tr class="memitem:a2ec6b4e369e66cd950e055177b44fa3e" id="r_a2ec6b4e369e66cd950e055177b44fa3e"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ec6b4e369e66cd950e055177b44fa3e">Num</a> () const</td></tr>
 <tr class="memdesc:a2ec6b4e369e66cd950e055177b44fa3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the total number of elements in a vector.  <br /></td></tr>
 <tr class="memitem:ae5e9df07563a38837d836291d9e0484f" id="r_ae5e9df07563a38837d836291d9e0484f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5e9df07563a38837d836291d9e0484f">Reset</a> ()</td></tr>
 <tr class="memdesc:ae5e9df07563a38837d836291d9e0484f"><td class="mdescLeft">&#160;</td><td class="mdescRight">We just reset the vector. UE has the following implementation.  <br /></td></tr>
+<tr class="memitem:a5435b7d6a16b97e716d6afea74bad9a5" id="r_a5435b7d6a16b97e716d6afea74bad9a5"><td class="memItemLeft" align="right" valign="top"><a id="a5435b7d6a16b97e716d6afea74bad9a5" name="a5435b7d6a16b97e716d6afea74bad9a5"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Resize</b> (uint32_t NewSize)</td></tr>
 <tr class="memitem:a89ce8d9e4e2ae54328630ac045e2b6dd" id="r_a89ce8d9e4e2ae54328630ac045e2b6dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89ce8d9e4e2ae54328630ac045e2b6dd">SmartReset</a> ()</td></tr>
 <tr class="memdesc:a89ce8d9e4e2ae54328630ac045e2b6dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Just clear the elements.  <br /></td></tr>
 <tr class="memitem:a98e3030937e0e48f1f4f6bd168f20f8a" id="r_a98e3030937e0e48f1f4f6bd168f20f8a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a98e3030937e0e48f1f4f6bd168f20f8a">SetVectorElementByIndex</a> (int32_t Index, BuildingBlock Value)</td></tr>
 <tr class="memdesc:a98e3030937e0e48f1f4f6bd168f20f8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the element of a vector using the vector index.  <br /></td></tr>
+<tr class="memitem:ab0ad049aa645267aa8bf2c8f02df34e6" id="r_ab0ad049aa645267aa8bf2c8f02df34e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0ad049aa645267aa8bf2c8f02df34e6">Clear</a> ()</td></tr>
+<tr class="memdesc:ab0ad049aa645267aa8bf2c8f02df34e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the vector from all the elements.  <br /></td></tr>
 <tr class="memitem:ab3dd402146764c23a606e30d1968f3b2" id="r_ab3dd402146764c23a606e30d1968f3b2"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; BuildingBlock &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3dd402146764c23a606e30d1968f3b2">GetElements</a> () const</td></tr>
 <tr class="memdesc:ab3dd402146764c23a606e30d1968f3b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the elements of vector.  <br /></td></tr>
 <tr class="memitem:a477df63bb0809e08d4dad5da1e966bfe" id="r_a477df63bb0809e08d4dad5da1e966bfe"><td class="memItemLeft" align="right" valign="top">std::vector&lt; BuildingBlock &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a477df63bb0809e08d4dad5da1e966bfe">ModifyElements</a> ()</td></tr>
@@ -116,8 +126,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a4071c12a1468444e4cebd2a7680b91ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for first vector element.  <br /></td></tr>
 <tr class="memitem:a0c84ea9d11a81ac748a19a1b711cb77d" id="r_a0c84ea9d11a81ac748a19a1b711cb77d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; BuildingBlock &gt;::iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c84ea9d11a81ac748a19a1b711cb77d">end</a> ()</td></tr>
 <tr class="memdesc:a0c84ea9d11a81ac748a19a1b711cb77d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the last vector element.  <br /></td></tr>
+<tr class="memitem:a4bca912654e0f839e5298080fb8fb5b2" id="r_a4bca912654e0f839e5298080fb8fb5b2"><td class="memItemLeft" align="right" valign="top"><a id="a4bca912654e0f839e5298080fb8fb5b2" name="a4bca912654e0f839e5298080fb8fb5b2"></a>
+std::vector&lt; BuildingBlock &gt;::const_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const</td></tr>
+<tr class="memitem:a7d287a956876fbbe817e83d8ad0d2013" id="r_a7d287a956876fbbe817e83d8ad0d2013"><td class="memItemLeft" align="right" valign="top"><a id="a7d287a956876fbbe817e83d8ad0d2013" name="a7d287a956876fbbe817e83d8ad0d2013"></a>
+std::vector&lt; BuildingBlock &gt;::const_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const</td></tr>
 <tr class="memitem:a8b4a388fcc565d0cca7a3040cb08ed8b" id="r_a8b4a388fcc565d0cca7a3040cb08ed8b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> BuildingBlock &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b4a388fcc565d0cca7a3040cb08ed8b">IndexToObject</a> (int32_t Index)</td></tr>
 <tr class="memitem:a537adfdf95a5b9ba0ae3d1c83a58ac99" id="r_a537adfdf95a5b9ba0ae3d1c83a58ac99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a537adfdf95a5b9ba0ae3d1c83a58ac99">IsValidIndex</a> (int32_t Index) const</td></tr>
+<tr class="memitem:aa30bdaf7528eb389480dc1a26b1c98b5" id="r_aa30bdaf7528eb389480dc1a26b1c98b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> BuildingBlock const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa30bdaf7528eb389480dc1a26b1c98b5">GetData</a> () const</td></tr>
+<tr class="memdesc:aa30bdaf7528eb389480dc1a26b1c98b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to return typed pointer to the first entry of array.  <br /></td></tr>
+<tr class="memitem:a74ed40280f1cdf61d6e398329e775645" id="r_a74ed40280f1cdf61d6e398329e775645"><td class="memItemLeft" align="right" valign="top"><a id="a74ed40280f1cdf61d6e398329e775645" name="a74ed40280f1cdf61d6e398329e775645"></a>
+BuildingBlock &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (int32_t Index)</td></tr>
+<tr class="memitem:ae54f49afc3dc06fefe974401db32964b" id="r_ae54f49afc3dc06fefe974401db32964b"><td class="memItemLeft" align="right" valign="top"><a id="ae54f49afc3dc06fefe974401db32964b" name="ae54f49afc3dc06fefe974401db32964b"></a>
+const BuildingBlock &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (int32_t Index) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -126,7 +146,8 @@ std::vector&lt; BuildingBlock &gt;&#160;</td><td class="memItemRight" valign="bo
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename BuildingBlock&gt;<br />
-class KarmaVector&lt; BuildingBlock &gt;</div><p>Karma's std::vector wrapper. </p>
+class KarmaVector&lt; BuildingBlock &gt;</div><p>Karma's std::vector wrapper with additional functionalities. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2a6f1cd06e52515f0f8b9f5fad083116" name="a2a6f1cd06e52515f0f8b9f5fad083116"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2a6f1cd06e52515f0f8b9f5fad083116">&#9670;&#160;</a></span>KarmaVector()</h2>
@@ -243,11 +264,11 @@ template&lt;typename BuildingBlock&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Adds unique element to array if it doesn't exist.</p>
+<p>Adds unique element to array if the element doesn't exist.</p>
 <p>Move semantics version.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Item</td><td>Item to add. </td></tr>
+    <tr><td class="paramname">Item</td><td>Item to add </td></tr>
   </table>
   </dd>
 </dl>
@@ -283,6 +304,37 @@ template&lt;typename BuildingBlock&gt; </div>
 </div><div class="memdoc">
 
 <p>Getter for first vector element. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="ab0ad049aa645267aa8bf2c8f02df34e6" name="ab0ad049aa645267aa8bf2c8f02df34e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0ad049aa645267aa8bf2c8f02df34e6">&#9670;&#160;</a></span>Clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename BuildingBlock&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_karma_vector.html">KarmaVector</a>&lt; BuildingBlock &gt;::Clear </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears the vector from all the elements. </p>
+<dl class="section note"><dt>Note</dt><dd>Duplicate of SmartReset </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -378,7 +430,7 @@ template&lt;typename BuildingBlock&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Finds element within the array.</p>
+<p>Finds first occurance of an element within the array.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">Item</td><td>Item to look for. </td></tr>
@@ -389,6 +441,36 @@ template&lt;typename BuildingBlock&gt; </div>
 <dl class="section see"><dt>See also</dt><dd>FindLast, FindLastByPredicate </dd>
 <dd>
 <a href="https://www.techiedelight.com/find-index-element-vector-cpp/">https://www.techiedelight.com/find-index-element-vector-cpp/</a></dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="aa30bdaf7528eb389480dc1a26b1c98b5" name="aa30bdaf7528eb389480dc1a26b1c98b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa30bdaf7528eb389480dc1a26b1c98b5">&#9670;&#160;</a></span>GetData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename BuildingBlock&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> BuildingBlock const  * <a class="el" href="class_karma_vector.html">KarmaVector</a>&lt; BuildingBlock &gt;::GetData </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Helper function to return typed pointer to the first entry of array. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -556,6 +638,36 @@ template&lt;typename BuildingBlock&gt; </div>
 
 </div>
 </div>
+<a id="a8e0a42206a63ac24fe1ea6a94673de1f" name="a8e0a42206a63ac24fe1ea6a94673de1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e0a42206a63ac24fe1ea6a94673de1f">&#9670;&#160;</a></span>RangeCheck()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename BuildingBlock&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_karma_vector.html">KarmaVector</a>&lt; BuildingBlock &gt;::RangeCheck </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>Index</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sanity check for the index. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="a8ee0ebbf20ee399ba22c934f66043bc8" name="a8ee0ebbf20ee399ba22c934f66043bc8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8ee0ebbf20ee399ba22c934f66043bc8">&#9670;&#160;</a></span>Remove()</h2>
 
@@ -582,12 +694,91 @@ template&lt;typename BuildingBlock&gt; </div>
 </div><div class="memdoc">
 
 <p>Removes an element from the vector. </p>
+<p>The function removes all occurrences of the specified element from the vector</p>
+<dl class="section note"><dt>Note</dt><dd>The vector size is reduced by the number of removed elements</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">aBlock</td><td>The element to be removed </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a5f77e3522d625aca00c8791fda40e5e0" name="a5f77e3522d625aca00c8791fda40e5e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f77e3522d625aca00c8791fda40e5e0">&#9670;&#160;</a></span>RemoveAtSwap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename BuildingBlock&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_karma_vector.html">KarmaVector</a>&lt; BuildingBlock &gt;::RemoveAtSwap </td>
+          <td>(</td>
+          <td class="paramtype">int32_t</td>          <td class="paramname"><span class="paramname"><em>Index</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes an element at given location, swapping the last element into its place, and shrinking the array. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Index</td><td>The index of the element to be removed </td></tr>
+    <tr><td class="paramname">AllowShrinking</td><td>Whether to allow the array to shrink its allocation if possible</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>This implementation is differenct from UE and here vector shrinks automatically </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="add8d89f0352e180db7d6e9ffc55f436a" name="add8d89f0352e180db7d6e9ffc55f436a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add8d89f0352e180db7d6e9ffc55f436a">&#9670;&#160;</a></span>RemoveSingleSwap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename BuildingBlock&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t <a class="el" href="class_karma_vector.html">KarmaVector</a>&lt; BuildingBlock &gt;::RemoveSingleSwap </td>
+          <td>(</td>
+          <td class="paramtype">const BuildingBlock &amp;</td>          <td class="paramname"><span class="paramname"><em>Item</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes a first appearence of single element from the array, swapping the last element into its place, and shrinking the array. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Item</td><td>The item to be removed </td></tr>
+    <tr><td class="paramname">AllowShrinking</td><td>Whether to allow the array to shrink its allocation if possible </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of elements removed (0 or 1)</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>AllowShrinking is automatic different from UE </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

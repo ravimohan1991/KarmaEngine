@@ -85,13 +85,14 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>This file contains the types used in game logic.  
+<p>This file contains the custom types used in Engine's logic.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;map&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;glm/glm.hpp&gt;</code><br />
 </div>
 <p><a href="_karma_types_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -100,7 +101,7 @@ Classes</h2></td></tr>
 <tr class="memitem:KarmaMap_3C_20KeyType_2C_20ValueType_20_3E" id="r_KarmaMap_3C_20KeyType_2C_20ValueType_20_3E"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_map.html">KarmaMap&lt; KeyType, ValueType &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Karma's std::map wrapper.  <a href="class_karma_map.html#details">More...</a><br /></td></tr>
 <tr class="memitem:KarmaVector_3C_20BuildingBlock_20_3E" id="r_KarmaVector_3C_20BuildingBlock_20_3E"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_vector.html">KarmaVector&lt; BuildingBlock &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Karma's std::vector wrapper.  <a href="class_karma_vector.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Karma's std::vector wrapper with additional functionalities.  <a href="class_karma_vector.html#details">More...</a><br /></td></tr>
 <tr class="memitem:FUrlConfig" id="r_FUrlConfig"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_url_config.html">FUrlConfig</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper for obtaining the default Url configuration.  <a href="struct_f_url_config.html#details">More...</a><br /></td></tr>
 <tr class="memitem:FURL" id="r_FURL"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_f_u_r_l.html">FURL</a></td></tr>
@@ -115,6 +116,9 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:a8c77fe30855437bb0442d683a0751c51" id="r_a8c77fe30855437bb0442d683a0751c51"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c77fe30855437bb0442d683a0751c51">EAllowShrinking</a> { <a class="el" href="#a8c77fe30855437bb0442d683a0751c51a93cba07454f06a4a960172bbd6e2a435">Yes</a>
+, <a class="el" href="#a8c77fe30855437bb0442d683a0751c51abafd7322c6e97d25b6299b5d6fe8920b">No</a>
+ }</td></tr>
 <tr class="memitem:a8b44c9c9dc5082d57986ffb19ba69a8c" id="r_a8b44c9c9dc5082d57986ffb19ba69a8c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_e_end_play_reason.html#a8b44c9c9dc5082d57986ffb19ba69a8c">EEndPlayReason::Type</a> : int { <br />
 &#160;&#160;<a class="el" href="namespace_e_end_play_reason.html#a8b44c9c9dc5082d57986ffb19ba69a8ca3a5cb0d9cc5cec0a351fc63cb4b30757">EEndPlayReason::Destroyed</a>
 , <a class="el" href="namespace_e_end_play_reason.html#a8b44c9c9dc5082d57986ffb19ba69a8cad7562d6cb973882acee3d5bf656de223">EEndPlayReason::LevelTransition</a>
@@ -145,9 +149,13 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#a9665fe4edde2538fef3bd9972f284988af8ff98f24475d7f3f013934b7d74fa1c">TRAVEL_MAX</a>
  }</td></tr>
 <tr class="memdesc:a9665fe4edde2538fef3bd9972f284988"><td class="mdescLeft">&#160;</td><td class="mdescRight">Traveling from server to server.  <a href="#a9665fe4edde2538fef3bd9972f284988">More...</a><br /></td></tr>
+<tr class="memitem:a30ad4bafdcb6589e32ec0ab373a30bc9" id="r_a30ad4bafdcb6589e32ec0ab373a30bc9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a30ad4bafdcb6589e32ec0ab373a30bc9">ETeleportType</a> : uint8_t { <a class="el" href="#a30ad4bafdcb6589e32ec0ab373a30bc9a6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="#a30ad4bafdcb6589e32ec0ab373a30bc9a260dd698f7a09c122dfff8eab8323605">TeleportPhysics</a>
+, <a class="el" href="#a30ad4bafdcb6589e32ec0ab373a30bc9ae629d17a0d94dc0eddf24ef9b62d2885">ResetPhysics</a>
+ }</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This file contains the types used in game logic. </p>
+<div class="textblock"><p>This file contains the custom types used in Engine's logic. </p>
 <dl class="section author"><dt>Author</dt><dd>Ravi Mohan (the_cowboy) </dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>March 30, 2023</dd></dl>
@@ -166,7 +174,66 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 
 <p>euphemism for no index situations </p>
-<dl class="todo"><dt><b>Todo</b></dt><dd>usage hasn't caught on in usual engine routines </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_vector.html#a7544254bbe8f0e36ceff25441d19850e">KarmaVector::Find</a>, <a class="el" href="class_karma_vector.html#add8d89f0352e180db7d6e9ffc55f436a" title="Removes a first appearence of single element from the array, swapping the last element into its place...">KarmaVector::RemoveSingleSwap</a> etc </dd></dl>
+
+</div>
+</div>
+<a id="a8c77fe30855437bb0442d683a0751c51" name="a8c77fe30855437bb0442d683a0751c51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c77fe30855437bb0442d683a0751c51">&#9670;&#160;</a></span>EAllowShrinking</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#a8c77fe30855437bb0442d683a0751c51">EAllowShrinking</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a8c77fe30855437bb0442d683a0751c51a93cba07454f06a4a960172bbd6e2a435" name="a8c77fe30855437bb0442d683a0751c51a93cba07454f06a4a960172bbd6e2a435"></a>Yes&#160;</td><td class="fielddoc"><p>Allow the array to shrink its allocation if possible </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8c77fe30855437bb0442d683a0751c51abafd7322c6e97d25b6299b5d6fe8920b" name="a8c77fe30855437bb0442d683a0751c51abafd7322c6e97d25b6299b5d6fe8920b"></a>No&#160;</td><td class="fielddoc"><p>Prevent the array from shrinking its allocation </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="a30ad4bafdcb6589e32ec0ab373a30bc9" name="a30ad4bafdcb6589e32ec0ab373a30bc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30ad4bafdcb6589e32ec0ab373a30bc9">&#9670;&#160;</a></span>ETeleportType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#a30ad4bafdcb6589e32ec0ab373a30bc9">ETeleportType</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Whether to teleport physics body or not </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a30ad4bafdcb6589e32ec0ab373a30bc9a6adf97f83acf6453d4a6a4b1070f3754" name="a30ad4bafdcb6589e32ec0ab373a30bc9a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>Do not teleport physics body. This means velocity will reflect the movement between initial and final position, and collisions along the way will occur </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30ad4bafdcb6589e32ec0ab373a30bc9a260dd698f7a09c122dfff8eab8323605" name="a30ad4bafdcb6589e32ec0ab373a30bc9a260dd698f7a09c122dfff8eab8323605"></a>TeleportPhysics&#160;</td><td class="fielddoc"><p>Teleport physics body so that velocity remains the same and no collision occurs </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30ad4bafdcb6589e32ec0ab373a30bc9ae629d17a0d94dc0eddf24ef9b62d2885" name="a30ad4bafdcb6589e32ec0ab373a30bc9ae629d17a0d94dc0eddf24ef9b62d2885"></a>ResetPhysics&#160;</td><td class="fielddoc"><p>Teleport physics body and reset physics state completely </p>
+</td></tr>
+</table>
 
 </div>
 </div>

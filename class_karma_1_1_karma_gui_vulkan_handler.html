@@ -84,7 +84,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>A class for required Vulkan routines for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> Vulkan backend.  
+<p>A class for required Vulkan routines for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> Vulkan backend.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_karma_gui_vulkan_handler_8h_source.html">KarmaGuiVulkanHandler.h</a>&gt;</code></p>
@@ -96,9 +96,11 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a56fe3b6d98631be363c0d4a3990c4b8f" id="r_a56fe3b6d98631be363c0d4a3990c4b8f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56fe3b6d98631be363c0d4a3990c4b8f">CreateOrResizeBuffer</a> (VkBuffer &amp;buffer, VkDeviceMemory &amp;bufferMemory, VkDeviceSize &amp;pBufferSize, size_t newSize, VkBufferUsageFlagBits usage)</td></tr>
 <tr class="memdesc:a56fe3b6d98631be363c0d4a3990c4b8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates new vulkan buffer and allocates appropriate memory based upon the supplied newSize (appropriately aligned) and usage.  <br /></td></tr>
 <tr class="memitem:ac989f0dd29c02b3489ff33a31c0b261b" id="r_ac989f0dd29c02b3489ff33a31c0b261b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac989f0dd29c02b3489ff33a31c0b261b">KarmaGui_ImplVulkan_SetupRenderState</a> (<a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> *drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame_render_buffers.html">KarmaGui_ImplVulkanH_ImageFrameRenderBuffers</a> *remderingBufferData, int width, int height)</td></tr>
-<tr class="memdesc:ac989f0dd29c02b3489ff33a31c0b261b"><td class="mdescLeft">&#160;</td><td class="mdescRight">A routine to bind index/vertex buffers, setup a external viewport, and bind pipeline. Usually for rendering of <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> windows and all that.  <br /></td></tr>
+<tr class="memdesc:ac989f0dd29c02b3489ff33a31c0b261b"><td class="mdescLeft">&#160;</td><td class="mdescRight">A routine to bind index/vertex buffers, setup a external viewport, and bind pipeline. Usually for rendering of <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> windows and all that.  <br /></td></tr>
 <tr class="memitem:abd34e93e2175ac37b4c01191aa77298b" id="r_abd34e93e2175ac37b4c01191aa77298b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abd34e93e2175ac37b4c01191aa77298b">KarmaGui_ImplVulkan_CreateShaderModules</a> (VkDevice device, const VkAllocationCallbacks *allocator)</td></tr>
 <tr class="memdesc:abd34e93e2175ac37b4c01191aa77298b"><td class="mdescLeft">&#160;</td><td class="mdescRight">A routine to create the shader modules (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#aaa4f696be8c1c601fdb26abcbadc56a6" title="Opaque handle to a vertex shader module object for backend. Shader modules contain shader code and on...">KarmaGui_ImplVulkan_Data.ShaderModuleVert</a> and <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#ac35e29609b5537b35dde85d6957a4456" title="Opaque handle to fragment shader module object for backend. Shader modules contain shader code and on...">KarmaGui_ImplVulkan_Data.ShaderModuleFrag</a>) for the backend GraphicsPipeline (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#ab3fd538b7f67b6e1b6af2e36a9cafae9" title="A huge object in Vulkan that encompasses the configuration of the entire GPU for the draw....">KarmaGui_ImplVulkan_Data.Pipeline</a>).  <br /></td></tr>
+<tr class="memitem:a61027014573126f1c63f0f7bbff135eb" id="r_a61027014573126f1c63f0f7bbff135eb"><td class="memItemLeft" align="right" valign="top"><a id="a61027014573126f1c63f0f7bbff135eb" name="a61027014573126f1c63f0f7bbff135eb"></a>
+static VkShaderModule&#160;</td><td class="memItemRight" valign="bottom"><b>KarmaGui_ImplVulkan_CreateShaderModule</b> (const std::vector&lt; uint32_t &gt; &amp;code)</td></tr>
 <tr class="memitem:aa583f5e1a61b93581443dc2382056da6" id="r_aa583f5e1a61b93581443dc2382056da6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa583f5e1a61b93581443dc2382056da6">KarmaGui_ImplVulkan_CreateFontSampler</a> (VkDevice device, const VkAllocationCallbacks *allocator)</td></tr>
 <tr class="memdesc:aa583f5e1a61b93581443dc2382056da6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear sampling object is created for font and stored in <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#a1176bcb25813c28c571cee1d682fe36a" title="Opaque handle to a sampler object. The object represents the state of an image sampler which is used ...">KarmaGui_ImplVulkan_Data.FontSampler</a> if not done already in <a class="el" href="#a8798f337eabad2a1268cfbaa6114643c" title="Generates or creates the following objects.">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects()</a>.  <br /></td></tr>
 <tr class="memitem:a10ede603ade2ed4ff6d9c093edb53868" id="r_a10ede603ade2ed4ff6d9c093edb53868"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10ede603ade2ed4ff6d9c093edb53868">KarmaGui_ImplVulkan_CreateDescriptorSetLayout</a> (VkDevice device, const VkAllocationCallbacks *allocator)</td></tr>
@@ -110,29 +112,41 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aa6bec71360e2fe60c4cea26dac3cf565" id="r_aa6bec71360e2fe60c4cea26dac3cf565"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6bec71360e2fe60c4cea26dac3cf565">KarmaGui_ImplVulkan_CreateWindow</a> (<a class="el" href="struct_karma_gui_viewport.html">KarmaGuiViewport</a> *viewport)</td></tr>
 <tr class="memdesc:aa6bec71360e2fe60c4cea26dac3cf565"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is an <em>advanced</em> and <em>optional</em> feature, allowing the backend to create and handle multiple viewports simultaneously. NOT SUPPORTED.  <br /></td></tr>
 <tr class="memitem:a42881b7018110e014a12ce23d329da65" id="r_a42881b7018110e014a12ce23d329da65"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42881b7018110e014a12ce23d329da65">KarmaGui_ImplVulkan_DestroyWindow</a> (<a class="el" href="struct_karma_gui_viewport.html">KarmaGuiViewport</a> *viewport)</td></tr>
-<tr class="memdesc:a42881b7018110e014a12ce23d329da65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> window relevant data (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html" title="Data relevant to rendering of a Mesa viewport.">KarmaGui_ImplVulkan_ViewportData</a>) and buffers. Basically set to KarmaGuiPlatformIO::Renderer_DestroyWindow pointer.  <br /></td></tr>
+<tr class="memdesc:a42881b7018110e014a12ce23d329da65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> window relevant data (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html" title="Data relevant to rendering of a Mesa viewport.">KarmaGui_ImplVulkan_ViewportData</a>) and buffers. Basically set to KarmaGuiPlatformIO::Renderer_DestroyWindow pointer.  <br /></td></tr>
 <tr class="memitem:a4ab8fcd5e37558658567a97fc27d9e32" id="r_a4ab8fcd5e37558658567a97fc27d9e32"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ab8fcd5e37558658567a97fc27d9e32">KarmaGui_ImplVulkan_DestroyWindow</a> (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html">KarmaGui_ImplVulkanH_Window</a> *windowData)</td></tr>
-<tr class="memdesc:a4ab8fcd5e37558658567a97fc27d9e32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> window relevant data (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html" title="Data relevant to rendering of a Mesa viewport.">KarmaGui_ImplVulkan_ViewportData</a>) and buffers. Called by <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a775ef054881cb12eb9d06de979767828" title="Cleaning up vulkan allocated resources.">KarmaGuiRenderer::CleanUpVulkanAndWindowData()</a>.  <br /></td></tr>
+<tr class="memdesc:a4ab8fcd5e37558658567a97fc27d9e32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> window relevant data (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html" title="Data relevant to rendering of a Mesa viewport.">KarmaGui_ImplVulkan_ViewportData</a>) and buffers. Called by <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a775ef054881cb12eb9d06de979767828" title="Cleaning up vulkan allocated resources.">KarmaGuiRenderer::CleanUpVulkanAndWindowData()</a>.  <br /></td></tr>
 <tr class="memitem:a2fe945584a8c6cc1b93cce469ea71961" id="r_a2fe945584a8c6cc1b93cce469ea71961"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2fe945584a8c6cc1b93cce469ea71961">KarmaGui_ImplVulkan_SetWindowSize</a> (<a class="el" href="struct_karma_gui_viewport.html">KarmaGuiViewport</a> *viewport, <a class="el" href="struct_k_g_vec2.html">KGVec2</a> size)</td></tr>
 <tr class="memdesc:a2fe945584a8c6cc1b93cce469ea71961"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the size of window rendering relevant resources (swapchain, framebuffers, and all that). Basically implementation of <a class="el" href="struct_karma_gui_platform_i_o.html#aa283022b931f333a1db0a0665a81fed4" title="Resize swap chain, frame buffers etc. (called after Platform_SetWindowSize).">KarmaGuiPlatformIO::Renderer_SetWindowSize</a>.  <br /></td></tr>
 <tr class="memitem:a72b73653d18fdde91d1225e63abf9313" id="r_a72b73653d18fdde91d1225e63abf9313"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72b73653d18fdde91d1225e63abf9313">KarmaGui_ImplVulkan_RenderWindow</a> (<a class="el" href="struct_karma_gui_viewport.html">KarmaGuiViewport</a> *viewport, void *)</td></tr>
-<tr class="memdesc:a72b73653d18fdde91d1225e63abf9313"><td class="mdescLeft">&#160;</td><td class="mdescRight">A set of instructions for rendering a viewport of <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> window (called each loop for realtime Vulkan rendering). A bird's eye overview can be experienced in the wikipedia page <a href="https://github.com/ravimohan1991/KarmaEngine/wiki/Vulkan-Creative-Pipeline-(vCP)-II">https://github.com/ravimohan1991/KarmaEngine/wiki/Vulkan-Creative-Pipeline-(vCP)-II</a>. Set to <a class="el" href="struct_karma_gui_platform_i_o.html#a5889d84187c6addf5d6999efba728db2" title="(Optional) Clear framebuffer, setup render target, then render the viewport-&gt;DrawData....">KarmaGuiPlatformIO::Renderer_RenderWindow</a> in the function <a class="el" href="#aedb50322002e6ad8e1eb8e18356adb50" title="Called in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init, during the initialization of Vulkan backend for...">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_InitPlatformInterface()</a>. Called in the routine KarmaGuiRenderer::OnKarmaGuiLayerEnd(), via <a class="el" href="class_karma_1_1_karma_gui.html#a4cfd4ebcfdaaec822b80b7805d288e36" title="Call in main loop. Will call RenderWindow/SwapBuffers platform functions for each secondary viewport ...">KarmaGui::RenderPlatformWindowsDefault()</a>-&gt;platform_io.Renderer_RenderWindow, if multiviewports (KGGuiConfigFlags_ViewportsEnable) are supported.  <br /></td></tr>
+<tr class="memdesc:a72b73653d18fdde91d1225e63abf9313"><td class="mdescLeft">&#160;</td><td class="mdescRight">A set of instructions for rendering a viewport of <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> window (called each loop for realtime Vulkan rendering). A bird's eye overview can be experienced in the wikipedia page <a href="https://github.com/ravimohan1991/KarmaEngine/wiki/Vulkan-Creative-Pipeline-(vCP)-II">https://github.com/ravimohan1991/KarmaEngine/wiki/Vulkan-Creative-Pipeline-(vCP)-II</a>. Set to <a class="el" href="struct_karma_gui_platform_i_o.html#a5889d84187c6addf5d6999efba728db2" title="(Optional) Clear framebuffer, setup render target, then render the viewport-&gt;DrawData....">KarmaGuiPlatformIO::Renderer_RenderWindow</a> in the function <a class="el" href="#aedb50322002e6ad8e1eb8e18356adb50" title="Called in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init, during the initialization of Vulkan backend for...">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_InitPlatformInterface()</a>. Called in the routine KarmaGuiRenderer::OnKarmaGuiLayerEnd(), via <a class="el" href="class_karma_1_1_karma_gui.html#a4cfd4ebcfdaaec822b80b7805d288e36" title="Call in main loop. Will call RenderWindow/SwapBuffers platform functions for each secondary viewport ...">KarmaGui::RenderPlatformWindowsDefault()</a>-&gt;platform_io.Renderer_RenderWindow, if multiviewports (KGGuiConfigFlags_ViewportsEnable) are supported.  <br /></td></tr>
 <tr class="memitem:a2ca6554d0fac593aae7be85c39dab4b7" id="r_a2ca6554d0fac593aae7be85c39dab4b7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ca6554d0fac593aae7be85c39dab4b7">KarmaGui_ImplVulkan_RenderDrawData</a> (<a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> *drawData, VkCommandBuffer commandBuffer, VkPipeline pipeline, uint32_t imageFrameIndex)</td></tr>
-<tr class="memdesc:a2ca6554d0fac593aae7be85c39dab4b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> primitives into command buffer. Frame rendering relevant buffers and resources are set. They include:  <br /></td></tr>
+<tr class="memdesc:a2ca6554d0fac593aae7be85c39dab4b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> primitives into command buffer. Frame rendering relevant buffers and resources are set. They include:  <br /></td></tr>
 <tr class="memitem:a00a73f7f1e709e8615bff7dc1e5aa00a" id="r_a00a73f7f1e709e8615bff7dc1e5aa00a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00a73f7f1e709e8615bff7dc1e5aa00a">KarmaGui_ImplVulkan_SwapBuffers</a> (<a class="el" href="struct_karma_gui_viewport.html">KarmaGuiViewport</a> *viewport, void *)</td></tr>
 <tr class="memdesc:a00a73f7f1e709e8615bff7dc1e5aa00a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called in KarmaGui_ImplVulkan_InitPlatformInterface for setting the field <a class="el" href="struct_karma_gui_platform_i_o.html#a4ec5324e8fa2e131a51fd0f38e6d33bc" title="(Optional) Call Present/SwapBuffers. &#39;render_arg&#39; is the value passed to Karma::KarmaGui::RenderPlatf...">KarmaGuiPlatformIO::Renderer_SwapBuffers</a>. Based upon the present conditions, does the following.  <br /></td></tr>
-<tr class="memitem:ac2c93fab4bd1c3b354b46485db32a8d6" id="r_ac2c93fab4bd1c3b354b46485db32a8d6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2c93fab4bd1c3b354b46485db32a8d6">ShareVulkanContextResourcesOfMainWindow</a> (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html">KarmaGui_ImplVulkanH_Window</a> *windowData, bool bCreateSyncronicity=false)</td></tr>
-<tr class="memdesc:ac2c93fab4bd1c3b354b46485db32a8d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The purpose of the routine is two-fold.  <br /></td></tr>
+<tr class="memitem:a53207fb86f8a12ba0abe43d609aa9e54" id="r_a53207fb86f8a12ba0abe43d609aa9e54"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53207fb86f8a12ba0abe43d609aa9e54">CheckInitialization</a> ()</td></tr>
+<tr class="memdesc:a53207fb86f8a12ba0abe43d609aa9e54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___init_info.html" title="A data structure for Vulkan&#39;s initialization done in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init().">KarmaGui_ImplVulkan_InitInfo</a> has been initialized properly. Crashes if not.  <br /></td></tr>
+<tr class="memitem:adab4f6d915432384b6d09d2f0db17778" id="r_adab4f6d915432384b6d09d2f0db17778"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adab4f6d915432384b6d09d2f0db17778">FillWindowData</a> (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html">KarmaGui_ImplVulkanH_Window</a> *windowData, bool bCreateSyncronicity)</td></tr>
+<tr class="memdesc:adab4f6d915432384b6d09d2f0db17778"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replacement for ShareVulkanContextResourcesOfMainWindow. Does the following.  <br /></td></tr>
+<tr class="memitem:aadbbae2686575f36a55e490422698360" id="r_aadbbae2686575f36a55e490422698360"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadbbae2686575f36a55e490422698360">MakeRenderPassInfo</a> (<a class="el" href="class_karma_1_1_f_vulkan_swap_chain.html">FVulkanSwapChain</a> *SwapChain, struct <a class="el" href="struct_karma_1_1_f_vulkan_render_pass_info.html">FVulkanRenderPassInfo</a> &amp;RPInfo)</td></tr>
+<tr class="memdesc:aadbbae2686575f36a55e490422698360"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the renderpass information for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s Vulkan backend.  <br /></td></tr>
+<tr class="memitem:a008c215164220f1b07d0c1f0f4c18ae5" id="r_a008c215164220f1b07d0c1f0f4c18ae5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a008c215164220f1b07d0c1f0f4c18ae5">CreateDepthRenderTarget</a> (<a class="el" href="class_karma_1_1_f_vulkan_render_targets_info.html">FVulkanRenderTargetsInfo</a> &amp;RTInfo, <a class="el" href="class_karma_1_1_f_vulkan_swap_chain.html">FVulkanSwapChain</a> *SwapChain)</td></tr>
+<tr class="memdesc:a008c215164220f1b07d0c1f0f4c18ae5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fills the depth render target information.  <br /></td></tr>
+<tr class="memitem:a913525c97865e2c1bf62bd513ba1f359" id="r_a913525c97865e2c1bf62bd513ba1f359"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a913525c97865e2c1bf62bd513ba1f359">GatherSwapChainColorRenderTargets</a> (<a class="el" href="class_karma_1_1_f_vulkan_render_targets_info.html">FVulkanRenderTargetsInfo</a> &amp;RTInfo, <a class="el" href="class_karma_1_1_f_vulkan_swap_chain.html">FVulkanSwapChain</a> *SwapChain, uint32_t SwapChainImageIndex)</td></tr>
+<tr class="memdesc:a913525c97865e2c1bf62bd513ba1f359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares the RTInfo for framebuffer creation.  <br /></td></tr>
+<tr class="memitem:a36b1b8add3f3d5fafb23d214d1a39255" id="r_a36b1b8add3f3d5fafb23d214d1a39255"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a36b1b8add3f3d5fafb23d214d1a39255">ShivaSwapChainForRebuild</a> (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html">KarmaGui_ImplVulkanH_Window</a> *windowData)</td></tr>
+<tr class="memdesc:a36b1b8add3f3d5fafb23d214d1a39255"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys swapchain and related resources for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s Vulkan backend.  <br /></td></tr>
 <tr class="memitem:a9b7c3ec2c2a44fc69ab47b0c42c0c9cd" id="r_a9b7c3ec2c2a44fc69ab47b0c42c0c9cd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b7c3ec2c2a44fc69ab47b0c42c0c9cd">CreateOffScreenTextureResources</a> ()</td></tr>
-<tr class="memdesc:a9b7c3ec2c2a44fc69ab47b0c42c0c9cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates framebuffers, renderpass, and vertexarray (for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>) pipeline for 2D texture creation from 3D scene.  <br /></td></tr>
+<tr class="memdesc:a9b7c3ec2c2a44fc69ab47b0c42c0c9cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates framebuffers, renderpass, and vertexarray (for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>) pipeline for 2D texture creation from 3D scene.  <br /></td></tr>
 <tr class="memitem:aeaf1e648a9734d3ffdd5cf885265d298" id="r_aeaf1e648a9734d3ffdd5cf885265d298"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeaf1e648a9734d3ffdd5cf885265d298">CreateOffScreenTextureDepthResource</a> (<a class="el" href="struct_karma_1_1_karma_gui__3_d_scene___to__2_d_texture___data.html">KarmaGui_3DScene_To_2DTexture_Data</a> *textureData)</td></tr>
 <tr class="memdesc:aeaf1e648a9734d3ffdd5cf885265d298"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates depth resource for off screen texture (3D scene to 2D texture).  <br /></td></tr>
 <tr class="memitem:a17754eba8c8dd03ab6d47181685bccb7" id="r_a17754eba8c8dd03ab6d47181685bccb7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17754eba8c8dd03ab6d47181685bccb7">CreateOffScreenTextureRenderpassResource</a> ()</td></tr>
 <tr class="memdesc:a17754eba8c8dd03ab6d47181685bccb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates renderpass for off screen texture (3D scene to 2D texture).  <br /></td></tr>
 <tr class="memitem:a2769529c7d82f3f31c292c42b733c834" id="r_a2769529c7d82f3f31c292c42b733c834"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2769529c7d82f3f31c292c42b733c834">CreateOffScreenTextureFrameBufferResource</a> (<a class="el" href="struct_karma_1_1_karma_gui__3_d_scene___to__2_d_texture___data.html">KarmaGui_3DScene_To_2DTexture_Data</a> *textureData)</td></tr>
 <tr class="memdesc:a2769529c7d82f3f31c292c42b733c834"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates appropriate frame buffer for off screen texture rendering.  <br /></td></tr>
+<tr class="memitem:a66f2360a95024260b8a4cbc7a248252c" id="r_a66f2360a95024260b8a4cbc7a248252c"><td class="memItemLeft" align="right" valign="top"><a id="a66f2360a95024260b8a4cbc7a248252c" name="a66f2360a95024260b8a4cbc7a248252c"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>CreateOffScreenTextureGraphicsPipelineResource</b> (VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight)</td></tr>
 <tr class="memitem:a1d00e6e1c2ed243be58dba5ce7ce26a6" id="r_a1d00e6e1c2ed243be58dba5ce7ce26a6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d00e6e1c2ed243be58dba5ce7ce26a6">ClearVulkanWindowData</a> (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html">KarmaGui_ImplVulkanH_Window</a> *vulkanWindowData, bool bDestroySyncronicity=false)</td></tr>
-<tr class="memdesc:a1d00e6e1c2ed243be58dba5ce7ce26a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears appropriate buffers which are used for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>'s rendering. They include:  <br /></td></tr>
+<tr class="memdesc:a1d00e6e1c2ed243be58dba5ce7ce26a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears appropriate buffers which are used for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s rendering. They include:  <br /></td></tr>
 <tr class="memitem:a94070041ba2361045f0f8ea9ef3bf1e5" id="r_a94070041ba2361045f0f8ea9ef3bf1e5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94070041ba2361045f0f8ea9ef3bf1e5">DestroyWindowDataFrame</a> (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame.html">KarmaGui_ImplVulkanH_ImageFrame</a> *frame)</td></tr>
 <tr class="memdesc:a94070041ba2361045f0f8ea9ef3bf1e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears KarmaGui_ImplVulkanH_ImageFrame::BackBuffer and <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame.html#ae6ab5c377d34dfdd1667da4b95c5f28e" title="A handle to framebuffer which represents a collection of specific memory attachments that a render pa...">KarmaGui_ImplVulkanH_ImageFrame::Framebuffer</a> and called by <a class="el" href="#a1d00e6e1c2ed243be58dba5ce7ce26a6" title="Clears appropriate buffers which are used for KarmaGui&#39;s rendering. They include:">KarmaGuiVulkanHandler::ClearVulkanWindowData</a>.  <br /></td></tr>
 <tr class="memitem:a84b96ddbdae784e186e14f16357be59e" id="r_a84b96ddbdae784e186e14f16357be59e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a84b96ddbdae784e186e14f16357be59e">DestroyFramesOnFlightData</a> (<a class="el" href="struct_karma_1_1_karma_gui___vulkan___frame___on___flight.html">KarmaGui_Vulkan_Frame_On_Flight</a> *frameSyncronicityData)</td></tr>
@@ -140,13 +154,13 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aee8565ba0b84ee6611092898b9a94d2d" id="r_aee8565ba0b84ee6611092898b9a94d2d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee8565ba0b84ee6611092898b9a94d2d">KarmaGui_ImplVulkan_CreateOrResizeWindow</a> (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html">KarmaGui_ImplVulkanH_Window</a> *windowData, bool bCreateSyncronicity, bool bRecreateSwapChainAndCommandBuffers)</td></tr>
 <tr class="memdesc:aee8565ba0b84ee6611092898b9a94d2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">KarmaGui_ImplVulkan_CreateOrResizeWindow.  <br /></td></tr>
 <tr class="memitem:a2601ed7116d9c42c98d5c9c62146fe00" id="r_a2601ed7116d9c42c98d5c9c62146fe00"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2601ed7116d9c42c98d5c9c62146fe00">KarmaGui_ImplVulkan_DestroyAllViewportsRenderBuffers</a> (VkDevice device, const VkAllocationCallbacks *allocator)</td></tr>
-<tr class="memdesc:a2601ed7116d9c42c98d5c9c62146fe00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html#ad561589b3551dd85139bfaf629b960f0" title="The rendering relevant buffers to be used by viewport.">KarmaGui_ImplVulkan_ViewportData::RenderBuffers</a> associated with the single <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> viewport.  <br /></td></tr>
+<tr class="memdesc:a2601ed7116d9c42c98d5c9c62146fe00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html#ad561589b3551dd85139bfaf629b960f0" title="The rendering relevant buffers to be used by viewport.">KarmaGui_ImplVulkan_ViewportData::RenderBuffers</a> associated with the single <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> viewport.  <br /></td></tr>
 <tr class="memitem:af0fcca8d4decb19e46348685131ee6dc" id="r_af0fcca8d4decb19e46348685131ee6dc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af0fcca8d4decb19e46348685131ee6dc">KarmaGui_ImplVulkan_ShivaWindowRenderBuffers</a> (VkDevice device, <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window_render_buffers.html">KarmaGui_ImplVulkanH_WindowRenderBuffers</a> *buffers, const VkAllocationCallbacks *allocator)</td></tr>
 <tr class="memdesc:af0fcca8d4decb19e46348685131ee6dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys and clears the frame buffers, <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window_render_buffers.html#a2b0dc6dd76f73e641d9a5616289d31a0" title="Reusable buffers used for rendering, to be instantiated.">KarmaGui_ImplVulkanH_WindowRenderBuffers::FrameRenderBuffers</a>, using KarmaGui_ImplVulkan_ShivaFrameRenderBuffers.  <br /></td></tr>
 <tr class="memitem:a3f0a1ac0b54a0b7ce3896636d75a78c4" id="r_a3f0a1ac0b54a0b7ce3896636d75a78c4"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f0a1ac0b54a0b7ce3896636d75a78c4">KarmaGui_ImplVulkan_ShivaFrameRenderBuffers</a> (VkDevice device, <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame_render_buffers.html">KarmaGui_ImplVulkanH_ImageFrameRenderBuffers</a> *buffers, const VkAllocationCallbacks *allocator)</td></tr>
 <tr class="memdesc:a3f0a1ac0b54a0b7ce3896636d75a78c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys and clears the following buffers.  <br /></td></tr>
 <tr class="memitem:a947289d89dbaaaf49ebe72b2a834d9d7" id="r_a947289d89dbaaaf49ebe72b2a834d9d7"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a947289d89dbaaaf49ebe72b2a834d9d7">KarmaGui_ImplVulkan_CreateFontsTexture</a> (VkCommandBuffer commandBuffer)</td></tr>
-<tr class="memdesc:a947289d89dbaaaf49ebe72b2a834d9d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates fonts' texture for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>.  <br /></td></tr>
+<tr class="memdesc:a947289d89dbaaaf49ebe72b2a834d9d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates fonts' texture for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>.  <br /></td></tr>
 <tr class="memitem:a218401e00f91c8083613f52f3b3016fa" id="r_a218401e00f91c8083613f52f3b3016fa"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a218401e00f91c8083613f52f3b3016fa">KarmaGui_ImplVulkan_CreateTexture</a> (VkCommandBuffer commandBuffer, char const *fileName, const std::string &amp;lable=&quot;&quot;)</td></tr>
 <tr class="memdesc:a218401e00f91c8083613f52f3b3016fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Routine to create Image vulkan texture.  <br /></td></tr>
 <tr class="memitem:a8798f337eabad2a1268cfbaa6114643c" id="r_a8798f337eabad2a1268cfbaa6114643c"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8798f337eabad2a1268cfbaa6114643c">KarmaGui_ImplVulkan_CreateDeviceObjects</a> ()</td></tr>
@@ -162,13 +176,42 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a69593647c6b97022deb5449e94bdef93" id="r_a69593647c6b97022deb5449e94bdef93"><td class="memItemLeft" align="right" valign="top">static VkDescriptorSet&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69593647c6b97022deb5449e94bdef93">KarmaGui_ImplVulkan_AddTexture</a> (VkSampler sampler, VkImageView imageView, VkImageLayout imageLayout)</td></tr>
 <tr class="memdesc:a69593647c6b97022deb5449e94bdef93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a texture by creation of descriptor set from preallocated descriptor pool.  <br /></td></tr>
 <tr class="memitem:aedb50322002e6ad8e1eb8e18356adb50" id="r_aedb50322002e6ad8e1eb8e18356adb50"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aedb50322002e6ad8e1eb8e18356adb50">KarmaGui_ImplVulkan_InitPlatformInterface</a> ()</td></tr>
-<tr class="memdesc:aedb50322002e6ad8e1eb8e18356adb50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a9b480e660f6873323cbdc9b93c3d2211" title="Initialize Vulkan backend renderer.">KarmaGuiRenderer::KarmaGui_ImplVulkan_Init</a>, during the initialization of Vulkan backend for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>, if Vulkan is the chosen renderer (<a class="el" href="class_karma_1_1_renderer_a_p_i.html#a2e92f9cf14b27dae03f2d5f360af98d3" title="Getter for rendering api being used.">RendererAPI::GetAPI()</a> == <a class="el" href="class_karma_1_1_renderer_a_p_i.html#a573e3e054970498200c116a853602934a38625270231b647116c80bcbc4f9d1d8" title="Vulkan (https://www.vulkan.org).">RendererAPI::API::Vulkan</a>).  <br /></td></tr>
+<tr class="memdesc:aedb50322002e6ad8e1eb8e18356adb50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a9b480e660f6873323cbdc9b93c3d2211" title="Initialize Vulkan backend renderer.">KarmaGuiRenderer::KarmaGui_ImplVulkan_Init</a>, during the initialization of Vulkan backend for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>, if Vulkan is the chosen renderer (<a class="el" href="class_karma_1_1_renderer_a_p_i.html#a2e92f9cf14b27dae03f2d5f360af98d3" title="Getter for rendering api being used.">RendererAPI::GetAPI()</a> == <a class="el" href="class_karma_1_1_renderer_a_p_i.html#a573e3e054970498200c116a853602934a38625270231b647116c80bcbc4f9d1d8" title="Vulkan (https://www.vulkan.org).">RendererAPI::API::Vulkan</a>).  <br /></td></tr>
 <tr class="memitem:aef31ff42b26af3f3f9b7b348ca304f42" id="r_aef31ff42b26af3f3f9b7b348ca304f42"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef31ff42b26af3f3f9b7b348ca304f42">KarmaGui_ImplVulkan_ShutdownPlatformInterface</a> ()</td></tr>
 <tr class="memdesc:aef31ff42b26af3f3f9b7b348ca304f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls KarmaGui::DestroyPlatformWindows, which further calls KarmaGuiInternal::DestroyPlatformWindow on each viewport window (main viewport in current state). Clears the RendererUserData and calls <a class="el" href="#a42881b7018110e014a12ce23d329da65" title="Destroys the KarmaGui window relevant data (KarmaGui_ImplVulkan_ViewportData) and buffers....">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow</a>.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A class for required Vulkan routines for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> Vulkan backend. </p>
+<div class="textblock"><p>A class for required Vulkan routines for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> Vulkan backend. </p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a53207fb86f8a12ba0abe43d609aa9e54" name="a53207fb86f8a12ba0abe43d609aa9e54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53207fb86f8a12ba0abe43d609aa9e54">&#9670;&#160;</a></span>CheckInitialization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::KarmaGuiVulkanHandler::CheckInitialization </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks whether <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___init_info.html" title="A data structure for Vulkan&#39;s initialization done in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init().">KarmaGui_ImplVulkan_InitInfo</a> has been initialized properly. Crashes if not. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_renderer.html#a5cb4f523b4ab2e3580247d7cac491467" title="Sets the renderer for KarmaGui based on programmer&#39;s choice.">KarmaGuiRenderer::SetUpKarmaGuiRenderer</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="a1d00e6e1c2ed243be58dba5ce7ce26a6" name="a1d00e6e1c2ed243be58dba5ce7ce26a6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1d00e6e1c2ed243be58dba5ce7ce26a6">&#9670;&#160;</a></span>ClearVulkanWindowData()</h2>
 
@@ -196,9 +239,9 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Clears appropriate buffers which are used for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>'s rendering. They include: </p>
+<p>Clears appropriate buffers which are used for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s rendering. They include: </p>
 <ul>
-<li><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html#a827c0cf1d334104bdb429ca3030afd76" title="Just a container for buffers (framebuffers, images, and imageviews etc) and all those sizes depending...">KarmaGui_ImplVulkanH_Window::ImageFrames</a></li>
+<li><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html#a827c0cf1d334104bdb429ca3030afd76" title="Just a container for rendertarget buffers (framebuffers, images, and imageviews etc) and all those si...">KarmaGui_ImplVulkanH_Window::ImageFrames</a></li>
 <li><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html#a4e83a6e76e046beb3704892784f58fc3" title="Data (fences, semaphores, and commandbuffers (taken from VulkanRendererAPI::GetCommandBuffers())) for...">KarmaGui_ImplVulkanH_Window::FramesOnFlight</a> if bDestroySyncronicity is set to true</li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -208,6 +251,38 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a008c215164220f1b07d0c1f0f4c18ae5" name="a008c215164220f1b07d0c1f0f4c18ae5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a008c215164220f1b07d0c1f0f4c18ae5">&#9670;&#160;</a></span>CreateDepthRenderTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::KarmaGuiVulkanHandler::CreateDepthRenderTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_f_vulkan_render_targets_info.html">FVulkanRenderTargetsInfo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>RTInfo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_f_vulkan_swap_chain.html">FVulkanSwapChain</a> *</td>          <td class="paramname"><span class="paramname"><em>SwapChain</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fills the depth render target information. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -331,7 +406,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates framebuffers, renderpass, and vertexarray (for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>) pipeline for 2D texture creation from 3D scene. </p>
+<p>Creates framebuffers, renderpass, and vertexarray (for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>) pipeline for 2D texture creation from 3D scene. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -458,6 +533,84 @@ Static Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="adab4f6d915432384b6d09d2f0db17778" name="adab4f6d915432384b6d09d2f0db17778"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adab4f6d915432384b6d09d2f0db17778">&#9670;&#160;</a></span>FillWindowData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::KarmaGuiVulkanHandler::FillWindowData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html">KarmaGui_ImplVulkanH_Window</a> *</td>          <td class="paramname"><span class="paramname"><em>windowData</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>bCreateSyncronicity</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replacement for ShareVulkanContextResourcesOfMainWindow. Does the following. </p>
+<ul>
+<li>Creates Vulkan swapchain and sets the swapchain handle of windowData along with imagecount, MAX_FRAMES_IN_FLIGHT, and renderarea.</li>
+<li>Creates Vulkan renderpass (see <a class="el" href="#aadbbae2686575f36a55e490422698360" title="Prepares the renderpass information for KarmaGui&#39;s Vulkan backend.">KarmaGuiVulkanHandler::MakeRenderPassInfo</a>) for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s Vulkan backend and sets backend-&gt;VulkanInitInfo.RenderPass with this renderpass (of which <a class="el" href="#aeb43f8c13ca81df044eecbe9dbd05630" title="Creates KarmaGui_ImplVulkan_Data.Pipeline.">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline</a> is created)</li>
+<li>Creates depth render target and uses swapchain images for color render targets and packages them into <a class="el" href="class_karma_1_1_f_vulkan_render_targets_info.html" title="May move to more abstract since any graphic api should use such render targets&#39; information.">FVulkanRenderTargetsInfo</a></li>
+<li>Creates framebuffers for each swapchain image and sets windowData-&gt;Framebuffers</li>
+<li>Sets windowData-&gt;CommandPool with the pool created in FVulkanDynamiRHI::m_Device (<a class="el" href="class_karma_1_1_f_vulkan_device.html" title="Manages Vulkan device resources and operations.">FVulkanDevice</a>)</li>
+<li>Creates semaphores and fences if bCreateSyncronicity is set to true</li>
+</ul>
+<dl class="section note"><dt>Note</dt><dd>SwapChain and renderpass resources are cleared in <a class="el" href="#a42881b7018110e014a12ce23d329da65" title="Destroys the KarmaGui window relevant data (KarmaGui_ImplVulkan_ViewportData) and buffers....">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a913525c97865e2c1bf62bd513ba1f359" name="a913525c97865e2c1bf62bd513ba1f359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a913525c97865e2c1bf62bd513ba1f359">&#9670;&#160;</a></span>GatherSwapChainColorRenderTargets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::KarmaGuiVulkanHandler::GatherSwapChainColorRenderTargets </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_f_vulkan_render_targets_info.html">FVulkanRenderTargetsInfo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>RTInfo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_f_vulkan_swap_chain.html">FVulkanSwapChain</a> *</td>          <td class="paramname"><span class="paramname"><em>SwapChain</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>SwapChainImageIndex</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prepares the RTInfo for framebuffer creation. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -642,7 +795,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Creates fonts' texture for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>. </p>
+<p>Creates fonts' texture for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">commandBuffer</td><td>The buffer of commands to be filled with primitive drawing and relevant commands </td></tr>
@@ -947,7 +1100,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Clears the <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html#ad561589b3551dd85139bfaf629b960f0" title="The rendering relevant buffers to be used by viewport.">KarmaGui_ImplVulkan_ViewportData::RenderBuffers</a> associated with the single <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> viewport. </p>
+<p>Clears the <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html#ad561589b3551dd85139bfaf629b960f0" title="The rendering relevant buffers to be used by viewport.">KarmaGui_ImplVulkan_ViewportData::RenderBuffers</a> associated with the single <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> viewport. </p>
 <dl class="section note"><dt>Note</dt><dd>Engine is not supporting multiviewports in the current state.</dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
@@ -987,7 +1140,7 @@ Static Public Member Functions</h2></td></tr>
 <li><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#aa37b401f2a0186e69738fe9c64f61dc0" title="A handle to the descriptorsetlayout created by backend in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_...">KarmaGui_ImplVulkan_Data::DescriptorSetLayout</a></li>
 <li><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#a0a98124a889feda82390bfe97e14e1b6" title="Opaque handle to a pipeline layout object. Access to descriptor sets from a pipeline is accomplished ...">KarmaGui_ImplVulkan_Data::PipelineLayout</a></li>
 <li><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#ab3fd538b7f67b6e1b6af2e36a9cafae9" title="A huge object in Vulkan that encompasses the configuration of the entire GPU for the draw....">KarmaGui_ImplVulkan_Data::Pipeline</a></li>
-<li><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html" title="Data structure containing the Mesa image texture relevant data. For instance, file and folder icons o...">KarmaGui_ImplVulkan_Image_TextureData</a> of <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#ac6e6b1a2bd4881e77346873d7611cd71" title="List of vulkan images&#39; textures, for instance icons and stuff.">KarmaGui_ImplVulkan_Data::vulkanMesaDecalDataList</a></li>
+<li><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html" title="Data structure containing the Mesa image texture relevant data. For instance, file,...">KarmaGui_ImplVulkan_Image_TextureData</a> of <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#ac6e6b1a2bd4881e77346873d7611cd71" title="List of vulkan images&#39; textures, for instance icons and stuff.">KarmaGui_ImplVulkan_Data::vulkanMesaDecalDataList</a></li>
 </ol>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
@@ -1048,7 +1201,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Destroys the <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> window relevant data (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html" title="Data relevant to rendering of a Mesa viewport.">KarmaGui_ImplVulkan_ViewportData</a>) and buffers. Called by <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a775ef054881cb12eb9d06de979767828" title="Cleaning up vulkan allocated resources.">KarmaGuiRenderer::CleanUpVulkanAndWindowData()</a>. </p>
+<p>Destroys the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> window relevant data (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html" title="Data relevant to rendering of a Mesa viewport.">KarmaGui_ImplVulkan_ViewportData</a>) and buffers. Called by <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a775ef054881cb12eb9d06de979767828" title="Cleaning up vulkan allocated resources.">KarmaGuiRenderer::CleanUpVulkanAndWindowData()</a>. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="#a1d00e6e1c2ed243be58dba5ce7ce26a6" title="Clears appropriate buffers which are used for KarmaGui&#39;s rendering. They include:">KarmaGuiVulkanHandler::ClearVulkanWindowData</a></dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -1083,7 +1236,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Destroys the <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> window relevant data (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html" title="Data relevant to rendering of a Mesa viewport.">KarmaGui_ImplVulkan_ViewportData</a>) and buffers. Basically set to KarmaGuiPlatformIO::Renderer_DestroyWindow pointer. </p>
+<p>Destroys the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> window relevant data (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html" title="Data relevant to rendering of a Mesa viewport.">KarmaGui_ImplVulkan_ViewportData</a>) and buffers. Basically set to KarmaGuiPlatformIO::Renderer_DestroyWindow pointer. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">viewport</td><td>The current platform window to be destroyed </td></tr>
@@ -1117,8 +1270,8 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Called in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a9b480e660f6873323cbdc9b93c3d2211" title="Initialize Vulkan backend renderer.">KarmaGuiRenderer::KarmaGui_ImplVulkan_Init</a>, during the initialization of Vulkan backend for <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>, if Vulkan is the chosen renderer (<a class="el" href="class_karma_1_1_renderer_a_p_i.html#a2e92f9cf14b27dae03f2d5f360af98d3" title="Getter for rendering api being used.">RendererAPI::GetAPI()</a> == <a class="el" href="class_karma_1_1_renderer_a_p_i.html#a573e3e054970498200c116a853602934a38625270231b647116c80bcbc4f9d1d8" title="Vulkan (https://www.vulkan.org).">RendererAPI::API::Vulkan</a>). </p>
-<dl class="section note"><dt>Note</dt><dd>Setting up <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>'s window operations (create, resize, and all that)</dd></dl>
+<p>Called in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a9b480e660f6873323cbdc9b93c3d2211" title="Initialize Vulkan backend renderer.">KarmaGuiRenderer::KarmaGui_ImplVulkan_Init</a>, during the initialization of Vulkan backend for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>, if Vulkan is the chosen renderer (<a class="el" href="class_karma_1_1_renderer_a_p_i.html#a2e92f9cf14b27dae03f2d5f360af98d3" title="Getter for rendering api being used.">RendererAPI::GetAPI()</a> == <a class="el" href="class_karma_1_1_renderer_a_p_i.html#a573e3e054970498200c116a853602934a38625270231b647116c80bcbc4f9d1d8" title="Vulkan (https://www.vulkan.org).">RendererAPI::API::Vulkan</a>). </p>
+<dl class="section note"><dt>Note</dt><dd>Setting up <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s window operations (create, resize, and all that)</dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -1188,7 +1341,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>No clue what this does. Legacy? </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000086">Todo</a></b></dt><dd>Ponder over </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000087">Todo</a></b></dt><dd>Ponder over </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -1230,17 +1383,17 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Record <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> primitives into command buffer. Frame rendering relevant buffers and resources are set. They include: </p>
+<p>Record <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> primitives into command buffer. Frame rendering relevant buffers and resources are set. They include: </p>
 <ol type="1">
 <li>drawData-&gt;OwnerViewport-&gt;RendererUserData-&gt;RenderBuffers (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___viewport_data.html#ad561589b3551dd85139bfaf629b960f0" title="The rendering relevant buffers to be used by viewport.">KarmaGui_ImplVulkan_ViewportData::RenderBuffers</a>)</li>
 <li>drawData-&gt;OwnerViewport-&gt;RendererUserData-&gt;RenderBuffers-&gt;FrameRenderBuffers (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window_render_buffers.html#a2b0dc6dd76f73e641d9a5616289d31a0" title="Reusable buffers used for rendering, to be instantiated.">KarmaGui_ImplVulkanH_WindowRenderBuffers::FrameRenderBuffers</a>)</li>
 <li>FrameRenderBuffers::VertexBuffer and FrameRenderBuffers::IndexBuffer and corresponding sizes</li>
 <li>Commandbuffer is filled with scissor, KarmaGui_ImplVulkan_SetupRenderState, and drawing primitives commands</li>
 </ol>
-<p>Also any callback routines, usually related to rendering in <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>'s window (for instance 3D scene data), are processed here.</p>
+<p>Also any callback routines, usually related to rendering in <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s window (for instance 3D scene data), are processed here.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">drawData</td><td>All draw data to render a <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> frame </td></tr>
+    <tr><td class="paramname">drawData</td><td>All draw data to render a <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> frame </td></tr>
     <tr><td class="paramname">commandBuffer</td><td>The buffer of commands to be filled with primitive drawing and relevant commands </td></tr>
     <tr><td class="paramname">pipeline</td><td><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___data.html#ab3fd538b7f67b6e1b6af2e36a9cafae9" title="A huge object in Vulkan that encompasses the configuration of the entire GPU for the draw....">KarmaGui_ImplVulkan_Data::Pipeline</a> </td></tr>
     <tr><td class="paramname">imageFrameIndex</td><td>The frame counter (<a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html#a2434955c7533a2fea20d7acd813634e9" title="Current set of swapchain wait semaphores and command buffers we&#39;re using (0 &lt;= SemaphoreIndex &lt; MAX_F...">KarmaGui_ImplVulkanH_Window::SemaphoreIndex</a>)</td></tr>
@@ -1253,7 +1406,7 @@ Static Public Member Functions</h2></td></tr>
 <div class="line"> <a class="code hl_function" href="#a2ca6554d0fac593aae7be85c39dab4b7">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData</a>(drawData, frameOnFlightData-&gt;CommandBuffer, VK_NULL_HANDLE, windowData-&gt;SemaphoreIndex);</div>
 <div class="line">}</div>
 <div class="line">vkCmdEndRenderPass(frameOnFlightData-&gt;CommandBuffer);</div>
-<div class="ttc" id="aclass_karma_1_1_karma_gui_vulkan_handler_html_a2ca6554d0fac593aae7be85c39dab4b7"><div class="ttname"><a href="#a2ca6554d0fac593aae7be85c39dab4b7">Karma::KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData</a></div><div class="ttdeci">static void KarmaGui_ImplVulkan_RenderDrawData(KGDrawData *drawData, VkCommandBuffer commandBuffer, VkPipeline pipeline, uint32_t imageFrameIndex)</div><div class="ttdoc">Record KarmaGui primitives into command buffer. Frame rendering relevant buffers and resources are se...</div><div class="ttdef"><b>Definition</b> KarmaGuiVulkanHandler.cpp:207</div></div>
+<div class="ttc" id="aclass_karma_1_1_karma_gui_vulkan_handler_html_a2ca6554d0fac593aae7be85c39dab4b7"><div class="ttname"><a href="#a2ca6554d0fac593aae7be85c39dab4b7">Karma::KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData</a></div><div class="ttdeci">static void KarmaGui_ImplVulkan_RenderDrawData(KGDrawData *drawData, VkCommandBuffer commandBuffer, VkPipeline pipeline, uint32_t imageFrameIndex)</div><div class="ttdoc">Record KarmaGui primitives into command buffer. Frame rendering relevant buffers and resources are se...</div><div class="ttdef"><b>Definition</b> KarmaGuiVulkanHandler.cpp:212</div></div>
 </div><!-- fragment --></dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
@@ -1286,7 +1439,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>A set of instructions for rendering a viewport of <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> window (called each loop for realtime Vulkan rendering). A bird's eye overview can be experienced in the wikipedia page <a href="https://github.com/ravimohan1991/KarmaEngine/wiki/Vulkan-Creative-Pipeline-(vCP)-II">https://github.com/ravimohan1991/KarmaEngine/wiki/Vulkan-Creative-Pipeline-(vCP)-II</a>. Set to <a class="el" href="struct_karma_gui_platform_i_o.html#a5889d84187c6addf5d6999efba728db2" title="(Optional) Clear framebuffer, setup render target, then render the viewport-&gt;DrawData....">KarmaGuiPlatformIO::Renderer_RenderWindow</a> in the function <a class="el" href="#aedb50322002e6ad8e1eb8e18356adb50" title="Called in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init, during the initialization of Vulkan backend for...">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_InitPlatformInterface()</a>. Called in the routine KarmaGuiRenderer::OnKarmaGuiLayerEnd(), via <a class="el" href="class_karma_1_1_karma_gui.html#a4cfd4ebcfdaaec822b80b7805d288e36" title="Call in main loop. Will call RenderWindow/SwapBuffers platform functions for each secondary viewport ...">KarmaGui::RenderPlatformWindowsDefault()</a>-&gt;platform_io.Renderer_RenderWindow, if multiviewports (KGGuiConfigFlags_ViewportsEnable) are supported. </p>
+<p>A set of instructions for rendering a viewport of <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> window (called each loop for realtime Vulkan rendering). A bird's eye overview can be experienced in the wikipedia page <a href="https://github.com/ravimohan1991/KarmaEngine/wiki/Vulkan-Creative-Pipeline-(vCP)-II">https://github.com/ravimohan1991/KarmaEngine/wiki/Vulkan-Creative-Pipeline-(vCP)-II</a>. Set to <a class="el" href="struct_karma_gui_platform_i_o.html#a5889d84187c6addf5d6999efba728db2" title="(Optional) Clear framebuffer, setup render target, then render the viewport-&gt;DrawData....">KarmaGuiPlatformIO::Renderer_RenderWindow</a> in the function <a class="el" href="#aedb50322002e6ad8e1eb8e18356adb50" title="Called in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init, during the initialization of Vulkan backend for...">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_InitPlatformInterface()</a>. Called in the routine KarmaGuiRenderer::OnKarmaGuiLayerEnd(), via <a class="el" href="class_karma_1_1_karma_gui.html#a4cfd4ebcfdaaec822b80b7805d288e36" title="Call in main loop. Will call RenderWindow/SwapBuffers platform functions for each secondary viewport ...">KarmaGui::RenderPlatformWindowsDefault()</a>-&gt;platform_io.Renderer_RenderWindow, if multiviewports (KGGuiConfigFlags_ViewportsEnable) are supported. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">viewport</td><td>The viewport to be rendered</td></tr>
@@ -1345,10 +1498,10 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>A routine to bind index/vertex buffers, setup a external viewport, and bind pipeline. Usually for rendering of <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> windows and all that. </p>
+<p>A routine to bind index/vertex buffers, setup a external viewport, and bind pipeline. Usually for rendering of <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> windows and all that. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">drawData</td><td>All draw data to render a <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> frame </td></tr>
+    <tr><td class="paramname">drawData</td><td>All draw data to render a <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> frame </td></tr>
     <tr><td class="paramname">pipeline</td><td>The vulkan pipeline (created in KarmaGui_ImplVulkan_CreatePipeline) being used by the backend </td></tr>
     <tr><td class="paramname">commandBuffer</td><td>The vulkan commandbuffer (taken from VulkanRendererAPI.m_CommandBuffer) being used by the backend, see todo list. </td></tr>
     <tr><td class="paramname">remderingBufferData</td><td>The set of buffers relevant to current frame (in flight?) </td></tr>
@@ -1600,8 +1753,8 @@ A core design philosophy in Vulkan is that synchronization of execution on the G
 
 </div>
 </div>
-<a id="ac2c93fab4bd1c3b354b46485db32a8d6" name="ac2c93fab4bd1c3b354b46485db32a8d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2c93fab4bd1c3b354b46485db32a8d6">&#9670;&#160;</a></span>ShareVulkanContextResourcesOfMainWindow()</h2>
+<a id="aadbbae2686575f36a55e490422698360" name="aadbbae2686575f36a55e490422698360"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadbbae2686575f36a55e490422698360">&#9670;&#160;</a></span>MakeRenderPassInfo()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1610,14 +1763,14 @@ A core design philosophy in Vulkan is that synchronization of execution on the G
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Karma::KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow </td>
+          <td class="memname">void Karma::KarmaGuiVulkanHandler::MakeRenderPassInfo </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html">KarmaGui_ImplVulkanH_Window</a> *</td>          <td class="paramname"><span class="paramname"><em>windowData</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_f_vulkan_swap_chain.html">FVulkanSwapChain</a> *</td>          <td class="paramname"><span class="paramname"><em>SwapChain</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>bCreateSyncronicity</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+          <td class="paramtype">struct <a class="el" href="struct_karma_1_1_f_vulkan_render_pass_info.html">FVulkanRenderPassInfo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>RPInfo</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1627,19 +1780,40 @@ A core design philosophy in Vulkan is that synchronization of execution on the G
 </table>
 </div><div class="memdoc">
 
-<p>The purpose of the routine is two-fold. </p>
-<ul>
-<li>Share the Vulkan resources, including Swapchain, Renderpass, CommandPool, Framebuffer, and all that, of MainWindow (stored in <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a> of <a class="el" href="class_karma_1_1_vulkan_holder.html" title="A holder class to statically hold VulkanContext instance.">VulkanHolder</a>, initialized during <a class="el" href="class_karma_1_1_vulkan_context.html#ae07d2db438aac38447337bed1c940713" title="Initializes VulkanContext by creating appropriate Vulkan and glslang specific instruments and allocat...">VulkanContext::Init()</a> which gets called on Platform(Windows, Mac, and Linux)<a class="el" href="class_karma_1_1_window.html" title="The abstract base class of Karma&#39;s window (for platform specific purposes).">Window</a> during their specific creation implementation, for instance LinuxWindow::Init) to <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>'s backend, after appropriate clearence.</li>
-<li>Ground work for establishing syncronicity, in GPU side functions' execution, by creating semaphores for (<a href="https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation#page_Synchronization">https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation#page_Synchronization</a>)<ol type="1">
-<li>to signal that image has been acquired from the swapchain and ready for rendering</li>
-<li>to signal that rendering has finished and presentation (the last step of drawing a frame is submitting the result back to the swap chain to have it eventually show up on the screen) can happen The set number of semaphores (we are using two types of them) are for number of "frames in flight" which represent the number of frames which can be processed on CPU whilst rendering is done on GPU</li>
-</ol>
-</li>
-</ul>
+<p>Prepares the renderpass information for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s Vulkan backend. </p>
+<p>Basically fills <a class="el" href="struct_karma_1_1_f_vulkan_render_pass_info.html" title="Data structure to hold information about Vulkan renderpass attachments (like color and depth attachme...">FVulkanRenderPassInfo</a> struct with two attachments, one for color and one for depth.</p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000086">Todo</a></b></dt><dd>Ponder upon the configurable subpass configuration. Currently done in <a class="el" href="class_karma_1_1_f_vulkan_render_pass_builder.html#af1b4f9df56aeafadc20545615315a40c" title="Build the VkRenderPassCreateInfo structure from the supplied FVulkanRenderTargetLayout.">FVulkanRenderPassBuilder::BuildCreateInfo</a> with basic subpass description. </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a36b1b8add3f3d5fafb23d214d1a39255" name="a36b1b8add3f3d5fafb23d214d1a39255"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36b1b8add3f3d5fafb23d214d1a39255">&#9670;&#160;</a></span>ShivaSwapChainForRebuild()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::KarmaGuiVulkanHandler::ShivaSwapChainForRebuild </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___window.html">KarmaGui_ImplVulkanH_Window</a> *</td>          <td class="paramname"><span class="paramname"><em>windowData</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destroys swapchain and related resources for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s Vulkan backend. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">windowData</td><td>The datastructure to hold all the data needed by one rendering Vulkan context. </td></tr>
-    <tr><td class="paramname">bCreateSyncronicity</td><td>Should we allocate semaphores and fences. For instance true during <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a5cb4f523b4ab2e3580247d7cac491467" title="Sets the renderer for KarmaGui based on programmer&#39;s choice.">KarmaGuiRenderer::SetUpKarmaGuiRenderer</a> and false during KarmaGuiRenderer::GiveLoopBeginControlToVulkan</td></tr>
+    <tr><td class="paramname">windowData</td><td>Container for information required for swapchain destruction </td></tr>
   </table>
   </dd>
 </dl>

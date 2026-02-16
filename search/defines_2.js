@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['event_5fclass_5fcategory_0',['EVENT_CLASS_CATEGORY',['../_event_8h.html#abd52deea587a36ef619e596a0c691839',1,'Event.h']]],
-  ['event_5fclass_5ftype_1',['EVENT_CLASS_TYPE',['../_event_8h.html#a80d534fc4d69a68eefd1573fd0ac2f44',1,'Event.h']]]
+  ['declare_5fkarma_5fclass_0',['DECLARE_KARMA_CLASS',['../_g_framework_macros_8h.html#af3d6e87ba7fc4890d74636f2a614496e',1,'GFrameworkMacros.h']]],
+  ['define_5fdefault_5fconstructor_5fcall_1',['DEFINE_DEFAULT_CONSTRUCTOR_CALL',['../_g_framework_macros_8h.html#a8a4d9d62bf4e9adb896567b519908bb7',1,'GFrameworkMacros.h']]]
 ];

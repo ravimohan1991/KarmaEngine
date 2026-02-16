@@ -1,10 +1,12 @@
 var searchData=
 [
-  ['value_0',['Value',['../struct_karma_1_1_t_is_derived_from.html#aa95a7dd8e2d3562185ec82eb6fcac23b',1,'Karma::TIsDerivedFrom']]],
-  ['vbohandle_1',['VboHandle',['../struct_karma_1_1_karma_gui___impl_open_g_l3___data.html#a7d564cdc486dd8065279f092f071614b',1,'Karma::KarmaGui_ImplOpenGL3_Data']]],
-  ['vertexbuffer_2',['VertexBuffer',['../struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame_render_buffers.html#a02160c859f8974ef45b4ef8ced8e79b9',1,'Karma::KarmaGui_ImplVulkanH_ImageFrameRenderBuffers']]],
-  ['vertexbuffermemory_3',['VertexBufferMemory',['../struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame_render_buffers.html#a13f604c2c2a0c96fc7a7b19d360d2513',1,'Karma::KarmaGui_ImplVulkanH_ImageFrameRenderBuffers']]],
-  ['vertexbuffersize_4',['VertexBufferSize',['../struct_karma_1_1_karma_gui___impl_open_g_l3___data.html#a828f5fab5881466bebea807eddeeb07e',1,'Karma::KarmaGui_ImplOpenGL3_Data::VertexBufferSize'],['../struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame_render_buffers.html#aa66f0b74e9e6759e6b0d5452bbdcad76',1,'Karma::KarmaGui_ImplVulkanH_ImageFrameRenderBuffers::VertexBufferSize']]],
-  ['vulkaninitinfo_5',['VulkanInitInfo',['../struct_karma_1_1_karma_gui___impl_vulkan___data.html#a04092d99e23a6c7734710158cc213471',1,'Karma::KarmaGui_ImplVulkan_Data']]],
-  ['vulkanmesadecaldatalist_6',['vulkanMesaDecalDataList',['../struct_karma_1_1_karma_gui___impl_vulkan___data.html#ac6e6b1a2bd4881e77346873d7611cd71',1,'Karma::KarmaGui_ImplVulkan_Data']]]
+  ['texturedescriptorset_0',['TextureDescriptorSet',['../struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html#a97859426042264139533e8bc1eefbe3e',1,'Karma::KarmaGui_ImplVulkan_Image_TextureData']]],
+  ['textureimage_1',['TextureImage',['../struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html#a4aa7e5ed35913e63dd9d5257081a9a7b',1,'Karma::KarmaGui_ImplVulkan_Image_TextureData']]],
+  ['texturelable_2',['TextureLable',['../struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html#af6dbc03a6ec9eec30ce40e5aa2730f7c',1,'Karma::KarmaGui_ImplVulkan_Image_TextureData']]],
+  ['texturememory_3',['TextureMemory',['../struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html#a8cb41157febc5361e29b1f554cca8f64',1,'Karma::KarmaGui_ImplVulkan_Image_TextureData']]],
+  ['texturesampler_4',['TextureSampler',['../struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html#a10d03b9ced5cb7d0a916622bf5b8288d',1,'Karma::KarmaGui_ImplVulkan_Image_TextureData']]],
+  ['textureview_5',['TextureView',['../struct_karma_1_1_karma_gui___impl_vulkan___image___texture_data.html#ab8c05c98fcedc95e4a117fafcf969af1',1,'Karma::KarmaGui_ImplVulkan_Image_TextureData']]],
+  ['title_6',['Title',['../struct_karma_1_1_window_props.html#aa48d0319321b70b70ae11e684aaae4c7',1,'Karma::WindowProps']]],
+  ['totalimagecount_7',['TotalImageCount',['../struct_karma_1_1_karma_gui___impl_vulkan_h___window.html#ada96e70fe3975b6b5f12407463f21c0b',1,'Karma::KarmaGui_ImplVulkanH_Window']]],
+  ['type_8',['Type',['../struct_karma_1_1_buffer_element.html#a19f0817ed077839c07acd116f4f156eb',1,'Karma::BufferElement']]]
 ];

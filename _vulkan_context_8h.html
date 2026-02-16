@@ -86,8 +86,7 @@ $(function() {
 
 <p>This file contains VulkanContext class.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;krpch.h&quot;</code><br />
-<code>#include &quot;<a class="el" href="_graphics_context_8h_source.html">Karma/Renderer/GraphicsContext.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="_graphics_context_8h_source.html">Karma/Renderer/GraphicsContext.h</a>&quot;</code><br />
 <code>#include &quot;GLFW/glfw3.h&quot;</code><br />
 <code>#include &quot;vulkan/vulkan_core.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="_vulkan_buffer_8h_source.html">Platform/Vulkan/VulkanBuffer.h</a>&quot;</code><br />
@@ -97,12 +96,13 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:Karma_3A_3AQueueFamilyIndices" id="r_Karma_3A_3AQueueFamilyIndices"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_karma_1_1_queue_family_indices.html">Karma::QueueFamilyIndices</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A structure for graphics and present queuefamilies.  <a href="struct_karma_1_1_queue_family_indices.html#details">More...</a><br /></td></tr>
-<tr class="memitem:Karma_3A_3ASwapChainSupportDetails" id="r_Karma_3A_3ASwapChainSupportDetails"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_karma_1_1_swap_chain_support_details.html">Karma::SwapChainSupportDetails</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure with data required for appropriate creation and working of swapchain.  <a href="struct_karma_1_1_swap_chain_support_details.html#details">More...</a><br /></td></tr>
+<tr class="memitem:Karma_3A_3AFrameDescriptorSets" id="r_Karma_3A_3AFrameDescriptorSets"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_karma_1_1_frame_descriptor_sets.html">Karma::FrameDescriptorSets</a></td></tr>
+<tr class="memitem:Karma_3A_3AQueueFamilyIndicesDepricated" id="r_Karma_3A_3AQueueFamilyIndicesDepricated"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_karma_1_1_queue_family_indices_depricated.html">Karma::QueueFamilyIndicesDepricated</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A structure for graphics and present queuefamilies.  <a href="struct_karma_1_1_queue_family_indices_depricated.html#details">More...</a><br /></td></tr>
+<tr class="memitem:Karma_3A_3ASwapChainSupportDetailsDepricated" id="r_Karma_3A_3ASwapChainSupportDetailsDepricated"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_karma_1_1_swap_chain_support_details_depricated.html">Karma::SwapChainSupportDetailsDepricated</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure with data required for appropriate creation and working of swapchain.  <a href="struct_karma_1_1_swap_chain_support_details_depricated.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Karma_3A_3AVulkanContext" id="r_Karma_3A_3AVulkanContext"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_karma_1_1_vulkan_context.html">Karma::VulkanContext</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan API has the following concepts.  <a href="class_karma_1_1_vulkan_context.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A class for Vulkan specific graphics context. This class also contains all the common Vulkan resources shared by various elements that are rendered, for instance UniformBufferObjects, graphicspipeline etc.  <a href="class_karma_1_1_vulkan_context.html#details">More...</a><br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This file contains VulkanContext class. </p>

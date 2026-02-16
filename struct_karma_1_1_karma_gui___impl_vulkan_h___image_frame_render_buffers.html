@@ -85,7 +85,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Reusable buffers used for rendering 1 current in-flight ImageFrame, for KarmaGui_ImplVulkan_RenderDrawData(). Seems like data structure with single instantiation for each of the FrameIndex.  
+<p>Reusable buffers used for rendering 1 current in-flight ImageFrame, for KarmaGui_ImplVulkan_RenderDrawData(). Seems like data structure with single instantiation for each of the FrameIndex (not ImageFrameIndex which is returned by vkGetSwapchainImagesKHR).  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_karma_gui_vulkan_handler_8h_source.html">KarmaGuiVulkanHandler.h</a>&gt;</code></p>
@@ -111,8 +111,10 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:ad9ed87fba606d838f61310cb7c033d99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan buffer to be bound to <a class="el" href="struct_karma_1_1_karma_gui___vulkan___frame___on___flight.html#a45e2fa05e1788ba9d71ea11de43935d3" title="Object used to record commands which can be subsequently submitted to a device queue for execution....">KarmaGui_Vulkan_Frame_On_Flight::CommandBuffer</a> for indexbuffer.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Reusable buffers used for rendering 1 current in-flight ImageFrame, for KarmaGui_ImplVulkan_RenderDrawData(). Seems like data structure with single instantiation for each of the FrameIndex. </p>
-<dl class="section note"><dt>Note</dt><dd>Please zero-clear before use. </dd></dl>
+<div class="textblock"><p>Reusable buffers used for rendering 1 current in-flight ImageFrame, for KarmaGui_ImplVulkan_RenderDrawData(). Seems like data structure with single instantiation for each of the FrameIndex (not ImageFrameIndex which is returned by vkGetSwapchainImagesKHR). </p>
+<dl class="section note"><dt>Note</dt><dd>Please zero-clear before use.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#a2ca6554d0fac593aae7be85c39dab4b7" title="Record KarmaGui primitives into command buffer. Frame rendering relevant buffers and resources are se...">KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a247bf694d13da4e2d260e82cd650092e" name="a247bf694d13da4e2d260e82cd650092e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a247bf694d13da4e2d260e82cd650092e">&#9670;&#160;</a></span>KarmaGui_ImplVulkanH_ImageFrameRenderBuffers()</h2>

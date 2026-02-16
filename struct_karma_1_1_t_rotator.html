@@ -85,17 +85,24 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Implements a container for rotation information.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_transform_8h_source.html">Transform.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abfd6df3a21cc3245917a18a21d91fdd8" id="r_abfd6df3a21cc3245917a18a21d91fdd8"><td class="memItemLeft" align="right" valign="top"><a id="abfd6df3a21cc3245917a18a21d91fdd8" name="abfd6df3a21cc3245917a18a21d91fdd8"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TRotator</b> (glm::vec3 EulerAngles)</td></tr>
-<tr class="memitem:abaf0d4c92c177675f95ec9a196ecadbc" id="r_abaf0d4c92c177675f95ec9a196ecadbc"><td class="memItemLeft" align="right" valign="top">TRotator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abaf0d4c92c177675f95ec9a196ecadbc">Inverse</a> () const</td></tr>
+<tr class="memitem:abaf0d4c92c177675f95ec9a196ecadbc" id="r_abaf0d4c92c177675f95ec9a196ecadbc"><td class="memItemLeft" align="right" valign="top"><a id="abaf0d4c92c177675f95ec9a196ecadbc" name="abaf0d4c92c177675f95ec9a196ecadbc"></a>
+TRotator&#160;</td><td class="memItemRight" valign="bottom"><b>Inverse</b> () const</td></tr>
+<tr class="memdesc:abaf0d4c92c177675f95ec9a196ecadbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the counter of this rotation governed by Yaw, Pitch, and Roll in the fashion above. <br /></td></tr>
 <tr class="memitem:ac609c5492a92d6e172f185f9c8444f0b" id="r_ac609c5492a92d6e172f185f9c8444f0b"><td class="memItemLeft" align="right" valign="top"><a id="ac609c5492a92d6e172f185f9c8444f0b" name="ac609c5492a92d6e172f185f9c8444f0b"></a>
 TRotator&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (const TRotator &amp;Other) const</td></tr>
 <tr class="memitem:ae8e2e3e84d66dc8f8084ba9b2ee19b61" id="r_ae8e2e3e84d66dc8f8084ba9b2ee19b61"><td class="memItemLeft" align="right" valign="top"><a id="ae8e2e3e84d66dc8f8084ba9b2ee19b61" name="ae8e2e3e84d66dc8f8084ba9b2ee19b61"></a>
 glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (const glm::vec3 &amp;Translation) const</td></tr>
+<tr class="memitem:aeacc36791a209922ff5007a8d93c4c77" id="r_aeacc36791a209922ff5007a8d93c4c77"><td class="memItemLeft" align="right" valign="top"><a id="aeacc36791a209922ff5007a8d93c4c77" name="aeacc36791a209922ff5007a8d93c4c77"></a>
+glm::quat&#160;</td><td class="memItemRight" valign="bottom"><b>ToQuat</b> () const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -104,38 +111,12 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:acd4170e7708584598c6d797befdcbcaa" id="r_acd4170e7708584598c6d797befdcbcaa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acd4170e7708584598c6d797befdcbcaa">m_Roll</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Implements a container for rotation information.</p>
+<div class="textblock"><p>Implements a container for rotation information. </p>
 <p>All rotation values are stored in degrees.</p>
 <p>The angles are interpreted as intrinsic rotations applied in the order Yaw, then Pitch, then Roll. I.e., an object would be rotated first by the specified yaw around its up axis (with positive angles interpreted as clockwise when viewed from above, along -Z), then pitched around its (new) right axis (with positive angles interpreted as 'nose up', i.e. clockwise when viewed along +Y), and then finally rolled around its (final) forward axis (with positive angles interpreted as clockwise rotations when viewed along +X).</p>
-<p>Note that these conventions differ from quaternion axis/angle. UE Quat always considers a positive angle to be a left-handed rotation, whereas Rotator treats yaw as left-handed but pitch and roll as right-handed. </p>
-</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="abaf0d4c92c177675f95ec9a196ecadbc" name="abaf0d4c92c177675f95ec9a196ecadbc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abaf0d4c92c177675f95ec9a196ecadbc">&#9670;&#160;</a></span>Inverse()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">TRotator Karma::TRotator::Inverse </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Returns the counter of this rotation governed by Yaw, Pitch, and Roll in the fashion above </p>
-
-</div>
-</div>
-<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<p>Note that these conventions differ from quaternion axis/angle. UE Quat always considers a positive angle to be a left-handed rotation, whereas Rotator treats yaw as left-handed but pitch and roll as right-handed.</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
 <a id="ad47295713662d68f4da60b95bee31889" name="ad47295713662d68f4da60b95bee31889"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad47295713662d68f4da60b95bee31889">&#9670;&#160;</a></span>m_Pitch</h2>
 

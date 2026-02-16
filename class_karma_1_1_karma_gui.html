@@ -83,6 +83,11 @@ $(function() {
   <div class="headertitle"><div class="title">Karma::KarmaGui Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>The chief class for our UI needs. The responsibility includes.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_karma_gui_8h_source.html">KarmaGui.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -103,7 +108,7 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>NewFrame</b> (
 <tr class="memitem:ac0e7dffbd2470c41d4600634dcae4763" id="r_ac0e7dffbd2470c41d4600634dcae4763"><td class="memItemLeft" align="right" valign="top"><a id="ac0e7dffbd2470c41d4600634dcae4763" name="ac0e7dffbd2470c41d4600634dcae4763"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>EndFrame</b> ()</td></tr>
 <tr class="memitem:a1d9b26de2cde7a601f7ed184e90e177c" id="r_a1d9b26de2cde7a601f7ed184e90e177c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d9b26de2cde7a601f7ed184e90e177c">Render</a> ()</td></tr>
-<tr class="memdesc:a1d9b26de2cde7a601f7ed184e90e177c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to fill the <a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> instance of <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>.  <br /></td></tr>
+<tr class="memdesc:a1d9b26de2cde7a601f7ed184e90e177c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to fill the <a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> instance of <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>.  <br /></td></tr>
 <tr class="memitem:affcb0e2ebbfb6c2d10dd0f34bd5c78a2" id="r_affcb0e2ebbfb6c2d10dd0f34bd5c78a2"><td class="memItemLeft" align="right" valign="top"><a id="affcb0e2ebbfb6c2d10dd0f34bd5c78a2" name="affcb0e2ebbfb6c2d10dd0f34bd5c78a2"></a>
 static <a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>GetDrawData</b> ()</td></tr>
 <tr class="memitem:a2122929f87125717ab69c86271b9db0a" id="r_a2122929f87125717ab69c86271b9db0a"><td class="memItemLeft" align="right" valign="top"><a id="a2122929f87125717ab69c86271b9db0a" name="a2122929f87125717ab69c86271b9db0a"></a>
@@ -880,7 +885,20 @@ static <a class="el" href="struct_karma_gui_viewport.html">KarmaGuiViewport</a> 
 <tr class="memitem:a0fc7beef2d31e3b45fe56ae960ac64ba" id="r_a0fc7beef2d31e3b45fe56ae960ac64ba"><td class="memItemLeft" align="right" valign="top"><a id="a0fc7beef2d31e3b45fe56ae960ac64ba" name="a0fc7beef2d31e3b45fe56ae960ac64ba"></a>
 static KarmaGuiKey&#160;</td><td class="memItemRight" valign="bottom"><b>GetKeyIndex</b> (KarmaGuiKey key)</td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The chief class for our UI needs. The responsibility includes. </p>
+<ul>
+<li>Context creation and access</li>
+<li>Main functions to start and end frames, render, and access draw data</li>
+<li>Demo, Debug, Information windows</li>
+<li>Styles</li>
+<li>Windows and Child Windows management</li>
+<li><a class="el" href="class_karma_1_1_window.html" title="The abstract base class of Karma&#39;s window (for platform specific purposes).">Window</a> Utilities and Manipulation</li>
+<li>Content region access</li>
+<li>Windows Scrolling</li>
+</ul>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="ac377901621df4a3cac7b1ad6a4af1391" name="ac377901621df4a3cac7b1ad6a4af1391"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac377901621df4a3cac7b1ad6a4af1391">&#9670;&#160;</a></span>AddTextVertical()</h2>
 
@@ -1071,8 +1089,8 @@ static KarmaGuiKey&#160;</td><td class="memItemRight" valign="bottom"><b>GetKeyI
 </table>
 </div><div class="memdoc">
 
-<p>Function to fill the <a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> instance of <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a>. </p>
-<dl class="section note"><dt>Note</dt><dd>Ends the <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> frame and finalizes the draw data. The GetDrawData() becomes functional after this. </dd></dl>
+<p>Function to fill the <a class="el" href="struct_k_g_draw_data.html">KGDrawData</a> instance of <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>. </p>
+<dl class="section note"><dt>Note</dt><dd>Ends the <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> frame and finalizes the draw data. The GetDrawData() becomes functional after this. </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

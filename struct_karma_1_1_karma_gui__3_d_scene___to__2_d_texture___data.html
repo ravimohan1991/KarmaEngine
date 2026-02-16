@@ -83,31 +83,50 @@ $(function() {
   <div class="headertitle"><div class="title">Karma::KarmaGui_3DScene_To_2DTexture_Data Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Data structure for 3D scene to 2D texture rendering element(s) in <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_karma_gui_vulkan_handler_8h_source.html">KarmaGuiVulkanHandler.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:af0995160711ff16738f24a5866964a87" id="r_af0995160711ff16738f24a5866964a87"><td class="memItemLeft" align="right" valign="top"><a id="af0995160711ff16738f24a5866964a87" name="af0995160711ff16738f24a5866964a87"></a>
 std::shared_ptr&lt; <a class="el" href="class_karma_1_1_scene.html">Scene</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Scene3D</b></td></tr>
+<tr class="memdesc:af0995160711ff16738f24a5866964a87"><td class="mdescLeft">&#160;</td><td class="mdescRight">3D scene to be rendered offscreen to 2D texture for display in <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> element. <br /></td></tr>
 <tr class="memitem:a6d247481f1a8d7a13f3d3fd601eda815" id="r_a6d247481f1a8d7a13f3d3fd601eda815"><td class="memItemLeft" align="right" valign="top"><a id="a6d247481f1a8d7a13f3d3fd601eda815" name="a6d247481f1a8d7a13f3d3fd601eda815"></a>
 <a class="el" href="struct_k_g_vec2.html">KGVec2</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Size</b></td></tr>
+<tr class="memdesc:a6d247481f1a8d7a13f3d3fd601eda815"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the 2D texture to be rendered offscreen from 3D scene. <br /></td></tr>
 <tr class="memitem:aea53a626172544be735106eed0830770" id="r_aea53a626172544be735106eed0830770"><td class="memItemLeft" align="right" valign="top"><a id="aea53a626172544be735106eed0830770" name="aea53a626172544be735106eed0830770"></a>
 KGTextureID&#160;</td><td class="memItemRight" valign="bottom"><b>KarmaGui_Texture</b></td></tr>
+<tr class="memdesc:aea53a626172544be735106eed0830770"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_karma_1_1_texture.html" title="Texture class.">Texture</a> ID to be used in KarmaGui::Image() and related functions, for display of 2D rendered rendertarget in some <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> window. <br /></td></tr>
 <tr class="memitem:a6ed881deb0bb072103cd57bd7c6b619b" id="r_a6ed881deb0bb072103cd57bd7c6b619b"><td class="memItemLeft" align="right" valign="top"><a id="a6ed881deb0bb072103cd57bd7c6b619b" name="a6ed881deb0bb072103cd57bd7c6b619b"></a>
 VkImage&#160;</td><td class="memItemRight" valign="bottom"><b>Image</b></td></tr>
+<tr class="memdesc:a6ed881deb0bb072103cd57bd7c6b619b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan image for offscreen rendered 2D texture. <br /></td></tr>
 <tr class="memitem:a3886482552328e5f7dad013481b49154" id="r_a3886482552328e5f7dad013481b49154"><td class="memItemLeft" align="right" valign="top"><a id="a3886482552328e5f7dad013481b49154" name="a3886482552328e5f7dad013481b49154"></a>
 VkDeviceMemory&#160;</td><td class="memItemRight" valign="bottom"><b>DeviceMemory</b></td></tr>
+<tr class="memdesc:a3886482552328e5f7dad013481b49154"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device memory for the offscreen rendered 2D texture image. <br /></td></tr>
 <tr class="memitem:a65ecd5f4b1d98a831d15c7573350d583" id="r_a65ecd5f4b1d98a831d15c7573350d583"><td class="memItemLeft" align="right" valign="top"><a id="a65ecd5f4b1d98a831d15c7573350d583" name="a65ecd5f4b1d98a831d15c7573350d583"></a>
 VkImageView&#160;</td><td class="memItemRight" valign="bottom"><b>Image_View</b></td></tr>
+<tr class="memdesc:a65ecd5f4b1d98a831d15c7573350d583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Image view for the offscreen rendered 2D texture image. <br /></td></tr>
 <tr class="memitem:a9ee706dcc86982be344a3f472751acb6" id="r_a9ee706dcc86982be344a3f472751acb6"><td class="memItemLeft" align="right" valign="top"><a id="a9ee706dcc86982be344a3f472751acb6" name="a9ee706dcc86982be344a3f472751acb6"></a>
 VkImage&#160;</td><td class="memItemRight" valign="bottom"><b>DepthImage</b></td></tr>
+<tr class="memdesc:a9ee706dcc86982be344a3f472751acb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Depth image for offscreen rendered 2D texture. <br /></td></tr>
 <tr class="memitem:aadf10246759a6bc1699f6be589dbb1da" id="r_aadf10246759a6bc1699f6be589dbb1da"><td class="memItemLeft" align="right" valign="top"><a id="aadf10246759a6bc1699f6be589dbb1da" name="aadf10246759a6bc1699f6be589dbb1da"></a>
 VkDeviceMemory&#160;</td><td class="memItemRight" valign="bottom"><b>DepthDeviceMemory</b></td></tr>
+<tr class="memdesc:aadf10246759a6bc1699f6be589dbb1da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device memory for the offscreen rendered 2D texture depth image. <br /></td></tr>
 <tr class="memitem:a248da55b60a862971fd4f20d626c756c" id="r_a248da55b60a862971fd4f20d626c756c"><td class="memItemLeft" align="right" valign="top"><a id="a248da55b60a862971fd4f20d626c756c" name="a248da55b60a862971fd4f20d626c756c"></a>
 VkImageView&#160;</td><td class="memItemRight" valign="bottom"><b>DepthImage_View</b></td></tr>
+<tr class="memdesc:a248da55b60a862971fd4f20d626c756c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Image view for the offscreen rendered 2D texture depth image. <br /></td></tr>
 <tr class="memitem:a6e05915a0910a7e7acdd4a4303883eab" id="r_a6e05915a0910a7e7acdd4a4303883eab"><td class="memItemLeft" align="right" valign="top"><a id="a6e05915a0910a7e7acdd4a4303883eab" name="a6e05915a0910a7e7acdd4a4303883eab"></a>
 VkFramebuffer&#160;</td><td class="memItemRight" valign="bottom"><b>FrameBuffer</b></td></tr>
+<tr class="memdesc:a6e05915a0910a7e7acdd4a4303883eab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Framebuffer for offscreen rendered 2D texture. <br /></td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Data structure for 3D scene to 2D texture rendering element(s) in <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>Karma/src/Platform/Vulkan/<a class="el" href="_karma_gui_vulkan_handler_8h_source.html">KarmaGuiVulkanHandler.h</a></li>
 </ul>
 </div><!-- contents -->

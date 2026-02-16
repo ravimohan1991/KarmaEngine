@@ -98,6 +98,8 @@ Macros</h2></td></tr>
 <tr class="memdesc:aa1ec71e8b97d939f75e13db3a94b5409"><td class="mdescLeft">&#160;</td><td class="mdescRight">Karma's Assertion.  <br /></td></tr>
 <tr class="memitem:af2bf4aa9fd4260051ca058dfc2d0f57a" id="r_af2bf4aa9fd4260051ca058dfc2d0f57a"><td class="memItemLeft" align="right" valign="top"><a id="af2bf4aa9fd4260051ca058dfc2d0f57a" name="af2bf4aa9fd4260051ca058dfc2d0f57a"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>KR_CORE_ASSERT</b>(expr, ...)</td></tr>
+<tr class="memitem:aa847ed6e67067adba097796d6ce3f6f7" id="r_aa847ed6e67067adba097796d6ce3f6f7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa847ed6e67067adba097796d6ce3f6f7">checkNoEntry</a>()</td></tr>
+<tr class="memdesc:aa847ed6e67067adba097796d6ce3f6f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Denotes code paths that should never be reached.  <br /></td></tr>
 <tr class="memitem:a32ecba5b2ab37e1478d0fdfe3799ee1c" id="r_a32ecba5b2ab37e1478d0fdfe3799ee1c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32ecba5b2ab37e1478d0fdfe3799ee1c">KR_BIND_EVENT_FN</a>(fn)</td></tr>
 <tr class="memdesc:a32ecba5b2ab37e1478d0fdfe3799ee1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro for std::bind routine. See <a href="https://en.cppreference.com/w/cpp/utility/functional/bind">https://en.cppreference.com/w/cpp/utility/functional/bind</a>.  <br /></td></tr>
 <tr class="memitem:a0c5af3f446de340dae52d68adf0055df" id="r_a0c5af3f446de340dae52d68adf0055df"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c5af3f446de340dae52d68adf0055df">KR_NONCOPYABLE</a>(TypeName)</td></tr>
@@ -135,6 +137,27 @@ Macros</h2></td></tr>
 <p>Macro for bit-shift operation (left). </p>
 <p>Basically shifting 0000001 to x power of 2 (2^x). <a class="el" href="#ad27cc17b25bb93134368d5eb21126eae" title="Macro for bit-shift operation (left).">BIT(1)</a> is 0000010</p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="aa847ed6e67067adba097796d6ce3f6f7" name="aa847ed6e67067adba097796d6ce3f6f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa847ed6e67067adba097796d6ce3f6f7">&#9670;&#160;</a></span>checkNoEntry</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define checkNoEntry</td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">KR_CORE_ASSERT(<span class="keyword">false</span>, <span class="stringliteral">&quot;Enclosing block should never be called&quot;</span>)</div>
+</div><!-- fragment -->
+<p>Denotes code paths that should never be reached. </p>
+<dl class="section note"><dt>Note</dt><dd>Taken from the UE </dd></dl>
 
 </div>
 </div>

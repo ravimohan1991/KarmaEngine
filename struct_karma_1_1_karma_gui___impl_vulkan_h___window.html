@@ -85,7 +85,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Helper structure to hold the data needed by entire <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> primitive rendering including commandpools, renderpass, commandbuffers, ImageFrameCount (swapchain), and SemaphoreIndex etc.  
+<p>Helper structure to hold the data needed by entire <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> primitive rendering including commandpools, renderpass, commandbuffers, ImageFrameCount (swapchain), and SemaphoreIndex etc.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_karma_gui_vulkan_handler_8h_source.html">KarmaGuiVulkanHandler.h</a>&gt;</code></p>
@@ -128,15 +128,17 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a4040e45840d9a92ebcfa7b1252bab0b9" id="r_a4040e45840d9a92ebcfa7b1252bab0b9"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4040e45840d9a92ebcfa7b1252bab0b9">MAX_FRAMES_IN_FLIGHT</a></td></tr>
 <tr class="memdesc:a4040e45840d9a92ebcfa7b1252bab0b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is representative of (linearly proportional to or indicative of) number of commandbuffer recordings on CPU that may happen whilst the rendering is being done on GPU. That should determine the semaphore, fence, and commandbuffer size.  <br /></td></tr>
 <tr class="memitem:a827c0cf1d334104bdb429ca3030afd76" id="r_a827c0cf1d334104bdb429ca3030afd76"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___image_frame.html">KarmaGui_ImplVulkanH_ImageFrame</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a827c0cf1d334104bdb429ca3030afd76">ImageFrames</a></td></tr>
-<tr class="memdesc:a827c0cf1d334104bdb429ca3030afd76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Just a container for buffers (framebuffers, images, and imageviews etc) and all those sizes depending on <a class="el" href="class_karma_1_1_vulkan_holder.html#a525f7ebea87ac0633b6ba0fcb4fab4e1" title="Gets the VulkanContext instance.">VulkanHolder::GetVulkanContext()</a>-&gt;GetSwapChainImages().size();.  <br /></td></tr>
+<tr class="memdesc:a827c0cf1d334104bdb429ca3030afd76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Just a container for rendertarget buffers (framebuffers, images, and imageviews etc) and all those sizes depending on number of swapchain images.  <br /></td></tr>
 <tr class="memitem:a4e83a6e76e046beb3704892784f58fc3" id="r_a4e83a6e76e046beb3704892784f58fc3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_karma_gui___vulkan___frame___on___flight.html">KarmaGui_Vulkan_Frame_On_Flight</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e83a6e76e046beb3704892784f58fc3">FramesOnFlight</a></td></tr>
 <tr class="memdesc:a4e83a6e76e046beb3704892784f58fc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data (fences, semaphores, and commandbuffers (taken from VulkanRendererAPI::GetCommandBuffers())) for synchronous operations of in-flight rendering frames.  <br /></td></tr>
 <tr class="memitem:a5b444633145dd5dd0ed01a67c9f75603" id="r_a5b444633145dd5dd0ed01a67c9f75603"><td class="memItemLeft" align="right" valign="top">VkRect2D&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b444633145dd5dd0ed01a67c9f75603">RenderArea</a></td></tr>
 <tr class="memdesc:a5b444633145dd5dd0ed01a67c9f75603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Most likely the glfw window size, set from <a class="el" href="class_karma_1_1_vulkan_holder.html#a525f7ebea87ac0633b6ba0fcb4fab4e1" title="Gets the VulkanContext instance.">VulkanHolder::GetVulkanContext()</a>-&gt;GetSwapChainExtent(). Used for setting renderPassInfo.renderArea.extent in <a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a>.  <br /></td></tr>
+<tr class="memitem:a362daf4e142a49c2493d15161f06534b" id="r_a362daf4e142a49c2493d15161f06534b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___r_h_i_resources.html">KarmaGui_ImplVulkanH_RHIResources</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a362daf4e142a49c2493d15161f06534b">RHIResources</a></td></tr>
+<tr class="memdesc:a362daf4e142a49c2493d15161f06534b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan RHI resources containing pointers to FVulkanSwpaChain etc.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Helper structure to hold the data needed by entire <a class="el" href="class_karma_1_1_karma_gui.html">KarmaGui</a> primitive rendering including commandpools, renderpass, commandbuffers, ImageFrameCount (swapchain), and SemaphoreIndex etc. </p>
-<p>ATM commandpools, swapchain, renderpass, commandbuffers etc are shared from vulkan context (<a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#ac2c93fab4bd1c3b354b46485db32a8d6" title="The purpose of the routine is two-fold.">KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow</a>)</p>
+<div class="textblock"><p>Helper structure to hold the data needed by entire <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a> primitive rendering including commandpools, renderpass, commandbuffers, ImageFrameCount (swapchain), and SemaphoreIndex etc. </p>
+<p>ATM commandpools, swapchain, renderpass, commandbuffers etc are shared from vulkan context (KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow)</p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a194b19fa100ff3c1f8399110f43d1346" name="a194b19fa100ff3c1f8399110f43d1346"></a>
@@ -283,7 +285,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Just a container for buffers (framebuffers, images, and imageviews etc) and all those sizes depending on <a class="el" href="class_karma_1_1_vulkan_holder.html#a525f7ebea87ac0633b6ba0fcb4fab4e1" title="Gets the VulkanContext instance.">VulkanHolder::GetVulkanContext()</a>-&gt;GetSwapChainImages().size();. </p>
+<p>Just a container for rendertarget buffers (framebuffers, images, and imageviews etc) and all those sizes depending on number of swapchain images. </p>
+<dl class="section note"><dt>Note</dt><dd>Only SwapChain rendertargets are stored. The grand list of rendertargets (all rendertargets) is in <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___r_h_i_resources.html#ae63a3433b9c478a90827b1095fa7f3a7" title="Collection of render targets organized in KarmaVector. Meaning each KarmaVector element contains a co...">KarmaGui_ImplVulkanH_RHIResources::RenderTargets</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#a913525c97865e2c1bf62bd513ba1f359" title="Prepares the RTInfo for framebuffer creation.">KarmaGuiVulkanHandler::GatherSwapChainColorRenderTargets</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -371,7 +375,26 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>A render pass object represents a collection of attachments, subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses. </p>
-<dl class="section note"><dt>Note</dt><dd>Taken from <a class="el" href="class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a> set in <a class="el" href="class_karma_1_1_karma_gui_vulkan_handler.html#ac2c93fab4bd1c3b354b46485db32a8d6" title="The purpose of the routine is two-fold.">KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow()</a> </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Taken from <a class="el" href="class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a> set in KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow()</dd>
+<dd>
+There are multiple RenderPass references for instance in <a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan___init_info.html" title="A data structure for Vulkan&#39;s initialization done in KarmaGuiRenderer::KarmaGui_ImplVulkan_Init().">KarmaGui_ImplVulkan_InitInfo</a> and created in <a class="el" href="class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a>. Here, this RenderPass is again usually set to the one created in <a class="el" href="class_karma_1_1_vulkan_context.html#ab653bd5254de11636e5f52bd59aa57c9" title="A VkRenderPass is a Vulkan object that encapsulates the state needed to setup the “target” for render...">VulkanContext::CreateRenderPass()</a>, meant for <a class="el" href="class_karma_1_1_karma_gui.html" title="The chief class for our UI needs. The responsibility includes.">KarmaGui</a>'s primitive rendering. However the RenderPass in KarmaGui_OffScreenRenderResources (created in KarmaGuiVulkanHandler::CreateOffScreenRenderResources) is different, and meant for offscreen rendering purpose.</dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a362daf4e142a49c2493d15161f06534b" name="a362daf4e142a49c2493d15161f06534b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a362daf4e142a49c2493d15161f06534b">&#9670;&#160;</a></span>RHIResources</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_karma_1_1_karma_gui___impl_vulkan_h___r_h_i_resources.html">KarmaGui_ImplVulkanH_RHIResources</a>* Karma::KarmaGui_ImplVulkanH_Window::RHIResources</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vulkan RHI resources containing pointers to FVulkanSwpaChain etc. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -406,7 +429,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The surface is a cross-platform abstraction over windows to render to and is generally instantiated by providing a reference to the native window handle. </p>
-<dl class="section note"><dt>Note</dt><dd>The vulkan backend, in current stance, is not using the surface created in <a class="el" href="class_karma_1_1_vulkan_context.html#acbb00492d6e134b605a00ed599b2a6c4" title="Platform agnostic creation of surface to present rendered images to. Typically they are backed by the...">VulkanContext::CreateSurface()</a> since all the surface relevant operations have already been done in <a class="el" href="class_karma_1_1_vulkan_context.html" title="Vulkan API has the following concepts.">VulkanContext</a>.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The vulkan backend, in current stance, is not using the surface created in <a class="el" href="class_karma_1_1_vulkan_context.html#acbb00492d6e134b605a00ed599b2a6c4" title="Platform agnostic creation of surface to present rendered images to. Typically they are backed by the...">VulkanContext::CreateSurface()</a> since all the surface relevant operations have already been done in <a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a>.</dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

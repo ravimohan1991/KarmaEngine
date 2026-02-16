@@ -90,7 +90,7 @@ $(function() {
 
 <p>This file contains some commonly used game code macros.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;krpch.h&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="_karma_types_8h_source.html">KarmaTypes.h</a>&quot;</code><br />
 </div>
 <p><a href="_u_object_globals_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -288,6 +288,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a930c76166b5f51ff5bd5d2b0d003085f" id="r_a930c76166b5f51ff5bd5d2b0d003085f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_karma_1_1_u_object.html">UObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_u_object_globals_8cpp.html#a930c76166b5f51ff5bd5d2b0d003085f">Karma::StaticAllocateObject</a> (const <a class="el" href="class_karma_1_1_u_class.html">UClass</a> *inClass, <a class="el" href="class_karma_1_1_u_object.html">UObject</a> *inOuter, const std::string &amp;inName, <a class="el" href="#a76fa055fd82e7c09a3fe62befdc8e5d5">EObjectFlags</a> inFlags, <a class="el" href="#a934ef016d169a5af50d3cf77f9931cc1">EInternalObjectFlags</a> internalSetFlags)</td></tr>
 <tr class="memitem:a1d0539ed2010c67b6f0ac7eed7e9113d" id="r_a1d0539ed2010c67b6f0ac7eed7e9113d"><td class="memTemplParams" colspan="2">template&lt;class T&gt; </td></tr>
 <tr class="memitem:a1d0539ed2010c67b6f0ac7eed7e9113d template"><td class="memItemLeft" align="right" valign="top">FUNCTION_NON_NULL_RETURN_START T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d0539ed2010c67b6f0ac7eed7e9113d">Karma::NewObject</a> (<a class="el" href="class_karma_1_1_u_object.html">UObject</a> *Outer, const <a class="el" href="class_karma_1_1_u_class.html">UClass</a> *Class, std::string name=&quot;No_Name&quot;, <a class="el" href="#a76fa055fd82e7c09a3fe62befdc8e5d5">EObjectFlags</a> Flags=<a class="el" href="#a76fa055fd82e7c09a3fe62befdc8e5d5ae841ef7b05e1fe839af3b8c1cf0a5ca8">RF_NoFlags</a>, <a class="el" href="class_karma_1_1_u_object.html">UObject</a> *Template=nullptr, bool bCopyTransientsFromClassDefaults=false) FUNCTION_NON_NULL_RETURN_END</td></tr>
+<tr class="memitem:a18a10d732e3e80b63b704e0bd2dd3afb" id="r_a18a10d732e3e80b63b704e0bd2dd3afb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a> <a class="el" href="class_karma_1_1_u_object.html">UObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18a10d732e3e80b63b704e0bd2dd3afb">Karma::CreateDefaultSubobject</a> (<a class="el" href="class_karma_1_1_u_object.html">UObject</a> *Outer, std::string SubobjectFName, const <a class="el" href="class_karma_1_1_u_class.html">UClass</a> *ReturnType, const <a class="el" href="class_karma_1_1_u_class.html">UClass</a> *ClassToCreateByDefault, bool bIsRequired=true, bool bIsTransient=false)</td></tr>
+<tr class="memdesc:a18a10d732e3e80b63b704e0bd2dd3afb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a component or subobject that will be instanced inside all instances of this class.  <br /></td></tr>
 <tr class="memitem:a0e7b7e8feecce106ab759d663afa4b22" id="r_a0e7b7e8feecce106ab759d663afa4b22"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_karma_1_1_u_object.html">UObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_u_object_globals_8cpp.html#a0e7b7e8feecce106ab759d663afa4b22">Karma::StaticFindObjectFastInternal</a> (const <a class="el" href="class_karma_1_1_u_class.html">UClass</a> *ObjectClass, const <a class="el" href="class_karma_1_1_u_object.html">UObject</a> *ObjectPackage, const std::string &amp;ObjectName, bool bExactClass, <a class="el" href="#a76fa055fd82e7c09a3fe62befdc8e5d5">EObjectFlags</a> ExcludeFlags, <a class="el" href="#a934ef016d169a5af50d3cf77f9931cc1">EInternalObjectFlags</a> ExclusiveInternalFlags)</td></tr>
 <tr class="memitem:ad53fe3b9f020e64851ebc00329ba103a" id="r_ad53fe3b9f020e64851ebc00329ba103a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a> <a class="el" href="class_karma_1_1_u_object.html">UObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad53fe3b9f020e64851ebc00329ba103a">Karma::StaticFindObject</a> (<a class="el" href="class_karma_1_1_u_class.html">UClass</a> *Class, <a class="el" href="class_karma_1_1_u_object.html">UObject</a> *InOuter, const std::string &amp;Name, bool ExactClass=false)</td></tr>
 <tr class="memitem:ac2a0d9af6555f2ca81eed515baba3783" id="r_ac2a0d9af6555f2ca81eed515baba3783"><td class="memTemplParams" colspan="2">template&lt;class T&gt; </td></tr>
@@ -323,7 +325,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Karma::StaticUObjectI
 </div><div class="memdoc">
 
 <p>32-bit signed integer </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000032">Todo</a></b></dt><dd>find or write appropriate class for such type</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000031">Todo</a></b></dt><dd>find or write appropriate class for such type</dd></dl>
 <dl class="section remark"><dt>Remarks</dt><dd>usage hasn't caught on in usual engine routines </dd></dl>
 
 </div>
@@ -530,7 +532,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Karma::StaticUObjectI
 <tr><td class="fieldname"><a id="a76fa055fd82e7c09a3fe62befdc8e5d5aa127a007255ddab0ea37168dd2052d57" name="a76fa055fd82e7c09a3fe62befdc8e5d5aa127a007255ddab0ea37168dd2052d57"></a>RF_NonPIEDuplicateTransient&#160;</td><td class="fielddoc"><p>Object should not be included for duplication unless it's being duplicated for a PIE session. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a76fa055fd82e7c09a3fe62befdc8e5d5aff93a39f9810ed1f0280a8b68ed57fdf" name="a76fa055fd82e7c09a3fe62befdc8e5d5aff93a39f9810ed1f0280a8b68ed57fdf"></a>RF_Dynamic&#160;</td><td class="fielddoc"><p>Field Only. Dynamic field - doesn't get constructed during static initialization, can be constructed multiple times //. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000036">Todo</a></b></dt><dd>: BP2CPP_remove </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000035">Todo</a></b></dt><dd>: BP2CPP_remove </dd></dl>
 </td></tr>
 <tr><td class="fieldname"><a id="a76fa055fd82e7c09a3fe62befdc8e5d5a5f2e2635d16068a1fd4c462c2d738bec" name="a76fa055fd82e7c09a3fe62befdc8e5d5a5f2e2635d16068a1fd4c462c2d738bec"></a>RF_WillBeLoaded&#160;</td><td class="fielddoc"><p>This object was constructed during load and will be loaded shortly. </p>
 </td></tr>
@@ -671,7 +673,62 @@ template&lt;class T, class U&gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000034">Todo</a></b></dt><dd>static_cast may require more addition depending on the usage </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000033">Todo</a></b></dt><dd>static_cast may require more addition depending on the usage </dd></dl>
+
+</div>
+</div>
+<a id="a18a10d732e3e80b63b704e0bd2dd3afb" name="a18a10d732e3e80b63b704e0bd2dd3afb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18a10d732e3e80b63b704e0bd2dd3afb">&#9670;&#160;</a></span>CreateDefaultSubobject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a> UObject * Karma::CreateDefaultSubobject </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_u_object.html">UObject</a> *</td>          <td class="paramname"><span class="paramname"><em>Outer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>SubobjectFName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_karma_1_1_u_class.html">UClass</a> *</td>          <td class="paramname"><span class="paramname"><em>ReturnType</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_karma_1_1_u_class.html">UClass</a> *</td>          <td class="paramname"><span class="paramname"><em>ClassToCreateByDefault</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>bIsRequired</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>bIsTransient</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a component or subobject that will be instanced inside all instances of this class. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Outer</td><td>outer to construct the subobject in </td></tr>
+    <tr><td class="paramname">SubobjectName</td><td>name of the new component </td></tr>
+    <tr><td class="paramname">ReturnType</td><td>class of return type, all overrides must be of this type </td></tr>
+    <tr><td class="paramname">ClassToConstructByDefault</td><td>if the derived class has not overridden, create a component of this type </td></tr>
+    <tr><td class="paramname">bIsRequired</td><td>true if the component is required and will always be created even if DoNotCreateDefaultSubobject was specified. </td></tr>
+    <tr><td class="paramname">bIsTransient</td><td>true if the component is being assigned to a transient property</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>This is work in progress, not fully functional yet </dd></dl>
 
 </div>
 </div>
@@ -738,7 +795,7 @@ template&lt;typename Enum&gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000033">Todo</a></b></dt><dd>may need to write in seperate file </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000032">Todo</a></b></dt><dd>may need to write in seperate file </dd></dl>
 
 </div>
 </div>
@@ -861,7 +918,7 @@ template&lt;class T&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Returns a vector of objects of a specific class. Optionally, results can include objects of derived classes as well.</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000035">Todo</a></b></dt><dd>Results of derived class logic needs be written bIncludeDerivedClasses not functional yet</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000034">Todo</a></b></dt><dd>Results of derived class logic needs be written bIncludeDerivedClasses not functional yet</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">ClassToLookFor</td><td>Class of the objects to return. </td></tr>

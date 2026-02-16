@@ -112,7 +112,11 @@ Inheritance diagram for Karma::UObjectBase:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae5443b9f74f6f118535129f1b5e87955" id="r_ae5443b9f74f6f118535129f1b5e87955"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5443b9f74f6f118535129f1b5e87955">UObjectBase</a> (<a class="el" href="class_karma_1_1_u_class.html">UClass</a> *inClass, <a class="el" href="_u_object_globals_8h.html#a76fa055fd82e7c09a3fe62befdc8e5d5">EObjectFlags</a> inFlags, <a class="el" href="_u_object_globals_8h.html#a934ef016d169a5af50d3cf77f9931cc1">EInternalObjectFlags</a> inInternalFlags, <a class="el" href="class_karma_1_1_u_object.html">UObject</a> *inOuter, const std::string &amp;inName)</td></tr>
+<tr class="memdesc:ae5443b9f74f6f118535129f1b5e87955"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor used by StaticAllocateObject.  <br /></td></tr>
+<tr class="memitem:a512f820b56a0cad6c3827dba68c76301" id="r_a512f820b56a0cad6c3827dba68c76301"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a512f820b56a0cad6c3827dba68c76301">ShivaUObject</a> ()</td></tr>
+<tr class="memdesc:a512f820b56a0cad6c3827dba68c76301"><td class="mdescLeft">&#160;</td><td class="mdescRight">One function to destroy them.  <br /></td></tr>
 <tr class="memitem:a38305b83660607ab6effa4baf16481cc" id="r_a38305b83660607ab6effa4baf16481cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_karma_1_1_u_package.html">UPackage</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38305b83660607ab6effa4baf16481cc">GetPackage</a> () const</td></tr>
+<tr class="memdesc:a38305b83660607ab6effa4baf16481cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Walks up the list of outers until it finds a package directly associated with the object.  <br /></td></tr>
 <tr class="memitem:a46fb8397ce68c58be4e93f9f89c3e172" id="r_a46fb8397ce68c58be4e93f9f89c3e172"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_karma_1_1_u_package.html">UPackage</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a46fb8397ce68c58be4e93f9f89c3e172">GetExternalPackage</a> () const</td></tr>
 <tr class="memitem:a54510d8a87d1bd7e19ae267374923aba" id="r_a54510d8a87d1bd7e19ae267374923aba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54510d8a87d1bd7e19ae267374923aba">IsUnreachable</a> () const</td></tr>
 <tr class="memitem:a8b5487a55f059b8274aee44512cd05a1" id="r_a8b5487a55f059b8274aee44512cd05a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_core_8h.html#a724fb9f82013c782db5c3c12ea36aac8">FORCEINLINE</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b5487a55f059b8274aee44512cd05a1">SetInternalIndex</a> (uint32_t StoreIndex)</td></tr>
@@ -214,7 +218,9 @@ Protected Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Constructor used by StaticAllocateObject </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Constructor used by StaticAllocateObject. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">InClass</td><td>non NULL, this gives the class of the new object, if known at this time </td></tr>
     <tr><td class="paramname">InFlags</td><td>RF_Flags to assign </td></tr>
@@ -253,7 +259,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Add an object to the root set. This prevents the object and all its descendants from being deleted during garbage collection.</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000031">Todo</a></b></dt><dd>To be implemented when garbage collection system is finished </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000030">Todo</a></b></dt><dd>To be implemented when garbage collection system is finished </dd></dl>
 
 </div>
 </div>
@@ -305,7 +311,7 @@ Protected Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Unmarks this object as Garbage</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000028">Todo</a></b></dt><dd>Not functional </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000027">Todo</a></b></dt><dd>Not functional </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -333,7 +339,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Helper function that sets the appropriate flag based on PK being enabled or not</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000030">Todo</a></b></dt><dd>Need to write decent garbage collection system. Then this may become useful. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000029">Todo</a></b></dt><dd>Need to write decent garbage collection system. Then this may become useful. </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -508,7 +514,8 @@ Protected Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Walks up the list of outers until it finds a package directly associated with the object.</p>
+
+<p>Walks up the list of outers until it finds a package directly associated with the object. </p>
 <dl class="section return"><dt>Returns</dt><dd>the package the object is in </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
@@ -711,7 +718,7 @@ template&lt;typename OtherClassType&gt; </div>
 </div><div class="memdoc">
 <p>Checks to see if the object appears to be valid</p>
 <dl class="section return"><dt>Returns</dt><dd>true if this appears to be a valid object </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000029">Todo</a></b></dt><dd>Not functional</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000028">Todo</a></b></dt><dd>Not functional</dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -731,7 +738,7 @@ template&lt;typename OtherClassType&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Marks the object for garbage collection</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000027">Todo</a></b></dt><dd>Not functional </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000026">Todo</a></b></dt><dd>Not functional </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -883,6 +890,35 @@ template&lt;typename OtherClassType&gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Sets the name of UObjects</p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a512f820b56a0cad6c3827dba68c76301" name="a512f820b56a0cad6c3827dba68c76301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a512f820b56a0cad6c3827dba68c76301">&#9670;&#160;</a></span>ShivaUObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Karma::UObjectBase::ShivaUObject </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>One function to destroy them. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_smriti.html#a21b5ac62a8735740108219f4ef250422" title="Releases memory &amp; any other resources held by the memory system (KarmaSmriti) and allocators.">KarmaSmriti::ShutDown()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

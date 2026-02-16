@@ -112,8 +112,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8da9035a7bfd182eda1c64ed342b40f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actual creation of buffer using Vulkan API. Memory is also allocated appropriately.  <br /></td></tr>
 <tr class="memitem:a414d3c0f663b3f033198087d685b0511" id="r_a414d3c0f663b3f033198087d685b0511"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a414d3c0f663b3f033198087d685b0511">CopyBuffer</a> (VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)</td></tr>
 <tr class="memdesc:a414d3c0f663b3f033198087d685b0511"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy buffer.  <br /></td></tr>
-<tr class="memitem:adf626085f037b66b12af1efcb7131ca7" id="r_adf626085f037b66b12af1efcb7131ca7"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf626085f037b66b12af1efcb7131ca7">FindMemoryType</a> (uint32_t typeFilter, VkMemoryPropertyFlags properties)</td></tr>
-<tr class="memdesc:adf626085f037b66b12af1efcb7131ca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.  <br /></td></tr>
 <tr class="memitem:a869e06315d887684927fb804cb4b6ff2" id="r_a869e06315d887684927fb804cb4b6ff2"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a869e06315d887684927fb804cb4b6ff2">GetCount</a> () const override</td></tr>
 <tr class="memdesc:a869e06315d887684927fb804cb4b6ff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the number of vertices to draw.  <br /></td></tr>
 <tr class="memitem:a26d45b74c18e570e96098ad461a5fb9d" id="r_a26d45b74c18e570e96098ad461a5fb9d"><td class="memItemLeft" align="right" valign="top">VkBuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a26d45b74c18e570e96098ad461a5fb9d">GetIndexBuffer</a> () const</td></tr>
@@ -219,7 +217,7 @@ static <a class="el" href="class_karma_1_1_index_buffer.html">IndexBuffer</a> *&
 </div><div class="memdoc">
 
 <p>Not useful for Vulkan API atm. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000089">Todo</a></b></dt><dd>Ponder over Vulkan equivalent of glBindBuffer </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000090">Todo</a></b></dt><dd>Ponder over Vulkan equivalent of glBindBuffer </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="class_karma_1_1_index_buffer.html">Karma::IndexBuffer</a>.</p>
@@ -308,38 +306,6 @@ static <a class="el" href="class_karma_1_1_index_buffer.html">IndexBuffer</a> *&
   </table>
   </dd>
 </dl>
-<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
-
-</div>
-</div>
-<a id="adf626085f037b66b12af1efcb7131ca7" name="adf626085f037b66b12af1efcb7131ca7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf626085f037b66b12af1efcb7131ca7">&#9670;&#160;</a></span>FindMemoryType()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t Karma::VulkanIndexBuffer::FindMemoryType </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>typeFilter</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">VkMemoryPropertyFlags</td>          <td class="paramname"><span class="paramname"><em>properties</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">typeFilter</td><td>A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource. </td></tr>
-    <tr><td class="paramname">properties</td><td>The demanded properties (<a href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html">https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html</a>).</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Memory type index i </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -484,7 +450,7 @@ static <a class="el" href="class_karma_1_1_index_buffer.html">IndexBuffer</a> *&
 </div><div class="memdoc">
 
 <p>Not useful for Vulkan API atm. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000090">Todo</a></b></dt><dd>Ponder over Vulkan equivalent of glBindBuffer </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000091">Todo</a></b></dt><dd>Ponder over Vulkan equivalent of glBindBuffer </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 <p>Implements <a class="el" href="class_karma_1_1_index_buffer.html">Karma::IndexBuffer</a>.</p>

@@ -102,6 +102,8 @@ Inheritance diagram for Karma::VulkanTexture:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a07c1aab0a9d8d05e0c18763e51a907b1" id="r_a07c1aab0a9d8d05e0c18763e51a907b1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07c1aab0a9d8d05e0c18763e51a907b1">VulkanTexture</a> ()</td></tr>
 <tr class="memdesc:a07c1aab0a9d8d05e0c18763e51a907b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constructor.  <br /></td></tr>
+<tr class="memitem:ae6d6b1614b77e1c083f81f91d2bd40e6" id="r_ae6d6b1614b77e1c083f81f91d2bd40e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6d6b1614b77e1c083f81f91d2bd40e6">VulkanTexture</a> (<a class="el" href="class_karma_1_1_f_vulkan_device.html">FVulkanDevice</a> *InDevice, const char *filename)</td></tr>
+<tr class="memdesc:ae6d6b1614b77e1c083f81f91d2bd40e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with VulkanRHI support.  <br /></td></tr>
 <tr class="memitem:a9eba898fd907f21598102f305d214c35" id="r_a9eba898fd907f21598102f305d214c35"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9eba898fd907f21598102f305d214c35">~VulkanTexture</a> ()</td></tr>
 <tr class="memdesc:a9eba898fd907f21598102f305d214c35"><td class="mdescLeft">&#160;</td><td class="mdescRight">A destructor.  <br /></td></tr>
 <tr class="memitem:a1f64de2bf4d111399bbb1405aa0e9fe8" id="r_a1f64de2bf4d111399bbb1405aa0e9fe8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f64de2bf4d111399bbb1405aa0e9fe8">CreateTextureImage</a> (<a class="el" href="class_karma_1_1_vulkan_image_buffer.html">VulkanImageBuffer</a> *vImageBuffer)</td></tr>
@@ -137,7 +139,7 @@ VkSampler&#160;</td><td class="memItemRight" valign="bottom"><b>GetImageSampler<
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a07c1aab0a9d8d05e0c18763e51a907b1" name="a07c1aab0a9d8d05e0c18763e51a907b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07c1aab0a9d8d05e0c18763e51a907b1">&#9670;&#160;</a></span>VulkanTexture()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a07c1aab0a9d8d05e0c18763e51a907b1">&#9670;&#160;</a></span>VulkanTexture() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -152,6 +154,33 @@ VkSampler&#160;</td><td class="memItemRight" valign="bottom"><b>GetImageSampler<
 </div><div class="memdoc">
 
 <p>A constructor. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="ae6d6b1614b77e1c083f81f91d2bd40e6" name="ae6d6b1614b77e1c083f81f91d2bd40e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6d6b1614b77e1c083f81f91d2bd40e6">&#9670;&#160;</a></span>VulkanTexture() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Karma::VulkanTexture::VulkanTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_f_vulkan_device.html">FVulkanDevice</a> *</td>          <td class="paramname"><span class="paramname"><em>InDevice</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor with VulkanRHI support. </p>
+<p>InDevice The <a class="el" href="class_karma_1_1_f_vulkan_device.html" title="Manages Vulkan device resources and operations.">FVulkanDevice</a> object</p>
+<p>filename The location of the texture file along with location</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_f_vulkan_device.html#af1158521d3ee1ec2bb793930706b84e3" title="Creates the Vulkan logical device and default vulkan resources.">FVulkanDevice::InitGPU()</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

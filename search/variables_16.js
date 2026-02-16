@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['z_0',['Z',['../struct_karma_1_1_t_quaternion.html#ab039349df3333f84e3ae2f45cb16af15',1,'Karma::TQuaternion']]]
+  ['x_0',['X',['../struct_karma_1_1_t_quaternion.html#ac4e991d4680bc2912254b7f12865855e',1,'Karma::TQuaternion']]]
 ];

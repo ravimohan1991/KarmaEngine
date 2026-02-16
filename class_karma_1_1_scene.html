@@ -97,6 +97,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a6851ecc6266598f0775d597d3eed0af9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="memitem:a434d0352143278ded817903ebc356b02" id="r_a434d0352143278ded817903ebc356b02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a434d0352143278ded817903ebc356b02">AddVertexArray</a> (std::shared_ptr&lt; <a class="el" href="class_karma_1_1_vertex_array.html">VertexArray</a> &gt; vertexArray)</td></tr>
 <tr class="memdesc:a434d0352143278ded817903ebc356b02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a <a class="el" href="class_karma_1_1_vertex_array.html" title="A class, comprising of Mesh and Material substances along with relevant setup, for a renderable unit.">VertexArray</a> (<a class="el" href="class_karma_1_1_mesh.html" title="An organized collection of vertex and index buffers along with rest of the model specific information...">Mesh</a> + <a class="el" href="class_karma_1_1_material.html" title="A class for shader + texture.">Material</a>) to the list of renderable VertexArrays.  <br /></td></tr>
+<tr class="memitem:ae84a6f23ba3837b120a998392ef1c977" id="r_ae84a6f23ba3837b120a998392ef1c977"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae84a6f23ba3837b120a998392ef1c977">AddStaticMeshActor</a> (<a class="el" href="class_karma_1_1_a_static_mesh_actor.html">AStaticMeshActor</a> *smActor)</td></tr>
+<tr class="memdesc:ae84a6f23ba3837b120a998392ef1c977"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add StaticMeshActor to the scene.  <br /></td></tr>
 <tr class="memitem:a3e4210e665585d458fa95fdcec68834f" id="r_a3e4210e665585d458fa95fdcec68834f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e4210e665585d458fa95fdcec68834f">AddCamera</a> (std::shared_ptr&lt; <a class="el" href="class_karma_1_1_camera.html">Camera</a> &gt; camera)</td></tr>
 <tr class="memdesc:a3e4210e665585d458fa95fdcec68834f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add <a class="el" href="class_karma_1_1_camera.html" title="Base class of Camera.">Camera</a>.  <br /></td></tr>
 <tr class="memitem:a455cba43f2de4be6c0a519eb60bdd92d" id="r_a455cba43f2de4be6c0a519eb60bdd92d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a455cba43f2de4be6c0a519eb60bdd92d">SetClearColor</a> (const glm::vec4 &amp;clearColor)</td></tr>
@@ -105,14 +107,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a012a6c7455b74691437192c7f0bd6ecc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="class_karma_1_1_window.html" title="The abstract base class of Karma&#39;s window (for platform specific purposes).">Window</a> in which the <a class="el" href="class_karma_1_1_scene.html" title="Class for organizing and containing Scene relevant data.">Scene</a> is to be rendered.  <br /></td></tr>
 <tr class="memitem:a3df01bfb56dacdbe3e8917b5e4a76fc0" id="r_a3df01bfb56dacdbe3e8917b5e4a76fc0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3df01bfb56dacdbe3e8917b5e4a76fc0">SetWindowToRenderWithinResize</a> (bool bStatus)</td></tr>
 <tr class="memdesc:a3df01bfb56dacdbe3e8917b5e4a76fc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the status of the m_WindowResize true if resize is done so that necessary reset and reallocation of resources can be done.  <br /></td></tr>
-<tr class="memitem:a1041cf5cacfad509f47868f3ba9c29f0" id="r_a1041cf5cacfad509f47868f3ba9c29f0"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_karma_1_1_vertex_array.html">VertexArray</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1041cf5cacfad509f47868f3ba9c29f0">GetRenderableVertexArray</a> () const</td></tr>
-<tr class="memdesc:a1041cf5cacfad509f47868f3ba9c29f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the <a class="el" href="class_karma_1_1_vertex_array.html" title="A class, comprising of Mesh and Material substances along with relevant setup, for a renderable unit.">VertexArray</a>.  <br /></td></tr>
+<tr class="memitem:ac544e7baefda394bde2b69d5429fc98d" id="r_ac544e7baefda394bde2b69d5429fc98d"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="class_karma_1_1_a_static_mesh_actor.html">AStaticMeshActor</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac544e7baefda394bde2b69d5429fc98d">GetSMActors</a> () const</td></tr>
+<tr class="memdesc:ac544e7baefda394bde2b69d5429fc98d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the list of StaticMeshActors in the scene.  <br /></td></tr>
 <tr class="memitem:ae0de40e0cb5e55aec6e2a18d4913e273" id="r_ae0de40e0cb5e55aec6e2a18d4913e273"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_karma_1_1_camera.html">Camera</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0de40e0cb5e55aec6e2a18d4913e273">GetSceneCamera</a> () const</td></tr>
 <tr class="memdesc:ae0de40e0cb5e55aec6e2a18d4913e273"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the <a class="el" href="class_karma_1_1_camera.html" title="Base class of Camera.">Camera</a> being used for the scene.  <br /></td></tr>
 <tr class="memitem:ac780860df5b72fb8f23de1d7c01369d3" id="r_ac780860df5b72fb8f23de1d7c01369d3"><td class="memItemLeft" align="right" valign="top">const glm::vec4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac780860df5b72fb8f23de1d7c01369d3">GetClearColor</a> () const</td></tr>
 <tr class="memdesc:ac780860df5b72fb8f23de1d7c01369d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the m_ClearColor.  <br /></td></tr>
-<tr class="memitem:aef854e0d2daaa83f3b825d06b5457fa6" id="r_aef854e0d2daaa83f3b825d06b5457fa6"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="class_karma_1_1_vertex_array.html">VertexArray</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef854e0d2daaa83f3b825d06b5457fa6">GetAllVertexArrays</a> () const</td></tr>
-<tr class="memdesc:aef854e0d2daaa83f3b825d06b5457fa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the list of VertexArrays.  <br /></td></tr>
 <tr class="memitem:a5bcfb41632ca754e899c1bdc643b8c16" id="r_a5bcfb41632ca754e899c1bdc643b8c16"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="class_karma_1_1_camera.html">Camera</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5bcfb41632ca754e899c1bdc643b8c16">GetAllCameras</a> () const</td></tr>
 <tr class="memdesc:a5bcfb41632ca754e899c1bdc643b8c16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the list of all Cameras.  <br /></td></tr>
 <tr class="memitem:a7c124775ed58a79708dc051df075ec4d" id="r_a7c124775ed58a79708dc051df075ec4d"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c124775ed58a79708dc051df075ec4d">GetRenderingWindow</a> () const</td></tr>
@@ -190,6 +190,32 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ae84a6f23ba3837b120a998392ef1c977" name="ae84a6f23ba3837b120a998392ef1c977"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae84a6f23ba3837b120a998392ef1c977">&#9670;&#160;</a></span>AddStaticMeshActor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::Scene::AddStaticMeshActor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_a_static_mesh_actor.html">AStaticMeshActor</a> *</td>          <td class="paramname"><span class="paramname"><em>smActor</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add StaticMeshActor to the scene. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">smActor</td><td>The StaticMeshActor to be added </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
 <a id="a434d0352143278ded817903ebc356b02" name="a434d0352143278ded817903ebc356b02"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a434d0352143278ded817903ebc356b02">&#9670;&#160;</a></span>AddVertexArray()</h2>
 
@@ -244,34 +270,6 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aef854e0d2daaa83f3b825d06b5457fa6" name="aef854e0d2daaa83f3b825d06b5457fa6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef854e0d2daaa83f3b825d06b5457fa6">&#9670;&#160;</a></span>GetAllVertexArrays()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="class_karma_1_1_vertex_array.html">VertexArray</a> &gt; &gt; &amp; Karma::Scene::GetAllVertexArrays </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get the list of VertexArrays. </p>
-<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
-
-</div>
-</div>
 <a id="ac780860df5b72fb8f23de1d7c01369d3" name="ac780860df5b72fb8f23de1d7c01369d3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac780860df5b72fb8f23de1d7c01369d3">&#9670;&#160;</a></span>GetClearColor()</h2>
 
@@ -296,26 +294,6 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Getter for the m_ClearColor. </p>
-<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
-
-</div>
-</div>
-<a id="a1041cf5cacfad509f47868f3ba9c29f0" name="a1041cf5cacfad509f47868f3ba9c29f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1041cf5cacfad509f47868f3ba9c29f0">&#9670;&#160;</a></span>GetRenderableVertexArray()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="class_karma_1_1_vertex_array.html">VertexArray</a> &gt; Karma::Scene::GetRenderableVertexArray </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Getter for the <a class="el" href="class_karma_1_1_vertex_array.html" title="A class, comprising of Mesh and Material substances along with relevant setup, for a renderable unit.">VertexArray</a>. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>
@@ -364,6 +342,34 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Getter for the <a class="el" href="class_karma_1_1_camera.html" title="Base class of Camera.">Camera</a> being used for the scene. </p>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="ac544e7baefda394bde2b69d5429fc98d" name="ac544e7baefda394bde2b69d5429fc98d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac544e7baefda394bde2b69d5429fc98d">&#9670;&#160;</a></span>GetSMActors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="class_karma_1_1_a_static_mesh_actor.html">AStaticMeshActor</a> * &gt; &amp; Karma::Scene::GetSMActors </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the list of StaticMeshActors in the scene. </p>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

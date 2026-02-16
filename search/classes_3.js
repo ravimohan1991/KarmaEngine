@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['event_0',['Event',['../class_karma_1_1_event.html',1,'Karma']]],
-  ['eventdispatcher_1',['EventDispatcher',['../class_karma_1_1_event_dispatcher.html',1,'Karma']]]
+  ['depthrendertarget_0',['DepthRenderTarget',['../struct_karma_1_1_f_vulkan_render_targets_info_1_1_depth_render_target.html',1,'Karma::FVulkanRenderTargetsInfo']]]
 ];

@@ -102,12 +102,12 @@ Inheritance diagram for Karma::VulkanImageBuffer:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a2c470d05be31569217e1cd5f09defd65" id="r_a2c470d05be31569217e1cd5f09defd65"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c470d05be31569217e1cd5f09defd65">VulkanImageBuffer</a> (const char *filename)</td></tr>
 <tr class="memdesc:a2c470d05be31569217e1cd5f09defd65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a GPU memory buffer for storing image texture.  <br /></td></tr>
+<tr class="memitem:a961fd51ce74628d34fc3329960c84e14" id="r_a961fd51ce74628d34fc3329960c84e14"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a961fd51ce74628d34fc3329960c84e14">VulkanImageBuffer</a> (<a class="el" href="class_karma_1_1_f_vulkan_device.html">FVulkanDevice</a> *InDevice, const char *filename)</td></tr>
+<tr class="memdesc:a961fd51ce74628d34fc3329960c84e14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates GPU memory buffer for storing image texture with VulkanRHI support.  <br /></td></tr>
 <tr class="memitem:af7e08e2ca33729f0baac761dd7ec6c64" id="r_af7e08e2ca33729f0baac761dd7ec6c64"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7e08e2ca33729f0baac761dd7ec6c64">~VulkanImageBuffer</a> ()</td></tr>
 <tr class="memdesc:af7e08e2ca33729f0baac761dd7ec6c64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees up device resources.  <br /></td></tr>
 <tr class="memitem:ac498e5c05459e82ebe6e8d11bf357bce" id="r_ac498e5c05459e82ebe6e8d11bf357bce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac498e5c05459e82ebe6e8d11bf357bce">CreateBuffer</a> (VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &amp;buffer, VkDeviceMemory &amp;bufferMemory)</td></tr>
 <tr class="memdesc:ac498e5c05459e82ebe6e8d11bf357bce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates Vulkan buffer (VKbuffer) for image texture's use and allocates device memory appropriately.  <br /></td></tr>
-<tr class="memitem:ac9225f818712a2e9d5eae1a7c56e058d" id="r_ac9225f818712a2e9d5eae1a7c56e058d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9225f818712a2e9d5eae1a7c56e058d">FindMemoryType</a> (uint32_t typeFilter, VkMemoryPropertyFlags properties)</td></tr>
-<tr class="memdesc:ac9225f818712a2e9d5eae1a7c56e058d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.  <br /></td></tr>
 <tr class="memitem:a60941235428ee68a9beaa4831b0ec323" id="r_a60941235428ee68a9beaa4831b0ec323"><td class="memItemLeft" align="right" valign="top"><a id="a60941235428ee68a9beaa4831b0ec323" name="a60941235428ee68a9beaa4831b0ec323"></a>
 const VkBuffer &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetBuffer</b> () const</td></tr>
 <tr class="memitem:a9eebcd10bb72fd9b8fc291cbb64bda5d" id="r_a9eebcd10bb72fd9b8fc291cbb64bda5d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9eebcd10bb72fd9b8fc291cbb64bda5d">GetTextureWidth</a> () const</td></tr>
@@ -133,7 +133,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>m_BindingPoint</b
 <div class="textblock"><p>Vulkan specific implemetation of <a class="el" href="class_karma_1_1_image_buffer.html" title="Abstract class for image buffer.">ImageBuffer</a> class. </p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2c470d05be31569217e1cd5f09defd65" name="a2c470d05be31569217e1cd5f09defd65"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2c470d05be31569217e1cd5f09defd65">&#9670;&#160;</a></span>VulkanImageBuffer()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c470d05be31569217e1cd5f09defd65">&#9670;&#160;</a></span>VulkanImageBuffer() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -151,6 +151,37 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>m_BindingPoint</b
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">filename</td><td>The path to the file, including filename, containing the image texture </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+
+</div>
+</div>
+<a id="a961fd51ce74628d34fc3329960c84e14" name="a961fd51ce74628d34fc3329960c84e14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a961fd51ce74628d34fc3329960c84e14">&#9670;&#160;</a></span>VulkanImageBuffer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Karma::VulkanImageBuffer::VulkanImageBuffer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_karma_1_1_f_vulkan_device.html">FVulkanDevice</a> *</td>          <td class="paramname"><span class="paramname"><em>InDevice</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates GPU memory buffer for storing image texture with VulkanRHI support. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">InDevice</td><td>The <a class="el" href="class_karma_1_1_f_vulkan_device.html" title="Manages Vulkan device resources and operations.">FVulkanDevice</a> object </td></tr>
+    <tr><td class="paramname">filename</td><td>The path to the file, including filename, containing the image texture</td></tr>
   </table>
   </dd>
 </dl>
@@ -230,38 +261,6 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>m_BindingPoint</b
   </dd>
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="struct_karma_1_1_vulkan_uniform_buffer.html#ad1fa2995c3e817ffe496b717059d9482" title="Based on MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being ren...">VulkanUniformBuffer::BufferCreation()</a> </dd></dl>
-<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
-
-</div>
-</div>
-<a id="ac9225f818712a2e9d5eae1a7c56e058d" name="ac9225f818712a2e9d5eae1a7c56e058d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac9225f818712a2e9d5eae1a7c56e058d">&#9670;&#160;</a></span>FindMemoryType()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t Karma::VulkanImageBuffer::FindMemoryType </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>typeFilter</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">VkMemoryPropertyFlags</td>          <td class="paramname"><span class="paramname"><em>properties</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">typeFilter</td><td>A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource. </td></tr>
-    <tr><td class="paramname">properties</td><td>The demanded properties (<a href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html">https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html</a>).</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Memory type index i </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

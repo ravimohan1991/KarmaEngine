@@ -83,78 +83,76 @@ $(function() {
 <a href="_controller_device_event_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;krpch.h&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_event_8h.html">Event.h</a>&quot;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="_event_8h.html">Event.h</a>&quot;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>Karma</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{</div>
-<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_connected_event.html">   21</a></span>    <span class="keyword">class </span><a class="code hl_define" href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a> <a class="code hl_function" href="class_karma_1_1_controller_device_connected_event.html#a32d90c06852782638021fcb6e6928b79">ControllerDeviceConnectedEvent</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_karma_1_1_event.html">Event</a></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">public</span>:</div>
-<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_connected_event.html#a32d90c06852782638021fcb6e6928b79">   35</a></span>        <a class="code hl_function" href="class_karma_1_1_controller_device_connected_event.html#a32d90c06852782638021fcb6e6928b79">ControllerDeviceConnectedEvent</a>(<span class="keywordtype">int</span> cID, <span class="keywordtype">int</span> status) : m_ControllerID(cID), m_Status(status)</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        }</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>Karma</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_connected_event.html">   19</a></span>    <span class="keyword">class </span><a class="code hl_define" href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a> <a class="code hl_function" href="class_karma_1_1_controller_device_connected_event.html#a32d90c06852782638021fcb6e6928b79">ControllerDeviceConnectedEvent</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_karma_1_1_event.html">Event</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_connected_event.html#a32d90c06852782638021fcb6e6928b79">   33</a></span>        <a class="code hl_function" href="class_karma_1_1_controller_device_connected_event.html#a32d90c06852782638021fcb6e6928b79">ControllerDeviceConnectedEvent</a>(<span class="keywordtype">int</span> cID, <span class="keywordtype">int</span> status) : m_ControllerID(cID), m_Status(status)</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        }</div>
 </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span></div>
-<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_connected_event.html#a821c68dd3fecc74decf41f360b40c020">   42</a></span>        std::string <a class="code hl_function" href="class_karma_1_1_controller_device_connected_event.html#a821c68dd3fecc74decf41f360b40c020">ToString</a>()<span class="keyword"> const override</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            std::stringstream ss;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            ss &lt;&lt; <span class="stringliteral">&quot;ControllerDeviceConnectedEvent: joystick &quot;</span> &lt;&lt; m_ControllerID;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">return</span> ss.str();</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span></div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_connected_event.html#a821c68dd3fecc74decf41f360b40c020">   40</a></span>        std::string <a class="code hl_function" href="class_karma_1_1_controller_device_connected_event.html#a821c68dd3fecc74decf41f360b40c020">ToString</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            std::stringstream ss;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            ss &lt;&lt; <span class="stringliteral">&quot;ControllerDeviceConnectedEvent: joystick &quot;</span> &lt;&lt; m_ControllerID;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">return</span> ss.str();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
 </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_define" href="_event_8h.html#a80d534fc4d69a68eefd1573fd0ac2f44">EVENT_CLASS_TYPE</a>(GameControllerConnected)</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_define" href="_event_8h.html#abd52deea587a36ef619e596a0c691839">EVENT_CLASS_CATEGORY</a>(<a class="code hl_enumvalue" href="_event_8h.html#a527d6c4d8e5b79d623fd9efa4914d0cbafe99743ff2bbd28c596496d184d930a0">EventCategoryGameControllerDevice</a>)</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordtype">int</span> m_ControllerID;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordtype">int</span> m_Status;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    };</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_define" href="_event_8h.html#a80d534fc4d69a68eefd1573fd0ac2f44">EVENT_CLASS_TYPE</a>(GameControllerConnected)</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_define" href="_event_8h.html#abd52deea587a36ef619e596a0c691839">EVENT_CLASS_CATEGORY</a>(<a class="code hl_enumvalue" href="_event_8h.html#a527d6c4d8e5b79d623fd9efa4914d0cbafe99743ff2bbd28c596496d184d930a0">EventCategoryGameControllerDevice</a>)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordtype">int</span> m_ControllerID;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordtype">int</span> m_Status;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    };</div>
 </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span></div>
-<div class="foldopen" id="foldopen00060" data-start="{" data-end="};">
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_disconnected_event.html">   60</a></span>    <span class="keyword">class </span><a class="code hl_define" href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a> <a class="code hl_function" href="class_karma_1_1_controller_device_disconnected_event.html#a14090cf2b5fdb7234b2a788bed7d9ed3">ControllerDeviceDisconnectedEvent</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_karma_1_1_event.html">Event</a></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    {</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">public</span>:</div>
-<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_disconnected_event.html#a14090cf2b5fdb7234b2a788bed7d9ed3">   74</a></span>        <a class="code hl_function" href="class_karma_1_1_controller_device_disconnected_event.html#a14090cf2b5fdb7234b2a788bed7d9ed3">ControllerDeviceDisconnectedEvent</a>(<span class="keywordtype">int</span> cID, <span class="keywordtype">int</span> status) : m_ControllerID(cID), m_Status(status)</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span></div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="};">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_disconnected_event.html">   58</a></span>    <span class="keyword">class </span><a class="code hl_define" href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a> <a class="code hl_function" href="class_karma_1_1_controller_device_disconnected_event.html#a14090cf2b5fdb7234b2a788bed7d9ed3">ControllerDeviceDisconnectedEvent</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_karma_1_1_event.html">Event</a></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_disconnected_event.html#a14090cf2b5fdb7234b2a788bed7d9ed3">   72</a></span>        <a class="code hl_function" href="class_karma_1_1_controller_device_disconnected_event.html#a14090cf2b5fdb7234b2a788bed7d9ed3">ControllerDeviceDisconnectedEvent</a>(<span class="keywordtype">int</span> cID, <span class="keywordtype">int</span> status) : m_ControllerID(cID), m_Status(status)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        }</div>
 </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span></div>
-<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_disconnected_event.html#a58335d44d5db6dcfa7513123c44f3f99">   81</a></span>        std::string <a class="code hl_function" href="class_karma_1_1_controller_device_disconnected_event.html#a58335d44d5db6dcfa7513123c44f3f99">ToString</a>()<span class="keyword"> const override</span></div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            std::stringstream ss;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            ss &lt;&lt; <span class="stringliteral">&quot;ControllerDeviceDisconnectedEvent: joystick &quot;</span> &lt;&lt; m_ControllerID;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keywordflow">return</span> ss.str();</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span></div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="class_karma_1_1_controller_device_disconnected_event.html#a58335d44d5db6dcfa7513123c44f3f99">   79</a></span>        std::string <a class="code hl_function" href="class_karma_1_1_controller_device_disconnected_event.html#a58335d44d5db6dcfa7513123c44f3f99">ToString</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            std::stringstream ss;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            ss &lt;&lt; <span class="stringliteral">&quot;ControllerDeviceDisconnectedEvent: joystick &quot;</span> &lt;&lt; m_ControllerID;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordflow">return</span> ss.str();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        }</div>
 </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <a class="code hl_define" href="_event_8h.html#a80d534fc4d69a68eefd1573fd0ac2f44">EVENT_CLASS_TYPE</a>(GameControllerConnected)</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <a class="code hl_define" href="_event_8h.html#abd52deea587a36ef619e596a0c691839">EVENT_CLASS_CATEGORY</a>(<a class="code hl_enumvalue" href="_event_8h.html#a527d6c4d8e5b79d623fd9efa4914d0cbafe99743ff2bbd28c596496d184d930a0">EventCategoryGameControllerDevice</a>)</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordtype">int</span> m_ControllerID;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordtype">int</span> m_Status;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    };</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <a class="code hl_define" href="_event_8h.html#a80d534fc4d69a68eefd1573fd0ac2f44">EVENT_CLASS_TYPE</a>(GameControllerConnected)</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_define" href="_event_8h.html#abd52deea587a36ef619e596a0c691839">EVENT_CLASS_CATEGORY</a>(<a class="code hl_enumvalue" href="_event_8h.html#a527d6c4d8e5b79d623fd9efa4914d0cbafe99743ff2bbd28c596496d184d930a0">EventCategoryGameControllerDevice</a>)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordtype">int</span> m_ControllerID;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordtype">int</span> m_Status;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    };</div>
 </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
 <div class="ttc" id="a_core_8h_html_a0362c0681bf67d6dd6b8d2c75866bef4"><div class="ttname"><a href="_core_8h.html#a0362c0681bf67d6dd6b8d2c75866bef4">KARMA_API</a></div><div class="ttdeci">#define KARMA_API</div><div class="ttdoc">Defining Karma&#39;s API macro for storage class information.</div><div class="ttdef"><b>Definition</b> Core.h:41</div></div>
 <div class="ttc" id="a_event_8h_html"><div class="ttname"><a href="_event_8h.html">Event.h</a></div><div class="ttdoc">This file contains the base class Event for Karma&#39;s events.</div></div>
-<div class="ttc" id="a_event_8h_html_a527d6c4d8e5b79d623fd9efa4914d0cbafe99743ff2bbd28c596496d184d930a0"><div class="ttname"><a href="_event_8h.html#a527d6c4d8e5b79d623fd9efa4914d0cbafe99743ff2bbd28c596496d184d930a0">Karma::EventCategoryGameControllerDevice</a></div><div class="ttdeci">@ EventCategoryGameControllerDevice</div><div class="ttdoc">Events belonging to game controller devices&#39; input.</div><div class="ttdef"><b>Definition</b> Event.h:67</div></div>
-<div class="ttc" id="a_event_8h_html_a80d534fc4d69a68eefd1573fd0ac2f44"><div class="ttname"><a href="_event_8h.html#a80d534fc4d69a68eefd1573fd0ac2f44">EVENT_CLASS_TYPE</a></div><div class="ttdeci">#define EVENT_CLASS_TYPE(type)</div><div class="ttdoc">A macro for a template for Event based classes.</div><div class="ttdef"><b>Definition</b> Event.h:75</div></div>
-<div class="ttc" id="a_event_8h_html_abd52deea587a36ef619e596a0c691839"><div class="ttname"><a href="_event_8h.html#abd52deea587a36ef619e596a0c691839">EVENT_CLASS_CATEGORY</a></div><div class="ttdeci">#define EVENT_CLASS_CATEGORY(category)</div><div class="ttdoc">Macro for the routine category flags.</div><div class="ttdef"><b>Definition</b> Event.h:84</div></div>
-<div class="ttc" id="aclass_karma_1_1_controller_device_connected_event_html_a32d90c06852782638021fcb6e6928b79"><div class="ttname"><a href="class_karma_1_1_controller_device_connected_event.html#a32d90c06852782638021fcb6e6928b79">Karma::ControllerDeviceConnectedEvent::ControllerDeviceConnectedEvent</a></div><div class="ttdeci">ControllerDeviceConnectedEvent(int cID, int status)</div><div class="ttdoc">A constructor.</div><div class="ttdef"><b>Definition</b> ControllerDeviceEvent.h:35</div></div>
-<div class="ttc" id="aclass_karma_1_1_controller_device_connected_event_html_a821c68dd3fecc74decf41f360b40c020"><div class="ttname"><a href="class_karma_1_1_controller_device_connected_event.html#a821c68dd3fecc74decf41f360b40c020">Karma::ControllerDeviceConnectedEvent::ToString</a></div><div class="ttdeci">std::string ToString() const override</div><div class="ttdoc">String representation of the event.</div><div class="ttdef"><b>Definition</b> ControllerDeviceEvent.h:42</div></div>
-<div class="ttc" id="aclass_karma_1_1_controller_device_disconnected_event_html_a14090cf2b5fdb7234b2a788bed7d9ed3"><div class="ttname"><a href="class_karma_1_1_controller_device_disconnected_event.html#a14090cf2b5fdb7234b2a788bed7d9ed3">Karma::ControllerDeviceDisconnectedEvent::ControllerDeviceDisconnectedEvent</a></div><div class="ttdeci">ControllerDeviceDisconnectedEvent(int cID, int status)</div><div class="ttdoc">A constructor.</div><div class="ttdef"><b>Definition</b> ControllerDeviceEvent.h:74</div></div>
-<div class="ttc" id="aclass_karma_1_1_controller_device_disconnected_event_html_a58335d44d5db6dcfa7513123c44f3f99"><div class="ttname"><a href="class_karma_1_1_controller_device_disconnected_event.html#a58335d44d5db6dcfa7513123c44f3f99">Karma::ControllerDeviceDisconnectedEvent::ToString</a></div><div class="ttdeci">std::string ToString() const override</div><div class="ttdoc">String representation of the event.</div><div class="ttdef"><b>Definition</b> ControllerDeviceEvent.h:81</div></div>
-<div class="ttc" id="aclass_karma_1_1_event_html"><div class="ttname"><a href="class_karma_1_1_event.html">Karma::Event</a></div><div class="ttdoc">The base class of all the events for Karma.</div><div class="ttdef"><b>Definition</b> Event.h:90</div></div>
+<div class="ttc" id="a_event_8h_html_a527d6c4d8e5b79d623fd9efa4914d0cbafe99743ff2bbd28c596496d184d930a0"><div class="ttname"><a href="_event_8h.html#a527d6c4d8e5b79d623fd9efa4914d0cbafe99743ff2bbd28c596496d184d930a0">Karma::EventCategoryGameControllerDevice</a></div><div class="ttdeci">@ EventCategoryGameControllerDevice</div><div class="ttdoc">Events belonging to game controller devices&#39; input.</div><div class="ttdef"><b>Definition</b> Event.h:65</div></div>
+<div class="ttc" id="a_event_8h_html_a80d534fc4d69a68eefd1573fd0ac2f44"><div class="ttname"><a href="_event_8h.html#a80d534fc4d69a68eefd1573fd0ac2f44">EVENT_CLASS_TYPE</a></div><div class="ttdeci">#define EVENT_CLASS_TYPE(type)</div><div class="ttdoc">A macro for a template for Event based classes.</div><div class="ttdef"><b>Definition</b> Event.h:73</div></div>
+<div class="ttc" id="a_event_8h_html_abd52deea587a36ef619e596a0c691839"><div class="ttname"><a href="_event_8h.html#abd52deea587a36ef619e596a0c691839">EVENT_CLASS_CATEGORY</a></div><div class="ttdeci">#define EVENT_CLASS_CATEGORY(category)</div><div class="ttdoc">Macro for the routine category flags.</div><div class="ttdef"><b>Definition</b> Event.h:82</div></div>
+<div class="ttc" id="aclass_karma_1_1_controller_device_connected_event_html_a32d90c06852782638021fcb6e6928b79"><div class="ttname"><a href="class_karma_1_1_controller_device_connected_event.html#a32d90c06852782638021fcb6e6928b79">Karma::ControllerDeviceConnectedEvent::ControllerDeviceConnectedEvent</a></div><div class="ttdeci">ControllerDeviceConnectedEvent(int cID, int status)</div><div class="ttdoc">A constructor.</div><div class="ttdef"><b>Definition</b> ControllerDeviceEvent.h:33</div></div>
+<div class="ttc" id="aclass_karma_1_1_controller_device_connected_event_html_a821c68dd3fecc74decf41f360b40c020"><div class="ttname"><a href="class_karma_1_1_controller_device_connected_event.html#a821c68dd3fecc74decf41f360b40c020">Karma::ControllerDeviceConnectedEvent::ToString</a></div><div class="ttdeci">std::string ToString() const override</div><div class="ttdoc">String representation of the event.</div><div class="ttdef"><b>Definition</b> ControllerDeviceEvent.h:40</div></div>
+<div class="ttc" id="aclass_karma_1_1_controller_device_disconnected_event_html_a14090cf2b5fdb7234b2a788bed7d9ed3"><div class="ttname"><a href="class_karma_1_1_controller_device_disconnected_event.html#a14090cf2b5fdb7234b2a788bed7d9ed3">Karma::ControllerDeviceDisconnectedEvent::ControllerDeviceDisconnectedEvent</a></div><div class="ttdeci">ControllerDeviceDisconnectedEvent(int cID, int status)</div><div class="ttdoc">A constructor.</div><div class="ttdef"><b>Definition</b> ControllerDeviceEvent.h:72</div></div>
+<div class="ttc" id="aclass_karma_1_1_controller_device_disconnected_event_html_a58335d44d5db6dcfa7513123c44f3f99"><div class="ttname"><a href="class_karma_1_1_controller_device_disconnected_event.html#a58335d44d5db6dcfa7513123c44f3f99">Karma::ControllerDeviceDisconnectedEvent::ToString</a></div><div class="ttdeci">std::string ToString() const override</div><div class="ttdoc">String representation of the event.</div><div class="ttdef"><b>Definition</b> ControllerDeviceEvent.h:79</div></div>
+<div class="ttc" id="aclass_karma_1_1_event_html"><div class="ttname"><a href="class_karma_1_1_event.html">Karma::Event</a></div><div class="ttdoc">The base class of all the events for Karma.</div><div class="ttdef"><b>Definition</b> Event.h:88</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

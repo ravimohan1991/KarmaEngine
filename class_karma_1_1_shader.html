@@ -103,8 +103,8 @@ Inheritance diagram for Karma::Shader:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8e558b284952a8791b2301e52c5aa9c0" id="r_a8e558b284952a8791b2301e52c5aa9c0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e558b284952a8791b2301e52c5aa9c0">Shader</a> (std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt; ubo)</td></tr>
-<tr class="memdesc:a8e558b284952a8791b2301e52c5aa9c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constructor.  <br /></td></tr>
+<tr class="memitem:affdd71cec147910d9942d926fac1c477" id="r_affdd71cec147910d9942d926fac1c477"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affdd71cec147910d9942d926fac1c477">Shader</a> ()</td></tr>
+<tr class="memdesc:affdd71cec147910d9942d926fac1c477"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constructor.  <br /></td></tr>
 <tr class="memitem:a53823dbc74b00a97a10753db22c83448" id="r_a53823dbc74b00a97a10753db22c83448"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53823dbc74b00a97a10753db22c83448">~Shader</a> ()=default</td></tr>
 <tr class="memdesc:a53823dbc74b00a97a10753db22c83448"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="memitem:a13ae58e739972571c81d8c2cb99c911e" id="r_a13ae58e739972571c81d8c2cb99c911e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13ae58e739972571c81d8c2cb99c911e">Bind</a> () const</td></tr>
@@ -113,17 +113,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a77bd6ac96fe8db4df7faaf7f261d1bc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binding using name of texture.  <br /></td></tr>
 <tr class="memitem:a2d20fa79716ec91a2f188b985be3b615" id="r_a2d20fa79716ec91a2f188b985be3b615"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d20fa79716ec91a2f188b985be3b615">UnBind</a> () const</td></tr>
 <tr class="memdesc:a2d20fa79716ec91a2f188b985be3b615"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo the binding of shader program.  <br /></td></tr>
-<tr class="memitem:ad3df3961cfa642287e1b34f1468f6bcc" id="r_ad3df3961cfa642287e1b34f1468f6bcc"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad3df3961cfa642287e1b34f1468f6bcc">GetUniformBufferObject</a> () const</td></tr>
-<tr class="memdesc:ad3df3961cfa642287e1b34f1468f6bcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for uniform buffer object.  <br /></td></tr>
 <tr class="memitem:a02061828e95d0ede71a43d2bae8a2358" id="r_a02061828e95d0ede71a43d2bae8a2358"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02061828e95d0ede71a43d2bae8a2358">GetShaderName</a> () const</td></tr>
 <tr class="memdesc:a02061828e95d0ede71a43d2bae8a2358"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for shader name.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a09264c9af35a832d1baa6307678345d2" id="r_a09264c9af35a832d1baa6307678345d2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="#a8e558b284952a8791b2301e52c5aa9c0">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09264c9af35a832d1baa6307678345d2">Create</a> (const std::string &amp;vertexSrc, const std::string &amp;fragmentSrc)</td></tr>
+<tr class="memitem:a09264c9af35a832d1baa6307678345d2" id="r_a09264c9af35a832d1baa6307678345d2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="#affdd71cec147910d9942d926fac1c477">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09264c9af35a832d1baa6307678345d2">Create</a> (const std::string &amp;vertexSrc, const std::string &amp;fragmentSrc)</td></tr>
 <tr class="memdesc:a09264c9af35a832d1baa6307678345d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiating shader object according to the programmer chosen API.  <br /></td></tr>
-<tr class="memitem:ac82a52b4c6f3d4a9aca29aac66efc00f" id="r_ac82a52b4c6f3d4a9aca29aac66efc00f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="#a8e558b284952a8791b2301e52c5aa9c0">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac82a52b4c6f3d4a9aca29aac66efc00f">Create</a> (const std::string &amp;vertexSrcFile, const std::string &amp;fragmentSrcFile, std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt; ubo, const std::string &amp;shaderName=&quot;NoNamedShader&quot;)</td></tr>
-<tr class="memdesc:ac82a52b4c6f3d4a9aca29aac66efc00f"><td class="mdescLeft">&#160;</td><td class="mdescRight">For instantiating shader object accodring to programer's chosen API.  <br /></td></tr>
+<tr class="memitem:af44283e2ca4c6dfc849657934cc5c2c4" id="r_af44283e2ca4c6dfc849657934cc5c2c4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="#affdd71cec147910d9942d926fac1c477">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af44283e2ca4c6dfc849657934cc5c2c4">Create</a> (const std::string &amp;vertexSrcFile, const std::string &amp;fragmentSrcFile, const std::string &amp;shaderName=&quot;NoNamedShader&quot;)</td></tr>
+<tr class="memdesc:af44283e2ca4c6dfc849657934cc5c2c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">For instantiating shader object accodring to programer's chosen API.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -133,8 +131,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class of vertex + fragment shaders (for Vulkan and OpenGL). </p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a8e558b284952a8791b2301e52c5aa9c0" name="a8e558b284952a8791b2301e52c5aa9c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e558b284952a8791b2301e52c5aa9c0">&#9670;&#160;</a></span>Shader()</h2>
+<a id="affdd71cec147910d9942d926fac1c477" name="affdd71cec147910d9942d926fac1c477"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affdd71cec147910d9942d926fac1c477">&#9670;&#160;</a></span>Shader()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -145,7 +143,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
         <tr>
           <td class="memname">Karma::Shader::Shader </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>ubo</em></span></td><td>)</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -268,7 +266,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a8e558b284952a8791b2301e52c5aa9c0">Shader</a> * Karma::Shader::Create </td>
+          <td class="memname"><a class="el" href="#affdd71cec147910d9942d926fac1c477">Shader</a> * Karma::Shader::Create </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>vertexSrc</em></span>, </td>
         </tr>
@@ -291,8 +289,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
 
 </div>
 </div>
-<a id="ac82a52b4c6f3d4a9aca29aac66efc00f" name="ac82a52b4c6f3d4a9aca29aac66efc00f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac82a52b4c6f3d4a9aca29aac66efc00f">&#9670;&#160;</a></span>Create() <span class="overload">[2/2]</span></h2>
+<a id="af44283e2ca4c6dfc849657934cc5c2c4" name="af44283e2ca4c6dfc849657934cc5c2c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af44283e2ca4c6dfc849657934cc5c2c4">&#9670;&#160;</a></span>Create() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -301,7 +299,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#a8e558b284952a8791b2301e52c5aa9c0">Shader</a> * Karma::Shader::Create </td>
+          <td class="memname"><a class="el" href="#affdd71cec147910d9942d926fac1c477">Shader</a> * Karma::Shader::Create </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>vertexSrcFile</em></span>, </td>
         </tr>
@@ -309,11 +307,6 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>fragmentSrcFile</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>ubo</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -333,7 +326,6 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
   <table class="params">
     <tr><td class="paramname">vertexSrcFile</td><td>Path to vertex shader (filename included). For instance "../Resources/Shaders/shader.vert", relative to Engine's running directory </td></tr>
     <tr><td class="paramname">fragmentSrcFile</td><td>Path to fragment shader (filename included). </td></tr>
-    <tr><td class="paramname">ubo</td><td><a class="el" href="struct_karma_1_1_uniform_buffer_object.html" title="Abstract class for UBO. A UBO is mostly used for shader variables, for instance projection or view ma...">UniformBufferObject</a> to be used </td></tr>
     <tr><td class="paramname">shaderName</td><td>Name of the shader to be supplied </td></tr>
   </table>
   </dd>
@@ -367,35 +359,6 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>m_ShaderName</
 
 <p>Getter for shader name. </p>
 <dl class="section note"><dt>Note</dt><dd>Could be a pointer? </dd></dl>
-<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
-
-</div>
-</div>
-<a id="ad3df3961cfa642287e1b34f1468f6bcc" name="ad3df3961cfa642287e1b34f1468f6bcc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad3df3961cfa642287e1b34f1468f6bcc">&#9670;&#160;</a></span>GetUniformBufferObject()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">UniformBufferObject</a> &gt; Karma::Shader::GetUniformBufferObject </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Getter for uniform buffer object. </p>
-<dl class="section return"><dt>Returns</dt><dd>pointer to <a class="el" href="struct_karma_1_1_uniform_buffer_object.html" title="Abstract class for UBO. A UBO is mostly used for shader variables, for instance projection or view ma...">UniformBufferObject</a> present in the shader </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
 
 </div>

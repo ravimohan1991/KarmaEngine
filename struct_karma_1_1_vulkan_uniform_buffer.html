@@ -106,16 +106,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a72c2868342027bb3a968bec26adcad63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. For freeing up UBO resources, use <a class="el" href="#acad49656438832a773b2cf08ec8ed442" title="Frees up the resources by destroying the buffer object(s) and clearing memory.">VulkanUniformBuffer::ClearBuffer()</a>.  <br /></td></tr>
 <tr class="memitem:ae35f4d03b2951314d7cda8a6c040083c" id="r_ae35f4d03b2951314d7cda8a6c040083c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae35f4d03b2951314d7cda8a6c040083c">CreateBuffer</a> (VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &amp;buffer, VkDeviceMemory &amp;bufferMemory)</td></tr>
 <tr class="memdesc:ae35f4d03b2951314d7cda8a6c040083c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates Vulkan buffer (VKbuffer) for ubo use and allocates device memory appropriately.  <br /></td></tr>
-<tr class="memitem:ad6247f684a860bbd6aa0612e31105f90" id="r_ad6247f684a860bbd6aa0612e31105f90"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6247f684a860bbd6aa0612e31105f90">FindMemoryType</a> (uint32_t typeFilter, VkMemoryPropertyFlags properties)</td></tr>
-<tr class="memdesc:ad6247f684a860bbd6aa0612e31105f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.  <br /></td></tr>
 <tr class="memitem:ad421f1c3be916425a01aac77eaddf07a" id="r_ad421f1c3be916425a01aac77eaddf07a"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; VkBuffer &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad421f1c3be916425a01aac77eaddf07a">GetUniformBuffers</a> () const</td></tr>
 <tr class="memdesc:ad421f1c3be916425a01aac77eaddf07a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the uniform buffers.  <br /></td></tr>
 <tr class="memitem:acad49656438832a773b2cf08ec8ed442" id="r_acad49656438832a773b2cf08ec8ed442"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acad49656438832a773b2cf08ec8ed442">ClearBuffer</a> ()</td></tr>
 <tr class="memdesc:acad49656438832a773b2cf08ec8ed442"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees up the resources by destroying the buffer object(s) and clearing memory.  <br /></td></tr>
 <tr class="memitem:ad1fa2995c3e817ffe496b717059d9482" id="r_ad1fa2995c3e817ffe496b717059d9482"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad1fa2995c3e817ffe496b717059d9482">BufferCreation</a> ()</td></tr>
 <tr class="memdesc:ad1fa2995c3e817ffe496b717059d9482"><td class="mdescLeft">&#160;</td><td class="mdescRight">Based on MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1), uniform buffers are created with appropriate buffer size.  <br /></td></tr>
+<tr class="memitem:ac5a660b28f9d16799cfa947b65ee4509" id="r_ac5a660b28f9d16799cfa947b65ee4509"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac5a660b28f9d16799cfa947b65ee4509">UpdateCameraUniform</a> () override</td></tr>
 <tr class="memitem:a0e480fa1d102bd1e98ef1729b06218d5" id="r_a0e480fa1d102bd1e98ef1729b06218d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0e480fa1d102bd1e98ef1729b06218d5">UploadUniformBuffer</a> (size_t frameIndex) override</td></tr>
-<tr class="memdesc:a0e480fa1d102bd1e98ef1729b06218d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uploads (copies) the data from buffer memory (m_UniformBuffersMemory) to host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range.  <br /></td></tr>
+<tr class="memdesc:a0e480fa1d102bd1e98ef1729b06218d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uploads (copies) the data to GPU buffer memory (m_UniformBuffersMemory) from host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range.  <br /></td></tr>
 <tr class="inherit_header pub_methods_struct_karma_1_1_uniform_buffer_object"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_struct_karma_1_1_uniform_buffer_object')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">Karma::UniformBufferObject</a></td></tr>
 <tr class="memitem:ad31680e2fbecb1746866abe03c0ec95c inherit pub_methods_struct_karma_1_1_uniform_buffer_object" id="r_ad31680e2fbecb1746866abe03c0ec95c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_karma_1_1_uniform_buffer_object.html#ad31680e2fbecb1746866abe03c0ec95c">UniformBufferObject</a> (std::vector&lt; <a class="el" href="_buffer_8h.html#a6772a8a24de3acd9480e516faf861c89">ShaderDataType</a> &gt; dataTypes, uint32_t bindingPointIndex)</td></tr>
 <tr class="memdesc:ad31680e2fbecb1746866abe03c0ec95c inherit pub_methods_struct_karma_1_1_uniform_buffer_object"><td class="mdescLeft">&#160;</td><td class="mdescRight">An agnostic constructor provided for precomputation of offset and buffer size.  <br /></td></tr>
@@ -183,6 +182,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Constructor for Vulkan buffer. Calls <a class="el" href="#ad1fa2995c3e817ffe496b717059d9482" title="Based on MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being ren...">VulkanUniformBuffer::BufferCreation()</a>. </p>
+<p>Also registers the UBO with <a class="el" href="class_karma_1_1_vulkan_context.html" title="A class for Vulkan specific graphics context. This class also contains all the common Vulkan resource...">VulkanContext</a> so that it can be updated appropriately during rendering.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dataTypes</td><td>List of data types for uniforms to be uploaded to GPU (like used in shaders), for instance <a href="https://github.com/ravimohan1991/KarmaEngine/blob/138c172ccedf31acfab982af51ae130f9a37d3bb/Application/src/KarmaApp.cpp#L39">https://github.com/ravimohan1991/KarmaEngine/blob/138c172ccedf31acfab982af51ae130f9a37d3bb/Application/src/KarmaApp.cpp#L39</a> where Mat4 are for <a href="https://github.com/ravimohan1991/KarmaEngine/blob/138c172ccedf31acfab982af51ae130f9a37d3bb/Resources/Shaders/shader.vert#L9-L13">https://github.com/ravimohan1991/KarmaEngine/blob/138c172ccedf31acfab982af51ae130f9a37d3bb/Resources/Shaders/shader.vert#L9-L13</a> </td></tr>
@@ -311,38 +311,6 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="ad6247f684a860bbd6aa0612e31105f90" name="ad6247f684a860bbd6aa0612e31105f90"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6247f684a860bbd6aa0612e31105f90">&#9670;&#160;</a></span>FindMemoryType()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t Karma::VulkanUniformBuffer::FindMemoryType </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t</td>          <td class="paramname"><span class="paramname"><em>typeFilter</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">VkMemoryPropertyFlags</td>          <td class="paramname"><span class="paramname"><em>properties</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">typeFilter</td><td>A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource. </td></tr>
-    <tr><td class="paramname">properties</td><td>The demanded properties (<a href="https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html">https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html</a>).</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Memory type index i </dd></dl>
-<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
-
-</div>
-</div>
 <a id="ad421f1c3be916425a01aac77eaddf07a" name="ad421f1c3be916425a01aac77eaddf07a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad421f1c3be916425a01aac77eaddf07a">&#9670;&#160;</a></span>GetUniformBuffers()</h2>
 
@@ -371,6 +339,33 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="ac5a660b28f9d16799cfa947b65ee4509" name="ac5a660b28f9d16799cfa947b65ee4509"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5a660b28f9d16799cfa947b65ee4509">&#9670;&#160;</a></span>UpdateCameraUniform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Karma::VulkanUniformBuffer::UpdateCameraUniform </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="struct_karma_1_1_uniform_buffer_object.html">Karma::UniformBufferObject</a>.</p>
+
+</div>
+</div>
 <a id="a0e480fa1d102bd1e98ef1729b06218d5" name="a0e480fa1d102bd1e98ef1729b06218d5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0e480fa1d102bd1e98ef1729b06218d5">&#9670;&#160;</a></span>UploadUniformBuffer()</h2>
 
@@ -394,7 +389,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Uploads (copies) the data from buffer memory (m_UniformBuffersMemory) to host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range. </p>
+<p>Uploads (copies) the data to GPU buffer memory (m_UniformBuffersMemory) from host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range. </p>
 <p>Basically copies the data from CPU side (uniforms) to GPU side (m_UniformBuffersMemory).</p>
 <p>In summary, the process of updating uniform buffers in Vulkan involves the following steps:</p><ul>
 <li>Uniform data is first stored in a CPU-side structure representing the uniform buffer object.</li>
@@ -402,6 +397,7 @@ Additional Inherited Members</h2></td></tr>
 <li>The updateUniformBuffer function copies the CPU-side data (like transformation matrices) into the mapped GPU buffer memory via a memcpy call.</li>
 <li>This allows the GPU to read the fresh uniform data every frame during rendering without needing to re-record command buffers.</li>
 </ul>
+<p>Mechanics: vkMapMemory returns a CPU-accessible pointer (data) to a specific range within m_UniformBuffersMemory[frameIndex], which is VkDeviceMemory allocated for GPU use but with VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT (see <a class="el" href="#ad1fa2995c3e817ffe496b717059d9482" title="Based on MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being ren...">VulkanUniformBuffer::BufferCreation()</a>). This pointer points directly into GPU memory, so memcpy(data, it.GetDataPointer(), uniformSize) overlays CPU data bytes onto that GPU buffer region</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">frameIndex</td><td>The m_CurrentFrame index representing index of MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1)</td></tr>

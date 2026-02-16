@@ -83,16 +83,83 @@ $(function() {
   <div class="headertitle"><div class="title">Karma::KarmaGui_OffScreen_Render_Resources Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Resources common to screen rendering of 3D scene to 2D texture elements.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_karma_gui_vulkan_handler_8h_source.html">KarmaGuiVulkanHandler.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a4b9a148e7d3740c05b25541d55ce87a5" id="r_a4b9a148e7d3740c05b25541d55ce87a5"><td class="memItemLeft" align="right" valign="top"><a id="a4b9a148e7d3740c05b25541d55ce87a5" name="a4b9a148e7d3740c05b25541d55ce87a5"></a>
-VkSampler&#160;</td><td class="memItemRight" valign="bottom"><b>Sampler</b></td></tr>
-<tr class="memitem:a4369e4ab948f567bd17a5ba06943d5e9" id="r_a4369e4ab948f567bd17a5ba06943d5e9"><td class="memItemLeft" align="right" valign="top"><a id="a4369e4ab948f567bd17a5ba06943d5e9" name="a4369e4ab948f567bd17a5ba06943d5e9"></a>
-VkRenderPass&#160;</td><td class="memItemRight" valign="bottom"><b>RenderPass</b></td></tr>
-<tr class="memitem:a9c3569ad4abb23210eb8ceed04e30e94" id="r_a9c3569ad4abb23210eb8ceed04e30e94"><td class="memItemLeft" align="right" valign="top"><a id="a9c3569ad4abb23210eb8ceed04e30e94" name="a9c3569ad4abb23210eb8ceed04e30e94"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>bAllocationDoneOnce</b></td></tr>
+<tr class="memitem:a4b9a148e7d3740c05b25541d55ce87a5" id="r_a4b9a148e7d3740c05b25541d55ce87a5"><td class="memItemLeft" align="right" valign="top">VkSampler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b9a148e7d3740c05b25541d55ce87a5">Sampler</a></td></tr>
+<tr class="memdesc:a4b9a148e7d3740c05b25541d55ce87a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sampler for offscreen rendered 2D texture(s).  <br /></td></tr>
+<tr class="memitem:affb8c08e486dee6c0c504310c1a24473" id="r_affb8c08e486dee6c0c504310c1a24473"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_karma_1_1_f_vulkan_render_pass.html">FVulkanRenderPass</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affb8c08e486dee6c0c504310c1a24473">RenderPass</a></td></tr>
+<tr class="memdesc:affb8c08e486dee6c0c504310c1a24473"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render pass for offscreen rendering of 3D scene to 2D texture(s).  <br /></td></tr>
+<tr class="memitem:a9c3569ad4abb23210eb8ceed04e30e94" id="r_a9c3569ad4abb23210eb8ceed04e30e94"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c3569ad4abb23210eb8ceed04e30e94">bAllocationDoneOnce</a></td></tr>
+<tr class="memdesc:a9c3569ad4abb23210eb8ceed04e30e94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether the allocation of offscreen rendering resources has been done at least once.  <br /></td></tr>
+<tr class="memitem:adcacd4b69d689f1d505f552c558acaf5" id="r_adcacd4b69d689f1d505f552c558acaf5"><td class="memItemLeft" align="right" valign="top"><a id="adcacd4b69d689f1d505f552c558acaf5" name="adcacd4b69d689f1d505f552c558acaf5"></a>
+VkPipelineLayout&#160;</td><td class="memItemRight" valign="bottom"><b>OffscreenPipelineLayout</b></td></tr>
+<tr class="memitem:a43737201cc01e630e68008be95212577" id="r_a43737201cc01e630e68008be95212577"><td class="memItemLeft" align="right" valign="top"><a id="a43737201cc01e630e68008be95212577" name="a43737201cc01e630e68008be95212577"></a>
+VkPipeline&#160;</td><td class="memItemRight" valign="bottom"><b>OffscreenGraphicsPipeline</b></td></tr>
 </table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Resources common to screen rendering of 3D scene to 2D texture elements. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_renderer.html#a73efb862f57dd83ce11a4a4e99afa797" title="Commandbuffer recording for KarmaGui primitives along with additional 2D render targets in KarmaGui_I...">KarmaGuiRenderer::FrameRender</a> </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>Karma 1.0.0 </dd></dl>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a9c3569ad4abb23210eb8ceed04e30e94" name="a9c3569ad4abb23210eb8ceed04e30e94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c3569ad4abb23210eb8ceed04e30e94">&#9670;&#160;</a></span>bAllocationDoneOnce</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Karma::KarmaGui_OffScreen_Render_Resources::bAllocationDoneOnce</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Flag indicating whether the allocation of offscreen rendering resources has been done at least once. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_renderer.html#ade22065d162677837ce35e235807d65b" title="Creates the vulkan resources for 2D texture (render target) from 3D meshes or scene.">KarmaGuiRenderer::Add3DSceneFor2DRendering</a> </dd></dl>
+
+</div>
+</div>
+<a id="affb8c08e486dee6c0c504310c1a24473" name="affb8c08e486dee6c0c504310c1a24473"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affb8c08e486dee6c0c504310c1a24473">&#9670;&#160;</a></span>RenderPass</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_karma_1_1_f_vulkan_render_pass.html">FVulkanRenderPass</a>* Karma::KarmaGui_OffScreen_Render_Resources::RenderPass</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Render pass for offscreen rendering of 3D scene to 2D texture(s). </p>
+<p>A render pass in Vulkan defines a sequence of rendering operations, including the attachments (color, depth, stencil) used during rendering, how they are used, and the order of subpasses. It encapsulates the rendering workflow and is essential for efficient rendering.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_renderer.html#ade22065d162677837ce35e235807d65b" title="Creates the vulkan resources for 2D texture (render target) from 3D meshes or scene.">KarmaGuiRenderer::Add3DSceneFor2DRendering</a> </dd></dl>
+
+</div>
+</div>
+<a id="a4b9a148e7d3740c05b25541d55ce87a5" name="a4b9a148e7d3740c05b25541d55ce87a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b9a148e7d3740c05b25541d55ce87a5">&#9670;&#160;</a></span>Sampler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VkSampler Karma::KarmaGui_OffScreen_Render_Resources::Sampler</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sampler for offscreen rendered 2D texture(s). </p>
+<p>A Vulkan sampler is an object that defines how to sample textures when they are accessed in shaders. It encapsulates various sampling parameters such as filtering modes, addressing modes, and mipmapping settings.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="class_karma_1_1_karma_gui_renderer.html#ade22065d162677837ce35e235807d65b" title="Creates the vulkan resources for 2D texture (render target) from 3D meshes or scene.">KarmaGuiRenderer::Add3DSceneFor2DRendering</a> </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>Karma/src/Platform/Vulkan/<a class="el" href="_karma_gui_vulkan_handler_8h_source.html">KarmaGuiVulkanHandler.h</a></li>
 </ul>

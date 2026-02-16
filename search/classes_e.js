@@ -1,29 +1,7 @@
 var searchData=
 [
-  ['scene_0',['Scene',['../class_karma_1_1_scene.html',1,'Karma']]],
-  ['selectintpointertype_1',['SelectIntPointerType',['../struct_karma_1_1_select_int_pointer_type.html',1,'Karma']]],
-  ['selectintpointertype_3c_20t32bits_2c_20t64bits_2c_204_20_3e_2',['SelectIntPointerType&lt; T32BITS, T64BITS, 4 &gt;',['../struct_karma_1_1_select_int_pointer_type_3_01_t32_b_i_t_s_00_01_t64_b_i_t_s_00_014_01_4.html',1,'Karma']]],
-  ['selectintpointertype_3c_20t32bits_2c_20t64bits_2c_208_20_3e_3',['SelectIntPointerType&lt; T32BITS, T64BITS, 8 &gt;',['../struct_karma_1_1_select_int_pointer_type_3_01_t32_b_i_t_s_00_01_t64_b_i_t_s_00_018_01_4.html',1,'Karma']]],
-  ['shader_4',['Shader',['../class_karma_1_1_shader.html',1,'Karma']]],
-  ['skeletalmesh_5',['SkeletalMesh',['../class_karma_1_1_skeletal_mesh.html',1,'Karma']]],
-  ['stb_5ftexteditstate_6',['STB_TexteditState',['../struct_k_g_stb_1_1_s_t_b___textedit_state.html',1,'KGStb::STB_TexteditState'],['../struct_s_t_b___textedit_state.html',1,'STB_TexteditState']]],
-  ['stbfindstate_7',['StbFindState',['../struct_k_g_stb_1_1_stb_find_state.html',1,'KGStb']]],
-  ['stbrp_5f_5ffindresult_8',['stbrp__findresult',['../structstbrp____findresult.html',1,'']]],
-  ['stbrp_5fcontext_9',['stbrp_context',['../structstbrp__context.html',1,'']]],
-  ['stbrp_5fnode_10',['stbrp_node',['../structstbrp__node.html',1,'']]],
-  ['stbrp_5frect_11',['stbrp_rect',['../structstbrp__rect.html',1,'']]],
-  ['stbtexteditrow_12',['StbTexteditRow',['../struct_k_g_stb_1_1_stb_textedit_row.html',1,'KGStb::StbTexteditRow'],['../struct_stb_textedit_row.html',1,'StbTexteditRow']]],
-  ['stbtt_5f_5fbitmap_13',['stbtt__bitmap',['../structstbtt____bitmap.html',1,'']]],
-  ['stbtt_5f_5fbuf_14',['stbtt__buf',['../structstbtt____buf.html',1,'']]],
-  ['stbtt_5faligned_5fquad_15',['stbtt_aligned_quad',['../structstbtt__aligned__quad.html',1,'']]],
-  ['stbtt_5fbakedchar_16',['stbtt_bakedchar',['../structstbtt__bakedchar.html',1,'']]],
-  ['stbtt_5ffontinfo_17',['stbtt_fontinfo',['../structstbtt__fontinfo.html',1,'']]],
-  ['stbtt_5fkerningentry_18',['stbtt_kerningentry',['../structstbtt__kerningentry.html',1,'']]],
-  ['stbtt_5fpack_5fcontext_19',['stbtt_pack_context',['../structstbtt__pack__context.html',1,'']]],
-  ['stbtt_5fpack_5frange_20',['stbtt_pack_range',['../structstbtt__pack__range.html',1,'']]],
-  ['stbtt_5fpackedchar_21',['stbtt_packedchar',['../structstbtt__packedchar.html',1,'']]],
-  ['stbtt_5fvertex_22',['stbtt_vertex',['../structstbtt__vertex.html',1,'']]],
-  ['stbundorecord_23',['StbUndoRecord',['../struct_k_g_stb_1_1_stb_undo_record.html',1,'KGStb::StbUndoRecord'],['../struct_stb_undo_record.html',1,'StbUndoRecord']]],
-  ['stbundostate_24',['StbUndoState',['../struct_k_g_stb_1_1_stb_undo_state.html',1,'KGStb::StbUndoState'],['../struct_stb_undo_state.html',1,'StbUndoState']]],
-  ['swapchainsupportdetails_25',['SwapChainSupportDetails',['../struct_karma_1_1_swap_chain_support_details.html',1,'Karma']]]
+  ['rendercommand_0',['RenderCommand',['../class_karma_1_1_render_command.html',1,'Karma']]],
+  ['renderer_1',['Renderer',['../class_karma_1_1_renderer.html',1,'Karma']]],
+  ['rendererapi_2',['RendererAPI',['../class_karma_1_1_renderer_a_p_i.html',1,'Karma']]],
+  ['result_3',['Result',['../class_karma_1_1_t_choose_class.html',1,'Karma::Result&lt; IsDerived, FField, UObject &gt;'],['../class_karma_1_1_t_choose_class.html',1,'Karma::Result&lt; IsDerived, FFieldClass, UClass &gt;']]]
 ];
