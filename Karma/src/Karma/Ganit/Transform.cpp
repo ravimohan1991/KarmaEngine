@@ -174,5 +174,10 @@ namespace Karma
 		m_Rotation = rotator;
 		
 		m_Scale3D = scale;
+
+		m_Translation[0] = (m_Scale3D[0] != 0) ? m_Translation[0] / m_Scale3D[0] : m_Translation[0];
+		m_Translation[1] = (m_Scale3D[1] != 0) ? m_Translation[1] / m_Scale3D[1] : m_Translation[1];
+
+		m_Translation[2] = (m_Scale3D[2] != 0) ? m_Translation[2] / m_Scale3D[2] : m_Translation[2];
 	}
 }

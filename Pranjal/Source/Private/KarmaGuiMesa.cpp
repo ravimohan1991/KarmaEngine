@@ -39,6 +39,7 @@ namespace Karma
 	bool KarmaGuiMesa::m_EditorInitialized = false;
 	bool KarmaGuiMesa::m_RefreshRenderingResources = false;
 	AStaticMeshActor* KarmaGuiMesa::m_SelectedSMActor = nullptr;
+	TransformCache KarmaGuiMesa::m_SelectedSMActorTransformCache;
 
 	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
 	WindowManipulationGaugeData	KarmaGuiMesa::m_MemoryExhibitor;
@@ -64,35 +65,58 @@ namespace Karma
 		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
 		FTransform transform = m_SelectedSMActor->GetTransform();
 		
-		matrixTranslation[0] = transform.GetTranslation().x;
-		matrixTranslation[1] = transform.GetTranslation().y;
-		matrixTranslation[2] = transform.GetTranslation().z;
+		matrixTranslation[0] = m_SelectedSMActorTransformCache.translation[0] = transform.GetTranslation().x;
+		matrixTranslation[1] = m_SelectedSMActorTransformCache.translation[1] = transform.GetTranslation().y;
+		matrixTranslation[2] = m_SelectedSMActorTransformCache.translation[2] = transform.GetTranslation().z;
 		
-		matrixRotation[0] = transform.GetRotation().m_Roll;
-		matrixRotation[1] = transform.GetRotation().m_Pitch;
-		matrixRotation[2] = transform.GetRotation().m_Yaw;
+		matrixRotation[0] = m_SelectedSMActorTransformCache.rotation[0] = transform.GetRotation().m_Roll;
+		matrixRotation[1] = m_SelectedSMActorTransformCache.rotation[1] = transform.GetRotation().m_Pitch;
+		matrixRotation[2] = m_SelectedSMActorTransformCache.rotation[2] = transform.GetRotation().m_Yaw;
 		
-		matrixScale[0] = transform.GetScale3D().x;
-		matrixScale[1] = transform.GetScale3D().y;
-		matrixScale[2] = transform.GetScale3D().z;
+		matrixScale[0] = m_SelectedSMActorTransformCache.scale[0] = transform.GetScale3D().x;
+		matrixScale[1] = m_SelectedSMActorTransformCache.scale[1] = transform.GetScale3D().y;
+		matrixScale[2] = m_SelectedSMActorTransformCache.scale[2] = transform.GetScale3D().z;
 		
 		KarmaGui::InputFloat3("Tr", matrixTranslation, "%.2f");
 		KarmaGui::InputFloat3("Rt", matrixRotation, "%.2f");
 		
 		KarmaGui::InputFloat3("Sc", matrixScale, "%.2f");
+
+		if (matrixTranslation[0] != m_SelectedSMActorTransformCache.translation[0] || matrixTranslation[1] != m_SelectedSMActorTransformCache.translation[1] || matrixTranslation[2] != m_SelectedSMActorTransformCache.translation[2] ||
+			matrixRotation[0] != m_SelectedSMActorTransformCache.rotation[0] || matrixRotation[1] != m_SelectedSMActorTransformCache.rotation[1] || matrixRotation[2] != m_SelectedSMActorTransformCache.rotation[2] ||
+			matrixScale[0] != m_SelectedSMActorTransformCache.scale[0] || matrixScale[1] != m_SelectedSMActorTransformCache.scale[1] || matrixScale[2] != m_SelectedSMActorTransformCache.scale[2])
+		{
+			m_SelectedSMActorTransformCache.translation[0] = matrixTranslation[0];
+			m_SelectedSMActorTransformCache.translation[1] = matrixTranslation[1];
+			m_SelectedSMActorTransformCache.translation[2] = matrixTranslation[2];
+			
+			m_SelectedSMActorTransformCache.rotation[0] = matrixRotation[0];
+			m_SelectedSMActorTransformCache.rotation[1] = matrixRotation[1];
+			m_SelectedSMActorTransformCache.rotation[2] = matrixRotation[2];
+			
+			m_SelectedSMActorTransformCache.scale[0] = matrixScale[0];
+			m_SelectedSMActorTransformCache.scale[1] = matrixScale[1];
+			m_SelectedSMActorTransformCache.scale[2] = matrixScale[2];
+
+			m_SelectedSMActorTransformCache.bIsDirty = true;
+		}
 		
-		glm::vec3 translation(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
-		transform.SetTranslation(translation);
-	
-		glm::vec3 euler(matrixRotation[0], matrixRotation[1], matrixRotation[2]);
-		TRotator rotation(euler);
-		
-		transform.SetRotation(rotation);
-		
-		glm::vec3 scale(matrixScale[0], matrixScale[1], matrixScale[2]);
-		transform.SetScale3D(scale);
-		
-		m_SelectedSMActor->SetActorTransform(transform);
+		if (m_SelectedSMActorTransformCache.bIsDirty)
+		{
+			glm::vec3 translation(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
+			transform.SetTranslation(translation);
+
+			glm::vec3 euler(matrixRotation[0], matrixRotation[1], matrixRotation[2]);
+			TRotator rotation(euler);
+
+			transform.SetRotation(rotation);
+
+			glm::vec3 scale(matrixScale[0], matrixScale[1], matrixScale[2]);
+			transform.SetScale3D(scale);
+
+			m_SelectedSMActor->SetActorTransform(transform);
+			m_SelectedSMActorTransformCache.bIsDirty = false;
+		}
 	}
 
 	void KarmaGuiMesa::RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
@@ -609,15 +633,15 @@ namespace Karma
 			float* projectionPtr = glm::value_ptr(projectionMatrix);
 			projectionPtr[5] *= -1.f;
 			
-			glm::mat4 objectMatrix = m_SelectedSMActor->GetTransform().ToMatrixWithScale();
+			FTransform operationalTransform = m_SelectedSMActor->GetTransform();
+
+			glm::mat4 objectMatrix = operationalTransform.ToMatrixWithScale();
+			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::WORLD, glm::value_ptr(objectMatrix));
 			
-			KarmaGuizmo::Enable(true);
-			KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::TRANSLATE, KarmaGuizmo::LOCAL, glm::value_ptr(objectMatrix));
-			
-			if(KarmaGuizmo::IsUsing())
+			if(KarmaGuizmo::IsUsing() && bManipulate)
 			{
-				FTransform transform = m_SelectedSMActor->GetTransform();
-				transform.SetTranslation(glm::vec3(objectMatrix[3]));
+				FTransform transform;
+				transform.ToTransform(objectMatrix);
 				
 				m_SelectedSMActor->SetActorTransform(transform);
 			}
