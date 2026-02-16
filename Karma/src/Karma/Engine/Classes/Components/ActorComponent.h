@@ -9,9 +9,8 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Karma/Core/Object.h"
+#include "Core/KarmaTypes.h"
 
 class AActor;
 
@@ -30,6 +29,21 @@ namespace Karma
 		UserConstructionScript,
 		/** A component added to a single Actor instance via the Component section of the Actor's details panel. */
 		Instance,
+	};
+
+	/**
+	 * @brief Information about how to update transform when something is moved 
+	 */
+	enum class EUpdateTransformFlags : int32
+	{
+		/** Default options */
+		None = 0x0,
+		/** Don't update the underlying physics */
+		SkipPhysicsUpdate = 0x1,
+		/** The update is coming as a result of the parent updating (i.e. not called directly) */
+		PropagateFromParent = 0x2,
+		/** Only update child transform if attached to parent via a socket */
+		OnlyUpdateIfUsingSocket = 0x4
 	};
 
 	/**
@@ -116,6 +130,14 @@ namespace Karma
 		 */
 		AActor* GetOwner() const;
 
+		/**
+		 * @brief Sets the owner of this component
+		 *
+		 * @param NewOwner - The new owner actor for this component
+		 * @since Karma 1.0.0
+		 */
+		void SetOwner(AActor* NewOwner);
+
 		/** 
 		 * @brief Indicates that OnCreatedComponent has been called, but OnDestroyedComponent has not yet
 		 *
@@ -136,6 +158,13 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		inline bool IsRegistered() const { return m_bRegistered; }
+
+		/**
+		 * @brief Recalculate the value of our component to world transform
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		virtual void UpdateComponentToWorld(EUpdateTransformFlags UpdateTransformFlags = EUpdateTransformFlags::None, ETeleportType Teleport = ETeleportType::None) {}
 
 		/**
 		 * @brief Returns whether the component is active or not

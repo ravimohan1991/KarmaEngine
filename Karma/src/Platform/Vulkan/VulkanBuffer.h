@@ -14,6 +14,8 @@
 
 namespace Karma
 {
+	class FVulkanDevice;
+
 	/**
 	 * @brief Vulkan's vertex buffer class. Vertex buffer is used in agnostic Mesh instance
 	 *
@@ -119,22 +121,6 @@ namespace Karma
 		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 		/**
-		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount
-		 * (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.
-		 *
-		 * Graphics cards can offer different types of memory to allocate from. Each type of memory varies in terms of allowed operations and performance characteristics.
-		 * We need to combine the requirements of the buffer and our own application requirements to find the right type of memory to use.
-		 *
-		 * @param typeFilter								A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
-		 * @param properties								The demanded properties (https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html).
-		 *
-		 * @return Memory type index i
-		 * @see VulkanUniformBuffer::CreateBuffer
-		 * @since Karma 1.0.0
-		 */
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
-		/**
 		 * @brief Getter for vertex buffer.
 		 *
 		 * @since Karma 1.0.0
@@ -232,18 +218,6 @@ namespace Karma
 		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 		/**
-		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount
-		 * (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.
-		 *
-		 * @param typeFilter								A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
-		 * @param properties								The demanded properties (https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html).
-		 *
-		 * @return Memory type index i
-		 * @since Karma 1.0.0
-		 */
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
-		/**
 		 * @brief Getter for the number of vertices to draw.
 		 *
 		 * @note To be used in vkCmdDrawIndexed mostly
@@ -293,6 +267,8 @@ namespace Karma
 	public:
 		/**
 		 * @brief Constructor for Vulkan buffer. Calls VulkanUniformBuffer::BufferCreation().
+		 * 
+		 * Also registers the UBO with VulkanContext so that it can be updated appropriately during rendering.
 		 *
 		 * @param dataTypes						List of data types for uniforms to be uploaded to GPU (like used in shaders),
 		 * 								for instance https://github.com/ravimohan1991/KarmaEngine/blob/138c172ccedf31acfab982af51ae130f9a37d3bb/Application/src/KarmaApp.cpp#L39 where Mat4 are for https://github.com/ravimohan1991/KarmaEngine/blob/138c172ccedf31acfab982af51ae130f9a37d3bb/Resources/Shaders/shader.vert#L9-L13
@@ -324,18 +300,6 @@ namespace Karma
 			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
 		/**
-		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount
-		 * (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.
-		 *
-		 * @param typeFilter								A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
-		 * @param properties								The demanded properties (https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html).
-		 *
-		 * @return Memory type index i
-		 * @since Karma 1.0.0
-		 */
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
-		/**
 		 * @brief Getter for the uniform buffers
 		 *
 		 * @since Karma 1.0.0
@@ -357,8 +321,10 @@ namespace Karma
 		 */
 		void BufferCreation();
 
+		virtual void UpdateCameraUniform() override;
+
 		/**
-		 * @brief Uploads (copies) the data from buffer memory (m_UniformBuffersMemory) to  host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range
+		 * @brief Uploads (copies) the data to GPU buffer memory (m_UniformBuffersMemory) from host-accessible (CPU) pointer, m_UniformList, to the beginning of the mapped range
 		 *
 		 * Basically copies the data from CPU side (uniforms) to GPU side (m_UniformBuffersMemory).
 		 * 
@@ -367,7 +333,12 @@ namespace Karma
 		 *	- The memory of the uniform buffer (a VkBuffer) is created with CPU-visible properties and mapped to a CPU pointer.
 		 *	- The updateUniformBuffer function copies the CPU-side data (like transformation matrices) into the mapped GPU buffer memory via a memcpy call.
 		 *	- This allows the GPU to read the fresh uniform data every frame during rendering without needing to re-record command buffers.
-		 * 
+		 *
+		 * Mechanics:
+		 * vkMapMemory returns a CPU-accessible pointer (data) to a specific range within m_UniformBuffersMemory[frameIndex], which is VkDeviceMemory allocated for
+		 * GPU use but with VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT (see VulkanUniformBuffer::BufferCreation()). This pointer points directly into GPU memory, so
+		 * memcpy(data, it.GetDataPointer(), uniformSize) overlays CPU data bytes onto that GPU buffer region
+		 *
 		 * @param frameIndex								The m_CurrentFrame index representing index of MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) whilst an image is being rendered (GPU side processing)) + 1)
 		 *
 		 * @see VulkanRendererAPI::SubmitCommandBuffers()
@@ -396,6 +367,16 @@ namespace Karma
 		VulkanImageBuffer(const char* filename);
 
 		/**
+		 * @brief Creates GPU memory buffer for storing image texture with VulkanRHI support
+		 * 
+		 * @param InDevice								The FVulkanDevice object
+		 * @param filename								The path to the file, including filename, containing the image texture
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		VulkanImageBuffer(FVulkanDevice* InDevice, const char* filename);
+
+		/**
 		 * @brief Frees up device resources
 		 *
 		 * @since Karma 1.0.0
@@ -414,17 +395,6 @@ namespace Karma
 		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
 			VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
-		/**
-		 * @brief Finds appropriate memory type with demanded properties. Basically a loop is run from counter i = 0 to VkPhysicalDeviceMemoryProperties.memoryTypeCount
-		 * (number of valid elements in the memoryTypes array) and memoryType[i] is queried for appropriate properties. On condition satisfaction, counter i is returned.
-		 *
-		 * @param typeFilter								A bitmask, and contains one bit set for every supported memory type for the resource. Bit i is set if and only if the memory type i in the VkPhysicalDeviceMemoryProperties structure for the physical device is supported for the resource.
-		 * @param properties								The demanded properties (https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html).
-		 *
-		 * @return Memory type index i
-		 * @since Karma 1.0.0
-		 */
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		const inline VkBuffer& GetBuffer() const { return m_StagingBuffer; }
 
 		// Getters
@@ -452,6 +422,7 @@ namespace Karma
 
 	private:
 		VkDevice m_Device;
+		VkPhysicalDevice m_PhysicalDevice;
 		VkBuffer m_StagingBuffer;
 		VkDeviceMemory m_StagingBufferMemory;
 

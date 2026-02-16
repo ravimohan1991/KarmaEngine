@@ -1,7 +1,7 @@
 #include "OpenGLContext.h"
+
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "Karma/Core.h"
 
 namespace Karma
 {

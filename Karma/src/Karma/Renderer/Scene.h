@@ -9,13 +9,14 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Camera.h"
 #include "VertexArray.h"
 
 namespace Karma
 {
+
+	class AStaticMeshActor;
+
 	/**
 	 * @brief Class for organizing and containing Scene relevant data
 	 */
@@ -43,6 +44,14 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		void AddVertexArray(std::shared_ptr<VertexArray> vertexArray);
+
+		/**
+		 * @brief Add StaticMeshActor to the scene
+		 *
+		 * @param smActor				The StaticMeshActor to be added
+		 * @since Karma 1.0.0
+		 */
+		void AddStaticMeshActor(AStaticMeshActor* smActor);
 
 		/**
 		 * @brief Add Camera
@@ -84,11 +93,11 @@ namespace Karma
 
 		// Getters
 		/**
-		 * @brief Getter for the VertexArray
+		 * @brief Get the list of StaticMeshActors in the scene
 		 *
 		 * @since Karma 1.0.0
 		 */
-		std::shared_ptr<VertexArray> GetRenderableVertexArray() const;
+		const std::vector<AStaticMeshActor*>& GetSMActors() const { return m_SMActors; }
 
 		/**
 		 * @brief Getter for the Camera being used for the scene
@@ -103,13 +112,6 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		inline const glm::vec4& GetClearColor() const { return m_ClearColor; }
-
-		/**
-		 * @brief Get the list of VertexArrays
-		 *
-		 * @since Karma 1.0.0
-		 */
-		inline const std::vector<std::shared_ptr<VertexArray>>& GetAllVertexArrays() const { return m_VertexArrays; }
 
 		/**
 		 * @brief Get the list of all Cameras
@@ -133,7 +135,7 @@ namespace Karma
 		inline bool GetWindowToRenderWithinResizeStatus() const { return m_WindowResize; }
 
 	private:
-		std::vector<std::shared_ptr<VertexArray>> m_VertexArrays;
+		std::vector<AStaticMeshActor*> m_SMActors;
 		std::vector<std::shared_ptr<Camera>> m_Cameras;
 
 		glm::vec4 m_ClearColor;

@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "KarmaTypes.h"
+
 namespace Karma
 {
 	class UObjectBase;
@@ -122,6 +124,8 @@ namespace Karma
 			m_PermanentObjectPoolExceededTail(nullptr)
 		{
 		}
+
+		~FUObjectAllocator();
 
 		/**
 		 * Allocates and initializes the permanent object pool.

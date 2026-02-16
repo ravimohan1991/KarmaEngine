@@ -1,7 +1,5 @@
 #pragma once
 
-#include "krpch.h"
-
 namespace Karma
 {
 	class KARMA_API Animation

@@ -7009,7 +7009,7 @@ void Karma::KarmaGui::SetKeyboardFocusHere(int offset)
 	KarmaGuiContext& g = *GKarmaGui;
 	KGGuiWindow* window = g.CurrentWindow;
 	KR_CORE_ASSERT(offset >= -1, "");    // -1 is allowed but not below
-	KR_CORE_INFO("SetKeyboardFocusHere(%d) in window \"%s\"\n", offset, window->Name);
+	KR_CORE_INFO("SetKeyboardFocusHere(%d) in window \"%s\"", offset, window->Name);
 
 	// It makes sense in the vast majority of cases to never interrupt a drag and drop.
 	// When we refactor this function into ActivateItem() we may want to make this an option.
@@ -7017,7 +7017,7 @@ void Karma::KarmaGui::SetKeyboardFocusHere(int offset)
 	// is also automatically dropped in the event g.ActiveId is stolen.
 	if (g.DragDropActive || g.MovingWindow != NULL)
 	{
-		KR_CORE_INFO("SetKeyboardFocusHere() ignored while DragDropActive!\n");
+		KR_CORE_INFO("SetKeyboardFocusHere() ignored while DragDropActive!");
 		return;
 	}
 
@@ -10132,7 +10132,7 @@ void Karma::KarmaGuiInternal::SetNavWindow(KGGuiWindow* window)
 	KarmaGuiContext& g = *GKarmaGui;
 	if (g.NavWindow != window)
 	{
-		KR_CORE_INFO("[focus] SetNavWindow(\"{0}\")\n", window ? window->Name : "<NULL>");
+		KR_CORE_INFO("[focus] SetNavWindow(\"{0}\")", window ? window->Name : "<NULL>");
 		g.NavWindow = window;
 	}
 	g.NavInitRequest = g.NavMoveSubmitted = g.NavMoveScoringItems = false;
@@ -10614,7 +10614,7 @@ void Karma::KarmaGuiInternal::NavInitWindow(KGGuiWindow* window, bool force_rein
 	bool init_for_nav = false;
 	if (window == window->RootWindow || (window->Flags & KGGuiWindowFlags_Popup) || (window->NavLastIds[0] == 0) || force_reinit)
 		init_for_nav = true;
-    KR_CORE_INFO("[nav] NavInitRequest: from NavInitWindow(), init_for_nav={0}, window=\"{1}\"", init_for_nav, window->Name);
+	KR_CORE_INFO("[nav] NavInitRequest: from NavInitWindow(), init_for_nav={0}, window=\"{1}\"", init_for_nav, window->Name);
 	if (init_for_nav)
 	{
 		SetNavID(0, g.NavLayer, window->NavRootFocusScopeId, KGRect());
@@ -10858,7 +10858,7 @@ void Karma::KarmaGuiInternal::NavInitRequestApplyResult()
 
 	// Apply result from previous navigation init request (will typically select the first item, unless SetItemDefaultFocus() has been called)
 	// FIXME-NAV: On _NavFlattened windows, g.NavWindow will only be updated during subsequent frame. Not a problem currently.
-    KR_CORE_INFO("[nav] NavInitRequest: ApplyResult: NavID {0} Window \"{1}\"", g.NavInitResultId, g.NavWindow->Name);
+	KR_CORE_INFO("[nav] NavInitRequest: ApplyResult: NavID {0} Window \"{1}\"", g.NavInitResultId, g.NavWindow->Name);
 	SetNavID(g.NavInitResultId, g.NavLayer, 0, g.NavInitResultRectRel);
 	g.NavIdIsAlive = true; // Mark as alive from previous frame as we got a result
 	if (g.NavInitRequestFromMove)
@@ -10929,7 +10929,7 @@ void Karma::KarmaGuiInternal::NavUpdateCreateMoveRequest()
 	// Moving with no reference triggers an init request (will be used as a fallback if the direction fails to find a match)
 	if (g.NavMoveSubmitted && g.NavId == 0)
 	{
-        KR_CORE_INFO("[nav] NavInitRequest: from move, window \"{0}\"", window ? window->Name : "<NULL>");
+		KR_CORE_INFO("[nav] NavInitRequest: from move, window \"{0}\"", window ? window->Name : "<NULL>");
 		g.NavInitRequest = g.NavInitRequestFromMove = true;
 		g.NavInitResultId = 0;
 		g.NavDisableHighlight = false;
@@ -14403,7 +14403,7 @@ static void Karma::DockNodeAddWindow(KGGuiDockNode* node, KGGuiWindow* window, b
 		Karma::DockNodeRemoveWindow(window->DockNode, window, 0);
 	}
 	KR_CORE_ASSERT(window->DockNode == NULL || window->DockNodeAsHost == NULL, "");
-	KR_CORE_INFO("[docking] DockNodeAddWindow node 0x%08X window '{0}'\n", node->ID, window->Name);
+	KR_CORE_INFO("[docking] DockNodeAddWindow node 0x%08X window '{0}'", node->ID, window->Name);
 
 	// If more than 2 windows appeared on the same frame leading to the creation of a new hosting window,
 	// we'll hide windows until the host window is ready. Hide the 1st window after its been output (so it is not visible for one frame).
@@ -14459,7 +14459,7 @@ void Karma::DockNodeRemoveWindow(KGGuiDockNode* node, KGGuiWindow* window, KGGui
 	//KR_CORE_ASSERT(window->RootWindowDockTree == node->HostWindow);
 	//KR_CORE_ASSERT(window->LastFrameActive < g.FrameCount);    // We may call this from Begin()
 	KR_CORE_ASSERT(save_dock_id == 0 || save_dock_id == node->ID, "");
-	KR_CORE_INFO("[docking] DockNodeRemoveWindow node 0x%08X window '{0}'\n", node->ID, window->Name);
+	KR_CORE_INFO("[docking] DockNodeRemoveWindow node 0x%08X window '{0}'", node->ID, window->Name);
 
 	window->DockNode = NULL;
 	window->DockIsActive = window->DockTabWantClose = false;
@@ -16704,7 +16704,7 @@ static KGGuiDockNode* DockBuilderCopyNodeRec(KGGuiDockNode* src_node, KGGuiID ds
 			dst_node->ChildNodes[child_n]->ParentNode = dst_node;
 		}
 
-	KR_CORE_INFO("[docking] Fork node {0} -> {1} ({2} childs)\n", src_node->ID, dst_node->ID, dst_node->IsSplitNode() ? 2 : 0);
+	KR_CORE_INFO("[docking] Fork node {0} -> {1} ({2} childs)", src_node->ID, dst_node->ID, dst_node->IsSplitNode() ? 2 : 0);
 	return dst_node;
 }
 

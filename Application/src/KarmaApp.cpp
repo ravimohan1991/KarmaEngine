@@ -17,7 +17,7 @@ public:
 		std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
 		shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
 
-		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, "CylinderShader"));
+		m_BlueSQShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", "CylinderShader"));
 
 		m_SquareMat.reset(new Karma::Material());
 		m_SquareMat->AddShader(m_BlueSQShader);
@@ -31,7 +31,7 @@ public:
 		m_Scene.reset(new Karma::Scene());
 
 		m_Scene->AddCamera(m_Camera);
-		m_Scene->AddVertexArray(m_SquareVA);
+		//m_Scene->AddVertexArray(m_SquareVA);
 
 		m_Scene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 

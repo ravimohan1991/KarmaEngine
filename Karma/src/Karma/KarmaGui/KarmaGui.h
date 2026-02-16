@@ -25,9 +25,6 @@
 #define KG_OFFSETOF(_TYPE,_MEMBER)  offsetof(_TYPE, _MEMBER)                    // Offset of _MEMBER within _TYPE. Standardized as offsetof() in C++11
 
 
-// Includes
-#include "krpch.h"
-
 //-----------------------------------------------------------------------------
 // [SECTION] Forward declarations and basic types
 //-----------------------------------------------------------------------------
@@ -174,6 +171,19 @@ struct KGVec4
 
 namespace Karma
 {
+    /**
+	 * @brief The chief class for our UI needs. The responsibility includes
+	 *  - Context creation and access
+	 *  - Main functions to start and end frames, render, and access draw data
+	 *  - Demo, Debug, Information windows
+	 *  - Styles
+	 *  - Windows and Child Windows management
+	 *  - Window Utilities and Manipulation
+	 *  - Content region access
+	 *  - Windows Scrolling
+     * 
+	 * @since Karma 1.0.0
+     */
 	class KARMA_API KarmaGui
 	{
 	public:

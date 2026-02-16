@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "Layer.h"
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"

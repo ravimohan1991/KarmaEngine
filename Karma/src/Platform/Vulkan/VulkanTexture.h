@@ -14,6 +14,8 @@
 
 namespace Karma
 {
+	class FVulkanDevice;
+
 	/**
 	 * @brief Vulkan specific implementation of Texture class.
 	 * 
@@ -33,6 +35,17 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		VulkanTexture();
+
+		/**
+		 * @brief Constructor with VulkanRHI support
+		 * 
+		 * @brief InDevice						The FVulkanDevice object
+		 * @brief filename						The location of the texture file along with location
+		 * 
+		 * @see FVulkanDevice::InitGPU()
+		 * @since Karma 1.0.0
+		 */
+		VulkanTexture(FVulkanDevice* InDevice, const char* filename);
 
 		/**
 		 * @brief A destructor
@@ -98,9 +111,12 @@ namespace Karma
 		VkSampler GetImageSampler() const { return m_TextureSampler; }
 		
 	private:
+		// VulkanRHI stuff
+		FVulkanDevice* m_Device;
+
 		// Vulkan context relevant stuff
-		VkDevice m_Device;
-		VkPhysicalDevice m_PhysicalDevice;
+		VkDevice m_LogicalDevice;
+		VkPhysicalDevice m_GPU;
 		
 		// Texture relevant stuff
 		VkImage m_TextureImage;

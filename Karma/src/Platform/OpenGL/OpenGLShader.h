@@ -52,8 +52,7 @@ namespace Karma
 		 *
 		 * @since Karma 1.0.0
 		 */
-		OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo,
-			const std::string& shaderName);
+		OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, const std::string& shaderName);
 
 		/**
 		 * @brief Deletes the appropriate resources, no longer in use, and clean up
@@ -111,6 +110,5 @@ namespace Karma
 	private:
 		// OpenGL's identification scheme
 		uint32_t m_RendererID;
-		std::shared_ptr<OpenGLUniformBuffer> m_UniformBufferObject;
 	};
 }

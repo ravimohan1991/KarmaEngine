@@ -2,18 +2,20 @@
 #include "Platform/Vulkan/VulkanHolder.h"
 #include "Platform/Vulkan/VulkanTexture.h"
 #include "Karma/Renderer/RenderCommand.h"
+#include "VulkanRHI/VulkanDynamicRHI.h"
+#include "VulkanRHI/VulkanDevice.h"
 
 namespace Karma
 {
 	VulkanVertexArray::VulkanVertexArray() : m_SupportedDeviceFeatures(VulkanHolder::GetVulkanContext()->GetSupportedDeviceFeatures()),
-		m_device(VulkanHolder::GetVulkanContext()->GetLogicalDevice())
+		m_device(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice())
 	{
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
 	{
 		vkDeviceWaitIdle(m_device);
-		CleanupPipeline();
+		//CleanupPipeline();
 	}
 
 	void VulkanVertexArray::Bind() const
@@ -45,7 +47,7 @@ namespace Karma
 	void VulkanVertexArray::SetShader(std::shared_ptr<Shader> shader)
 	{
 		m_Shader = std::static_pointer_cast<VulkanShader>(shader);
-		VulkanHolder::GetVulkanContext()->RegisterUBO(m_Shader->GetUniformBufferObject());
+		//VulkanHolder::GetVulkanContext()->RegisterUBO(m_Shader->GetUniformBufferObject());
 		GenerateVulkanVA();
 	}
 
@@ -365,7 +367,7 @@ namespace Karma
 		m_Materials.push_back(material);
 		m_Shader = std::static_pointer_cast<VulkanShader>(material->GetShader(0));
 
-		VulkanHolder::GetVulkanContext()->RegisterUBO(m_Shader->GetUniformBufferObject());
+		//VulkanHolder::GetVulkanContext()->RegisterUBO(m_Shader->GetUniformBufferObject());
 		GenerateVulkanVA();
 	}
 
@@ -499,7 +501,7 @@ namespace Karma
 	void VulkanVertexArray::CreateDescriptorSetLayout()
 	{
 		VkDescriptorSetLayoutBinding uboLayoutBinding{};
-		uboLayoutBinding.binding = m_Shader->GetUniformBufferObject()->GetBindingPointIndex();
+		uboLayoutBinding.binding = 0;//m_Shader->GetUniformBufferObject()->GetBindingPointIndex();
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding.descriptorCount = 1;
 		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -553,9 +555,9 @@ namespace Karma
 		for (size_t i = 0; i < maxFramesInFlight; i++)
 		{
 			VkDescriptorBufferInfo bufferInfo{};
-			bufferInfo.buffer = m_Shader->GetUniformBufferObject()->GetUniformBuffers()[i];
+			//bufferInfo.buffer = m_Shader->GetUniformBufferObject()->GetUniformBuffers()[i];
 			bufferInfo.offset = 0;
-			bufferInfo.range = m_Shader->GetUniformBufferObject()->GetBufferSize();
+			//bufferInfo.range = m_Shader->GetUniformBufferObject()->GetBufferSize();
 
 			// Fetch right texture pointer first whose image is to be considered.
 			// Caution: GetTexture index is with temporary assumption that needs addressing.
@@ -570,7 +572,7 @@ namespace Karma
 
 			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			descriptorWrites[0].dstSet = m_descriptorSets[i];
-			descriptorWrites[0].dstBinding = m_Shader->GetUniformBufferObject()->GetBindingPointIndex();
+			descriptorWrites[0].dstBinding = 0;//m_Shader->GetUniformBufferObject()->GetBindingPointIndex();
 			descriptorWrites[0].dstArrayElement = 0;
 			descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			descriptorWrites[0].descriptorCount = 1;

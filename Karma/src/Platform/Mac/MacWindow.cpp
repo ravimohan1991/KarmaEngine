@@ -1,5 +1,4 @@
 #include "MacWindow.h"
-#include "Karma/Log.h"
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/Events/KeyEvent.h"
 #include "Karma/Events/MouseEvent.h"
@@ -37,7 +36,7 @@ namespace Karma
 
 	bool MacWindow::OnResize(WindowResizeEvent& event)
 	{
-		return m_Context->OnWindowResize(event);
+        return false; //m_Context->OnWindowResize(event);
 	}
 
 	void MacWindow::Init(const WindowProps& props)
@@ -82,7 +81,8 @@ namespace Karma
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		
-		switch (currentAPI)
+		// To be replaced with RHI
+		/*switch (currentAPI)
 		{
 			case RendererAPI::API::None:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
@@ -95,7 +95,7 @@ namespace Karma
 				break;
 		}
 
-		m_Context->Init();
+		m_Context->Init();*/
 		SetVSync(true);
 
 		// Used for event callbacks
@@ -227,7 +227,7 @@ namespace Karma
 	void MacWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		m_Context->SwapBuffers();
+		//m_Context->SwapBuffers();
 	}
 
 	void MacWindow::SetVSync(bool enabled)
@@ -249,8 +249,8 @@ namespace Karma
 			}
 			case RendererAPI::API::Vulkan:
 			{
-				VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
-				vContext->SetVSync(enabled);
+				/*VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
+				vContext->SetVSync(enabled);*/
 				break;
 			}
 			case RendererAPI::API::None:

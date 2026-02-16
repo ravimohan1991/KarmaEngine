@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Platform/Vulkan/VulkanContext.h"
 
 namespace Karma

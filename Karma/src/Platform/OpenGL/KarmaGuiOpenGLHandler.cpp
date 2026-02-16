@@ -349,14 +349,14 @@ namespace Karma
 						sceneToDraw = static_cast<Scene*>(pcmd->UserCallbackData);
 						if (sceneToDraw)
 						{
-							std::shared_ptr<OpenGLVertexArray> openGLVA = static_pointer_cast<OpenGLVertexArray>(sceneToDraw->GetRenderableVertexArray());
+							/*std::shared_ptr<OpenGLVertexArray> openGLVA = static_pointer_cast<OpenGLVertexArray>(sceneToDraw->GetRenderableVertexArray());
 
 							openGLVA->UpdateProcessAndSetReadyForSubmission();
 							openGLVA->Bind();
 
 							// A very experimental hack
 							OpenGLImageBuffer::BindTexture();
-							glDrawElements(GL_TRIANGLES, openGLVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+							glDrawElements(GL_TRIANGLES, openGLVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);*/
 						}
 						KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
 					}

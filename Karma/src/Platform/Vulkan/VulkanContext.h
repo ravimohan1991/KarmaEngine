@@ -10,7 +10,6 @@
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
-#include "krpch.h"
 
 #include "Karma/Renderer/GraphicsContext.h"
 #include "GLFW/glfw3.h"
@@ -20,6 +19,12 @@
 
 namespace Karma
 {
+	class VulkanShader;
+
+	class Texture;
+
+	class Scene;
+
 	/**
 	 * @brief Forward declaration
 	 */
@@ -28,12 +33,14 @@ namespace Karma
 	/**
 	 * @brief Forward declaration
 	 */
-	class VulkanVertexArray;
-
-	/**
-	 * @brief Forward declaration
-	 */
 	struct VulkanUniformBuffer;
+
+	struct FrameDescriptorSets 
+	{
+		VkDescriptorSet viewSet;     // Set 0: Camera UBO
+		std::vector<VkDescriptorSet> textureSet;  // Set 1: Per-mesh Texture  
+		std::vector<VkDescriptorSet> objectsSet;   // Set 2: Per-mesh UBO
+	};
 
 	/**
 	 * @brief A structure for graphics and present queuefamilies
@@ -48,7 +55,7 @@ namespace Karma
 	 * @see VulkanContext::FindQueueFamilies()
 	 * @since Karma 1.0.0
 	 */
-	struct QueueFamilyIndices
+	struct QueueFamilyIndicesDepricated
 	{
 		/**
 		 * @brief The queues in this queue family support graphics operations.
@@ -92,7 +99,7 @@ namespace Karma
 	 *
 	 * @since Karma 1.0.0
 	 */
-	struct SwapChainSupportDetails
+	struct SwapChainSupportDetailsDepricated
 	{
 		/**
 		 * @brief Basic surface capabilities (min/max number of images in swap chain, min/max width
@@ -118,11 +125,16 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Vulkan API has the following concepts
-	 * 1. Physical Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Physical_devices_and_queue_families): The software counterpart (VkPhysicalDevice) of a graphics card (GPU). Logical device is created from physical device.
-	 * 2. Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues): The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device.
+	 * @brief A class for Vulkan specific graphics context. This class also contains all the common Vulkan resources shared by various
+	 * elements that are rendered, for instance UniformBufferObjects, graphicspipeline etc.
+	 * 
+	 * ATM this class also contains resources like swapchain, commandpool etc which are used by KarmaGui.
 	 *
-	 * Host : is CPU the host?
+	 * @note Vulkan API has the following concepts
+	 * 1. Physical Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Physical_devices_and_queue_families): The software counterpart (VkPhysicalDevice) of a graphics card (GPU). Logical device is created from physical device.
+	 * 2. Device (https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Logical_device_and_queues): The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. 
+	 * @note CPU is always the host in Vulkan and GPU is the device.
+	 * @since Karma 1.0.0
 	 */
 	class KARMA_API VulkanContext : public GraphicsContext
 	{
@@ -272,7 +284,7 @@ namespace Karma
 		 * @param device						The graphics card to be queired for queue family
 		 * @since Karma 1.0.0
 		 */
-		QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+		QueueFamilyIndicesDepricated FindQueueFamilies(VkPhysicalDevice device);
 
 		/**
 		 * @brief The so called logical device for interfacing with the physical device. All the machinery (swapchain, graphicspipeline, and all that) are created from logical device. Following is done:
@@ -307,7 +319,7 @@ namespace Karma
 		 * Calls vkEnumerateDeviceExtensionProperties for list of supported extensions for instance VK_KHR_swapchain which is
 		 * required for, well, swapchain
 		 * 
-		 * @
+		 * @since Karma 1.0.0
 		 */
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 		
@@ -317,7 +329,7 @@ namespace Karma
 		 * @see VulkanContext::IsDeviceSuitable(), and VulkanContext::CreateSwapChain()
 		 * @since Karma 1.0.0
 		 */
-		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+		SwapChainSupportDetailsDepricated QuerySwapChainSupport(VkPhysicalDevice device);
 
 		/**
 		 * @brief Chooses the best surface format (pixel format and color space) for the swapchain from the available formats.
@@ -510,7 +522,7 @@ namespace Karma
 		 * @see VulkanContext::m_VulkanUBO
 		 * @since Karma 1.0.0
 		 */
-		void RegisterUBO(const std::shared_ptr<VulkanUniformBuffer>& ubo);
+		void RegisterUBO(VulkanUniformBuffer* ubo);
 
 		/**
 		 * @brief Clears all registered VulkanUniformBuffers, freeing their resources.
@@ -529,6 +541,106 @@ namespace Karma
 		void RecreateUBO();
 
 		/**
+		 * @brief Creates a Vulkan shader module from SPIR-V bytecode.
+		 *
+		 * This is specifically used when creating the graphics pipeline to load vertex and fragment shaders.
+		 *
+		 * For instance while creating vertex shader stage info (pipeline creation):
+		 * @code{.cpp}
+		 *		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+		 *		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		 *		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+		 *		vertShaderStageInfo.module = vertShaderModule;
+		 *		vertShaderStageInfo.pName = "main";
+		 * @endcode
+		 *
+		 * @param code					The SPIR-V bytecode as a vector of uint32_t
+		 *
+		 * @return The created VkShaderModule
+		 * @since Karma 1.0.0
+		 */
+		VkShaderModule CreateShaderModule(const std::vector<uint32_t>& code);
+
+		void CreateVulkanResourcesForScene(std::shared_ptr<Scene> scene3D );
+
+		/**
+		 * @brief Create a default vulkan shader
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CreateGeneralShader();
+
+		/**
+		 * @brief Creates a general texture used for default texturing in the KarmaGui exhibitor window.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CreateGeneralTexture();
+
+		/**
+		 * @brief Creates general descriptor set layouts for common resources like camera UBO, texture sampler, and object UBO.
+		 * 
+		 * These descriptor set layouts define how shader resources are organized and accessed in the rendering pipeline.
+		 *
+		 * @since Karma 1.0.0
+		 */
+		void CreateGeneralDescriptorSetLayouts();
+
+		/**
+		 * @brief Creates the graphics pipeline for rendering 3D objects in the KarmaGui's exhibitor window.
+		 * 
+		 * @param renderPassKG					The render pass to be used with the Karma GUI graphics pipeline
+		 * @param windowKGWidth					The width of the window for viewport and scissor setup
+		 * @param windowKGHeight				The height of the window for viewport and scissor setup
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CreateKarmaGuiGeneralGraphicsPipeline(VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight);
+
+		/**
+		 * @brief Cleans up the resources associated with the KarmaGui general graphics pipeline.
+		 * 
+		 * This includes destroying the pipeline and pipeline layout is destroyed in destructor.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CleanUpKarmaGuiGeneralGraphicsPipeline();
+
+		/**
+		 * @brief Creates a general descriptor pool for allocating descriptor sets for common resources.
+		 * 
+		 * The descriptor sets are like so
+		 * 1. Camera UBO descriptor set
+		 * 2. Texture sampler descriptor set
+		 * 3. Object UBO descriptor set
+		 * 4. Maybe add more later
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CreateGeneralDescriptorPool(uint32_t smElementsNumber);
+
+		/**
+		 * @brief Allocates and writes to general descriptor sets for common resources like camera UBO, texture sampler, and object UBO.
+		 * 
+		 * These descriptor sets are used in the graphics pipeline to bind the appropriate resources for rendering.
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void CreateGeneralDescriptorSets(std::shared_ptr<Scene> scene3D, uint32_t smElementsNumber, uint32_t maxFramesInFlight);
+
+		/**
+		 * @brief Updates the general descriptor sets with the provided view buffer for the specified frame index.
+		 * 
+		 * @note viewbuffer is the vkbuffer of the camera in scene
+		 * 
+		 * @param frameIndex						The index of the frame for which to update the descriptor sets
+		 * @param viewBuffer						The buffer containing view (camera) data
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		void UpdateGeneralDescriptorSets(std::shared_ptr<Scene> scene3D, uint32_t frameIndex);
+
+		/**
 		 * @brief Uploads data to the registered VulkanUniformBuffers for the specified frame index.
 		 * 
 		 * Typically called during rendering to update uniform buffer data for the current frame like so
@@ -545,6 +657,13 @@ namespace Karma
 		 * @endcode
 		 * 
 		 * @param frameIndex						The index of the frame for which to upload UBO data
+		 * 
+		 * @note The frameIndex is used to determine which uniform buffer to update, as multiple buffers 
+		 * may be used for double or triple buffering to avoid synchronization issues between CPU and GPU.
+		 * 
+		 * @note The uniform buffers are resized automatically based on MAX_FRAMES_IN_FLIGHT (number of images (to work upon (CPU side) 
+		 * whilst an image is being rendered (GPU side processing)) + 1)
+		 * @see VulkanUniformBuffer::BufferCreation()
 		 * 
 		 * @see KarmaGuiRenderer::FrameRender, VulkanBuffer::UploadUniformBuffer
 		 * @since Karma 1.0.0
@@ -572,6 +691,10 @@ namespace Karma
 		uint32_t GetMinImageCount() const { return m_MinImageCount; }
 		VkSurfaceKHR GetSurface() const { return m_surface; }
 		VkPresentModeKHR GetPresentMode() const { return m_presentMode; }
+		std::shared_ptr<VulkanShader> GetGeneralShader() const { return m_GeneralShader; }
+		VkPipeline GetKarmaGuiGeneralGraphicsPipeline() const { return m_KarmaGuiGeneralGraphicsPipeline; }
+		VkPipelineLayout GetKarmaGuiGeneralPipelineLayout() const { return m_KarmaGuiGeneralPipelineLayout; }
+		const std::vector<FrameDescriptorSets>& GetGeneralDescriptorSets() const { return m_GeneralDescriptorSets; }
 
 	private:
 		// Apologies for little out-of-sync naming convention, was dealing with flood of lines when
@@ -607,9 +730,20 @@ namespace Karma
 		std::vector<VkFramebuffer> m_swapChainFrameBuffers;
 		VkCommandPool m_commandPool;
 
-		std::set<std::shared_ptr<VulkanUniformBuffer>> m_VulkanUBO;
+		std::set<VulkanUniformBuffer*> m_VulkanUBO;
 
-		bool bVSync = false;
+		// General vulkan resources
+		std::shared_ptr<VulkanShader> m_GeneralShader;
+		std::shared_ptr<Texture> m_GeneralTexture;
+		VkPipelineLayout m_KarmaGuiGeneralPipelineLayout;
+		VkPipeline m_KarmaGuiGeneralGraphicsPipeline;
+		VkDescriptorSetLayout m_ViewLayout; // Camera UBO
+		VkDescriptorSetLayout m_TextureLayout; // Material UBO + texture sampler
+		VkDescriptorSetLayout m_ObjectLayout; // Object UBO
+		VkDescriptorPool m_GeneralDescriptorPool;
+		std::vector<FrameDescriptorSets> m_GeneralDescriptorSets;
+
+        bool bVSync = true;
 
 		VkImage m_DepthImage;
 		VkDeviceMemory m_DepthImageMemory;

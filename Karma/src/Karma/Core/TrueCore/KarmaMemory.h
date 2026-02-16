@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #ifdef KR_WINDOWS_PLATFORM
 #include "Platform/Windows/Core/WindowsPlatformMemory.h"
 #elif KR_MAC_PLATFORM

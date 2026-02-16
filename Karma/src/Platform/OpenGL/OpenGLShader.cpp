@@ -5,7 +5,7 @@
 
 namespace Karma
 {
-	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc) : Shader(nullptr)
+	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc) : Shader()
 	{
 		// Create an empty vertex shader handle
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -109,8 +109,7 @@ namespace Karma
 		glDetachShader(program, fragmentShader);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo,
-		const std::string& shaderName) : Shader(ubo)
+	OpenGLShader::OpenGLShader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, const std::string& shaderName) : Shader()
 	{
 		m_ShaderName = shaderName;
 
@@ -120,12 +119,6 @@ namespace Karma
 		shaderSources[GL_FRAGMENT_SHADER] = KarmaUtilities::ReadFileToSpitString(fragmentSrcFile);
 
 		Compile(shaderSources);
-
-		m_UniformBufferObject = std::static_pointer_cast<OpenGLUniformBuffer>(ubo);
-		if (m_UniformBufferObject == nullptr)
-		{
-			KR_CORE_WARN("Cast to OpenGLUniformBuffer failed.");
-		}
 	}
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)

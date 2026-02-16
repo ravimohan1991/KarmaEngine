@@ -5,15 +5,13 @@
 
 namespace Karma
 {
-	VulkanShader::VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc, std::shared_ptr<UniformBufferObject> ubo) : Shader(ubo)
+	VulkanShader::VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
 		std::string vString = KarmaUtilities::ReadFileToSpitString(vertexSrc);
 		vertSpirV = Compile(vertexSrc, vString, EShLangVertex);// vertex shader
 
 		vString = KarmaUtilities::ReadFileToSpitString(fragmentSrc);
 		fragSpirV = Compile(fragmentSrc, vString, EShLangFragment);// fragment shader
-
-		m_UniformBufferObject = std::static_pointer_cast<VulkanUniformBuffer>(ubo);
 	}
 
 	VulkanShader::~VulkanShader()
@@ -23,7 +21,7 @@ namespace Karma
 
 	std::vector<uint32_t> VulkanShader::Compile(const std::string& src, const std::string& source, EShLanguage lang)
 	{
-		KR_CORE_INFO("Compiling {0} {1} for Vulkan ...", lang == EShLangVertex ? "vertex shader" : "fragment shader", src);
+		KR_CORE_INFO("Compiling {0} {1} for Vulkan ..", lang == EShLangVertex ? "vertex shader" : "fragment shader", src);
 
 		const char* sString = source.c_str();
 

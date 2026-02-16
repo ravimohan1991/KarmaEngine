@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "Object.h"
 #include "SubClassOf.h"
 
@@ -184,6 +182,12 @@ namespace Karma
 		T* SpawnActor(UClass* Class, const FActorSpawnParameters& SpawnParameters = FActorSpawnParameters())
 		{
 			return CastChecked<T>(SpawnActor(Class, nullptr, SpawnParameters), ECastCheckedType::NullAllowed);
+		}
+
+		template< class T >
+		T* SpawnActor(UClass* Class, FTransform const* Transform, const FActorSpawnParameters& SpawnParameters = FActorSpawnParameters())
+		{
+			return CastChecked<T>(SpawnActor(Class, Transform, SpawnParameters), ECastCheckedType::NullAllowed);
 		}
 
 		/**

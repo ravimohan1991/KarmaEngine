@@ -9,7 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
 #include "Event.h"
 
 namespace Karma

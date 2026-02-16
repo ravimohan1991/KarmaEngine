@@ -2,8 +2,16 @@
 #include "Renderer/RendererAPI.h"
 #include "Vulkan/VulkanHolder.h"
 #include "Renderer/RenderCommand.h"
-
+#include "StaticMeshActor.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
+#include "VulkanRHI/VulkanDynamicRHI.h"
+#include "VulkanRHI/VulkanSwapChain.h"
+#include "VulkanRHI/VulkanSynchronization.h"
+#include "KarmaRHI/DynamicRHI.h"
+#include "VulkanRHI/VulkanRenderPass.h"
+#include "VulkanRHI/VulkanDescriptorSets.h"
+#include "StaticMeshActor.h"
+#include "PrimitiveComponent.h"
 
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"
@@ -11,6 +19,7 @@
 namespace Karma
 {
 	VkDescriptorPool KarmaGuiRenderer::m_KarmaGuiDescriptorPool;
+	uint32_t KarmaGuiRenderer::m_SMCounter = 0;
 	KarmaGui_ImplVulkanH_Window KarmaGuiRenderer::m_VulkanWindowData;
 	bool KarmaGuiRenderer::m_SwapChainRebuild;
 	GLFWwindow* KarmaGuiRenderer::m_GLFWwindow = nullptr;
@@ -22,38 +31,38 @@ namespace Karma
 
 		m_GLFWwindow = window;
 
-		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		if (GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
 			KarmaGui_ImplGlfw_InitForVulkan(window, true);
 
 			KarmaGui_ImplVulkan_InitInfo initInfo = {};
-			// An inter-class communication
-			initInfo.Instance = VulkanHolder::GetVulkanContext()->GetInstance();
-			initInfo.PhysicalDevice = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
-			initInfo.Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
-			initInfo.QueueFamily = VulkanHolder::GetVulkanContext()->FindQueueFamilies(initInfo.PhysicalDevice).graphicsFamily.value();
-			initInfo.Queue = VulkanHolder::GetVulkanContext()->GetGraphicsQueue();
+			initInfo.Instance = FVulkanDynamicRHI::Get().GetInstance();
+			initInfo.PhysicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetGPU();
+			initInfo.Device = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+			initInfo.QueueFamily = FVulkanDynamicRHI::Get().FindQueueFamilies(initInfo.PhysicalDevice).graphicsFamily.value();
+			initInfo.Queue = FVulkanDynamicRHI::Get().GetDevice()->GetGraphicsQueue();
 			initInfo.PipelineCache = VK_NULL_HANDLE;
-			initInfo.MinImageCount = VulkanHolder::GetVulkanContext()->GetMinImageCount();
-			initInfo.ImageCount = VulkanHolder::GetVulkanContext()->GetImageCount();
+			initInfo.MinImageCount = FVulkanDynamicRHI::Get().GetGpuSwapChainSupportDetails().capabilities.minImageCount;
+			initInfo.ImageCount = FVulkanDynamicRHI::Get().SwapChainImageCount();
 			initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
 			// Stuff created and dedicated to KarmaGui
-			CreateDescriptorPool();
+			CreateDescriptorPool(initInfo.Device);
 			initInfo.DescriptorPool = m_KarmaGuiDescriptorPool;
-			
-			initInfo.RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
-
-			// Not sure about the use of Subpass so setting to 0
-			initInfo.Subpass = 0;
 
 			// Settingup backend in KarmaGui
 			// KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(&initInfo);
 			KarmaGui_ImplVulkan_Init(&initInfo);
 
 			// Fresh start with newly instantiated Vulkan data
-			// Since VulkanContext has already instantiated fresh swapchain and commandbuffers, we send that false
-			KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, true);
+			KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, true);
+
+			// See if all the appropriate Vulkan resources have been instantiated
+			KarmaGuiVulkanHandler::CheckInitialization();
+
+			// Font, descriptor, and pipeline
+			KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
+			FVulkanDynamicRHI::Get().GetDevice()->InitializeDefaultDescriptorSets(m_VulkanWindowData.RHIResources->VulkanSwapChain->GetMaxFramesInFlight());
 
 			// Load default font
 			KGFontConfig fontConfig;
@@ -117,11 +126,26 @@ namespace Karma
 		}
 	}
 
+	void KarmaGuiRenderer::OnAdditionOfStaticMesh(AStaticMeshActor* smActor)
+	{
+		if(GRHIInterfaceType == ERHIInterfaceType::Vulkan)
+		{
+			uint32_t maxFramesInFlight = GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
+			
+			for (uint32_t counter = 0; counter < maxFramesInFlight; counter++)
+			{
+				FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(static_cast<VulkanUniformBuffer*>(static_cast<UPrimitiveComponent*>(smActor->GetRootComponent())->GetComponentTransformUniform().get()), 1, m_SMCounter, counter);
+			}
+			
+			m_SMCounter++;
+		}
+	}
+
 	void KarmaGuiRenderer::AddImageTexture(char const* fileName, const std::string& label)
 	{
-		switch(RendererAPI::GetAPI())
+		switch(GRHIInterfaceType)
 		{
-			case RendererAPI::API::Vulkan:
+			case ERHIInterfaceType::Vulkan:
 			{
 				KarmaGuiIO& io = KarmaGui::GetIO();
 				KarmaGuiBackendRendererUserData* backendData = (KarmaGuiBackendRendererUserData*) io.BackendRendererUserData;
@@ -155,12 +179,12 @@ namespace Karma
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait!");
 			}
 			break;
-			case RendererAPI::API::OpenGL:
+			case ERHIInterfaceType::OpenGL:
 			{
 				KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_CreateTexture(fileName, label);
 			}
 			break;
-			case RendererAPI::API::None:
+			case ERHIInterfaceType::Null:
 					KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 				break;
 			default:
@@ -171,16 +195,16 @@ namespace Karma
 
 	void KarmaGuiRenderer::OnKarmaGuiLayerBegin()
 	{
-		switch (RendererAPI::GetAPI())
+		switch (GRHIInterfaceType)
 		{
-		case RendererAPI::API::Vulkan:
+		case ERHIInterfaceType::Vulkan:
 				GiveLoopBeginControlToVulkan();
 			break;
-		case RendererAPI::API::OpenGL:
+		case ERHIInterfaceType::OpenGL:
 				KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_NewFrame();
 				KarmaGui_ImplGlfw_NewFrame();
 			break;
-		case RendererAPI::API::None:
+		case ERHIInterfaceType::Null:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 			break;
 		default:
@@ -244,23 +268,15 @@ namespace Karma
 		// Maybe chore for toofani mood!
 		// io.BackendFlags |= KarmaGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
 
-		KR_CORE_ASSERT(info->Instance != VK_NULL_HANDLE, "No instance found");
-		KR_CORE_ASSERT(info->PhysicalDevice != VK_NULL_HANDLE, "No physical device found");
-		KR_CORE_ASSERT(info->Device != VK_NULL_HANDLE, "No device found");
-		KR_CORE_ASSERT(info->Queue != VK_NULL_HANDLE, "No queue assigned");
-		KR_CORE_ASSERT(info->DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
-		KR_CORE_ASSERT(info->MinImageCount >= 2, "Minimum image count exceeding limit");
-		KR_CORE_ASSERT(info->ImageCount >= info->MinImageCount, "Not enough pitch for ImageCount");
-		KR_CORE_ASSERT(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
-
 		backendData->VulkanInitInfo = *info;
 		//backendData->VulkanInitInfo.Device = info->Device;
 
-		backendData->RenderPass = info->RenderPass;
-		backendData->Subpass = info->Subpass;
+		//backendData->RenderPass = info->RenderPass;
+		//backendData->Subpass = info->Subpass;
 
-		// Font, descriptor, and pipeline
-		KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
+		// Font, descriptor, and pipeline (moved to the KarmaGuiRenderer::SetUpKarmaGuiRenderer, after KarmaGuiVulkanHandler::FillWindowData
+		// because RenderPass is required for pipeline creation)
+		// KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects();
 
 		// Our render function expect RendererUserData to be storing the window render buffer we need (for the main viewport we won't use ->Window)
 		KarmaGuiViewport* mainViewport = KarmaGui::GetMainViewport();
@@ -285,23 +301,10 @@ namespace Karma
 
 			if (width > 0 && height > 0)
 			{
-				RendererAPI* rAPI = RenderCommand::GetRendererAPI();
-				VulkanRendererAPI* vulkanAPI = nullptr;
+				//KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateOrResizeWindow(&m_VulkanWindowData, true, true);
+				KarmaGuiVulkanHandler::ShivaSwapChainForRebuild(&m_VulkanWindowData);
+				KarmaGuiVulkanHandler::FillWindowData(&m_VulkanWindowData, false);
 
-				if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
-				{
-					vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
-				}
-				else
-				{
-					KR_CORE_ASSERT(false, "How is this even possible?");
-				}
-
-				KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-
-				vulkanAPI->RecreateCommandBuffersAndSwapChain();
-
-				KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(&m_VulkanWindowData, false);
 				m_SwapChainRebuild = false;
 			}
 		}
@@ -396,7 +399,7 @@ namespace Karma
 		vkDestroyDescriptorPool(vulkanInfo->Device, m_KarmaGuiDescriptorPool, VK_NULL_HANDLE);
 	}
 
-	void KarmaGuiRenderer::CreateDescriptorPool()
+	void KarmaGuiRenderer::CreateDescriptorPool(VkDevice VulkanDevice)
 	{
 		VkDescriptorPoolSize pool_sizes[] =
 		{
@@ -420,7 +423,7 @@ namespace Karma
 		poolInfo.poolSizeCount = uint32_t(std::size(pool_sizes));
 		poolInfo.pPoolSizes = pool_sizes;
 
-		VkResult result = vkCreateDescriptorPool(VulkanHolder::GetVulkanContext()->GetLogicalDevice(), &poolInfo, nullptr, &m_KarmaGuiDescriptorPool);
+		VkResult result = vkCreateDescriptorPool(VulkanDevice, &poolInfo, nullptr, &m_KarmaGuiDescriptorPool);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create descriptor pool for KarmaGui");
 	}
 
@@ -431,18 +434,12 @@ namespace Karma
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
 		// Pointer to the per frame data for instance fence, semaphores, and commandbuffer
-		// Remember windowData->SemaphoreIndex is m_CurrentFrame equivalent of VulkanRendererAPI
 		KarmaGui_Vulkan_Frame_On_Flight* frameOnFlightData = &windowData->FramesOnFlight[windowData->SemaphoreIndex];
 		VkResult result;
 
-		// Pointer to the container of framebuffers (based on number of swapchain images)
-		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
+		// Fence needs to be signaled to pass the vkWaitForFences.
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().WaitForFence(frameOnFlightData->Fence);
 
-		result = vkWaitForFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence, VK_TRUE, UINT64_MAX);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to wait");
-
-
-		// ImageAcquiredSemaphore is m_ImageAvailableSemaphores equivalent
 		VkSemaphore imageAcquiredSemaphore = frameOnFlightData->ImageAcquiredSemaphore;
 		VkSemaphore renderCompleteSemaphore = frameOnFlightData->RenderCompleteSemaphore;
 
@@ -450,10 +447,17 @@ namespace Karma
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
+			vkDeviceWaitIdle(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice());
+
 			return;
 		}
+		else
+		{
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image");
+		}
 
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image");
+		// Pointer to the container of framebuffers (based on number of swapchain images)
+		KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
 
 		vkResetCommandBuffer(frameOnFlightData->CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
@@ -467,12 +471,18 @@ namespace Karma
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't begin commandbuffer recording");
 		}
 
-		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
+		FVulkanDynamicRHI::Get().UploadUniformBufferObjects(windowData->SemaphoreIndex);
+		
+		for (auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
 		{
+			std::shared_ptr<Scene> scene3D = it->Scene3D;
+
+			FVulkanDescriptorSets* descriptorSets = FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[windowData->SemaphoreIndex];
+
 			{
 				VkRenderPassBeginInfo renderPassInfo{};
 				renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-				renderPassInfo.renderPass = backendData->OffScreenRR.RenderPass;
+				renderPassInfo.renderPass = backendData->OffScreenRR.RenderPass->GetHandle();
 				renderPassInfo.framebuffer = it->FrameBuffer;
 				renderPassInfo.renderArea.offset = {0, 0};
 				renderPassInfo.renderArea.extent.width = it->Size.x;
@@ -488,29 +498,37 @@ namespace Karma
 				
 				// The pass starts here and all commands until vkCmdEndRenderPass are recorded into it
 				vkCmdBeginRenderPass(frameOnFlightData->CommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-				std::shared_ptr<VulkanVertexArray> vulkanVA =	static_pointer_cast<VulkanVertexArray>(it->Scene3D->GetRenderableVertexArray());
-				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,	vulkanVA->GetKarmaGuiGraphicsPipeline());
+
+				// ---- Bind Graphics Pipeline ----
+				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenGraphicsPipeline);
+
+				// === BIND GLOBAL DESCRIPTOR SETS (once per frame) ===
+				// Set 0, Binding 0 :Camera UBO
+				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenPipelineLayout, 0, 1, &descriptorSets->m_DescriptorSets[0][0], 0, nullptr);
+				// Set 0, Binding 1: Texture
+				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenPipelineLayout, 0, 1, &descriptorSets->m_DescriptorSets[0][0], 0, nullptr);
+
+				uint32_t objectIndex = 0;
 				
 				// ---- Bind 3D Vertex And Index Buffers ----
+				for (const auto& smActor : scene3D->GetSMActors())
 				{
-					VkBuffer vertexBuffers[1] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
+					std::shared_ptr<Mesh> mesh = smActor->GetStaticMeshComponent()->GetStaticMesh();
+
+					VkBuffer vertexBuffers[1] = { std::static_pointer_cast<VulkanVertexBuffer>(mesh->GetVertexBuffer())->GetVertexBuffer() };
 					VkDeviceSize vertexOffset[1] = { 0 };
 					vkCmdBindVertexBuffers(frameOnFlightData->CommandBuffer, 0, 1, vertexBuffers, vertexOffset);
-					vkCmdBindIndexBuffer(frameOnFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0,	VK_INDEX_TYPE_UINT32);
+					vkCmdBindIndexBuffer(frameOnFlightData->CommandBuffer, std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer())->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+					// Set 2: Object UBO
+					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenPipelineLayout, 1, 1, &descriptorSets->m_DescriptorSets[1][objectIndex], 0, nullptr);
+
+					// ----Issue Draw Commands----
+					// Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)
+					vkCmdDrawIndexed(frameOnFlightData->CommandBuffer, std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer())->GetCount(), 1, 0, 0, 0);
+
+					objectIndex++;
 				}
-				
-				vulkanVA->UpdateProcessAndSetReadyForSubmission();
-				vulkanVA->Bind();
-				
-				VulkanHolder::GetVulkanContext()->UploadUBO(windowData->SemaphoreIndex);
-				
-				// ---- Bind descriptor sets (e.g., uniforms for MVP matrices, lighting) ----
-				// Assumes layout compatibility between pipeline and descriptor set
-				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,	vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[windowData->SemaphoreIndex], 0,	nullptr);
-				
-				// ---- Issue Draw Commands ----
-				// Draw 3D scene geometry on 2D rendertarget (it->FrameBuffers)
-				vkCmdDrawIndexed(frameOnFlightData->CommandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
 				
 				// ---- End the Offscreen Render Pass ----
 				vkCmdEndRenderPass(frameOnFlightData->CommandBuffer);
@@ -526,7 +544,7 @@ namespace Karma
 		renderPassInfo.renderArea.extent = windowData->RenderArea.extent;
 
 		std::array<VkClearValue, 2> clearValues{};
-		clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], 		windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
+		clearValues[0] = { windowData->ClearValue.color.float32[0], windowData->ClearValue.color.float32[1], windowData->ClearValue.color.float32[2], windowData->ClearValue.color.float32[3] };
 		clearValues[1].depthStencil = { 1.0f, 0 };
 
 		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -559,11 +577,13 @@ namespace Karma
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &renderCompleteSemaphore;
 
-		// We reset the fence here or else the swapchain rebuild seemingly fails
-		result = vkResetFences(vulkanInfo->Device, 1, &frameOnFlightData->Fence);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to reset fence");
+		// vkResetFences unsignals the Fence
+		// Fixing a deadlock: https://vulkan-tutorial.com/Drawing_a_triangle/Swap_chain_recreation#page_Fixing-a-deadlock
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().ResetFence(frameOnFlightData->Fence);
 
-		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, frameOnFlightData->Fence);
+		VkFence fence = frameOnFlightData->Fence->GetHandle();
+		// vkQueueSubmit signals the Fence once commandbuffers finish execution
+		result = vkQueueSubmit(vulkanInfo->Queue, 1, &submitInfo, fence);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
 	}
 
@@ -592,6 +612,9 @@ namespace Karma
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
+		}
+		if (result == VK_ERROR_OUT_OF_DATE_KHR)
+		{
 			return;
 		}
 
@@ -602,7 +625,7 @@ namespace Karma
 
 	KGTextureID KarmaGuiRenderer::Add3DSceneFor2DRendering(std::shared_ptr<Scene> scene, KGVec2 dimensions)
 	{
-		if(RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		if(GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
 			KarmaGui_ImplVulkan_Data* backendData = GetBackendRendererUserData();
 			KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;

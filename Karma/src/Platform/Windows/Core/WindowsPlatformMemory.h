@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Core/TrueCore/GenericPlatformMemory.h"
 
 namespace Karma

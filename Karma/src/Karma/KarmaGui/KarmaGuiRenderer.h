@@ -10,14 +10,15 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "imgui_impl_glfw.h"
+
 #include "Platform/Vulkan/KarmaGuiVulkanHandler.h"
 #include "Platform/OpenGL/KarmaGuiOpenGLHandler.h"
 
 namespace Karma
 {
+	class AStaticMeshActor;
+
 	/**
 	 * @brief A multiply inherited class for supporting both OpenGL and Vulkan API's.
 	 *
@@ -52,6 +53,8 @@ namespace Karma
 		static void OnKarmaGuiLayerBegin();
 		static void OnKarmaGuiLayerEnd();
 
+		static void OnAdditionOfStaticMesh(AStaticMeshActor* smActor);
+
 		/**
 		 * @brief Acessor function for KarmaGui's renderer backend (BackendRendererUserData).
 		 *
@@ -70,7 +73,7 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* initInfo);
-		static void CreateDescriptorPool();
+		static void CreateDescriptorPool(VkDevice VulkanDevice);
 
 		/**
 		 * @brief Calls CleanUpVulkanAndWindowData() and does the shutting of GLFW and KarmaGui (KarmaGui::DestroyContext)
@@ -121,6 +124,11 @@ namespace Karma
 		 * @since Karma 1.0.0 
 		 */
 		static KGTextureID Add3DSceneFor2DRendering(std::shared_ptr<Scene> scene, KGVec2 dimensions);
+		
+		/**
+		 * @brief Getter for m_VulkanWindowData
+		 */
+		static const KarmaGui_ImplVulkanH_Window& GetWindowData() { return m_VulkanWindowData; }
 
 	private:
 
@@ -130,6 +138,8 @@ namespace Karma
 		// Vulkan specific members
 		static VkDescriptorPool m_KarmaGuiDescriptorPool;
 		static KarmaGui_ImplVulkanH_Window m_VulkanWindowData;
+		
+		static uint32_t m_SMCounter;
 
 		static bool m_SwapChainRebuild;
 	};

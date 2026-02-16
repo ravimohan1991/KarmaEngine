@@ -61,6 +61,11 @@ namespace Karma
 		return m_OwnerPrivate;
 	}
 
+	void UActorComponent::SetOwner(AActor* NewOwner)
+	{
+		m_OwnerPrivate = NewOwner;
+	}
+
 	void UActorComponent::Activate(bool bReset)
 	{
 		if (bReset || ShouldActivate() == true)

@@ -2,11 +2,16 @@
 #include "Karma/Core/TrueCore/KarmaMemory.h"
 #include "Karma/Ganit/KarmaMath.h"
 #include "Core/UObjectBase.h"
+#include <UObjectIterator.h>
 
 namespace Karma
 {
 	/** Global UObjectBase allocator							*/
 	FUObjectAllocator GUObjectAllocator;
+
+	FUObjectAllocator::~FUObjectAllocator()
+	{
+	}
 
 	void FUObjectAllocator::AllocatePermanentObjectPool(int32_t InPermanentObjectPoolSize)
 	{

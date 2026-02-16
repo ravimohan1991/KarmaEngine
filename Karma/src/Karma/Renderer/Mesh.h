@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "Buffer.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -123,5 +121,7 @@ namespace Karma
 		MeshType m_MeshType;
 
 		static std::shared_ptr<std::unordered_map<std::string, MeshAttribute>> m_NameToAttributeDictionary;
+
+		std::shared_ptr<class Material> m_StaticMaterial;
 	};
 }

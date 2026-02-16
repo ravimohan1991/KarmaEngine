@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Karma/Renderer/Buffer.h"
 #include "glm/glm.hpp"
 
@@ -28,7 +26,7 @@ namespace Karma
 		 * @param ubo						Uniform buffer object to a assigned
 		 * @since Karma 1.0.0
 		 */
-		Shader(std::shared_ptr<UniformBufferObject> ubo) : m_UniformBufferObject(ubo)
+		Shader()
 		{}
 
 		/**
@@ -63,14 +61,6 @@ namespace Karma
 		virtual void UnBind() const {}
 
 		/**
-		 * @brief Getter for uniform buffer object
-		 *
-		 * @return pointer to UniformBufferObject present in the shader
-		 * @since Karma 1.0.0
-		 */
-		std::shared_ptr<UniformBufferObject> GetUniformBufferObject() const { return m_UniformBufferObject; }
-
-		/**
 		 * @brief Instantiating shader object according to the programmer chosen API
 		 *
 		 * @deprecated Use the overloaded function with uniformbuffer object argument
@@ -84,12 +74,10 @@ namespace Karma
 		 * @param vertexSrcFile					Path to vertex shader (filename included). For instance "../Resources/Shaders/shader.vert", relative to
 		 * 										Engine's running directory
 		 * @param fragmentSrcFile				Path to fragment shader (filename included).
-		 * @param ubo							UniformBufferObject to be used
 		 * @param shaderName					Name of the shader to be supplied
 		 * @since Karma 1.0.0
 		 */
-		static Shader* Create(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, std::shared_ptr<UniformBufferObject> ubo,
-			const std::string& shaderName = "NoNamedShader");
+		static Shader* Create(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, const std::string& shaderName = "NoNamedShader");
 
 		// Getters
 		/**
@@ -99,9 +87,6 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		const std::string& GetShaderName() const { return m_ShaderName; }
-
-	private:
-		std::shared_ptr<UniformBufferObject> m_UniformBufferObject;
 	
 	protected:
 		std::string m_ShaderName;

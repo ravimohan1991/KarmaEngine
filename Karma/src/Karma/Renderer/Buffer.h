@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "glm/gtc/type_ptr.hpp"
 #include "stb_image.h"
 
@@ -413,6 +411,8 @@ namespace Karma
 		{
 			m_UniformList = { uniforms... };
 		}
+
+		virtual void UpdateCameraUniform() = 0;
 
 		/**
 		 * @brief An overridable function to upload the uniform buffer

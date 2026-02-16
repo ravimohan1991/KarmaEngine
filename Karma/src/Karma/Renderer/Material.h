@@ -9,12 +9,10 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Karma/Renderer/Shader.h"
-
 #include "Texture.h"
 #include "Camera/Camera.h"
+#include <list>
 
 namespace Karma
 {

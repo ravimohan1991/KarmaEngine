@@ -109,6 +109,14 @@
 	#define KR_CORE_ASSERT(expr, ...)
 #endif
 
+ /**
+  * @brief Denotes code paths that should never be reached.
+  * 
+  * @note Taken from the UE
+  */
+#define checkNoEntry()       KR_CORE_ASSERT(false, "Enclosing block should never be called")
+
+
 /**
  * @brief Macro for std::bind routine. See https://en.cppreference.com/w/cpp/utility/functional/bind
  *

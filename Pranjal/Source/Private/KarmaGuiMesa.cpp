@@ -14,6 +14,8 @@
 #include "hwinfo/hwinfo.h"
 #include "hwinfo/utils/unit.h"
 #include "spdlog/sinks/callback_sink.h"
+#include "KarmaGui/KarmaGuizmo.h"
+#include "StaticMeshActor.h"
 
 // Experimental
 //#include "Karma/Core/UObjectAllocator.h"
@@ -36,6 +38,8 @@ namespace Karma
 	std::shared_ptr<spdlog::pattern_formatter> s_MesaLogFormatter = nullptr;
 	bool KarmaGuiMesa::m_EditorInitialized = false;
 	bool KarmaGuiMesa::m_RefreshRenderingResources = false;
+	AStaticMeshActor* KarmaGuiMesa::m_SelectedSMActor = nullptr;
+	TransformCache KarmaGuiMesa::m_SelectedSMActorTransformCache;
 
 	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
 	WindowManipulationGaugeData	KarmaGuiMesa::m_MemoryExhibitor;
@@ -50,6 +54,70 @@ namespace Karma
 			DropRectsDraw[n] = KGRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX);
 		}
 	}
+	
+	void KarmaGuiMesa::EditTransform(std::shared_ptr<Scene> scene)
+	{
+		if(m_SelectedSMActor == nullptr)
+		{
+			return;
+		}
+		
+		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+		FTransform transform = m_SelectedSMActor->GetTransform();
+		
+		matrixTranslation[0] = m_SelectedSMActorTransformCache.translation[0] = transform.GetTranslation().x;
+		matrixTranslation[1] = m_SelectedSMActorTransformCache.translation[1] = transform.GetTranslation().y;
+		matrixTranslation[2] = m_SelectedSMActorTransformCache.translation[2] = transform.GetTranslation().z;
+		
+		matrixRotation[0] = m_SelectedSMActorTransformCache.rotation[0] = transform.GetRotation().m_Roll;
+		matrixRotation[1] = m_SelectedSMActorTransformCache.rotation[1] = transform.GetRotation().m_Pitch;
+		matrixRotation[2] = m_SelectedSMActorTransformCache.rotation[2] = transform.GetRotation().m_Yaw;
+		
+		matrixScale[0] = m_SelectedSMActorTransformCache.scale[0] = transform.GetScale3D().x;
+		matrixScale[1] = m_SelectedSMActorTransformCache.scale[1] = transform.GetScale3D().y;
+		matrixScale[2] = m_SelectedSMActorTransformCache.scale[2] = transform.GetScale3D().z;
+		
+		KarmaGui::InputFloat3("Tr", matrixTranslation, "%.2f");
+		KarmaGui::InputFloat3("Rt", matrixRotation, "%.2f");
+		
+		KarmaGui::InputFloat3("Sc", matrixScale, "%.2f");
+
+		if (matrixTranslation[0] != m_SelectedSMActorTransformCache.translation[0] || matrixTranslation[1] != m_SelectedSMActorTransformCache.translation[1] || matrixTranslation[2] != m_SelectedSMActorTransformCache.translation[2] ||
+			matrixRotation[0] != m_SelectedSMActorTransformCache.rotation[0] || matrixRotation[1] != m_SelectedSMActorTransformCache.rotation[1] || matrixRotation[2] != m_SelectedSMActorTransformCache.rotation[2] ||
+			matrixScale[0] != m_SelectedSMActorTransformCache.scale[0] || matrixScale[1] != m_SelectedSMActorTransformCache.scale[1] || matrixScale[2] != m_SelectedSMActorTransformCache.scale[2])
+		{
+			m_SelectedSMActorTransformCache.translation[0] = matrixTranslation[0];
+			m_SelectedSMActorTransformCache.translation[1] = matrixTranslation[1];
+			m_SelectedSMActorTransformCache.translation[2] = matrixTranslation[2];
+			
+			m_SelectedSMActorTransformCache.rotation[0] = matrixRotation[0];
+			m_SelectedSMActorTransformCache.rotation[1] = matrixRotation[1];
+			m_SelectedSMActorTransformCache.rotation[2] = matrixRotation[2];
+			
+			m_SelectedSMActorTransformCache.scale[0] = matrixScale[0];
+			m_SelectedSMActorTransformCache.scale[1] = matrixScale[1];
+			m_SelectedSMActorTransformCache.scale[2] = matrixScale[2];
+
+			m_SelectedSMActorTransformCache.bIsDirty = true;
+		}
+		
+		if (m_SelectedSMActorTransformCache.bIsDirty)
+		{
+			glm::vec3 translation(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
+			transform.SetTranslation(translation);
+
+			glm::vec3 euler(matrixRotation[0], matrixRotation[1], matrixRotation[2]);
+			TRotator rotation(euler);
+
+			transform.SetRotation(rotation);
+
+			glm::vec3 scale(matrixScale[0], matrixScale[1], matrixScale[2]);
+			transform.SetScale3D(scale);
+
+			m_SelectedSMActor->SetActorTransform(transform);
+			m_SelectedSMActorTransformCache.bIsDirty = false;
+		}
+	}
 
 	void KarmaGuiMesa::RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
 	{
@@ -58,15 +126,16 @@ namespace Karma
 
 		// 2. Show a simple sampling and experiment window
 		{
-			static bool show = true;
+			static bool show1 = true;
+			static bool show2 = true;
 			static float fValue = 0.0f;
 			static int counter = 0;
 
 			KarmaGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and appeninto it
 
 			KarmaGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			KarmaGui::Checkbox("Demo Window", &show);                  // Edit bools storing our window open/close state
-			KarmaGui::Checkbox("Another Window", &show);
+			KarmaGui::Checkbox("Demo Window", &show1);                  // Edit bools storing our window open/close state
+			KarmaGui::Checkbox("Another Window", &show2);
 
 			KarmaGui::SliderFloat("float", &fValue, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 			//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a colo
@@ -86,6 +155,8 @@ namespace Karma
 			node = nullptr;//ImGui::FindAppropriateNode(window, payloadWindow, boxNumber);
 
 			KarmaGui::Text("Node ID = %d at position x = %f, y = %f on docking box %d", node != nullptr ? node->ID : 0, KarmaGui::GetMousePos().x, KarmaGui::GetMousePos().y, boxNumber);
+			
+			EditTransform(scene);
 
 			if (payloadWindow)
 				KarmaGui::Text("Karma: Log window is of dimension width = %f und height = %f", payloadWindow->Size.x, payloadWindow->Size.y);
@@ -100,7 +171,7 @@ namespace Karma
 
 		// 4. A panel for scene hierarchy and whatnot
 		{
-			DrawKarmaSceneHierarchyPanelMesa();
+			DrawKarmaSceneHierarchyPanelMesa(scene);
 		}
 
 		// 5. A window for 3D rendering part
@@ -512,8 +583,16 @@ namespace Karma
 			bShouldRefresh = true;
 		}
 
-		m_ViewportFocused = KarmaGui::IsWindowFocused();
-		m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
+		if (!KarmaGuizmo::IsUsing())
+		{
+			m_ViewportFocused = KarmaGui::IsWindowFocused();
+			m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
+		}
+		else
+		{
+			m_ViewportFocused = false;
+			m_ViewportHovered = false;
+		}
 
 		KarmaGuiIO& io = KarmaGui::GetIO();
 
@@ -524,14 +603,49 @@ namespace Karma
 
 		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
-				
-		KGTextureID textureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
 		
+		KGTextureID textureID3D = nullptr;
+		if (scene->GetSMActors().size() > 0)
+		{
+			textureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
+			KarmaGui::SetItemAllowOverlap();
+		}
+
+		KGVec2 pos = KarmaGui::GetWindowPos();
 		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
-		KGVec2 pos = KarmaGui::GetCursorScreenPos();
 		
 		drawList->AddImage((void*)backgroundImageTextureID, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
-		drawList->AddImage((void*)textureID3D, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
+		if (scene->GetSMActors().size() > 0 && textureID3D != nullptr)
+		{
+			drawList->AddImage((void*)textureID3D, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
+		}
+		
+		KarmaGuizmo::SetDrawlist();
+		KarmaGuizmo::SetRect(pos.x, pos.y + window->TitleBarHeight(), window->Size.x, window->Size.y - window->TitleBarHeight());
+		
+		if(scene->GetSMActors().size() > 0 && m_SelectedSMActor != nullptr)
+		{
+			std::shared_ptr<Camera> sceneCamera =  scene->GetSceneCamera();
+			glm::mat4 viewMatrix = sceneCamera->GetViewMatirx();
+			
+			glm::mat4 projectionMatrix = sceneCamera->GetProjectionMatrix();
+			
+			float* projectionPtr = glm::value_ptr(projectionMatrix);
+			projectionPtr[5] *= -1.f;
+			
+			FTransform operationalTransform = m_SelectedSMActor->GetTransform();
+
+			glm::mat4 objectMatrix = operationalTransform.ToMatrixWithScale();
+			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::WORLD, glm::value_ptr(objectMatrix));
+			
+			if(KarmaGuizmo::IsUsing() && bManipulate)
+			{
+				FTransform transform;
+				transform.ToTransform(objectMatrix);
+				
+				m_SelectedSMActor->SetActorTransform(transform);
+			}
+		}
 		
 		scene->SetRenderWindow(window);
 
@@ -571,14 +685,30 @@ namespace Karma
 		KarmaGui::End();
 	}
 
-	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
+	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa(std::shared_ptr<Scene> scene)
 	{
 		KarmaGui::SetNextWindowSize(KGVec2(500, 400), KGGuiCond_FirstUseEver);
 
 		KarmaGui::Begin("Scene Hierarchy");
-		KarmaGui::Text("Some Stuff 1");
-		KarmaGui::Text("Some stuff 2");
-		KarmaGui::Text("lumbdaa");
+		
+		for(const auto& smActor : scene->GetSMActors())
+		{
+			const char* sceneElement = smActor->GetName().c_str();
+			
+			KGGuiTreeNodeFlags_ flags = (smActor == m_SelectedSMActor) ? KGGuiTreeNodeFlags_Selected : KGGuiTreeNodeFlags_Bullet;
+			bool opened = KarmaGui::TreeNodeEx(sceneElement, flags);
+			
+			if(KarmaGui::IsItemClicked())
+			{
+				m_SelectedSMActor = smActor;
+			}
+			
+			if(opened)
+			{
+				KarmaGui::TreePop();
+			}
+		}
+		
 		KarmaGui::End();
 	}
 

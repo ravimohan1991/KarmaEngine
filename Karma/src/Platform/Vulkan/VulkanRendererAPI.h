@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "Karma/Renderer/RendererAPI.h"
 #include "vulkan/vulkan.h"
 

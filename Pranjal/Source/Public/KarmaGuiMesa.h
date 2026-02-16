@@ -272,15 +272,25 @@ namespace Karma
 		}
 	};
 
+	struct TransformCache
+	{
+		float translation[3];
+		float rotation[3];
+		float scale[3];
+
+		bool bIsDirty = false;
+	};
+
 	class KarmaGuiMesa
 	{
 	public:
 		// Showtime!
 		static void RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks);
+		static void EditTransform(std::shared_ptr<Scene> scene);
 		static void DrawKarmaMainMenuBarMesa();
 		static void DrawMainMenuFileListMesa();
 		static void DrawKarmaLogMesa(KGGuiID mainMesaDockID);
-		static void DrawKarmaSceneHierarchyPanelMesa();
+		static void DrawKarmaSceneHierarchyPanelMesa(std::shared_ptr<Scene> scene);
 		static void Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene);
 		static void DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback);
 		static void DrawMemoryExhibitor();
@@ -320,6 +330,9 @@ namespace Karma
 		static WindowManipulationGaugeData m_MemoryExhibitor;
 		static bool m_EditorInitialized;
 		static bool m_RefreshRenderingResources;
+		static class AStaticMeshActor* m_SelectedSMActor;
+		static TransformCache m_SelectedSMActorTransformCache;
+
 
 		// Content browser
 		static std::filesystem::path m_CurrentDirectory;

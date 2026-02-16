@@ -1,7 +1,8 @@
 #include "KarmaSmriti.h"
 #include "KarmaMemory.h"
-
+#include "UObjectBase.h"
 #include "Core/UObjectAllocator.h"
+#include <UObjectIterator.h>
 
 namespace Karma
 {
@@ -30,6 +31,18 @@ namespace Karma
 
 	void KarmaSmriti::ShutDown()
 	{
+		for (FRawObjectIterator ObjectItr; ObjectItr; ++ObjectItr)
+		{
+			if ((*ObjectItr)->m_Object)
+			{
+				(*ObjectItr)->m_Object->ShivaUObject();
+			}
+			else
+			{
+				KR_INFO("Can't delete {0}", (*ObjectItr)->m_Object->GetName());
+			}
+		}
+
 		FMemory::SystemFree(m_pMemBlock);
 		KR_CORE_INFO("Freed Karma's memory softbed");
 	}

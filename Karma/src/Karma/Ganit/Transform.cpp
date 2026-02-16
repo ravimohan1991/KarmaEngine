@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace Karma
 {
@@ -13,9 +14,9 @@ namespace Karma
 
 	TRotator::TRotator(glm::vec3 eulerAngles)
 	{
-		m_Yaw = eulerAngles.y;
-		m_Pitch = eulerAngles.z;
-		m_Roll = eulerAngles.x;
+		m_Yaw = eulerAngles.x;
+		m_Pitch = eulerAngles.y;
+		m_Roll = eulerAngles.z;
 	}
 
 	TRotator TRotator::Inverse() const
@@ -143,5 +144,40 @@ namespace Karma
 			// ScaleResult = Scale.B * Scale.A
 			OutTransform->SetScale3D(glm::vec3(ScaleA.x * ScaleB.x, ScaleA.y * ScaleB.y, ScaleA.z * ScaleB.z));// = VectorMultiply(ScaleA, ScaleB);
 		//}
+	}
+
+	glm::mat4 FTransform::ToMatrixWithScale() const
+	{
+		glm::mat4 ReturnMatrix = glm::mat4(1.0f);
+		
+		ReturnMatrix = glm::scale(ReturnMatrix, m_Scale3D);
+		ReturnMatrix *= glm::mat4_cast(m_Rotation.ToQuat());
+		
+		ReturnMatrix = glm::translate(ReturnMatrix, m_Translation);
+
+		return ReturnMatrix;
+	}
+
+	void FTransform::ToTransform(const glm::mat4 Matrix)
+	{
+		glm::vec3 scale(0), translation(0), skew(0);
+		glm::quat rotation;
+		glm::vec4 perspective(0);
+
+		glm::decompose(Matrix, scale, rotation, translation, skew, perspective);
+		
+		TRotator rotator = TRotator(glm::eulerAngles(rotation));
+		
+		//FTransform transform = FTransform::Identity();
+		
+		m_Translation = translation;
+		m_Rotation = rotator;
+		
+		m_Scale3D = scale;
+
+		m_Translation[0] = (m_Scale3D[0] != 0) ? m_Translation[0] / m_Scale3D[0] : m_Translation[0];
+		m_Translation[1] = (m_Scale3D[1] != 0) ? m_Translation[1] / m_Scale3D[1] : m_Translation[1];
+
+		m_Translation[2] = (m_Scale3D[2] != 0) ? m_Translation[2] / m_Scale3D[2] : m_Translation[2];
 	}
 }

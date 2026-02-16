@@ -1,5 +1,5 @@
 #include "Actor.h"
-#include "GameFramework/Level.h"
+#include "Engine/Level.h"
 #include "World.h"
 #include "GameFramework/Pawn.h"
 #include "Ganit/Transform.h"
@@ -333,6 +333,17 @@ namespace Karma
 		}
 	}
 
+	bool AActor::SetActorTransform(const FTransform& NewTransform)
+	{
+		if(m_RootComponent)
+		{
+			m_RootComponent->SetWorldTransform(NewTransform);
+			return true;
+		}
+		
+		return false;
+	}
+
 	void AActor::DispatchBeginPlay(bool bFromLevelStreaming)
 	{
 		UWorld* World = (!HasActorBegunPlay() && IsValidChecked(this) ? GetWorld() : nullptr);
@@ -461,8 +472,8 @@ namespace Karma
 
 			// Respect any non-default transform value that the root component may have received from the archetype that's owned
 			// by the native CDO, so the final transform might not always necessarily equate to the passed-in UserSpawnTransform.
-			const FTransform RootTransform(SceneRootComponent->GetRelativeRotation(), SceneRootComponent->GetRelativeLocation(), SceneRootComponent->GetRelativeScale3D());
-			const FTransform FinalRootComponentTransform = RootTransform * UserSpawnTransform;
+			/*const FTransform RootTransform(SceneRootComponent->GetRelativeRotation(), SceneRootComponent->GetRelativeLocation(), SceneRootComponent->GetRelativeScale3D());*/
+			const FTransform FinalRootComponentTransform = /*RootTransform */ UserSpawnTransform;
 
 			SceneRootComponent->SetWorldTransform(FinalRootComponentTransform/*, false, nullptr, ETeleportType::ResetPhysics*/);
 		}
@@ -543,6 +554,19 @@ namespace Karma
 
 		return SceneRootComponent;
 	}
+
+	bool AActor::SetActorLocation(const glm::vec3& NewLocation)
+	{
+		return true;
+	}
+
+	bool AActor::SetActorRotation(TRotator NewRotator)
+	{
+		return true;
+	}
+
+	void AActor::SetActorScale3D(glm::vec3 NewScale3D)
+	{}
 
 	bool AActor::SetRootComponent(class USceneComponent* NewRootComponent)
 	{

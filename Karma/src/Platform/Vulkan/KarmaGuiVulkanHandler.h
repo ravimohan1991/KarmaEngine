@@ -17,15 +17,19 @@
 
 #pragma once
 
-#include "krpch.h"
-
 #include "KarmaGui.h"
 #include "KarmaGuiInternal.h"
 #include "Karma/Renderer/Scene.h"
+#include "KarmaTypes.h"
 #include <vulkan/vulkan.h>
 
 namespace Karma
 {
+	class FVulkanSwapChain;
+	class FVulkanRenderPass;
+	class FVulkanRenderTargetsInfo;
+	class FVulkanFramebuffer;
+	class FVulkanFence;
 
 	/**
 	 * @brief Macro for vulkan's alignment needs.
@@ -97,11 +101,16 @@ namespace Karma
 		VkDescriptorPool                DescriptorPool;
 
 		/**
-		 * @brief A handle to render pass object which represents a collection of attachments (depth attachment or colo(u)r attachment ), subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses. Taken from the one created in VulkanContext::CreateRenderPass().
+		 * @brief A handle to render pass object which represents a collection of attachments (depth attachment or colo(u)r attachment ), subpasses, and dependencies between the subpasses, and describes how the attachments are used over the course of the subpasses.
 		 *
+		 * Taken from the one created in VulkanContext::CreateRenderPass().
+		 *
+		 * @note Used to set KarmaGui_ImplVulkan_Data::RenderPass (backend data) in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init()
+		 * 
+		 * @see KarmaGuiRenderer::SetupKarmaGuiRenderer
 		 * @since Karma 1.0.0
 		 */
-		VkRenderPass                    RenderPass; // Very experimental here
+		VkRenderPass                    RenderPass;
 
 		// begin Optional
 		/**
@@ -112,7 +121,7 @@ namespace Karma
 		VkPipelineCache                 PipelineCache;
 
 		/**
-		 * @brief Not sure what the sue of this Subpass is. Seems vestigial?
+		 * @brief Not sure what the use of this Subpass is. Seems vestigial?
 		 *
 		 * @since Karma 1.0.0
 		 */
@@ -130,7 +139,6 @@ namespace Karma
 		/**
 		 * @brief The number of elements in the pSwapchainImages array, i.e number of presentable swapchain images available (vkGetSwapchainImagesKHR).
 		 *
-		 * @note Taken from VulkanContext where (VulkanContext::CreateSwapChain()) ImageCount is defined MinImageCount + 1.
 		 * @since Karma 1.0.0
 		 */
 		uint32_t                        ImageCount;
@@ -138,10 +146,24 @@ namespace Karma
 		/**
 		 * @brief Is a VkSampleCountFlagBits value specifying the number of samples used in rasterization. This value is ignored for the purposes of setting the number of samples used in rasterization if the pipeline is created with the VK_DYNAMIC_STATE_RASTERIZATION_SAMPLES_EXT dynamic state set, but if VK_DYNAMIC_STATE_SAMPLE_MASK_EXT dynamic state is not set, it is still used to define the size of the pSampleMask array.
 		 *
-		 * @note >= VK_SAMPLE_COUNT_1_BIT (0 -> default to VK_SAMPLE_COUNT_1_BIT)
+		 * This is using in the rasterization stage of the graphics pipeline to determine how many samples per pixel will be used when rendering.
+		 * 
+		 * @note >= VK_SAMPLE_COUNT_1_BIT (0 -> default to VK_SAMPLE_COUNT_1_BIT). This setting disables multisampling, equivalent to no anti-aliasing, 
+		 * where each pixel has a single sample for color and depth processing during rasterization. Images created 
+		 * with this sample count cannot be used for multisample resolve operations or multisampled samplers, as they
+		 * are treated as non-multisampled. Higher values like VK_SAMPLE_COUNT_2_BIT or VK_SAMPLE_COUNT_4_BIT enable 
+		 * multiple samples per pixel for improved anti-aliasing quality
+		 * 
+		 * @note In rasterization stage the primitives are converted to fragments. Each fragment corresponds to a pixel in the framebuffer. When multisampling is enabled, multiple samples are taken within each pixel to improve image quality and reduce aliasing effects.
+		 * @remark While using higher sample counts (for instance VK_SAMPLE_COUNT_4_BIT), I couldn't produce coherent 2D 
+		 * image here, despit of setting VK_SAMPLE_COUNT_4_BIT in KarmaGuiHandler::CreateOffScreenRenderResources() and 
+		 * appropriately setting image, depthimage, and pipeline to use that sample count. Perplexity isn't particularly
+		 * able to help. So, I am leaving VK_SAMPLE_COUNT_1_BIT (no multisampling).
+		 * 
+		 * @see KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline
 		 * @since Karma 1.0.0
 		 */
-		VkSampleCountFlagBits           MSAASamples;
+		VkSampleCountFlagBits           MSAASamples; // Multi sample anti aliasing samples
 
 		/**
 		 * @brief A pointer to a valid VkAllocationCallbacks structure. Structure containing callback function pointers for memory allocation
@@ -193,7 +215,7 @@ namespace Karma
 		 *
 		 * @since Karma 1.0.0
 		 */
-		VkFence             Fence;
+		FVulkanFence*             Fence;
 
 		/**
 		 * @brief Handle to semaphore object for next available presentable image (vkAcquireNextImageKHR).
@@ -267,6 +289,31 @@ namespace Karma
 	};
 
 	/**
+	 * @brief Structure to hold references to Vulkan RHI resources
+	 * 
+	 * @since Karma 1.0.0
+	 */
+	struct KarmaGui_ImplVulkanH_RHIResources
+	{
+		/**
+		 * @brief Primary swapchain created in KarmaGuiVulkanHandler::FillWindowData
+		 */
+		FVulkanSwapChain*                           VulkanSwapChain;
+		
+		/**
+		 * @brief Primary renderpass for on-screen presentation
+		 */
+		FVulkanRenderPass*                          VulkanRenderPass;
+		KarmaVector<FVulkanFramebuffer*>            VulkanFrameBuffers;
+		
+		/**
+		 * @brief Collection of render targets organized in KarmaVector. Meaning each KarmaVector element contains
+		 * a collection of rendertargets for a framebuffer
+		 */
+		KarmaVector<FVulkanRenderTargetsInfo*>      RenderTargets;
+	};
+
+	/**
 	 * @brief Helper structure to hold the data needed by entire KarmaGui primitive rendering including commandpools, renderpass, commandbuffers, 
 	 * ImageFrameCount (swapchain), and SemaphoreIndex etc.
 	 * 
@@ -336,6 +383,13 @@ namespace Karma
 		 *
 		 * 
 		 * @note Taken from VulkanContext::CreateRenderPass() set in KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow()
+		 * 
+		 * @note There are multiple RenderPass references for instance in KarmaGui_ImplVulkan_InitInfo and created in VulkanContext::CreateRenderPass(). Here, this 
+		 * RenderPass is again usually set to the one created in VulkanContext::CreateRenderPass(), meant for KarmaGui's primitive
+		 * rendering. 
+		 * However the RenderPass in KarmaGui_OffScreenRenderResources (created in KarmaGuiVulkanHandler::CreateOffScreenRenderResources)
+		 * is different, and meant for offscreen rendering purpose.
+		 *
 		 * @since Karma 1.0.0
 		 */
 		VkRenderPass        RenderPass;
@@ -388,11 +442,13 @@ namespace Karma
 		 *
 		 * @since Karma 1.0.0
 		 */
-		uint32_t                 MAX_FRAMES_IN_FLIGHT;
+		uint32_t             MAX_FRAMES_IN_FLIGHT;
 		
 		/**
-		 * @brief Just a container for buffers (framebuffers, images, and imageviews etc) and all those sizes depending on  VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+		 * @brief Just a container for rendertarget buffers (framebuffers, images, and imageviews etc) and all those sizes depending on  number of swapchain images
 		 *
+		 * @note Only SwapChain rendertargets are stored. The grand list of rendertargets (all rendertargets) is in KarmaGui_ImplVulkanH_RHIResources::RenderTargets
+		 * @see KarmaGuiVulkanHandler::GatherSwapChainColorRenderTargets
 		 * @since Karma 1.0.0
 		 */
 		KarmaGui_ImplVulkanH_ImageFrame* ImageFrames;
@@ -416,6 +472,13 @@ namespace Karma
 		VkRect2D                            RenderArea;
 
 		/**
+		 * @brief Vulkan RHI resources containing pointers to FVulkanSwpaChain etc
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		KarmaGui_ImplVulkanH_RHIResources*				RHIResources;
+
+		/**
 		 * @brief Constructor for zero clearence and relevant stuff.
 		 *
 		 * @since Karma 1.0.0
@@ -430,9 +493,13 @@ namespace Karma
 
 	/**
 	 * @brief Reusable buffers used for rendering 1 current in-flight ImageFrame, for KarmaGui_ImplVulkan_RenderDrawData().
-	 * Seems like data structure with single instantiation for each of the FrameIndex.
+	 * Seems like data structure with single instantiation for each of the FrameIndex (not ImageFrameIndex which is 
+	 * returned by vkGetSwapchainImagesKHR).
 	 *
 	 * @note Please zero-clear before use.
+	 * 
+	 * @see KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderDrawData
+	 * @since Karma 1.0.0
 	 */
 	struct KarmaGui_ImplVulkanH_ImageFrameRenderBuffers
 	{
@@ -566,7 +633,6 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		KarmaGui_ImplVulkanH_WindowRenderBuffers   RenderBuffers;
-		//ImGui_ImplVulkanH_Window*               ImGUILayerWindowData;
 
 		/**
 		 * @brief A constructor for allocation and 0 initialization
@@ -588,7 +654,7 @@ namespace Karma
 	};
 
 	/**
-	 * @brief Data structure containing the Mesa image texture relevant data. For instance, file and folder icons of Content Browser.
+	 * @brief Data structure containing the Mesa image texture relevant data. For instance, file, and folder icons of Content Browser.
 	 *
 	 * Similar to MesaDecalData in KarmaGuiOpenGLHandler.
 	 *
@@ -698,35 +764,104 @@ namespace Karma
 		}
 	};
 
+	/**
+	 * @brief Data structure for 3D scene to 2D texture rendering element(s) in KarmaGui.
+	 *
+	 * @see KarmaGuiRenderer::FrameRender
+	 * @since Karma 1.0.0
+	 */
 	struct KarmaGui_3DScene_To_2DTexture_Data
 	{
-		std::shared_ptr<Scene> Scene3D;
+		/**
+		 * @brief 3D scene to be rendered offscreen to 2D texture for display in KarmaGui element.
+		 */
+		std::shared_ptr<Scene>              Scene3D;
 		
+		/**
+		 * @brief Size of the 2D texture to be rendered offscreen from 3D scene.
+		 */
 		KGVec2                              Size;
+		
+		/**
+		 * @brief Texture ID to be used in KarmaGui::Image() and related functions, for display of 2D rendered rendertarget
+		 * in some KarmaGui window.
+		 */
 		KGTextureID                         KarmaGui_Texture;
 		
+		/**
+		 * @brief Vulkan image for offscreen rendered 2D texture.
+		 */
 		VkImage                             Image;
+
+		/**
+		 * @brief Device memory for the offscreen rendered 2D texture image.
+		 */
 		VkDeviceMemory                      DeviceMemory;
+
+		/**
+		 * @brief Image view for the offscreen rendered 2D texture image.
+		 */
 		VkImageView                         Image_View;
-		//VkSampler                           Sampler;
 		
-		// Depth resources
+		/**
+		 * @brief Depth image for offscreen rendered 2D texture.
+		 */
 		VkImage                             DepthImage;
+		
+		/**
+		 * @brief Device memory for the offscreen rendered 2D texture depth image.
+		 */
 		VkDeviceMemory                      DepthDeviceMemory;
 		
+		/**
+		 * @brief Image view for the offscreen rendered 2D texture depth image.
+		 */
 		VkImageView                         DepthImage_View;
 		
-		//VkRenderPass                        RenderPass;
+		/**
+		 * @brief Framebuffer for offscreen rendered 2D texture.
+		 */
 		VkFramebuffer                       FrameBuffer;
 	};
 
+	/**
+	 * @brief Resources common to screen rendering of 3D scene to 2D texture elements.
+	 *
+	 * @see KarmaGuiRenderer::FrameRender
+	 * @since Karma 1.0.0
+	 */
 	struct KarmaGui_OffScreen_Render_Resources
 	{
+		/**
+		 * @brief Sampler for offscreen rendered 2D texture(s).
+		 * 
+		 * A Vulkan sampler is an object that defines how to sample textures when they are accessed in shaders. 
+		 * It encapsulates various sampling parameters such as filtering modes, addressing modes, and mipmapping
+		 * settings.
+		 * 
+		 * @see KarmaGuiRenderer::Add3DSceneFor2DRendering
+		 */
 		VkSampler                           Sampler;
-		VkRenderPass                        RenderPass;
 		
-		// Since the resources in here require allocation only once
+		/**
+		 * @brief Render pass for offscreen rendering of 3D scene to 2D texture(s).
+		 * 
+		 * A render pass in Vulkan defines a sequence of rendering operations, including the attachments (color, depth, stencil) used during rendering,
+		 * how they are used, and the order of subpasses. It encapsulates the rendering workflow and is essential for efficient rendering.
+		 * 
+		 * @see KarmaGuiRenderer::Add3DSceneFor2DRendering
+		 */
+		FVulkanRenderPass*					RenderPass;
+
+		/**
+		 * @brief Flag indicating whether the allocation of offscreen rendering resources has been done at least once.
+		 * 
+		 * @see KarmaGuiRenderer::Add3DSceneFor2DRendering
+		 */
 		bool                                bAllocationDoneOnce;
+
+		VkPipelineLayout					OffscreenPipelineLayout;
+		VkPipeline							OffscreenGraphicsPipeline;
 		
 		KarmaGui_OffScreen_Render_Resources() : bAllocationDoneOnce(false)
 		{}
@@ -817,7 +952,7 @@ namespace Karma
 		VkPipeline                  Pipeline;
 
 		/**
-		 * @brief Not sure what the use of this Subpass is. Seems vestigial?
+		 * @brief This is the index of the subpass in the render pass where this pipeline (KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline) will be used
 		 *
 		 * @since Karma 1.0.0
 		 */
@@ -982,6 +1117,8 @@ namespace Karma
 		 */
 		static void KarmaGui_ImplVulkan_CreateShaderModules(VkDevice device, const VkAllocationCallbacks* allocator);
 
+		static VkShaderModule KarmaGui_ImplVulkan_CreateShaderModule(const std::vector<uint32_t>& code);
+
 		/**
 		 * @brief Bilinear sampling object is created for font and stored in KarmaGui_ImplVulkan_Data.FontSampler if not done already in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects().
 		 *
@@ -1124,21 +1261,64 @@ namespace Karma
 		static void KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*);
 
 		/**
-		 * @brief The purpose of the routine is two-fold
+		 * @brief Checks whether KarmaGui_ImplVulkan_InitInfo has been initialized properly. Crashes if not.
 		 * 
-		 * - Share the Vulkan resources, including Swapchain, Renderpass, CommandPool, Framebuffer, and all that, of MainWindow (stored in VulkanContext of VulkanHolder, initialized during VulkanContext::Init() which gets called
-		 *  on Platform(Windows, Mac, and Linux)Window during their specific creation implementation, for instance LinuxWindow::Init) to KarmaGui's backend, after appropriate clearence.
-		 * - Ground work for establishing syncronicity, in GPU side functions' execution, by creating semaphores for (https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Rendering_and_presentation#page_Synchronization)
-		 *      -# to signal that image has been acquired from the swapchain and ready for rendering
-		 *      -# to signal that rendering has finished and presentation (the last step of drawing a frame is submitting the result back to the swap chain to have it eventually show up on the screen) can happen
-		 * The set number of semaphores (we are using two types of them) are for number of "frames in flight" which represent the number of frames which can be processed on CPU whilst rendering is done on GPU
-		 * 
-		 * @param windowData											The datastructure to hold all the data needed by one rendering Vulkan context.
-		 * @param bCreateSyncronicity									Should we allocate semaphores and fences. For instance true during KarmaGuiRenderer::SetUpKarmaGuiRenderer and false during KarmaGuiRenderer::GiveLoopBeginControlToVulkan
-		 * 
+		 * @see KarmaGuiRenderer::SetUpKarmaGuiRenderer
 		 * @since Karma 1.0.0
 		 */
-		static void ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity = false);
+		static void CheckInitialization();
+
+		/**
+		 * @brief Replacement for ShareVulkanContextResourcesOfMainWindow. Does the following
+		 * 
+		 * - Creates Vulkan swapchain and sets the swapchain handle of windowData along with imagecount, MAX_FRAMES_IN_FLIGHT,
+		 *   and renderarea.
+		 * - Creates Vulkan renderpass (see KarmaGuiVulkanHandler::MakeRenderPassInfo) for KarmaGui's Vulkan backend and sets
+		 *   backend->VulkanInitInfo.RenderPass with this renderpass (of which KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline
+		 *   is created)
+		 * - Creates depth render target and uses swapchain images for color render targets and packages them into FVulkanRenderTargetsInfo
+		 * - Creates framebuffers for each swapchain image and sets windowData->Framebuffers
+		 * - Sets windowData->CommandPool with the pool created in FVulkanDynamiRHI::m_Device (FVulkanDevice)
+		 * - Creates semaphores and fences if bCreateSyncronicity is set to true
+		 * 
+		 * 
+		 * @note SwapChain and renderpass resources are cleared in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow
+		 * @since Karma 1.0.0
+		 */
+		static void FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity);
+
+		/**
+		 * @brief Prepares the renderpass information for KarmaGui's Vulkan backend
+		 * 
+		 * Basically fills FVulkanRenderPassInfo struct with two attachments, one for color and one for depth.
+		 * 
+		 * @todo Ponder upon the configurable subpass configuration. Currently done in FVulkanRenderPassBuilder::BuildCreateInfo with basic
+		 * subpass description.
+		 * @since Karma 1.0.0
+		 */
+		static void MakeRenderPassInfo(FVulkanSwapChain* SwapChain, struct FVulkanRenderPassInfo& RPInfo);
+		
+		/**
+		 * @brief Fills the depth render target information
+		 *
+		 * @since Karma 1.0.0
+		 */
+		static void CreateDepthRenderTarget(FVulkanRenderTargetsInfo& RTInfo, FVulkanSwapChain* SwapChain);
+		
+		/**
+		 * @brief Prepares the RTInfo for framebuffer creation
+		 *
+		 * @since Karma 1.0.0
+		 */
+		static void GatherSwapChainColorRenderTargets(FVulkanRenderTargetsInfo& RTInfo, FVulkanSwapChain* SwapChain, uint32_t SwapChainImageIndex);
+		
+		/**
+		 * @brief Destroys swapchain and related resources for KarmaGui's Vulkan backend
+		 *
+		 * @param windowData                               Container for information required for swapchain destruction
+		 * @since Karma 1.0.0
+		 */
+		static void ShivaSwapChainForRebuild(KarmaGui_ImplVulkanH_Window* windowData);
 		
 		/**
 		 * @brief Creates framebuffers, renderpass, and vertexarray (for KarmaGui) pipeline for 2D texture creation from 3D scene
@@ -1169,6 +1349,8 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		static void CreateOffScreenTextureFrameBufferResource(KarmaGui_3DScene_To_2DTexture_Data* textureData);
+
+		static void CreateOffScreenTextureGraphicsPipelineResource(VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight);
 
 		/**
 		 * @brief Clears appropriate buffers which are used for KarmaGui's rendering. They include:

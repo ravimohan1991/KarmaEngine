@@ -34,10 +34,16 @@ set(MAC_PACKAGE FALSE)
 # This is so that .app can be installed in KarmaBin
 if (APPLE)
 	if(MAC_PACKAGE)
+                # We will be needing the install scheme so generate all the schemes
 		set(CMAKE_XCODE_GENERATE_SCHEME ON CACHE BOOL "")
 		set(CMAKE_INSTALL_PREFIX "${REPOSITORYROOT}/KarmaBin" CACHE PATH
 			"Custom install location for .app bundle" FORCE)
 	else()
+                # No need for generating all the schemes. Selected schemes can be
+                # be generated for appropriate targets. See Pranjal
+                #     set_target_properties(Pranjal PROPERTIES
+                #             XCODE_GENERATE_SCHEME TRUE
+                #             XCODE_SCHEME_WORKING_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 		set(CMAKE_XCODE_GENERATE_SCHEME OFF CACHE BOOL "")
 	endif()
 endif()
@@ -81,13 +87,13 @@ add_subdirectory(Karma)
 list(APPEND ESSENTIAL_LIBS Karma)
 
 # Build the Client
-add_subdirectory(Application)
+# add_subdirectory(Application)
 
 # Build the Editor
 add_subdirectory(Pranjal)
 
 # Relevant linking of finished Application with the Engine!
-target_link_libraries(SandBox PUBLIC KarmaEngine)
+# target_link_libraries(SandBox PUBLIC KarmaEngine)
 target_link_libraries(Pranjal PUBLIC KarmaEngine)
 
 if (APPLE AND MAC_PACKAGE)

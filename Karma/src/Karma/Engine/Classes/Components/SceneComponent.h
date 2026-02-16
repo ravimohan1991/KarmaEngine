@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "ActorComponent.h"
 #include "glm/glm.hpp"
 
@@ -177,7 +175,7 @@ namespace Karma
 		 *							If CCD is on and not teleporting, this will affect objects along the entire sweep volume.
 		 * @since Karma 1.0.0
 		 */
-		void SetWorldTransform(const FTransform& NewTransform/*, bool bSweep = false, FHitResult* OutSweepHitResult = nullptr, ETeleportType Teleport = ETeleportType::None*/);
+		virtual void SetWorldTransform(const FTransform& NewTransform/*, bool bSweep = false, FHitResult* OutSweepHitResult = nullptr, ETeleportType Teleport = ETeleportType::None*/);
 
 		/** 
 		 * @brief Get the SceneComponent we are attached to.
@@ -267,6 +265,17 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		void SetRelativeTransform(const FTransform& NewTransform/*, bool bSweep = false, FHitResult* OutSweepHitResult = nullptr, ETeleportType Teleport = ETeleportType::None*/);
+
+		/**
+		 * @brief Recalculate the value of our component to world transform
+		 * 
+		 * @since Karma 1.0.0
+		 */
+		virtual void UpdateComponentToWorld(EUpdateTransformFlags UpdateTransformFlags = EUpdateTransformFlags::None, ETeleportType Teleport = ETeleportType::None) override final
+		{
+			//UpdateComponentToWorldWithParent(GetAttachParent(), GetAttachSocketName(), UpdateTransformFlags, RelativeRotationCache.RotatorToQuat(GetRelativeRotation()), Teleport);
+
+		}
 
 		/**
 		 * @brief Getter for the m_AttachSocektName

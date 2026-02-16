@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "krpch.h"
-
 #include "glm/glm.hpp"
 
 namespace Karma
@@ -37,6 +35,13 @@ namespace Karma
 		 * @since Karma 1.0.0
 		 */
 		virtual ~Camera();
+
+		/**
+		 * @brief A hook into the game loop for updating camera position and orientation in the level perhaps
+		 *
+		 * @since Karma 1.0.0
+		 */
+		virtual void OnUpdate(float deltaTime);
 
 		/**
 		 * @brief Getter for current position of the Camers
@@ -171,6 +176,13 @@ namespace Karma
 		 */
 		const glm::mat4& GetViewMatirx() const { return m_ViewMatrix; }
 
+		/**
+		 * @brief Getter for ViewProjection UBO
+		 *
+		 * @since Karma 1.0.0
+		 */
+		std::shared_ptr<class UniformBufferObject>& GetViewProjectionUBO() { return m_ViewProjectionUBO; }
+
 	private:
 		void RecalculateViewMatrix();
 
@@ -192,5 +204,8 @@ namespace Karma
 		const float m_Sensitivity = 0.1f;
 		float m_Roll = 0.0f;
 		float m_Pitch = 0.0f;
+
+	private:
+		std::shared_ptr<class UniformBufferObject> m_ViewProjectionUBO;
 	};
 }
