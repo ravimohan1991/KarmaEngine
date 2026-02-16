@@ -98,7 +98,7 @@ namespace Karma
 		
 		inline glm::quat ToQuat() const
 		{
-			return glm::quat(glm::vec3(m_Pitch, m_Yaw, m_Roll));
+			return glm::quat(glm::vec3(m_Roll, m_Pitch, m_Yaw));
 		}
 	};
 

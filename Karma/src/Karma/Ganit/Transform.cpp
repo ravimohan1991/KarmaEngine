@@ -14,14 +14,14 @@ namespace Karma
 
 	TRotator::TRotator(glm::vec3 eulerAngles)
 	{
-		m_Yaw = eulerAngles.x;
+		m_Yaw = eulerAngles.z;
 		m_Pitch = eulerAngles.y;
-		m_Roll = eulerAngles.z;
+		m_Roll = eulerAngles.x;
 	}
 
 	TRotator TRotator::Inverse() const
 	{
-		TRotator returnRotation = TRotator(glm::vec3(-m_Yaw, -m_Pitch, -m_Roll));
+		TRotator returnRotation = TRotator(glm::vec3(-m_Roll, -m_Pitch, -m_Yaw));
 		return returnRotation;
 	}
 
@@ -134,7 +134,7 @@ namespace Karma
 			const glm::vec3 ScaleB = B->GetScale3D();
 
 			// RotationResult = B.Rotation * A.Rotation
-			OutTransform->SetRotation(TRotator(glm::vec3(RotationA.m_Pitch + RotationB.m_Pitch, RotationA.m_Yaw + RotationB.m_Pitch, RotationA.m_Roll + RotationB.m_Roll)));
+			OutTransform->SetRotation(TRotator(glm::vec3(RotationA.m_Roll + RotationB.m_Roll, RotationA.m_Pitch + RotationB.m_Pitch, RotationA.m_Yaw + RotationB.m_Pitch)));
 
 			// TranslateResult = B.Rotate(B.Scale * A.Translation) + B.Translate
 			const glm::vec3 ScaledTransA(TranslateA.x * ScaleB.x, TranslateA.y * ScaleB.y, TranslateA.z * ScaleB.z);// = VectorMultiply(TranslateA, ScaleB);
