@@ -151,9 +151,15 @@ namespace Karma
 		glm::mat4 ReturnMatrix = glm::mat4(1.0f);
 		
 		ReturnMatrix = glm::scale(ReturnMatrix, m_Scale3D);
-		ReturnMatrix *= glm::mat4_cast(m_Rotation.ToQuat());
+        ReturnMatrix = glm::mat4_cast(m_Rotation.ToQuat()) * ReturnMatrix;
 		
-		ReturnMatrix = glm::translate(ReturnMatrix, m_Translation);
+        //ReturnMatrix = glm::translate(ReturnMatrix, m_Translation);
+        ReturnMatrix[3] = glm::vec4(m_Translation, 1.0f);
+
+        /*KR_CORE_INFO("{0}  {1}  {2}  {3}", ReturnMatrix[0][0], ReturnMatrix[0][1], ReturnMatrix[0][2], ReturnMatrix[0][3]);
+        KR_CORE_INFO("{0}  {1}  {2}  {3}", ReturnMatrix[1][0], ReturnMatrix[1][1], ReturnMatrix[1][2], ReturnMatrix[1][3]);
+        KR_CORE_INFO("{0}  {1}  {2}  {3}", ReturnMatrix[2][0], ReturnMatrix[2][1], ReturnMatrix[2][2], ReturnMatrix[2][3]);
+        KR_CORE_INFO("{0}  {1}  {2}  {3}", ReturnMatrix[3][0], ReturnMatrix[3][1], ReturnMatrix[3][2], ReturnMatrix[3][3]);*/
 
 		return ReturnMatrix;
 	}

@@ -623,7 +623,7 @@ namespace Karma
 		KarmaGuizmo::SetDrawlist();
 		KarmaGuizmo::SetRect(pos.x, pos.y + window->TitleBarHeight(), window->Size.x, window->Size.y - window->TitleBarHeight());
 		
-		if(scene->GetSMActors().size() > 0 && m_SelectedSMActor != nullptr)
+        if(scene->GetSMActors().size() > 0 && m_SelectedSMActor != nullptr)
 		{
 			std::shared_ptr<Camera> sceneCamera =  scene->GetSceneCamera();
 			glm::mat4 viewMatrix = sceneCamera->GetViewMatirx();
@@ -636,7 +636,7 @@ namespace Karma
 			FTransform operationalTransform = m_SelectedSMActor->GetTransform();
 
 			glm::mat4 objectMatrix = operationalTransform.ToMatrixWithScale();
-			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::WORLD, glm::value_ptr(objectMatrix));
+            bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::LOCAL, glm::value_ptr(objectMatrix));
 			
 			if(KarmaGuizmo::IsUsing() && bManipulate)
 			{
@@ -645,7 +645,7 @@ namespace Karma
 				
 				m_SelectedSMActor->SetActorTransform(transform);
 			}
-		}
+        }
 		
 		scene->SetRenderWindow(window);
 
