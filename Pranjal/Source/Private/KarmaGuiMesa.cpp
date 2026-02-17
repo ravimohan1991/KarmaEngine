@@ -39,7 +39,6 @@ namespace Karma
 	bool KarmaGuiMesa::m_EditorInitialized = false;
 	bool KarmaGuiMesa::m_RefreshRenderingResources = false;
 	AStaticMeshActor* KarmaGuiMesa::m_SelectedSMActor = nullptr;
-	TransformCache KarmaGuiMesa::m_SelectedSMActorTransformCache;
 
 	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
 	WindowManipulationGaugeData	KarmaGuiMesa::m_MemoryExhibitor;
@@ -54,6 +53,63 @@ namespace Karma
 			DropRectsDraw[n] = KGRect(+FLT_MAX, +FLT_MAX, -FLT_MAX, -FLT_MAX);
 		}
 	}
+
+	bool InputAxisFloat(const char* axis_id, const char* axis_label, const KGVec4& color,
+					float* v, float width = 60.0f)
+	{
+		bool changed = false;
+
+		// Colored label background
+		KarmaGui::PushStyleColor(KGGuiCol_Button,        color);
+		KarmaGui::PushStyleColor(KGGuiCol_ButtonHovered, color);
+		KarmaGui::PushStyleColor(KGGuiCol_ButtonActive,  color);
+		KarmaGui::Button(axis_label); // size comes from style, you can pass a custom size if needed
+		KarmaGui::PopStyleColor(3);
+
+		KarmaGui::SameLine();
+		KarmaGui::SetNextItemWidth(width);
+		changed = KarmaGui::InputFloat(axis_id, v, 0.0f, 0.0f, "%.2f"); // axis_id should be "##X" / "##Y" / "##Z"
+
+		return changed;
+	}
+
+	bool InputFloat3XYZ(const char* label, float v[3], const char* format = "%.3f")
+	{
+		bool changed = false;
+		float itemWidth = 65.5f;
+
+		KarmaGui::PushID(label);
+		
+		// Fixed label column width
+		const float label_col_width = 30.0f; // tune this
+
+		float start_x = KarmaGui::GetCursorPosX();
+		float line_y  = KarmaGui::GetCursorPosY();
+
+		// Draw label at start
+		KarmaGui::TextUnformatted(label);
+
+		// Move cursor to fixed column for the controls
+		KarmaGui::SameLine();
+		KarmaGui::SetCursorPosX(start_x + label_col_width);
+
+		// X
+		// Colored label background
+		changed |= InputAxisFloat("##X", "X", KGVec4(1.0f, 0.1f, 0.1f, 1.0f), &v[0]);
+
+		KarmaGui::SameLine();
+
+		// Y
+		changed |= InputAxisFloat("##Y", "Y", KGVec4(0.1f, 1.0f, 0.1f, 1.0f), &v[1]);
+
+		KarmaGui::SameLine();
+
+		// Z
+		changed |= InputAxisFloat("##Z", "Z", KGVec4(0.1f, 0.1f, 1.0f, 1.0f), &v[2]);
+
+		KarmaGui::PopID();
+		return changed;
+	}
 	
 	void KarmaGuiMesa::EditTransform(std::shared_ptr<Scene> scene)
 	{
@@ -65,43 +121,24 @@ namespace Karma
 		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
 		FTransform transform = m_SelectedSMActor->GetTransform();
 		
-		matrixTranslation[0] = m_SelectedSMActorTransformCache.translation[0] = transform.GetTranslation().x;
-		matrixTranslation[1] = m_SelectedSMActorTransformCache.translation[1] = transform.GetTranslation().y;
-		matrixTranslation[2] = m_SelectedSMActorTransformCache.translation[2] = transform.GetTranslation().z;
+		matrixTranslation[0] = transform.GetTranslation().x;
+		matrixTranslation[1] = transform.GetTranslation().y;
+		matrixTranslation[2] = transform.GetTranslation().z;
+		matrixRotation[0] = transform.GetRotation().m_Roll;
+		matrixRotation[1] = transform.GetRotation().m_Pitch;
+		matrixRotation[2] = transform.GetRotation().m_Yaw;
+		matrixScale[0] = transform.GetScale3D().x;
+		matrixScale[1] = transform.GetScale3D().y;
+		matrixScale[2] = transform.GetScale3D().z;
 		
-		matrixRotation[0] = m_SelectedSMActorTransformCache.rotation[0] = transform.GetRotation().m_Roll;
-		matrixRotation[1] = m_SelectedSMActorTransformCache.rotation[1] = transform.GetRotation().m_Pitch;
-		matrixRotation[2] = m_SelectedSMActorTransformCache.rotation[2] = transform.GetRotation().m_Yaw;
+		bool bIsDirty = false;// effectively
 		
-		matrixScale[0] = m_SelectedSMActorTransformCache.scale[0] = transform.GetScale3D().x;
-		matrixScale[1] = m_SelectedSMActorTransformCache.scale[1] = transform.GetScale3D().y;
-		matrixScale[2] = m_SelectedSMActorTransformCache.scale[2] = transform.GetScale3D().z;
+		bIsDirty |= InputFloat3XYZ("Tr", matrixTranslation, "%.2f");
+		bIsDirty |= InputFloat3XYZ("Rt", matrixRotation, "%.2f");
 		
-		KarmaGui::InputFloat3("Tr", matrixTranslation, "%.2f");
-		KarmaGui::InputFloat3("Rt", matrixRotation, "%.2f");
+		bIsDirty |= InputFloat3XYZ("Sc", matrixScale, "%.2f");
 		
-		KarmaGui::InputFloat3("Sc", matrixScale, "%.2f");
-
-		if (matrixTranslation[0] != m_SelectedSMActorTransformCache.translation[0] || matrixTranslation[1] != m_SelectedSMActorTransformCache.translation[1] || matrixTranslation[2] != m_SelectedSMActorTransformCache.translation[2] ||
-			matrixRotation[0] != m_SelectedSMActorTransformCache.rotation[0] || matrixRotation[1] != m_SelectedSMActorTransformCache.rotation[1] || matrixRotation[2] != m_SelectedSMActorTransformCache.rotation[2] ||
-			matrixScale[0] != m_SelectedSMActorTransformCache.scale[0] || matrixScale[1] != m_SelectedSMActorTransformCache.scale[1] || matrixScale[2] != m_SelectedSMActorTransformCache.scale[2])
-		{
-			m_SelectedSMActorTransformCache.translation[0] = matrixTranslation[0];
-			m_SelectedSMActorTransformCache.translation[1] = matrixTranslation[1];
-			m_SelectedSMActorTransformCache.translation[2] = matrixTranslation[2];
-			
-			m_SelectedSMActorTransformCache.rotation[0] = matrixRotation[0];
-			m_SelectedSMActorTransformCache.rotation[1] = matrixRotation[1];
-			m_SelectedSMActorTransformCache.rotation[2] = matrixRotation[2];
-			
-			m_SelectedSMActorTransformCache.scale[0] = matrixScale[0];
-			m_SelectedSMActorTransformCache.scale[1] = matrixScale[1];
-			m_SelectedSMActorTransformCache.scale[2] = matrixScale[2];
-
-			m_SelectedSMActorTransformCache.bIsDirty = true;
-		}
-		
-		if (m_SelectedSMActorTransformCache.bIsDirty)
+		if (bIsDirty)
 		{
 			glm::vec3 translation(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
 			transform.SetTranslation(translation);
@@ -115,7 +152,6 @@ namespace Karma
 			transform.SetScale3D(scale);
 
 			m_SelectedSMActor->SetActorTransform(transform);
-			m_SelectedSMActorTransformCache.bIsDirty = false;
 		}
 	}
 
@@ -623,7 +659,7 @@ namespace Karma
 		KarmaGuizmo::SetDrawlist();
 		KarmaGuizmo::SetRect(pos.x, pos.y + window->TitleBarHeight(), window->Size.x, window->Size.y - window->TitleBarHeight());
 		
-        if(scene->GetSMActors().size() > 0 && m_SelectedSMActor != nullptr)
+		if(scene->GetSMActors().size() > 0 && m_SelectedSMActor != nullptr)
 		{
 			std::shared_ptr<Camera> sceneCamera =  scene->GetSceneCamera();
 			glm::mat4 viewMatrix = sceneCamera->GetViewMatirx();
@@ -636,7 +672,7 @@ namespace Karma
 			FTransform operationalTransform = m_SelectedSMActor->GetTransform();
 
 			glm::mat4 objectMatrix = operationalTransform.ToMatrixWithScale();
-            bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::LOCAL, glm::value_ptr(objectMatrix));
+			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::LOCAL, glm::value_ptr(objectMatrix));
 			
 			if(KarmaGuizmo::IsUsing() && bManipulate)
 			{
@@ -645,7 +681,7 @@ namespace Karma
 				
 				m_SelectedSMActor->SetActorTransform(transform);
 			}
-        }
+		}
 		
 		scene->SetRenderWindow(window);
 

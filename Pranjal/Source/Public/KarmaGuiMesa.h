@@ -272,15 +272,6 @@ namespace Karma
 		}
 	};
 
-	struct TransformCache
-	{
-		float translation[3];
-		float rotation[3];
-		float scale[3];
-
-		bool bIsDirty = false;
-	};
-
 	class KarmaGuiMesa
 	{
 	public:
@@ -331,8 +322,6 @@ namespace Karma
 		static bool m_EditorInitialized;
 		static bool m_RefreshRenderingResources;
 		static class AStaticMeshActor* m_SelectedSMActor;
-		static TransformCache m_SelectedSMActorTransformCache;
-
 
 		// Content browser
 		static std::filesystem::path m_CurrentDirectory;
