@@ -240,8 +240,25 @@ namespace Karma
 			m_Scale3D = Other.GetScale3D();
 		}
 		
+		/**
+		 * @brief Convert this transform to a 4x4 matrix with scale.
+		 * 
+		 * This is useful for uniform buffer object matrices (see UPrimitiveComponent::UPrimitiveComponent()) or for use with
+		 * KarmaGuizmo, which only accepts matrices.
+		 * 
+		 * @note Uses KarmaGuizmo's RecomposeMatrixFromComponents
+		 * @return glm::mat4 matrix
+		 */
 		glm::mat4 ToMatrixWithScale() const;
 		
+		/**
+		 * @brief Convert a 4x4 matrix to an FTransform. This is the inverse of ToMatrixWithScale.
+		 * 
+		 * @note Uses KarmaGuizmo's DecomposeMatrixToComponents
+		 * 
+		 * @param Matrix						the matrix to convert
+		 * @return FTransform corresponding to the input matrix
+		 */
 		void ToTransform(const glm::mat4 Matrix);
 
 	public:
