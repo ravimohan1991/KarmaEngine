@@ -51,7 +51,7 @@ namespace Karma
 			AStaticMeshActor* staticMeshActor = nullptr;
 			uint32_t smActorCounter = 0;
 			
-			std::string smName = std::filesystem::path(objFileName).stem();
+			std::string smName = std::filesystem::path(objFileName).stem().string();
 			
 			while(staticMeshActor == nullptr)
 			{
