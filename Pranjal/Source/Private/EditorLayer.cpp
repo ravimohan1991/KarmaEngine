@@ -26,46 +26,9 @@ namespace Karma
 		// Instantiate camera
 		m_EditorCamera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
 
-		// Model loading begins
-
-		// First intantiate VertexArray
-		m_ModelVertexArray.reset(Karma::VertexArray::Create());
-
-		/* {
-			// Get hold of model
-			std::shared_ptr<Karma::Mesh> modelMesh;
-			modelMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
-
-			// Set the mesh in vertex array
-			m_ModelVertexArray->SetMesh(modelMesh);
-		}*/
-
-		// Next, instantiate material
-		// m_ModelMaterial.reset(new Karma::Material());
-
-		{
-			// Setting shader
-
-			// Uniforms for regular transform uploads
-			/*std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
-			shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
-
-			m_ModelShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, "CylinderShader"));
-
-			m_ModelMaterial->AddShader(m_ModelShader);*/
-		}
-
-		// Then we set texture
-		/*m_ModelTexture.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/UnrealGrid.png", "VikingTex", "texSampler"));
-
-		m_ModelMaterial->AddTexture(m_ModelTexture);
-		m_ModelMaterial->AttatchMainCamera(m_EditorCamera); //Is this needed?
-
-		m_ModelVertexArray->SetMaterial(m_ModelMaterial);*/
-
 		m_EditorScene.reset(new Karma::Scene());
 		m_EditorScene->AddCamera(m_EditorCamera);
-		//m_EditorScene->AddVertexArray(m_ModelVertexArray);
+
 		m_EditorScene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 	}
 
@@ -76,13 +39,42 @@ namespace Karma
 
 	void EditorLayer::OpenScene(const std::string& objFileName)
 	{
-		std::shared_ptr<Mesh> meshToLoad;
+		UWorld* currentWorld = GEngine->GetCurrentGameInstance()->GetWorldContext()->World();
 
-		// Check if the already assigned is freed and there is no leak
-		meshToLoad.reset(new Mesh(objFileName));
+		if (currentWorld)
+		{
+			KR_INFO("Current World is : {0}", currentWorld->GetName());
 
-		m_ModelVertexArray->SetMesh(meshToLoad);
-		KR_INFO("Successfully loaded scene");
+			FTransform smActorTransform = FTransform::m_Identity;
+			smActorTransform.SetTranslation(glm::vec3(0.f, 0.f, 1.f));
+			
+			AStaticMeshActor* staticMeshActor = nullptr;
+			uint32_t smActorCounter = 0;
+			
+			std::string smName = std::filesystem::path(objFileName).stem();
+			
+			while(staticMeshActor == nullptr)
+			{
+				FActorSpawnParameters smActorParams;
+				smActorParams.m_Owner = nullptr;
+				smActorParams.m_Name = (smActorCounter > 0)
+					? smName + std::to_string(smActorCounter)
+					: smName;
+				smActorParams.m_OverrideLevel = currentWorld->GetCurrentLevel();
+				
+				staticMeshActor = currentWorld->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), &smActorTransform, smActorParams);
+				
+				smActorCounter++;
+			}
+
+			if (staticMeshActor)
+			{
+				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
+				
+				staticMeshActor->LoadMeshFromFile(objFileName);
+				m_EditorScene->AddStaticMeshActor(staticMeshActor);
+			}
+		}
 	}
 
 	void EditorLayer::OnAttach()
@@ -204,14 +196,6 @@ namespace Karma
 		else if (e.GetKeyCode() == GLFW_KEY_Y)
 		{
 			IterateActors();
-		}
-		else if (e.GetKeyCode() == GLFW_KEY_V)
-		{
-			SpawnStaticMeshActor();
-		}
-		else if (e.GetKeyCode() == GLFW_KEY_B)
-		{
-			SpawnStaticMeshActor2();
 		}
 
 		return false;
@@ -353,66 +337,6 @@ namespace Karma
 		// delete testWorld;
 	}
 
-	void EditorLayer::SpawnStaticMeshActor()
-	{
-		// We are attempting to spawn StaticMeshActor here which will hold the model
-
-		UWorld* currentWorld = GEngine->GetCurrentGameInstance()->GetWorldContext()->World();
-
-		if (currentWorld)
-		{
-			KR_INFO("Current World is : {0}", currentWorld->GetName());
-
-			FTransform smActorTransform = FTransform::m_Identity;
-			smActorTransform.SetTranslation(glm::vec3(1.f, 0, 1.f));
-			
-			FActorSpawnParameters smActorParams;
-			smActorParams.m_Owner = nullptr;
-			smActorParams.m_Name = "StaticMeshActor";
-			smActorParams.m_OverrideLevel = currentWorld->GetCurrentLevel();
-
-
-			AStaticMeshActor* staticMeshActor = currentWorld->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), &smActorTransform, smActorParams);
-
-			if (staticMeshActor)
-			{
-				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
-				
-				staticMeshActor->LoadMeshFromFile("../Resources/Models/BonedCylinder.obj");
-				m_EditorScene->AddStaticMeshActor(staticMeshActor);
-			}
-		}
-	}
-
-	void EditorLayer::SpawnStaticMeshActor2()
-	{
-		UWorld* currentWorld = GEngine->GetCurrentGameInstance()->GetWorldContext()->World();
-
-		if (currentWorld)
-		{
-			KR_INFO("Current World is : {0}", currentWorld->GetName());
-
-			FTransform smActorTransform = FTransform::m_Identity;
-			smActorTransform.SetTranslation(glm::vec3(0.f, 0.f, 1.f));
-			
-			FActorSpawnParameters smActorParams;
-			smActorParams.m_Owner = nullptr;
-			smActorParams.m_Name = "StaticMeshActor2";
-			smActorParams.m_OverrideLevel = currentWorld->GetCurrentLevel();
-
-
-			AStaticMeshActor* staticMeshActor = currentWorld->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), &smActorTransform, smActorParams);
-
-			if (staticMeshActor)
-			{
-				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
-				
-				staticMeshActor->LoadMeshFromFile("../Resources/Models/FORZombie.obj");
-				m_EditorScene->AddStaticMeshActor(staticMeshActor);
-			}
-		}
-	}
-
 	void EditorLayer::IterateActors()
 	{
 		// Iterate over all actors, can also supply a different derived class
@@ -450,3 +374,4 @@ Karma::Application* Karma::CreateApplication()
 {
 	return new KarmaApp();
 }
+

@@ -224,8 +224,8 @@ namespace Karma
 		/**
 		 * @brief Allocates descriptor sets from the pool based on the provided allocation info.
 		 * 
-		 * @param InDescriptorSetAllocateInfo				Information about the descriptor set allocation
-		 * @param OutSets									Pointer to an array where allocated descriptor sets will be stored
+		 * @param InLayout				the compiled descriptor set layout object that knows which layouts exist, how many sets are needed for each, and a ready-to-use VkDescriptorSetAllocateInfo template (GetAllocateInfo()).
+		 * @param InDSets				an output/owner object where the allocated VkDescriptorSet handles will be stored in the structure expected by the engine (grouped per layout).
 		 * @return VkDescriptorSet							The first allocated descriptor set handle
 		 * @since Karma 1.0.0
 		 */
