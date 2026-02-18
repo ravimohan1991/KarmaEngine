@@ -11,8 +11,11 @@
 
 #include "KarmaGuiMesa.h"
 #include "Karma/Application.h"
-#include "Karma/Renderer/RendererAPI.h"
+#include "hwinfo/hwinfo.h"
+#include "hwinfo/utils/unit.h"
 #include "spdlog/sinks/callback_sink.h"
+#include "KarmaGui/KarmaGuizmo.h"
+#include "StaticMeshActor.h"
 
 // Experimental
 //#include "Karma/Core/UObjectAllocator.h"
@@ -35,6 +38,7 @@ namespace Karma
 	std::shared_ptr<spdlog::pattern_formatter> s_MesaLogFormatter = nullptr;
 	bool KarmaGuiMesa::m_EditorInitialized = false;
 	bool KarmaGuiMesa::m_RefreshRenderingResources = false;
+	AStaticMeshActor* KarmaGuiMesa::m_SelectedSMActor = nullptr;
 
 	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
 	WindowManipulationGaugeData	KarmaGuiMesa::m_MemoryExhibitor;
@@ -50,6 +54,107 @@ namespace Karma
 		}
 	}
 
+	bool InputAxisFloat(const char* axis_id, const char* axis_label, const KGVec4& color,
+					float* v, float width = 60.0f)
+	{
+		bool changed = false;
+
+		// Colored label background
+		KarmaGui::PushStyleColor(KGGuiCol_Button,        color);
+		KarmaGui::PushStyleColor(KGGuiCol_ButtonHovered, color);
+		KarmaGui::PushStyleColor(KGGuiCol_ButtonActive,  color);
+		KarmaGui::Button(axis_label); // size comes from style, you can pass a custom size if needed
+		KarmaGui::PopStyleColor(3);
+
+		KarmaGui::SameLine();
+		KarmaGui::SetNextItemWidth(width);
+		changed = KarmaGui::InputFloat(axis_id, v, 0.0f, 0.0f, "%.2f"); // axis_id should be "##X" / "##Y" / "##Z"
+
+		return changed;
+	}
+
+	bool InputFloat3XYZ(const char* label, float v[3], const char* format = "%.3f")
+	{
+		bool changed = false;
+		float itemWidth = 65.5f;
+
+		KarmaGui::PushID(label);
+		
+		// Fixed label column width
+		const float label_col_width = 30.0f; // tune this
+
+		float start_x = KarmaGui::GetCursorPosX();
+		float line_y  = KarmaGui::GetCursorPosY();
+
+		// Draw label at start
+		KarmaGui::TextUnformatted(label);
+
+		// Move cursor to fixed column for the controls
+		KarmaGui::SameLine();
+		KarmaGui::SetCursorPosX(start_x + label_col_width);
+
+		// X
+		// Colored label background
+		changed |= InputAxisFloat("##X", "X", KGVec4(1.0f, 0.1f, 0.1f, 1.0f), &v[0]);
+
+		KarmaGui::SameLine();
+
+		// Y
+		changed |= InputAxisFloat("##Y", "Y", KGVec4(0.1f, 1.0f, 0.1f, 1.0f), &v[1]);
+
+		KarmaGui::SameLine();
+
+		// Z
+		changed |= InputAxisFloat("##Z", "Z", KGVec4(0.1f, 0.1f, 1.0f, 1.0f), &v[2]);
+
+		KarmaGui::PopID();
+		return changed;
+	}
+	
+	void KarmaGuiMesa::EditTransform(std::shared_ptr<Scene> scene)
+	{
+		if(m_SelectedSMActor == nullptr)
+		{
+			return;
+		}
+		
+		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+		FTransform transform = m_SelectedSMActor->GetTransform();
+		
+		matrixTranslation[0] = transform.GetTranslation().x;
+		matrixTranslation[1] = transform.GetTranslation().y;
+		matrixTranslation[2] = transform.GetTranslation().z;
+		matrixRotation[0] = transform.GetRotation().m_Roll;
+		matrixRotation[1] = transform.GetRotation().m_Pitch;
+		matrixRotation[2] = transform.GetRotation().m_Yaw;
+		matrixScale[0] = transform.GetScale3D().x;
+		matrixScale[1] = transform.GetScale3D().y;
+		matrixScale[2] = transform.GetScale3D().z;
+		
+		bool bIsDirty = false;// effectively
+		
+		bIsDirty |= InputFloat3XYZ("Tr", matrixTranslation, "%.2f");
+		bIsDirty |= InputFloat3XYZ("Rt", matrixRotation, "%.2f");
+		
+		bIsDirty |= InputFloat3XYZ("Sc", matrixScale, "%.2f");
+		
+		if (bIsDirty)
+		{
+			glm::vec3 translation(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
+			transform.SetTranslation(translation);
+
+			glm::vec3 euler(matrixRotation[0], matrixRotation[1], matrixRotation[2]);
+			TRotator rotation(euler);
+
+			transform.SetRotation(rotation);
+
+			glm::vec3 scale(matrixScale[0], matrixScale[1], matrixScale[2]);
+			transform.SetScale3D(scale);
+
+			m_SelectedSMActor->SetActorTransform(transform);
+		}
+	}
+
 	void KarmaGuiMesa::RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks)
 	{
 		// The MM (Main Menu) menu bar
@@ -57,15 +162,16 @@ namespace Karma
 
 		// 2. Show a simple sampling and experiment window
 		{
-			static bool show = true;
+			static bool show1 = true;
+			static bool show2 = true;
 			static float fValue = 0.0f;
 			static int counter = 0;
 
 			KarmaGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and appeninto it
 
 			KarmaGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			KarmaGui::Checkbox("Demo Window", &show);                  // Edit bools storing our window open/close state
-			KarmaGui::Checkbox("Another Window", &show);
+			KarmaGui::Checkbox("Demo Window", &show1);                  // Edit bools storing our window open/close state
+			KarmaGui::Checkbox("Another Window", &show2);
 
 			KarmaGui::SliderFloat("float", &fValue, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 			//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a colo
@@ -85,6 +191,8 @@ namespace Karma
 			node = nullptr;//ImGui::FindAppropriateNode(window, payloadWindow, boxNumber);
 
 			KarmaGui::Text("Node ID = %d at position x = %f, y = %f on docking box %d", node != nullptr ? node->ID : 0, KarmaGui::GetMousePos().x, KarmaGui::GetMousePos().y, boxNumber);
+			
+			EditTransform(scene);
 
 			if (payloadWindow)
 				KarmaGui::Text("Karma: Log window is of dimension width = %f und height = %f", payloadWindow->Size.x, payloadWindow->Size.y);
@@ -99,7 +207,7 @@ namespace Karma
 
 		// 4. A panel for scene hierarchy and whatnot
 		{
-			DrawKarmaSceneHierarchyPanelMesa();
+			DrawKarmaSceneHierarchyPanelMesa(scene);
 		}
 
 		// 5. A window for 3D rendering part
@@ -511,8 +619,16 @@ namespace Karma
 			bShouldRefresh = true;
 		}
 
-		m_ViewportFocused = KarmaGui::IsWindowFocused();
-		m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
+		if (!KarmaGuizmo::IsUsing())
+		{
+			m_ViewportFocused = KarmaGui::IsWindowFocused();
+			m_ViewportHovered = KarmaGui::IsWindowHovered() && !((window->Pos.y + window->TitleBarHeight()) * KarmaGui::GetIO().DisplayFramebufferScale.y > KarmaGui::GetMousePos().y);
+		}
+		else
+		{
+			m_ViewportFocused = false;
+			m_ViewportHovered = false;
+		}
 
 		KarmaGuiIO& io = KarmaGui::GetIO();
 
@@ -523,27 +639,51 @@ namespace Karma
 
 		KarmaGuiBackendRendererUserData* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		backgroundImageTextureID = backendData->GetTextureIDAtIndex(1);
-		width = backendData->GetTextureWidthAtIndex(1);
-		height = backendData->GetTextureHeightAtIndex(1);
-
-
-		//ImGui::GetCurrentWindow()->DrawList->SetWindowBackgroundColor(bgColor);
-
-		KGDrawCallback sceneCallBack = [](const KGDrawList* parentList, const KGDrawCmd* drawCommand)
+		
+		KGTextureID textureID3D = nullptr;
+		if (scene->GetSMActors().size() > 0)
 		{
-			//KR_INFO("Scene Callback");
-		};
-
-		//KGGuiWindow* theWindow = KarmaGuiInternal::GetCurrentWindow();
-		scene->SetRenderWindow(window);
-
-		{
-			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
-			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
-			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
-			KGVec4 border_col = KGVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
-			KarmaGui::Image(backgroundImageTextureID, KGVec2(window->Size.x, window->Size.y), uvMin, uvMax, tint_col, border_col);
+			textureID3D = KarmaGuiRenderer::Add3DSceneFor2DRendering(scene, KGVec2(window->Size.x, window->Size.y));
+			KarmaGui::SetItemAllowOverlap();
 		}
+
+		KGVec2 pos = KarmaGui::GetWindowPos();
+		KGDrawList* drawList = KarmaGui::GetWindowDrawList();
+		
+		drawList->AddImage((void*)backgroundImageTextureID, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
+		if (scene->GetSMActors().size() > 0 && textureID3D != nullptr)
+		{
+			drawList->AddImage((void*)textureID3D, pos, KGVec2(pos.x + window->Size.x, pos.y + window->Size.y));
+		}
+		
+		KarmaGuizmo::SetDrawlist();
+		KarmaGuizmo::SetRect(pos.x, pos.y + window->TitleBarHeight(), window->Size.x, window->Size.y - window->TitleBarHeight());
+		
+		if(scene->GetSMActors().size() > 0 && m_SelectedSMActor != nullptr)
+		{
+			std::shared_ptr<Camera> sceneCamera =  scene->GetSceneCamera();
+			glm::mat4 viewMatrix = sceneCamera->GetViewMatirx();
+			
+			glm::mat4 projectionMatrix = sceneCamera->GetProjectionMatrix();
+			
+			float* projectionPtr = glm::value_ptr(projectionMatrix);
+			projectionPtr[5] *= -1.f;
+			
+			FTransform operationalTransform = m_SelectedSMActor->GetTransform();
+
+			glm::mat4 objectMatrix = operationalTransform.ToMatrixWithScale();
+			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::LOCAL, glm::value_ptr(objectMatrix));
+			
+			if(KarmaGuizmo::IsUsing() && bManipulate)
+			{
+				FTransform transform;
+				transform.ToTransform(objectMatrix);
+				
+				m_SelectedSMActor->SetActorTransform(transform);
+			}
+		}
+		
+		scene->SetRenderWindow(window);
 
 		if(window->Size.x != m_3DExhibitor.widthCache || window->Size.y != m_3DExhibitor.heightCache)
 		{
@@ -571,8 +711,6 @@ namespace Karma
 			scene->SetWindowToRenderWithinResize(false);
 		}
 
-		KarmaGuiInternal::GetCurrentWindow()->DrawList->AddCallback(sceneCallBack, (void*)scene.get());
-
 		if (m_RefreshRenderingResources)
 		{
 			scene->SetWindowToRenderWithinResize(true);
@@ -583,14 +721,30 @@ namespace Karma
 		KarmaGui::End();
 	}
 
-	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa()
+	void KarmaGuiMesa::DrawKarmaSceneHierarchyPanelMesa(std::shared_ptr<Scene> scene)
 	{
 		KarmaGui::SetNextWindowSize(KGVec2(500, 400), KGGuiCond_FirstUseEver);
 
 		KarmaGui::Begin("Scene Hierarchy");
-		KarmaGui::Text("Some Stuff 1");
-		KarmaGui::Text("Some stuff 2");
-		KarmaGui::Text("lumbdaa");
+		
+		for(const auto& smActor : scene->GetSMActors())
+		{
+			const char* sceneElement = smActor->GetName().c_str();
+			
+			KGGuiTreeNodeFlags_ flags = (smActor == m_SelectedSMActor) ? KGGuiTreeNodeFlags_Selected : KGGuiTreeNodeFlags_Bullet;
+			bool opened = KarmaGui::TreeNodeEx(sceneElement, flags);
+			
+			if(KarmaGui::IsItemClicked())
+			{
+				m_SelectedSMActor = smActor;
+			}
+			
+			if(opened)
+			{
+				KarmaGui::TreePop();
+			}
+		}
+		
 		KarmaGui::End();
 	}
 
@@ -623,9 +777,7 @@ namespace Karma
 			// Should be called when "about" mesa is closed, the first time
 			if (electronicsItems.bHasQueried)
 			{
-				reset_electronics_structures();
 				KarmaGuiMesa::SetElectronicsRamInformationToNull();
-				electronicsItems.ramSoftSlots.clear();
 				electronicsItems.bHasQueried = false;
 			}
 		}
@@ -748,8 +900,6 @@ namespace Karma
 		height = backendData->GetTextureHeightAtIndex(0);
 
 		{
-			KGVec2 position = KarmaGui::GetCursorScreenPos();
-
 			KGVec2 uvMin = KGVec2(0.0f, 0.0f);                 // Top-left
 			KGVec2 uvMax = KGVec2(1.0f, 1.0f);                 // Lower-right
 			KGVec4 tint_col = KGVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
@@ -789,7 +939,7 @@ namespace Karma
 			KarmaGuiIO& io = KarmaGui::GetIO();
 			KarmaGuiStyle& style = KarmaGui::GetStyle();
 
-			bool copy_to_clipboard = KarmaGui::Button("Copy to clipboard");
+			/*bool copy_to_clipboard =*/ KarmaGui::Button("Copy to clipboard");
 		}
 
 		KarmaGui::Separator();
@@ -829,89 +979,50 @@ namespace Karma
 			KarmaGui::Separator();
 
 			KarmaGui::Text("Vendor: %s", electronicsItems.biosVendorName.c_str());
-			KarmaGui::Text("Supplied On: %s", electronicsItems.biosReleaseDate.c_str());
-			KarmaGui::Text("ROM Size: %s", electronicsItems.biosROMSize.c_str());
-			KarmaGui::Text("Current Language: %s", electronicsItems.biosCurrentSetLanguage.c_str());
-			KarmaGui::Text("Supported Languages:");
-			KarmaGui::Indent();
-			KarmaGui::Text("%s", electronicsItems.biosRestOfTheSupportedLanguages.c_str());
-			KarmaGui::Unindent();
-			KarmaGui::Text("BIOS Characteristics:");
-			KarmaGui::Indent();
-			KarmaGui::Text("%s", electronicsItems.biosCharacteristics.c_str());
-			KarmaGui::Unindent();
+			KarmaGui::Text("MotherBoard: %s", electronicsItems.biosBoardName.c_str());
+			KarmaGui::Text("MotherBoard Serial: %s", electronicsItems.biosSerialNumber.c_str());
+			KarmaGui::Text("BIOS Version: %s", electronicsItems.biosVersion.c_str());
 			KarmaGui::Separator();
 
-			KarmaGui::Text("Machine System Memory (RAM and all that)");
+			KarmaGui::Text("Machine System Memory (RAM)");
 			KarmaGui::Separator();
 
-			KarmaGui::Text("Supporting Area: %s", electronicsItems.supportingArea.c_str());
-			KarmaGui::Text("Estimated Capacity: %s", electronicsItems.estimatedCapacity.c_str());
-			KarmaGui::Text("Total such devices (est): %d", electronicsItems.numberOfMemoryDevices);
-			KarmaGui::Text("Physical devices present:");
+			KarmaGui::Text("Total Capacity (MiB): %s", electronicsItems.memoryCapacity.c_str());
+			KarmaGui::Text("Free Memory (MiB): %s", electronicsItems.freeMemory.c_str());
 
-			for (uint32_t counter = 0; counter < electronicsItems.ramSoftSlots.size(); counter++)
+			KarmaGui::Text("Total modules: %d", electronicsItems.numberOfMemoryDevices);
+			
+			for(uint32_t counter = 0; counter < electronicsItems.numberOfMemoryDevices; counter++)
 			{
 				KarmaGui::Text("RAM %d", counter + 1);
-				KarmaGui::Text("Manufacturer: %s", electronicsItems.ramInformation[counter].manufacturer.c_str());
-
-				KarmaGui::Text("Identification Parameters");
-
 				KarmaGui::Indent();
-				KarmaGui::Text("Ram Type: %s", electronicsItems.ramInformation[counter].ramType.c_str());
-				KarmaGui::Text("Part Number: %s", electronicsItems.ramInformation[counter].partNumber.c_str());
+				KarmaGui::Text("Vendor: %s", electronicsItems.ramInformation[counter].vendor.c_str());
+				KarmaGui::Text("Name: %s", electronicsItems.ramInformation[counter].name.c_str());
+				KarmaGui::Text("Model: %s", electronicsItems.ramInformation[counter].model.c_str());
 				KarmaGui::Text("Serial Number: %s", electronicsItems.ramInformation[counter].serialNumber.c_str());
-				KarmaGui::Text("(Bank | Device) Locator: %s | %s", electronicsItems.ramInformation[counter].bankLocator.c_str(),
-					electronicsItems.ramInformation[counter].locator.c_str());
-				KarmaGui::Text("Asset Tag: %s", electronicsItems.ramInformation[counter].assetTag.c_str());
-				KarmaGui::Unindent();
-
-				KarmaGui::Text("Ram Conditions");
-				KarmaGui::Indent();
-				KarmaGui::Text("Size: %s", electronicsItems.ramInformation[counter].ramSize.c_str());
-				KarmaGui::Text("Operating Voltage: %s", electronicsItems.ramInformation[counter].operatingVoltage.c_str());
-				KarmaGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.ramInformation[counter].configuredMemorySpeed.c_str(),
-					electronicsItems.ramInformation[counter].memorySpeed.c_str());
-				KarmaGui::Text("Form Factor: %s", electronicsItems.ramInformation[counter].formFactor.c_str());
+				KarmaGui::Text("Frequency (MHz): %s", electronicsItems.ramInformation[counter].frequency.c_str());
+				KarmaGui::Text("Capacity: %s", electronicsItems.ramInformation[counter].capacity.c_str());
 				KarmaGui::Unindent();
 			}
-
-			KarmaGui::Text("RAM Logistics");
-			KarmaGui::Indent();
-			KarmaGui::Text("Total Ram Size: %d %s", electronicsItems.totalRamSize, electronicsItems.ramSizeDimensions.c_str());
-			KarmaGui::Unindent();
-
+			
 			KarmaGui::Separator();
 
 			KarmaGui::Text("Central Processor Unit");
 			KarmaGui::Separator();
 
-			KarmaGui::Text("Manufacturer: %s", electronicsItems.cpuManufacturer.c_str());
-			KarmaGui::Text("Processor Family: %s", electronicsItems.cpuProcessingfamily.c_str());
-			KarmaGui::Text("Version: %s", electronicsItems.cpuVersion.c_str());
+			KarmaGui::Text("Manufacturer: %s", electronicsItems.cpuInformation.cpuVendor.c_str());
+			KarmaGui::Text("Processor Family: %s", electronicsItems.cpuInformation.cpuModel.c_str());
 			KarmaGui::Text("CPU Conditions");
 			KarmaGui::Indent();
-			KarmaGui::Text("Speed (Current | Maximum): %s | %s", electronicsItems.cpuCurrentSpeed.c_str(), electronicsItems.cpuMaximumSpeed.c_str());
-			KarmaGui::Text("External Clock: %s", electronicsItems.cpuExternalClock.c_str());
-			KarmaGui::Text("Cores (Current | Maximum): %s | %s", electronicsItems.cpuEnabledCoresCount.c_str(), electronicsItems.cpuCorescount.c_str());
-			KarmaGui::Text("Threads Count: %s", electronicsItems.cpuThreadCount.c_str());
-			KarmaGui::Text("Operating Voltage: %s", electronicsItems.cpuOperatingVoltage.c_str());
+			KarmaGui::Text("Speed : %s (MHz) | %s (MHz)", electronicsItems.cpuInformation.cpuCurrentFrequency.c_str(), electronicsItems.cpuInformation.cpuMaximumFrequency.c_str());
+			KarmaGui::Text("Cores (Logical | Physical): %s | %s", electronicsItems.cpuInformation.cpuLogicalCores.c_str(), electronicsItems.cpuInformation.cpuPhysicalCores.c_str());
 			KarmaGui::Unindent();
 			KarmaGui::Text("CPU Tags or Numbers");
 			KarmaGui::Indent();
-			KarmaGui::Text("Signature: %s", electronicsItems.cpuSignature.c_str());
-			KarmaGui::Text("ID: %s", electronicsItems.cpuid.c_str());
-			KarmaGui::Text("Part Number: %s", electronicsItems.cpuPartNumber.c_str());
-			KarmaGui::Text("Serial Number: %s", electronicsItems.cpuSerialNumber.c_str());
-			KarmaGui::Text("Asset Tag: %s", electronicsItems.cpuAssettag.c_str());
-			KarmaGui::Unindent();
-			KarmaGui::Text("CPU Characteristics");
-			KarmaGui::Indent();
-			KarmaGui::Text("%s", electronicsItems.cpuTheCharacterstics.c_str());
-			KarmaGui::Unindent();
-			KarmaGui::Text("Flags:");
-			KarmaGui::Indent();
-			KarmaGui::Text("%s", electronicsItems.cpuFlags.c_str());
+			KarmaGui::Text("Caches (MegaBytes)");
+			KarmaGui::Text("L1 Cache : %s", electronicsItems.cpuInformation.cpuCacheSizeL1.c_str());
+			KarmaGui::Text("L2 Cache: %s", electronicsItems.cpuInformation.cpuCacheSizeL2.c_str());
+			KarmaGui::Text("L3 Cache: %s", electronicsItems.cpuInformation.cpuCacheSizeL3.c_str());
 			KarmaGui::Unindent();
 
 			KarmaGui::Separator();
@@ -921,6 +1032,7 @@ namespace Karma
 
 			KarmaGui::Text("Manufacturer: %s", electronicsItems.gpuVendor.c_str());
 			KarmaGui::Text("Model: %s", electronicsItems.gpuModelIdentification.c_str());
+			
 			KarmaGui::Text("VRam: %s", electronicsItems.gpuVMemory.c_str());
 
 			KarmaGui::Separator();
@@ -937,127 +1049,97 @@ namespace Karma
 	}
 
 	// Strings are copied in this not-so-cheap function. Hence the check!!
-	// First copying is done within BiosReader for apporpriate seperation into structures. Prevents multiple queries
-	// at the cost of bulk (pun intended!).
-	// Next copying is done here, in the routine.
 	void KarmaGuiMesa::QueryForTuringMachineElectronics()
 	{
 		if (electronicsItems.bHasQueried)
 		{
 			return;
 		}
-
-		// Catcher rhymes with Hatcher, the Topologist, just for information!
-		void* catcher = electronics_spit(ss_bios);
-
-		if (bios_information* bInfo = static_cast<bios_information*>(catcher))
+		
+		hwinfo::MainBoard mainboard;
+		
+		electronicsItems.biosVendorName = mainboard.vendor() != "" ? mainboard.vendor() : notAvailableText;
+		electronicsItems.biosBoardName = mainboard.name() != "" ? mainboard.name() : notAvailableText;
+		electronicsItems.biosVersion = mainboard.version() != "" ? mainboard.version() : notAvailableText;
+		electronicsItems.biosSerialNumber = mainboard.serialNumber() != "" ? mainboard.serialNumber() : notAvailableText;
+		
+		hwinfo::Memory memory;
+		
+		electronicsItems.memoryCapacity = std::to_string(hwinfo::unit::bytes_to_MiB(memory.total_Bytes()));
+		electronicsItems.freeMemory = std::to_string(hwinfo::unit::bytes_to_MiB(memory.free_Bytes() > 0 ? memory.free_Bytes() : 0));
+		
+		electronicsItems.numberOfMemoryDevices = static_cast<uint32_t>(memory.modules().size());
+		
+		for(const auto& module : memory.modules())
 		{
-			electronicsItems.biosVendorName = bInfo->vendor != nullptr ? bInfo->vendor : notAvailableText;
-			electronicsItems.biosVersion = bInfo->version != nullptr ? bInfo->version : notAvailableText;
-			electronicsItems.biosReleaseDate = bInfo->biosreleasedate != nullptr ? bInfo->biosreleasedate : notAvailableText;
-			electronicsItems.biosROMSize = bInfo->biosromsize != nullptr ? bInfo->biosromsize : notAvailableText;
-			electronicsItems.biosCharacteristics = bInfo->bioscharacteristics[0] != '\0' ? bInfo->bioscharacteristics : notAvailableText;
+			KR_INFO("ID: {0}", module.id);
+			KR_INFO("Frequencey (Hz): {0}", module.frequency_Hz == -1 ? -1 : static_cast<double>(module.frequency_Hz) / 1e6);
+			KR_INFO("Name: {0}", module.name);
+			KR_INFO("Serial Number: {0}", module.serial_number);
+			KR_INFO("Vendor: {0}", module.vendor);
+			KR_INFO("Model: {0}", module.model);
+			KR_INFO("Capacity: {0}", hwinfo::unit::bytes_to_MiB(module.total_Bytes));
 		}
-		else
+		
+		electronicsItems.ramInformation = new KarmaTuringMachineElectronics::SystemRAM[memory.modules().size()];
+		uint32_t counter = 0;
+		
+		for(const auto& mod : memory.modules())
 		{
-			KR_WARN("BiosReader isn't behaving normally.");
+			electronicsItems.ramInformation[counter].name = mod.name;
+			electronicsItems.ramInformation[counter].vendor = mod.vendor;
+			electronicsItems.ramInformation[counter].model = mod.model;
+			electronicsItems.ramInformation[counter].serialNumber = mod.serial_number;
+			electronicsItems.ramInformation[counter].frequency = std::to_string(mod.frequency_Hz == -1 ? -1 : static_cast<double>(mod.frequency_Hz) / 1e6);
+			electronicsItems.ramInformation[counter].id = mod.id;
+			electronicsItems.ramInformation[counter].capacity = std::to_string(hwinfo::unit::bytes_to_MiB(mod.total_Bytes));
+			counter++;
 		}
 
-		catcher = electronics_spit(pi_bioslanguages);
+		const auto cpus = hwinfo::getAllCPUs();
 
-		if (mb_language_modules* mbLangModules = static_cast<mb_language_modules*>(catcher))
+		for(const auto& cpu : cpus)
 		{
-			electronicsItems.biosCurrentSetLanguage = mbLangModules->currentactivemodule != nullptr ? mbLangModules->currentactivemodule : notAvailableText;
-			electronicsItems.biosRestOfTheSupportedLanguages = mbLangModules->supportedlanguagemodules != nullptr ? mbLangModules->supportedlanguagemodules : notAvailableText;
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally.");
-		}
-
-		catcher = electronics_spit(pi_systemmemory);
-		if (turing_machine_system_memory* tInfo = static_cast<turing_machine_system_memory*>(catcher))
-		{
-			electronicsItems.estimatedCapacity = tInfo->total_grand_capacity != nullptr ? tInfo->total_grand_capacity : notAvailableText;
-			electronicsItems.numberOfMemoryDevices = tInfo->number_of_ram_or_system_memory_devices != 0 ? tInfo->number_of_ram_or_system_memory_devices : 0;
-			electronicsItems.supportingArea = tInfo->mounting_location != nullptr ? tInfo->mounting_location : notAvailableText;
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally.");
-		}
-
-		catcher = electronics_spit(ps_systemmemory);
-
-		// Now since there may be more than one Ram type of electronics, and given that BIOS lies, we need a mechanism
-		// to gauge the true amount of every estimation we obtained earlier
-		// Please see https://github.com/ravimohan1991/BiosReader/blob/37e1179f876b940b3f483a398091f44a479692ea/src/private/dmidecode.c#L4980
-		if (random_access_memory* rInfo = static_cast<random_access_memory*>(catcher))
-		{
-			KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(rInfo);
-
-			if (electronicsItems.ramInformation == nullptr)
+			electronicsItems.cpuInformation.cpuVendor = cpu.vendor();
+			electronicsItems.cpuInformation.cpuModel = cpu.modelName();
+			electronicsItems.cpuInformation.cpuLogicalCores = std::to_string(cpu.numLogicalCores());
+			electronicsItems.cpuInformation.cpuPhysicalCores = std::to_string(cpu.numPhysicalCores());
+			
+			int64_t averageFrequency = 0;
+			for(uint32_t counter = 0; counter < cpu.numLogicalCores(); counter++)
 			{
-				electronicsItems.ramInformation = new KarmaTuringMachineElectronics::SystemRAM[electronicsItems.ramSoftSlots.size()];
+				averageFrequency += cpu.currentClockSpeed_MHz()[counter];
 			}
-			else
-			{
-				KR_WARN("ramInformation is already allocated which should have been cleared in the first place.");
-			}
+			
+			averageFrequency = averageFrequency / cpu.numLogicalCores();
+			
+			electronicsItems.cpuInformation.cpuCurrentFrequency = std::to_string(averageFrequency);
+			electronicsItems.cpuInformation.cpuMaximumFrequency = std::to_string(cpu.maxClockSpeed_MHz());
+			KR_INFO("CPU frequency: {0}", cpu.maxClockSpeed_MHz());
+			electronicsItems.cpuInformation.cpuCacheSizeL1 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L1CacheSize_Bytes() > 0 ? cpu.L1CacheSize_Bytes() : 0));
+			electronicsItems.cpuInformation.cpuCacheSizeL2 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L2CacheSize_Bytes() > 0 ? cpu.L2CacheSize_Bytes() : 0));
+			electronicsItems.cpuInformation.cpuCacheSizeL3 = std::to_string(hwinfo::unit::bytes_to_MiB(cpu.L3CacheSize_Bytes() > 0 ? cpu.L3CacheSize_Bytes() : 0));
 
-			uint32_t counter = 0;
-
-			for (auto& elem : electronicsItems.ramSoftSlots)
-			{
-				KarmaTuringMachineElectronics::FillTheSystemRamStructure(electronicsItems.ramInformation[counter++], *fetch_access_memory_members(elem));
-			}
-
-			KarmaTuringMachineElectronics::FindRealCapacityOfRam();
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally.");
+			break;
 		}
 
-		catcher = electronics_spit(ps_processor);
-
-		if (central_processing_unit* pInfo = static_cast<central_processing_unit*>(catcher))
+		auto gpus = hwinfo::getAllGPUs();
+		
+		if(gpus.size() == 0)
 		{
-			//electronicsItems.cpuDesignation = pInfo->designation; <----- Please refer to central_processing_unit struct
-			electronicsItems.cpuFlags = pInfo->cpuflags != nullptr ? pInfo->cpuflags : notAvailableText;
-			electronicsItems.cpuid = pInfo->cpuid != nullptr ? pInfo->cpuid : notAvailableText;
-			electronicsItems.cpuManufacturer = pInfo->manufacturer ? pInfo->manufacturer : notAvailableText;
-			electronicsItems.cpuProcessingfamily = pInfo->processingfamily ? pInfo->processingfamily : notAvailableText;
-			electronicsItems.cpuVersion = pInfo->version ? pInfo->version : notAvailableText;
-			electronicsItems.cpuPartNumber = pInfo->partnumber ? pInfo->partnumber : notAvailableText;
-			electronicsItems.cpuSerialNumber = pInfo->serialnumber ? pInfo->serialnumber : notAvailableText;
-			electronicsItems.cpuAssettag = pInfo->assettag ? pInfo->assettag : notAvailableText;
-			electronicsItems.cpuOperatingVoltage = pInfo->operatingvoltage ? pInfo->operatingvoltage : notAvailableText;
-			electronicsItems.cpuCurrentSpeed = pInfo->currentspeed ? pInfo->currentspeed : notAvailableText;
-			electronicsItems.cpuMaximumSpeed = pInfo->maximumspeed ? pInfo->maximumspeed : notAvailableText;
-			electronicsItems.cpuExternalClock = pInfo->externalclock ? pInfo->externalclock : notAvailableText;
-			electronicsItems.cpuCorescount = pInfo->corescount ? pInfo->corescount : notAvailableText;
-			electronicsItems.cpuThreadCount = pInfo->threadcount ? pInfo->threadcount : notAvailableText;
-			electronicsItems.cpuEnabledCoresCount = pInfo->enabledcorescount ? pInfo->enabledcorescount : notAvailableText;
-			electronicsItems.cpuTheCharacterstics = pInfo->characterstics ? pInfo->characterstics : notAvailableText;
-			electronicsItems.cpuSignature = pInfo->signature ? pInfo->signature : notAvailableText;
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally");
+			electronicsItems.gpuModelIdentification = notAvailableText;
+			electronicsItems.gpuVendor = notAvailableText;
+			
+			electronicsItems.gpuVMemory = notAvailableText;
 		}
 
-		catcher = electronics_spit(ps_graphicscard);
-
-		if (graphics_processing_unit* gInfo = static_cast<graphics_processing_unit*>(catcher))
+		for(const auto& gpu : gpus)
 		{
-			electronicsItems.gpuModelIdentification = gInfo->gpuModel != nullptr ? gInfo->gpuModel : notAvailableText;
-			electronicsItems.gpuVendor = gInfo->vendor ? gInfo->vendor : notAvailableText;
-			electronicsItems.gpuVMemory = gInfo->grandtotalvideomemory ? gInfo->grandtotalvideomemory : notAvailableText;
-		}
-		else
-		{
-			KR_WARN("BiosReader isn't behaving normally");
+			electronicsItems.gpuModelIdentification = gpu.name() != "" ? gpu.name() : notAvailableText;
+			electronicsItems.gpuVendor = gpu.vendor() != "" ? gpu.vendor() : notAvailableText;
+			
+			electronicsItems.gpuVMemory = gpu.memory_Bytes() != 0 ? std::to_string(hwinfo::unit::bytes_to_MiB(gpu.memory_Bytes())) : notAvailableText;
+			break;
 		}
 
 		electronicsItems.bHasQueried = true;
@@ -1075,7 +1157,7 @@ namespace Karma
 		return n;
 	}
 
-	uint32_t KarmaGuiMesa::ChernUint32FromString(const std::string& ramString)
+	uint32_t KarmaGuiMesa::ChurnUint32FromString(const std::string& ramString)
 	{
 		std::string digitString;
 		//bool ctype = std::isdigit(ramString[0]);
@@ -1097,7 +1179,7 @@ namespace Karma
 		return value;
 	}
 
-	std::string KarmaGuiMesa::ChernDimensionsFromString(const std::string& ramString)
+	std::string KarmaGuiMesa::ChurnDimensionsFromString(const std::string& ramString)
 	{
 		std::string dimensionString;
 
@@ -1118,75 +1200,6 @@ namespace Karma
 		{
 			delete[] electronicsItems.ramInformation;
 			electronicsItems.ramInformation = nullptr;
-		}
-	}
-
-	void KarmaTuringMachineElectronics::FindRealCapacityOfRam()
-	{
-		uint32_t ramSizeFound = 0;
-
-		// Assumption dimension of memory is GB only
-		for (uint32_t counter = 0; counter < KarmaGuiMesa::GetGatheredElectronicsInformation().ramSoftSlots.size(); counter++)
-		{
-			ramSizeFound += KarmaGuiMesa::ChernUint32FromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[counter].ramSize);
-		}
-
-		KarmaGuiMesa::GetGatheredElectronicsInformationForModification().totalRamSize = ramSizeFound;
-
-		// Hoping for GB only dimension
-		KarmaGuiMesa::GetGatheredElectronicsInformationForModification().ramSizeDimensions = KarmaGuiMesa::ChernDimensionsFromString(KarmaGuiMesa::GetGatheredElectronicsInformation().ramInformation[0].ramSize);
-	}
-
-	void KarmaTuringMachineElectronics::GaugeSystemMemoryDevices(random_access_memory* ramCluster)
-	{
-		if (ramCluster == nullptr)
-		{
-			KR_WARN("Memory devices pointer is null. No Ram(s) shall be detected and reported");
-			return;
-		}
-
-		KarmaTuringMachineElectronics selfRefrentialVariable = KarmaGuiMesa::GetGatheredElectronicsInformationForModification();
-
-		uint32_t biosReportedNumber = selfRefrentialVariable.numberOfMemoryDevices;
-
-		for (uint32_t counter = 0; counter < biosReportedNumber; counter++)
-		{
-			random_access_memory* aMemoryBeingScanned = fetch_access_memory_members(counter);
-
-			if (aMemoryBeingScanned != nullptr && IsPhysicalRamPresent(*aMemoryBeingScanned))
-			{
-				KarmaGuiMesa::GetGatheredElectronicsInformationForModification().ramSoftSlots.push_back(counter);
-			}
-		}
-	}
-
-	void KarmaTuringMachineElectronics::FillTheSystemRamStructure(SystemRAM& destinationStructure, random_access_memory& sourceStructure)
-	{
-		destinationStructure.assetTag = sourceStructure.assettag != nullptr ? sourceStructure.assettag : KarmaGuiMesa::notAvailableText;
-		destinationStructure.bankLocator = sourceStructure.banklocator != nullptr ? sourceStructure.banklocator : KarmaGuiMesa::notAvailableText;
-		destinationStructure.configuredMemorySpeed = sourceStructure.configuredmemoryspeed != nullptr ? sourceStructure.configuredmemoryspeed : KarmaGuiMesa::notAvailableText;
-		destinationStructure.memorySpeed = sourceStructure.memoryspeed != nullptr ? sourceStructure.memoryspeed : KarmaGuiMesa::notAvailableText;
-		destinationStructure.formFactor = sourceStructure.formfactor != nullptr ? sourceStructure.formfactor : KarmaGuiMesa::notAvailableText;
-		destinationStructure.locator = sourceStructure.locator != nullptr ? sourceStructure.locator : KarmaGuiMesa::notAvailableText;
-		destinationStructure.manufacturer = sourceStructure.manufacturer != nullptr ? sourceStructure.manufacturer : KarmaGuiMesa::notAvailableText;
-		destinationStructure.operatingVoltage = sourceStructure.operatingvoltage != nullptr ? sourceStructure.operatingvoltage : KarmaGuiMesa::notAvailableText;
-		destinationStructure.partNumber = sourceStructure.partnumber != nullptr ? sourceStructure.partnumber : KarmaGuiMesa::notAvailableText;
-		destinationStructure.ramSize = sourceStructure.ramsize != nullptr ? sourceStructure.ramsize : KarmaGuiMesa::notAvailableText;
-		destinationStructure.ramType = sourceStructure.ramtype != nullptr ? sourceStructure.ramtype : KarmaGuiMesa::notAvailableText;
-		//destinationStructure.rank = sourceStructure.rank; Not a big fan of rank, reminds me of my JEE AIR 4729
-		destinationStructure.serialNumber = sourceStructure.serialnumber != nullptr ? sourceStructure.serialnumber : KarmaGuiMesa::notAvailableText;
-	}
-
-	bool KarmaTuringMachineElectronics::IsPhysicalRamPresent(const random_access_memory& ramScam)
-	{
-		if (ramScam.memoryspeed == nullptr || ramScam.configuredmemoryspeed == nullptr || ramScam.banklocator == nullptr
-			|| ramScam.formfactor == nullptr || ramScam.operatingvoltage == nullptr)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
 		}
 	}
 
@@ -1238,9 +1251,7 @@ namespace Karma
 	{
 		if (electronicsItems.bHasQueried)
 		{
-			reset_electronics_structures();
 			KarmaGuiMesa::SetElectronicsRamInformationToNull();
-			electronicsItems.ramSoftSlots.clear();
 			electronicsItems.bHasQueried = false;
 		}
 	}

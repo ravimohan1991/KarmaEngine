@@ -4,6 +4,11 @@
 #include "KarmaUtilities.h"
 #include "Platform/Vulkan/VulkanVertexArray.h"
 #include "Karma/KarmaGui/KarmaGuiRenderer.h"
+#include "VulkanRHI/VulkanSwapChain.h"
+#include "VulkanRHI/VulkanDynamicRHI.h"
+#include "VulkanRHI/VulkanRenderPass.h"
+#include "VulkanRHI/VulkanFramebuffer.h"
+#include "VulkanRHI/VulkanDescriptorSets.h"
 
 // Visual Studio warnings
 /*#ifdef _MSC_VER
@@ -93,12 +98,21 @@ namespace Karma
 	{
 		KarmaGuiBackendRendererUserData* bd = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* v = &bd->VulkanInitInfo;
+
 		VkPhysicalDeviceMemoryProperties prop;
 		vkGetPhysicalDeviceMemoryProperties(v->PhysicalDevice, &prop);
-		for (uint32_t i = 0; i < prop.memoryTypeCount; i++)
+
+		for (uint32_t i = 0; i < prop.memoryTypeCount; i++)// prop.memoryTypeCount is the number of valid elements in the memoryTypes (VkMemoryType) array.
 			if ((prop.memoryTypes[i].propertyFlags & properties) == properties && type_bits & (1 << i))
 				return i;
+		
 		return 0xFFFFFFFF; // Unable to find memoryType
+	}
+
+	// Same as KR_MEMALIGN(). 'alignment' must be a power of two.
+	static inline VkDeviceSize AlignBufferSize(VkDeviceSize size, VkDeviceSize alignment)
+	{
+		return (size + alignment - 1) & ~(alignment - 1);
 	}
 
 	void KarmaGuiVulkanHandler::CreateOrResizeBuffer(VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkDeviceSize& bufferSize, size_t newSize, VkBufferUsageFlagBits usage)
@@ -117,8 +131,8 @@ namespace Karma
 
 		VkResult result;
 
-		VkDeviceSize vertexBufferSizeAligned = ((newSize - 1) / backendData->BufferMemoryAlignment + 1) * backendData->BufferMemoryAlignment;
-
+		VkDeviceSize vertexBufferSizeAligned = AlignBufferSize(KR_MAX(1024*1024, newSize), backendData->BufferMemoryAlignment);
+		
 		VkBufferCreateInfo bufferInfo = {};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = vertexBufferSizeAligned;
@@ -144,38 +158,6 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind memory. Oh crappp");
 
 		bufferSize = requirements.size;
-	}
-
-	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(Scene* sceneToDraw, VkCommandBuffer commandBuffer, KGDrawData* drawData)
-	{
-		std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
-
-		// Bind 3D Vertex And Index Buffer:
-		{
-			VkBuffer vertexBuffers[1] = { vulkanVA->GetVertexBuffer()->GetVertexBuffer() };
-			VkDeviceSize vertexOffset[1] = { 0 };
-			vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, vertexOffset);
-			vkCmdBindIndexBuffer(commandBuffer, vulkanVA->GetIndexBuffer()->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
-		}
-
-		// Setup viewport:
-		{
-			if(sceneToDraw->GetWindowToRenderWithinResizeStatus())
-			{
-				KGGuiWindow* windowToRenderWithin = static_cast<KGGuiWindow*>(sceneToDraw->GetRenderingWindow());
-
-				vulkanVA->CreateExternalViewPort(windowToRenderWithin->Pos.x * drawData->FramebufferScale.x, (windowToRenderWithin->Pos.y + windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y , windowToRenderWithin->Size.x * drawData->FramebufferScale.x , (windowToRenderWithin->Size.y - windowToRenderWithin->TitleBarHeight()) * drawData->FramebufferScale.y);
-				vulkanVA->CleanupPipeline();
-				vulkanVA->RecreateVulkanVA();
-				sceneToDraw->SetWindowToRenderWithinResize(false);
-			}
-		}
-
-		// Bind pipeline:
-		{
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray())->GetGraphicsPipeline());
-		}
-
 	}
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetupRenderState(KGDrawData* drawData, VkPipeline pipeline, VkCommandBuffer commandBuffer, KarmaGui_ImplVulkanH_ImageFrameRenderBuffers* remderingBufferData, int width, int height)
@@ -210,7 +192,7 @@ namespace Karma
 
 		// Cowboy's Note: May need to use uniform buffer objects.
 		// Setup scale and translation:
-		// Our visible imgui space lies from drawData->DisplayPps (top left) to drawData->DisplayPos + darawData->DisplaySize (bottom right). DisplayPos is (0,0) for single viewport apps.
+		// Our visible KarmaGui space lies from drawData->DisplayPps (top left) to drawData->DisplayPos + darawData->DisplaySize (bottom right). DisplayPos is (0,0) for single viewport apps.
 		{
 			float scale[2];
 			scale[0] = 2.0f / drawData->DisplaySize.x;
@@ -259,23 +241,10 @@ namespace Karma
 
 		if (windowRenderBuffers->FrameRenderBuffers == nullptr)
 		{
-			RendererAPI* rAPI = RenderCommand::GetRendererAPI();
-			VulkanRendererAPI* vulkanAPI = nullptr;
-
-			if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
-			{
-				vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
-			}
-			else
-			{
-				KR_CORE_ASSERT(false, "How is this even possible?");
-			}
-
-			KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-
-			windowRenderBuffers->Count = vulkanAPI->GetMaxFramesInFlight();
+			windowRenderBuffers->Count = KarmaGuiRenderer::GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
 
 			// Caution: Need to think about the object instantiation and resource management
+			// Cowboy's Note: delete is done in KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_ShivaWindowRenderBuffers
 			windowRenderBuffers->FrameRenderBuffers = new KarmaGui_ImplVulkanH_ImageFrameRenderBuffers[windowRenderBuffers->Count];
 		}
 
@@ -350,10 +319,11 @@ namespace Karma
 			for (int commandCounter = 0; commandCounter < commandList->CmdBuffer.Size; commandCounter++)
 			{
 				const KGDrawCmd* drawCommand = &commandList->CmdBuffer[commandCounter];
+				
 				if (drawCommand->UserCallback != nullptr)
 				{
-					// User callback, registered via ImDrawList::AddCallback()
-					// (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
+					// User callback, registered via KarmaDrawList::AddCallback()
+					// (KGDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset 	render state.)
 					if (drawCommand->UserCallback == KGDrawCallback_ResetRenderState)
 					{
 						//sceneToDraw->SetWindowToRenderWithinResize(true);
@@ -361,24 +331,6 @@ namespace Karma
 					else
 					{
 						drawCommand->UserCallback(commandList, drawCommand);
-						sceneToDraw = static_cast<Scene*>(drawCommand->UserCallbackData);
-						if (sceneToDraw)
-						{
-							// Assuming only one such callback
-							KarmaGui_ImplVulkan_SetupRenderStateFor3DRendering(sceneToDraw, commandBuffer, drawData);
-							bDoneSettingRenderState = false;
-
-							std::shared_ptr<VulkanVertexArray> vulkanVA = static_pointer_cast<VulkanVertexArray>(sceneToDraw->GetRenderableVertexArray());
-
-							// Hmm
-							vulkanVA->UpdateProcessAndSetReadyForSubmission();
-							vulkanVA->Bind();
-
-							VulkanHolder::GetVulkanContext()->UploadUBO(frameIndex);
-
-							vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanVA->GetGraphicsPipelineLayout(), 0, 1, &vulkanVA->GetDescriptorSets()[frameIndex], 0, nullptr);
-							vkCmdDrawIndexed(commandBuffer, vulkanVA->GetIndexBuffer()->GetCount(), 1, 0, 0, 0);
-						}
 					}
 				}
 				else
@@ -434,7 +386,7 @@ namespace Karma
 
 		// Note: at this point both vkCmdSetViewport() and vkCmdSetScissor() have been called.
 		// Our last values will leak into user/application rendering IF:
-		// - Your app uses a pipeline with VK_DYNAMIC_STATE_VIEWPORT or VK_DYNAMIC_STATE_SCISSOR dynamic state
+		// - Your application uses a pipeline with VK_DYNAMIC_STATE_VIEWPORT or VK_DYNAMIC_STATE_SCISSOR dynamic state
 		// - And you forgot to call vkCmdSetViewport() and vkCmdSetScissor() yourself to explicitely set that state.
 		// If you use VK_DYNAMIC_STATE_VIEWPORT or VK_DYNAMIC_STATE_SCISSOR you are responsible for setting the values before rendering.
 		// In theory we should aim to backup/restore those values but I am not sure this is possible.
@@ -466,7 +418,7 @@ namespace Karma
 			VkImageCreateInfo info = {};
 			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			info.imageType = VK_IMAGE_TYPE_2D;
-			info.format = VK_FORMAT_R8G8B8A8_UNORM;
+			info.format = VK_FORMAT_R8G8B8A8_SRGB;// VK_FORMAT_R8G8B8A8_UNORM;
 			info.extent.width = width;
 			info.extent.height = height;
 			info.extent.depth = 1;
@@ -501,13 +453,35 @@ namespace Karma
 			info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			info.image = imageData->TextureImage;
 			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			info.format = VK_FORMAT_R8G8B8A8_UNORM;
+			info.format = VK_FORMAT_R8G8B8A8_SRGB;//VK_FORMAT_R8G8B8A8_UNORM;
 			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			info.subresourceRange.levelCount = 1;
 			info.subresourceRange.layerCount = 1;
+			info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+			info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
 			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &imageData->TextureView);
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create image view");
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
+		}
+
+		// Imgui basically make one sampler for all textures
+		{
+			VkSamplerCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+			info.magFilter = VK_FILTER_LINEAR;
+			info.minFilter = VK_FILTER_LINEAR;
+			info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+			info.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			info.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			info.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			info.minLod = -1000;
+			info.maxLod = 1000;
+			info.maxAnisotropy = 1.0f;
+
+			result = vkCreateSampler(vulkanInfo->Device, &info, vulkanInfo->Allocator, &imageData->TextureSampler);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
 		}
 
 		// Create the Descriptor Set:
@@ -551,6 +525,7 @@ namespace Karma
 			range[0].memory = imageData->UploadBufferMemory;
 			range[0].size = uploadSize;
 
+			// Flush issue 
 			result = vkFlushMappedMemoryRanges(vulkanInfo->Device, 1, range);
 			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't flush memory range");
 
@@ -664,7 +639,7 @@ namespace Karma
 			info.subresourceRange.layerCount = 1;
 
 			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &backendData->FontView);
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create image view");
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
 		}
 
 		// Create the Descriptor Set:
@@ -758,6 +733,24 @@ namespace Karma
 		return true;
 	}
 
+	VkShaderModule KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateShaderModule(const std::vector<uint32_t>& code)
+	{
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		
+		VkShaderModuleCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		createInfo.codeSize = code.size() * sizeof(uint32_t);
+		createInfo.pCode = code.data();
+
+		VkShaderModule shaderModule;
+		VkResult result = vkCreateShaderModule(vulkanInfo->Device, &createInfo, nullptr, &shaderModule);
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create shader module!");
+
+		return shaderModule;
+	}
+
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateShaderModules(VkDevice device, const VkAllocationCallbacks* allocator)
 	{
 		// Create the shader modules
@@ -792,7 +785,7 @@ namespace Karma
 			return;
 		}
 
-		// Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 	'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
+		// Bilinear sampling is required by default. Set 'io.Fonts->Flags |= KGFontAtlasFlags_NoBakedLines' or 	'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
 		VkSamplerCreateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		info.magFilter = VK_FILTER_LINEAR;
@@ -859,7 +852,7 @@ namespace Karma
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create pipeline layout");
 	}
 
-	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache 	pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass)
+	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_CreateShaderModules(device, allocator);
@@ -963,7 +956,7 @@ namespace Karma
 		info.subpass = subpass;
 
 		VkResult result = vkCreateGraphicsPipelines(device, pipelineCache, 1, &info, allocator, pipeline);
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create graphics pipelines");
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create graphics pipelines");
 	}
 
 	bool KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_CreateDeviceObjects()
@@ -986,7 +979,7 @@ namespace Karma
 			info.maxLod = 1000;
 			info.maxAnisotropy = 1.0f;
 			result = vkCreateSampler(vulkanInfo->Device, &info, vulkanInfo->Allocator, &backendData->FontSampler);
-			KR_CORE_ASSERT(result == VK_SUCCESS, "Coudln't create sampler");
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create sampler");
 		}
 
 		if (!backendData->DescriptorSetLayout)
@@ -1197,7 +1190,7 @@ namespace Karma
 	}
 
 	// Seems like used for initializing the Vulkan relevant variables
-	bool KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* info)
+	/*bool KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init(KarmaGui_ImplVulkan_InitInfo* info)
 	{
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		KR_CORE_ASSERT(io.BackendRendererUserData == nullptr, "Already initialized a renderer backend!");
@@ -1210,7 +1203,7 @@ namespace Karma
 
 		io.BackendRendererUserData = (void*)backendData;
 		io.BackendRendererName = "Vulkan_Got_Back";
-		io.BackendFlags |= KGGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
+		io.BackendFlags |= KGGuiBackendFlags_RendererHasVtxOffset;  // We can honor the KGDrawCmd::VtxOffset field, allowing for large meshes.
 
 		// Maybe chore for toofani mood!
 		// io.BackendFlags |= KarmaGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
@@ -1220,7 +1213,7 @@ namespace Karma
 		KR_CORE_ASSERT(info->Device != VK_NULL_HANDLE, "No device found");
 		KR_CORE_ASSERT(info->Queue != VK_NULL_HANDLE, "No queue assigned");
 		KR_CORE_ASSERT(info->DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
-		KR_CORE_ASSERT(info->MinImageCount <= 2, "Minimum image count exceeding limit");
+		KR_CORE_ASSERT(info->MinImageCount >= 2, "Minimum image count exceeding limit");
 		KR_CORE_ASSERT(info->ImageCount >= info->MinImageCount, "Not enough pitch for ImageCount");
 		KR_CORE_ASSERT(info->RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
 
@@ -1243,7 +1236,7 @@ namespace Karma
 		}
 
 		return true;
-	}
+	}*/
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Shutdown()
 	{
@@ -1318,103 +1311,665 @@ namespace Karma
 		return descriptorSet;
 	}
 
-	// This function is called, in multi-viewport context, when new view-port is instantiated
-	// and KarmaGui::UpdatePlatformWindows() is called.
-	// https://github.com/ravimohan1991/imgui/blob/cf070488c71be01a04498e8eb50d66b982c7af9b/imgui.cpp#L13451
-	void KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
+	void KarmaGuiVulkanHandler::CreateOffScreenTextureResources()
 	{
-		// Still need to address bRecreateSwapChainAndCommandBuffers?
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		
+		if(!backendData->OffScreenRR.bAllocationDoneOnce)
+		{
+			CreateOffScreenTextureRenderpassResource();
+		}
+		
+		for(auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
+		{
+			if (!backendData->OffScreenRR.bAllocationDoneOnce)
+			{
+				// assuming that all 3D scenes use same pipeline layout. This may change later
+				CreateOffScreenTextureGraphicsPipelineResource(backendData->OffScreenRR.RenderPass->GetHandle(), it->Size.x, it->Size.y);
 
+				// This variable is also used to create sampler in KarmaGuiRenderer::Add3DSceneFor2DRendering once
+				backendData->OffScreenRR.bAllocationDoneOnce = true;
+			}
+
+			CreateOffScreenTextureDepthResource(&(*it));
+			CreateOffScreenTextureFrameBufferResource(&(*it));
+		}
+	}
+
+	static VkFormat ShaderDataTypeToVulkanType(ShaderDataType type)
+	{
+		switch (type)
+		{
+		case ShaderDataType::Float:
+			return VK_FORMAT_R32_SFLOAT;
+		case ShaderDataType::Float2:
+			return VK_FORMAT_R32G32_SFLOAT;
+		case ShaderDataType::Float3:
+			return VK_FORMAT_R32G32B32_SFLOAT;
+		case ShaderDataType::Float4:
+			return VK_FORMAT_R32G32B32A32_SFLOAT;
+		case ShaderDataType::None:
+		case ShaderDataType::Mat3:
+		case ShaderDataType::Mat4:
+		case ShaderDataType::Int:
+		case ShaderDataType::Int2:
+		case ShaderDataType::Int3:
+		case ShaderDataType::Int4:
+		case ShaderDataType::Bool:
+			// Refer Mesh::GaugeVertexDataLayout for usual datatype
+			// to be used in the context of vertex buffer
+			KR_CORE_ASSERT(false, "Weird ShaderDataType is being used")
+				return VK_FORMAT_UNDEFINED;
+			break;
+		}
+
+		KR_CORE_ASSERT(false, "Vulkan doesn't support this ShaderDatatype");
+		return VK_FORMAT_UNDEFINED;
+	}
+
+	void KarmaGuiVulkanHandler::CreateOffScreenTextureGraphicsPipelineResource(VkRenderPass renderPassKG, float windowKGWidth, float windowKGHeight)
+	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
-		// Clear the structure with now redundant information
-		ClearVulkanWindowData(windowData, bCreateSyncronicity);
+		const KarmaVector<VkDescriptorSetLayout>& setLayouts = FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSetLayout()->GetHandles();
 
-		RendererAPI* rAPI = RenderCommand::GetRendererAPI();
-		VulkanRendererAPI* vulkanAPI = nullptr;
+		VkPipelineLayoutCreateInfo plInfo{};
+		plInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		plInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.Num());
+		plInfo.pSetLayouts = setLayouts.GetData();
+		plInfo.pushConstantRangeCount = 0;
+		plInfo.pPushConstantRanges = nullptr;
 
-		if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
+		VkResult result = vkCreatePipelineLayout(vulkanInfo->Device, &plInfo, nullptr, &backendData->OffScreenRR.OffscreenPipelineLayout);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create pipeline layout!");
+
+		VkShaderModule vertShaderModule = KarmaGui_ImplVulkan_CreateShaderModule(FVulkanDynamicRHI::Get().GetDevice()->GetDefaultShader()->GetVertSpirV());
+		VkShaderModule fragShaderModule = KarmaGui_ImplVulkan_CreateShaderModule(FVulkanDynamicRHI::Get().GetDevice()->GetDefaultShader()->GetFragSpirV());
+
+		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+		vertShaderStageInfo.module = vertShaderModule;
+		vertShaderStageInfo.pName = "main";
+
+		VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+		fragShaderStageInfo.module = fragShaderModule;
+		fragShaderStageInfo.pName = "main";
+
+		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+
+		// See Mesh::GaugeVertexDataLayout to understand the layout of vertex data we are using
+		BufferLayout layout;
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Position"));
+		layout.PushElement(BufferElement(ShaderDataType::Float2, "v_UV"));
+
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Normal"));
+		/*layout.PushElement(BufferElement(ShaderDataType::Float4, "v_Color"));
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Normal"));
+		layout.PushElement(BufferElement(ShaderDataType::Float3, "v_Tangent"));*/
+
+		VkVertexInputBindingDescription bindingDescription = {};
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+		bindingDescription.binding = 0;
+		bindingDescription.stride = layout.GetStride();
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		// Telling vulkan what to expect from vertex data in terms of attributes and their rate of loading
+		uint32_t index = 0;
+
+		for (const auto& element : layout)
 		{
-			vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
+			VkVertexInputAttributeDescription elementAttributeDescription{};
+			elementAttributeDescription.binding = 0;
+			elementAttributeDescription.location = index;
+			elementAttributeDescription.format = ShaderDataTypeToVulkanType(element.Type);
+			elementAttributeDescription.offset = static_cast<uint32_t>(element.Offset);
+
+			attributeDescriptions.push_back(elementAttributeDescription);
+			index++;
+		}
+
+		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+		VkViewport viewport{};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = windowKGWidth;
+		viewport.height = windowKGHeight;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+
+		VkRect2D scissor{};
+		scissor.offset = { 0, 0 };
+		scissor.extent.width = windowKGWidth;
+		scissor.extent.height = windowKGHeight;
+
+		VkPipelineViewportStateCreateInfo viewportState{};
+		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewportState.viewportCount = 1;
+		viewportState.pViewports = &viewport;
+
+		viewportState.scissorCount = 1;
+		viewportState.pScissors = &scissor;
+
+		VkPipelineRasterizationStateCreateInfo rasterizer{};
+		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rasterizer.depthClampEnable = VK_FALSE;
+		rasterizer.rasterizerDiscardEnable = VK_FALSE;
+		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+		rasterizer.lineWidth = 1.0f;
+		rasterizer.cullMode = VK_CULL_MODE_NONE;
+		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		rasterizer.depthBiasEnable = VK_FALSE;
+
+		// Antialiasing
+		VkPipelineMultisampleStateCreateInfo multisampling{};
+		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		multisampling.sampleShadingEnable = VK_FALSE;
+		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+		VkPipelineDepthStencilStateCreateInfo depthStencil{};
+		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.stencilTestEnable = VK_FALSE;
+
+		VkBool32 bLogicalOperationsAllowed = FVulkanDynamicRHI::Get().GetGpuDeviceFeatures().logicOp;
+
+		// Mix the old and new value to produce a final color
+		// finalColor.rgb = newAlpha * newColor + (1 - newAlpha) * oldColor;
+		// finalColor.a = newAlpha.a;
+		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT
+			| VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		if (!bLogicalOperationsAllowed)
+		{
+			colorBlendAttachment.blendEnable = VK_TRUE;
 		}
 		else
 		{
-			KR_CORE_ASSERT(false, "How is this even possible?");
+			colorBlendAttachment.blendEnable = VK_FALSE;
 		}
+		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
-		KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
+		// Combine the old and new value using a bitwise operation
+		VkPipelineColorBlendStateCreateInfo colorBlending{};
+		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		if (bLogicalOperationsAllowed)
+		{
+			colorBlending.logicOpEnable = VK_TRUE;
+		}
+		else
+		{
+			colorBlending.logicOpEnable = VK_FALSE;
+		}
+		colorBlending.logicOp = VK_LOGIC_OP_COPY;
+		colorBlending.attachmentCount = 1;
+		colorBlending.pAttachments = &colorBlendAttachment;
+		colorBlending.blendConstants[0] = 0.0f;
+		colorBlending.blendConstants[1] = 0.0f;
+		colorBlending.blendConstants[2] = 0.0f;
+		colorBlending.blendConstants[3] = 0.0f;
 
-		// Fill relevant information gathered from VulkanContext
-		// Assuming new swapchain and all that has been created in the KarmaGuiLayer::GiveLoopBeginControlToVulkan
-		windowData->Swapchain = VulkanHolder::GetVulkanContext()->GetSwapChain();
-		windowData->TotalImageCount = (uint32_t)VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
-		windowData->RenderArea.extent = VulkanHolder::GetVulkanContext()->GetSwapChainExtent();
+		VkGraphicsPipelineCreateInfo pipelineInfo{};
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineInfo.stageCount = 2;
+		pipelineInfo.pStages = shaderStages;
+		pipelineInfo.pVertexInputState = &vertexInputInfo;
+		pipelineInfo.pInputAssemblyState = &inputAssembly;
+		pipelineInfo.pViewportState = &viewportState;
+		pipelineInfo.pRasterizationState = &rasterizer;
+		pipelineInfo.pMultisampleState = &multisampling;
+		pipelineInfo.pColorBlendState = &colorBlending;
+		pipelineInfo.layout = backendData->OffScreenRR.OffscreenPipelineLayout;
+		pipelineInfo.renderPass = renderPassKG;
+		pipelineInfo.subpass = 0;
+		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+		pipelineInfo.pDepthStencilState = &depthStencil;
+
+		VkResult resultGP = vkCreateGraphicsPipelines(vulkanInfo->Device, VK_NULL_HANDLE,
+			1, &pipelineInfo, nullptr, &backendData->OffScreenRR.OffscreenGraphicsPipeline);
+
+		KR_CORE_ASSERT(resultGP == VK_SUCCESS, "Failed to create graphics pipeline!");
+
+
+		vkDestroyShaderModule(vulkanInfo->Device, fragShaderModule, nullptr);
+		vkDestroyShaderModule(vulkanInfo->Device, vertShaderModule, nullptr);
+	}
+
+	void KarmaGuiVulkanHandler::CreateOffScreenTextureRenderpassResource()
+	{
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+
+		KR_CORE_INFO("Attempting to Vulkan renderpass for offscreen texture rendering of 3D scene");
+		FVulkanRenderPassInfo RPInfo;
+
+		// Color Attachment
+		FVulkanRenderPassInfo::FAttachmentInfo colorAttachmentInfo;
+		colorAttachmentInfo.AttachmentFlags = 0;
+		colorAttachmentInfo.AttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
+		colorAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR;       // Clear the image at start
+		colorAttachmentInfo.AttachmentStoreOperation = VK_ATTACHMENT_STORE_OP_STORE;     // Store the result for sampling later
+		colorAttachmentInfo.AttachmentStencilLoadOperation = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachmentInfo.AttachmentStencilStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachmentInfo.AttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;  // Layout when render pass starts
+		colorAttachmentInfo.AttachmentFinalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;// Layout when render pass ends (we transition *after* the pass)
+		RPInfo.m_AttachmentsInfo.Add(colorAttachmentInfo);
+
+		// Depth Attachment
+		FVulkanRenderPassInfo::FAttachmentInfo depthAttachmentInfo;
+		depthAttachmentInfo.AttachmentFlags = 0;
+		depthAttachmentInfo.AttachmentFormat = FVulkanDynamicRHI::Get().FindDepthFormat();
+		depthAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
+		depthAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR;       // Clear the image at start
+		depthAttachmentInfo.AttachmentStoreOperation = VK_ATTACHMENT_STORE_OP_STORE;     // Store the result for sampling later
+		depthAttachmentInfo.AttachmentStencilLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachmentInfo.AttachmentStencilStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachmentInfo.AttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;  // Layout when render pass starts
+		depthAttachmentInfo.AttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;// Layout when render pass ends (we transition *after* the pass)
+		RPInfo.m_AttachmentsInfo.Add(depthAttachmentInfo);
+
+		RPInfo.bHasDepthAttachment = true;
+
+		FVulkanRenderPassInfo::FAttachmentRefInfo colorAttachmentReference;
+		colorAttachmentReference.attachment = 0;
+		colorAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		RPInfo.m_ColorAttachmentsRefInfo.Add(colorAttachmentReference);
+
+		RPInfo.m_DepthAttachmentReference.attachment = 1;
+		RPInfo.m_DepthAttachmentReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		FVulkanRenderTargetLayout RTLayout(RPInfo);
+		backendData->OffScreenRR.RenderPass = new FVulkanRenderPass(*FVulkanDynamicRHI::Get().GetDevice(), RTLayout);
+
+		// --- had couple of dependencies for layouts change ---
+	}
+
+	void KarmaGuiVulkanHandler::CreateOffScreenTextureFrameBufferResource(KarmaGui_3DScene_To_2DTexture_Data* textureData)
+	{
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+
+		std::vector<VkImageView> attachments ={
+				textureData->Image_View,
+				textureData->DepthImage_View
+		};
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = backendData->OffScreenRR.RenderPass->GetHandle();
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferInfo.pAttachments = attachments.data();
+		framebufferInfo.width = textureData->Size.x;
+		framebufferInfo.height = textureData->Size.y;
+		framebufferInfo.layers = 1;
+
+		VkResult result = vkCreateFramebuffer(vulkanInfo->Device, &framebufferInfo, nullptr, &textureData->FrameBuffer);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create off screen frame buffer");
+	}
+
+	void KarmaGuiVulkanHandler::CreateOffScreenTextureDepthResource(KarmaGui_3DScene_To_2DTexture_Data* textureData)
+	{
+		// may want to destroy old depth image and imageview
+		
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+		
+		VkResult result;
+		
+		// Create depth image
+		{
+			VkImageCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			info.imageType = VK_IMAGE_TYPE_2D;
+			info.format = FVulkanDynamicRHI::Get().FindDepthFormat();
+			info.extent.width = textureData->Size.x;
+			info.extent.height = textureData->Size.y;
+			info.extent.depth = 1;
+			info.mipLevels = 1;
+			info.arrayLayers = 1;
+			info.samples = VK_SAMPLE_COUNT_1_BIT;
+			info.tiling = VK_IMAGE_TILING_OPTIMAL;
+			info.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+			info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			//info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+			result = vkCreateImage(vulkanInfo->Device, &info, vulkanInfo->Allocator, &textureData->DepthImage);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create a image");
+
+			VkMemoryRequirements req;
+			vkGetImageMemoryRequirements(vulkanInfo->Device, textureData->DepthImage, &req);
+			VkMemoryAllocateInfo allocInfo = {};
+			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			allocInfo.allocationSize = req.size;
+			allocInfo.memoryTypeIndex = FVulkanDynamicRHI::Get().FindMemoryType(req.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+			result = vkAllocateMemory(vulkanInfo->Device, &allocInfo, vulkanInfo->Allocator, &textureData->DepthDeviceMemory);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't allocate memory");
+
+			result = vkBindImageMemory(vulkanInfo->Device, textureData->DepthImage, textureData->DepthDeviceMemory, 0);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't bind image memory");
+		}
+		
+		// Create depth image view
+		{
+			VkImageViewCreateInfo info = {};
+			info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			info.image = textureData->DepthImage;
+			info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			info.format = FVulkanDynamicRHI::Get().FindDepthFormat();
+			info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+			info.subresourceRange.levelCount = 1;
+			info.subresourceRange.layerCount = 1;
+			info.subresourceRange.baseMipLevel = 0;
+			info.subresourceRange.baseArrayLayer = 0;
+			
+			result = vkCreateImageView(vulkanInfo->Device, &info, vulkanInfo->Allocator, &textureData->DepthImage_View);
+			KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't create image view");
+		}
+	}
+
+	void KarmaGuiVulkanHandler::CheckInitialization()
+	{
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		KarmaGui_ImplVulkan_InitInfo& vulkanInitInfo = backendData->VulkanInitInfo;
+
+		KR_CORE_ASSERT(vulkanInitInfo.Instance != VK_NULL_HANDLE, "No instance found");
+		KR_CORE_ASSERT(vulkanInitInfo.PhysicalDevice != VK_NULL_HANDLE, "No physical device found");
+		KR_CORE_ASSERT(vulkanInitInfo.Device != VK_NULL_HANDLE, "No device found");
+		KR_CORE_ASSERT(vulkanInitInfo.Queue != VK_NULL_HANDLE, "No queue assigned");
+		KR_CORE_ASSERT(vulkanInitInfo.DescriptorPool != VK_NULL_HANDLE, "No descriptor pool found");
+		KR_CORE_ASSERT(vulkanInitInfo.MinImageCount >= 2, "Minimum image count exceeding limit");
+		KR_CORE_ASSERT(vulkanInitInfo.ImageCount >= vulkanInitInfo.MinImageCount, "Not enough pitch for ImageCount");
+		KR_CORE_ASSERT(vulkanInitInfo.RenderPass != VK_NULL_HANDLE, "No renderpass assigned");
+	}
+
+	void KarmaGuiVulkanHandler::FillWindowData(KarmaGui_ImplVulkanH_Window* windowData, bool bCreateSyncronicity)
+	{
+		windowData->RHIResources = new KarmaGui_ImplVulkanH_RHIResources();
+
+		windowData->RHIResources->VulkanSwapChain = FVulkanSwapChain::Create(FVulkanDynamicRHI::Get().GetDevice());
+
+		windowData->Swapchain = windowData->RHIResources->VulkanSwapChain->GetSwapChainHandle();
+		
+		windowData->TotalImageCount = FVulkanDynamicRHI::Get().SwapChainImageCount();
+		windowData->RenderArea.extent = windowData->RHIResources->VulkanSwapChain->GetSwapChainExtent();
 		windowData->RenderArea.offset = { 0, 0 };
-		windowData->RenderPass = VulkanHolder::GetVulkanContext()->GetRenderPass();
-		windowData->MAX_FRAMES_IN_FLIGHT = vulkanAPI->GetMaxFramesInFlight();
-		windowData->CommandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
-		windowData->ImageFrameIndex = 0;
+		windowData->MAX_FRAMES_IN_FLIGHT = windowData->RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
+
+		KR_CORE_INFO("Attempting to create primary Vulkan renderpass for on-screen presentation");
+		FVulkanRenderPassInfo RPInfo;
+		KarmaGuiVulkanHandler::MakeRenderPassInfo(windowData->RHIResources->VulkanSwapChain, RPInfo);
+
+		FVulkanRenderTargetLayout RTLayout(RPInfo);
+		windowData->RHIResources->VulkanRenderPass = new FVulkanRenderPass(*FVulkanDynamicRHI::Get().GetDevice(), RTLayout);
+		windowData->RenderPass = windowData->RHIResources->VulkanRenderPass->GetHandle();
+
+		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+
+		backendData->VulkanInitInfo.RenderPass = windowData->RenderPass;
+		backendData->RenderPass = windowData->RenderPass;
+
+		backendData->Subpass = 0;
+
+		windowData->CommandPool = FVulkanDynamicRHI::Get().GetDevice()->GetCommandPool();
 
 		KR_CORE_ASSERT(windowData->ImageFrames == nullptr, "Somehow frames are still occupied. Please clear them.");
 		windowData->ImageFrames = new KarmaGui_ImplVulkanH_ImageFrame[windowData->TotalImageCount];
 
+		FVulkanRenderTargetsInfo* rT = new FVulkanRenderTargetsInfo();
+		windowData->RHIResources->RenderTargets.Add(rT);
+		
+		FVulkanRenderTargetsInfo& renderTargets = *rT;
+		CreateDepthRenderTarget(renderTargets, windowData->RHIResources->VulkanSwapChain);
+		
+		renderTargets.m_ColorRenderTargets.resize(windowData->TotalImageCount);
+		
 		for (uint32_t counter = 0; counter < windowData->TotalImageCount; counter++)
 		{
 			KarmaGui_ImplVulkanH_ImageFrame* frameData = &windowData->ImageFrames[counter];
 
-			// VulkanContext ImageView equivalent
-			frameData->BackbufferView = VulkanHolder::GetVulkanContext()->GetSwapChainImageViews()[counter];
+			// Backbuffers are swapchain images
+			frameData->Backbuffer = windowData->RHIResources->VulkanSwapChain->GetSwapChainImages()[counter];
 
+			// BackbufferViews are swapchain image views
+			frameData->BackbufferView = windowData->RHIResources->VulkanSwapChain->GetSwapChainImageViews()[counter];
+
+			GatherSwapChainColorRenderTargets(renderTargets, windowData->RHIResources->VulkanSwapChain, counter);
+			
+			FVulkanFramebuffer* frameBuffer = new FVulkanFramebuffer(*FVulkanDynamicRHI::Get().GetDevice(), renderTargets, RTLayout, *windowData->RHIResources->VulkanRenderPass, counter);
+			
+			windowData->RHIResources->VulkanFrameBuffers.Add(frameBuffer);
+			
 			// Framebuffer
-			frameData->Framebuffer = VulkanHolder::GetVulkanContext()->GetSwapChainFrameBuffer()[counter];
-
-			// Backbuffers could be VulkanContext m_swapChainImages equivalent
-			frameData->Backbuffer = VulkanHolder::GetVulkanContext()->GetSwapChainImages()[counter];
+			frameData->Framebuffer = frameBuffer->GetHandle();
 		}
 
+		if(windowData->FramesOnFlight == nullptr)
+		{
+			windowData->FramesOnFlight = new KarmaGui_Vulkan_Frame_On_Flight[windowData->MAX_FRAMES_IN_FLIGHT];
+		}
+
+		KR_CORE_ASSERT(windowData->FramesOnFlight != nullptr, "Commandbuffers are being assigned without enough resources");
+
+		std::vector<VkCommandBuffer> commandBuffers;
+		commandBuffers.resize(windowData->MAX_FRAMES_IN_FLIGHT);
+
+		VkCommandBufferAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.commandPool = windowData->CommandPool;
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
+
+		VkResult result = vkAllocateCommandBuffers(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &allocInfo, commandBuffers.data());
+
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create command buffers!");
+
+		for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
+		{
+			KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
+			frameOnFlight->CommandBuffer = commandBuffers[counter];
+		}
+		
 		// We create seperate syncronicity resources for Dear KarmaGui
 		if (bCreateSyncronicity)
 		{
-			// For syncronicity, we instantiate FramesOnFlight with MAX_FRAMES_IN_FLIGHT number and label them the Real-Frames-On-Flight in our mind
-			KR_CORE_ASSERT(windowData->FramesOnFlight == nullptr, "Somehow frames-on-flight are still occupied. Please clear them.");
-
-			windowData->FramesOnFlight = new KarmaGui_Vulkan_Frame_On_Flight[windowData->MAX_FRAMES_IN_FLIGHT];
-
 			for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
 			{
 				KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
 
-				VkFenceCreateInfo fenceInfo = {};
-				fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-				fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-				VkResult result = vkCreateFence(vulkanInfo->Device, &fenceInfo, VK_NULL_HANDLE, &frameOnFlight->Fence);
-
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create fence");
+				frameOnFlight->Fence = FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().AllocateFence(true);
 
 				VkSemaphoreCreateInfo semaphoreInfo = {};
 				semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-				result = vkCreateSemaphore(vulkanInfo->Device, &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->ImageAcquiredSemaphore);
+				result = vkCreateSemaphore(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->ImageAcquiredSemaphore);
 
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create ImageAcquiredSemaphore");
 
-				result = vkCreateSemaphore(vulkanInfo->Device, &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->RenderCompleteSemaphore);
+				result = vkCreateSemaphore(FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice(), &semaphoreInfo, VK_NULL_HANDLE, &frameOnFlight->RenderCompleteSemaphore);
 
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create RenderCompleteSemaphore");
 			}
 
 			windowData->SemaphoreIndex = 0;
 		}
+	}
 
-		KR_CORE_ASSERT(windowData->FramesOnFlight != nullptr, "Commandbuffers are being assigned without enough resources");
-		vulkanAPI->AllocateCommandBuffers();
+	void KarmaGuiVulkanHandler::CreateDepthRenderTarget(FVulkanRenderTargetsInfo &RTInfo, FVulkanSwapChain *SwapChain)
+	{
+		VkFormat depthFormat = FVulkanDynamicRHI::Get().FindDepthFormat();
 
+		VkImageCreateInfo imageInfo{};
+		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		imageInfo.imageType = VK_IMAGE_TYPE_2D;
+		imageInfo.extent.width = SwapChain->GetSwapChainExtent().width;
+		imageInfo.extent.height = SwapChain->GetSwapChainExtent().height;
+		imageInfo.extent.depth = 1;
+		imageInfo.mipLevels = 1;
+		imageInfo.arrayLayers = 1;
+		imageInfo.format = depthFormat;
+		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageInfo.flags = 0;
+
+		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+		
+		VkResult result = vkCreateImage(logicalDevice, &imageInfo, nullptr, &RTInfo.m_DepthRenderTarget.m_DepthRTImage);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create depthimage!");
+
+		VkMemoryRequirements memRequirements;
+		vkGetImageMemoryRequirements(logicalDevice, RTInfo.m_DepthRenderTarget.m_DepthRTImage, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = FVulkanDynamicRHI::Get().FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		VkResult result1 = vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &RTInfo.m_DepthRenderTarget.m_DepthRTDeviceMemory);
+		KR_CORE_ASSERT(result1 == VK_SUCCESS, "Failed to allocate depth image memeory");
+
+		vkBindImageMemory(logicalDevice, RTInfo.m_DepthRenderTarget.m_DepthRTImage, RTInfo.m_DepthRenderTarget.m_DepthRTDeviceMemory, 0);
+
+		VkImageViewCreateInfo viewInfo{};
+		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		viewInfo.image = RTInfo.m_DepthRenderTarget.m_DepthRTImage;
+		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		viewInfo.format = depthFormat;
+		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+		viewInfo.subresourceRange.baseMipLevel = 0;
+		viewInfo.subresourceRange.levelCount = 1;
+		viewInfo.subresourceRange.baseArrayLayer = 0;
+		viewInfo.subresourceRange.layerCount = 1;
+
+		result = vkCreateImageView(logicalDevice, &viewInfo, nullptr, &RTInfo.m_DepthRenderTarget.m_DepthRTView);
+		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create depth imageview");
+		
+		RTInfo.bDepthRenderTarget = true;
+	}
+
+	void KarmaGuiVulkanHandler::GatherSwapChainColorRenderTargets(class FVulkanRenderTargetsInfo &RTInfo, FVulkanSwapChain *SwapChain, uint32_t SwapChainImageIndex)
+	{
+		RTInfo.m_ColorRenderTargets[SwapChainImageIndex].m_ColorRTViews[0] = SwapChain->GetSwapChainImageViews()[SwapChainImageIndex];
+		
+		RTInfo.m_ColorRenderTargets[SwapChainImageIndex].bSwapChainColorRenderTarget = true;
+		RTInfo.m_NumColorRenderTargets = 1;
+	}
+
+	void KarmaGuiVulkanHandler::MakeRenderPassInfo(FVulkanSwapChain* SwapChain, FVulkanRenderPassInfo& RPInfo)
+	{
+		FVulkanRenderPassInfo::FAttachmentInfo colorAttachmentInfo;
+		colorAttachmentInfo.AttachmentFlags = 0;
+		colorAttachmentInfo.AttachmentFormat = SwapChain->GetSwapChainImageFormat();
+		colorAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR; 
+		colorAttachmentInfo.AttachmentStoreOperation = VK_ATTACHMENT_STORE_OP_STORE; 
+		colorAttachmentInfo.AttachmentStencilLoadOperation = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachmentInfo.AttachmentStencilStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachmentInfo.AttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		colorAttachmentInfo.AttachmentFinalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+		RPInfo.m_AttachmentsInfo.Add(colorAttachmentInfo);
+
+		FVulkanRenderPassInfo::FAttachmentInfo depthAttachmentInfo;
+		depthAttachmentInfo.AttachmentFlags = 0;
+		depthAttachmentInfo.AttachmentFormat = FVulkanDynamicRHI::Get().FindDepthFormat();
+		depthAttachmentInfo.AttachmentSampleCount = VK_SAMPLE_COUNT_1_BIT;
+		depthAttachmentInfo.AttachmentLoadOperation = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachmentInfo.AttachmentStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachmentInfo.AttachmentStencilLoadOperation = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		depthAttachmentInfo.AttachmentStencilStoreOperation = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachmentInfo.AttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		depthAttachmentInfo.AttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		RPInfo.m_AttachmentsInfo.Add(depthAttachmentInfo);
+
+		RPInfo.bHasDepthAttachment = true;
+
+		FVulkanRenderPassInfo::FAttachmentRefInfo colorAttachmentReference;
+		colorAttachmentReference.attachment = 0;
+		colorAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		RPInfo.m_ColorAttachmentsRefInfo.Add(colorAttachmentReference);
+
+		RPInfo.m_DepthAttachmentReference.attachment = 1;
+		RPInfo.m_DepthAttachmentReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		RPInfo.m_RenderArea.extent = SwapChain->GetSwapChainExtent();
+	}
+
+	void KarmaGuiVulkanHandler::ShivaSwapChainForRebuild(KarmaGui_ImplVulkanH_Window* windowData)
+	{
+		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+		
+		std::vector<VkCommandBuffer> commandBuffers;
+		commandBuffers.resize(windowData->MAX_FRAMES_IN_FLIGHT);
+		
 		for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
 		{
 			KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
-			frameOnFlight->CommandBuffer = vulkanAPI->GetCommandBuffers()[counter];
+			commandBuffers[counter] = frameOnFlight->CommandBuffer;
 		}
+		
+		vkDeviceWaitIdle(logicalDevice);
+		
+		vkFreeCommandBuffers(logicalDevice, windowData->CommandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+		
+        ClearVulkanWindowData(windowData, false);
+		
+		for(const auto& vulkanFramebuffer : windowData->RHIResources->VulkanFrameBuffers)
+		{
+			delete vulkanFramebuffer;
+		}
+		windowData->RHIResources->VulkanFrameBuffers.Clear();
+		
+		// DepthRenderTarget of the swapchain should be destroyed here. This assumes depth render target is only used for swapchain
+		for(const auto& renderTargets : windowData->RHIResources->RenderTargets)
+		{
+			if(renderTargets->bDepthRenderTarget)
+			{
+				vkDestroyImageView(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTView, nullptr);
+				vkDestroyImage(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTImage, nullptr);
+				vkFreeMemory(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTDeviceMemory, nullptr);
+			}
+			
+			delete renderTargets;
+		}
+		windowData->RHIResources->RenderTargets.Clear();
+		
+		delete windowData->RHIResources->VulkanRenderPass;
+
+		FVulkanSwapChainRecreateInfo RI{};
+		windowData->RHIResources->VulkanSwapChain->Destroy(&RI);
+		delete windowData->RHIResources->VulkanSwapChain;
+		windowData->RHIResources->VulkanSwapChain = nullptr;
+
+		delete windowData->RHIResources;
 	}
 
 	void KarmaGuiVulkanHandler::ClearVulkanWindowData(KarmaGui_ImplVulkanH_Window* vulkanWindowData, bool bDestroySyncronicity)
@@ -1438,7 +1993,6 @@ namespace Karma
 			{
 				if (vulkanWindowData->FramesOnFlight != nullptr)
 				{
-					// Remove syncronicity resources using Vulkan API
 					DestroyFramesOnFlightData(&vulkanWindowData->FramesOnFlight[counter]);
 				}
 			}
@@ -1484,8 +2038,9 @@ namespace Karma
 
 		vkDeviceWaitIdle(vulkanInfo->Device);
 
-		vkDestroyFence(vulkanInfo->Device, frameSyncronicityData->Fence, VK_NULL_HANDLE);
-		frameSyncronicityData->Fence = VK_NULL_HANDLE;
+		//vkDestroyFence(vulkanInfo->Device, frameSyncronicityData->Fence, VK_NULL_HANDLE);
+		//frameSyncronicityData->Fence = VK_NULL_HANDLE;
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().ReleaseFence(frameSyncronicityData->Fence);
 
 		vkDestroySemaphore(vulkanInfo->Device, frameSyncronicityData->ImageAcquiredSemaphore, VK_NULL_HANDLE);
 		vkDestroySemaphore(vulkanInfo->Device, frameSyncronicityData->RenderCompleteSemaphore, VK_NULL_HANDLE);
@@ -1500,24 +2055,10 @@ namespace Karma
 	{
 		if (bRecreateSwapChainAndCommandBuffers)
 		{
-			RendererAPI* rAPI = RenderCommand::GetRendererAPI();
-			VulkanRendererAPI* vulkanAPI = nullptr;
-
-			if (rAPI->GetAPI() == RendererAPI::API::Vulkan)
-			{
-				vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
-			}
-			else
-			{
-				KR_CORE_ASSERT(false, "How is this even possible?");
-			}
-
-			KR_CORE_ASSERT(vulkanAPI != nullptr, "Casting to VulkanAPI failed");
-
-			vulkanAPI->RecreateCommandBuffersAndSwapChain();
+			ShivaSwapChainForRebuild(windowData);
 		}
 
-		KarmaGuiVulkanHandler::ShareVulkanContextResourcesOfMainWindow(windowData, bCreateSyncronicity);
+		FillWindowData(windowData, bCreateSyncronicity);
 	}
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGui_ImplVulkanH_Window* windowData)
@@ -1525,18 +2066,90 @@ namespace Karma
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
-		//vkDeviceWaitIdle(vulkanInfo->Device); // FIXME: We could wait on the Queue if we had the queue in windowData-> (otherwise VulkanH functions can't use globals)
+		if (backendData->OffScreenRR.bAllocationDoneOnce)
+		{
+			vkDestroyPipeline(vulkanInfo->Device, backendData->OffScreenRR.OffscreenGraphicsPipeline, nullptr);
+			vkDestroyPipelineLayout(vulkanInfo->Device, backendData->OffScreenRR.OffscreenPipelineLayout, nullptr);
 
+			delete backendData->OffScreenRR.RenderPass;
+			backendData->OffScreenRR.RenderPass = nullptr;
+
+			vkDestroySampler(vulkanInfo->Device, backendData->OffScreenRR.Sampler, nullptr);
+		}
+
+		// Clear vulkan resources from KarmaGui_3DScene_To_2DTexture_Data
+		for (auto it = backendData->Elements3DTo2D.begin(); it != backendData->Elements3DTo2D.end(); ++it)
+		{
+			vkDestroyImageView(vulkanInfo->Device, it->DepthImage_View, nullptr);
+			vkDestroyImage(vulkanInfo->Device, it->DepthImage, nullptr);
+			vkFreeMemory(vulkanInfo->Device, it->DepthDeviceMemory, nullptr);
+			vkDestroyImageView(vulkanInfo->Device, it->Image_View, nullptr);
+			vkDestroyImage(vulkanInfo->Device, it->Image, nullptr);
+			vkFreeMemory(vulkanInfo->Device, it->DeviceMemory, nullptr);
+			vkDestroyFramebuffer(vulkanInfo->Device, it->FrameBuffer, nullptr);
+		}
+
+		VkDevice logicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+		
+		std::vector<VkCommandBuffer> commandBuffers;
+		commandBuffers.resize(windowData->MAX_FRAMES_IN_FLIGHT);
+		
+		for (uint32_t counter = 0; counter < windowData->MAX_FRAMES_IN_FLIGHT; counter++)
+		{
+			KarmaGui_Vulkan_Frame_On_Flight* frameOnFlight = &windowData->FramesOnFlight[counter];
+			commandBuffers[counter] = frameOnFlight->CommandBuffer;
+		}
+		
+		vkFreeCommandBuffers(logicalDevice, windowData->CommandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+		
+		// 1. Removes synchronicity
+		// 2. Deletes imageframes and frames on flight objects
 		ClearVulkanWindowData(windowData, true);
 
-		// Seems like each window has seperate instantiation of the resources below
-		// Ponder over them
-		/*
-		vkDestroyPipeline(device, wd->Pipeline, allocator);
-		vkDestroyRenderPass(device, wd->RenderPass, allocator);
-		vkDestroySwapchainKHR(device, wd->Swapchain, allocator);
-		vkDestroySurfaceKHR(instance, wd->Surface, allocator);
-		*/
+		FVulkanDynamicRHI::Get().GetDevice()->GetFenceManager().Denit();
+		
+		for(const auto& vulkanFramebuffer : windowData->RHIResources->VulkanFrameBuffers)
+		{
+			delete vulkanFramebuffer;
+		}
+		windowData->RHIResources->VulkanFrameBuffers.Clear();
+		
+		// What to do with the rendertargets of swapchain which are destroyed in FVulkanSwapChain::Destroy
+		// A heuristic is used and swapchain rendertargets are not cleared here, they are cleared in ^^
+		for(const auto& renderTargets : windowData->RHIResources->RenderTargets)
+		{
+			for(uint32_t counter = 0; counter < FVulkanDynamicRHI::Get().SwapChainImageCount(); counter++)
+			{
+				if(!renderTargets->m_ColorRenderTargets[counter].bSwapChainColorRenderTarget)
+				{
+					for(uint32_t colorRT = 0; colorRT < renderTargets->m_NumColorRenderTargets; colorRT++)
+					{
+						vkDestroyImageView(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTViews[colorRT], nullptr);
+						vkDestroyImage(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTImages[colorRT], nullptr);
+						vkFreeMemory(logicalDevice, renderTargets->m_ColorRenderTargets[counter].m_ColorRTDeviceMemory[colorRT], nullptr);
+					}
+				}
+			}
+			
+			if(renderTargets->bDepthRenderTarget)
+			{
+				vkDestroyImageView(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTView, nullptr);
+				vkDestroyImage(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTImage, nullptr);
+				vkFreeMemory(logicalDevice, renderTargets->m_DepthRenderTarget.m_DepthRTDeviceMemory, nullptr);
+			}
+			
+			delete renderTargets;
+		}
+		windowData->RHIResources->RenderTargets.Clear();
+		
+		delete windowData->RHIResources->VulkanRenderPass;
+
+		FVulkanSwapChainRecreateInfo RI{};
+		windowData->RHIResources->VulkanSwapChain->Destroy(&RI);
+		delete windowData->RHIResources->VulkanSwapChain;
+		windowData->RHIResources->VulkanSwapChain = nullptr;
+
+		delete windowData->RHIResources;
 	}
 
 	//--------------------------------------------------------------------------------------------------------
@@ -1576,8 +2189,6 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyWindow(KarmaGuiViewport* viewport)
 	{
-		// The main viewport (owned by the application) will always have RendererUserData == NULL since we didn't create the data for it.
-		// See KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_Init and it seems not true
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		if (KarmaGui_ImplVulkan_ViewportData* viewportData = (KarmaGui_ImplVulkan_ViewportData*)viewport->RendererUserData)
 		{
@@ -1595,18 +2206,19 @@ namespace Karma
 
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SetWindowSize(KarmaGuiViewport* viewport, KGVec2 size)
 	{
-		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
+		//KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
 		KarmaGui_ImplVulkan_ViewportData* viewportData = (KarmaGui_ImplVulkan_ViewportData*)viewport->RendererUserData;
 		if (viewportData == nullptr) // This is NULL for the main viewport (which is left to the user/app to handle)
 		{
 			return;
 		}
-		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
+
 		viewportData->Window.ClearEnable = (viewport->Flags & KGGuiViewportFlags_NoRendererClear) ? false : true;
 		KarmaGui_ImplVulkan_CreateOrResizeWindow(&viewportData->Window, false, true);
 	}
 
 	// May need extra scrutiny especially when we decoupled imageIndex and FrameOnFlightIndex.
+	// In the current state of Engine, this function is not called because multiport rendering is not supported.
 	void KarmaGuiVulkanHandler::KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_RenderWindow(KarmaGuiViewport* viewport, void*)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
@@ -1622,16 +2234,11 @@ namespace Karma
 		{
 			{
 				result = vkAcquireNextImageKHR(vulkanInfo->Device, windowData->Swapchain, UINT64_MAX, frameFlightData->ImageAcquiredSemaphore, VK_NULL_HANDLE, &windowData->ImageFrameIndex);
-				frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
-			}
-			for (;;)
-			{
-				result = vkWaitForFences(vulkanInfo->Device, 1, &frameFlightData->Fence, VK_TRUE, 100);
-				if (result == VK_SUCCESS) break;
-				if (result == VK_TIMEOUT) continue;
+                KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to acquire next image from swapchain");
 
-				KR_CORE_ASSERT((result == VK_SUCCESS || VK_TIMEOUT), "Something not right");
+                frameData = &windowData->ImageFrames[windowData->ImageFrameIndex];
 			}
+			
 			{
 				//result = vkResetCommandPool(vulkanInfo->Device, windowData->CommandPool, 0);
 				//KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't resent the commandpool");
@@ -1643,6 +2250,7 @@ namespace Karma
 				result = vkBeginCommandBuffer(frameFlightData->CommandBuffer, &info);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't begin commandbuffer recording");
 			}
+			
 			{
 				KGVec4 clearColor = KGVec4(0.0f, 0.0f, 0.0f, 1.0f);
 				memcpy(&windowData->ClearValue.color.float32[0], &clearColor, 4 * sizeof(float));
@@ -1683,16 +2291,10 @@ namespace Karma
 				result = vkEndCommandBuffer(frameFlightData->CommandBuffer);
 				KR_CORE_ASSERT(result == VK_SUCCESS, "Coudn't finish the commandbuffer recording")
 
-					result = vkResetFences(vulkanInfo->Device, 1, &frameFlightData->Fence);
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't reset the fences");
-
-				result = vkQueueSubmit(vulkanInfo->Queue, 1, &info, frameFlightData->Fence);
-				KR_CORE_ASSERT(result == VK_SUCCESS, "Couldn't submit the queue");
 			}
 		}
 	}
 
-	// Need reconsideration because of the same decoupling
 	void KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_SwapBuffers(KarmaGuiViewport* viewport, void*)
 	{
 		KarmaGui_ImplVulkan_Data* backendData = KarmaGuiRenderer::GetBackendRendererUserData();
@@ -1700,8 +2302,7 @@ namespace Karma
 		KarmaGui_ImplVulkanH_Window* windowData = &viewportData->Window;
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
-		KarmaGuiViewport* mainViewPort = KarmaGui::GetMainViewport();
-		KarmaGui_ImplVulkan_ViewportData* mainViewPortData = static_cast<KarmaGui_ImplVulkan_ViewportData*>(mainViewPort->RendererUserData);
+		//KarmaGuiViewport* mainViewPort = KarmaGui::GetMainViewport();
 
 		VkResult result;
 		uint32_t presentIndex = windowData->ImageFrameIndex;

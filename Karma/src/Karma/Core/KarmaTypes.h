@@ -1,7 +1,7 @@
 /**
  * @file KarmaTypes.h
  * @author Ravi Mohan (the_cowboy)
- * @brief This file contains the types used in game logic
+ * @brief This file contains the custom types used in Engine's logic
  * @version 1.0
  * @date March 30, 2023
  *
@@ -15,6 +15,16 @@
 #include <map>
 #include <utility>
 #include <algorithm>
+#include <glm/glm.hpp>
+
+enum class EAllowShrinking
+{
+	/** Allow the array to shrink its allocation if possible */
+	Yes,
+
+	/** Prevent the array from shrinking its allocation */
+	No
+};
 
 /** @brief Specifies why an actor is being deleted/removed from a level */
 namespace EEndPlayReason
@@ -36,7 +46,8 @@ namespace EEndPlayReason
 
 /**
  * @brief euphemism for no index situations
- * @todo usage hasn't caught on in usual engine routines
+ * 
+ * @see KarmaVector::Find, KarmaVector::RemoveSingleSwap etc
  */
 enum { INDEX_NONE = -1 };
 
@@ -91,6 +102,29 @@ public:
 	}
 
 	/**
+	 * @brief Addes a key-value pair to the map
+	 * 
+	 * @since Karma 1.0.0
+	 */
+	void Add(const KeyType& Key, const ValueType& Value)
+	{
+		m_KeyValuePair.insert(typename AMap::value_type(Key, Value));
+	}
+
+	/**
+	 * @brief Checks if the map contains a specified key
+	 *
+	 * @param Key The key to search for.
+	 * @return true if the map contains the specified key, false otherwise.
+	 *
+	 * @since Karma 1.0.0
+	 */
+	bool Contains(const KeyType& Key) const
+	{
+		return m_KeyValuePair.find(Key) != m_KeyValuePair.end();
+	}
+
+	/**
 	 * @brief Find the value associated with a specified key, or if none exists,
 	 * adds a value using the default constructor.
 	 *
@@ -140,12 +174,69 @@ public:
 
 		return nullptr;
 	}
+
+	/**
+	 * @brief Overloaded subscript operator for accessing values by key
+	 *
+	 * @param Key The key whose associated value is to be accessed.
+	 * @return A reference to the value associated with the specified key.
+	 *
+	 * @note If the key does not exist in the map, a new entry is created with a default-constructed value. A mutable reference
+	 * is returned.
+	 * @since Karma 1.0.0
+	 */
+	ValueType& operator[](const KeyType& Key)
+	{
+		return m_KeyValuePair[Key];
+	}
+
+	/**
+	 * @brief Overloaded subscript operator for accessing values by key (const version)
+	 *
+	 * @param Key						The key whose associated value is to be accessed.
+	 * @return A const reference to the value associated with the specified key.
+	 *
+	 * @note Returns immutable reference
+	 * @since Karma 1.0.0
+	 */
+	const ValueType& operator[](const KeyType& Key) const
+	{
+		return m_KeyValuePair.at(Key);
+	}
+
+	uint32_t Num() const
+	{
+		return (uint32_t) m_KeyValuePair.size();
+	}
+
+	auto begin()
+	{
+		return m_KeyValuePair.begin();
+	}
+
+	auto end()
+	{
+		return m_KeyValuePair.end();
+	}
+
+	auto begin() const
+	{
+		return m_KeyValuePair.cbegin();
+	}
+
+	auto end() const
+	{
+		return m_KeyValuePair.cend();
+	}
+
 protected:
 	AMap m_KeyValuePair;
 };
 
 /**
- * @brief Karma's std::vector wrapper
+ * @brief Karma's std::vector wrapper with additional functionalities
+ * 
+ * @since Karma 1.0.0
  */
 template<typename BuildingBlock>
 class KarmaVector
@@ -172,6 +263,10 @@ public:
 	/**
 	 * @brief Removes an element from the vector
 	 *
+	 * The function removes all occurrences of the specified element from the vector
+	 * 
+	 * @note The vector size is reduced by the number of removed elements
+	 * 
 	 * @param aBlock	The element to be removed
 	 * @since Karma 1.0.0
 	 */
@@ -208,11 +303,21 @@ public:
 	}
 
 	/**
-	 * Adds unique element to array if it doesn't exist.
+	 * @brief Sanity check for the index
+	 * 
+	 * @since Karma 1.0.0
+	 */
+	void RangeCheck(uint32_t Index) const
+	{
+		KR_CORE_ASSERT((Index >= 0 && Index < Num()), "KarmaVector: Range check failed");
+	}
+
+	/**
+	 * Adds unique element to array if the element doesn't exist.
 	 *
 	 * Move semantics version.
 	 *
-	 * @param Item Item to add.
+	 * @param Item						Item to add
 	 * @returns Index of the element in the array.
 	 *
 	 * @see Add, AddDefaulted, AddZeroed, Append, Insert
@@ -234,7 +339,7 @@ public:
 	}
 
 	/**
-	 * Finds element within the array.
+	 * Finds first occurance of an element within the array.
 	 *
 	 * @param Item Item to look for.
 	 * @returns Index of the found element. INDEX_NONE otherwise.
@@ -295,6 +400,53 @@ public:
 	}
 
 	/**
+	 * @brief Removes an element at given location, swapping the last element into its place, and
+	 * shrinking the array.
+	 * 
+	 * @param Index					The index of the element to be removed
+	 * @param AllowShrinking		Whether to allow the array to shrink its allocation if possible
+	 * 
+	 * 
+	 * @note This implementation is differenct from UE and here vector shrinks automatically
+	 * @since Karma 1.0.0
+	 */
+	void RemoveAtSwap(int32_t Index/*, EAllowShrinking AllowShrinking = EAllowShrinking::Yes*/)
+	{
+		RangeCheck(Index);
+		RemoveAtSwapImpl(Index);
+
+		//if (AllowShrinking == EAllowShrinking::Yes)
+		//{
+			// not functional yet
+		//}
+	}
+
+	/**
+	 * @brief Removes a first appearence of single element from the array, swapping the last element 
+	 * into its place, and  shrinking the array.
+	 *
+	 * @param Item					The item to be removed
+	 * @param AllowShrinking		Whether to allow the array to shrink its allocation if possible
+	 * @returns The number of elements removed (0 or 1)
+	 *
+	 * @note AllowShrinking is automatic different from UE
+	 * @since Karma 1.0.0
+	 */
+	uint32_t RemoveSingleSwap(const BuildingBlock& Item/*, EAllowShrinking AllowShrinking = EAllowShrinking::Yes*/)
+	{
+		int32_t Index = Find(Item);
+
+		if (Index == INDEX_NONE)
+		{
+			return 0;
+		}
+
+		RemoveAtSwap(Index/*, AllowShrinking*/);
+
+		return 1;
+	}
+
+	/**
 	 * @brief Returns the total number of elements in a vector
 	 *
 	 * @since Karma 1.0.0
@@ -337,6 +489,11 @@ public:
 		m_Elements.clear();
 	}
 
+	void Resize(uint32_t NewSize)
+	{
+		m_Elements.resize(NewSize);
+	}
+
 	/**
 	 * @brief Just clear the elements
 	 *
@@ -364,6 +521,14 @@ public:
 	}
 
 	/**
+	 * @brief Clears the vector from all the elements
+	 *
+	 * @note Duplicate of SmartReset
+	 * @since Karma 1.0.0
+	 */
+	inline void Clear() { m_Elements.clear(); }
+	
+	/**
 	 * @brief Getter for the elements of vector
 	 *
 	 * @since Karma 1.0.0
@@ -380,7 +545,7 @@ public:
 
 	/**
 	 * @brief Getter for first vector element
-	 *
+	 * 
 	 * @since Karma 1.0.0
 	 */
 	typename std::vector<BuildingBlock>::iterator begin()
@@ -398,6 +563,16 @@ public:
 		return m_Elements.end();
 	}
 
+	typename std::vector<BuildingBlock>::const_iterator begin() const
+	{
+		return m_Elements.cbegin();
+	}
+
+	typename std::vector<BuildingBlock>::const_iterator end() const
+	{
+		return m_Elements.cend();
+	}
+
 	/**
 	 * Returns the UObject corresponding to index. Be advised this is only for very low level use.
 	 *
@@ -410,7 +585,7 @@ public:
 	{
 		KR_CORE_ASSERT(Index >= 0, "");
 		
-		if(Index < m_Elements.size())
+		if(Index < Num())
 		{
 			return m_Elements.at(Index);
 		}
@@ -431,9 +606,54 @@ public:
 	 */
 	FORCEINLINE bool IsValidIndex(int32_t Index) const
 	{
-		return Index >= 0 && Index < m_Elements.size();
+		return Index >= 0 && Index < Num();
 	}
 
+	/**
+	 * @brief Helper function to return typed pointer to the first entry of array
+	 * 
+	 * @since Karma 1.0.0
+	 */
+	FORCEINLINE BuildingBlock const* GetData() const { return m_Elements.data(); }
+
+	BuildingBlock& operator[](int32_t Index)
+	{
+		RangeCheck(Index);
+		return m_Elements[Index];
+	}
+
+	const BuildingBlock& operator[](int32_t Index) const
+	{
+		RangeCheck(Index);
+		return m_Elements[Index];
+	}
+
+private:
+	/**
+	 * @brief Internal implementation of RemoveAtSwap
+	 * 
+	 * @param Index					The index of the element to be removed
+	 * @since Karma 1.0.0
+	 */
+	void RemoveAtSwapImpl(int32_t Index)
+	{
+		const BuildingBlock* Data = GetData();
+		const BuildingBlock* Dest = Data + Index;
+
+		// Number of elements (after the generated vacancy) to move
+		const int32_t NumElementsAfterHole = Num() - Index - 1;
+		const int32_t NumElementsToMoveIntoHole = glm::min(1, NumElementsAfterHole);
+
+		if (NumElementsToMoveIntoHole)
+		{
+			//std::memmove((void *) Dest, (const void*)(Data + Num() - NumElementsToMoveIntoHole),
+			//	sizeof(BuildingBlock) * NumElementsToMoveIntoHole);
+			const int32_t LastElementIndex = Num() - 1;
+			
+			m_Elements[Index] = m_Elements[LastElementIndex];
+		}
+		m_Elements.pop_back();
+	}
 
 protected:
 	std::vector<BuildingBlock> m_Elements;
@@ -455,6 +675,19 @@ enum ETravelType
 
 	/** No clue. */
 	TRAVEL_MAX,
+};
+
+/** Whether to teleport physics body or not */
+enum class ETeleportType : uint8_t
+{
+	/** Do not teleport physics body. This means velocity will reflect the movement between initial and final position, and collisions along the way will occur */
+	None,
+
+	/** Teleport physics body so that velocity remains the same and no collision occurs */
+	TeleportPhysics,
+
+	/** Teleport physics body and reset physics state completely */
+	ResetPhysics,
 };
 
 /**

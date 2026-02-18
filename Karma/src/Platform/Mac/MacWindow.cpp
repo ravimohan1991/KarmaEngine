@@ -1,5 +1,4 @@
 #include "MacWindow.h"
-#include "Karma/Log.h"
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/Events/KeyEvent.h"
 #include "Karma/Events/MouseEvent.h"
@@ -8,6 +7,7 @@
 #include "stb_image.h"
 #include "Karma/Renderer/Renderer.h"
 #include "Platform/Vulkan/VulkanContext.h"
+#include "Karma/KarmaUtilities.h"
 
 namespace Karma
 {
@@ -32,6 +32,11 @@ namespace Karma
 	MacWindow::~MacWindow()
 	{
 		ShutDown();
+	}
+
+	bool MacWindow::OnResize(WindowResizeEvent& event)
+	{
+        return false; //m_Context->OnWindowResize(event);
 	}
 
 	void MacWindow::Init(const WindowProps& props)
@@ -76,7 +81,8 @@ namespace Karma
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		
-		switch (currentAPI)
+		// To be replaced with RHI
+		/*switch (currentAPI)
 		{
 			case RendererAPI::API::None:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
@@ -89,7 +95,7 @@ namespace Karma
 				break;
 		}
 
-		m_Context->Init();
+		m_Context->Init();*/
 		SetVSync(true);
 
 		// Used for event callbacks
@@ -97,6 +103,12 @@ namespace Karma
 
 		// Set glfw callbacks
 		SetGLFWCallbacks(m_Window);
+
+		// Set the ICOOOOON
+		GLFWimage karmaEQ;
+		karmaEQ.pixels = KarmaUtilities::GetImagePixelData("../Resources/Textures/KarmaEQ.png", &karmaEQ.width, &karmaEQ.height, 0, 4); //rgba channels
+		glfwSetWindowIcon(m_Window, 1, &karmaEQ);
+		stbi_image_free(karmaEQ.pixels);
 	}
 
 	void MacWindow::SetGLFWCallbacks(GLFWwindow* glfwWindow)
@@ -215,7 +227,7 @@ namespace Karma
 	void MacWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		m_Context->SwapBuffers();
+		//m_Context->SwapBuffers();
 	}
 
 	void MacWindow::SetVSync(bool enabled)
@@ -237,8 +249,8 @@ namespace Karma
 			}
 			case RendererAPI::API::Vulkan:
 			{
-				VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
-				vContext->SetVSync(enabled);
+				/*VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
+				vContext->SetVSync(enabled);*/
 				break;
 			}
 			case RendererAPI::API::None:

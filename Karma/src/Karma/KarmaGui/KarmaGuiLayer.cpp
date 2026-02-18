@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 #include "Renderer/Renderer.h"
 #include "KarmaGuiRenderer.h"
+#include "KarmaGui/KarmaGuizmo.h"
 
 namespace Karma
 {
@@ -34,7 +35,7 @@ namespace Karma
 		(void)io;
 		io.ConfigFlags |= KGGuiConfigFlags_NavEnableKeyboard;	// Enable Keyboard Controls
 		io.ConfigFlags |= KGGuiConfigFlags_DockingEnable;		// Enable Docking
-		io.ConfigFlags |= KGGuiConfigFlags_ViewportsEnable;		// Enable Multi-Viewport / Platform Windows
+		//io.ConfigFlags |= KGGuiConfigFlags_ViewportsEnable;		// Enable Multi-Viewport / Platform Windows
 
 		// Setup KarmaGui color style
 		KarmaGui::StyleColorsKarma();
@@ -47,7 +48,7 @@ namespace Karma
 			style.Colors[KGGuiCol_WindowBg].w = 1.0f;
 		}
 
-		// Setting Dear ImGui ini file
+		// Setting KarmaGui ini file
 		io.IniFilename = "../Resources/Misc/KarmaGuiEditor.ini";//"yeehaw!";
 
 		GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
@@ -59,7 +60,7 @@ namespace Karma
 	void KarmaGuiLayer::OnDetach()
 	{
 		KarmaGuiRenderer::OnKarmaGuiLayerDetach();
-		KR_CORE_INFO("Shutting down ImGuiLayer");
+		KR_CORE_INFO("Shutting down KarmaGuiLayer");
 	}
 
 	// The KarmaGuiLayer sequence begins
@@ -67,9 +68,11 @@ namespace Karma
 	{
 		KarmaGuiRenderer::OnKarmaGuiLayerBegin();
 		KarmaGui::NewFrame();
+		
+		KarmaGuizmo::BeginFrame();
 	}
 
-	void KarmaGuiLayer::ImGuiRender(float deltaTime)
+	void KarmaGuiLayer::KarmaGuiRender(float deltaTime)
 	{
 	}
 

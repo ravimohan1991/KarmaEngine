@@ -1,7 +1,7 @@
 #include "Texture.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 #include "Renderer.h"
-#include "Platform/Vulkan/VulkanTexutre.h"
+#include "Platform/Vulkan/VulkanTexture.h"
 
 namespace Karma
 {
@@ -40,6 +40,7 @@ namespace Karma
 		}
 		case TextureType::DiffusionMap:
 		case TextureType::LightMap:
+
 		case TextureType::None:
 			KR_CORE_ASSERT(false, "Other maps not supported yet.");
 			break;

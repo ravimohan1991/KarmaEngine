@@ -1,3 +1,9 @@
+<div align="center"> अहं सर्वस्य प्रभवो मत्त: सर्वं प्रवर्तते | </div>
+
+<div align="center"> इति मत्वा भजन्ते मां बुधा भावसमन्विता: || 8 || </div>
+
+Geta: [Chapter 10, Verse 8](https://www.holy-bhagavad-gita.org/chapter/10/verse/8)
+
 KarmaEngine
 ===========
 <img width="1440" alt="Screenshot 2023-02-15 at 15 45 40" src="https://user-images.githubusercontent.com/2173654/218999401-fe78d0e1-7bff-45ca-a0ab-cb6ab2ce31aa.png">
@@ -13,7 +19,7 @@ Developing
 
 Karma rocks on ```Linux```, ```MacOS```, and ```Windows```.  The architecture is liberal enough to support Mobile, perhaps, in the future (I won't count stars for that though). 
 
-Make sure to install [CMake](https://cmake.org/) for mega convinence and null nuiances.
+Make sure to install [CMake](https://cmake.org/) for null nuisances.
 
 #### Global Software Requirements ###
 * [Vulkan SDK](https://www.lunarg.com/vulkan-sdk/) should be installed depending on your choice of development platform
@@ -26,6 +32,7 @@ Open the command prompt in the root directory and type the following commands
 ```
 mkdir KarmaLightHouse
 cd KarmaLightHouse
+
 cmake ../
 ```
 
@@ -55,6 +62,7 @@ Karma has been developed and tested on macOS Monterey and should work on any upp
 ```
 mkdir KarmaLightHouse
 cd KarmaLightHouse
+
 cmake -G Xcode ..
 ```
 This shall generate full-fledged Xcode project file bundle.  Then you are at the mercy of the IDE!
@@ -63,8 +71,9 @@ Patreon
 -----------
 Help me in supporting FOSS by being a member of this [page](https://www.patreon.com/FreeandOpen). No strings attached.
 
-Huge thanks to:
-Shiwali Mohan
+Demonstration
+-------------
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/8ebeqtLxt9g/0.jpg)](https://www.youtube.com/watch?v=8ebeqtLxt9g)
 
 References
 -----------

@@ -1,14 +1,18 @@
 #include "VulkanBuffer.h"
-#include "Platform/Vulkan/VulkanHolder.h"
 #include "Karma/Renderer/RenderCommand.h"
 #include "Karma/KarmaUtilities.h"
+#include "VulkanRHI/VulkanDynamicRHI.h"
+#include "VulkanRHI/VulkanDevice.h"
+#include "VulkanRHI/VulkanSwapChain.h"
+#include "KarmaGui/KarmaGuiRenderer.h"
+#include "VulkanRHI/VulkanDescriptorSets.h"
 
 namespace Karma
 {
 	// Vertex Buffer
 	VulkanVertexBuffer::VulkanVertexBuffer(float* vertices, uint32_t size)
 	{
-		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+		m_Device = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
 
 		VkDeviceSize bufferSize = size;
 		m_BufferSize = size;
@@ -35,6 +39,8 @@ namespace Karma
 
 	VulkanVertexBuffer::~VulkanVertexBuffer()
 	{
+		vkDeviceWaitIdle(m_Device);
+
 		vkDestroyBuffer(m_Device, m_VertexBuffer, nullptr);
 		vkFreeMemory(m_Device, m_VertexBufferMemory, nullptr);
 	}
@@ -44,7 +50,7 @@ namespace Karma
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
+		allocInfo.commandPool = FVulkanDynamicRHI::Get().GetDevice()->GetCommandPool();
 		allocInfo.commandBufferCount = 1;
 
 		VkCommandBuffer commandBuffer;
@@ -67,10 +73,10 @@ namespace Karma
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &commandBuffer;
 
-		vkQueueSubmit(VulkanHolder::GetVulkanContext()->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(VulkanHolder::GetVulkanContext()->GetGraphicsQueue());
+		vkQueueSubmit(FVulkanDynamicRHI::Get().GetDevice()->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(FVulkanDynamicRHI::Get().GetDevice()->GetGraphicsQueue());
 
-		vkFreeCommandBuffers(m_Device, VulkanHolder::GetVulkanContext()->GetCommandPool(), 1, &commandBuffer);
+		vkFreeCommandBuffers(m_Device, allocInfo.commandPool, 1, &commandBuffer);
 	}
 
 	void VulkanVertexBuffer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
@@ -92,29 +98,12 @@ namespace Karma
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = FVulkanDynamicRHI::Get().FindMemoryType(memRequirements.memoryTypeBits, properties);
 
 		VkResult resultm = vkAllocateMemory(m_Device, &allocInfo, nullptr, &bufferMemory);
 
 		KR_CORE_ASSERT(resultm == VK_SUCCESS, "Failed to allocate vertexbuffer memory");
 		vkBindBufferMemory(m_Device, buffer, bufferMemory, 0);
-	}
-
-	uint32_t VulkanVertexBuffer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-	{
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanHolder::GetVulkanContext()->GetPhysicalDevice(), &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-		{
-			if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-			{
-				return i;
-			}
-		}
-
-		KR_CORE_ASSERT(false, "Failed to find suitable memory type for vertexbuffer");
-		return 0;
 	}
 
 	void VulkanVertexBuffer::Bind() const
@@ -126,11 +115,10 @@ namespace Karma
 	{
 	}
 
-
 	// Index buffer
 	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* indices, uint32_t count) : m_Count(count)
 	{
-		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+		m_Device = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
 
 		VkDeviceSize bufferSize = sizeof(uint32_t) * count;
 		m_BufferSize = bufferSize;
@@ -157,6 +145,8 @@ namespace Karma
 
 	VulkanIndexBuffer::~VulkanIndexBuffer()
 	{
+		vkDeviceWaitIdle(m_Device);
+
 		vkDestroyBuffer(m_Device, m_IndexBuffer, nullptr);
 		vkFreeMemory(m_Device, m_IndexBufferMemory, nullptr);
 	}
@@ -166,7 +156,7 @@ namespace Karma
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = VulkanHolder::GetVulkanContext()->GetCommandPool();
+		allocInfo.commandPool = FVulkanDynamicRHI::Get().GetDevice()->GetCommandPool();
 		allocInfo.commandBufferCount = 1;
 
 		VkCommandBuffer commandBuffer;
@@ -189,10 +179,10 @@ namespace Karma
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &commandBuffer;
 
-		vkQueueSubmit(VulkanHolder::GetVulkanContext()->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(VulkanHolder::GetVulkanContext()->GetGraphicsQueue());
+		vkQueueSubmit(FVulkanDynamicRHI::Get().GetDevice()->GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(FVulkanDynamicRHI::Get().GetDevice()->GetGraphicsQueue());
 
-		vkFreeCommandBuffers(m_Device, VulkanHolder::GetVulkanContext()->GetCommandPool(), 1, &commandBuffer);
+		vkFreeCommandBuffers(m_Device, allocInfo.commandPool, 1, &commandBuffer);
 	}
 
 	void VulkanIndexBuffer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
@@ -214,29 +204,12 @@ namespace Karma
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = FVulkanDynamicRHI::Get().FindMemoryType(memRequirements.memoryTypeBits, properties);
 
 		VkResult resultm = vkAllocateMemory(m_Device, &allocInfo, nullptr, &bufferMemory);
 
 		KR_CORE_ASSERT(resultm == VK_SUCCESS, "Failed to allocate indexbuffer memory");
 		vkBindBufferMemory(m_Device, buffer, bufferMemory, 0);
-	}
-
-	uint32_t VulkanIndexBuffer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-	{
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanHolder::GetVulkanContext()->GetPhysicalDevice(), &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-		{
-			if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-			{
-				return i;
-			}
-		}
-
-		KR_CORE_ASSERT(false, "Failed to find suitable memory type for indexbuffer");
-		return 0;
 	}
 
 	void VulkanIndexBuffer::Bind() const
@@ -251,32 +224,35 @@ namespace Karma
 	VulkanUniformBuffer::VulkanUniformBuffer(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex) :
 		UniformBufferObject(dataTypes, bindingPointIndex)
 	{
-		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+		m_Device = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
 		BufferCreation();
+
+		//std::shared_ptr <VulkanUniformBuffer> uboPtr(this);
+		//VulkanHolder::GetVulkanContext()->RegisterUBO(this);
+		
+		FVulkanDynamicRHI::Get().RegisterUniformBufferObject(this);
 	}
 
 	VulkanUniformBuffer::~VulkanUniformBuffer()
 	{
-		//ClearBuffer();
+		ClearBuffer();
+	}
+
+	void VulkanUniformBuffer::UpdateCameraUniform()
+	{
+		uint32_t maxFramesInFlight = KarmaGuiRenderer::GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
+		
+		for(uint32_t counter = 0; counter < maxFramesInFlight; counter++)
+		{
+			FVulkanDynamicRHI::Get().GetDevice()->GetDefaultDescriptorSets()[counter]->UpdateUniformBufferDescriptorSet(this, 0, 0, counter);
+		}
 	}
 
 	void VulkanUniformBuffer::BufferCreation()
 	{
 		VkDeviceSize bufferSize = GetBufferSize();
 		
-		RendererAPI* rAPI = RenderCommand::GetRendererAPI();
-		VulkanRendererAPI* vulkanAPI = nullptr;
-		
-		if(rAPI->GetAPI() == RendererAPI::API::Vulkan)
-		{
-			vulkanAPI = static_cast<VulkanRendererAPI*>(rAPI);
-		}
-		else
-		{
-			KR_CORE_ASSERT(false, "How is this even possible?");
-		}
-		
-		int maxFramesInFlight = vulkanAPI->GetMaxFramesInFlight();
+		int maxFramesInFlight = KarmaGuiRenderer::GetWindowData().RHIResources->VulkanSwapChain->GetMaxFramesInFlight();
 
 		m_UniformBuffers.resize(maxFramesInFlight);
 		m_UniformBuffersMemory.resize(maxFramesInFlight);
@@ -290,6 +266,8 @@ namespace Karma
 
 	void VulkanUniformBuffer::ClearBuffer()
 	{
+		vkDeviceWaitIdle(m_Device);
+
 		for (size_t i = 0; i < m_UniformBuffers.size(); i++)
 		{
 			vkDestroyBuffer(m_Device, m_UniformBuffers[i], nullptr);
@@ -330,29 +308,12 @@ namespace Karma
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = FVulkanDynamicRHI::Get().FindMemoryType(memRequirements.memoryTypeBits, properties);
 
 		VkResult resultm = vkAllocateMemory(m_Device, &allocInfo, nullptr, &bufferMemory);
 
 		KR_CORE_ASSERT(resultm == VK_SUCCESS, "Failed to allocate uniformbuffer memory");
 		vkBindBufferMemory(m_Device, buffer, bufferMemory, 0);
-	}
-
-	uint32_t VulkanUniformBuffer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-	{
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanHolder::GetVulkanContext()->GetPhysicalDevice(), &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-		{
-			if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-			{
-				return i;
-			}
-		}
-
-		KR_CORE_ASSERT(false, "Failed to find suitable memory type for uniformbuffer");
-		return 0;
 	}
 
 	// ImageBuffer
@@ -365,7 +326,28 @@ namespace Karma
 
 		KR_CORE_ASSERT(pixels, "Failed to load textures image!");
 
-		m_Device = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
+		m_Device = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+		CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_StagingBuffer, m_StagingBufferMemory);
+		void* data;
+		vkMapMemory(m_Device, m_StagingBufferMemory, 0, imageSize, 0, &data);
+		memcpy(data, pixels, static_cast<size_t>(imageSize));
+		vkUnmapMemory(m_Device, m_StagingBufferMemory);
+
+		stbi_image_free(pixels);
+	}
+
+	VulkanImageBuffer::VulkanImageBuffer(FVulkanDevice* InDevice, const char* filename)
+	{
+		stbi_uc* pixels = KarmaUtilities::GetImagePixelData(filename, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+		// Need more consideration on image size
+		VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+		KR_CORE_ASSERT(pixels, "Failed to load textures image!");
+
+		m_Device = InDevice->GetLogicalDevice();
+		m_PhysicalDevice = InDevice->GetGPU();
+
 		CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_StagingBuffer, m_StagingBufferMemory);
 		void* data;
 		vkMapMemory(m_Device, m_StagingBufferMemory, 0, imageSize, 0, &data);
@@ -400,28 +382,11 @@ namespace Karma
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = FVulkanDynamicRHI::Get().FindMemoryType(memRequirements.memoryTypeBits, properties);
 
 		VkResult resultm = vkAllocateMemory(m_Device, &allocInfo, nullptr, &bufferMemory);
 
 		KR_CORE_ASSERT(resultm == VK_SUCCESS, "Failed to allocate imagebuffer memory");
 		vkBindBufferMemory(m_Device, buffer, bufferMemory, 0);
-	}
-
-	uint32_t VulkanImageBuffer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-	{
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanHolder::GetVulkanContext()->GetPhysicalDevice(), &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-		{
-			if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-			{
-				return i;
-			}
-		}
-
-		KR_CORE_ASSERT(false, "Failed to find suitable memory type for imagebuffer");
-		return 0;
 	}
 }

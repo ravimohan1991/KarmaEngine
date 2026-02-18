@@ -1,6 +1,14 @@
-#pragma once
+/**
+ * @file KarmaGuiLayer.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the class KarmaGuiLayer, a Layer between Engine and KarmaGui.
+ * @version 1.0
+ * @date December 7, 2020
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 
-#include "krpch.h"
+#pragma once
 
 #include "Layer.h"
 #include "Events/KeyEvent.h"
@@ -21,10 +29,10 @@ namespace Karma
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
-		virtual void ImGuiRender(float deltaTime) override;
+		virtual void KarmaGuiRender(float deltaTime) override;
 		virtual void OnUpdate(float deltaTime) override;
 
-		// Only for ImGui layer
+		// Only for KarmaGui layer
 		void Begin();
 		void End();
 

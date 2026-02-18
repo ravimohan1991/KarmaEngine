@@ -1,3 +1,13 @@
+/**
+ * @file imstb_rectpack.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief Useful for e.g. packing rectangular textures into an atlas. Does not do rotation.
+ * @version 1.0
+ * @date January 24, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
 // [DEAR IMGUI]
 // This is a slightly modified version of stb_rect_pack.h 1.01.
 // Grep for [DEAR IMGUI] to find the changes.

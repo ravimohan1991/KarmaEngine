@@ -1,8 +1,13 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
+/**
+ * @file WindowsPlatformMemory.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief Windows platform specific implementation of memory functions
+ * @version 1.0
+ * @date Mar 8, 2023
+ * 
+ * @copyright Epic Games, Inc. All Rights Reserved.
+ */
 #pragma once
-
-#include "krpch.h"
 
 #include "Core/TrueCore/GenericPlatformMemory.h"
 

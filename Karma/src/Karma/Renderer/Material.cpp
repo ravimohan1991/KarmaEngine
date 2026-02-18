@@ -8,7 +8,7 @@ namespace Karma
 
 	void Material::OnUpdate()
 	{
-		if (m_MainCamera != nullptr)
+		/*if (m_MainCamera != nullptr)
 		{
 			UBODataPointer uProjection(&m_MainCamera->GetProjectionMatrix());
 			UBODataPointer uView(&m_MainCamera->GetViewMatirx());
@@ -22,7 +22,7 @@ namespace Karma
 		else
 		{
 			KR_CORE_WARN("No main camera specified for Material.");
-		}
+		}*/
 	}
 
 	void Material::AttatchMainCamera(std::shared_ptr<Camera> mCamera)
@@ -38,7 +38,7 @@ namespace Karma
 		{
 			// Again hacky way.
 			elem->Bind(m_Textures.front()->GetTextureShaderName());
-			elem->GetUniformBufferObject()->UploadUniformBuffer();
+			//elem->GetUniformBufferObject()->UploadUniformBuffer();
 		}
 	}
 

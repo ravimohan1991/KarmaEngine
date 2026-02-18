@@ -3,10 +3,10 @@
 // To be included in clients
 
 // Game code specific includes
-#include "Karma/GameFramework/Actor.h"
-#include "Karma/GameFramework/World.h"
+#include "GameFramework/Actor.h"
+#include "GameFramework/World.h"
 
-#include "Karma/GameFramework/Level.h"
+#include "Engine/Level.h"
 
 #include "Karma/Application.h"
 #include "Karma/Layer.h"
@@ -14,6 +14,7 @@
 #include "Karma/KarmaGui/KarmaGuiLayer.h"
 #include "Karma/KarmaGui/KarmaGui.h"
 #include "Karma/KarmaGui/KarmaGuiInternal.h"
+#include "Karma/KarmaGui/KarmaGuizmo.h"
 #include "Karma/KarmaGui/KarmaGuiRenderer.h"
 
 #include "Karma/Renderer/Shader.h"
@@ -28,8 +29,6 @@
 #include "Karma/Renderer/Material.h"
 #include "Karma/Renderer/Texture.h"
 #include "Karma/Renderer/Scene.h"
-#include "Karma/Renderer/SceneModel.h"
-
 #include "Karma/KarmaUtilities.h"
 
 #include "Karma/Input.h"

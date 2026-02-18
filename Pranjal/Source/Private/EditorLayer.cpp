@@ -10,6 +10,8 @@
 #include "UObjectIterator.h"
 #include "Engine.h"
 #include "GameInstance.h"
+#include "Engine/StaticMeshActor.h"
+#include <VulkanHolder.h>
 
 namespace Karma
 {
@@ -24,46 +26,9 @@ namespace Karma
 		// Instantiate camera
 		m_EditorCamera.reset(new Karma::PerspectiveCamera(45.0f, 1280.f / 720.0f, 0.1f, 100.0f));
 
-		// Model loading begins
-
-		// First intantiate VertexArray
-		m_ModelVertexArray.reset(Karma::VertexArray::Create());
-
-		{
-			// Get hold of model
-			std::shared_ptr<Karma::Mesh> modelMesh;
-			modelMesh.reset(new Karma::Mesh("../Resources/Models/BonedCylinder.obj"));
-
-			// Set the mesh in vertex array
-			m_ModelVertexArray->SetMesh(modelMesh);
-		}
-
-		// Next, instantiate material
-		m_ModelMaterial.reset(new Karma::Material());
-
-		{
-			// Setting shader
-
-			// Uniforms for regular transform uploads
-			std::shared_ptr<Karma::UniformBufferObject> shaderUniform;
-			shaderUniform.reset(Karma::UniformBufferObject::Create({ Karma::ShaderDataType::Mat4, Karma::ShaderDataType::Mat4 }, 0));
-
-			m_ModelShader.reset(Karma::Shader::Create("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag", shaderUniform, true, "CylinderShader"));
-
-			m_ModelMaterial->AddShader(m_ModelShader);
-		}
-
-		// Then we set texture
-		m_ModelTexture.reset(new Karma::Texture(Karma::TextureType::Image, "../Resources/Textures/UnrealGrid.png", "VikingTex", "texSampler"));
-
-		m_ModelMaterial->AddTexture(m_ModelTexture);
-		m_ModelMaterial->AttatchMainCamera(m_EditorCamera); //Is this needed?
-
-		m_ModelVertexArray->SetMaterial(m_ModelMaterial);
-
 		m_EditorScene.reset(new Karma::Scene());
 		m_EditorScene->AddCamera(m_EditorCamera);
-		m_EditorScene->AddVertexArray(m_ModelVertexArray);
+
 		m_EditorScene->SetClearColor({ 0.0f, 0.0f, 0.0f, 1 });
 	}
 
@@ -74,13 +39,42 @@ namespace Karma
 
 	void EditorLayer::OpenScene(const std::string& objFileName)
 	{
-		std::shared_ptr<Mesh> meshToLoad;
+		UWorld* currentWorld = GEngine->GetCurrentGameInstance()->GetWorldContext()->World();
 
-		// Check if the already assigned is freed and there is no leak
-		meshToLoad.reset(new Mesh(objFileName));
+		if (currentWorld)
+		{
+			KR_INFO("Current World is : {0}", currentWorld->GetName());
 
-		m_ModelVertexArray->SetMesh(meshToLoad);
-		KR_INFO("Successfully loaded scene");
+			FTransform smActorTransform = FTransform::m_Identity;
+			smActorTransform.SetTranslation(glm::vec3(0.f, 0.f, 1.f));
+			
+			AStaticMeshActor* staticMeshActor = nullptr;
+			uint32_t smActorCounter = 0;
+			
+			std::string smName = std::filesystem::path(objFileName).stem().string();
+			
+			while(staticMeshActor == nullptr)
+			{
+				FActorSpawnParameters smActorParams;
+				smActorParams.m_Owner = nullptr;
+				smActorParams.m_Name = (smActorCounter > 0)
+					? smName + std::to_string(smActorCounter)
+					: smName;
+				smActorParams.m_OverrideLevel = currentWorld->GetCurrentLevel();
+				
+				staticMeshActor = currentWorld->SpawnActor<AStaticMeshActor>(AStaticMeshActor::StaticClass(), &smActorTransform, smActorParams);
+				
+				smActorCounter++;
+			}
+
+			if (staticMeshActor)
+			{
+				KR_INFO("Spawned Actor: {0}", staticMeshActor->GetName());
+				
+				staticMeshActor->LoadMeshFromFile(objFileName);
+				m_EditorScene->AddStaticMeshActor(staticMeshActor);
+			}
+		}
 	}
 
 	void EditorLayer::OnAttach()
@@ -107,11 +101,14 @@ namespace Karma
 
 	void EditorLayer::OnUpdate(float deltaTime)
 	{
+		// Hacky, need to see if ubos are updated in correct manner (wrt to input etc)
+		m_EditorCamera->OnUpdate(deltaTime);
+
 		InputPolling(deltaTime);
 	}
 
 	// Rename to KarmaGuiRender for uniformity
-	void EditorLayer::ImGuiRender(float deltaTime)
+	void EditorLayer::KarmaGuiRender(float deltaTime)
 	{
 		KGGuiID dockspaceID;
 		// 1. Show the big demo window. For debug purpose!!
@@ -327,6 +324,15 @@ namespace Karma
 		KR_INFO("-----> Spawning {0}", testSParameters.m_Name);
 		AActor* someActor = testWorld->SpawnActor(testActorClass, &testTransform, testSParameters);
 
+		KR_INFO("AActor is derived from UObject {0}", TIsDerivedFrom<AActor, UObject>::Value);
+		KR_INFO("UObject is derived from AActor {0}", TIsDerivedFrom<UObject, AActor>::Value);
+
+		/*char str[80];
+		snprintf(str, 10, "%x", someActor);
+		KR_INFO("actor address: {0}, size: {1}", str, sizeof(*someActor));
+		snprintf(str, 10, "%x", (UObjectBase*)someActor);
+		KR_INFO("uobjectbase address: {0}", str);*/
+
 		// Shouldn't we be using Shivasomething?
 		// delete testWorld;
 	}
@@ -368,3 +374,4 @@ Karma::Application* Karma::CreateApplication()
 {
 	return new KarmaApp();
 }
+

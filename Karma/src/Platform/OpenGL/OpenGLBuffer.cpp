@@ -130,7 +130,7 @@ namespace Karma
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	void OpenGLUniformBuffer::UploadUniformBuffer()
+	void OpenGLUniformBuffer::UploadUniformBuffer(size_t frameIndex)
 	{
 		uint32_t index = 0;
 		for (auto it : GetUniformList())

@@ -1,4 +1,7 @@
 #include "Transform.h"
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "KarmaGuizmo.h"
 
 namespace Karma
 {
@@ -13,14 +16,14 @@ namespace Karma
 
 	TRotator::TRotator(glm::vec3 eulerAngles)
 	{
-		m_Yaw = eulerAngles.y;
-		m_Pitch = eulerAngles.z;
+		m_Yaw = eulerAngles.z;
+		m_Pitch = eulerAngles.y;
 		m_Roll = eulerAngles.x;
 	}
 
 	TRotator TRotator::Inverse() const
 	{
-		TRotator returnRotation = TRotator(glm::vec3(-m_Yaw, -m_Pitch, -m_Roll));
+		TRotator returnRotation = TRotator(glm::vec3(-m_Roll, -m_Pitch, -m_Yaw));
 		return returnRotation;
 	}
 
@@ -133,7 +136,7 @@ namespace Karma
 			const glm::vec3 ScaleB = B->GetScale3D();
 
 			// RotationResult = B.Rotation * A.Rotation
-			OutTransform->SetRotation(TRotator(glm::vec3(RotationA.m_Pitch + RotationB.m_Pitch, RotationA.m_Yaw + RotationB.m_Pitch, RotationA.m_Roll + RotationB.m_Roll)));
+			OutTransform->SetRotation(TRotator(glm::vec3(RotationA.m_Roll + RotationB.m_Roll, RotationA.m_Pitch + RotationB.m_Pitch, RotationA.m_Yaw + RotationB.m_Pitch)));
 
 			// TranslateResult = B.Rotate(B.Scale * A.Translation) + B.Translate
 			const glm::vec3 ScaledTransA(TranslateA.x * ScaleB.x, TranslateA.y * ScaleB.y, TranslateA.z * ScaleB.z);// = VectorMultiply(TranslateA, ScaleB);
@@ -143,5 +146,37 @@ namespace Karma
 			// ScaleResult = Scale.B * Scale.A
 			OutTransform->SetScale3D(glm::vec3(ScaleA.x * ScaleB.x, ScaleA.y * ScaleB.y, ScaleA.z * ScaleB.z));// = VectorMultiply(ScaleA, ScaleB);
 		//}
+	}
+
+	glm::mat4 FTransform::ToMatrixWithScale() const
+	{
+		glm::mat4 ReturnMatrix;
+
+		float position[3] = { m_Translation.x, m_Translation.y, m_Translation.z };
+		float rotation[3] = { m_Rotation.m_Roll, m_Rotation.m_Pitch, m_Rotation.m_Yaw };
+
+		float scale[3] = { m_Scale3D.x, m_Scale3D.y, m_Scale3D.z };
+
+		float composite[16];
+		KarmaGuizmo::RecomposeMatrixFromComponents(position, rotation, scale, composite);
+
+		memcpy(glm::value_ptr(ReturnMatrix), composite, sizeof(float) * 16);
+
+		return ReturnMatrix;
+	}
+
+	void FTransform::ToTransform(const glm::mat4 Matrix)
+	{
+		float position[3];
+		float rotation[3];
+
+		float scale[3];
+
+		KarmaGuizmo::DecomposeMatrixToComponents(glm::value_ptr(Matrix), position, rotation, scale);
+
+		m_Translation = glm::vec3(position[0], position[1], position[2]);
+		m_Rotation = TRotator(glm::vec3(rotation[0], rotation[1], rotation[2]));
+
+		m_Scale3D = glm::vec3(scale[0], scale[1], scale[2]);
 	}
 }

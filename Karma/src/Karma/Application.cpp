@@ -1,11 +1,11 @@
 #include "Application.h"
-#include "Karma/Log.h"
 #include "Karma/Input.h"
 #include "Karma/Renderer/Renderer.h"
 #include "chrono"
 #include "Engine/Engine.h"
 #include "Core/UObjectGlobals.h"// to be bundled appropriately in core.h
 #include "Core/Package.h"
+#include "KarmaRHI/KarmaRHI.h"
 
 namespace Karma
 {
@@ -31,6 +31,9 @@ namespace Karma
 		m_Window = Window::Create();
 		m_Window->SetEventCallback(KR_BIND_EVENT_FN(Application::OnEvent)); // Setting the listener
 
+		// Initialize RHI (Render Hardware Interface)
+		RHIInit();
+
 		m_LayerStack = new LayerStack();
 
 		// Graphics API Vulkan or OpenGL should have been completely initialized by here
@@ -48,6 +51,10 @@ namespace Karma
 		// and its context.
 		KR_CORE_INFO("Deleting stacks");
 		delete m_LayerStack;
+
+		// Deinitialize RHI
+		RHIExit();
+
 		KR_CORE_INFO("Deleting window");
 		delete m_Window;
 		s_Instance = nullptr;
@@ -102,24 +109,29 @@ namespace Karma
 			deltaTime /= 1000000.0f;
 
 			// Tick KEngine
-			GEngine->Tick(deltaTime, false);
+			if(GEngine)
+			{
+				GEngine->Tick(deltaTime, false);
+			}
+			
+			// Ponder over the sequence of this updation
+			// this includes glfwPollEvents()
+			m_Window->OnUpdate();
 
 			for (auto layer : *m_LayerStack)
 			{
 				layer->OnUpdate(deltaTime);
 			}
 
-			// ImGui rendering sequence cue trickling through stack
+			// KarmaGui rendering sequence cue trickling through stack
 			m_KarmaGuiLayer->Begin();
 
 			for (auto layer : *m_LayerStack)
 			{
-				layer->ImGuiRender(deltaTime);
+				layer->KarmaGuiRender(deltaTime);
 			}
 
 			m_KarmaGuiLayer->End();
-
-			m_Window->OnUpdate();
 		}
 	}
 

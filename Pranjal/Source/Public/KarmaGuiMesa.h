@@ -1,10 +1,15 @@
+/**
+ * @file KarmaGuiMesa.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains the classes for Editor
+ * @version 1.0
+ * @date October 1, 2022
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 #include "Karma.h"
-
-extern "C" {
-#include "dmidecode.h"
-}
 
 namespace Karma
 {
@@ -177,83 +182,51 @@ namespace Karma
 
 		// Bios Information
 		std::string biosVendorName;
+		std::string biosSerialNumber;
 		std::string biosVersion;
-		std::string biosReleaseDate;
-		std::string biosCharacteristics;
-		std::string biosROMSize;
-		std::string biosCurrentSetLanguage;
-		std::string biosRestOfTheSupportedLanguages;
+		std::string biosBoardName;
 
 		// System Memory (RAM) overview
-		uint32_t numberOfMemoryDevices;// An estimation. I shall manually introduce logical checks
+		uint32_t numberOfMemoryDevices;
 
-		// I named estimated because of the lies
-		// https://github.com/ravimohan1991/BiosReader/wiki/The-Life-and-Lies-of-the-BIOS
-		std::string estimatedCapacity;
-		std::string supportingArea;
+		std::string memoryCapacity;
+		std::string freeMemory;
 
 		struct SystemRAM
 		{
-			std::string formFactor;
-			std::string ramSize;
-			std::string locator;
-			std::string ramType;
-			std::string bankLocator;
-			std::string manufacturer;
-
+			uint32_t	id;
+			std::string vendor;
+			std::string model;
+			std::string name;
 			std::string serialNumber;
-			std::string partNumber;
-			std::string assetTag;
-
-			std::string memorySpeed;
-			std::string configuredMemorySpeed;
-
-			std::string operatingVoltage;
-			std::string rank;
+			std::string frequency;
+			std::string capacity;
 		};
 		SystemRAM* ramInformation;
 
-		// Let me tell the story of naming. Since the physical slots are the ones
-		// present on board, the array slots in software side, getting filled on a query to BIOS,
-		// naturally get the name "...SoftSlots" from BiosReader's allocation POV
-		std::vector<uint32_t> ramSoftSlots;
-
-		uint32_t totalRamSize;
-		std::string ramSizeDimensions;
 
 		// Processor information
-		// Asssuming only 1 processor
-		std::string cpuDesignation;// Socket designation
-		std::string cpuType; // In order to distinguish from GPU processor :) or DSP https://en.wikipedia.org/wiki/Digital_signal_processor
-		std::string cpuProcessingfamily;
-		std::string cpuManufacturer;
-		std::string cpuFlags;
-		// Kind of the most important element of this struct. eg Intel(R) Core(TM) i5-7400 CPU @ 3.00GHz (completeprocessingunitidentifier)
-		std::string cpuVersion;
-
-		std::string cpuOperatingVoltage;
-		std::string cpuExternalClock;
-		std::string cpuMaximumSpeed;
-		std::string cpuCurrentSpeed;
-
-		// Some OEM specific numbers
-		std::string cpuSerialNumber;
-		std::string cpuPartNumber;
-		std::string cpuAssettag;
-
-		std::string cpuCorescount;
-		std::string cpuEnabledCoresCount;
-		std::string cpuThreadCount;
-		std::string cpuTheCharacterstics;
-
-		// The Cpu ID field contains processor - specific information that describes the processor’s features.
-		std::string cpuid; // in the context of motherboard components
-		std::string cpuSignature;
+		struct CPU
+		{
+			std::string cpuVendor;
+			std::string cpuModel;
+			std::string cpuCurrentFrequency;
+			std::string cpuMaximumFrequency;
+			std::string cpuPhysicalCores;
+			std::string cpuLogicalCores;
+			std::string cpuCacheSizeL1;
+			std::string cpuCacheSizeL2;
+			std::string cpuCacheSizeL3;
+		};
+		CPU cpuInformation;
 
 		// For now, with due respect, let there be enough content with just model number
 		// und vendor. Would be dope to read the GPU just like RAM or CPU, from SMBIOS!!
+		
+		// Ok thanks to shadPS4 emulator, we are using dope library hwinfo 
 		std::string gpuVendor;
 		std::string gpuModelIdentification;
+		
 		std::string gpuVMemory;
 
 		KarmaTuringMachineElectronics()
@@ -265,17 +238,6 @@ namespace Karma
 
 		~KarmaTuringMachineElectronics();
 
-		// Gauging Ram devices
-		static void GaugeSystemMemoryDevices(random_access_memory* ramCluster);
-
-		// Obtain the real RAM information
-		static void FindRealCapacityOfRam();
-
-		// No-ram conditions. Bit'o hacky stuff
-		static bool IsPhysicalRamPresent(const random_access_memory& ramScam);
-
-		// Filling the SystemRAM structure with relevant information
-		static void FillTheSystemRamStructure(SystemRAM& destinationStructure, random_access_memory& sourceStructure);
 	};
 
 	struct WindowManipulationGaugeData
@@ -315,10 +277,11 @@ namespace Karma
 	public:
 		// Showtime!
 		static void RevealMainFrame(KGGuiID mainMesaDockID, std::shared_ptr<Scene> scene, const CallbacksFromEditor& editorCallbacks);
+		static void EditTransform(std::shared_ptr<Scene> scene);
 		static void DrawKarmaMainMenuBarMesa();
 		static void DrawMainMenuFileListMesa();
 		static void DrawKarmaLogMesa(KGGuiID mainMesaDockID);
-		static void DrawKarmaSceneHierarchyPanelMesa();
+		static void DrawKarmaSceneHierarchyPanelMesa(std::shared_ptr<Scene> scene);
 		static void Draw3DModelExhibitorMesa(std::shared_ptr<Scene> scene);
 		static void DrawContentBrowser(const std::function< void(std::string) >& openSceneCallback);
 		static void DrawMemoryExhibitor();
@@ -341,8 +304,8 @@ namespace Karma
 		// Helpers
 		static int ImStrlenW(const KGWchar* str);
 		static void QueryForTuringMachineElectronics();
-		static uint32_t ChernUint32FromString(const std::string& ramString);
-		static std::string ChernDimensionsFromString(const std::string& ramString);
+		static uint32_t ChurnUint32FromString(const std::string& ramString);
+		static std::string ChurnDimensionsFromString(const std::string& ramString);
 		static double HexStringToDecimal(const std::string& hexString);
 
 		// Statistics
@@ -358,6 +321,7 @@ namespace Karma
 		static WindowManipulationGaugeData m_MemoryExhibitor;
 		static bool m_EditorInitialized;
 		static bool m_RefreshRenderingResources;
+		static class AStaticMeshActor* m_SelectedSMActor;
 
 		// Content browser
 		static std::filesystem::path m_CurrentDirectory;

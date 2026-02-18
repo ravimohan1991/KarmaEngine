@@ -1,3 +1,12 @@
+/**
+ * @file Roboto-Regular.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains font supplied with the Engine
+ * @version 1.0
+ * @date August 20, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
 #pragma once
 
 const uint8_t g_RobotoRegular[] =

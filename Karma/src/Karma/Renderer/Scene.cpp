@@ -1,4 +1,7 @@
 #include "Scene.h"
+#include "StaticMeshActor.h"
+
+#include "KarmaGui/KarmaGuiRenderer.h"
 
 namespace Karma
 {
@@ -11,21 +14,16 @@ namespace Karma
 	{
 	}
 
-	std::shared_ptr<VertexArray> Scene::GetRenderableVertexArray() const
-	{
-		// Get the first for now
-		return m_VertexArrays.at(0);
-	}
-
 	std::shared_ptr<Camera> Scene::GetSceneCamera() const
 	{
 		// Get the first for now
 		return m_Cameras.at(0);
 	}
 
-	void Scene::AddVertexArray(std::shared_ptr<VertexArray> vertexArray)
+	void Scene::AddStaticMeshActor(AStaticMeshActor* smActor)
 	{
-		m_VertexArrays.push_back(vertexArray);
+		m_SMActors.push_back(smActor);
+		KarmaGuiRenderer::OnAdditionOfStaticMesh(smActor);
 	}
 
 	void Scene::AddCamera(std::shared_ptr<Camera> camera)

@@ -1,5 +1,4 @@
 #include "WindowsWindow.h"
-#include "Karma/Log.h"
 #include "Karma/Events/ApplicationEvent.h"
 #include "Karma/Events/KeyEvent.h"
 #include "Karma/Events/MouseEvent.h"
@@ -64,7 +63,8 @@ namespace Karma
 
 		m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-		switch (currentAPI)
+		// To be uncommented when we have RHI
+		/*switch (currentAPI)
 		{
 		case RendererAPI::API::None:
 			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
@@ -75,10 +75,9 @@ namespace Karma
 		case RendererAPI::API::Vulkan:
 			m_Context = new VulkanContext(m_Window);
 			break;
-		}
+		}*/
 
-		m_Context->Init();
-		SetVSync(true);
+		//SetVSync(true);
 
 		// Used for event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -95,7 +94,7 @@ namespace Karma
 
 	bool WindowsWindow::OnResize(WindowResizeEvent& event)
 	{
-		return m_Context->OnWindowResize(event);
+		return true;//m_Context->OnWindowResize(event); <-- to be removed when RHI is in place
 	}
 
 	void WindowsWindow::SetGLFWCallbacks(GLFWwindow* glfwWindow)
@@ -202,17 +201,17 @@ namespace Karma
 	{
 		glfwDestroyWindow(m_Window);
 		glfwTerminate();
-		if (m_Context)
+		/*if (m_Context)
 		{
 			delete m_Context;
 			m_Context = 0;
-		}
+		}*/
 	}
 
 	void WindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		m_Context->SwapBuffers();
+		//m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)

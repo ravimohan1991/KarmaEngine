@@ -111,11 +111,11 @@ namespace Karma
 
 	void VulkanRendererAPI::EndScene()
 	{
-		vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
+		/*vkDeviceWaitIdle(VulkanHolder::GetVulkanContext()->GetLogicalDevice());
 		for (size_t i = 0; i < m_commandBuffers.size(); i++)
 		{
 			vkResetCommandBuffer(m_commandBuffers[i], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
-		}
+		}*/
 		m_VulkaVertexArrays.clear();
 	}
 
@@ -263,6 +263,7 @@ namespace Karma
 	{
 		std::shared_ptr<VulkanVertexArray> vulkanVA = std::static_pointer_cast<VulkanVertexArray>(vertexArray);
 		m_VulkaVertexArrays.push_back(vulkanVA);
+		
 		SubmitCommandBuffers();
 	}
 }

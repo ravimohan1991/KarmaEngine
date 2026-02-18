@@ -1,7 +1,7 @@
 #include "OpenGLContext.h"
+
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "Karma/Core.h"
 
 namespace Karma
 {
@@ -26,6 +26,7 @@ namespace Karma
 	{
 		glfwSwapBuffers(m_windowHandle);
 		glfwSwapInterval(1);
+		
 		glFinish();
 	}
 

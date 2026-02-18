@@ -5,15 +5,13 @@
 
 namespace Karma
 {
-	VulkanShader::VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc, std::shared_ptr<UniformBufferObject> ubo) : Shader(ubo)
+	VulkanShader::VulkanShader(const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
 		std::string vString = KarmaUtilities::ReadFileToSpitString(vertexSrc);
 		vertSpirV = Compile(vertexSrc, vString, EShLangVertex);// vertex shader
 
 		vString = KarmaUtilities::ReadFileToSpitString(fragmentSrc);
 		fragSpirV = Compile(fragmentSrc, vString, EShLangFragment);// fragment shader
-
-		m_UniformBufferObject = std::static_pointer_cast<VulkanUniformBuffer>(ubo);
 	}
 
 	VulkanShader::~VulkanShader()
@@ -23,16 +21,17 @@ namespace Karma
 
 	std::vector<uint32_t> VulkanShader::Compile(const std::string& src, const std::string& source, EShLanguage lang)
 	{
-		KR_CORE_INFO("Compiling {0} {1} for Vulkan ...", lang == EShLangVertex ? "vertex shader" : "fragment shader", src);
+		KR_CORE_INFO("Compiling {0} {1} for Vulkan ..", lang == EShLangVertex ? "vertex shader" : "fragment shader", src);
 
 		const char* sString = source.c_str();
+
 		glslang::TShader Shader(lang);
 		Shader.setStrings(&sString, 1);
 
 		int ClientInputSemanticsVersion = 100;
+
 		glslang::EshTargetClientVersion VulkanClientVersion = glslang::EShTargetVulkan_1_0;
 		glslang::EShTargetLanguageVersion TargetVersion = glslang::EShTargetSpv_1_0;
-
 		Shader.setEnvInput(glslang::EShSourceGlsl, lang, glslang::EShClientVulkan, ClientInputSemanticsVersion);
 		Shader.setEnvClient(glslang::EShClientVulkan, VulkanClientVersion);
 		Shader.setEnvTarget(glslang::EShTargetSpv, TargetVersion);
@@ -45,6 +44,7 @@ namespace Karma
 		const int DefaultVersion = 100;
 
 		DirStackFileIncluder Includer;
+
 		std::string Path = KarmaUtilities::GetFilePath(src);
 		Includer.pushExternalLocalDirectory(Path);
 
@@ -53,6 +53,7 @@ namespace Karma
 		{
 			KR_CORE_ERROR("{0}", Shader.getInfoLog());
 			KR_CORE_ERROR("{0}", Shader.getInfoDebugLog());
+
 			KR_CORE_ASSERT(false, "Shader preprocessing failed!");
 		}
 
@@ -63,6 +64,7 @@ namespace Karma
 		{
 			KR_CORE_ERROR("{0}", Shader.getInfoLog());
 			KR_CORE_ERROR("{0}", Shader.getInfoDebugLog());
+
 			KR_CORE_ASSERT(false, "GLSL parsing failed!");
 		}
 
@@ -73,6 +75,7 @@ namespace Karma
 		{
 			KR_CORE_ERROR("{0}", Shader.getInfoLog());
 			KR_CORE_ERROR("{0}", Shader.getInfoDebugLog());
+			
 			KR_CORE_ASSERT(false, "Shader link faliure!");
 		}
 

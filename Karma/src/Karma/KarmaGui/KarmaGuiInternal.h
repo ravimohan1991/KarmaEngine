@@ -1,4 +1,14 @@
-// Dear ImGui (1.89.2) is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context!!
+/**
+ * @file KarmaGuiInternal.h
+ * @author Ravi Mohan (the_cowboy)
+ * @brief This file contains helper routines for UI drawing and relevant data structures
+ * @version 1.0
+ * @date January 10, 2023
+ *
+ * @copyright Karma Engine copyright(c) People of India
+ */
+
+// Dear ImGui (1.89.2) is Copyright (c) 2014-2023 Omar Cornut. This code is practically ImGui in Karma context, with minor modifications of course!!
 /*
 Index of this file:
 
@@ -33,7 +43,6 @@ Index of this file:
 
 #pragma once
 
-#include "krpch.h"
 #include "KarmaGui.h"
 
 // Enable stb_truetype by default unless FreeType is enabled.
@@ -1719,7 +1728,7 @@ struct KGGuiContextHook
 };
 
 //-----------------------------------------------------------------------------
-// [SECTION] KarmaGuiContext (main Dear ImGui context)
+// [SECTION] KarmaGuiContext (main KarmaGui context)
 //-----------------------------------------------------------------------------
 struct KarmaGuiContext
 {

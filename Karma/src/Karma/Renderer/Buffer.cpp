@@ -1,5 +1,4 @@
 #include "Buffer.h"
-#include "Karma/Core.h"
 #include "Renderer.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
@@ -91,7 +90,11 @@ namespace Karma
 		{
 			uint32_t uniformBaseAlignment = ComputeBaseAlignment(uniformDataType);
 			uint32_t uniformAlignedOffset = 0;
+			
 			uint32_t uniformSize = ShaderDataTypeSize(uniformDataType);
+
+			// seems like ShaderDataTypeSize and ComputeBaseAlignment are spitting same number
+			// think why different names
 
 			if (index == 0)
 			{
