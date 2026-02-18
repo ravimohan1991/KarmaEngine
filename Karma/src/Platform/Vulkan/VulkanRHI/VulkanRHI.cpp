@@ -2,21 +2,21 @@
 #include "GLFW/glfw3.h"
 #include "Application.h"
 #include "VulkanBuffer.h"
+#include "glslang/Public/ShaderLang.h"
 
 namespace Karma
 {
 	const std::vector<const char*> FVulkanDynamicRHI::validationLayers = {"VK_LAYER_KHRONOS_validation"};
 	std::vector<const char*> FVulkanDynamicRHI:: deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-#ifdef KR_DEBUG
-	bool FVulkanDynamicRHI::bEnableValidationLayers = true;
-#else
+
 	bool FVulkanDynamicRHI::bEnableValidationLayers = false;
-#endif
 
 	FVulkanDynamicRHI::FVulkanDynamicRHI()
 	{
 		KR_CORE_INFO("Initializing Vulkan RHI..");
+
+        glslang::InitializeProcess();
 
 		CreateInstance();
 		SetupDebugMessenger();
@@ -54,6 +54,8 @@ namespace Karma
 
 		delete m_Device;
 		m_Device = nullptr;
+
+        glslang::FinalizeProcess();
 
 		KR_CORE_INFO("Vulkan RHI shutdown complete");
 	}
