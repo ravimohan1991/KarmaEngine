@@ -612,13 +612,16 @@ namespace Karma
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			m_SwapChainRebuild = true;
+            KR_CORE_INFO("Oudates swapchain. Not even attempting to present.");
+
+            return;
 		}
 		if (result == VK_ERROR_OUT_OF_DATE_KHR)
 		{
 			return;
 		}
 
-		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to submit queue");
+        KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to present queue");
 
 		windowData->SemaphoreIndex = (windowData->SemaphoreIndex + 1) % windowData->MAX_FRAMES_IN_FLIGHT; // Now we can use the next set of semaphores
 	}
