@@ -28,22 +28,24 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 
 # For MacOS .app packaging
+# Choose install scheme for packaging
 set(MAC_PACKAGE FALSE)
 
 # Set custom install prefix inside CMakeLists.txt
 # This is so that .app can be installed in KarmaBin
 if (APPLE)
 	if(MAC_PACKAGE)
-                # We will be needing the install scheme so generate all the schemes
+	add_compile_definitions(KR_MAC_APP_BUNDLE)
+		# We will be needing the install scheme so generate all the schemes
 		set(CMAKE_XCODE_GENERATE_SCHEME ON CACHE BOOL "")
 		set(CMAKE_INSTALL_PREFIX "${REPOSITORYROOT}/KarmaBin" CACHE PATH
 			"Custom install location for .app bundle" FORCE)
 	else()
-                # No need for generating all the schemes. Selected schemes can be
-                # be generated for appropriate targets. See Pranjal
-                #     set_target_properties(Pranjal PROPERTIES
-                #             XCODE_GENERATE_SCHEME TRUE
-                #             XCODE_SCHEME_WORKING_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
+		# No need for generating all the schemes. Selected schemes can be
+		# be generated for appropriate targets. See Pranjal
+		#     set_target_properties(Pranjal PROPERTIES
+		#             XCODE_GENERATE_SCHEME TRUE
+		#             XCODE_SCHEME_WORKING_DIRECTORY "${REPOSITORYROOT}/KarmaBin")
 		set(CMAKE_XCODE_GENERATE_SCHEME OFF CACHE BOOL "")
 	endif()
 endif()
@@ -106,6 +108,8 @@ set_target_properties(Pranjal PROPERTIES
     BUILD_WITH_INSTALL_RPATH TRUE
     INSTALL_RPATH "@executable_path/../Frameworks"
 )
+
+target_link_libraries(Pranjal PUBLIC "-framework CoreFoundation")
 
 # Install .app to custom prefix (creates KarmaBin/Pranjal.app)
 install(TARGETS Pranjal

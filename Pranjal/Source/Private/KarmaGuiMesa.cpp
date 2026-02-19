@@ -250,9 +250,37 @@ namespace Karma
 	// [SECTION] A variety of KarmaGui  mesas
 	//-----------------------------------------------------------------------------
 
+#ifdef KR_MAC_APP_BUNDLE
+#include <CoreFoundation/CoreFoundation.h>
+#include <filesystem>
+#include <vector>
+#include <cstring>
+
+	std::filesystem::path getAppBundleResourcesPath()
+	{
+		CFBundleRef bundle = CFBundleGetMainBundle();
+		if (!bundle) return {};
+		
+		CFURLRef bundleURL = CFBundleCopyBundleURL(bundle);
+		if (!bundleURL) return {};
+		
+		char path[PATH_MAX];
+		Boolean success = CFURLGetFileSystemRepresentation(bundleURL, true, reinterpret_cast<UInt8*>(path), PATH_MAX);
+		CFRelease(bundleURL);
+		
+		if (!success) return {};
+		
+		return std::filesystem::path(path) / "Contents/Resources";
+	}
+#endif
+
 	// Once we have projects, change this
 	extern const std::filesystem::path g_AssetPath = "assets";
+#ifdef KR_MAC_APP_BUNDLE
+	std::filesystem::path KarmaGuiMesa::m_CurrentDirectory = getAppBundleResourcesPath();
+#else
 	std::filesystem::path KarmaGuiMesa::m_CurrentDirectory = std::filesystem::current_path();
+#endif
 	uint32_t KarmaGuiMesa::m_DirectoryIcon = 3;
 	uint32_t KarmaGuiMesa::m_FileIcon = 2;
 
