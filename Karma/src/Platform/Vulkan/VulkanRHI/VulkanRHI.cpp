@@ -2,6 +2,7 @@
 #include "GLFW/glfw3.h"
 #include "Application.h"
 #include "VulkanBuffer.h"
+#include "glslang/Public/ShaderLang.h"
 
 namespace Karma
 {
@@ -17,6 +18,9 @@ namespace Karma
 	FVulkanDynamicRHI::FVulkanDynamicRHI()
 	{
 		KR_CORE_INFO("Initializing Vulkan RHI..");
+		
+		bool result = glslang::InitializeProcess();
+		KR_CORE_INFO("glslang status = {0}", result ? "true" : "false");
 
 		CreateInstance();
 		SetupDebugMessenger();
@@ -54,6 +58,8 @@ namespace Karma
 
 		delete m_Device;
 		m_Device = nullptr;
+		
+		glslang::FinalizeProcess();
 
 		KR_CORE_INFO("Vulkan RHI shutdown complete");
 	}
