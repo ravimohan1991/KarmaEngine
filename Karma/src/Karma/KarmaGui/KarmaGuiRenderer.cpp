@@ -503,9 +503,7 @@ namespace Karma
 				vkCmdBindPipeline(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenGraphicsPipeline);
 
 				// === BIND GLOBAL DESCRIPTOR SETS (once per frame) ===
-				// Set 0, Binding 0 :Camera UBO
-				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenPipelineLayout, 0, 1, &descriptorSets->m_DescriptorSets[0][0], 0, nullptr);
-				// Set 0, Binding 1: Texture
+				// Set 0, Binding 0 : Camera UBO, Binding 1 : Texture
 				vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenPipelineLayout, 0, 1, &descriptorSets->m_DescriptorSets[0][0], 0, nullptr);
 
 				uint32_t objectIndex = 0;
@@ -520,7 +518,7 @@ namespace Karma
 					vkCmdBindVertexBuffers(frameOnFlightData->CommandBuffer, 0, 1, vertexBuffers, vertexOffset);
 					vkCmdBindIndexBuffer(frameOnFlightData->CommandBuffer, std::static_pointer_cast<VulkanIndexBuffer>(mesh->GetIndexBuffer())->GetIndexBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
-					// Set 2: Object UBO
+					// Set 1: Object UBO
 					vkCmdBindDescriptorSets(frameOnFlightData->CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, backendData->OffScreenRR.OffscreenPipelineLayout, 1, 1, &descriptorSets->m_DescriptorSets[1][objectIndex], 0, nullptr);
 
 					// ----Issue Draw Commands----

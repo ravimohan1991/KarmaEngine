@@ -103,8 +103,6 @@ namespace Karma
 		vkDestroySurfaceKHR(m_Instance, m_surface, nullptr);
 
 		vkDestroyInstance(m_Instance, nullptr);
-
-		glslang::FinalizeProcess();
 	}
 
 	void VulkanContext::CleanUpKarmaGuiGeneralGraphicsPipeline()
@@ -158,9 +156,6 @@ namespace Karma
 		VulkanHolder::SetVulkanContext(this);
 
 		m_vulkanRendererAPI->CreateSynchronicity();
-
-		// For glslang
-		Initializeglslang();
 
 		CreateGeneralShader();
 		CreateGeneralTexture();
