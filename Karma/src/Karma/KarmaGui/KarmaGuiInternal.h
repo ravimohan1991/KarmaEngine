@@ -1812,7 +1812,7 @@ struct KarmaGuiContext
 	KGGuiKeyRoutingTable    KeysRoutingTable;
 	KGU32                   ActiveIdUsingNavDirMask;            // Active widget will want to read those nav move requests (e.g. can activate a button and move away from it)
 	bool                    ActiveIdUsingAllKeyboardKeys;       // Active widget will want to read all keyboard keys inputs. (FIXME: This is a shortcut for not taking ownership of 100+ keys but perhaps best to not have the inconsistency)
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	KGU32                   ActiveIdUsingNavInputMask;          // If you used this. Since (IMGUI_VERSION_NUM >= 18804) : 'g.ActiveIdUsingNavInputMask |= (1 << KGGuiNavInput_Cancel);' becomes 'SetKeyOwner(KGGuiKey_Escape, g.ActiveId) and/or SetKeyOwner(KGGuiKey_NavGamepadCancel, g.ActiveId);'
 #endif
 
@@ -2085,7 +2085,7 @@ struct KarmaGuiContext
 
 		ActiveIdUsingNavDirMask = 0x00;
 		ActiveIdUsingAllKeyboardKeys = false;
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 		ActiveIdUsingNavInputMask = 0x00;
 #endif
 

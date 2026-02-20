@@ -169,7 +169,7 @@ KarmaGuiIO::KarmaGuiIO()
 	LogFilename = "imgui_log.txt";
 	MouseDoubleClickTime = 0.30f;
 	MouseDoubleClickMaxDist = 6.0f;
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	for (int i = 0; i < KGGuiKey_COUNT; i++)
 		KeyMap[i] = -1;
 #endif
@@ -307,7 +307,7 @@ void KarmaGuiIO::ClearInputCharacters()
 // FIXME: Perhaps we could clear queued events as well?
 void KarmaGuiIO::ClearInputKeys()
 {
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	memset(KeysDown, 0, sizeof(KeysDown));
 #endif
 	for (int n = 0; n < KG_ARRAYSIZE(KeysData); n++)
@@ -360,7 +360,7 @@ void KarmaGuiIO::AddKeyAnalogEvent(KarmaGuiKey key, bool down, float analog_valu
 	KR_CORE_ASSERT(key != KGGuiMod_Shortcut, ""); // We could easily support the translation here but it seems saner to not accept it (TestEngine perform a translation itself)
 
 	// Verify that backend isn't mixing up using new io.AddKeyEvent() api and old io.KeysDown[] + io.KeyMap[] data.
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	KR_CORE_ASSERT((BackendUsingLegacyKeyArrays == -1 || BackendUsingLegacyKeyArrays == 0), "Backend needs to either only use io.AddKeyEvent(), either only fill legacy io.KeysDown[] + io.KeyMap[]. Not both!");
 	if (BackendUsingLegacyKeyArrays == -1)
 		for (int n = KGGuiKey_NamedKey_BEGIN; n < KGGuiKey_NamedKey_END; n++)
@@ -410,7 +410,7 @@ void KarmaGuiIO::SetKeyEventNativeData(KarmaGuiKey key, int native_keycode, int 
 	KG_UNUSED(native_scancode); // Yet unused
 
 	// Build native->imgui map so old user code can still call key functions with native 0..511 values.
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	const int legacy_key = (native_legacy_index != -1) ? native_legacy_index : native_keycode;
 	if (!Karma::KarmaGuiInternal::IsLegacyKey((KarmaGuiKey)legacy_key))
 		return;
@@ -2827,7 +2827,7 @@ void Karma::KarmaGuiInternal::SetActiveID(KGGuiID id, KGGuiWindow* window)
 	// (Please note that this is WIP and not all keys/inputs are thoroughly declared by all widgets yet)
 	g.ActiveIdUsingNavDirMask = 0x00;
 	g.ActiveIdUsingAllKeyboardKeys = false;
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	g.ActiveIdUsingNavInputMask = 0x00;
 #endif
 }
@@ -3591,12 +3591,12 @@ void Karma::KarmaGui::NewFrame()
 	{
 		g.ActiveIdUsingNavDirMask = 0x00;
 		g.ActiveIdUsingAllKeyboardKeys = false;
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 		g.ActiveIdUsingNavInputMask = 0x00;
 #endif
 	}
 
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	if (g.ActiveId == 0)
 		g.ActiveIdUsingNavInputMask = 0;
 	else if (g.ActiveIdUsingNavInputMask != 0)
@@ -7230,7 +7230,7 @@ KarmaGuiKeyData* Karma::KarmaGuiInternal::GetKeyData(KarmaGuiKey key)
 		key = ConvertSingleModFlagToKey(key);
 
 	int index;
-	/*#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+    /*#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 		KR_CORE_ASSERT(key >= KGGuiKey_LegacyNativeKey_BEGIN && key < KGGuiKey_NamedKey_END);
 		if (IsLegacyKey(key))
 			index = (g.IO.KeyMap[key] != -1) ? g.IO.KeyMap[key] : key; // Remap native->imgui or imgui->native
@@ -7244,7 +7244,7 @@ KarmaGuiKeyData* Karma::KarmaGuiInternal::GetKeyData(KarmaGuiKey key)
 }
 
 /*
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 KarmaGuiKey KarmaGui::GetKeyIndex(KarmaGuiKey key)
 {
 	KarmaGuiContext& g = *GKarmaGui;
@@ -7282,7 +7282,7 @@ const char* const Karma::KarmaGui::GKeyNames[] =
 const char* Karma::KarmaGui::GetKeyName(KarmaGuiKey key)
 {
 	KR_CORE_ASSERT(KarmaGuiKey::KGGuiKey_NamedKey_COUNT == KG_ARRAYSIZE(Karma::KarmaGui::GKeyNames), "size mismatch");
-	//#ifdef IMGUI_DISABLE_OBSOLETE_KEYIO
+    //#ifdef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	KR_CORE_ASSERT((KarmaGuiInternal::IsNamedKey(key) || key == KGGuiKey_None), "Support for user key indices was dropped in favor of KarmaGuiKey. Please update backend and user code.");
 	/*#else
 		if (IsLegacyKey(key))
@@ -7821,7 +7821,7 @@ void Karma::KarmaGuiInternal::UpdateKeyboardInputs()
 
 	// Import legacy keys or verify they are not used
 	/*
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	if (io.BackendUsingLegacyKeyArrays == 0)
 	{
 		// Backend used new io.AddKeyEvent() API: Good! Verify that old arrays are never written to externally.
@@ -7864,7 +7864,7 @@ void Karma::KarmaGuiInternal::UpdateKeyboardInputs()
 		}
 	}
 
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	const bool nav_gamepad_active = (io.ConfigFlags & KGGuiConfigFlags_NavEnableGamepad) != 0 && (io.BackendFlags & KGGuiBackendFlags_HasGamepad) != 0;
 	if (io.BackendUsingLegacyNavInputArray && nav_gamepad_active)
 	{
@@ -8267,7 +8267,7 @@ void Karma::KarmaGuiInternal::UpdateInputEvents(bool trickle_fast_inputs)
 			key_changed_mask.SetBit(key_data_index);
 
 			// Allow legacy code using io.KeysDown[GetKeyIndex()] with new backends
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 			io.KeysDown[key_data_index] = key_data->Down;
 			if (io.KeyMap[key_data_index] != -1)
 				io.KeysDown[io.KeyMap[key_data_index]] = key_data->Down;
@@ -8526,7 +8526,7 @@ void Karma::KarmaGuiInternal::ErrorCheckNewFrameSanityChecks()
 	KR_CORE_ASSERT(g.Style.WindowMinSize.x >= 1.0f && g.Style.WindowMinSize.y >= 1.0f, "Invalid style setting.");
 	KR_CORE_ASSERT(g.Style.WindowMenuButtonPosition == KGGuiDir_None || g.Style.WindowMenuButtonPosition == KGGuiDir_Left || g.Style.WindowMenuButtonPosition == KGGuiDir_Right, "");
 	KR_CORE_ASSERT(g.Style.ColorButtonPosition == KGGuiDir_Left || g.Style.ColorButtonPosition == KGGuiDir_Right, "");
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 	for (int n = KGGuiKey_NamedKey_BEGIN; n < KGGuiKey_COUNT; n++)
 		KR_CORE_ASSERT(g.IO.KeyMap[n] >= -1 && g.IO.KeyMap[n] < KGGuiKey_LegacyNativeKey_END, "io.KeyMap[] contains an out of bound value (need to be 0..511, or -1 for unmapped key)");
 
@@ -18161,7 +18161,7 @@ void Karma::KarmaGui::ShowMetricsWindow(bool* p_open)
 			// We iterate both legacy native range and named KarmaGuiKey ranges, which is a little odd but this allows displaying the data for old/new backends.
 			// User code should never have to go through such hoops: old code may use native keycodes, new code may use KarmaGuiKey codes.
 			Indent();
-#ifdef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifdef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 			struct funcs { static bool IsLegacyNativeDupe(KarmaGuiKey) { return false; } };
 #else
 			struct funcs { static bool IsLegacyNativeDupe(KarmaGuiKey key) { return key < 512 && GetIO().KeyMap[key] != -1; } }; // Hide Native<>KarmaGuiKey duplicates when both exists in the array

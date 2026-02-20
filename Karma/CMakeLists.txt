@@ -227,7 +227,7 @@ if(MSVC AND BUILD_SHARED_LIBS)
 endif()
 
 # General compile
-add_compile_definitions(KARMAGUI_HAS_DOCK)
+add_compile_definitions(KARMAGUI_HAS_DOCK KARMAGUI_DISABLE_OBSOLETE_KEYIO)
 
 # Karma's personal code
 file(GLOB_RECURSE CPPFILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)

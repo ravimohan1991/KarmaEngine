@@ -101,8 +101,9 @@ namespace Karma
 		dispatcher.Dispatch<MouseButtonReleasedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnMouseButtonReleasedEvent));
 		dispatcher.Dispatch<MouseMovedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnMouseMovedEvent));
 		dispatcher.Dispatch<MouseScrolledEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnMouseScrollEvent));
-		dispatcher.Dispatch<KeyPressedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnKeyPressedEvent));
-		dispatcher.Dispatch<KeyReleasedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnKeyReleasedEvent));
+        //dispatcher.Dispatch<KeyPressedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnKeyPressedEvent));
+        //dispatcher.Dispatch<KeyReleasedEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnKeyReleasedEvent));
+
 		//dispatcher.Dispatch<KeyTypedEvent>(KR_BIND_EVENT_FN(ImGuiLayer::OnKeyTypedEvent));
 		dispatcher.Dispatch<WindowResizeEvent>(KR_BIND_EVENT_FN(KarmaGuiLayer::OnWindowResizeEvent));
 	}
@@ -142,22 +143,11 @@ namespace Karma
 
 	bool KarmaGuiLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
-		KarmaGuiIO& io = KarmaGui::GetIO();
-		io.KeysDown[e.GetKeyCode()] = true;
-
-		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
-
 		return false;
 	}
 
 	bool KarmaGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
 	{
-		KarmaGuiIO& io = KarmaGui::GetIO();
-		io.KeysDown[e.GetKeyCode()] = false;
-
 		return false;
 	}
 

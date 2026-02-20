@@ -827,8 +827,8 @@ namespace Karma
 		// Inputs Utilities: Keyboard/Mouse/Gamepad
 		// - the KarmaGuiKey enum contains all possible keyboard, mouse and gamepad inputs (e.g. KGGuiKey_A, KGGuiKey_MouseLeft, KGGuiKey_GamepadDpadUp...).
 		// - before v1.87, we used KarmaGuiKey to carry native/user indices as defined by each backends. About use of those legacy KarmaGuiKey values:
-		//  - without IMGUI_DISABLE_OBSOLETE_KEYIO (legacy support): you can still use your legacy native/user indices (< 512) according to how your backend/engine stored them in io.KeysDown[], but need to cast them to KarmaGuiKey.
-		//  - with    IMGUI_DISABLE_OBSOLETE_KEYIO (this is the way forward): any use of KarmaGuiKey will assert with key < 512. GetKeyIndex() is pass-through and therefore deprecated (gone if IMGUI_DISABLE_OBSOLETE_KEYIO is defined).
+        //  - without KARMAGUI_DISABLE_OBSOLETE_KEYIO (legacy support): you can still use your legacy native/user indices (< 512) according to how your backend/engine stored them in io.KeysDown[], but need to cast them to KarmaGuiKey.
+        //  - with    KARMAGUI_DISABLE_OBSOLETE_KEYIO (this is the way forward): any use of KarmaGuiKey will assert with key < 512. GetKeyIndex() is pass-through and therefore deprecated (gone if KARMAGUI_DISABLE_OBSOLETE_KEYIO is defined).
 		static bool          IsKeyDown(KarmaGuiKey key);                                            // is key being held.
 		static bool          IsKeyPressed(KarmaGuiKey key, bool repeat = true);                     // was key pressed (went from !Down to Down)? if repeat=true, uses io.KeyRepeatDelay / KeyRepeatRate
 		static bool          IsKeyReleased(KarmaGuiKey key);                                        // was key released (went from Down to !Down)?
@@ -1519,7 +1519,7 @@ enum KGGuiInputFlags_
 
 #ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
 // OBSOLETED in 1.88 (from July 2022): KGGuiNavInput and io.NavInputs[].
-// Official backends between 1.60 and 1.86: will keep working and feed gamepad inputs as long as IMGUI_DISABLE_OBSOLETE_KEYIO is not set.
+// Official backends between 1.60 and 1.86: will keep working and feed gamepad inputs as long as KARMAGUI_DISABLE_OBSOLETE_KEYIO is not set.
 // Custom backends: feed gamepad inputs via io.AddKeyEvent() and KGGuiKey_GamepadXXX enums.
 enum KGGuiNavInput
 {
@@ -2071,7 +2071,7 @@ struct KARMA_API KarmaGuiIO
     // Legacy: before 1.87, we required backend to fill io.KeyMap[] (imgui->native map) during initialization and io.KeysDown[] (native indices) every frame.
     // This is still temporarily supported as a legacy feature. However the new preferred scheme is for backend to call io.AddKeyEvent().
     //   Old (<1.87):  ImGui::IsKeyPressed(ImGui::GetIO().KeyMap[KGGuiKey_Space]) --> New (1.87+) ImGui::IsKeyPressed(KGGuiKey_Space)
-#ifndef IMGUI_DISABLE_OBSOLETE_KEYIO
+#ifndef KARMAGUI_DISABLE_OBSOLETE_KEYIO
     int         KeyMap[KGGuiKey_COUNT];             // [LEGACY] Input: map of indices into the KeysDown[512] entries array which represent your "native" keyboard state. The first 512 are now unused and should be kept zero. Legacy backend will write into KeyMap[] using KGGuiKey_ indices which are always >512.
     bool        KeysDown[KGGuiKey_COUNT];           // [LEGACY] Input: Keyboard keys that are pressed (ideally left in the "native" order your engine has access to keyboard keys, so you can use your own defines/enums for keys). This used to be [512] sized. It is now KGGuiKey_COUNT to allow legacy io.KeysDown[GetKeyIndex(...)] to work without an overflow.
     float       NavInputs[KGGuiNavInput_COUNT];     // [LEGACY] Since 1.88, NavInputs[] was removed. Backends from 1.60 to 1.86 won't build. Feed gamepad inputs via io.AddKeyEvent() and KGGuiKey_GamepadXXX enums.
