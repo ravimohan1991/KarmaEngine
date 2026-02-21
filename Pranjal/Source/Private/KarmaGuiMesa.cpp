@@ -700,7 +700,7 @@ namespace Karma
 			FTransform operationalTransform = m_SelectedSMActor->GetTransform();
 
 			glm::mat4 objectMatrix = operationalTransform.ToMatrixWithScale();
-			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::LOCAL, glm::value_ptr(objectMatrix));
+			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::WORLD, glm::value_ptr(objectMatrix));
 			
 			if(KarmaGuizmo::IsUsing() && bManipulate)
 			{
