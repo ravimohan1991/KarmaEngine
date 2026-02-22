@@ -14,7 +14,6 @@
 #include "hwinfo/hwinfo.h"
 #include "hwinfo/utils/unit.h"
 #include "spdlog/sinks/callback_sink.h"
-#include "KarmaGui/KarmaGuizmo.h"
 #include "StaticMeshActor.h"
 
 // Experimental
@@ -39,6 +38,8 @@ namespace Karma
 	bool KarmaGuiMesa::m_EditorInitialized = false;
 	bool KarmaGuiMesa::m_RefreshRenderingResources = false;
 	AStaticMeshActor* KarmaGuiMesa::m_SelectedSMActor = nullptr;
+	KarmaGuizmo::OPERATION KarmaGuiMesa::m_CurrentGizmoOperation(KarmaGuizmo::OPERATION::TRANSLATE);
+	KarmaGuizmo::MODE KarmaGuiMesa::m_CurrentGizmoMode(KarmaGuizmo::MODE::LOCAL);
 
 	WindowManipulationGaugeData KarmaGuiMesa::m_3DExhibitor;
 	WindowManipulationGaugeData	KarmaGuiMesa::m_MemoryExhibitor;
@@ -54,8 +55,8 @@ namespace Karma
 		}
 	}
 
-	bool InputAxisFloat(const char* axis_id, const char* axis_label, const KGVec4& color,
-					float* v, float width = 60.0f)
+	bool KarmaGuiMesa::InputAxisFloat(const char* axis_id, const char* axis_label, const KGVec4& color,
+					float* v, float width)
 	{
 		bool changed = false;
 
@@ -73,7 +74,7 @@ namespace Karma
 		return changed;
 	}
 
-	bool InputFloat3XYZ(const char* label, float v[3], const char* format = "%.3f")
+	bool KarmaGuiMesa::InputFloat3XYZ(const char* label, float v[3], const char* format)
 	{
 		bool changed = false;
 		float itemWidth = 65.5f;
@@ -118,6 +119,25 @@ namespace Karma
 			return;
 		}
 		
+		if(KarmaGui::RadioButton("Translate", m_CurrentGizmoOperation == KarmaGuizmo::TRANSLATE))
+		{
+			m_CurrentGizmoOperation = KarmaGuizmo::TRANSLATE;
+		}
+		
+		KarmaGui::SameLine();
+		
+		if(KarmaGui::RadioButton("Rotate", m_CurrentGizmoOperation == KarmaGuizmo::ROTATE))
+		{
+			m_CurrentGizmoOperation = KarmaGuizmo::ROTATE;
+		}
+		
+		KarmaGui::SameLine();
+		
+		if(KarmaGui::RadioButton("Scale", m_CurrentGizmoOperation == KarmaGuizmo::SCALE))
+		{
+			m_CurrentGizmoOperation = KarmaGuizmo::SCALE;
+		}
+		
 		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
 		FTransform transform = m_SelectedSMActor->GetTransform();
 		
@@ -137,6 +157,18 @@ namespace Karma
 		bIsDirty |= InputFloat3XYZ("Rt", matrixRotation, "%.2f");
 		
 		bIsDirty |= InputFloat3XYZ("Sc", matrixScale, "%.2f");
+		
+		if(KarmaGui::RadioButton("LOCAL", m_CurrentGizmoMode == KarmaGuizmo::LOCAL))
+		{
+			m_CurrentGizmoMode = KarmaGuizmo::LOCAL;
+		}
+		
+		KarmaGui::SameLine();
+		
+		if(KarmaGui::RadioButton("WORLD", m_CurrentGizmoMode == KarmaGuizmo::WORLD))
+		{
+			m_CurrentGizmoMode = KarmaGuizmo::WORLD;
+		}
 		
 		if (bIsDirty)
 		{
@@ -700,7 +732,7 @@ namespace Karma
 			FTransform operationalTransform = m_SelectedSMActor->GetTransform();
 
 			glm::mat4 objectMatrix = operationalTransform.ToMatrixWithScale();
-			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, KarmaGuizmo::UNIVERSAL, KarmaGuizmo::WORLD, glm::value_ptr(objectMatrix));
+			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, m_CurrentGizmoOperation, m_CurrentGizmoMode, glm::value_ptr(objectMatrix));
 			
 			if(KarmaGuizmo::IsUsing() && bManipulate)
 			{

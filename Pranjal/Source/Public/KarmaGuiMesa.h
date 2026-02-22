@@ -10,6 +10,7 @@
 #pragma once
 
 #include "Karma.h"
+#include "KarmaGui/KarmaGuizmo.h"
 
 namespace Karma
 {
@@ -288,6 +289,11 @@ namespace Karma
 
 		// Mesas!
 		static void ShowAboutKarmaMesa(bool* pbOpen);
+		
+		// Utility
+		static bool InputFloat3XYZ(const char* label, float v[3], const char* format = "%.3f");
+		static bool InputAxisFloat(const char* axis_id, const char* axis_label, const KGVec4& color,
+								   float* v, float width = 60.0f);
 
 		// Shiva the Mesa and rest
 		static void MesaShutDownRoutine();
@@ -329,6 +335,10 @@ namespace Karma
 		// Need agnostic naming scheme
 		static uint32_t m_DirectoryIcon;
 		static uint32_t m_FileIcon;
+		
+		// KarmaGuizmo
+		static KarmaGuizmo::OPERATION m_CurrentGizmoOperation;
+		static KarmaGuizmo::MODE m_CurrentGizmoMode;
 
 		// UObjects statistics
 		static KarmaVector<UObjectsStatistics> m_UObjectStatistics;
