@@ -56,7 +56,7 @@ namespace Karma
 	}
 
 	bool KarmaGuiMesa::InputAxisFloat(const char* axis_id, const char* axis_label, const KGVec4& color,
-					float* v, float width)
+					float* v, const char* format, float width)
 	{
 		bool changed = false;
 
@@ -69,7 +69,7 @@ namespace Karma
 
 		KarmaGui::SameLine();
 		KarmaGui::SetNextItemWidth(width);
-		changed = KarmaGui::InputFloat(axis_id, v, 0.0f, 0.0f, "%.2f"); // axis_id should be "##X" / "##Y" / "##Z"
+		changed = KarmaGui::InputFloat(axis_id, v, 0.0f, 0.0f, format); // axis_id should be "##X" / "##Y" / "##Z"
 
 		return changed;
 	}
@@ -96,17 +96,17 @@ namespace Karma
 
 		// X
 		// Colored label background
-		changed |= InputAxisFloat("##X", "X", KGVec4(1.0f, 0.1f, 0.1f, 1.0f), &v[0]);
+		changed |= InputAxisFloat("##X", "X", KGVec4(1.0f, 0.1f, 0.1f, 1.0f), &v[0], format);
 
 		KarmaGui::SameLine();
 
 		// Y
-		changed |= InputAxisFloat("##Y", "Y", KGVec4(0.1f, 1.0f, 0.1f, 1.0f), &v[1]);
+		changed |= InputAxisFloat("##Y", "Y", KGVec4(0.1f, 1.0f, 0.1f, 1.0f), &v[1], format);
 
 		KarmaGui::SameLine();
 
 		// Z
-		changed |= InputAxisFloat("##Z", "Z", KGVec4(0.1f, 0.1f, 1.0f, 1.0f), &v[2]);
+		changed |= InputAxisFloat("##Z", "Z", KGVec4(0.1f, 0.1f, 1.0f, 1.0f), &v[2], format);
 
 		KarmaGui::PopID();
 		return changed;

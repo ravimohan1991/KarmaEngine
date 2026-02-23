@@ -293,7 +293,7 @@ namespace Karma
 		// Utility
 		static bool InputFloat3XYZ(const char* label, float v[3], const char* format = "%.3f");
 		static bool InputAxisFloat(const char* axis_id, const char* axis_label, const KGVec4& color,
-								   float* v, float width = 60.0f);
+								   float* v, const char* format, float width = 60.0f);
 
 		// Shiva the Mesa and rest
 		static void MesaShutDownRoutine();
