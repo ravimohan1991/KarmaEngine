@@ -1,14 +1,13 @@
 #include "KarmaGuiVulkanHandler.h"
-#include "Vulkan/VulkanHolder.h"
 #include "Renderer/RenderCommand.h"
 #include "KarmaUtilities.h"
-#include "Platform/Vulkan/VulkanVertexArray.h"
 #include "Karma/KarmaGui/KarmaGuiRenderer.h"
 #include "VulkanRHI/VulkanSwapChain.h"
 #include "VulkanRHI/VulkanDynamicRHI.h"
 #include "VulkanRHI/VulkanRenderPass.h"
 #include "VulkanRHI/VulkanFramebuffer.h"
 #include "VulkanRHI/VulkanDescriptorSets.h"
+#include "Vulkan/VulkanShader.h"
 
 // Visual Studio warnings
 /*#ifdef _MSC_VER
@@ -2166,7 +2165,7 @@ namespace Karma
 		KarmaGui_ImplVulkanH_Window* windowData = &viewportData->Window;
 		KarmaGui_ImplVulkan_InitInfo* vulkanInfo = &backendData->VulkanInitInfo;
 
-		VkSurfaceKHR vulkanSurface = VulkanHolder::GetVulkanContext()->GetSurface();
+		VkSurfaceKHR vulkanSurface = FVulkanDynamicRHI::Get().GetSurface();
 
 		// Check for Window System Integration (WSI) support
 		VkBool32 bResult;
@@ -2176,8 +2175,9 @@ namespace Karma
 			KR_CORE_ASSERT(false, "No WSI support found"); // Error: no WSI support on physical device
 			return;
 		}
-		windowData->SurfaceFormat = VulkanHolder::GetVulkanContext()->GetSurfaceFormat();
-		windowData->PresentMode = VulkanHolder::GetVulkanContext()->GetPresentMode();
+		windowData->SurfaceFormat = windowData->RHIResources->VulkanSwapChain->GetSurfaceFormat();
+		
+		windowData->PresentMode = windowData->RHIResources->VulkanSwapChain->GetPresentMode();
 
 		// No clue about the utility
 		windowData->ClearEnable = (viewport->Flags & KGGuiViewportFlags_NoRendererClear) ? false : true;

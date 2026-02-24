@@ -15,7 +15,6 @@
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
-#include "Platform/Vulkan/VulkanRendererAPI.h"
 
 namespace Karma
 {
@@ -700,7 +699,6 @@ namespace Karma
 		// Apologies for little out-of-sync naming convention, was dealing with flood of lines when
 		// learning Vulkan!
 		GLFWwindow* m_windowHandle;
-		VulkanRendererAPI* m_vulkanRendererAPI;
 
 		VkInstance m_Instance;
 		VkDebugUtilsMessengerEXT debugMessenger;

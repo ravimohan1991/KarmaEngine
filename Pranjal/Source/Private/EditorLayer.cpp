@@ -11,7 +11,6 @@
 #include "Engine.h"
 #include "GameInstance.h"
 #include "Engine/StaticMeshActor.h"
-#include <VulkanHolder.h>
 
 namespace Karma
 {

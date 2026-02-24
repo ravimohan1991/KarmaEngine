@@ -1,9 +1,8 @@
 #include "KarmaGuiRenderer.h"
 #include "Renderer/RendererAPI.h"
-#include "Vulkan/VulkanHolder.h"
 #include "Renderer/RenderCommand.h"
 #include "StaticMeshActor.h"
-#include "Platform/Vulkan/VulkanVertexArray.h"
+#include "Vulkan/VulkanBuffer.h"
 #include "VulkanRHI/VulkanDynamicRHI.h"
 #include "VulkanRHI/VulkanSwapChain.h"
 #include "VulkanRHI/VulkanSynchronization.h"
@@ -12,6 +11,7 @@
 #include "VulkanRHI/VulkanDescriptorSets.h"
 #include "StaticMeshActor.h"
 #include "PrimitiveComponent.h"
+#include "GLFW/glfw3.h"
 
 // Emedded font
 #include "Karma/KarmaGui/Roboto-Regular.h"

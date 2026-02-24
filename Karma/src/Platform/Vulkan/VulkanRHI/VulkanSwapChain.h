@@ -76,6 +76,10 @@ namespace Karma
 		inline const std::vector<VkImage>& GetSwapChainImages() const { return m_SwapChainImages; }
 		inline const std::vector<VkImageView>& GetSwapChainImageViews() const { return m_SwapChainImageViews; }
 		inline VkFormat GetSwapChainImageFormat() const { return m_SwapChainImageFormat; }
+		
+		inline VkSurfaceFormatKHR GetSurfaceFormat() const { return m_SurfaceFormat; }
+			
+		inline VkPresentModeKHR GetPresentMode() const { return m_PresentMode; }
 
 	private:
 

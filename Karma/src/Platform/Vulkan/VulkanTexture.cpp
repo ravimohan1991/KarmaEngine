@@ -1,5 +1,5 @@
 #include "VulkanTexture.h"
-#include "VulkanHolder.h"
+
 #include "VulkanRHI/VulkanDevice.h"
 #include "VulkanRHI/VulkanDynamicRHI.h"
 
@@ -7,8 +7,8 @@ namespace Karma
 {
 	VulkanTexture::VulkanTexture()
 	{
-		m_LogicalDevice = VulkanHolder::GetVulkanContext()->GetLogicalDevice();
-		m_GPU = VulkanHolder::GetVulkanContext()->GetPhysicalDevice();
+		m_LogicalDevice = FVulkanDynamicRHI::Get().GetDevice()->GetLogicalDevice();
+		m_GPU = FVulkanDynamicRHI::Get().GetDevice()->GetGPU();
 	}
 
 	VulkanTexture::VulkanTexture(FVulkanDevice* InDevice, const char* filename) : m_TextureImage(VK_NULL_HANDLE), 

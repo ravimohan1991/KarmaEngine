@@ -1,10 +1,7 @@
 #include "VulkanContext.h"
 #include "GLFW/glfw3.h"
-#include "Platform/Vulkan/VulkanHolder.h"
 #include "glslang/Public/ShaderLang.h"
-#include "Platform/Vulkan/VulkanRendererAPI.h"
 #include "Karma/Renderer/RenderCommand.h"
-#include "Platform/Vulkan/VulkanVertexArray.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
 #include "Platform/Vulkan/VulkanTexture.h"
 #include "Scene.h"
@@ -57,7 +54,6 @@ namespace Karma
 		: m_windowHandle(windowHandle)
 	{
 		KR_CORE_ASSERT(windowHandle, "windowHandle is null");
-		m_vulkanRendererAPI = static_cast<VulkanRendererAPI*> (RenderCommand::GetRendererAPI());
 	}
 
 	VulkanContext::~VulkanContext()
@@ -72,8 +68,6 @@ namespace Karma
 
 		// Tentative
 		static_pointer_cast<VulkanTexture>(m_GeneralTexture)->~VulkanTexture();
-
-		m_vulkanRendererAPI->ClearVulkanRendererAPI();
 		
 		// Tentative for the moment
 		// ClearUBO();
@@ -153,10 +147,6 @@ namespace Karma
 		CreateDepthResources();
 		CreateFrameBuffers();
 
-		VulkanHolder::SetVulkanContext(this);
-
-		m_vulkanRendererAPI->CreateSynchronicity();
-
 		CreateGeneralShader();
 		CreateGeneralTexture();
 		
@@ -173,15 +163,8 @@ namespace Karma
 		}
 
 		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
-		VulkanRendererAPI* vulkanRendererAPI = static_cast<VulkanRendererAPI*>(rendererAPI);
 
-		if (!vulkanRendererAPI)
-		{
-			KR_CORE_ASSERT(false, "VulkanRendererAPI is null!");
-			return;
-		}
-
-		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
+		uint32_t maxFramesInFlight = 0;
 
 		CreateGeneralDescriptorPool(smElementsNumber);
 
@@ -197,7 +180,7 @@ namespace Karma
 	{
 		// We are creating general shader here for the static material (material used as default for meshes)
 		// Ponder how this would look like in OpenGL
-		m_GeneralShader.reset(new VulkanShader("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag"));
+		//m_GeneralShader.reset(new VulkanShader("../Resources/Shaders/shader.vert", "../Resources/Shaders/shader.frag"));
 	}
 
 	void VulkanContext::CreateGeneralTexture()
@@ -238,8 +221,8 @@ namespace Karma
 		VkResult result = vkCreatePipelineLayout(m_device, &plInfo, nullptr, &m_KarmaGuiGeneralPipelineLayout);
 		KR_CORE_ASSERT(result == VK_SUCCESS, "Failed to create pipeline layout!");
 
-		VkShaderModule vertShaderModule = CreateShaderModule(m_GeneralShader->GetVertSpirV());
-		VkShaderModule fragShaderModule = CreateShaderModule(m_GeneralShader->GetFragSpirV());
+		VkShaderModule vertShaderModule;
+		VkShaderModule fragShaderModule;
 
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -415,15 +398,8 @@ namespace Karma
 	void VulkanContext::CreateGeneralDescriptorPool(uint32_t smElementsNumber)
 	{
 		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
-		VulkanRendererAPI* vulkanRendererAPI = static_cast<VulkanRendererAPI*>(rendererAPI);
 
-		if (!vulkanRendererAPI)
-		{
-			KR_CORE_ASSERT(false, "VulkanRendererAPI is null!");
-			return;
-		}
-
-		uint32_t maxFramesInFlight = static_cast<uint32_t>(vulkanRendererAPI->GetMaxFramesInFlight());
+		uint32_t maxFramesInFlight = 0;
 		
 		std::array<VkDescriptorPoolSize, 2> poolSizes{};
 

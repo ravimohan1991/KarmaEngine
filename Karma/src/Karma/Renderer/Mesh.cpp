@@ -1,9 +1,7 @@
 #include "Mesh.h"
 #include "RenderCommand.h"
-#include "Renderer/Material.h"
 
-// Experimental
-#include "Platform/Vulkan/VulkanHolder.h"
+#include "Renderer/Material.h"
 
 namespace Karma
 {

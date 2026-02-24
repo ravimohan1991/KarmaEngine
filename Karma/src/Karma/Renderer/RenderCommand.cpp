@@ -1,6 +1,5 @@
 #include "RenderCommand.h"
 #include "Platform/OpenGL/OpenGLRendererAPI.h"
-#include "Platform/Vulkan/VulkanRendererAPI.h"
 
 namespace Karma
 {
@@ -17,7 +16,7 @@ namespace Karma
 				s_RendererAPI = new OpenGLRendererAPI();
 				break;
 			case RendererAPI::API::Vulkan:
-				s_RendererAPI = new VulkanRendererAPI();
+				//s_RendererAPI = new VulkanRendererAPI();
 				break;
 			default:
 				KR_CORE_ASSERT(false, "Unknown RendererAPI specified");

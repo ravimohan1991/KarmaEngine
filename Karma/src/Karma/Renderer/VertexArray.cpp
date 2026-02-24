@@ -1,7 +1,7 @@
 #include "VertexArray.h"
 #include "Renderer.h"
+
 #include "Platform/OpenGL/OpenGLVertexArray.h"
-#include "Platform/Vulkan/VulkanVertexArray.h"
 
 namespace Karma
 {
@@ -15,7 +15,8 @@ namespace Karma
 			case RendererAPI::API::OpenGL:
 				return new OpenGLVertexArray();
 			case RendererAPI::API::Vulkan:
-				return new VulkanVertexArray();
+				//return new VulkanVertexArray();
+				return nullptr;
 		}
 
 		KR_CORE_ASSERT(false, "Unknown RendererAPI");
