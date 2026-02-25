@@ -732,6 +732,7 @@ namespace Karma
 			FTransform operationalTransform = m_SelectedSMActor->GetTransform();
 
 			glm::mat4 objectMatrix = operationalTransform.ToMatrixWithScale();
+
 			bool bManipulate = KarmaGuizmo::Manipulate(glm::value_ptr(viewMatrix), projectionPtr, m_CurrentGizmoOperation, m_CurrentGizmoMode, glm::value_ptr(objectMatrix));
 			
 			if(KarmaGuizmo::IsUsing() && bManipulate)
