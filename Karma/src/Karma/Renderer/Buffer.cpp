@@ -1,5 +1,5 @@
 #include "Buffer.h"
-#include "Renderer.h"
+#include "VulkanRHI/VulkanRHI.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
 
@@ -7,14 +7,14 @@ namespace Karma
 {
 	VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
 	{
-		switch (Renderer::GetAPI())
+        switch (GRHIInterfaceType)
 		{
-			case RendererAPI::API::None:
-				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+            case ERHIInterfaceType::Null:
+                KR_CORE_ASSERT(false, "Without graphics API not supported");
 				return nullptr;
-			case RendererAPI::API::OpenGL:
+            case ERHIInterfaceType::OpenGL:
 				return new OpenGLVertexBuffer(vertices, size);
-			case RendererAPI::API::Vulkan:
+            case ERHIInterfaceType::Vulkan:
 				return new VulkanVertexBuffer(vertices, size);
 		}
 
@@ -24,14 +24,14 @@ namespace Karma
 
 	IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t size)
 	{
-		switch (Renderer::GetAPI())
+        switch (GRHIInterfaceType)
 		{
-			case RendererAPI::API::None:
+            case ERHIInterfaceType::Null:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 				return nullptr;
-			case RendererAPI::API::OpenGL:
+            case ERHIInterfaceType::OpenGL:
 				return new OpenGLIndexBuffer(indices, size);
-			case RendererAPI::API::Vulkan:
+            case ERHIInterfaceType::Vulkan:
 				return new VulkanIndexBuffer(indices, size);
 		}
 
@@ -41,15 +41,15 @@ namespace Karma
 
 	ImageBuffer* ImageBuffer::Create(const char* filename)
 	{
-		switch (Renderer::GetAPI())
+        switch (GRHIInterfaceType)
 		{
-			case RendererAPI::API::None:
+            case ERHIInterfaceType::Null:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 				return nullptr;
-			case RendererAPI::API::OpenGL:
+            case ERHIInterfaceType::OpenGL:
 				OpenGLImageBuffer::SetUpImageBuffer(filename);
 				return nullptr;
-			case RendererAPI::API::Vulkan:
+            case ERHIInterfaceType::Vulkan:
 				return(static_cast<ImageBuffer*>(new VulkanImageBuffer(filename)));
 		}
 
@@ -59,14 +59,14 @@ namespace Karma
 
 	UniformBufferObject* UniformBufferObject::Create(std::vector<ShaderDataType> dataTypes, uint32_t bindingPointIndex)
 	{
-		switch (Renderer::GetAPI())
+        switch (GRHIInterfaceType)
 		{
-			case RendererAPI::API::None:
+            case ERHIInterfaceType::Null:
 				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 				return nullptr;
-			case RendererAPI::API::OpenGL:
+            case ERHIInterfaceType::OpenGL:
 				return new OpenGLUniformBuffer(dataTypes, bindingPointIndex);
-			case RendererAPI::API::Vulkan:
+            case ERHIInterfaceType::Vulkan:
 				return new VulkanUniformBuffer(dataTypes, bindingPointIndex);
 		}
 

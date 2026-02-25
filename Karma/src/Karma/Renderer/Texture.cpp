@@ -1,6 +1,6 @@
 #include "Texture.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
-#include "Renderer.h"
+#include "KarmaRHI/DynamicRHI.h"
 #include "Platform/Vulkan/VulkanTexture.h"
 
 namespace Karma
@@ -16,15 +16,15 @@ namespace Karma
 		{
 		case TextureType::Image:
 		{
-			switch (Renderer::GetAPI())
+            switch (GRHIInterfaceType)
 			{
-			case RendererAPI::API::None:
-				KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+            case ERHIInterfaceType::Null:
+                KR_CORE_ASSERT(false, "Without graphics API not supported");
 				break;
-			case RendererAPI::API::OpenGL:
+            case ERHIInterfaceType::OpenGL:
 				ImageBuffer::Create(filename);
 				break;
-			case RendererAPI::API::Vulkan:
+            case ERHIInterfaceType::Vulkan:
 				VulkanImageBuffer* vImageBuffer = static_cast<VulkanImageBuffer*>(ImageBuffer::Create(filename));
 				if (vImageBuffer != nullptr)
 				{

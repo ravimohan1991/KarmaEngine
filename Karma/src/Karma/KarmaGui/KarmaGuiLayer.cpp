@@ -3,7 +3,6 @@
 #include "GLFW/glfw3.h"
 #include "Karma/Application.h"
 #include "glm/glm.hpp"
-#include "Renderer/Renderer.h"
 #include "KarmaGuiRenderer.h"
 #include "KarmaGui/KarmaGuizmo.h"
 
@@ -12,15 +11,6 @@ namespace Karma
 	KarmaGuiLayer::KarmaGuiLayer(Window* relevantWindow)
 		: Layer("ImGuiLayer"), m_AssociatedWindow(relevantWindow)
 	{
-		// Is this really required?
-		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
-		{
-			// Curate the data associated with Window context and VulkanAPI
-			int width, height;
-			GLFWwindow* window = static_cast<GLFWwindow*>(m_AssociatedWindow->GetNativeWindow());
-
-			glfwGetFramebufferSize(window, &width, &height);
-		}
 	}
 
 	KarmaGuiLayer::~KarmaGuiLayer()

@@ -1,7 +1,6 @@
 #include "VulkanContext.h"
 #include "GLFW/glfw3.h"
 #include "glslang/Public/ShaderLang.h"
-#include "Karma/Renderer/RenderCommand.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
 #include "Platform/Vulkan/VulkanTexture.h"
 #include "Scene.h"
@@ -161,8 +160,6 @@ namespace Karma
 		{
 			smElementsNumber++;
 		}
-
-		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
 
 		uint32_t maxFramesInFlight = 0;
 
@@ -397,8 +394,6 @@ namespace Karma
 
 	void VulkanContext::CreateGeneralDescriptorPool(uint32_t smElementsNumber)
 	{
-		RendererAPI* rendererAPI = RenderCommand::GetRendererAPI();
-
 		uint32_t maxFramesInFlight = 0;
 		
 		std::array<VkDescriptorPoolSize, 2> poolSizes{};

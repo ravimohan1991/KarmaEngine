@@ -1,6 +1,5 @@
 #include "Application.h"
 #include "Karma/Input.h"
-#include "Karma/Renderer/Renderer.h"
 #include "chrono"
 #include "Engine/Engine.h"
 #include "Core/UObjectGlobals.h"// to be bundled appropriately in core.h
@@ -46,7 +45,6 @@ namespace Karma
 		// Deinitialize Kengine
 
 		m_MemoryManager.ShutDown();
-		Renderer::DeleteData();
 		// We want to clear off layers and their rendering components before the m_Window
 		// and its context.
 		KR_CORE_INFO("Deleting stacks");

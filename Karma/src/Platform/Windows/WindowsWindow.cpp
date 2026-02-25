@@ -5,7 +5,7 @@
 #include "GLFW/glfw3.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Platform/Vulkan/VulkanContext.h"
-#include "Karma/Renderer/Renderer.h"
+#include "KarmaRHI/DynamicRHI.h"
 
 namespace Karma
 {
@@ -51,9 +51,7 @@ namespace Karma
 			s_GLFWInitialized = true;
 		}
 
-		RendererAPI::API currentAPI = RendererAPI::GetAPI();
-
-		if (currentAPI == RendererAPI::API::Vulkan)
+        if (GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 			uint32_t extensionCount = 0;
@@ -216,11 +214,9 @@ namespace Karma
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
-		RendererAPI::API currentAPI = RendererAPI::GetAPI();
-
-		switch (currentAPI)
+        switch (GRHIInterfaceType)
 		{
-		case RendererAPI::API::OpenGL:
+        case ERHIInterfaceType::OpenGL:
 		{
 			if (enabled)
 			{
@@ -232,15 +228,15 @@ namespace Karma
 			}
 			break;
 		}
-		case RendererAPI::API::Vulkan:
+        case ERHIInterfaceType::Vulkan:
 		{
 			VulkanContext* vContext = static_cast<VulkanContext*>(m_Context);
 			vContext->SetVSync(enabled);
 			break;
 		}
-		case RendererAPI::API::None:
+        case ERHIInterfaceType::Null:
 		{
-			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+            KR_CORE_ASSERT(false, "Without graphics API is not supported");
 			break;
 		}
 		}

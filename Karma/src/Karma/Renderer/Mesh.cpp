@@ -1,7 +1,7 @@
 #include "Mesh.h"
-#include "RenderCommand.h"
-
 #include "Renderer/Material.h"
+
+#include "KarmaRHI/DynamicRHI.h"
 
 namespace Karma
 {
@@ -46,7 +46,7 @@ namespace Karma
 
 		uint32_t importFlags = aiProcess_Triangulate;
 
-		if(RenderCommand::GetRendererAPI()->GetAPI() == RendererAPI::API::Vulkan)
+        if(GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
 			importFlags = importFlags | aiProcess_FlipUVs;
 		}

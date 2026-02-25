@@ -7,6 +7,8 @@ namespace Karma
 	FDynamicRHI* GDynamicRHI = nullptr;
 	ERHIInterfaceType GRHIInterfaceType = ERHIInterfaceType::Vulkan;
 
+    glm::vec4 FDynamicRHI::m_ClearColor = {0.0f, 0.0f, 0.0f, 0.0f};
+
 	FDynamicRHI* FDynamicRHI::CreateRHI()
 	{
 		// if RHI is ERHIInterfaceType::Vulkan

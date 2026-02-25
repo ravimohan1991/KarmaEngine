@@ -1,5 +1,5 @@
 #include "VertexArray.h"
-#include "Renderer.h"
+#include "KarmaRHI/DynamicRHI.h"
 
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 
@@ -7,14 +7,14 @@ namespace Karma
 {
 	VertexArray* VertexArray::Create()
 	{
-		switch (Renderer::GetAPI())
+        switch (GRHIInterfaceType)
 		{
-			case RendererAPI::API::None:
-				KR_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
+            case ERHIInterfaceType::Null:
+                KR_CORE_ASSERT(false, "Without graphics API currently not supported");
 				return nullptr;
-			case RendererAPI::API::OpenGL:
+            case ERHIInterfaceType::OpenGL:
 				return new OpenGLVertexArray();
-			case RendererAPI::API::Vulkan:
+            case ERHIInterfaceType::Vulkan:
 				//return new VulkanVertexArray();
 				return nullptr;
 		}

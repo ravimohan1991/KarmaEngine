@@ -1,5 +1,4 @@
 #include "VulkanBuffer.h"
-#include "Karma/Renderer/RenderCommand.h"
 #include "Karma/KarmaUtilities.h"
 #include "VulkanRHI/VulkanDynamicRHI.h"
 #include "VulkanRHI/VulkanDevice.h"

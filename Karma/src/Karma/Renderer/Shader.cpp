@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include "Renderer.h"
+#include "KarmaRHI/DynamicRHI.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Platform/Vulkan/VulkanShader.h"
 
@@ -10,14 +10,14 @@ namespace Karma
 {
 	Shader* Shader::Create(const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
-		switch (Renderer::GetAPI())
+        switch (GRHIInterfaceType)
 		{
-			case RendererAPI::API::None:
-				KR_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
+            case ERHIInterfaceType::Null:
+                KR_CORE_ASSERT(false, "Without graphics API currently not supported");
 				return nullptr;
-			case RendererAPI::API::OpenGL:
+            case ERHIInterfaceType::OpenGL:
 				return new OpenGLShader(vertexSrc, fragmentSrc);
-			case RendererAPI::API::Vulkan:
+            case ERHIInterfaceType::Vulkan:
 				KR_CORE_ASSERT(false, "Creating Vulkan shader this way is not supported");
 				return nullptr;// Use the overloaded version
 		}
@@ -28,14 +28,14 @@ namespace Karma
 
 	Shader* Shader::Create(const std::string& vertexSrcFile, const std::string& fragmentSrcFile, const std::string& shaderName)
 	{
-		switch (Renderer::GetAPI())
+        switch (GRHIInterfaceType)
 		{
-			case RendererAPI::API::None:
-				KR_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
+            case ERHIInterfaceType::Null:
+                KR_CORE_ASSERT(false, "Without graphics API currently not supported");
 				return nullptr;
-			case RendererAPI::API::OpenGL:
+            case ERHIInterfaceType::OpenGL:
 				return new OpenGLShader(vertexSrcFile, fragmentSrcFile, shaderName);
-			case RendererAPI::API::Vulkan:
+            case ERHIInterfaceType::Vulkan:
 				return new VulkanShader(vertexSrcFile, fragmentSrcFile);
 		}
 

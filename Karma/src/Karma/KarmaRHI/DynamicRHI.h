@@ -10,6 +10,7 @@
 #pragma once
 
 #include "KarmaRHI.h"
+#include "glm/glm.hpp"
 
 namespace Karma
 {
@@ -55,6 +56,11 @@ namespace Karma
 		// Additional methods for rendering operations can be added here
 
 		virtual Karma::ERHIInterfaceType GetInterfaceType() const { return Karma::ERHIInterfaceType::Hidden; }
+
+        inline glm::vec4& GetClearColor() const { return m_ClearColor; }
+
+    protected:
+        static glm::vec4 m_ClearColor;
 	};
 
 	/** A global pointer to the dynamically bound RHI implementation. */

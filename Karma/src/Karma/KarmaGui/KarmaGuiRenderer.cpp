@@ -1,6 +1,4 @@
 #include "KarmaGuiRenderer.h"
-#include "Renderer/RendererAPI.h"
-#include "Renderer/RenderCommand.h"
 #include "StaticMeshActor.h"
 #include "Vulkan/VulkanBuffer.h"
 #include "VulkanRHI/VulkanDynamicRHI.h"
@@ -108,7 +106,7 @@ namespace Karma
 				KarmaGuiVulkanHandler::KarmaGui_ImplVulkan_DestroyFontUploadObjects();
 			}
 		}
-		else if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
+        else if (GRHIInterfaceType == ERHIInterfaceType::OpenGL)
 		{
 			KarmaGui_ImplGlfw_InitForOpenGL(window, true);
 
@@ -218,18 +216,18 @@ namespace Karma
 		KarmaGuiIO& io = KarmaGui::GetIO();
 		(void)io;
 
-		switch (RendererAPI::GetAPI())
+        switch (GRHIInterfaceType)
 		{
-		case RendererAPI::API::Vulkan:
+        case ERHIInterfaceType::Vulkan:
 			GiveLoopEndControlToVulkan();
 			break;
-		case RendererAPI::API::OpenGL:
+        case ERHIInterfaceType::OpenGL:
 		{
 			int displayWidth, displayHeight;
 			glfwGetFramebufferSize(m_GLFWwindow, &displayWidth, &displayHeight);
 			glViewport(0, 0, displayWidth, displayHeight);
-			glm::vec4 clearColor = RenderCommand::GetClearColor();
-			glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
+            glm::vec4 clearColor = GDynamicRHI->GetClearColor();
+            glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
 			glClear(GL_COLOR_BUFFER_BIT);
 			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_RenderDrawData(KarmaGui::GetDrawData());
 			if (io.ConfigFlags & KGGuiConfigFlags_ViewportsEnable)
@@ -241,7 +239,7 @@ namespace Karma
 			}
 		}
 		break;
-		case RendererAPI::API::None:
+        case ERHIInterfaceType::Null:
 			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
 			break;
 		default:
@@ -320,7 +318,7 @@ namespace Karma
 		KGDrawData* mainDrawData = KarmaGui::GetDrawData();
 		const bool mainIsMinimized = (mainDrawData->DisplaySize.x <= 0.0f || mainDrawData->DisplaySize.y <= 0.0f);
 
-		glm::vec4 clearColor = RenderCommand::GetClearColor();
+        glm::vec4 clearColor = GDynamicRHI->GetClearColor();
 
 		m_VulkanWindowData.ClearValue.color.float32[0] = clearColor.x * clearColor.w;
 		m_VulkanWindowData.ClearValue.color.float32[1] = clearColor.y * clearColor.w;
@@ -346,18 +344,18 @@ namespace Karma
 
 	void KarmaGuiRenderer::OnKarmaGuiLayerDetach()
 	{
-		switch (RendererAPI::GetAPI())
+        switch (GRHIInterfaceType)
 		{
-		case RendererAPI::API::Vulkan:
+        case ERHIInterfaceType::Vulkan:
 			GracefulVulkanShutDown();
 			break;
-		case RendererAPI::API::OpenGL:
+        case ERHIInterfaceType::OpenGL:
 			KarmaGuiOpenGLHandler::KarmaGui_ImplOpenGL3_Shutdown();
 			KarmaGui_ImplGlfw_Shutdown();
 			KarmaGui::DestroyContext();
 			break;
-		case RendererAPI::API::None:
-			KR_CORE_ASSERT(false, "RendererAPI::None is not supported");
+        case ERHIInterfaceType::Null:
+            KR_CORE_ASSERT(false, "Without graphics API not supported");
 			break;
 		default:
 			KR_CORE_ASSERT(false, "Unknown RendererAPI {0} is in play.")
@@ -742,11 +740,11 @@ namespace Karma
 
 	KGTextureID KarmaGuiBackendRendererUserData::GetTextureIDAtIndex(uint32_t index)
 	{
-		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+        if (GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
 			return vulkanMesaDecalDataList.at(index)->TextureDescriptorSet;
 		}
-		else if(RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
+        else if(GRHIInterfaceType == ERHIInterfaceType::OpenGL)
 		{
 			return openglMesaDecalDataList.at(index).DecalID;
 		}
@@ -756,11 +754,11 @@ namespace Karma
 
 	uint32_t KarmaGuiBackendRendererUserData::GetTextureWidthAtIndex(uint32_t index)
 	{
-		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+        if (GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
 			return vulkanMesaDecalDataList.at(index)->width;
 		}
-		else if(RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
+        else if(GRHIInterfaceType == ERHIInterfaceType::OpenGL)
 		{
 			return openglMesaDecalDataList.at(index).width;
 		}
@@ -770,11 +768,11 @@ namespace Karma
 
 	uint32_t KarmaGuiBackendRendererUserData::GetTextureHeightAtIndex(uint32_t index)
 	{
-		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+        if (GRHIInterfaceType == ERHIInterfaceType::Vulkan)
 		{
 			return vulkanMesaDecalDataList.at(index)->height;
 		}
-		else if(RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
+        else if(GRHIInterfaceType == ERHIInterfaceType::OpenGL)
 		{
 			return openglMesaDecalDataList.at(index).height;
 		}

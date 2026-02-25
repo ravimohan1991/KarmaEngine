@@ -1,5 +1,4 @@
 #include "KarmaGuiVulkanHandler.h"
-#include "Renderer/RenderCommand.h"
 #include "KarmaUtilities.h"
 #include "Karma/KarmaGui/KarmaGuiRenderer.h"
 #include "VulkanRHI/VulkanSwapChain.h"
