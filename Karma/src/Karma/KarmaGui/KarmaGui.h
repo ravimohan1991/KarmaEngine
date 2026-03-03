@@ -171,7 +171,7 @@ struct KGVec4
 
 namespace Karma
 {
-    /**
+	/**
 	 * @brief The chief class for our UI needs. The responsibility includes
 	 *  - Context creation and access
 	 *  - Main functions to start and end frames, render, and access draw data
@@ -181,9 +181,9 @@ namespace Karma
 	 *  - Window Utilities and Manipulation
 	 *  - Content region access
 	 *  - Windows Scrolling
-     * 
+	 * 
 	 * @since Karma 1.0.0
-     */
+	 */
 	class KARMA_API KarmaGui
 	{
 	public:
